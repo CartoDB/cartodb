@@ -93,6 +93,12 @@ describe Carto::OauthProvider::Scopes do
         )
         expect(scopes).to eq([@non_shared_dataset_scope])
       end
+
+      it 'should fail write scope in shared dataset with only read perms' do
+        rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([rw_scope], @carto_org_user_2)
+        expect(scopes).to eq([rw_scope])
+      end
     end
   end
 

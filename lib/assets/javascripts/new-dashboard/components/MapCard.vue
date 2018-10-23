@@ -1,5 +1,5 @@
 <template>
-    <div class="grid-cell grid-cell--col4">
+    <div class="grid-cell" v-bind:class="mapSizeClass">
         <div class="card" v-bind:class="{selected: selected}">
             <span class="checkbox card-select">
                 <input class="checkbox-input" @click="toggleSelection" type="checkBox">
@@ -21,9 +21,15 @@
                 <img :src=mapThumbnailUrl />
             </div>
             <div class="card-text">
-                <h2 class="card-title">{{map.name}}</h2>
+                <h2 class="card-title">{{map.name}}&nbsp;
+                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click="toggleFavorite">
+                    <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
+                      <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
+                    </svg>
+                  </span>
+                </h2>
                 <p class="card-description" v-if="map.description">{{map.description}}</p>
-                <p class="card-description" v-else>No description</p>
+                <p class="card-description" v-else>{{$t(`mapCard.noDescription`)}}</p>
                 <ul class="card-metadata">
                     <li class="card-metadataItem">
                         <span class="icon icon--privacy" v-bind:class="privacyIcon"></span>
@@ -37,10 +43,10 @@
                         <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
                         <ul class="card-tagList">
                           <li v-for="(tag, index) in map.tagList" :key="tag">
-                            <a href="#">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&nbsp;</span>
+                            <a href="#">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
                           </li>
                           <li v-if="map.tagList.length <= 0">
-                            <span>No tags</span>
+                            <span>{{$t(`mapCard.noTags`)}}</span>
                           </li>
                         </ul>
                     </li>
@@ -59,7 +65,8 @@ export default {
   },
   data: function () {
     return {
-      selected: false
+      selected: false,
+      favorite: this.$props.map.favorite
     };
   },
   computed: {
@@ -71,11 +78,22 @@ export default {
     },
     mapThumbnailUrl: function () {
       return this.$props.map.thumbnailUrl;
+    },
+    mapSizeClass: function () {
+      if (this.$props.size === 'medium') {
+        return 'grid-cell--col6';
+      } else {
+        return 'grid-cell--col4';
+      }
     }
   },
   methods: {
     toggleSelection () {
       this.selected = !this.selected;
+    },
+    toggleFavorite () {
+      this.favorite = !this.favorite;
+      // this.$props.map.favorite = !this.$props.map.favorite;
     }
   },
   props: {
@@ -307,6 +325,33 @@ export default {
     display: block;
     padding: 12px 24px;
     text-decoration: none;
+  }
+}
+
+.card-favorite {
+  margin-left: 4px;
+
+  svg {
+    transform: translateY(2px);
+  }
+
+  &:hover {
+    .favorite-icon {
+      stroke: $primaryColor;
+    }
+  }
+
+  &.is-favorite {
+    .favorite-icon {
+      stroke: #FFC300;
+      fill: #FFC300;
+    }
+
+    &:hover {
+      .favorite-icon {
+        stroke: $primaryColor;
+      }
+    }
   }
 }
 

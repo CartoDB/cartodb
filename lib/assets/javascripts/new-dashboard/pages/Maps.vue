@@ -3,6 +3,11 @@
     <MapCard :map=test size=medium></MapCard>
     <MapCard :map=test2 size=medium></MapCard>
     <MapCard :map=test></MapCard>
+    <MapCard :map=test2></MapCard>
+    <MapCard :map=test></MapCard>
+    <MapCard :map=test2></MapCard>
+    <MapCard :map=test></MapCard>
+    <MapCard :map=test2></MapCard>
   </div>
 </template>
 

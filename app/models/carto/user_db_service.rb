@@ -44,5 +44,24 @@ module Carto
       query = "select table_name::text from information_schema.tables where table_schema = '#{schema}'"
       execute_in_user_database(query).map { |i| i['table_name'] }
     end
+
+    def tables_privileges(role = @user.database_username)
+      query = %{
+        SELECT
+          s.nspname as schema,
+          c.relname as t,
+          string_agg(lower(acl.privilege_type), ',') as permission
+        FROM
+          pg_class c
+          JOIN pg_namespace s ON c.relnamespace = s.oid
+          JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
+          JOIN pg_roles r ON acl.grantee = r.oid
+        WHERE
+          r.rolname = '#{role}'
+        GROUP BY schema, t;
+      }
+
+      execute_in_user_database(query)
+    end
   end
 end

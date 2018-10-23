@@ -96,7 +96,7 @@ module Carto
 
         def initialize(scope)
           permission = scope.split(':')[1]
-          @schema, @table = self.class.schema_table(scope)
+          @table, @schema = self.class.table_and_schema(scope)
           super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
           @grant_key = :tables
           @permission = permission.to_sym
@@ -143,7 +143,7 @@ module Carto
           tables_by_schema = {}
           invalid_scopes = []
           dataset_scopes.each do |scope|
-            schema, table = schema_table(scope)
+            table, schema = table_and_schema(scope)
             schema = user.database_schema if schema.nil?
             if tables_by_schema[schema.to_sym].nil?
               tables_by_schema[schema.to_sym] = user.db_service.tables_effective(schema)
@@ -158,13 +158,8 @@ module Carto
           PERMISSIONS.find { |_, values| permission.split(',').sort == values.sort }.first
         end
 
-        def self.schema_table(scope)
-          schema, table = scope.split(':')[-1].split('.')
-          if table.nil?
-            table = schema
-            schema = nil
-          end
-          [schema, table]
+        def self.table_and_schema(scope)
+          Table.table_and_schema(scope.split(':')[-1])
         end
       end
 

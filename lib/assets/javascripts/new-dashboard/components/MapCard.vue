@@ -35,11 +35,11 @@
                     <li class="card-metadataItem">
                         <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
                         <ul class="card-tagList">
-                          <li v-for="(tag, index) in map.tagList" :key="tag.id">
+                          <li v-for="(tag, index) in map.tagList" :key="tag">
                             <a href="#">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&nbsp;</span>
                           </li>
                           <li v-if="map.tagList.length <= 0">
-                            <a>No tags</a>
+                            <span>No tags</span>
                           </li>
                         </ul>
                     </li>
@@ -95,10 +95,10 @@ export default {
       opacity: 1;
     }
   }
-  &.selected{
+  &.selected {
     background-color: #F2F9FF;
     .card-actions,
-    .card-select{
+    .card-select {
       opacity: 1;
     }
   }
@@ -244,7 +244,7 @@ export default {
   }
 }
 
-.card-development{
+.card-development {
   background-color: $softblue;
   padding: 36px 16px;
   display: flex;
@@ -255,7 +255,7 @@ export default {
   }
 }
 
-.card-tagList > li{
+.card-tagList > li {
   display: inline;
 }
 </style>

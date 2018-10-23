@@ -24,7 +24,7 @@ export default {
         className: 'Dropdown vertical_bottom horizontal_right tick_right'
       });
 
-      settingsDropdown.on('onDropdownHidden', () => { this.isDropdownOpen = false });
+      settingsDropdown.on('onDropdownHidden', () => { this.isDropdownOpen = false; });
 
       settingsDropdown.render();
 

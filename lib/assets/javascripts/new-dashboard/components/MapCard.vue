@@ -2,7 +2,7 @@
     <div class="grid-cell grid-cell--col4">
         <div class="card" v-bind:class="{selected: selected}">
             <span class="checkbox card-select">
-                <input class="checkbox-input" @click="selected = !selected" type="checkBox" name="contact" value="02">
+                <input class="checkbox-input" @click="toggleSelection" type="checkBox">
                 <span class="checkbox-decoration">
                     <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
                         <g fill="none">
@@ -18,7 +18,7 @@
                 <!-- {%include cards/card-dropdown.html%} -->
             </div>
             <div class="card-media">
-                <img :src=map.thumbnailUrl />
+                <img :src=mapThumbnailUrl />
             </div>
             <div class="card-text">
                 <h2 class="card-title">{{map.name}}</h2>
@@ -30,7 +30,7 @@
                     </li>
                     <li class="card-metadataItem">
                         <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
-                        <p>{{map.updatedAt}}</p>
+                        <p>{{lastUpdated}}</p>
                     </li>
                     <li class="card-metadataItem">
                         <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
@@ -50,6 +50,8 @@
 </template>
 
 <script>
+import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+
 export default {
   name: 'CardMap',
   components: {
@@ -59,13 +61,22 @@ export default {
       selected: false
     };
   },
+  computed: {
+    lastUpdated: function () {
+      return `Updated ${distanceInWordsStrict(this.$props.map.updatedAt, new Date())} ago`;
+    },
+    mapThumbnailUrl: function () {
+      return this.$props.map.thumbnailUrl;
+    }
+  },
   methods: {
     toggleSelection () {
       this.selected = !this.selected;
     }
   },
   props: {
-    map: Object
+    map: Object,
+    size: String
   }
 };
 </script>

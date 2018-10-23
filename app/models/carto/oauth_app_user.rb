@@ -20,7 +20,7 @@ module Carto
 
     after_create :create_dataset_role, :grant_dataset_role_privileges
     before_update :grant_dataset_role_privileges
-    after_destroy: :drop_dataset_role
+    after_destroy :drop_dataset_role
 
     def authorized?(requested_scopes)
       (requested_scopes - all_scopes).empty?
@@ -103,6 +103,7 @@ module Carto
     end
 
     def grant_dataset_role_privileges
+      invalid_scopes = []
       DatasetsScope.valid_scopes(scopes).each do |scope|
         dataset_scope = DatasetsScope.new(scope)
         query = %{
@@ -114,10 +115,12 @@ module Carto
         begin
           user.in_database.execute(query)
         rescue ActiveRecord::StatementInvalid
+          invalid_scopes << scope
           CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
-          raise OauthProvider::Errors::InvalidScope.new
         end
       end
+
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
     end
 
     def dataset_role_name

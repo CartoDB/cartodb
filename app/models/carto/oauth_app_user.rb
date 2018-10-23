@@ -20,6 +20,7 @@ module Carto
 
     after_create :create_dataset_role, :grant_dataset_role_privileges
     before_update :grant_dataset_role_privileges
+    after_destroy: :drop_dataset_role
 
     def authorized?(requested_scopes)
       (requested_scopes - all_scopes).empty?
@@ -86,10 +87,19 @@ module Carto
     def create_dataset_role
       user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
     rescue ActiveRecord::StatementInvalid => e
-      unless e.message =~ /already exist/
-        CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
-        raise OauthProvider::Errors::ServerError.new
-      end
+      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def drop_dataset_role
+      queries = %{
+        DROP OWNED BY \"#{dataset_role_name}\";
+        DROP ROLE \"#{dataset_role_name}\";
+      }
+      user.in_database(as: :superuser).execute(queries)
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: 'Error dropping dataset role', exception: e)
+      raise OauthProvider::Errors::ServerError.new
     end
 
     def grant_dataset_role_privileges

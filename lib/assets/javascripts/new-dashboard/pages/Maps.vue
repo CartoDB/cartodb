@@ -1,23 +1,30 @@
 <template>
-  <div class="container grid">
-    <MapCard :map=test size=medium></MapCard>
-    <MapCard :map=test2 size=medium></MapCard>
-    <MapCard :map=test></MapCard>
-    <MapCard :map=test2></MapCard>
-    <MapCard :map=test></MapCard>
-    <MapCard :map=test2></MapCard>
-    <MapCard :map=test></MapCard>
-    <MapCard :map=test2></MapCard>
-  </div>
+  <section class="section">
+    <div class="container grid">
+      <div class="grid-cell grid-cell--col12">
+        <SectionTitle title='Your Maps' description="This is a description test"></SectionTitle>
+      </div>
+      <MapCard :map=test size=medium></MapCard>
+      <MapCard :map=test2 size=medium></MapCard>
+      <MapCard :map=test></MapCard>
+      <MapCard :map=test2></MapCard>
+      <MapCard :map=test></MapCard>
+      <MapCard :map=test2></MapCard>
+      <MapCard :map=test></MapCard>
+      <MapCard :map=test2></MapCard>
+    </div>
+  </section>
 </template>
 
 <script>
 import MapCard from '../components/MapCard';
+import SectionTitle from '../components/SectionTitle';
 
 export default {
   name: 'MapsPage',
   components: {
-    MapCard
+    MapCard,
+    SectionTitle
   },
   computed: {
     test: () =>

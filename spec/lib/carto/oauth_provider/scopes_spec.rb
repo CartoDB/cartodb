@@ -135,6 +135,44 @@ describe Carto::OauthProvider::Scopes do
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([rw_scope], @carto_org_user_2)
         expect(scopes).to eq([rw_scope])
       end
+
+      describe 'organization shared datasets' do
+        before :each do
+          @org_shared_table = create_table(user_id: @carto_org_user_1.id)
+          non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+          perm = @shared_table.table_visualization.permission
+          perm.acl = [{ type: 'org', entity: { id: @organization.id }, access: 'r' }]
+          perm.save!
+
+          @org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          @non_org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{non_org_shared_table.name}"
+        end
+
+        it 'validates org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@org_shared_dataset_scope], @carto_org_user_2)
+          expect(scopes).to be_empty
+        end
+
+        it 'returns non org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@non_org_shared_dataset_scope], @carto_org_user_2)
+          expect(scopes).to eq([@non_org_shared_dataset_scope])
+        end
+
+        it 'returns only non org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@org_shared_dataset_scope, @non_org_shared_dataset_scope],
+            @carto_org_user_2
+          )
+          expect(scopes).to eq([@non_org_shared_dataset_scope])
+        end
+
+        it 'should fail write scope in org shared dataset with only read perms' do
+          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([rw_scope], @carto_org_user_2)
+          expect(scopes).to eq([rw_scope])
+        end
+      end
     end
   end
 

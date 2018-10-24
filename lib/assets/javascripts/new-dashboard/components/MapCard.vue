@@ -135,7 +135,7 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
-    border: 1px solid rgba($textColor, 0.16);
+    border: 1px solid $light-grey;
     pointer-events: none;
   }
 
@@ -149,7 +149,8 @@ export default {
     }
 
     .card-select,
-    .card-actions {
+    .card-actions,
+    .card-favorite {
       opacity: 1;
     }
   }
@@ -287,6 +288,7 @@ export default {
 
 .card-favorite {
   margin-left: 4px;
+  opacity: 0;
 
   svg {
     transform: translateY(2px);
@@ -299,6 +301,8 @@ export default {
   }
 
   &.is-favorite {
+    opacity: 1;
+
     .favorite-icon {
       stroke: #FFC300;
       fill: #FFC300;

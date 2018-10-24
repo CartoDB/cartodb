@@ -2,7 +2,49 @@
   <section class="section">
     <div class="container grid">
       <div class="grid-cell grid-cell--col12">
-        <SectionTitle title='Your Maps' description="This is a description test"></SectionTitle>
+        <SectionTitle title='Your Maps' description="This is a description test">
+          <template slot="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+              <path d="M0 0h24v24H0z" fill="transparent"/>
+              <path d="M20.55 17.83A1 1 0 0 0 21 17V3a1 1 0 0 0-1.55-.83l-5.4 3.6-4.43-3.55c-.17-.13-.37-.2-.58-.21-.21 0-.42.05-.6.16l-6 4A1 1 0 0 0 2 7v14a1 1 0 0 0 1.56.83l5.39-3.6 4.43 3.55A1 1 0 0 0 14 22c.2 0 .4-.06.55-.18zM4 7.53l4-2.66v11.6l-4 2.66zm9 11.39l-3-2.4V5.08l3 2.4zm6-2.46l-4 2.67V7.53l4-2.66z" fill="#2E3C43"/>
+            </svg>
+          </template>
+          <template slot="dropdownButton">
+            <button class="button button--ghost">
+              <span class="button-icon">
+                <svg width="18" height="20" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="#036FE2" fill-rule="evenodd">
+                    <path d="M8.3 6.7l1.4-1.4L5 .58.3 5.29l1.4 1.42L4 4.4v11.6h2V4.4zM16.3 13.3L14 15.58V4h-2V15.6l-2.3-2.3-1.4 1.42 4.7 4.7 4.7-4.7z"/>
+                  </g>
+                </svg>
+              </span>
+            </button>
+            <div class="head-sectionDropdown">
+              <div class="head-sectionDropdownCategory">
+                <h6 class="text is-xsmall is-txtGreyLight u-tupper letter-spacing">Show Me</h6>
+                <ul class="head-sectionDropdownList">
+                  <li class="text is-caption is-txtGrey is-selected">All applications</li>
+                  <li class="text is-caption is-txtGrey">Favorites only</li>
+                  <li class="text is-caption is-txtGrey">Shared with you</li>
+                </ul>
+              </div>
+              <div class="head-sectionDropdownCategory">
+                <h6 class="text is-xsmall is-txtGreyLight u-tupper letter-spacing">Order</h6>
+                <ul class="head-sectionDropdownList">
+                  <li class="text is-caption is-txtGrey is-selected">Alphabetically</li>
+                  <li class="text is-caption is-txtGrey">Newest first</li>
+                  <li class="text is-caption is-txtGrey">Oldest first</li>
+                  <li class="text is-caption is-txtGrey">Most views first</li>
+                </ul>
+              </div>
+            </div>
+          </template>
+          <template slot="primaryButton">
+            <button class="button">
+              Test
+            </button>
+          </template>
+        </SectionTitle>
       </div>
       <MapCard :map=test size=medium></MapCard>
       <MapCard :map=test2 size=medium></MapCard>

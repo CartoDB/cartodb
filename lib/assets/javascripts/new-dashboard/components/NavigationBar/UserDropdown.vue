@@ -20,12 +20,15 @@ export default {
   mounted () {
     this.$dropdownView = this.renderView();
   },
+  beforeDestroy () {
+    this.$dropdownView.clean();
+  },
   methods: {
     renderView () {
       const settingsDropdown = new SettingsDropdown({
         model: this.$cartoModels.user,
         configModel: this.$cartoModels.config,
-        className: 'Dropdown SettingsDropdown vertical_bottom horizontal_right tick_right'
+        className: 'Dropdown user-dropdown vertical_bottom horizontal_right tick_right'
       });
 
       settingsDropdown.on('onDropdownHidden', () => {
@@ -59,7 +62,7 @@ export default {
 </script>
 
 <style lang="scss">
-.SettingsDropdown {
+.user-dropdown {
   top: 48px;
   right: 1px;
 }

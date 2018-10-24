@@ -1,59 +1,59 @@
 <template>
-    <div class="grid-cell" v-bind:class="mapSizeClass">
-        <a :href="vizUrl" class="card map-card" v-bind:class="{selected: selected, 'card--noHover': !activeHover}">
-            <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-                <input class="checkbox-input" @click="toggleSelection" type="checkBox">
-                <span class="checkbox-decoration">
-                    <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
-                        <g fill="none">
-                            <polyline class="checkbox-check" points="1.65093994 3.80255127 4.48919678 6.97192383 10.3794556 0.717346191"></polyline>
-                        </g>
-                    </svg>
-                </span>
-            </span>
-            <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-                <span class="card-actionsSelect">
-                  <img src="../assets/icons/common/options.svg">
-                </span>
-                <!-- {%include cards/card-dropdown.html%} -->
-            </div>
-            <div class="card-media">
-                <img :src=mapThumbnailUrl />
-            </div>
-            <div class="card-text">
-                <h2 class="card-title">{{map.name}}&nbsp;
-                  <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-                    <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
-                      <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
-                    </svg>
-                  </span>
-                </h2>
-                <p class="card-description" v-if="map.description">{{map.description}}</p>
-                <p class="card-description" v-else>{{$t(`mapCard.noDescription`)}}</p>
-                <ul class="card-metadata">
-                    <li class="card-metadataItem">
-                        <span class="icon icon--privacy" v-bind:class="privacyIcon"></span>
-                        <p>{{$t(`mapCard.shared.${map.privacy}`)}}</p>
-                    </li>
-                    <li class="card-metadataItem">
-                        <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
-                        <p>{{lastUpdated}}</p>
-                    </li>
-                    <li class="card-metadataItem">
-                        <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
-                        <ul class="card-tagList">
-                          <li v-for="(tag, index) in map.tagList" :key="tag">
-                            <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{tag}}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
-                          </li>
-                          <li v-if="map.tagList.length <= 0">
-                            <span>{{$t(`mapCard.noTags`)}}</span>
-                          </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </a>
-    </div>
+  <div class="grid-cell" :class="sizeClass">
+    <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
+      <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+        <input class="checkbox-input" @click="toggleSelection" type="checkBox">
+        <span class="checkbox-decoration">
+            <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
+                <g fill="none">
+                    <polyline class="checkbox-check" points="1.65093994 3.80255127 4.48919678 6.97192383 10.3794556 0.717346191"></polyline>
+                </g>
+            </svg>
+        </span>
+      </span>
+      <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+        <span class="card-actionsSelect">
+            <img src="../assets/icons/common/options.svg">
+        </span>
+      </div>
+      <div class="card-media">
+        <img :src=mapThumbnailUrl />
+      </div>
+      <div class="card-text">
+        <h2 class="card-title">
+          {{ map.name }}&nbsp;
+          <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+            <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
+              <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
+            </svg>
+          </span>
+        </h2>
+        <p class="card-description" v-if="map.description">{{ map.description }}</p>
+        <p class="card-description" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        <ul class="card-metadata">
+          <li class="card-metadataItem">
+            <span class="icon icon--privacy" :class="privacyIcon"></span>
+            <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
+          </li>
+          <li class="card-metadataItem">
+            <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
+            <p>{{ lastUpdated }}</p>
+          </li>
+          <li class="card-metadataItem">
+            <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
+            <ul class="card-tagList">
+              <li v-for="(tag, index) in map.tagList" :key="tag">
+                <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
+              </li>
+              <li v-if="map.tagList.length <= 0">
+                <span>{{ $t(`mapCard.noTags`) }}</span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </a>
+  </div>
 </template>
 
 <script>
@@ -62,37 +62,38 @@ import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
   name: 'CardMap',
-  components: {
-  },
   props: {
     map: Object,
-    size: String
+    size: {
+      type: String,
+      default: 'small'
+    }
   },
   data: function () {
     return {
       selected: false,
       favorite: this.$props.map.favorite,
-      activeHover: true
+      activeHover: true,
+      sizeClasses: {
+        medium: 'grid-cell--col6',
+        small: 'grid-cell--col4'
+      }
     };
   },
   computed: {
-    privacyIcon: function () {
+    privacyIcon () {
       return `icon--${this.$props.map.privacy}`.toLowerCase();
     },
-    lastUpdated: function () {
+    lastUpdated () {
       return `Updated ${distanceInWordsStrict(this.$props.map.updated_at, new Date())} ago`;
     },
-    mapThumbnailUrl: function () {
+    sizeClass () {
+      return this.sizeClasses[this.$props.size];
+    },
+    mapThumbnailUrl () {
       return this.$props.map.thumbnailUrl;
     },
-    mapSizeClass: function () {
-      if (this.$props.size === 'medium') {
-        return 'grid-cell--col6';
-      } else {
-        return 'grid-cell--col4';
-      }
-    },
-    vizUrl: function () {
+    vizUrl () {
       return Visualization.getURL(this.$props.map);
     }
   },
@@ -102,7 +103,6 @@ export default {
     },
     toggleFavorite () {
       this.favorite = !this.favorite;
-      // this.$props.map.favorite = !this.$props.map.favorite;
     },
     mouseOverElement () {
       this.activeHover = false;
@@ -141,7 +141,6 @@ export default {
   }
 
   &:hover {
-    // background: rgba($primaryColor, 0.02);
     cursor: pointer;
 
     &:not(.card--noHover) {

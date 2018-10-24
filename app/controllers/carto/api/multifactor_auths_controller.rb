@@ -3,8 +3,9 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
 
   ssl_required :create, :destroy, :validate_code, :show, :index
 
-  before_action :check_shared_secret_not_present, only: [:create, :validate_code]
   before_action :load_user
+  before_action :check_ff
+  before_action :check_shared_secret_not_present, only: [:create, :validate_code]
   before_action :load_multifactor_auth, only: [:show, :validate_code, :destroy]
 
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
@@ -58,5 +59,9 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
 
   def create_params
     params.permit(:type)
+  end
+
+  def check_ff
+    raise Carto::UnauthorizedError.new unless @carto_viewer.has_feature_flag?('mfa')
   end
 end

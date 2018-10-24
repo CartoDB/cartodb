@@ -5,25 +5,25 @@
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Home</span>
+        <span class="title is-caption is-regular is-txt-white">Home</span>
       </router-link>
       <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Solutions</span>
+        <span class="title is-caption is-regular is-txt-white">Solutions</span>
       </router-link>
       <router-link :to="{ name: 'maps' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Maps</span>
+        <span class="title is-caption is-regular is-txt-white">Maps</span>
       </router-link>
       <router-link :to="{ name: 'data' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Data</span>
+        <span class="title is-caption is-regular is-txt-white">Data</span>
       </router-link>
   </ul>
   <div class="navbar-imagotype">

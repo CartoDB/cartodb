@@ -12,6 +12,7 @@ Development
 - Add timeout for AR and Sequel connections (#13266)
 - Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
 - Apply code style for "Layer hidden" notification in advanced mode (#13355)
+- Fixed varnish validation for http function due a regexp problem (https://github.com/CartoDB/support/issues/1727)
 - Fix input widths (#13453)
 - Update tags style (#13756)
 - Add more formats to the base datasource class to be used by for example Box connector (#10183)

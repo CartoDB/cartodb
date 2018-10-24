@@ -79,7 +79,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   padding: 0 64px;
-  background-color: $primaryColor;
+  background-color: $primary-color;
 }
 
 .navbar-elementsContainer {
@@ -137,7 +137,7 @@ export default {
     background-position: 16px center;
 
     &::placeholder {
-      color: $textColor-light;
+      color: $text-color-light;
     }
 
     &:focus {
@@ -158,7 +158,7 @@ export default {
   margin-left: 30px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $textColor-light;
+  background-color: $text-color-light;
   background-size: cover;
 
   &:hover {

@@ -139,7 +139,7 @@ module Carto
 
           return [] unless dataset_scopes.any?
 
-          allowed = user.db_service.tables_privileges_hashed
+          allowed = user.db_service.all_tables_granted_hashed
 
           valid_scopes = []
           dataset_scopes.each do |scope|

@@ -45,7 +45,28 @@ module Carto
       execute_in_user_database(query).map { |i| i['table_name'] }
     end
 
-    def tables_privileges(role = @user.database_username)
+    def all_user_roles
+      roles = []
+      roles << "'#{@user.database_username}'"
+      if @user.organization_user?
+        roles << "'#{organization_member_group_role_member_name}'"
+        if !@user.groups.nil?
+          @user.groups.each do |group|
+            roles << "'#{group.database_role}'"
+          end
+        end
+      end
+      roles
+    end
+
+    def all_tables_granted(role = nil)
+      roles = []
+      if !role.nil?
+        roles << role
+      else
+        roles = all_user_roles
+      end
+
       query = %{
         SELECT
           s.nspname as schema,
@@ -57,21 +78,26 @@ module Carto
           JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
           JOIN pg_roles r ON acl.grantee = r.oid
         WHERE
-          r.rolname = '#{role}'
+          r.rolname in(#{roles.join(',')})
         GROUP BY schema, t;
       }
 
       execute_in_user_database(query)
     end
 
-    def tables_privileges_hashed(role = @user.database_username)
-      results = tables_privileges(role)
+    def all_tables_granted_hashed(role = nil)
+      results = all_tables_granted(role)
       privileges_hashed = {}
       results.each do |row|
         privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
         privileges_hashed[row['schema']][row['t']] = row['permission'].split(',')
       end
       privileges_hashed
+    end
+
+    def organization_member_group_role_member_name
+      query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+      execute_in_user_database(query).first['org_member_role']
     end
   end
 end

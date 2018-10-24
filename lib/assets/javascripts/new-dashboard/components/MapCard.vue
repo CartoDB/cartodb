@@ -75,8 +75,8 @@ export default {
       favorite: this.$props.map.favorite,
       activeHover: true,
       sizeClasses: {
-        medium: 'grid-cell--col6',
-        small: 'grid-cell--col4'
+        medium: 'grid-cell--col6 grid-cell--col12--mobile',
+        small: 'grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile'
       }
     };
   },

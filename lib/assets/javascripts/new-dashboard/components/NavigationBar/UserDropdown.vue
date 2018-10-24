@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-dropdown" ref="injectionHTMLTemplate"></div>
+  <div class="navbar-dropdown" ref="injectionHTMLTemplate" v-once></div>
 </template>
 
 <script>

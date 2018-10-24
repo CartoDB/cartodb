@@ -5,8 +5,8 @@ Development
 - None yet
 
 ### Features
-* MFA
-  * Migration, models and controllers (#14335)
+- MFA (WIP)
+  - Migration, models and controllers (#14335)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)

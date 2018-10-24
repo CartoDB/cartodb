@@ -35,7 +35,7 @@
       </form>
       <div class="navbar-user">
         <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown ref="userDropdown" :userModel="userModel" :configModel="configModel"/>
+        <UserDropdown ref="userDropdown" :userModel="userModel" :configModel="configModel" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden"/>
       </div>
   </div>
 </nav>
@@ -61,7 +61,11 @@ export default {
   },
   methods: {
     toggleDropdown () {
-      this.$refs.userDropdown.toggle();
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+
+    onDropdownHidden () {
+      this.isDropdownOpen = false;
     }
   }
 };

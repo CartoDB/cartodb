@@ -20,7 +20,7 @@
         <img :src=mapThumbnailUrl />
       </div>
       <div class="card-text">
-        <h2 class="card-title">
+        <h2 class="card-title title is-caption">
           {{ map.name }}&nbsp;
           <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
             <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
@@ -28,18 +28,18 @@
             </svg>
           </span>
         </h2>
-        <p class="card-description" v-if="map.description">{{ map.description }}</p>
-        <p class="card-description" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        <p class="card-description text is-caption" v-if="map.description">{{ map.description }}</p>
+        <p class="card-description text is-caption" v-else>{{ $t(`mapCard.noDescription`) }}</p>
         <ul class="card-metadata">
-          <li class="card-metadataItem">
+          <li class="card-metadataItem text is-caption">
             <span class="icon icon--privacy" :class="privacyIcon"></span>
             <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
           </li>
-          <li class="card-metadataItem">
+          <li class="card-metadataItem text is-caption">
             <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
             <p>{{ lastUpdated }}</p>
           </li>
-          <li class="card-metadataItem">
+          <li class="card-metadataItem text is-caption">
             <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
             <ul class="card-tagList">
               <li v-for="(tag, index) in map.tagList" :key="tag">
@@ -114,7 +114,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
@@ -165,35 +164,6 @@ export default {
   }
 }
 
-.card--highlight {
-  display: flex;
-
-  .card-title {
-    margin-bottom: 16px;
-    font-size: 24px;
-  }
-
-  .card-description {
-    height: 72px;
-    margin-bottom: 32px;
-    -webkit-line-clamp: 3;
-  }
-
-  .card-media {
-    flex: 0 0 58.3331%;
-    min-width: 58.3331%;
-  }
-
-  .card-text {
-    padding: 24px 36px 24px 20px;
-  }
-}
-
-.card-subtitle {
-  margin-bottom: 4px;
-  font: 600 10px/1.6 'Montserrat';
-}
-
 .card-text {
   padding: 24px 16px;
   color: $textColor;
@@ -213,7 +183,6 @@ export default {
 .card-title {
   margin-bottom: 12px;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  font: 700 18px/1.4 'Montserrat';
 }
 
 .card-description {
@@ -224,18 +193,20 @@ export default {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  font: 400 16px/1.6 'Open Sans';
   text-overflow: ellipsis;
 }
 
 .card-metadataItem {
   display: flex;
   margin-bottom: 4px;
-  font: 400 16px/1.6 'Open Sans';
 
   a {
     color: $textColor;
     text-decoration: none;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 
   a:hover {
@@ -270,10 +241,6 @@ export default {
       background-image: url("../assets/icons/maps/privacy/password.svg");
     }
   }
-}
-
-.card-metadataItem:last-child {
-  margin-bottom: 0;
 }
 
 .card-select {
@@ -318,33 +285,6 @@ export default {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
 }
 
-.card-actionsContainer {
-  position: absolute;
-  z-index: 2;
-  top: 32px;
-  right: 0;
-  border: 1px solid rgba($textColor, 0.08);
-  border-radius: 2px;
-  background: $white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-.card-actionsListItem {
-  width: 264px;
-  border-bottom: 1px solid rgba($textColor, 0.08);
-  font: 400 16px/1.6 'Open Sans';
-
-  &:last-child {
-    border-bottom: 0;
-  }
-
-  a {
-    display: block;
-    padding: 12px 24px;
-    text-decoration: none;
-  }
-}
-
 .card-favorite {
   margin-left: 4px;
 
@@ -369,18 +309,6 @@ export default {
         stroke: $primaryColor;
       }
     }
-  }
-}
-
-.card-development {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 36px 16px;
-  background-color: $softblue;
-
-  .card-developmentTitle {
-    margin-bottom: 8px;
   }
 }
 

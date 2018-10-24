@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
+- Fix encoding corner case with ICU for some CSV files (https://github.com/CartoDB/support/issues/1808)
 - Add timeout for AR and Sequel connections (#13266)
 - Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
 - Apply code style for "Layer hidden" notification in advanced mode (#13355)

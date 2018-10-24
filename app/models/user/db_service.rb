@@ -1365,7 +1365,6 @@ module CartoDB
             BEGIN;
             CREATE OR REPLACE FUNCTION public.cdb_invalidate_varnish(table_name text) RETURNS void AS
             $$
-                import re
                 critical = #{varnish_critical}
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}

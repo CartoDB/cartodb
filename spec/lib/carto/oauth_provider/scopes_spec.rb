@@ -63,6 +63,42 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(["wadusdatasets:r:#{@user_table.name}"])
     end
 
+    describe 'views' do
+      before :all do
+        @view_name = "#{@user_table.name}_view"
+        @materialized_view_name = "#{@user_table.name}_matview"
+        @user.in_database do |db|
+          query = %{
+            CREATE VIEW #{@view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@view_name} TO \"#{@user.database_username}\";
+            CREATE MATERIALIZED VIEW #{@materialized_view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@materialized_view_name} TO \"#{@user.database_username}\";
+          }
+          db.execute(query)
+        end
+      end
+
+      after :all do
+        @user.in_database do |db|
+          query = %{
+            DROP VIEW #{@view_name};
+            DROP MATERIALIZED VIEW #{@materialized_view_name};
+          }
+          db.execute(query)
+        end
+      end
+
+      it 'validates view scope' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@view_name}"], @user)
+        expect(scopes).to be_empty
+      end
+
+      it 'validates materialized view scope' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@materialized_view_name}"], @user)
+        expect(scopes).to be_empty
+      end
+    end
+
     describe 'shared datasets' do
       before :each do
         @shared_table = create_table(user_id: @carto_org_user_1.id)

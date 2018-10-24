@@ -23,8 +23,8 @@ export default {
   methods: {
     renderView () {
       const settingsDropdown = new SettingsDropdown({
-        model: this.$props.userModel,
-        configModel: this.$props.configModel,
+        model: this.$cartoModels.user,
+        configModel: this.$cartoModels.config,
         className: 'Dropdown vertical_bottom horizontal_right tick_right'
       });
 

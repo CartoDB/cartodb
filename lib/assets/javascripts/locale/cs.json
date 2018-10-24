@@ -1379,7 +1379,7 @@
           }
         },
         "footer": {
-          "guessing-desc": "Nechte GEOMORAVU automaticky odhadnout datové typy a obsah k importu.",
+          "guessing-desc": "Nechte Carto automaticky odhadnout datové typy a obsah k importu.",
           "deprecated-connector": "Neschválený konektor.",
           "twitter-contact-support": "Prosím <a href='mailto:support@carto.com'>kontaktujte podporu</a> pro více informací.",
           "twitter-how-to-historical": "Abyste se dostali k historickým datům (starší 30 dní) potřebujete",

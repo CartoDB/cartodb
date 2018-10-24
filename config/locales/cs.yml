@@ -11,7 +11,7 @@ cs:
     title: 'E-mail nebo uživatelské jméno'
     placeholder: 'E-mail nebo uživatelské jméno'
   password: 'heslo'
-  carto_name: 'GeoMorava'
+  carto_name: 'Carto'
   maps: 'mapy'
   datasets: 'datasety'
   builder: 'Builder'   		#???
@@ -65,9 +65,9 @@ cs:
         example_read: 'Příklad čtetní osobních' #Example read private ???
         config_api: 'Konfigurovat API klíče od externích dodavatelů'
         google_maps: 'Google Mapy'
-        google_maps_query: 'Toto je váš dotazový Google řetězec, kontaktujte <a href="mailto:support@geomorava.cz">support@geomora.cz</a> ke změně.'
+        google_maps_query: 'Toto je váš dotazový Google řetězec, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
         google_maps_query_org_1: 'Toto je '
-        google_maps_query_org_2: ' dotazový Google řetězec, kontaktujte <a href="mailto:support@geomorava.cz">support@geomora.cz</a> ke změně.'
+        google_maps_query_org_2: ' dotazový Google řetězec, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
         google_maps_org_api: 'Toto je Google Mapy API klíč organizace'
         learn_more: 'Naučte se víc o autorizační místní aplikaci a správě API klíčů '
       oauth:
@@ -83,7 +83,7 @@ cs:
     orgs:
       auth:
         white_eml: 'Whitelist emailových domén'
-        valid_domains: 'Pouze platné domény, wildcar (*) jsou akceptovány (např. *.geomorava.cz)'
+        valid_domains: 'Pouze platné domény, wildcar (*) jsou akceptovány (např. *.carto.com)'
         if_empty: 'Pokud zůstané prázdné, stránky a přihlášení a registraci zůstanou zablokovány'
         usr_pwd: 'Uživatelské jméno / heslo'
         login_email: 'Dovolte uživatelům registrovat se pomocí jejich uživatelského jména a emailového potvrzení'
@@ -135,9 +135,9 @@ cs:
         config_keys: 'Konfigurovat API klíče od externích poskytovatelů'
         google_query: 'Dotazový řetězec Google Map'
         this_is: 'Toto je '
-        google_change_q: ' dotazový řetězec Google Map. Kontaktujte <a href="mailto:support@geomorava.cz">support@geomorava.c</a> ke změně.'
+        google_change_q: ' dotazový řetězec Google Map. Kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
         google_key: 'Google Map soukromý klíč'
-        google_change_k: ' soukromý klíč Google Map, kontaktujte <a href="mailto:support@geomorava.cz">support@geomorava.cz</a> ke změně.'
+        google_change_k: ' soukromý klíč Google Map, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
         save: 'Uložit změny'
         del_org: 'Smazat organizaci'
         sure: 'Jste si jistý?'
@@ -156,7 +156,7 @@ cs:
         org_owner_const: 'Vlastník organizace nemůže být pouze divák.'
         org_admin_const: 'Administrátoři ogranizace mohou být pouze tvůrčí uživatelé.'
         no_viewers: "Nemáte aktivovaná divácká místa. " ### Případně diváka můžeme změnit
-        contact_support: '<a href="mailto:enterprise-support@geomorava.cz">Kontaktujte podporu</a> pro více informací.'
+        contact_support: '<a href="mailto:enterprise-support@carto.com">Kontaktujte podporu</a> pro více informací.'
         only_read: 'Pouze ke čtení'
         can_manage_usrs: 'Uživatal má povolení spravovat uživatele a skupiny a zasílat oznámení'
         assign_admin: 'Pouze vlastník organizace může přiřadit administrátorská práva'
@@ -179,9 +179,9 @@ cs:
         tags:
           browse: 'Prohlížet podle tagu' ##Procházet?
       pub_data:
-        data_by: 'GEOMORAVA · Datasety podle '
+        data_by: 'CARTO · Datasety podle '
       pub_maps:
-        maps_by: 'GEOMORAVA · Mapy podle '
+        maps_by: 'CARTO · Mapy podle '
       usr_feed:
         pub_feed: ' veřejný přívod'  ## nutno vidět
     shared:
@@ -196,9 +196,9 @@ cs:
         guides: '<a href="https://carto.com/learn/guides/">Průvodci</a>'
         developers: '<a href="https://carto.com/developers">Vývojáři</a>'
         version: 'Verze: %{version}'
-        support: '<a href="mailto:support@geomorava.cz">Podpora</a>'
-        onpremise: '<a href="mailto:onpremise-support@geomorava.cz">Podpora</a>'
-        contact: '<a href="mailto:contact@geomorava.cz">Kontakt</a>'
+        support: '<a href="mailto:support@carto.com">Podpora</a>'
+        onpremise: '<a href="mailto:onpremise-support@carto.com">Podpora</a>'
+        contact: '<a href="mailto:contact@carto.com">Kontakt</a>'
       nores:
         no_items: " nemáte žádné položky na této stránce"
         try_the: 'Zkuste '
@@ -225,7 +225,7 @@ cs:
         issues: 'Máte potíže?'
       pub_footer: #### tady nevím co všechno tam necháme, takže přeskakuji než vyleštím kód
         subscribe: 'Přihlásit k odběru'
-        keepup: 'Držte krok s novinkami GEOMORAVA'
+        keepup: 'Držte krok s novinkami CARTO'
         location: 'Umístění datových službe'
         observ: 'Data dispečink'
         source: 'Zdrojový kód'
@@ -265,7 +265,7 @@ cs:
         jobs: 'Jobs'
         press: 'Press'
         partners: 'Partners'
-        attr: '<a class="Footer-link" href="https://geomorava.cz/attributions">Attributions</a>'
+        attr: '<a class="Footer-link" href="https://carto.com/attributions">Attributions</a>'
         contrib: 'Contributions'
         contact: 'Contact us'
         demo: 'Request a Live Demo'
@@ -304,8 +304,8 @@ cs:
       embed_map:
         map_created: 'Mapa vytvořená uživatelem #{@name}'
         upgrade_browser: 'Tato vizualizace funguje pouze v moderních prohlížečích. Upgradujte Váš a užívejte.'
-        attributions: "GeoMorava <a href='https://geomorava.cz/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
-        logo_link: "https://geomorava.cz?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
+        attributions: "Carto <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
+        logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
       embed_error:
         private: 'Vypadá to, že tato mapa byla nastavená jakou soukromá nebo již neexistuje'
       embed_pwd:
@@ -349,15 +349,15 @@ cs:
           show:
             untitled: 'Nepojmenovaná mapa'
             created: 'Mapa vytvořená '
-            in_carto: ' v GEOMORAVA'
+            in_carto: ' v CARTO'
           protected:
-            map: 'Mapa chráněná heslem — GEOMORAVA'
+            map: 'Mapa chráněná heslem — CARTO'
             passwd: 'Tato mapa je chráněna heslem'
             contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
   datalib:
     index:
-      datalib: 'GEOMORAVA · Datová knihovna'
-      incorporate: 'GEOMORAVA umožňuje vizualizovat velké datové sady.'
+      datalib: 'CARTO · Datová knihovna'
+      incorporate: 'CARTO umožňuje vizualizovat velké datové sady.'
       keywords: 'location intelligence, dataset, big data, location services'
       information: 'Z Vašich nahraných dat můžete pomocí jediného kliknutí přistupovat k datovým souborům, které obsahují širokou škálu informací.'
       disparate: 'Z Vaší nástěnky můžete přistupovat ke spoustě datasetů z Knihovny. Máme data pro Vaše rozličné potřeby.'
@@ -365,7 +365,7 @@ cs:
       seamless: 'Díky otevřeným datům můžete začít bezproblémově mapovat svět kolem Vás.'
   explore:
     index:
-      explore: 'GEOMORAVA &mdash; Prozkoumat'
+      explore: 'CARTO &mdash; Prozkoumat'
       discover: 'Prozkoumávejte skrze mapy, data vizualizace a datasety. Všechna velká data na jedno kliknutí.'
   geocoder:
     finished:
@@ -377,9 +377,9 @@ cs:
   home:
     app_diag:
       diag: 'GEMORAVA Diagnostika'
-      dependencies: 'Tato stránka zobrazuje informace o Vaší instalaci GEOMORAVA a dalších závislostech. Pokud jakákoliv kontrola zobrazí chybu, prosím zkontrolujte instrukce a nainstalujte podporované verze.'
-      problem: 'Pokud máte nějaké problémy s instalací GEOMORAVA, napište na '
-      google: 'GEOMORAVA Google Group'
+      dependencies: 'Tato stránka zobrazuje informace o Vaší instalaci CARTO a dalších závislostech. Pokud jakákoliv kontrola zobrazí chybu, prosím zkontrolujte instrukce a nainstalujte podporované verze.'
+      problem: 'Pokud máte nějaké problémy s instalací CARTO, napište na '
+      google: 'CARTO Google Group'
       include: ' včetně této informace.'
   import:
     data:
@@ -390,20 +390,20 @@ cs:
       imported: ' bylo úspěšně importováno.'
   layouts:
     app_passwd:
-      title: ' | GEOMORAVA'
+      title: ' | CARTO'
       contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
     app_public:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, GEOMORAVA'
+      keywords: ', datasets, maps, data visualization, spatial data, geospatial, CARTO'
     app_table:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, geomorava'
+      keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
     frontend:
       desc: 'Vytvářejte dynamické mapy, analyzujte a vytvářejte místní geoaplikace z Vašech dat pomocí síly PostGISu.'
   mailer:
     footer:
-      msg: 'GEOMORAVA · Made in ???' # No, nevím jak s tím tvářením se, že to není carto.
+      msg: 'CARTO · Made in ???' # No, nevím jak s tím tvářením se, že to není carto.
   oauth:
     author:
-      msg1: ' se chce připojit do Vaší GEOMORAVA databáze. To znamená, že '
+      msg1: ' se chce připojit do Vaší CARTO databáze. To znamená, že '
       msg2: ' bude moci modifikovat, vytvářet a mazat pole z Vaší databáze.'
       authorize: 'Potvrdit přístup'
     failure:
@@ -415,9 +415,9 @@ cs:
     invite:
       hello: 'Ahoj a vítejte!'
       join: 'Připojte se k '
-      org: ' ogranizaci v GEOMORAVA. Jen '
+      org: ' ogranizaci v CARTO. Jen '
       create: 'vytvořte Váš účet'
-      carto: 'GEOMORAVA je ??? CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.' #??? zde ještě bude dobré něco doplnit
+      carto: 'CARTO je ??? CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.' #??? zde ještě bude dobré něco doplnit
       resources: 'Zde jsou nějaké zdroje:' #ověřit
       devcenter: 'Developerské centerum'
       guides: ': Průvodce, FAQ a tutoriály'
@@ -469,12 +469,12 @@ cs:
       enabled: 'Účet již aktivován'
       active: 'Váš učet je již aktivován'
       login: 'Přihlášte se'
-      enjoy: ' a užívejte Váš GEOMORAVA účet.'
+      enjoy: ' a užívejte Váš CARTO účet.'
     account:
       enabled: ' účet aktivován'
       active: 'Váš účet je aktivní!'
       goto: 'Jďete na '
-      enjoy: ' a užívejte Váš GEOMORAVA účet.'
+      enjoy: ' a užívejte Váš CARTO účet.'
     resend:
       valid: ' kontrola emailem' ### zjistit jestli je to dobře
       new: 'Nový potvrzující email odeslán'
@@ -499,7 +499,7 @@ cs:
       click: 'klikněte zde.'
   user:
     new:
-      invited: 'Byl jste pozván do GEOMORAVA jako část'
+      invited: 'Byl jste pozván do CARTO jako část'
       login: ' organization. Prosím přihlašte se na Vaši nástěku Vaším ogranizačním uživatelksým jménem '
       passwd: ' a heslem '
       provided: 'které Vám dal poskytovatel.'

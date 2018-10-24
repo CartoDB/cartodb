@@ -25,7 +25,7 @@ export default {
       const settingsDropdown = new SettingsDropdown({
         model: this.$cartoModels.user,
         configModel: this.$cartoModels.config,
-        className: 'Dropdown vertical_bottom horizontal_right tick_right'
+        className: 'Dropdown SettingsDropdown vertical_bottom horizontal_right tick_right'
       });
 
       settingsDropdown.on('onDropdownHidden', () => {
@@ -57,3 +57,10 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.SettingsDropdown {
+  top: 48px;
+  right: 1px;
+}
+</style>

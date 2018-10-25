@@ -111,7 +111,6 @@ module Carto
             user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
           end
         rescue ActiveRecord::StatementInvalid => e
-          raise e
           invalid_scopes << scope
           CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
         end

@@ -4,7 +4,7 @@
     <h2 class="title--h2">Favorited maps</h2>
     <span class="loading" v-if="isFetchingFeaturedFavoritedMaps">Loading favorited maps</span>
     <ul class="maplist" v-else>
-      <li class="maplist-element" v-for="featuredFavoritedMap in featuredFavoritedMaps" v-bind:key="featuredFavoritedMap.id">
+      <li class="maplist-element" v-for="featuredFavoritedMap in featuredFavoritedMaps" :key="featuredFavoritedMap.id">
         <span class="maplist-detail">Title: {{ featuredFavoritedMap.name }}</span>
         <span class="maplist-detail">Id: {{ featuredFavoritedMap.id }}</span>
         <span class="maplist-detail">Locked: {{ featuredFavoritedMap.locked }}</span>
@@ -14,13 +14,14 @@
 
     <h2 class="title--h2">All maps</h2>
     <div>
-      <button class="button" v-on:click="filterLockedMaps()">LOCKED MAPS</button>
-      <button class="button" v-on:click="filterSharedMaps()">SHARED MAPS</button>
-      <button class="button" v-on:click="resetFilters()">RESET</button>
+      <button class="button" @click="filterLockedMaps()">LOCKED MAPS</button>
+      <button class="button" @click="filterSharedMaps()">SHARED MAPS</button>
+      <button class="button" @click="filterFavoritedMaps()">FAVORITED MAPS</button>
+      <button class="button" @click="resetFilters()">RESET</button>
     </div>
     <span class="loading" v-if="isFetchingMaps">Loading</span>
     <ul class="maplist" v-else>
-      <li class="maplist-element" v-for="map in maps" v-bind:key="map.id">
+      <li class="maplist-element" v-for="map in maps" :key="map.id">
         <span class="maplist-detail" >Title: {{ map.name }}</span>
         <span class="maplist-detail">Id: {{ map.id }}</span>
         <span class="maplist-detail" >Locked: {{ map.locked }}</span>
@@ -33,8 +34,8 @@
       <span>Num Pages: {{ numPages }}</span>
     </div>
     <ul class="pageslist">
-      <li class="pageslist-element" v-for="page in numPages" v-bind:key="page">
-        <button class="button button--page" v-on:click="goToPage(page)">Page {{ page }}</button>
+      <li class="pageslist-element" v-for="page in numPages" :key="page">
+        <button class="button button--page" @click="goToPage(page)">Page {{ page }}</button>
       </li>
     </ul>
 
@@ -42,29 +43,18 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
   name: 'MapsPage',
-  computed: {
-    isFetchingMaps () {
-      return this.$store.state.maps.isFetching;
-    },
-    maps () {
-      return this.$store.state.maps.list;
-    },
-    currentPage () {
-      return this.$store.state.maps.page;
-    },
-    numPages () {
-      return this.$store.state.maps.numPages;
-    },
-    isFetchingFeaturedFavoritedMaps () {
-      return this.$store.state.maps.featuredFavoritedMaps.isFetching;
-    },
-    featuredFavoritedMaps () {
-      return this.$store.state.maps.featuredFavoritedMaps.list;
-    }
-  },
+  computed: mapState({
+    numPages: state => state.maps.numPages,
+    currentPage: state => state.maps.page,
+    maps: state => state.maps.list,
+    isFetchingMaps: state => state.maps.isFetching,
+    featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
+    isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
+  }),
   methods: {
     goToPage (page) {
       this.$store.dispatch('maps/goToPage', page);
@@ -74,6 +64,9 @@ export default {
     },
     filterSharedMaps () {
       this.$store.dispatch('maps/filterSharedMaps');
+    },
+    filterFavoritedMaps () {
+      this.$store.dispatch('maps/filterFavoritedMaps');
     },
     resetFilters () {
       this.$store.dispatch('maps/resetFilters');
@@ -116,7 +109,7 @@ export default {
     margin: 8px;
     cursor: pointer;
     box-sizing: border-box;
-    background-color: $primaryColor;
+    background-color: $primary-color;
     color: $white;
   }
   .button--page {

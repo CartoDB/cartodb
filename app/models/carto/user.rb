@@ -617,8 +617,6 @@ class Carto::User < ActiveRecord::Base
                   Cartodb.config[:oauth][serv]['client_id'].present?
                 when 'box'
                   Cartodb.config[:oauth][serv]['client_id'].present?
-                when 'gdrive'
-                  Cartodb.config[:oauth][serv]['client_id'].present?
                 when 'dropbox'
                   Cartodb.config[:oauth]['dropbox']['app_key'].present?
                 when 'mailchimp'
@@ -627,7 +625,7 @@ class Carto::User < ActiveRecord::Base
                   Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
                 else
                   true
-      end
+                end
 
       if enabled
         oauth = oauths.select(serv)

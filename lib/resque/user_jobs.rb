@@ -151,7 +151,8 @@ module Resque
 
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, filenames)
           u = ::User.where(id: user_id).first
-          ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors, filenames).deliver_now
+          ImportMailer.data_import_finished(u, imported_tables, total_tables, first_imported_table, first_table, errors,
+                                            filenames).deliver_now
         end
       end
 
@@ -161,7 +162,8 @@ module Resque
 
         def self.perform(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows)
           user = ::User.where(id: user_id).first
-          GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows).deliver_now
+          GeocoderMailer.geocoding_finished(user, state, table_name, error_code, processable_rows, number_geocoded_rows)
+                        .deliver_now
         end
       end
 

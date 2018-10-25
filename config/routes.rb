@@ -34,6 +34,14 @@ CartoDB::Application.routes.draw do
   # Password change
   resources :password_change, only: [:edit, :update]
 
+  # Password resets
+  resources :password_resets, only: [:create, :edit, :update, :new] do
+    collection do
+      get '/sent'    => 'password_resets#sent'
+      get '/changed' => 'password_resets#changed'
+    end
+  end
+
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
   get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search

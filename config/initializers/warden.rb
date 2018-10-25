@@ -16,14 +16,23 @@ module CartoStrategy
     true
   end
 
+  def affected_by_reset_password_locked?
+    false
+  end
+
   def check_password_expired(user)
     if affected_by_password_expiration? && user.password_expired?
       throw(:warden, action: :password_change, username: user.username)
     end
   end
 
+  def reset_password_rate_limit(user)
+    user.reset_password_rate_limit if affected_by_reset_password_locked?
+  end
+
   def trigger_login_event(user)
     check_password_expired(user)
+    reset_password_rate_limit(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -50,8 +59,17 @@ Warden::Strategies.add(:password) do
   include Carto::EmailCleaner
   include CartoStrategy
 
+  def affected_by_reset_password_locked?
+    true
+  end
+
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
+  end
+
+  def fail!
+    # register login failed
+    super
   end
 
   def authenticate!

@@ -1,12 +1,14 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-  </div>
+  <section>
+    <div class="hello">
+      <h1>{{ msg }}</h1>
+    </div>
+  </section>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Home',
   data () {
     return {
       msg: "Welcome to CARTO\'s new dashboard"

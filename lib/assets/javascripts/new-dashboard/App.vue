@@ -1,22 +1,34 @@
 <template>
   <div id="app">
+    <NavigationBar :user="user"/>
     <router-view/>
   </div>
 </template>
 
 <script>
+import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    NavigationBar
+  },
+  computed: {
+    user () {
+      return this.$store.state.user;
+    }
+  }
 };
 </script>
 
 <style>
 #app {
-  margin-top: 60px;
-  color: #2C3E50;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+}
+
+* {
+  box-sizing: border-box;
 }
 </style>

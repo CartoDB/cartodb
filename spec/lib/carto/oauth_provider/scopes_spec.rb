@@ -89,12 +89,18 @@ describe Carto::OauthProvider::Scopes do
       end
 
       it 'validates view scope' do
-        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@view_name}"], @user)
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["datasets:r:#{@view_name}"],
+          @user
+        )
         expect(scopes).to be_empty
       end
 
       it 'validates materialized view scope' do
-        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@materialized_view_name}"], @user)
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["datasets:r:#{@materialized_view_name}"],
+          @user
+        )
         expect(scopes).to be_empty
       end
     end
@@ -144,9 +150,9 @@ describe Carto::OauthProvider::Scopes do
           perm = @org_shared_table.table_visualization.permission
           perm.acl = [
             {
-                type: Permission::TYPE_ORGANIZATION,
-                entity: {id: @carto_organization.id},
-                access: Permission::ACCESS_READONLY
+              type: Permission::TYPE_ORGANIZATION,
+              entity: { id: @carto_organization.id },
+              access: Permission::ACCESS_READONLY
             }
           ]
           perm.save!
@@ -156,12 +162,18 @@ describe Carto::OauthProvider::Scopes do
         end
 
         it 'validates org shared dataset' do
-          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@org_shared_dataset_scope], @carto_org_user_2)
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@org_shared_dataset_scope],
+            @carto_org_user_2
+          )
           expect(scopes).to be_empty
         end
 
         it 'returns non org shared dataset' do
-          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([@non_org_shared_dataset_scope], @carto_org_user_2)
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@non_org_shared_dataset_scope],
+            @carto_org_user_2
+          )
           expect(scopes).to eq([@non_org_shared_dataset_scope])
         end
 

@@ -146,7 +146,8 @@ module Carto
             table, schema, permissions = table_schema_permission(scope)
             schema = user.database_schema if schema.nil?
 
-            if !allowed[schema].nil? && !allowed[schema][table].nil? && (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
+            if !allowed[schema].nil? && !allowed[schema][table].nil? &&
+               (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
               valid_scopes << scope
             end
           end

@@ -1,26 +1,4 @@
 <% content_for :title do %>Password sent<% end %>
-
-<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
-  <div class="Sessions-centered">
-    <div class="header">
-      <div class="Sessions-logoContainer">
-        <picture class="Navbar-brand">
-            <% if @organization.present? && @organization.avatar_url.present? %>
-              <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
-            <% else %>
-              <% if @organization.present? %>
-                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
-              <% else %>
-                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
-              <% end %>
-            <% end %>
-        </picture>
-      </div>
-      <h1 class="Sessions-title"><%= 'Ok, we have sent you an email' %></h1>
-      <p class="Sessions-text margin15"><%= 'There you will find the instructions for entering your account and change — if desired — your password.' %></p>
-    </div>
-    <div class="footer">
-      <p class="Sessions-link"><%= link_to 'Sign in',login_path %> · <%= link_to 'Go back to the homepage', root_path %></p>
-    </div>
-  </div>
-</div>
+<% title = 'Ok, we have sent you an email' %>
+<% description = 'There you will find the instructions for entering your account and change — if desired — your password.' %>
+<%= render :partial => 'message', locals: { title: title, description: description } %>

@@ -62,7 +62,7 @@ module Carto
     def all_tables_granted(role = nil)
       roles = []
       if !role.nil?
-        roles << role
+        roles << "'#{role}'"
       else
         roles = all_user_roles
       end
@@ -82,16 +82,22 @@ module Carto
         GROUP BY schema, t;
       }
 
-      execute_in_user_database(query)
+      @user.in_database(as: :superuser) do |database|
+        database.execute(query)
+      end
     end
 
     def all_tables_granted_hashed(role = nil)
       results = all_tables_granted(role)
       privileges_hashed = {}
-      results.each do |row|
-        privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
-        privileges_hashed[row['schema']][row['t']] = row['permission'].split(',')
+
+      if !results.nil?
+        results.each do |row|
+          privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
+          privileges_hashed[row['schema']][row['t']] = row['permission'].split(',')
+        end
       end
+
       privileges_hashed
     end
 

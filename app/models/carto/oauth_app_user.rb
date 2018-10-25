@@ -56,7 +56,7 @@ module Carto
 
     def dataset_scopes
       begin
-        results = user.db_service.all_tables_granted_hashed(dataset_role_name)
+        results = user.db_service.all_tables_granted(dataset_role_name)
       rescue ActiveRecord::StatementInvalid => e
         CartoDB::Logger.error(message: 'Error getting scopes', exception: e)
         raise OauthProvider::Errors::ServerError.new

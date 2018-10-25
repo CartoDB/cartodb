@@ -347,12 +347,12 @@ module CartoDB
 
       def all_user_roles
         roles = []
-        roles << @user.database_username
+        roles << "'#{@user.database_username}'"
         if @user.organization_user?
-          roles << organization_member_group_role_member_name
+          roles << "'#{organization_member_group_role_member_name}'"
           if !@user.groups.nil?
             @user.groups.each do |group|
-              roles << group.database_role
+              roles << "'#{group.database_role}'"
             end
           end
         end
@@ -362,7 +362,7 @@ module CartoDB
       def all_tables_granted(role = nil)
         roles = []
         if !role.nil?
-          roles << role
+          roles << "'#{role}'"
         else
           roles = all_user_roles
         end
@@ -382,20 +382,22 @@ module CartoDB
           GROUP BY schema, t;
         }
 
-        @user.in_database do |user_database|
-          user_database.synchronize do |conn|
-            user_database[query]
-          end
+        @user.in_database(as: :superuser) do |database|
+          database.run(query)
         end
       end
 
       def all_tables_granted_hashed(role = nil)
         results = all_tables_granted(role)
         privileges_hashed = {}
-        results.each do |row|
-          privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
-          privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+
+        if !results.nil?
+          results.each do |row|
+            privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+            privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+          end
         end
+
         privileges_hashed
       end
 

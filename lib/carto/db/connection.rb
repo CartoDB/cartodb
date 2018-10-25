@@ -88,7 +88,8 @@ module Carto
             password: base_config['password'],
             database: db_name,
             port:     base_config['port'],
-            encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding']
+            encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding'],
+            connect_timeout: base_config['connect_timeout']
           }
 
           case options[:as]

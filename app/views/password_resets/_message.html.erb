@@ -1,0 +1,16 @@
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-centered">
+    <div class="header">
+      <div class="Sessions-logoContainer">
+      <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
+      </div>
+      <h1 class="Sessions-title"><%= title %></h1>
+      <% if description %>
+        <p class="Sessions-text margin15"><%= description %></p>
+      <% end %>
+    </div>
+    <div class="footer">
+      <p class="Sessions-link"><%= link_to 'Sign in',login_path %> · <%= link_to 'Go back to the homepage', root_path %></p>
+    </div>
+  </div>
+</div>

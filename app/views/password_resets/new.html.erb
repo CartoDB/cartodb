@@ -1,69 +1,20 @@
-<% content_for :title do %>Reset password<% end %>
+<%= render :layout => 'form' do %>
+  <%= form_tag password_resets_path, method: :post, class: "js-Loading-form" do %>
+    <div class="Sessions-field">
+      <%= text_field_tag :email, '', class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} withBorderRadius", title: 'Your email', placeholder: 'Your email' %>
+      <% if @error || flash[:alert] %>
+        <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @error || flash[:alert] %>.">!</div>
+      <% end %>
+    </div>
 
-<% content_for :js do %>
-  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
-
-  <script>
-    $(function() {
-      window.Sessions = new App.Views.Sessions();
-    });
-  </script>
+    <div class="Sessions-field">
+      <p>
+        <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
+          <span class="js-Loading-text"><%= 'Send instructions' %></span>
+          <%= render :partial => 'shared/loading_animation' %>
+        </button>
+      </p>
+    </div>
+  <% end %>
 <% end %>
 
-<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
-  <div class="Sessions-content">
-    <div class="Sessions-inner">
-      <div class="u-inner">
-        <div class="Sessions-left">
-          <div class="Sessions-logoContainer">
-            <picture class="Navbar-brand">
-                <% if @organization.present? && @organization.avatar_url.present? %>
-                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
-                <% else %>
-                  <% if @organization.present? %>
-                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
-                  <% else %>
-                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
-                  <% end %>
-                <% end %>
-            </picture>
-          </div>
-
-          <div class="Sessions-form">
-            <%= form_tag password_resets_path, method: :post, class: "js-Loading-form" do %>
-              <div class="Sessions-field">
-                <%= text_field_tag :email, '', class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} withBorderRadius", title: 'Your email', placeholder: 'Your email' %>
-
-                <% if @error || flash[:alert] %>
-                  <% e = @error || flash[:alert] %>
-                  <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= e[0, 1].capitalize + e.humanize[1..-1] %>.">!</div>
-                <% end %>
-              </div>
-
-              <div class="Sessions-field">
-                <p>
-                  <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
-                    <span class="js-Loading-text"><%= 'Send instructions' %></span>
-                    <span class="js-Loading-anim" style="display: none;">
-                      <span class="Loading-item">
-                        <span class="Loading-itemInner Loading-itemInner--01"></span>
-                      </span>
-
-                      <span class="Loading-item">
-                        <span class="Loading-itemInner Loading-itemInner--02"></span>
-                      </span>
-
-                      <span class="Loading-item">
-                        <span class="Loading-itemInner Loading-itemInner--03"></span>
-                      </span>
-                    </span>
-                  </button>
-                </p>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

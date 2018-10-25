@@ -1,78 +1,29 @@
-<% content_for :title do %>Reset your password<% end %>
+<%= render :layout => 'form' do %>
+  <%= form_for @user, url: password_reset_path(params[:id]), class: "js-Loading-form" do |f| %>
+    <div class="Sessions-fieldsGorup">
+      <div class="Sessions-field">
+        <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
 
-<% content_for :js do %>
-  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
+        <% if @user.errors['password'].present? %>
+          <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'].first %>.">!</div>
+        <% end %>
+      </div>
 
-  <script>
-    $(function() {
-      window.Sessions = new App.Views.Sessions();
-    });
-  </script>
-<% end %>
+      <div class="Sessions-field">
+        <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
+        <% if @user.errors['password_confirmation'].present? %>
+          <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'].first %>.">!</div>
+        <% end %>
+      </div>
 
-<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
-  <div class="Sessions-content">
-    <div class="Sessions-inner">
-      <div class="u-inner">
-        <div class="Sessions-left">
-          <div class="Sessions-logoContainer">
-            <picture class="Navbar-brand">
-                <% if @organization.present? && @organization.avatar_url.present? %>
-                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
-                <% else %>
-                  <% if @organization.present? %>
-                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
-                  <% else %>
-                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
-                  <% end %>
-                <% end %>
-            </picture>
-          </div>
-
-          <div class="Sessions-form">
-            <%= form_for @user, url: password_reset_path(params[:id]), class: "js-Loading-form" do |f| %>
-              <div class="Sessions-fieldsGorup">
-                <div class="Sessions-field">
-                  <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
-
-                  <% if @user.errors['password'].present? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'].first %>.">!</div>
-                  <% end %>
-                </div>
-
-                <div class="Sessions-field">
-                  <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
-                  <% if @user.errors['password_confirmation'].present? %>
-                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'].first %>.">!</div>
-                  <% end %>
-                </div>
-
-                <div class="Sessions-field">
-                  <p>
-                    <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
-                      <span class="js-Loading-text"><%= 'Save' %></span>
-                      <span class="js-Loading-anim" style="display: none;">
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--01"></span>
-                        </span>
-
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--02"></span>
-                        </span>
-
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--03"></span>
-                        </span>
-                      </span>
-                    </button>
-                  </p>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
+      <div class="Sessions-field">
+        <p>
+          <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
+            <span class="js-Loading-text"><%= 'Save' %></span>
+            <%= render :partial => 'shared/loading_animation' %>
+          </button>
+        </p>
       </div>
     </div>
-  </div>
-</div>
-'Password'
+  <% end %>
+<% end %>

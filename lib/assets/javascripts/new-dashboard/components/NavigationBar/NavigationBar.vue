@@ -34,8 +34,8 @@
           <input type="text" name="query" class="title is-small is-regular" placeholder="Search">
       </form>
       <div class="navbar-user">
-        <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown ref="userDropdown" :userModel="userModel" :configModel="configModel" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden"/>
+        <div class="navbar-avatar" :class="{'has-notification': numberNotifications > 0}" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown :userModel="userModel" :configModel="configModel" :notifications="numberNotifications" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden"/>
       </div>
   </div>
 </nav>
@@ -53,6 +53,15 @@ export default {
     user: Object,
     userModel: Object,
     configModel: Object
+  },
+  computed: {
+    numberNotifications () {
+      let notifications = this.$props.userModel.attributes.notifications;
+      if (!notifications) {
+        return 0;
+      }
+      return notifications.length;
+    }
   },
   data () {
     return {
@@ -162,6 +171,20 @@ export default {
   border-radius: 50%;
   background-color: $textColor-light;
   background-size: cover;
+
+  &.has-notification {
+    &::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid $primaryColor;
+      border-radius: 50%;
+      background-color: $notification;
+    }
+  }
 
   &:hover {
     cursor: pointer;

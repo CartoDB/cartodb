@@ -155,7 +155,9 @@ module Carto
         end
 
         def self.permission_from_db_to_scope(permission)
-          PERMISSIONS.find { |_, values| permission.split(',').sort == values.sort }.first
+          permission = permission.split(',').sort
+          return nil unless (permission - (READ_PERMISSIONS + WRITE_PERMISSIONS)).empty?
+          PERMISSIONS.find { |_, values| permission == values.sort }.first
         end
 
         def self.table_schema_permission(scope)

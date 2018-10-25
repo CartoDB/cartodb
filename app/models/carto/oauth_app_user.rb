@@ -62,11 +62,15 @@ module Carto
         raise OauthProvider::Errors::ServerError.new
       end
 
-      results.map do |row|
+      scopes = []
+      results.each do |row|
         permission = DatasetsScope.permission_from_db_to_scope(row['permission'])
-        schema = row['schema'] != user.database_schema ? "#{row['schema']}." : ''
-        "datasets:#{permission}:#{schema}#{row['t']}"
+        unless permission.nil?
+          schema = row['schema'] != user.database_schema ? "#{row['schema']}." : ''
+          scopes << "datasets:#{permission}:#{schema}#{row['t']}"
+        end
       end
+      scopes
     end
 
     def create_dataset_role
@@ -91,21 +95,47 @@ module Carto
       invalid_scopes = []
       DatasetsScope.valid_scopes(scopes).each do |scope|
         dataset_scope = DatasetsScope.new(scope)
+
+        schema = dataset_scope.schema || user.database_schema
+        table = dataset_scope.table
+
         query = %{
           GRANT #{dataset_scope.permission.join(',')}
-          ON \"#{dataset_scope.schema || user.database_schema}\".\"#{dataset_scope.table}\"
+          ON \"#{schema}\".\"#{table}\"
           TO \"#{dataset_role_name}\" WITH GRANT OPTION
         }
 
         begin
           user.in_database.execute(query)
-        rescue ActiveRecord::StatementInvalid
+          sequences_for_table(schema, table).each do |seq|
+            user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
+          end
+        rescue ActiveRecord::StatementInvalid => e
+          raise e
           invalid_scopes << scope
           CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
         end
       end
 
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
+    end
+
+    def sequences_for_table(schema, table)
+      query = %{
+        SELECT
+          n.nspname, c.relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid = ('#{schema}.#{table}')::regclass
+      }
+
+      user.in_database.execute(query).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
     def dataset_role_name

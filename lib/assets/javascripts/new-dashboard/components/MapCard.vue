@@ -144,7 +144,7 @@ export default {
 
     &:not(.card--noHover) {
       .card-title {
-        color: $primaryColor;
+        color: $primary-color;
       }
     }
 
@@ -263,7 +263,7 @@ export default {
 
   &:checked {
     opacity: 1;
-    background: $primaryColor;
+    background: $primary-color;
   }
 }
 
@@ -296,7 +296,7 @@ export default {
 
   &:hover {
     .favorite-icon {
-      stroke: $primaryColor;
+      stroke: $primary-color;
     }
   }
 
@@ -310,7 +310,7 @@ export default {
 
     &:hover {
       .favorite-icon {
-        stroke: $primaryColor;
+        stroke: $primary-color;
       }
     }
   }

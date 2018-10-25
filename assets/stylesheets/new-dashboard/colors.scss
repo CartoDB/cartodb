@@ -1,0 +1,19 @@
+$colors: (
+  'Primary': $primary-color,
+  'White': $white,
+  'Grey': $textColor,
+  'GreyLight': $textColor-light,
+  'Premium': $premiumColor,
+  'Alert': $alert,
+  'SoftBlue': $softblue,
+);
+
+@each $name, $color in $colors {
+  .is-bg#{$name} {
+    background: #{$color};
+  }
+
+  .is-txt#{$name} {
+    color: #{$color};
+  }
+}

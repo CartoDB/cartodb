@@ -152,7 +152,7 @@ export default {
 
     &.is-selected {
       position: relative;
-      color: $primaryColor;
+      color: $primary-color;
 
       &::before {
         content: "";

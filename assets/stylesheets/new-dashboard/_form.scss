@@ -44,15 +44,15 @@
     cursor: pointer;
 
     &:hover + .checkbox-decoration {
-      border: 1px solid $primaryColor;
+      border: 1px solid $primary-color;
     }
 
     &:checked {
       + .checkbox-decoration {
-        border: 1px solid $primaryColor;
+        border: 1px solid $primary-color;
 
         &::before {
-          content: '';
+          content: "";
           display: block;
           position: absolute;
           top: calc(50% - 12px);
@@ -63,7 +63,7 @@
           border-radius: 3px;
           opacity: 1;
           animation-fill-mode: forwards;
-          background: $primaryColor;
+          background: $primary-color;
         }
 
         .checkbox-check {

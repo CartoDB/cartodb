@@ -77,7 +77,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   padding: 0 64px;
-  background-color: $primaryColor;
+  background-color: $primary-color;
 }
 
 .navbar-elementsContainer {

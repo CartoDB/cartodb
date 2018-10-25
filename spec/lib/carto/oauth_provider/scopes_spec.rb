@@ -141,8 +141,14 @@ describe Carto::OauthProvider::Scopes do
           @org_shared_table = create_table(user_id: @carto_org_user_1.id)
           non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
 
-          perm = @shared_table.table_visualization.permission
-          perm.acl = [{ type: 'org', entity: { id: @organization.id }, access: 'r' }]
+          perm = @org_shared_table.table_visualization.permission
+          perm.acl = [
+            {
+                type: Permission::TYPE_ORGANIZATION,
+                entity: {id: @carto_organization.id},
+                access: Permission::ACCESS_READONLY
+            }
+          ]
           perm.save!
 
           @org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"

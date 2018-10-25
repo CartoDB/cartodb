@@ -3,7 +3,7 @@ require 'support/helpers'
 
 describe 'Warden' do
   def login
-      # Manual login because `login_as` skips normal warden hook processing
+    # Manual login because `login_as` skips normal warden hook processing
     host! "#{@user.username}.localhost.lan"
     post create_session_url(email: @user.email, password: @user.password)
   end

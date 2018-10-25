@@ -1,61 +1,69 @@
 <template>
-  <div class="navbar-dropdown" ref="injectionHTMLTemplate"></div>
+  <div class="navbar-dropdown" ref="injectionHTMLTemplate" v-once></div>
 </template>
 
 <script>
 import SettingsDropdown from 'dashboard/components/dashboard-header/settings-dropdown-view';
-import $ from 'jquery';
 
 export default {
   name: 'UserDropdown',
   props: {
-    userModel: Object,
-    configModel: Object
+    configModel: Object,
+    open: { type: Boolean, default: false },
+    userModel: Object
   },
-  data: function () {
-    return {
-      isDropdownOpen: false
-    };
+  watch: {
+    open (newVisibility) {
+      this.toggle(newVisibility);
+    }
+  },
+  mounted () {
+    this.$dropdownView = this.renderView();
+  },
+  beforeDestroy () {
+    this.$dropdownView.clean();
   },
   methods: {
-    renderView() {
+    renderView () {
       const settingsDropdown = new SettingsDropdown({
-        model: this.$props.userModel,
-        configModel: this.$props.configModel,
-        className: 'Dropdown vertical_bottom horizontal_right tick_right',
+        model: this.$cartoModels.user,
+        configModel: this.$cartoModels.config,
+        className: 'Dropdown user-dropdown vertical_bottom horizontal_right tick_right'
       });
 
-      settingsDropdown.on('onDropdownHidden', () => this.isDropdownOpen = false);
+      settingsDropdown.on('onDropdownHidden', () => {
+        this.$emit('dropdownHidden');
+      });
 
       settingsDropdown.render();
 
       this.$refs.injectionHTMLTemplate.appendChild(settingsDropdown.el);
-      settingsDropdown.show();
 
       return settingsDropdown;
     },
 
-    show: function () {
-      if (!this.$dropdownView) {
-        this.$dropdownView = this.renderView();
-      }
-
+    show () {
       this.$dropdownView.show();
-      this.isDropdownOpen = true;
     },
 
-    hide: function () {
+    hide () {
       this.$dropdownView.hide();
-      this.isDropdownOpen = false;
     },
 
-    toggle: function () {
-      if (this.isDropdownOpen) {
-        this.hide();
-      } else if (!this.isDropdownOpen) {
+    toggle (setVisible) {
+      if (setVisible) {
         this.show();
+      } else if (!setVisible) {
+        this.hide();
       }
     }
   }
 };
 </script>
+
+<style lang="scss">
+.user-dropdown {
+  top: 48px;
+  right: 1px;
+}
+</style>

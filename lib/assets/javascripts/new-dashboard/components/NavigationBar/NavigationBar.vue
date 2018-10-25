@@ -5,25 +5,25 @@
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Home</span>
+        <span class="title is-caption is-regular is-txt-white">Home</span>
       </router-link>
       <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Solutions</span>
+        <span class="title is-caption is-regular is-txt-white">Solutions</span>
       </router-link>
       <router-link :to="{ name: 'maps' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Maps</span>
+        <span class="title is-caption is-regular is-txt-white">Maps</span>
       </router-link>
       <router-link :to="{ name: 'data' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Data</span>
+        <span class="title is-caption is-regular is-txt-white">Data</span>
       </router-link>
   </ul>
   <div class="navbar-imagotype">
@@ -34,8 +34,8 @@
           <input type="text" name="query" class="title is-small is-regular" placeholder="Search">
       </form>
       <div class="navbar-user">
-        <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown ref="userDropdown" :userModel="userModel" :configModel="configModel"/>
+        <div class="navbar-avatar" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown ref="userDropdown" :open="this.isDropdownOpen" @dropdownHidden="onDropdownHidden"/>
       </div>
   </div>
 </nav>
@@ -52,22 +52,18 @@ export default {
   props: {
     user: Object
   },
-  data: function() {
+  data () {
     return {
       isDropdownOpen: false
-    }
-  },
-  computed: {
-    userModel() {
-      return this.$store.state.user.userModel;
-    },
-    configModel() {
-      return this.$store.state.config.configModel;
-    }
+    };
   },
   methods: {
-    toggleDropdown: function() {
-      this.$refs.userDropdown.toggle();
+    toggleDropdown () {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+
+    onDropdownHidden () {
+      this.isDropdownOpen = false;
     }
   }
 };
@@ -83,7 +79,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   padding: 0 64px;
-  background-color: $primaryColor;
+  background-color: $primary-color;
 }
 
 .navbar-elementsContainer {
@@ -141,7 +137,7 @@ export default {
     background-position: 16px center;
 
     &::placeholder {
-      color: $textColor-light;
+      color: $text-color-light;
     }
 
     &:focus {
@@ -162,7 +158,7 @@ export default {
   margin-left: 30px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $textColor-light;
+  background-color: $text-color-light;
   background-size: cover;
 
   &:hover {

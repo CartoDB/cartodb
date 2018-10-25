@@ -14,7 +14,7 @@ export default {
     NavigationBar
   },
   computed: {
-    user() {
+    user () {
       return this.$store.state.user;
     }
   }

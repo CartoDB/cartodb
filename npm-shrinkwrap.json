@@ -3497,6 +3497,11 @@
       "from": "vue@>=2.5.17 <3.0.0",
       "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.17.tgz"
     },
+    "vue-i18n": {
+      "version": "8.2.1",
+      "from": "vue-i18n@>=8.2.1 <9.0.0",
+      "resolved": "https://registry.npmjs.org/vue-i18n/-/vue-i18n-8.2.1.tgz"
+    },
     "vue-router": {
       "version": "3.0.1",
       "from": "vue-router@>=3.0.1 <4.0.0",

@@ -1,10 +1,18 @@
 <template>
-  <h1>Maps Page</h1>
+  <section>
+    <h1>Maps Page</h1>
+    <CreateButton visualizationType="maps" />
+  </section>
 </template>
 
 <script>
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
+
 export default {
-  name: 'MapsPage'
+  name: 'MapsPage',
+  components: {
+    CreateButton
+  }
 };
 </script>
 

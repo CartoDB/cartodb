@@ -52,7 +52,9 @@ class SessionsController < ApplicationController
       if params[:error] == SESSION_EXPIRED
         @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
       elsif params[:error] == PASSWORD_LOCKED
-        @flash_login_error = 'Your account has been locked temporarily due to too many failed login attempts. Please, reset your password to continue using CARTO.'
+        @flash_login_error =
+          'Your account has been locked temporarily due to too many failed login attempts.' +
+          ' Please, reset your password to continue using CARTO.'
       end
       render
     end

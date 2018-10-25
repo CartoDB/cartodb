@@ -612,6 +612,7 @@ class User < Sequel::Model
 
     # Must be set AFTER validations
     set_last_password_change_date
+    reset_password_rate_limit
 
     self.password = new_password_value
   end
@@ -1024,6 +1025,10 @@ class User < Sequel::Model
     "limits:timeout:#{username}"
   end
 
+  def rate_limit_password_key
+    "limits:password:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
@@ -1057,6 +1062,22 @@ class User < Sequel::Model
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
     save_rate_limits
+  end
+
+  def locked_password?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    return false unless [@max_burst, @count, @period].all?(&:present?)
+
+    rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
+
+    rate_limit[0] == 1
+  end
+
+  def reset_password_rate_limit
+    $users_metadata.DEL rate_limit_password_key
   end
 
   def save_rate_limits

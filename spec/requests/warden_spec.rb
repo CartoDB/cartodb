@@ -2,6 +2,17 @@ require 'spec_helper_min'
 require 'support/helpers'
 
 describe 'Warden' do
+  def login
+      # Manual login because `login_as` skips normal warden hook processing
+    host! "#{@user.username}.localhost.lan"
+    post create_session_url(email: @user.email, password: @user.password)
+  end
+
+  def wrong_login
+    host! "#{@user.username}.localhost.lan"
+    post create_session_url(email: @user.email, password: 'bla')
+  end
+
   describe ':auth_api Strategy' do
     include_context 'users helper'
     include HelperMethods
@@ -64,12 +75,6 @@ describe 'Warden' do
     end
 
     let (:session_expired_message) { 'Your session has expired' }
-
-    def login
-      # Manual login because `login_as` skips normal warden hook processing
-      host! "#{@user.username}.localhost.lan"
-      post create_session_url(email: @user.email, password: @user.password)
-    end
 
     it 'allows access for non-expired session' do
       # we use this to avoid generating the static assets in CI
@@ -138,6 +143,116 @@ describe 'Warden' do
         end
 
         Delorean.back_to_the_present
+      end
+    end
+  end
+
+  describe 'password locked' do
+    include HelperMethods
+
+    before(:all) do
+      @user = FactoryGirl.create(:valid_user)
+      @user.password = @user.password_confirmation = 'qwaszx'
+      @user.save
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    before(:each) do
+      @user.reset_password_rate_limit
+    end
+
+    def expect_password_locked
+      expect(response.status).to eq 302
+      follow_redirect!
+
+      expect(request.fullpath).to end_with "/login?error=password_locked"
+      expect(response.body).to include "Your account has been locked temporarily due to too many failed login attempts"
+    end
+
+    def expect_login
+      host! "#{@user.username}.localhost.lan"
+      get dashboard_url
+
+      expect(response.status).to eq 200
+    end
+
+    it 'redirects to login page with an error if password is locked' do
+      Cartodb.with_config(
+        passwords: {
+          'rate_limit' => {
+            'max_burst' => 0,
+            'count' => 1,
+            'period' => 60
+          }
+        }
+      ) do
+        wrong_login
+        wrong_login
+
+        expect_password_locked
+      end
+    end
+
+    it 'allows to login after the locked password period' do
+      Cartodb.with_config(
+        passwords: {
+          'rate_limit' => {
+            'max_burst' => 0,
+            'count' => 1,
+            'period' => 1
+          }
+        }
+      ) do
+        wrong_login
+        wrong_login
+        expect_password_locked
+
+        sleep(2)
+
+        login
+        expect_login
+      end
+    end
+
+    it 'does not allow to login during the locked password period' do
+      Cartodb.with_config(
+        passwords: {
+          'rate_limit' => {
+            'max_burst' => 0,
+            'count' => 1,
+            'period' => 10
+          }
+        }
+      ) do
+        wrong_login
+        wrong_login
+
+        login
+        expect_password_locked
+      end
+    end
+
+    it 'allows to login if password is reset' do
+      Cartodb.with_config(
+        passwords: {
+          'rate_limit' => {
+            'max_burst' => 0,
+            'count' => 2,
+            'period' => 10
+          }
+        }
+      ) do
+        wrong_login
+        wrong_login
+        expect_password_locked
+
+        @user.reset_password_rate_limit
+
+        login
+        expect_login
       end
     end
   end

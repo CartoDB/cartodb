@@ -15,10 +15,11 @@ class SessionsController < ApplicationController
   include Carto::EmailCleaner
 
   SESSION_EXPIRED = 'session_expired'.freeze
+  PASSWORD_LOCKED = 'password_locked'.freeze
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change, :password_locked
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -50,6 +51,8 @@ class SessionsController < ApplicationController
     else
       if params[:error] == SESSION_EXPIRED
         @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
+      elsif params[:error] == PASSWORD_LOCKED
+        @flash_login_error = 'Your account has been locked temporarily due to too many failed login attempts. Please, reset your password to continue using CARTO.'
       end
       render
     end
@@ -145,6 +148,11 @@ class SessionsController < ApplicationController
   def password_change
     username = warden.env['warden.options'][:username] if warden.env['warden.options']
     redirect_to edit_password_change_url(username) if username
+  end
+
+  def password_locked
+    warden.custom_failure!
+    redirect_to login_url + "?error=#{PASSWORD_LOCKED}"
   end
 
   def password_expired

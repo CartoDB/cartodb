@@ -3,8 +3,17 @@ module Carto
     def authenticate(email, password)
       sanitized_input = email.strip.downcase
       if candidate = ::User.filter("email = ? OR username = ?", sanitized_input, sanitized_input).first
-        candidate.crypted_password == password_digest(password, candidate.salt) ? candidate : nil
+        password_locked(candidate) if candidate.locked_password?
+        return candidate if valid_password?(candidate, password)
       end
+    end
+
+    def valid_password?(candidate, password)
+      candidate.crypted_password == password_digest(password, candidate.salt)
+    end
+
+    def password_locked(user)
+      throw(:warden, action: :password_locked, username: user.username)
     end
 
     def password_digest(password, salt)

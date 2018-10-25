@@ -1,5 +1,7 @@
 scss:
   enabled: false
+sass-lint:
+  enabled: false
 ruby:
   enabled: true
   config_file: .rubocop.yml

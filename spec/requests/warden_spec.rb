@@ -161,6 +161,8 @@ describe 'Warden' do
     end
 
     before(:each) do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
       @user.reset_password_rate_limit
     end
 

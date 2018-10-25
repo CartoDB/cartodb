@@ -34,8 +34,8 @@
           <input type="text" name="query" class="title is-small is-regular" placeholder="Search">
       </form>
       <div class="navbar-user">
-        <div class="navbar-avatar" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown ref="userDropdown" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden"/>
+        <div class="navbar-avatar" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown ref="userDropdown" :open="this.isDropdownOpen" @dropdownHidden="onDropdownHidden"/>
       </div>
   </div>
 </nav>

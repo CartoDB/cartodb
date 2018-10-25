@@ -35,7 +35,7 @@
       </form>
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': numberNotifications > 0}" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown :userModel="userModel" :configModel="configModel" :notifications="numberNotifications" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden"/>
+        <UserDropdown :userModel="userModel" :configModel="configModel" :notifications="numberNotifications" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden" v-click-outside="hideDropdown"/>
       </div>
   </div>
 </nav>
@@ -73,8 +73,27 @@ export default {
       this.isDropdownOpen = !this.isDropdownOpen;
     },
 
+    hideDropdown () {
+      this.isDropdownOpen = false;
+    },
+
     onDropdownHidden () {
       this.isDropdownOpen = false;
+    }
+  },
+  directives: {
+    clickOutside: {
+      bind: function (el, binding, vnode) {
+        el.clickOutsideEvent = function (event) {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener('click', el.clickOutsideEvent);
+      },
+      unbind: function (el) {
+        document.body.removeEventListener('click', el.clickOutsideEvent);
+      }
     }
   }
 };

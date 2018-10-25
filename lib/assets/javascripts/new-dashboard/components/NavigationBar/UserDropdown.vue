@@ -58,11 +58,7 @@ export default {
   },
   methods: {
     toggle (setVisible) {
-      if (setVisible) {
-        this.$props.open = true;
-      } else if (!setVisible) {
-        this.$props.open = false;
-      }
+      this.$props.open = setVisible;
     }
   }
 };

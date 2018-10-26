@@ -1064,7 +1064,7 @@ class User < Sequel::Model
     save_rate_limits
   end
 
-  def locked_password?
+  def password_locked?
     @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
     @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
     @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')

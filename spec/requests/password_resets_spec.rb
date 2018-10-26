@@ -1,7 +1,7 @@
 # coding: UTF-8
 
 require_relative '../acceptance_helper'
-require_relative '../spec_helper'
+require_relative '../spec_helper_min'
 
 feature "Forgot password" do
 

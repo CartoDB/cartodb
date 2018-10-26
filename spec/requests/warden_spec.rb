@@ -170,8 +170,8 @@ describe 'Warden' do
       expect(response.status).to eq 302
       follow_redirect!
 
-      expect(request.fullpath).to end_with "/login?error=password_locked"
-      expect(response.body).to include "Your account has been locked temporarily due to too many failed login attempts"
+      expect(request.fullpath).to include "/login?error=password_locked"
+      expect(response.body).to include "Too many failed login attempts"
     end
 
     def expect_login

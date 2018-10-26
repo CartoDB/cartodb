@@ -149,6 +149,8 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  LOGIN_NOT_RATE_LIMITED = -1
+
   include VarnishCacheHandler
 
   def db_service
@@ -1064,16 +1066,19 @@ class User < Sequel::Model
     save_rate_limits
   end
 
-  def password_locked?
+  def login_attempt
     @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
     @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
     @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
 
-    return false unless [@max_burst, @count, @period].all?(&:present?)
+    return LOGIN_NOT_RATE_LIMITED unless [@max_burst, @count, @period].all?(&:present?)
 
     rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
 
-    rate_limit[0] == 1
+    # it returns the number of seconds until the user should retry
+    # -1 means the action was allowed
+    # see https://github.com/brandur/redis-cell#response
+    rate_limit[3]
   end
 
   def reset_password_rate_limit

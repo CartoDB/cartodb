@@ -105,7 +105,7 @@ class UserMailer < ActionMailer::Base
   def password_reset(user)
     @user = user
     @subject = "Reset CARTO password"
-    path = Rails.application.routes.url_helpers.edit_password_reset_path(@user.password_reset_token)
+    path = CartoDB.path(self, 'edit_password_reset', id: @user.password_reset_token)
     @password_reset_link = "#{@user.public_url}#{path}"
     mail to: @user.email, subject: @subject
   end

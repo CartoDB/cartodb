@@ -161,9 +161,9 @@ describe 'Warden' do
     end
 
     before(:each) do
+      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-      @user.reset_password_rate_limit
     end
 
     def expect_password_locked
@@ -191,6 +191,7 @@ describe 'Warden' do
           }
         }
       ) do
+        @user.reset_password_rate_limit
         wrong_login
         wrong_login
 
@@ -208,11 +209,12 @@ describe 'Warden' do
           }
         }
       ) do
+        @user.reset_password_rate_limit
         wrong_login
         wrong_login
         expect_password_locked
 
-        sleep(2)
+        sleep(3)
 
         login
         expect_login
@@ -229,6 +231,7 @@ describe 'Warden' do
           }
         }
       ) do
+        @user.reset_password_rate_limit
         wrong_login
         wrong_login
 
@@ -247,6 +250,7 @@ describe 'Warden' do
           }
         }
       ) do
+        @user.reset_password_rate_limit
         wrong_login
         wrong_login
         expect_password_locked

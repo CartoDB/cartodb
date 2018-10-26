@@ -13,7 +13,7 @@ module Carto
     end
 
     def check_password_locked(user)
-      retry_after = user.login_attempt
+      retry_after = user.password_login_attempt
       if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
         throw(:warden, action: :password_locked, retry_after: retry_after)
       end

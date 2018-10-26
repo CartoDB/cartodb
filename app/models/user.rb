@@ -1066,12 +1066,8 @@ class User < Sequel::Model
     save_rate_limits
   end
 
-  def login_attempt
-    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
-    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
-    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
-
-    return LOGIN_NOT_RATE_LIMITED unless [@max_burst, @count, @period].all?(&:present?)
+  def password_login_attempt
+    return LOGIN_NOT_RATE_LIMITED unless password_rate_limit_configured?
 
     rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
 
@@ -1082,7 +1078,7 @@ class User < Sequel::Model
   end
 
   def reset_password_rate_limit
-    $users_metadata.DEL rate_limit_password_key
+    $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
   end
 
   def save_rate_limits
@@ -1883,6 +1879,14 @@ class User < Sequel::Model
   end
 
   private
+
+  def password_rate_limit_configured?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    [@max_burst, @count, @period].all?(&:present?)
+  end
 
   def common_data_outdated?
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day

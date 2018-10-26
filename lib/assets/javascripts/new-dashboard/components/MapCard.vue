@@ -24,7 +24,7 @@
         </h2>
 
         <p class="card-description text is-caption" v-if="map.description">{{ map.description }}</p>
-        <p class="card-description text is-caption" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
 
         <ul class="card-metadata">
           <li class="card-metadataItem text is-caption">
@@ -41,10 +41,10 @@
             <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
             <ul class="card-tagList">
-              <li v-for="(tag, index) in map.tagList" :key="tag">
-                <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
+              <li v-for="(tag, index) in map.tags" :key="tag">
+                <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
               </li>
-              <li v-if="hasTags <= 0">
+              <li v-if="!hasTags">
                 <span>{{ $t(`mapCard.noTags`) }}</span>
               </li>
             </ul>
@@ -81,7 +81,7 @@ export default {
       return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 300, height: 300 });
     },
     hasTags () {
-      return this.$props.map.tagList ? this.$props.map.tagList.length > 0 : false;
+      return this.$props.map.tags ? this.$props.map.tags.length > 0 : false;
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);
@@ -172,7 +172,7 @@ export default {
 }
 
 .card-title {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 

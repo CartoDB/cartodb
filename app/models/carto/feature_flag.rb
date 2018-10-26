@@ -11,9 +11,5 @@ module Carto
       FeatureFlag.where(restricted: false) + user.feature_flags.select(&:restricted)
     end
 
-    def self.unrestricted?(name)
-      FeatureFlag.where(name: name, restricted: false).first
-    end
-
   end
 end

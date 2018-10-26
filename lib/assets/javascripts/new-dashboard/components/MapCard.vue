@@ -1,21 +1,24 @@
 <template>
   <div>
     <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
+      <div class="card-media" :class="{'has-error': isThumbnailErrored}">
+        <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+      </div>
+
       <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
         <input class="checkbox-input" @click="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../assets/icons/common/checkbox.svg">
         </span>
       </span>
+
       <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
         <span class="card-actionsSelect">
             <img src="../assets/icons/common/options.svg">
         </span>
       </div>
-      <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-        <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
-        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
-      </div>
+
       <div class="card-text">
         <h2 class="card-title title is-caption">
           {{ map.name }}&nbsp;
@@ -23,7 +26,6 @@
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
-
         <p class="card-description text is-caption" v-if="map.description">{{ map.description }}</p>
         <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
 
@@ -45,6 +47,7 @@
               <li v-for="(tag, index) in map.tags" :key="tag">
                 <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
               </li>
+
               <li v-if="!hasTags">
                 <span>{{ $t(`mapCard.noTags`) }}</span>
               </li>
@@ -77,13 +80,13 @@ export default {
       return `icon--${this.$props.map.privacy}`.toLowerCase();
     },
     lastUpdated () {
-      return `Updated ${distanceInWordsStrict(this.$props.map.updated_at, new Date())} ago`;
+      return this.$t(`mapCard.lastUpdate`, { date: distanceInWordsStrict(this.$props.map.updated_at, new Date()) });
     },
     mapThumbnailUrl () {
-      return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 300, height: 300 });
+      return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
     },
     hasTags () {
-      return this.$props.map.tags ? this.$props.map.tags.length > 0 : false;
+      return this.$props.map.tags && this.$props.map.tags.length;
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);

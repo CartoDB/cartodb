@@ -1,31 +1,31 @@
 <template>
-    <header class="head-section">
-        <div class="head-sectionContainer">
-            <h2 class="head-sectionTitle">
-                <span class="icon icon--large"><slot name="icon"></slot></span>
-                {{title}}
-            </h2>
-            <ul class="head-sectionActions">
-                <li class="head-sectionActionsItem head-sectionDropdownContainer">
-                    <slot name="dropdownButton"></slot>
-                </li>
-                <li class="head-sectionActionsItem">
-                    <slot name="primaryButton"></slot>
-                </li>
-            </ul>
-        </div>
-        <p class="head-sectionDescription">{{description}}</p>
-    </header>
+  <header class="head-section">
+    <div class="head-sectionContainer">
+      <h2 class="head-sectionTitle is-txtGrey">
+        <span class="icon icon--large"><slot name="icon"></slot></span>
+        {{title}}
+      </h2>
+
+      <ul class="head-sectionActions">
+        <li class="head-sectionActionsItem head-sectionDropdownContainer">
+          <slot name="dropdownButton"></slot>
+        </li>
+
+        <li class="head-sectionActionsItem">
+          <slot name="actionButton"></slot>
+        </li>
+      </ul>
+    </div>
+
+    <p v-if="description" class="head-sectionDescription">{{description}}</p>
+  </header>
 </template>
 
 <script>
 export default {
   name: 'SectionTitle',
-  components: {
-  },
   props: {
     title: String,
-    icon: String,
     description: String
   }
 };
@@ -95,10 +95,10 @@ export default {
 }
 
 .head-sectionActionsItem {
-  margin-left: 24px;
+  margin-right: 32px;
 
   &:last-child {
-    margin-left: 0;
+    margin-right: 0;
   }
 }
 

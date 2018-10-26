@@ -1,4 +1,4 @@
-require_relative '../spec_helper'
+require_relative '../spec_helper_min'
 
 describe PasswordResetsController do
 

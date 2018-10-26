@@ -232,6 +232,54 @@ module Carto
           oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
+
+      describe 'organization shared datasets' do
+        before :each do
+          @org_shared_table = create_table(user_id: @carto_org_user_1.id)
+          non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+          perm = @org_shared_table.table_visualization.permission
+          perm.acl = [
+            {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: { id: @carto_organization.id },
+              access: Permission::ACCESS_READONLY
+            }
+          ]
+          perm.save!
+
+          @org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          @non_org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{non_org_shared_table.name}"
+        end
+
+        it 'works with org shared dataset' do
+          oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@org_shared_dataset_scope])
+          expect(oau.scopes).to(eq([@org_shared_dataset_scope]))
+        end
+
+        it 'should fail with non org shared dataset' do
+          expect {
+            oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
+          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end
+
+        it 'should fail with org shared and non org shared dataset' do
+          expect {
+            oau = OauthAppUser.create!(
+              user: @carto_org_user_2,
+              oauth_app: @app,
+              scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
+            )
+          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end
+
+        it 'should fail write scope in org shared dataset with only read perms' do
+          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          expect {
+            oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
+          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end
+      end
     end
 
     describe 'views' do

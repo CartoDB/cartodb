@@ -1,10 +1,19 @@
 //colors
-$primary-color: #0383ff;
-$premium-color: #f90;
-$white: #fff;
-$text-color: #2e3c43;
-$text-color-light: #babec0;
-$light-grey: #ebeef5;
-$softblue: #f2f6f9;
+$primary-color: #0383FF;
+$premium-color: #F90;
+$white: #FFF;
+$text-color: #2E3C43;
+$text-color-light: #BABEC0;
+$light-grey: #EBEEF5;
+$softblue: #F2F6F9;
 $alert: rgba(250, 20, 20, 0.64);
 $info: rgba(255, 195, 0, 0.48);
+
+//Progress bar colors
+$good-state: #72EEA8;
+$warning-state: #FFC300;
+$error-state: #FA1414;
+
+//Dimensions
+$layout-tablet: 800px;
+$layout-mobile: 600px;

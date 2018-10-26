@@ -1,4 +1,5 @@
 <template>
+<div class="REMOVE">
   <section class="section">
     <div class="container grid">
       <div class="grid-cell grid-cell--col12">
@@ -56,163 +57,129 @@
       <MapCard :map=test2></MapCard>
     </div>
   </section>
+  <section class="temp">
+    <h1 class="title--h1">Maps Page</h1>
+    <h2 class="title--h2">Favorited maps</h2>
+    <span class="loading" v-if="isFetchingFeaturedFavoritedMaps">Loading favorited maps</span>
+    <ul class="maplist" v-else>
+      <li class="maplist-element" v-for="featuredFavoritedMap in featuredFavoritedMaps" :key="featuredFavoritedMap.id">
+        <span class="maplist-detail">Title: {{ featuredFavoritedMap.name }}</span>
+        <span class="maplist-detail">Id: {{ featuredFavoritedMap.id }}</span>
+        <span class="maplist-detail">Locked: {{ featuredFavoritedMap.locked }}</span>
+        <span class="maplist-detail">Liked: {{ featuredFavoritedMap.liked }}</span>
+      </li>
+    </ul>
+
+    <h2 class="title--h2">All maps</h2>
+    <div>
+      <button class="button" @click="filterLockedMaps()">LOCKED MAPS</button>
+      <button class="button" @click="filterSharedMaps()">SHARED MAPS</button>
+      <button class="button" @click="filterFavoritedMaps()">FAVORITED MAPS</button>
+      <button class="button" @click="resetFilters()">RESET</button>
+    </div>
+    <span class="loading" v-if="isFetchingMaps">Loading</span>
+    <ul class="maplist" v-else>
+      <li class="maplist-element" v-for="map in maps" :key="map.id">
+        <span class="maplist-detail" >Title: {{ map.name }}</span>
+        <span class="maplist-detail">Id: {{ map.id }}</span>
+        <span class="maplist-detail" >Locked: {{ map.locked }}</span>
+        <span class="maplist-detail">Liked: {{ map.liked }}</span>
+      </li>
+    </ul>
+
+    <div>
+      <span>Current Page: {{ currentPage }}</span>
+      <span>Num Pages: {{ numPages }}</span>
+    </div>
+    <ul class="pageslist">
+      <li class="pageslist-element" v-for="page in numPages" :key="page">
+        <button class="button button--page" @click="goToPage(page)">Page {{ page }}</button>
+      </li>
+    </ul>
+
+  </section>
+</div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import MapCard from '../components/MapCard';
 import SectionTitle from '../components/SectionTitle';
 
 export default {
   name: 'MapsPage',
+  computed: mapState({
+    numPages: state => state.maps.numPages,
+    currentPage: state => state.maps.page,
+    maps: state => state.maps.list,
+    isFetchingMaps: state => state.maps.isFetching,
+    featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
+    isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
+  }),
   components: {
     MapCard,
     SectionTitle
   },
-  computed: {
-    test: () =>
-      ({
-        thumbnailUrl: 'https://carto.com/help/images/building-maps/add-columns-from-second-dataset/join-columns.png',
-        name: 'NYC Stores Sales Dashboard',
-        description: 'Real-time comparison of Nordstrom stores sales numbers and more stuff related with business insights. Real-time comparison of Nordstrom stores sales numbers and more stuff related with business insights',
-        favorite: true,
-        tagList: ['test', 'this is my test', 'first map', 'CARTO', 'Another tag to make a bit of space'],
-        views: 23,
-        id: '9c16cddc-12a1-4060-a4d4-3ec096a04c9a',
-        display_name: null,
-        map_id: '41f2bc03-530a-440e-94c3-b97a424f85df',
-        active_layer_id: null,
-        type: 'derived',
-        tags: [],
-        privacy: 'LINK',
-        created_at: '2018-10-16T10:22:09.453Z',
-        updated_at: '2018-10-16T10:22:09.453Z',
-        locked: false,
-        source: null,
-        title: null,
-        license: null,
-        attributions: null,
-        kind: 'geom',
-        external_source: {},
-        url: 'http://jesusorg.localhost.lan:3000/u/jesusowner/viz/9c16cddc-12a1-4060-a4d4-3ec096a04c9a/map',
-        version: 3,
-        prev_id: null,
-        next_id: null,
-        parent_id: null,
-        transition_options: {},
-        active_child: null,
-        children: [],
-        likes: 0,
-        synchronization: null,
-        uses_builder_features: true,
-        liked: false,
-        permission: {
-          id: 'edc4d325-2ef9-42a0-8f47-48a0eeffff67',
-          owner: {
-            id: '30f8755a-ec51-4231-80b4-92f2d21eb347',
-            name: 'Jesús7',
-            last_name: 'Botella8',
-            username: 'jesusowner',
-            email: 'jesusowner@jesusowner.com',
-            avatar_url: '/assets/unversioned/images/avatars/avatar_marker_green.png',
-            website: 'https://jesusbotella.es6',
-            description: 'Test description3',
-            location: 'Madrid, Spain',
-            twitter_username: 'sn00b4',
-            disqus_shortname: '5',
-            available_for_hire: true,
-            base_url: 'http://jesusorg.localhost.lan:3000/u/jesusowner',
-            google_maps_query_string: null,
-            quota_in_bytes: 1073741824,
-            table_count: 148,
-            viewer: false,
-            org_admin: true,
-            public_visualization_count: 9,
-            all_visualization_count: 81,
-            org_user: true,
-            remove_logo: false,
-            db_size_in_bytes: 134336512
-          },
-          entity: {
-            id: '9c16cddc-12a1-4060-a4d4-3ec096a04c9a',
-            type: 'vis'
-          },
-          acl: [],
-          created_at: '2018-10-16T10:22:09.455Z',
-          updated_at: '2018-10-16T10:22:09.455Z'
-        }
-      }),
-    test2: () =>
-      ({
-        thumbnailUrl: 'https://carto.com/help/images/building-maps/builder-viz-workshop/01-torque-04.png',
-        name: 'Mi mapaza',
-        description: 'This mapaza is just a test of a place holder 1, 2, 3 probando probando 1, 2',
-        favorite: true,
-        tagList: [],
-        views: 23,
-        id: '9c16cddc-12a1-4060-a4d4-3ec096a04c9a',
-        display_name: null,
-        map_id: '41f2bc03-530a-440e-94c3-b97a424f85df',
-        active_layer_id: null,
-        type: 'derived',
-        tags: [],
-        privacy: 'PASSWORD',
-        created_at: '2018-10-16T10:22:09.453Z',
-        updated_at: '2018-10-16T10:22:09.453Z',
-        locked: false,
-        source: null,
-        title: null,
-        license: null,
-        attributions: null,
-        kind: 'geom',
-        external_source: {},
-        url: 'http://jesusorg.localhost.lan:3000/u/jesusowner/viz/9c16cddc-12a1-4060-a4d4-3ec096a04c9a/map',
-        version: 3,
-        prev_id: null,
-        next_id: null,
-        parent_id: null,
-        transition_options: {},
-        active_child: null,
-        children: [],
-        likes: 0,
-        synchronization: null,
-        uses_builder_features: true,
-        liked: false,
-        permission: {
-          id: 'edc4d325-2ef9-42a0-8f47-48a0eeffff67',
-          owner: {
-            id: '30f8755a-ec51-4231-80b4-92f2d21eb347',
-            name: 'Jesús7',
-            last_name: 'Botella8',
-            username: 'jesusowner',
-            email: 'jesusowner@jesusowner.com',
-            avatar_url: '/assets/unversioned/images/avatars/avatar_marker_green.png',
-            website: 'https://jesusbotella.es6',
-            description: 'Test description3',
-            location: 'Madrid, Spain',
-            twitter_username: 'sn00b4',
-            disqus_shortname: '5',
-            available_for_hire: true,
-            base_url: 'http://jesusorg.localhost.lan:3000/u/jesusowner',
-            google_maps_query_string: null,
-            quota_in_bytes: 1073741824,
-            table_count: 148,
-            viewer: false,
-            org_admin: true,
-            public_visualization_count: 9,
-            all_visualization_count: 81,
-            org_user: true,
-            remove_logo: false,
-            db_size_in_bytes: 134336512
-          },
-          entity: {
-            id: '9c16cddc-12a1-4060-a4d4-3ec096a04c9a',
-            type: 'vis'
-          },
-          acl: [],
-          created_at: '2018-10-16T10:22:09.455Z',
-          updated_at: '2018-10-16T10:22:09.455Z'
-        }
-      })
+  methods: {
+    goToPage (page) {
+      this.$store.dispatch('maps/goToPage', page);
+    },
+    filterLockedMaps () {
+      this.$store.dispatch('maps/filterLockedMaps');
+    },
+    filterSharedMaps () {
+      this.$store.dispatch('maps/filterSharedMaps');
+    },
+    filterFavoritedMaps () {
+      this.$store.dispatch('maps/filterFavoritedMaps');
+    },
+    resetFilters () {
+      this.$store.dispatch('maps/resetFilters');
+    }
   }
 };
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+@import 'stylesheets/new-dashboard/variables';
+/* stylelint-disable */
+.temp {
+  .title--h1 {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+  .title--h2 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .maplist, .pageslist {
+    display: flex;
+  }
+  .maplist-element {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border: 1px solid $light-grey;
+    box-sizing: border-box;
+  }
+  .maplist-detail {
+    margin-bottom: 8px;
+  }
+  .pageslist-element {
+    padding: 16px;
+  }
+  .button {
+    padding: 8px 20px;
+    border-radius: 4px;
+    margin: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: $primary-color;
+    color: $white;
+  }
+  .button--page {
+    background-color: $light-grey;
+  }
+}
+</style>

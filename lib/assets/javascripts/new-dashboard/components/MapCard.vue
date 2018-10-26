@@ -167,7 +167,7 @@ export default {
 
 .card-text {
   padding: 24px 16px;
-  color: $textColor;
+  color: $text-color;
 }
 
 .card-media {
@@ -202,7 +202,7 @@ export default {
   margin-bottom: 4px;
 
   a {
-    color: $textColor;
+    color: $text-color;
     text-decoration: none;
   }
 
@@ -211,7 +211,7 @@ export default {
   }
 
   a:hover {
-    color: $textColor;
+    color: $text-color;
     text-decoration: underline;
   }
 

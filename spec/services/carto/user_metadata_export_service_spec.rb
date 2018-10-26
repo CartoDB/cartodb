@@ -879,7 +879,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_five) do
-    user_hash = full_export[:user].except!(:client_application)
+    user_hash = full_export_one_zero_six[:user].except!(:client_application)
     limits_hash = full_export[:user][:rate_limit][:limits]
     full_export[:user] = user_hash
     full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)

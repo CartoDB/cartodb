@@ -80,7 +80,7 @@ export default {
       return `Updated ${distanceInWordsStrict(this.$props.map.updated_at, new Date())} ago`;
     },
     mapThumbnailUrl () {
-      return this.$props.map.thumbnailUrl;
+      return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 300, height: 300 });
     },
     hasTags () {
       return this.$props.map.tagList ? this.$props.map.tagList.length > 0 : false;

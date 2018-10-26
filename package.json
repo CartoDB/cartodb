@@ -33,7 +33,6 @@
   "dependencies": {
     "backbone": "1.2.3",
     "backbone-poller": "^1.1.3",
-    "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
     "carto": "cartodb/carto#master",
     "@carto/zera": "1.0.7",
@@ -58,6 +57,7 @@
     "babel-preset-es2015": "~6.24.1",
     "babelify": "^7.3.0",
     "browserify": "13.0.0",
+    "browserify-shim": "3.8.12",
     "cartoassets": "CartoDB/CartoAssets#master",
     "eslint": "~4.8.0",
     "eslint-config-semistandard": "~11.0.0",

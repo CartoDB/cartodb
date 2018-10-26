@@ -18,6 +18,7 @@ Development
 - Update tags style (#13756)
 - Add more formats to the base datasource class to be used by for example Box connector (#10183)
 - Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
+- Update some old vulnerable dependencies (#14368)
 
 4.22.1 (2018-10-18)
 -------------------

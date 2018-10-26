@@ -114,7 +114,7 @@ module Carto
         }
 
         begin
-          res = user.in_database.execute(table_query)
+          user.in_database.execute(table_query)
           user.in_database(as: :superuser).execute(schema_query)
           sequences_for_table(schema, table).each do |seq|
             user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")

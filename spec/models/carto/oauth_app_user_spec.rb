@@ -224,13 +224,13 @@ module Carto
 
       it 'should fail with non shared dataset' do
         expect {
-          oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_shared_dataset_scope])
+          OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_shared_dataset_scope])
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
       it 'should fail with shared and non shared dataset' do
         expect {
-          oau = OauthAppUser.create!(
+          OauthAppUser.create!(
             user: @carto_org_user_2,
             oauth_app: @app,
             scopes: [@shared_dataset_scope, @non_shared_dataset_scope]
@@ -241,7 +241,7 @@ module Carto
       it 'should fail write scope in shared dataset with only read perms' do
         rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
         expect {
-          oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
+          OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
@@ -271,13 +271,13 @@ module Carto
 
         it 'should fail with non org shared dataset' do
           expect {
-            oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
+            OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@non_org_shared_dataset_scope])
           }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
 
         it 'should fail with org shared and non org shared dataset' do
           expect {
-            oau = OauthAppUser.create!(
+            OauthAppUser.create!(
               user: @carto_org_user_2,
               oauth_app: @app,
               scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
@@ -288,7 +288,7 @@ module Carto
         it 'should fail write scope in org shared dataset with only read perms' do
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
           expect {
-            oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
+            OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
           }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
       end
@@ -336,12 +336,20 @@ module Carto
       end
 
       it 'validates view scope' do
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ["datasets:r:#{@view_name}"])
+        oau = OauthAppUser.create!(
+          user: @carto_user,
+          oauth_app: @app,
+          scopes: ["datasets:r:#{@view_name}"]
+        )
         expect(oau.scopes).to(eq(["datasets:r:#{@view_name}"]))
       end
 
       it 'validates materialized view scope' do
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ["datasets:r:#{@materialized_view_name}"])
+        oau = OauthAppUser.create!(
+          user: @carto_user,
+          oauth_app: @app,
+          scopes: ["datasets:r:#{@materialized_view_name}"]
+        )
         expect(oau.scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
       end
     end

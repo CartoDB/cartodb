@@ -147,7 +147,7 @@ describe 'Warden' do
     end
   end
 
-  describe 'password locked' do
+  describe 'login locked' do
     include HelperMethods
 
     before(:all) do
@@ -237,7 +237,7 @@ describe 'Warden' do
       end
     end
 
-    it 'allows to login if password is reset' do
+    it 'allows to login if password is changed' do
       Cartodb.with_config(
         passwords: {
           'rate_limit' => {
@@ -251,10 +251,16 @@ describe 'Warden' do
         wrong_login
         expect_password_locked
 
-        @user.reset_password_rate_limit
+        old_password = @user.password
+        new_password = '12345678'
+        @user.change_password(old_password, new_password, new_password)
+        @user.save
 
         login
         expect_login
+
+        @user.change_password(new_password, old_password, old_password)
+        @user.save
       end
     end
   end

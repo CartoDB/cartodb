@@ -11,6 +11,7 @@ require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
+  include ActionView::Helpers::DateHelper
   include LoginHelper
   include Carto::EmailCleaner
 
@@ -52,9 +53,10 @@ class SessionsController < ApplicationController
       if params[:error] == SESSION_EXPIRED
         @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
       elsif params[:error] == PASSWORD_LOCKED
+        wait_text = time_ago_in_words(Time.now + params[:retry_after].to_i.seconds, include_seconds: true)
         @flash_login_error =
-          'Your account has been locked temporarily due to too many failed login attempts.' +
-          ' Please, reset your password to continue using CARTO.'
+          'Too many failed login attempts.' +
+          " Please, wait #{wait_text} or reset your password to continue using CARTO."
       end
       render
     end
@@ -154,7 +156,7 @@ class SessionsController < ApplicationController
 
   def password_locked
     warden.custom_failure!
-    redirect_to login_url + "?error=#{PASSWORD_LOCKED}"
+    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{warden.env['warden.options'][:retry_after]}"
   end
 
   def password_expired

@@ -77,10 +77,11 @@ describe PasswordResetsController do
     end
 
     it 'redirects to the initial password reset view if the token has expired' do
-      Delorean.jump(49.hours)
       payload = { carto_user: { password: 'newpass', password_confirmation: 'other' } }
 
-      put password_reset_url(id: @user.password_reset_token), payload, @headers
+      Delorean.jump(49.hours) do
+        put password_reset_url(id: @user.password_reset_token), payload, @headers
+      end
 
       response.status.should == 302
       follow_redirect!

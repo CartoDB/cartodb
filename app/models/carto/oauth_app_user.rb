@@ -91,11 +91,15 @@ module Carto
       raise OauthProvider::Errors::ServerError.new
     end
 
-    def grant_dataset_role_privileges
+    def validate_scopes
       invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
+    end
 
-      invalid_grants = []
+    def grant_dataset_role_privileges
+      validate_scopes
+
+      invalid_scopes = []
       DatasetsScope.valid_scopes(scopes).each do |scope|
         dataset_scope = DatasetsScope.new(scope)
 
@@ -120,12 +124,12 @@ module Carto
             user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
           end
         rescue ActiveRecord::StatementInvalid => e
-          invalid_grants << scope
+          invalid_scopes << scope
           CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
         end
       end
 
-      raise OauthProvider::Errors::InvalidScope.new(invalid_grants) if invalid_grants.any?
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
     end
 
     def sequences_for_table(schema, table)

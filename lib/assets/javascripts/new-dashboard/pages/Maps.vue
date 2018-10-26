@@ -47,14 +47,11 @@
           </template>
         </SectionTitle>
       </div>
-      <MapCard :map=test size=medium></MapCard>
-      <MapCard :map=test2 size=medium></MapCard>
-      <MapCard :map=test></MapCard>
-      <MapCard :map=test2></MapCard>
-      <MapCard :map=test></MapCard>
-      <MapCard :map=test2></MapCard>
-      <MapCard :map=test></MapCard>
-      <MapCard :map=test2></MapCard>
+      <ul class="maps-list-container grid">
+        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
+          <MapCard :map=map></MapCard>
+        </li>
+      </ul>
     </div>
   </section>
   <section class="temp">
@@ -180,6 +177,9 @@ export default {
   }
   .button--page {
     background-color: $light-grey;
+  }
+  .maps-list-container{
+    width: 100%;
   }
 }
 </style>

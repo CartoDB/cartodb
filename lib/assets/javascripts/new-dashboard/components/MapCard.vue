@@ -1,5 +1,5 @@
 <template>
-  <div class="grid-cell" :class="sizeClass">
+  <div>
     <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
       <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
         <input class="checkbox-input" @click="toggleSelection" type="checkBox">
@@ -45,7 +45,7 @@
               <li v-for="(tag, index) in map.tagList" :key="tag">
                 <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
               </li>
-              <li v-if="map.tagList.length <= 0">
+              <li v-if="hasTags <= 0">
                 <span>{{ $t(`mapCard.noTags`) }}</span>
               </li>
             </ul>
@@ -61,23 +61,15 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
-  name: 'CardMap',
+  name: 'MapCard',
   props: {
-    map: Object,
-    size: {
-      type: String,
-      default: 'small'
-    }
+    map: Object
   },
   data: function () {
     return {
       selected: false,
       favorite: this.$props.map.favorite,
-      activeHover: true,
-      sizeClasses: {
-        medium: 'grid-cell--col6 grid-cell--col12--mobile',
-        small: 'grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile'
-      }
+      activeHover: true
     };
   },
   computed: {
@@ -87,14 +79,14 @@ export default {
     lastUpdated () {
       return `Updated ${distanceInWordsStrict(this.$props.map.updated_at, new Date())} ago`;
     },
-    sizeClass () {
-      return this.sizeClasses[this.$props.size];
-    },
     mapThumbnailUrl () {
       return this.$props.map.thumbnailUrl;
     },
+    hasTags () {
+      return this.$props.map.tagList ? this.$props.map.tagList.length > 0 : false;
+    },
     vizUrl () {
-      return Visualization.getURL(this.$props.map);
+      return Visualization.getURL(this.$props.map, this.$cartoModels);
     }
   },
   methods: {

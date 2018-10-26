@@ -67,11 +67,6 @@ Warden::Strategies.add(:password) do
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
 
-  def fail!
-    # register login failed
-    super
-  end
-
   def authenticate!
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))

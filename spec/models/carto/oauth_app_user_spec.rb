@@ -233,5 +233,57 @@ module Carto
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
     end
+
+    describe 'views' do
+      before :all do
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @user_table = create_table(user_id: @carto_user.id)
+
+        @view_name = "#{@user_table.name}_view"
+        @materialized_view_name = "#{@user_table.name}_matview"
+        @carto_user.in_database do |db|
+          query = %{
+            CREATE VIEW #{@view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@view_name} TO \"#{@carto_user.database_username}\";
+            CREATE MATERIALIZED VIEW #{@materialized_view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@materialized_view_name} TO \"#{@carto_user.database_username}\";
+          }
+          db.execute(query)
+        end
+      end
+
+      before :each do
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+      end
+
+      after :each do
+        @app.destroy
+      end
+
+      after :all do
+        @carto_user.in_database do |db|
+          query = %{
+            DROP VIEW #{@view_name};
+            DROP MATERIALIZED VIEW #{@materialized_view_name};
+          }
+          db.execute(query)
+        end
+
+        @user_table.destroy
+        @user.destroy
+        @carto_user.destroy
+      end
+
+      it 'validates view scope' do
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ["datasets:r:#{@view_name}"])
+        expect(oau.scopes).to(eq(["datasets:r:#{@view_name}"]))
+      end
+
+      it 'validates materialized view scope' do
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ["datasets:r:#{@materialized_view_name}"])
+        expect(oau.scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
+      end
+    end
   end
 end

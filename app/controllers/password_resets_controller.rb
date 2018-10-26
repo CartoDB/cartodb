@@ -4,6 +4,9 @@ class PasswordResetsController < ApplicationController
 
   layout "frontend"
 
+  before_action :load_organization_from_request
+  before_action :load_user_from_token, only: [:edit, :update]
+
   def new; end
 
   def create
@@ -31,13 +34,9 @@ class PasswordResetsController < ApplicationController
     end
   end
 
-  def edit
-    @user = Carto::User.find_by_password_reset_token!(params[:id])
-  end
+  def edit; end
 
   def update
-    @user = Carto::User.find_by_password_reset_token!(params[:id])
-
     # check if it's valid token
     if @user.password_reset_sent_at < 48.hours.ago
       redirect_to(new_password_reset_path, alert: "Password reset has expired")
@@ -66,5 +65,15 @@ class PasswordResetsController < ApplicationController
   end
 
   def sent; end
+
+  private
+
+  def load_user_from_token
+    @user = Carto::User.find_by_password_reset_token!(params[:id])
+  end
+
+  def load_organization_from_request
+    @organization = Carto::Organization.where(name: CartoDB.extract_subdomain(request)).first
+  end
 
 end

@@ -9,7 +9,7 @@ class UserMailer < ActionMailer::Base
     @organization = @user.organization
     @owner = @organization.owner
     @subject = "You have been invited to CARTO organization '#{@organization.name}'"
-    base_url = CartoDB.base_url(@organization.name, @user.username).to_s
+    base_url = CartoDB.base_url(@organization.name, @user.username)
 
     if @user.enable_account_token.nil?
       @link = base_url

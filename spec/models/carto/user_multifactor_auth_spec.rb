@@ -64,22 +64,21 @@ describe Carto::UserMultifactorAuth do
   describe '#verify' do
     it 'verifies a valid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      mfa.code = mfa.totp.now
-      expect { mfa.verify }.to be
+      expect { mfa.verify(mfa.totp.now) }.to be
     end
 
     it 'does not allow reuse of a valid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      mfa.code = mfa.totp.now
-      expect { mfa.verify }.to be
-      mfa.verify.should_not be
+      code = mfa.totp.now
+      expect { mfa.verify(code) }.to be
+      Delorean.jump((Carto::UserMultifactorAuth::DRIFT * 2).seconds)
+      mfa.verify(code).should_not be
     end
 
     it 'does not verify an invalid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       totp = ROTP::TOTP.new(ROTP::Base32.random_base32)
-      mfa.code = totp.now
-      mfa.verify.should_not be
+      mfa.verify(totp.now).should_not be
     end
   end
 

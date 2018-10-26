@@ -1,12 +1,12 @@
 class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
   include Carto::ControllerHelper
 
-  ssl_required :create, :destroy, :validate_code, :show, :index
+  ssl_required
 
   before_action :load_user
   before_action :check_ff
-  before_action :check_shared_secret_not_present, only: [:create, :validate_code]
-  before_action :load_multifactor_auth, only: [:show, :validate_code, :destroy]
+  before_action :check_shared_secret_not_present, only: [:create, :verify_code]
+  before_action :load_multifactor_auth, only: [:show, :verify_code, :destroy]
 
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -14,11 +14,13 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
   def create
     multifactor_auth = @carto_viewer.user_multifactor_auths.create!(create_params)
     render_jsonp(Carto::Api::MultifactorAuthPresenter.new(multifactor_auth).to_poro_with_qrcode, 201)
+  rescue ActionController::ParameterMissing => e
+    raise Carto::UnprocesableEntityError.new(e.message)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
   end
 
-  def validate_code
+  def verify_code
     @multifactor_auth.verify!(params[:code])
     render_jsonp(Carto::Api::MultifactorAuthPresenter.new(@multifactor_auth).to_poro, 200)
   rescue ActiveRecord::RecordInvalid => e
@@ -58,7 +60,7 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
   end
 
   def create_params
-    params.permit(:type)
+    { type: params.require(:type) }
   end
 
   def check_ff

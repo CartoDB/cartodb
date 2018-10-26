@@ -80,8 +80,17 @@ describe Carto::Api::MultifactorAuthsController do
       end
     end
 
+    it 'requires the type' do
+      params = auth_params.merge(create_payload.except(:type))
+      post_json multifactor_auths_url, params, auth_headers do |response|
+        response.status.should eq 422
+        response = response.body
+        response[:errors].should include("param is missing or the value is empty: type")
+      end
+    end
+
     it 'creates a totp multifactor auth and ignores additional params' do
-      params = auth_params.merge(create_payload).merge(code: 'wadus', enabled: true)
+      params = auth_params.merge(create_payload).merge(enabled: true)
       post_json multifactor_auths_url, params, auth_headers do |response|
         response.status.should eq 201
         response = response.body
@@ -91,7 +100,7 @@ describe Carto::Api::MultifactorAuthsController do
         response[:qrcode].should be
         response[:user].should eq(@user.username)
 
-        @user.user_multifactor_auths.find(response[:id]).code.should be_nil
+        @user.user_multifactor_auths.find(response[:id]).enabled.should be false
       end
     end
   end
@@ -99,7 +108,7 @@ describe Carto::Api::MultifactorAuthsController do
   describe '#validate_code' do
     it 'validates a totp multifactor auth code' do
       params = auth_params.merge(code: @multifactor_auth.totp.now)
-      post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
+      post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 200
         response = response.body
         response[:id].should be
@@ -109,7 +118,6 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.code.should eq params[:code]
         @multifactor_auth.disabled?.should be_false
         @multifactor_auth.last_login.should be
       end
@@ -117,7 +125,7 @@ describe Carto::Api::MultifactorAuthsController do
 
     it 'raises error if not valid code' do
       params = auth_params.merge(code: '123456')
-      post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
+      post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 403
         response = response.body
         response[:errors].should include("The code is not valid")
@@ -126,7 +134,7 @@ describe Carto::Api::MultifactorAuthsController do
 
     it 'raises error if shared_secret is sent' do
       params = auth_params.merge(shared_secret: 'wadus')
-      post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
+      post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 422
         response = response.body
         response[:errors].should include("The 'shared_secret' parameter is not allowed for this endpoint")
@@ -135,7 +143,7 @@ describe Carto::Api::MultifactorAuthsController do
 
     it 'validates and ignores additional params' do
       params = auth_params.merge(code: @multifactor_auth.totp.now, last_login: Time.now - 1.year)
-      post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
+      post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 200
         response = response.body
         response[:id].should be
@@ -145,7 +153,6 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.code.should eq params[:code]
         @multifactor_auth.disabled?.should be_false
         @multifactor_auth.last_login.year.should eq Time.now.year
       end
@@ -156,7 +163,7 @@ describe Carto::Api::MultifactorAuthsController do
       last_login = @multifactor_auth.last_login
       Delorean.jump(2.hours)
       params = auth_params.merge(code: @multifactor_auth.totp.now)
-      post_json validate_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
+      post_json verify_code_multifactor_auth_url(id: @multifactor_auth.id), params, auth_headers do |response|
         response.status.should eq 200
         response = response.body
         response[:id].should be
@@ -166,7 +173,6 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.code.should eq params[:code]
         @multifactor_auth.disabled?.should be_false
         @multifactor_auth.last_login.should_not eq last_login
       end

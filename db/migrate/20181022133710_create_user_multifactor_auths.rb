@@ -10,7 +10,6 @@ migration(
       String      :type, null: false
       String      :shared_secret, null: false
       Boolean     :enabled, null: false, default: false
-      String      :code, null: true
       DateTime    :last_login, null: true
       DateTime    :created_at, null: false, default: Sequel::CURRENT_TIMESTAMP
       DateTime    :updated_at, null: false, default: Sequel::CURRENT_TIMESTAMP

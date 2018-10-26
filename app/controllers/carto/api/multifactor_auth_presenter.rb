@@ -1,5 +1,3 @@
-require 'json'
-
 module Carto
   module Api
     class MultifactorAuthPresenter

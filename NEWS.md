@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- MFA (WIP)
+  - Lock login if too many failed attempts (#14334)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)

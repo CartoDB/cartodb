@@ -23,7 +23,7 @@ class PasswordResetsController < ApplicationController
       return
     end
 
-    user.send_password_reset
+    user.send_password_reset!
 
     respond_to do |format|
       format.html { redirect_to sent_password_resets_path }

@@ -68,7 +68,7 @@ describe Carto::User do
     end
   end
 
-  describe "#send_password_reset" do
+  describe "#send_password_reset!" do
     before(:all) do
       @user = FactoryGirl.create(:carto_user)
     end
@@ -80,18 +80,18 @@ describe Carto::User do
     it 'enqueues a job to send an email' do
       Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::PasswordReset, @user.id)
 
-      @user.send_password_reset
+      @user.send_password_reset!
     end
 
     it 'updates password_reset_token' do
-      expect { @user.send_password_reset }.to change(@user, :password_reset_token)
+      expect { @user.send_password_reset! }.to change(@user, :password_reset_token)
     end
 
     it 'updates password_reset_sent_at' do
       now = Time.zone.now
 
       Delorean.time_travel_to(now) do
-        @user.send_password_reset
+        @user.send_password_reset!
       end
 
       @user.password_reset_sent_at.to_s.should eql now.to_s

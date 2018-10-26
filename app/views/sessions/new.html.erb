@@ -51,12 +51,9 @@
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                     <% end %>
 
-                    <%# TODO: remove this if to always show the link when the FF is released %>
-                    <% if !Cartodb.config[:cartodb_com_hosted] || Carto::FeatureFlag.unrestricted?('mfa') %>
-                      <div class="Sessions-inputLinkAside">
-                        <%= link_to 'Forgot?', forget_password_url %>
-                      </div>
-                    <% end %>
+                    <div class="Sessions-inputLinkAside">
+                      <%= link_to 'Forgot?', forget_password_url %>
+                    </div>
                   </div>
 
                   <div class="Sessions-field">

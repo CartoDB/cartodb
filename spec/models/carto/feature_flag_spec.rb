@@ -27,18 +27,4 @@ describe Carto::FeatureFlag do
     end
   end
 
-  describe "unrestricted?" do
-    it "returns true if the provided name corresponds to a unrestricted feature flag" do
-      result = Carto::FeatureFlag.unrestricted?('unrestricted-ff')
-
-      expect(result).to be_true
-    end
-
-    it "returns false if the provided name corresponds to a restricted feature flag" do
-      result = Carto::FeatureFlag.unrestricted?('user-ff')
-
-      expect(result).to be_false
-    end
-  end
-
 end

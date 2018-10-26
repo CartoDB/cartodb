@@ -12,8 +12,9 @@
             <img src="../assets/icons/common/options.svg">
         </span>
       </div>
-      <div class="card-media">
-        <img :src=mapThumbnailUrl />
+      <div class="card-media" :class="{'has-error': isThumbnailErrored}">
+        <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
       </div>
       <div class="card-text">
         <h2 class="card-title title is-caption">
@@ -66,6 +67,7 @@ export default {
   },
   data: function () {
     return {
+      isThumbnailErrored: false,
       selected: false,
       activeHover: true
     };
@@ -99,6 +101,9 @@ export default {
     },
     mouseOutOfElement () {
       this.activeHover = true;
+    },
+    onThumbnailError () {
+      this.isThumbnailErrored = true;
     }
   }
 };
@@ -162,12 +167,21 @@ export default {
 
 .card-media {
   display: flex;
+  position: relative;
   height: 140px;
   overflow: hidden;
+
+  background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
 
   img {
     width: 100%;
     object-fit: cover;
+  }
+
+  &.has-error {
+    .MapCard-error {
+      display: block;
+    }
   }
 }
 

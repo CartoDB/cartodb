@@ -35,12 +35,12 @@ CartoDB::Application.routes.draw do
   resources :password_change, only: [:edit, :update]
 
   # Password resets
-  resources :password_resets, only: [:create, :edit, :update, :new] do
-    collection do
-      get '/sent'    => 'password_resets#sent'
-      get '/changed' => 'password_resets#changed'
-    end
-  end
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/new'         => 'password_resets#new',      as: :new_password_reset
+  post '(/user/:user_domain)(/u/:user_domain)/password_resets'            => 'password_resets#create',   as: :create_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'    => 'password_resets#edit',     as: :edit_password_reset
+  match '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'  => 'password_resets#update',   as: :update_password_reset, via: [:put, :patch]
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index

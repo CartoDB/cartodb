@@ -125,32 +125,44 @@ module Carto
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @t1 = create_table(user_id: @carto_user.id)
+        @t2 = create_table(user_id: @carto_user.id)
+        @t3 = create_table(user_id: @carto_user.id)
+        @t4 = create_table(user_id: @carto_user.id)
       end
 
       after(:all) do
+        @t1.destroy
+        @t2.destroy
+        @t3.destroy
+        @t4.destroy
         @app.destroy
         @user.destroy
         @carto_user.destroy
       end
 
       it 'grants all new scopes without duplicates' do
-        OauthAppUser::ScopesValidator.any_instance.stubs(:validate_each)
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
+        o1 = "datasets:rw:#{@t1.name}"
+        o2 = "datasets:rw:#{@t2.name}"
+        o3 = "datasets:rw:#{@t3.name}"
+        o4 = "datasets:rw:#{@t4.name}"
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2']))
+        expect(oau.scopes).to(eq([o1, o2]))
 
-        oau.upgrade!(['allowed_1'])
-        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2']))
+        oau.upgrade!([o1])
+        expect(oau.scopes).to(eq([o1, o2]))
 
-        oau.upgrade!(['new_1'])
-        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1']))
+        oau.upgrade!([o3])
+        expect(oau.scopes).to(eq([o1, o2, o3]))
 
-        oau.upgrade!(['allowed_2', 'new_2'])
-        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1', 'new_2']))
+        oau.upgrade!([o2, o4])
+        expect(oau.scopes).to(eq([o1, o2, o3, o4]))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq(['allowed_1', 'allowed_2', 'new_1', 'new_2']))
+        expect(oau.scopes).to(eq([o1, o2, o3, o4]))
       end
     end
 

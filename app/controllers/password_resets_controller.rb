@@ -4,8 +4,8 @@ class PasswordResetsController < ApplicationController
 
   layout "frontend"
 
-  before_action :load_organization_from_request
-  before_action :load_user_from_token, only: [:edit, :update]
+  before_action :load_organization_from_request, only: [:new, :create, :sent, :changed]
+  before_action :load_user_and_organization, only: [:edit, :update]
 
   def new; end
 
@@ -18,18 +18,18 @@ class PasswordResetsController < ApplicationController
       return
     end
 
-    user = Carto::User.find_by_email(email)
+    @user = Carto::User.find_by_email(email)
 
-    if !user
+    if !@user
       @error = "Cannot find email"
       render :new
       return
     end
 
-    user.send_password_reset!
+    @user.send_password_reset!
 
     respond_to do |format|
-      format.html { redirect_to sent_password_resets_path }
+      format.html { redirect_to build_url('sent') }
       format.js   { head :ok }
     end
   end
@@ -58,7 +58,7 @@ class PasswordResetsController < ApplicationController
     @user.password_confirmation = pwc
     if @user.save
       @user.update_attribute(:password_reset_token, nil)
-      redirect_to changed_password_resets_path
+      redirect_to build_url('changed')
     else
       render :edit
     end
@@ -66,14 +66,24 @@ class PasswordResetsController < ApplicationController
 
   def sent; end
 
-  private
+  def changed; end
 
-  def load_user_from_token
-    @user = Carto::User.find_by_password_reset_token!(params[:id])
-  end
+  private
 
   def load_organization_from_request
     @organization = Carto::Organization.where(name: CartoDB.extract_subdomain(request)).first
+  end
+
+  def load_user_and_organization
+    @user = Carto::User.find_by_password_reset_token!(params[:id])
+    @organization = @user.organization
+  end
+
+  def build_url(view_name)
+    organization_name = @user.organization.try(:name)
+    base_url = CartoDB.base_url(organization_name)
+    path = CartoDB.path(self, "#{view_name}_password_reset")
+    "#{base_url}#{path}"
   end
 
 end

@@ -1,5 +1,5 @@
 <%= render :layout => 'form' do %>
-  <%= form_for @user, url: password_reset_path(params[:id]), class: "js-Loading-form" do |f| %>
+  <%= form_for @user, url: edit_password_reset_path(params[:id]), class: "js-Loading-form" do |f| %>
     <div class="Sessions-fieldsGorup">
       <div class="Sessions-field">
         <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>

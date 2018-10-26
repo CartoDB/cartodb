@@ -1,5 +1,5 @@
 <%= render :layout => 'form' do %>
-  <%= form_tag password_resets_path, method: :post, class: "js-Loading-form" do %>
+  <%= form_tag create_password_reset_path, method: :post, class: "js-Loading-form" do %>
     <div class="Sessions-field">
       <%= text_field_tag :email, '', class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} withBorderRadius", title: 'Your email', placeholder: 'Your email' %>
       <% if @error || flash[:alert] %>

@@ -4,11 +4,7 @@
       <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
         <input class="checkbox-input" @click="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
-            <svg viewBox="0 0 12 12" class="checkbox-decorationMedia">
-                <g fill="none">
-                    <polyline class="checkbox-check" points="1.65093994 3.80255127 4.48919678 6.97192383 10.3794556 0.717346191"></polyline>
-                </g>
-            </svg>
+          <img svg-inline src="../assets/icons/common/checkbox.svg">
         </span>
       </span>
       <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
@@ -22,25 +18,28 @@
       <div class="card-text">
         <h2 class="card-title title is-caption">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" v-bind:class="{'is-favorite': favorite}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-            <svg width="16" height="17" viewBox="0 0 16 17" xmlns="http://www.w3.org/2000/svg">
-              <path class="favorite-icon" d="M15.44 5.46a.75.75 0 0 0-.69-.46h-4.04L8.67.92C8.42.4 7.58.4 7.33.92L5.29 5H1.25a.75.75 0 0 0-.53 1.28l3.44 3.44-1.38 4.83a.75.75 0 0 0 1.14.82L8 12.65l4.08 2.72a.75.75 0 0 0 1.14-.82l-1.38-4.83 3.44-3.44a.75.75 0 0 0 .16-.82z" stroke="#6F757B" fill="none" fill-rule="evenodd"/>
-            </svg>
+          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+            <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
+
         <p class="card-description text is-caption" v-if="map.description">{{ map.description }}</p>
         <p class="card-description text is-caption" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+
         <ul class="card-metadata">
           <li class="card-metadataItem text is-caption">
             <span class="icon icon--privacy" :class="privacyIcon"></span>
             <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
           </li>
+
           <li class="card-metadataItem text is-caption">
-            <span class="icon"><img src="../assets/icons/maps/calendar.svg"></span>
+            <span class="icon"><img inline-svg src="../assets/icons/maps/calendar.svg"></span>
             <p>{{ lastUpdated }}</p>
           </li>
+
           <li class="card-metadataItem text is-caption">
-            <span class="icon"><img src="../assets/icons/maps/tag.svg"></span>
+            <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
+
             <ul class="card-tagList">
               <li v-for="(tag, index) in map.tagList" :key="tag">
                 <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tagList.length - 1">,&#32;</span>
@@ -68,7 +67,6 @@ export default {
   data: function () {
     return {
       selected: false,
-      favorite: this.$props.map.favorite,
       activeHover: true
     };
   },
@@ -94,7 +92,7 @@ export default {
       this.selected = !this.selected;
     },
     toggleFavorite () {
-      this.favorite = !this.favorite;
+      this.$props.map.liked = !this.$props.map.liked;
     },
     mouseOverElement () {
       this.activeHover = false;

@@ -99,14 +99,20 @@ module Carto
         schema = dataset_scope.schema || user.database_schema
         table = dataset_scope.table
 
-        query = %{
+        table_query = %{
           GRANT #{dataset_scope.permission.join(',')}
-          ON \"#{schema}\".\"#{table}\"
-          TO \"#{dataset_role_name}\" WITH GRANT OPTION
+          ON TABLE \"#{schema}\".\"#{table}\"
+          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
+        }
+
+        schema_query = %{
+          GRANT USAGE ON SCHEMA \"#{schema}\"
+          TO \"#{dataset_role_name}\";
         }
 
         begin
-          user.in_database.execute(query)
+          user.in_database.execute(table_query)
+          user.in_database(as: :superuser).execute(schema_query)
           sequences_for_table(schema, table).each do |seq|
             user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
           end

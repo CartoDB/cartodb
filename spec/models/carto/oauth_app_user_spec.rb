@@ -206,7 +206,7 @@ module Carto
         not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
         perm = @shared_table.table_visualization.permission
-        perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+        perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
         perm.save!
 
         @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
@@ -238,11 +238,25 @@ module Carto
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
-      it 'should fail write scope in shared dataset with only read perms' do
-        rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
-        expect {
-          OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
-        }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+      describe 'read - write permissions' do
+        before :each do
+          @only_read_table = create_table(user_id: @carto_org_user_1.id)
+
+          perm = @only_read_table.table_visualization.permission
+          perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+          perm.save!
+        end
+
+        after :each do
+          @only_read_table.destroy
+        end
+
+        it 'should fail write scope in shared dataset with only read perms' do
+          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
+          expect {
+            OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
+          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        end
       end
 
       describe 'organization shared datasets' do
@@ -255,7 +269,7 @@ module Carto
             {
               type: Permission::TYPE_ORGANIZATION,
               entity: { id: @carto_organization.id },
-              access: Permission::ACCESS_READONLY
+              access: Permission::ACCESS_READWRITE
             }
           ]
           perm.save!
@@ -285,11 +299,31 @@ module Carto
           }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
         end
 
-        it 'should fail write scope in org shared dataset with only read perms' do
-          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
-          expect {
-            OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
-          }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+        describe 'read - write permissions' do
+          before :each do
+            @only_read_table = create_table(user_id: @carto_org_user_1.id)
+
+            perm = @only_read_table.table_visualization.permission
+            perm.acl = [
+              {
+                type: Permission::TYPE_ORGANIZATION,
+                entity: { id: @carto_organization.id },
+                access: Permission::ACCESS_READONLY
+              }
+            ]
+            perm.save!
+          end
+
+          after :each do
+            @only_read_table.destroy
+          end
+
+          it 'should fail write scope in org shared dataset with only read perms' do
+            rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
+            expect {
+              OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [rw_scope])
+            }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
+          end
         end
       end
     end

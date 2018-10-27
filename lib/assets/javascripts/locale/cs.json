@@ -2619,8 +2619,8 @@
           "by-value-tab": " Odlišit každého %{type} velikost číselným přívlastkem k vytvořené třízené %{type} map"
         },
         "stroke": {
-          "size": "Změň velikost %{type} ukázky",
-          "color": "Změň barvu %{type} ukázky"
+          "size": "Změň tloušťku obrysu pro %{type}",
+          "color": "Změň barvu obrysu pro %{type}"
         }
       },
       "components": {
@@ -2633,16 +2633,16 @@
           "polygon": "Mnohoúhelník"
         },
         "stroke": {
-          "label": "Ukázka",
+          "label": "Obrys",
           "fetching": "Načítám schéma uzlu...",
           "unavailable": "Chyba při získávání schémata uzlu",
           "error": "Stala se chyba při získávání schémata uzlu..."
         },
         "stroke-color": {
-          "label": "Barva ukázky"
+          "label": "Barva obrysu"
         },
         "stroke-size": {
-          "label": "Velikost ukázky"
+          "label": "Tloušťka obrysu"
         },
         "point-size": {
           "label": "Velikost bodu"

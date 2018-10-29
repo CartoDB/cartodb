@@ -162,5 +162,53 @@ module Carto
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end
     end
+
+    describe '#shared datasets' do
+      include_context 'organization with users helper'
+
+      before :each do
+        @app = FactoryGirl.create(:oauth_app, user: @carto_org_user_1)
+        @app_user = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app)
+        @shared_table = create_table(user_id: @carto_org_user_1.id)
+        not_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+        perm = @shared_table.table_visualization.permission
+        perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
+        perm.save!
+
+        @shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
+        @non_shared_dataset_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{not_shared_table.name}"
+      end
+
+      after :each do
+        @app_user.destroy
+        @app.destroy
+      end
+
+      it 'works with shared dataset' do
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['maps', 'sql']
+            },
+            {
+              type: 'database',
+              tables: [
+                {
+                  name: @shared_table.name,
+                  permissions: ['select', 'insert', 'update', 'delete'],
+                  schema: @carto_org_user_1.database_schema
+                }
+              ]
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [@shared_dataset_scope])
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
+    end
   end
 end

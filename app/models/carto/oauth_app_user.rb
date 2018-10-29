@@ -104,11 +104,11 @@ module Carto
         dataset_scope = DatasetsScope.new(scope)
 
         schema = dataset_scope.schema || user.database_schema
-        table = dataset_scope.table
+        schema_table = Carto::TableAndFriends.qualified_table_name(schema, dataset_scope.table)
 
         table_query = %{
           GRANT #{dataset_scope.permission.join(',')}
-          ON TABLE \"#{schema}\".\"#{table}\"
+          ON TABLE #{schema_table}
           TO \"#{dataset_role_name}\" WITH GRANT OPTION;
         }
 
@@ -118,10 +118,10 @@ module Carto
         }
 
         begin
-          user.in_database.execute(table_query)
+          user.in_database(as: :superuser).execute(table_query)
           user.in_database(as: :superuser).execute(schema_query)
-          sequences_for_table(schema, table).each do |seq|
-            user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
+          sequences_for_table(schema_table).each do |seq|
+            user.in_database(as: :superuser).execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
           end
         rescue ActiveRecord::StatementInvalid => e
           invalid_scopes << scope
@@ -132,10 +132,10 @@ module Carto
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
     end
 
-    def sequences_for_table(schema, table)
+    def sequences_for_table(schema_table)
       query = %{
         SELECT
-          n.nspname, c.relname
+          n.nspname, quote_ident(c.relname) as relname
         FROM
           pg_depend d
           JOIN pg_class c ON d.objid = c.oid
@@ -144,10 +144,10 @@ module Carto
           d.refobjsubid > 0 AND
           d.classid = 'pg_class'::regclass AND
           c.relkind = 'S'::"char" AND
-          d.refobjid = ('#{schema}.#{table}')::regclass
+          d.refobjid = ('#{schema_table}')::regclass
       }
 
-      user.in_database.execute(query).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
+      user.in_database.execute(query).map { |r| "\"#{r['nspname']}\".#{r['relname']}" }
     end
 
     def dataset_role_name

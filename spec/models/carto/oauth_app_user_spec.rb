@@ -219,7 +219,7 @@ module Carto
 
       it 'works with shared dataset' do
         oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@shared_dataset_scope])
-        expect(oau.scopes).to(eq([@shared_dataset_scope]))
+        expect(oau.all_scopes).to(eq([@shared_dataset_scope]))
       end
 
       it 'should fail with non shared dataset' do
@@ -280,7 +280,7 @@ module Carto
 
         it 'works with org shared dataset' do
           oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@org_shared_dataset_scope])
-          expect(oau.scopes).to(eq([@org_shared_dataset_scope]))
+          expect(oau.all_scopes).to(eq([@org_shared_dataset_scope]))
         end
 
         it 'should fail with non org shared dataset' do
@@ -373,7 +373,7 @@ module Carto
           oauth_app: @app,
           scopes: ["datasets:r:#{@view_name}"]
         )
-        expect(oau.scopes).to(eq(["datasets:r:#{@view_name}"]))
+        expect(oau.all_scopes).to(eq(["datasets:r:#{@view_name}"]))
       end
 
       it 'validates materialized view scope' do
@@ -382,7 +382,7 @@ module Carto
           oauth_app: @app,
           scopes: ["datasets:r:#{@materialized_view_name}"]
         )
-        expect(oau.scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
+        expect(oau.all_scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
       end
     end
   end

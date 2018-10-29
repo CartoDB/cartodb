@@ -406,9 +406,9 @@ module Carto
             # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
             # which may or may not exists
             Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
-              user_db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
+              db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
               sequences_for_table(schema, table_name).each do |seq|
-                user_db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+                db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
               end
             end
           rescue Carto::UnprocesableEntityError => e

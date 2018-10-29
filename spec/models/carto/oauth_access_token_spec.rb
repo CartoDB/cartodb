@@ -6,6 +6,23 @@ module Carto
   describe OauthAccessToken do
     include_context 'organization with users helper'
 
+    def with_connection_from_api_key(api_key)
+      user = api_key.user
+
+      options = ::SequelRails.configuration.environment_for(Rails.env).merge(
+        'database' => user.database_name,
+        'username' => api_key.db_role,
+        'password' => api_key.db_password,
+        'host' => user.database_host
+      )
+      connection = ::Sequel.connect(options)
+      begin
+        yield connection
+      ensure
+        connection.disconnect
+      end
+    end
+
     describe '#validation' do
       before(:all) do
         @user = FactoryGirl.create(:carto_user)
@@ -208,6 +225,10 @@ module Carto
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("select count(1) from #{@carto_org_user_1.database_schema}.#{@shared_table.name}")
+        end
       end
 
       it 'should fail with non shared dataset' do

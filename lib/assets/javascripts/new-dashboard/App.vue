@@ -27,7 +27,7 @@ export default {
 <style>
 #app {
   font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
-  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 

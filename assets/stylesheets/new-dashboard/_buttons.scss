@@ -2,11 +2,11 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border-radius: 2px;
+  border-radius: 4px;
   background: $primary-color;
   color: $white;
-  font: 600 10px 'Open Sans';
-  text-transform: uppercase;
+  font: 600 12px/16px "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
   cursor: pointer;
 
   &:focus {
@@ -29,7 +29,7 @@
   display: inline-block;
   overflow: hidden;
   font: 600 12px/16px "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   text-transform: uppercase;
 
   svg {

@@ -70,7 +70,7 @@ feature "Forgot password" do
     fill_in "carto_user_password_confirmation", with: "newpass"
     click_button "Save"
 
-    current_path.should == changed_password_resets_path
+    current_path.should == changed_password_reset_path
     page.should have_content("Your password has been updated successfully")
   end
 

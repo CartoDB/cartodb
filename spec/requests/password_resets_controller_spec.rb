@@ -21,27 +21,27 @@ describe PasswordResetsController do
     it 'shows an error if the email is blank' do
       payload = { email: '' }
 
-      post password_resets_url, payload, @headers
+      post create_password_reset_path, payload, @headers
 
       response.status.should == 200
       response.body.should include "Email cannot be blank"
-      request.path.should eq password_resets_path
+      request.path.should eq create_password_reset_path
     end
 
     it 'shows an error if the email does not exist' do
       payload = { email: 'notfound@example.com' }
 
-      post password_resets_url, payload, @headers
+      post create_password_reset_path, payload, @headers
 
       response.status.should == 200
       response.body.should include "Cannot find email"
-      request.path.should eq password_resets_path
+      request.path.should eq create_password_reset_path
     end
 
     it 'updates the user password_reset_token and password_reset_sent_at' do
       payload = { email: @user.email }
 
-      post password_resets_url, payload, @headers
+      post create_password_reset_path, payload, @headers
 
       @user.reload
       @user.password_reset_token.should_not be_nil
@@ -51,12 +51,12 @@ describe PasswordResetsController do
     it 'redirects to the right page' do
       payload = { email: @user.email }
 
-      post password_resets_url, payload, @headers
+      post create_password_reset_path, payload, @headers
 
       response.status.should == 302
 
       follow_redirect!
-      request.path.should eq sent_password_resets_path
+      request.path.should eq sent_password_reset_path
     end
   end
 
@@ -70,7 +70,7 @@ describe PasswordResetsController do
     it 'shows an error if the passwords do not match' do
       payload = { carto_user: { password: 'newpass', password_confirmation: 'other' } }
 
-      put password_reset_url(id: @user.password_reset_token), payload, @headers
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
       response.body.should include "Please ensure your passwords match"
@@ -80,7 +80,7 @@ describe PasswordResetsController do
       payload = { carto_user: { password: 'newpass', password_confirmation: 'other' } }
 
       Delorean.jump(49.hours) do
-        put password_reset_url(id: @user.password_reset_token), payload, @headers
+        put update_password_reset_path(id: @user.password_reset_token), payload, @headers
       end
 
       response.status.should == 302
@@ -92,7 +92,7 @@ describe PasswordResetsController do
       original_password = @user.crypted_password
       payload = { carto_user: { password: 'newpass', password_confirmation: 'newpass' } }
 
-      put password_reset_url(id: @user.password_reset_token), payload, @headers
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       @user.reload
       @user.crypted_password.should_not == original_password
@@ -103,7 +103,7 @@ describe PasswordResetsController do
 
       payload = { carto_user: { password: 'newpass', password_confirmation: 'newpass' } }
 
-      put password_reset_url(id: @user.password_reset_token), payload, @headers
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       @user.reload
       @user.password_reset_token.should be_nil
@@ -112,11 +112,11 @@ describe PasswordResetsController do
     it 'redirects to the right page' do
       payload = { carto_user: { password: 'newpass', password_confirmation: 'newpass' } }
 
-      put password_reset_url(id: @user.password_reset_token), payload, @headers
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 302
       follow_redirect!
-      request.path.should eq changed_password_resets_path
+      request.path.should eq changed_password_reset_path
     end
   end
 end

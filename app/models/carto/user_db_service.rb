@@ -75,10 +75,11 @@ module Carto
         FROM
           pg_class c
           JOIN pg_namespace s ON c.relnamespace = s.oid
-          JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
+          JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
           JOIN pg_roles r ON acl.grantee = r.oid
         WHERE
-          r.rolname in(#{roles.join(',')})
+          r.rolname in(#{roles.join(',')}) AND
+          s.nspname not in('cartodb', 'cdb', 'cdb_importer')
         GROUP BY schema, t;
       }
 

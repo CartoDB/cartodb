@@ -54,6 +54,13 @@ module CartoDB
         port = Cartodb.config[:redis]["port"]
       end
       print "[redis] Starting test server on port #{port}... "
+
+      raise "Your OS is not supported" unless OS.unix?
+
+      current_dir = File.expand_path(__dir__)
+      redis_cell_path = "#{current_dir}/lib/libredis_cell.so"
+      redis_cell_path = "#{current_dir}/lib/libredis_cell.dylib" if OS.mac?
+
       redis_options = {
         "port"          => port,
         "daemonize"     => 'yes',
@@ -62,16 +69,11 @@ module CartoDB
         "dbfilename"    => REDIS_DB_NAME,
         "dir"           => new_cache_path || REDIS_CACHE_PATH,
         "loglevel"      => "notice",
-        "logfile"       => new_logfile || "stdout"
+        "logfile"       => new_logfile || "stdout",
+        "loadmodule"    => redis_cell_path
       }.map { |k, v| "#{k} #{v}" }.join("\n")
 
-      raise "Your OS is not supported" unless OS.unix?
-
-      current_dir = File.expand_path(__dir__)
-      redis_cell_path = "#{current_dir}/lib/libredis_cell.so"
-      redis_cell_path = "#{current_dir}/lib/libredis_cell.dylib" if OS.mac?
-
-      output = `printf '#{redis_options}' | redis-server - --loadmodule #{redis_cell_path} 2>&1`
+      output = `printf '#{redis_options}' | redis-server - 2>&1`
       if $?.success?
         puts('done')
         sleep 2

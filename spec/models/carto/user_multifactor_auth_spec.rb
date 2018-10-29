@@ -1,18 +1,23 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'spec_helper_min'
 
 describe Carto::UserMultifactorAuth do
 
-  before :all do
-    @valid_type = 'totp'
+  def totp_code(mfa)
+    ROTP::TOTP.new(mfa.shared_secret).now
   end
 
-  before :each do
+  before :all do
+    @valid_type = 'totp'
     @carto_user = FactoryGirl.create(:carto_user)
   end
 
-  after :each do
+  before :each do
+    @carto_user.user_multifactor_auths.each(&:destroy)
+  end
+
+  after :all do
     @carto_user.destroy
   end
 
@@ -44,55 +49,17 @@ describe Carto::UserMultifactorAuth do
     end
   end
 
-  describe '#save' do
-    before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @carto_user)
-    end
-
-    after :each do
-      @multifactor_auth.destroy
-    end
-
-    it 'does not allow updating the shared_scret field' do
-      @multifactor_auth.shared_secret = 'wadus'
-      expect {
-        @multifactor_auth.save!
-      }.to raise_error(/Change of shared_secret not allowed!/)
-    end
-  end
-
-  describe '#verify' do
-    it 'verifies a valid code' do
-      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      expect { mfa.verify(mfa.totp.now) }.to be
-    end
-
-    it 'does not allow reuse of a valid code' do
-      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      code = mfa.totp.now
-      expect { mfa.verify(code) }.to be
-      Delorean.jump((Carto::UserMultifactorAuth::DRIFT * 2).seconds)
-      mfa.verify(code).should_not be
-    end
-
-    it 'does not verify an invalid code' do
-      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      totp = ROTP::TOTP.new(ROTP::Base32.random_base32)
-      mfa.verify(totp.now).should_not be
-    end
-  end
-
   describe '#verify!' do
     it 'verifies a valid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      code = mfa.totp.now
+      code = totp_code(mfa)
       mfa.verify!(code)
       expect { mfa.enabled }.to be_true
     end
 
     it 'does not allow reuse of a valid code' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
-      code = mfa.totp.now
+      code = totp_code(mfa)
       mfa.verify!(code)
       expect { mfa.verify!(code) }.to raise_error("The code is not valid")
     end
@@ -101,6 +68,18 @@ describe Carto::UserMultifactorAuth do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       totp = ROTP::TOTP.new(ROTP::Base32.random_base32)
       expect { mfa.verify!(totp.now) }.to raise_error("The code is not valid")
+    end
+
+    it 'does not allow use of future/past tokens' do
+      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
+      totp = ROTP::TOTP.new(mfa.shared_secret)
+      expect { mfa.verify!(totp.at(Time.now - 90.seconds)) }.to raise_error("The code is not valid")
+    end
+
+    it 'verifies a code taking into account 30 seconds drift' do
+      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
+      totp = ROTP::TOTP.new(mfa.shared_secret)
+      expect { mfa.verify!(totp.at(Time.now - 30.seconds)) }.to be_true
     end
   end
 

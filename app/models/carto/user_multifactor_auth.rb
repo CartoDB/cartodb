@@ -6,14 +6,13 @@ module Carto
 
     TYPE_TOTP = 'totp'.freeze
     VALID_TYPES = [TYPE_TOTP].freeze
-    DRIFT = 60
-    INTERVAL = 30
+    DRIFT = 60.seconds
+    INTERVAL = 30.seconds
     ISSUER = 'CARTO'.freeze
 
     belongs_to :user, inverse_of: :user_multifactor_auths, foreign_key: :user_id
 
     validates :type, inclusion: { in: VALID_TYPES }
-    validate :shared_secret_not_changed
 
     before_create :create_shared_secret
 
@@ -23,15 +22,6 @@ module Carto
       timestamp = verify(code)
       raise Carto::UnauthorizedError.new('The code is not valid') unless timestamp
       update!(enabled: true, last_login: timestamp)
-    end
-
-    def verify(code)
-      timestamp = totp.verify_with_drift_and_prior(code.to_s, DRIFT, last_login_in_seconds)
-      Time.at(timestamp) if timestamp
-    end
-
-    def create_shared_secret
-      self.shared_secret = ROTP::Base32.random_base32
     end
 
     def disabled?
@@ -47,20 +37,23 @@ module Carto
       qrcode.as_png.to_data_url
     end
 
+    private
+
+    def last_login_in_seconds
+      last_login.strftime('%s').to_i if last_login
+    end
+
     def totp
       @totp ||= ROTP::TOTP.new(shared_secret, issuer: ISSUER, interval: INTERVAL)
     end
 
-    private
-
-    def shared_secret_not_changed
-      if shared_secret_changed? && persisted?
-        errors.add(:shared_secret, "Change of shared_secret not allowed!")
-      end
+    def verify(code)
+      timestamp = totp.verify_with_drift_and_prior(code.to_s, DRIFT, last_login_in_seconds)
+      Time.at(timestamp) if timestamp
     end
 
-    def last_login_in_seconds
-      last_login.strftime('%s').to_i if last_login
+    def create_shared_secret
+      self.shared_secret = ROTP::Base32.random_base32
     end
   end
 end

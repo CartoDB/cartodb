@@ -44,15 +44,16 @@
         <li class="card-metadataItem text is-caption">
           <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList">
+          <ul class="card-tagList" v-if="numberTags <= maxTags">
             <li v-for="(tag, index) in map.tags" :key="tag">
               <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
-            <li v-if="!hasTags">
+            <li v-if="!numberTags">
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
+          <FeaturesDropdown v-if="numberTags > maxTags" :tags=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
         </li>
       </ul>
     </div>
@@ -62,11 +63,15 @@
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
+import FeaturesDropdown from './FeaturesDropdown';
 
 export default {
   name: 'MapCard',
   props: {
     map: Object
+  },
+  components: {
+    FeaturesDropdown
   },
   data: function () {
     return {
@@ -74,7 +79,8 @@ export default {
       selected: false,
       activeHover: true,
       titleOverflow: false,
-      descriptionOverflow: false
+      descriptionOverflow: false,
+      maxTags: 3
     };
   },
   updated: function () {
@@ -95,8 +101,8 @@ export default {
     mapThumbnailUrl () {
       return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
     },
-    hasTags () {
-      return this.$props.map.tags && this.$props.map.tags.length;
+    numberTags () {
+      return !this.$props.map.tags ? 0 : this.$props.map.tags.length;
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);

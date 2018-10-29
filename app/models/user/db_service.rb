@@ -346,26 +346,23 @@ module CartoDB
       end
 
       def all_user_roles
-        roles = []
-        roles << "'#{@user.database_username}'"
+        roles = [@user.database_username]
         if @user.organization_user?
-          roles << "'#{organization_member_group_role_member_name}'"
-          if !@user.groups.nil?
-            @user.groups.each do |group|
-              roles << "'#{group.database_role}'"
-            end
-          end
+          roles << organization_member_group_role_member_name
+          roles += @user.groups.map(&:databse_role)
         end
+
         roles
       end
 
       def all_tables_granted(role = nil)
         roles = []
-        if !role.nil?
-          roles << "'#{role}'"
+        if role.present?
+          roles << role
         else
           roles = all_user_roles
         end
+        roles_str = roles.map { |r| "'#{r}'" }.join(',')
 
         query = %{
           SELECT
@@ -378,8 +375,8 @@ module CartoDB
             JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
             JOIN pg_roles r ON acl.grantee = r.oid
           WHERE
-            r.rolname in(#{roles.join(',')}) AND
-            s.nspname not in('cartodb', 'cdb', 'cdb_importer')
+            r.rolname IN (#{roles_str}) AND
+            s.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
           GROUP BY schema, t;
         }
 

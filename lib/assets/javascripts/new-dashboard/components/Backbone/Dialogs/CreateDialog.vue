@@ -69,8 +69,13 @@ export default {
 
 <style lang="scss">
 .Dialog {
-  * {
+  .Dialog-header,
+  .Dialog-footer {
     box-sizing: content-box;
+
+    * {
+      box-sizing: content-box;
+    }
   }
 }
 </style>

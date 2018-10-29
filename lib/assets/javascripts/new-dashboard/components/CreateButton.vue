@@ -1,9 +1,12 @@
 <template>
-  <button @click="openCreateModal">Create Map</button>
+  <button class="button button--small is-primary" @click="openCreateModal">
+    <slot />
+  </button>
 </template>
 
 <script>
-import CreateDialog from 'new-dashboard/components/Dialogs/CreateDialog.vue';
+import Dialog from 'new-dashboard/components/Backbone/Dialog.vue';
+import CreateDialog from 'new-dashboard/components/Backbone/Dialogs/CreateDialog.vue';
 
 export default {
   name: 'CreateButton',
@@ -16,9 +19,12 @@ export default {
   methods: {
     openCreateModal () {
       this.$modal.show({
-        template: `<CreateDialog :dialogType="dialogType" :backgroundPollingView="backgroundPollingView" v-on:close="$emit('close')"/>`,
+        template: `
+        <Dialog v-on:close="$emit('close')">
+          <CreateDialog :dialogType="dialogType" :backgroundPollingView="backgroundPollingView" v-on:close="$emit('close')"/>
+        </Dialog>`,
         props: ['dialogType', 'backgroundPollingView'],
-        components: { CreateDialog }
+        components: { Dialog, CreateDialog }
       },
       {
         dialogType: this.$props.visualizationType,

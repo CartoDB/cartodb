@@ -1,9 +1,5 @@
 <template>
-  <section class="Dialog is-white">
-    <div class="Dialog-contentWrapper Dialog-contentWrapper--withHeaderWrapper js-content">
-      <div class="Dialog-content Dialog-content--expanded" ref="injectionHTMLElement"></div>
-    </div>
-  </section>
+  <div class="Dialog-content Dialog-content--expanded" ref="injectionHTMLElement"></div>
 </template>
 
 <script>

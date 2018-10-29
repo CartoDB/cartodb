@@ -1,7 +1,7 @@
 <template>
   <section>
     <h1>Maps Page</h1>
-    <CreateButton visualizationType="maps" />
+    <CreateButton visualizationType="maps">New map</CreateButton>
   </section>
 </template>
 

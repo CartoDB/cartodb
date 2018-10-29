@@ -52,7 +52,11 @@ module LoginHelper
   end
 
   def forget_password_url
-    CartoDB.url(self, 'new_password_reset')
+    if CartoDB.account_host
+      "#{request.protocol}#{CartoDB.account_host}/password_resets/new"
+    else
+      CartoDB.url(self, 'new_password_reset')
+    end
   end
 
   def cdb_logout

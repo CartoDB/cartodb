@@ -44,6 +44,7 @@ export default {
       });
 
       DialogView.addProperties({
+        // TODO: Update when Mamufas View is ready
         mamufasView: {
           enable: () => {},
           disable: () => {}

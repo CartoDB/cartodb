@@ -29,9 +29,9 @@ export default {
       const configModel = this.$cartoModels.config;
       const userModel = this.$cartoModels.user;
 
-      // Tener cuidado porque la ruta puede cambiar e isMaps no se actualizará
       const backgroundPollingView = new BackgroundPollingView({
         model: backgroundPollingModel,
+        // TODO: Update view when dataset page is ready
         createVis: this.$props.routeType === 'maps',
         userModel,
         configModel,

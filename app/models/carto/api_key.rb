@@ -380,11 +380,11 @@ module Carto
 
       scopes = []
       databases[:tables].each do |table|
-        permissions = Carto::OauthProvider::Scopes::DatasetsScope.permission_from_db_to_scope(table[:permissions].join(','))
+        permissions = OauthProvider::Scopes::DatasetsScope.permission_from_db_to_scope(table[:permissions].join(','))
         scopes << "datasets:#{permissions}:#{table[:schema]}.#{table[:name]}" unless permissions.nil?
       end
 
-      Carto::OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
+      OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
     end
 
     def create_db_config

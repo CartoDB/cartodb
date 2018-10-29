@@ -174,8 +174,8 @@ describe Carto::ApiKey do
         "DROP MATERIALIZED VIEW #{view_name}"
       )
     end
-    def validate_view_api_key(view_name, create_query, drop_query)
 
+    def validate_view_api_key(view_name, create_query, drop_query)
       @user1.in_database.run(create_query)
       grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)

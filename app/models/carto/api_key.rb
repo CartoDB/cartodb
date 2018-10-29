@@ -1,6 +1,8 @@
 require 'securerandom'
+
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
+require_dependency 'carto/oauth_provider/scopes'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -91,11 +93,11 @@ module Carto
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :check_owned_table_permissions
+    validate :check_table_permissions
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
-    after_create :check_tables_exist, :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_create :setup_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_save { remove_from_redis(redis_key(token_was)) if token_changed? }
     after_save { invalidate_cache if token_changed? }
     after_save :add_to_redis, if: :valid_user?
@@ -315,73 +317,6 @@ module Carto
       raise Carto::UnprocesableEntityError.new(/PG::Error: ERROR:  (.+)/ =~ error.message && $1 || 'Unexpected error')
     end
 
-    def check_tables_exist
-      databases = grants.find { |v| v[:type] == 'database' }
-      return unless databases.present?
-
-      nonexistent = []
-      databases[:tables].each do |table|
-        if !check_table(table) && !check_view(table) && !check_materilized_view(table)
-          nonexistent << "\"#{table[:schema]}.#{table[:name]}\""
-        end
-      end
-
-      if nonexistent.any?
-        raise Carto::RelationDoesNotExistError.new(nonexistent.map { |t| "relation #{t} does not exist" }, nonexistent)
-      end
-    end
-
-    def check_table(table)
-      begin
-        result = db_run(%{
-          SELECT *
-          FROM
-            pg_tables
-          WHERE
-            schemaname = #{db_connection.quote(table[:schema])} AND
-            tablename = #{db_connection.quote(table[:name])}
-        })
-      rescue StandardError => e
-        raise_unprocessable_entity_error(e)
-      end
-
-      result && !result.count.zero?
-    end
-
-    def check_view(view)
-      begin
-        result = db_run(%{
-          SELECT *
-          FROM
-            pg_views
-          WHERE
-            schemaname = #{db_connection.quote(view[:schema])} AND
-            viewname = #{db_connection.quote(view[:name])}
-        })
-      rescue StandardError => e
-        raise_unprocessable_entity_error(e)
-      end
-
-      result && !result.count.zero?
-    end
-
-    def check_materilized_view(matview)
-      begin
-        result = db_run(%{
-          SELECT *
-          FROM
-            pg_matviews
-          WHERE
-            schemaname = #{db_connection.quote(matview[:schema])} AND
-            matviewname = #{db_connection.quote(matview[:name])}
-        })
-      rescue StandardError => e
-        raise_unprocessable_entity_error(e)
-      end
-
-      result && !result.count.zero?
-    end
-
     def invalidate_cache
       return unless user
       user.invalidate_varnish_cache
@@ -432,11 +367,23 @@ module Carto
       user_data_grants[:data]
     end
 
-    def check_owned_table_permissions
+    def check_table_permissions
       # Only checks if no previous errors in JSON definition
-      if errors[:grants].empty? && table_permissions.any? { |tp| tp.schema != user.database_schema }
-        errors.add(:grants, 'can only grant permissions over owned tables')
+      if errors[:grants].empty? && invalid_tables_permissions.any?
+        errors.add(:grants, 'can only grant permissions you have')
       end
+    end
+
+    def invalid_tables_permissions
+      databases = grants.find { |v| v[:type] == 'database' }
+      return [] unless databases.present?
+
+      scopes = databases[:tables].map do |table|
+        permissions = Carto::OauthProvider::Scopes::DatasetsScope.permission_from_db_to_scope(table[:permissions].join(','))
+        "datasets:#{permissions}:#{table[:schema]}.#{table[:name]}"
+      end
+
+      Carto::OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
     end
 
     def create_db_config

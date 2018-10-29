@@ -69,7 +69,7 @@ module Carto
         expect {
           OauthAccessToken.create!(oauth_app_user: @app_user,
                                    scopes: ['datasets:r:wadus'])
-        }.to raise_error(Carto::RelationDoesNotExistError)
+        }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
       it 'api key includes read permissions for datasets scopes' do

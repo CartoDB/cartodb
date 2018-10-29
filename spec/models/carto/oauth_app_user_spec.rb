@@ -339,9 +339,7 @@ module Carto
         @carto_user.in_database do |db|
           query = %{
             CREATE VIEW #{@view_name} AS SELECT * FROM #{@user_table.name};
-            GRANT SELECT ON #{@view_name} TO \"#{@carto_user.database_username}\";
             CREATE MATERIALIZED VIEW #{@materialized_view_name} AS SELECT * FROM #{@user_table.name};
-            GRANT SELECT ON #{@materialized_view_name} TO \"#{@carto_user.database_username}\";
           }
           db.execute(query)
         end

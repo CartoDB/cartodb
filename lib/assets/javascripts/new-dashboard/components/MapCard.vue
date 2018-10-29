@@ -20,14 +20,16 @@
       </div>
 
       <div class="card-text">
-        <h2 class="card-title title is-caption">
-          {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-            <img svg-inline src="../assets/icons/common/favorite.svg">
-          </span>
-        </h2>
-        <p class="card-description text is-caption" v-if="map.description">{{ map.description }}</p>
-        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        <div class="card-header">
+          <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
+            {{ map.name }}&nbsp;
+            <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+              <img svg-inline src="../assets/icons/common/favorite.svg">
+            </span>
+          </h2>
+          <p class="card-description text is-caption" v-if="map.description" :class="{ 'text-overflows': descriptionOverflow }">{{ map.description }}</p>
+          <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        </div>
 
         <ul class="card-metadata">
           <li class="card-metadataItem text is-caption">
@@ -72,8 +74,20 @@ export default {
     return {
       isThumbnailErrored: false,
       selected: false,
-      activeHover: true
+      activeHover: true,
+      titleOverflow: false,
+      descriptionOverflow: false
     };
+  },
+  updated: function () {
+    this.$nextTick(function () {
+      console.log(this);
+      console.log(this.$el);
+      var title = this.$el.querySelector('.card-title');
+      var description = this.$el.querySelector('.card-description');
+      this.titleOverflow = title.scrollHeight > title.clientHeight;
+      this.descriptionOverflow = description.scrollHeight > description.clientHeight;
+    });
   },
   computed: {
     privacyIcon () {
@@ -188,20 +202,58 @@ export default {
   }
 }
 
+.card-header {
+  display: flex;
+  flex-direction: column;
+  max-height: 88px;
+}
+
 .card-title {
+  position: relative;
+  flex-shrink: 0;
+  max-height: 48px;
   margin-bottom: 8px;
+  overflow: hidden;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.text-overflows {
+    &::after {
+      content: "...";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      padding-right: 24px;
+      background-image: linear-gradient(to right, #FFF0, #FFFF 4px);
+    }
+
+    .card-favorite {
+      position: absolute;
+      z-index: 1;
+      right: 0;
+      bottom: 0;
+    }
+  }
 }
 
 .card-description {
-  display: -webkit-box;
-  display: block;
-  height: 48px;
+  max-height: 48px;
   margin-bottom: 8px;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+
+  &.card-description--1line {
+    max-height: 24px;
+  }
+
+  &.text-overflows {
+    &::after {
+      content: "...";
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      padding-left: 4px;
+      background-color: #FFF;
+    }
+  }
 }
 
 .card-metadataItem {

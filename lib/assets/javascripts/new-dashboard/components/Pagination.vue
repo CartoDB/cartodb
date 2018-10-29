@@ -1,38 +1,27 @@
 <template>
-  <div>
-    <span class="CDB-Text CDB-Size-medium u-altTextColor">
-      <ul class="Pagination-list CDB-Text CDB-Size-medium">
-        <li class="Pagination-listItem" v-if="showFirst">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(1)>1</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionPrev(3)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionPrev(2)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(page-2)>{{ page - 2 }}</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionPrev(1)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(prevPage)>{{ prevPage }}</button>
-        </li>
-        <li class="Pagination-listItem is-current">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(page)>{{ page }}</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionNext(1)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(nextPage)>{{ nextPage }}</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionNext(2)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(page+2)>{{ page + 2 }}</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showNPositionNext(3)">
-          <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
-        </li>
-        <li class="Pagination-listItem" v-if="showLast">
-          <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(numPages)>{{ numPages }}</button>
-        </li>
-      </ul>
-
-    </span>
-  </div>
+  <ul class="Pagination-list CDB-Text CDB-Size-medium">
+    <li class="Pagination-listItem" v-if="showFirst">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(1)>1</button>
+    </li>
+    <li class="Pagination-listItem" v-if="showNPositionPrev(2)">
+      <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
+    </li>
+    <li class="Pagination-listItem" v-if="showNPositionPrev(1)">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(prevPage)>{{ prevPage }}</button>
+    </li>
+    <li class="Pagination-listItem is-current">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(page)>{{ page }}</button>
+    </li>
+    <li class="Pagination-listItem" v-if="showNPositionNext(1)">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(nextPage)>{{ nextPage }}</button>
+    </li>
+    <li class="Pagination-listItem" v-if="showNPositionNext(2)">
+      <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
+    </li>
+    <li class="Pagination-listItem" v-if="showLast">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(numPages)>{{ numPages }}</button>
+    </li>
+  </ul>
 </template>
 
 <script>
@@ -72,14 +61,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 @import 'stylesheets/new-dashboard/variables';
-
-.Pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .Pagination-list {
   display: flex;

@@ -81,8 +81,6 @@ export default {
   },
   updated: function () {
     this.$nextTick(function () {
-      console.log(this);
-      console.log(this.$el);
       var title = this.$el.querySelector('.card-title');
       var description = this.$el.querySelector('.card-description');
       this.titleOverflow = title.scrollHeight > title.clientHeight;

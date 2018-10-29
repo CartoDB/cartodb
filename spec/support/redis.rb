@@ -57,9 +57,11 @@ module CartoDB
 
       raise "Your OS is not supported" unless OS.unix?
 
-      current_dir = File.expand_path(__dir__)
-      redis_cell_path = "#{current_dir}/lib/libredis_cell.so"
-      redis_cell_path = "#{current_dir}/lib/libredis_cell.dylib" if OS.mac?
+      redis_cell_base_path = '/etc/redis/redis-cell'
+      redis_cell_path = "#{redis_cell_base_path}/libredis_cell.so"
+      redis_cell_path = "#{redis_cell_base_path}/libredis_cell.dylib" if OS.mac?
+
+      raise "Please drop redis-cell binaries in #{redis_cell_base_path}" unless FileTest.exist?(redis_cell_path)
 
       redis_options = {
         "port"          => port,

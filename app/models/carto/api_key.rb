@@ -93,7 +93,7 @@ module Carto
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :check_table_permissions
+    validate :check_table_permissions, unless: :skip_role_setup
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
@@ -378,9 +378,10 @@ module Carto
       databases = grants.find { |v| v[:type] == 'database' }
       return [] unless databases.present?
 
-      scopes = databases[:tables].map do |table|
+      scopes = []
+      databases[:tables].each do |table|
         permissions = Carto::OauthProvider::Scopes::DatasetsScope.permission_from_db_to_scope(table[:permissions].join(','))
-        "datasets:#{permissions}:#{table[:schema]}.#{table[:name]}"
+        scopes << "datasets:#{permissions}:#{table[:schema]}.#{table[:name]}" unless permissions.nil?
       end
 
       Carto::OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)

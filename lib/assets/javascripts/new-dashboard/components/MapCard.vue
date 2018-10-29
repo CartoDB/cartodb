@@ -1,64 +1,62 @@
 <template>
-  <div>
-    <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
-      <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-        <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
-        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
-      </div>
+  <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
+    <div class="card-media" :class="{'has-error': isThumbnailErrored}">
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+      <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+    </div>
 
-      <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-        <input class="checkbox-input" @click="toggleSelection" type="checkBox">
-        <span class="checkbox-decoration">
-          <img svg-inline src="../assets/icons/common/checkbox.svg">
-        </span>
+    <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+      <input class="checkbox-input" @click="toggleSelection" type="checkBox">
+      <span class="checkbox-decoration">
+        <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
+    </span>
 
-      <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-        <span class="card-actionsSelect">
-            <img src="../assets/icons/common/options.svg">
-        </span>
+    <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+      <span class="card-actionsSelect">
+          <img src="../assets/icons/common/options.svg">
+      </span>
+    </div>
+
+    <div class="card-text">
+      <div class="card-header">
+        <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
+          {{ map.name }}&nbsp;
+          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+            <img svg-inline src="../assets/icons/common/favorite.svg">
+          </span>
+        </h2>
+        <p class="card-description text is-caption" v-if="map.description" :class="{ 'text-overflows': descriptionOverflow }">{{ map.description }}</p>
+        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
       </div>
 
-      <div class="card-text">
-        <div class="card-header">
-          <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
-            {{ map.name }}&nbsp;
-            <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
-              <img svg-inline src="../assets/icons/common/favorite.svg">
-            </span>
-          </h2>
-          <p class="card-description text is-caption" v-if="map.description" :class="{ 'text-overflows': descriptionOverflow }">{{ map.description }}</p>
-          <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
-        </div>
+      <ul class="card-metadata">
+        <li class="card-metadataItem text is-caption">
+          <span class="icon icon--privacy" :class="privacyIcon"></span>
+          <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
+        </li>
 
-        <ul class="card-metadata">
-          <li class="card-metadataItem text is-caption">
-            <span class="icon icon--privacy" :class="privacyIcon"></span>
-            <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
-          </li>
+        <li class="card-metadataItem text is-caption">
+          <span class="icon"><img inline-svg src="../assets/icons/maps/calendar.svg"></span>
+          <p>{{ lastUpdated }}</p>
+        </li>
 
-          <li class="card-metadataItem text is-caption">
-            <span class="icon"><img inline-svg src="../assets/icons/maps/calendar.svg"></span>
-            <p>{{ lastUpdated }}</p>
-          </li>
+        <li class="card-metadataItem text is-caption">
+          <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <li class="card-metadataItem text is-caption">
-            <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
+          <ul class="card-tagList">
+            <li v-for="(tag, index) in map.tags" :key="tag">
+              <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
+            </li>
 
-            <ul class="card-tagList">
-              <li v-for="(tag, index) in map.tags" :key="tag">
-                <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
-              </li>
-
-              <li v-if="!hasTags">
-                <span>{{ $t(`mapCard.noTags`) }}</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </a>
-  </div>
+            <li v-if="!hasTags">
+              <span>{{ $t(`mapCard.noTags`) }}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </a>
 </template>
 
 <script>
@@ -221,6 +219,7 @@ export default {
       right: 0;
       bottom: 0;
       padding-right: 24px;
+      padding-left: 6px;
       background-image: linear-gradient(to right, #FFF0, #FFFF 4px);
     }
 
@@ -237,10 +236,6 @@ export default {
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
-
-  &.card-description--1line {
-    max-height: 24px;
-  }
 
   &.text-overflows {
     &::after {

@@ -20,6 +20,7 @@ module Carto
 
     after_create :create_dataset_role, :grant_dataset_role_privileges
     before_update :grant_dataset_role_privileges
+    after_destroy :drop_dataset_role
 
     def authorized?(requested_scopes)
       (requested_scopes - all_scopes).empty?
@@ -58,58 +59,99 @@ module Carto
     end
 
     def dataset_scopes
-      query = %{
-        SELECT
-          s.nspname as schema,
-          c.relname as t,
-          string_agg(lower(acl.privilege_type), ',') as permission
-        FROM
-          pg_class c
-          JOIN pg_namespace s ON c.relnamespace = s.oid
-          JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
-          JOIN pg_roles r ON acl.grantee = r.oid
-        WHERE
-          r.rolname = '#{dataset_role_name}'
-        GROUP BY schema, t;
-      }
-
       begin
-        results = user.in_database(as: :superuser).execute(query)
+        results = user.db_service.all_tables_granted(dataset_role_name)
       rescue ActiveRecord::StatementInvalid => e
-        CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+        CartoDB::Logger.error(message: 'Error getting scopes', exception: e)
+        raise OauthProvider::Errors::ServerError.new
       end
 
-      results.map do |row|
+      scopes = []
+      results.each do |row|
         permission = DatasetsScope.permission_from_db_to_scope(row['permission'])
-        schema = row['schema'] != user.database_schema ? "#{row['schema']}." : ''
-        "datasets:#{permission}:#{schema}#{row['t']}"
+        unless permission.nil?
+          schema = row['schema'] != user.database_schema ? "#{row['schema']}." : ''
+          scopes << "datasets:#{permission}:#{schema}#{row['t']}"
+        end
       end
+      scopes
     end
 
     def create_dataset_role
       user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
     rescue ActiveRecord::StatementInvalid => e
-      raise OauthProvider::Errors::ServerError.new unless e.message =~ /already exist/
+      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def drop_dataset_role
+      queries = %{
+        DROP OWNED BY \"#{dataset_role_name}\";
+        DROP ROLE \"#{dataset_role_name}\";
+      }
+      user.in_database(as: :superuser).execute(queries)
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: 'Error dropping dataset role', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def validate_scopes
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 
     def grant_dataset_role_privileges
+      validate_scopes
+
+      invalid_scopes = []
       DatasetsScope.valid_scopes(scopes).each do |scope|
         dataset_scope = DatasetsScope.new(scope)
-        query = %{
-          GRANT #{dataset_scope.permission.join(',')}
-          ON \"#{dataset_scope.schema || user.database_schema}\".\"#{dataset_scope.table}\"
-          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
 
-          GRANT USAGE ON SCHEMA \"#{dataset_scope.schema || user.database_schema}\"
+        schema = dataset_scope.schema || user.database_schema
+        table = dataset_scope.table
+
+        table_query = %{
+          GRANT #{dataset_scope.permission.join(',')}
+          ON TABLE \"#{schema}\".\"#{table}\"
+          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
+        }
+
+        schema_query = %{
+          GRANT USAGE ON SCHEMA \"#{schema}\"
           TO \"#{dataset_role_name}\";
         }
 
         begin
-          user.in_database.execute(query)
-        rescue ActiveRecord::StatementInvalid
-          raise OauthProvider::Errors::InvalidScope.new
+          user.in_database.execute(table_query)
+          user.in_database(as: :superuser).execute(schema_query)
+          sequences_for_table(schema, table).each do |seq|
+            user.in_database.execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
+          end
+        rescue ActiveRecord::StatementInvalid => e
+          invalid_scopes << scope
+          CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
         end
       end
+
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
+    end
+
+    def sequences_for_table(schema, table)
+      query = %{
+        SELECT
+          n.nspname, c.relname
+        FROM
+          pg_depend d
+          JOIN pg_class c ON d.objid = c.oid
+          JOIN pg_namespace n ON c.relnamespace = n.oid
+        WHERE
+          d.refobjsubid > 0 AND
+          d.classid = 'pg_class'::regclass AND
+          c.relkind = 'S'::"char" AND
+          d.refobjid = ('#{schema}.#{table}')::regclass
+      }
+
+      user.in_database.execute(query).map { |r| "\"#{r['nspname']}\".\"#{r['relname']}\"" }
     end
 
   end

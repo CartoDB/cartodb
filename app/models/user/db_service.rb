@@ -345,6 +345,62 @@ module CartoDB
         end
       end
 
+      def all_user_roles
+        roles = []
+        roles << "'#{@user.database_username}'"
+        if @user.organization_user?
+          roles << "'#{organization_member_group_role_member_name}'"
+          if !@user.groups.nil?
+            @user.groups.each do |group|
+              roles << "'#{group.database_role}'"
+            end
+          end
+        end
+        roles
+      end
+
+      def all_tables_granted(role = nil)
+        roles = []
+        if !role.nil?
+          roles << "'#{role}'"
+        else
+          roles = all_user_roles
+        end
+
+        query = %{
+          SELECT
+            s.nspname as schema,
+            c.relname as t,
+            string_agg(lower(acl.privilege_type), ',') as permission
+          FROM
+            pg_class c
+            JOIN pg_namespace s ON c.relnamespace = s.oid
+            JOIN LATERAL aclexplode(c.relacl) acl ON TRUE
+            JOIN pg_roles r ON acl.grantee = r.oid
+          WHERE
+            r.rolname in(#{roles.join(',')})
+          GROUP BY schema, t;
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.run(query)
+        end
+      end
+
+      def all_tables_granted_hashed(role = nil)
+        results = all_tables_granted(role)
+        privileges_hashed = {}
+
+        if !results.nil?
+          results.each do |row|
+            privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+            privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+          end
+        end
+
+        privileges_hashed
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end

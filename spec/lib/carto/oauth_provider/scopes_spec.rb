@@ -63,21 +63,58 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(["wadusdatasets:r:#{@user_table.name}"])
     end
 
+    describe 'views' do
+      before :all do
+        @view_name = "#{@user_table.name}_view"
+        @materialized_view_name = "#{@user_table.name}_matview"
+        @user.in_database do |db|
+          query = %{
+            CREATE VIEW #{@view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@view_name} TO \"#{@user.database_username}\";
+            CREATE MATERIALIZED VIEW #{@materialized_view_name} AS SELECT * FROM #{@user_table.name};
+            GRANT SELECT ON #{@materialized_view_name} TO \"#{@user.database_username}\";
+          }
+          db.execute(query)
+        end
+      end
+
+      after :all do
+        @user.in_database do |db|
+          query = %{
+            DROP VIEW #{@view_name};
+            DROP MATERIALIZED VIEW #{@materialized_view_name};
+          }
+          db.execute(query)
+        end
+      end
+
+      it 'validates view scope' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["datasets:r:#{@view_name}"],
+          @user
+        )
+        expect(scopes).to be_empty
+      end
+
+      it 'validates materialized view scope' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["datasets:r:#{@materialized_view_name}"],
+          @user
+        )
+        expect(scopes).to be_empty
+      end
+    end
+
     describe 'shared datasets' do
       before :each do
-        shared_table = create_table(user_id: @carto_org_user_1.id)
+        @shared_table = create_table(user_id: @carto_org_user_1.id)
         not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
-        # TODO: change the share way
-        db_role = ""
-        @org_user_2.in_database do |db|
-          db_role = db.fetch("select session_user").first[:session_user]
-        end
-        @org_user_1.in_database(as: :superuser) do |db|
-          db.execute("GRANT SELECT ON #{@carto_org_user_1.database_schema}.#{shared_table.name} TO \"#{db_role}\"")
-        end
+        perm = @shared_table.table_visualization.permission
+        perm.acl = [{ type: 'user', entity: { id: @org_user_2.id }, access: 'r' }]
+        perm.save!
 
-        @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{shared_table.name}"
+        @shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
         @non_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{not_shared_table.name}"
       end
 
@@ -97,6 +134,62 @@ describe Carto::OauthProvider::Scopes do
           @carto_org_user_2
         )
         expect(scopes).to eq([@non_shared_dataset_scope])
+      end
+
+      it 'should fail write scope in shared dataset with only read perms' do
+        rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([rw_scope], @carto_org_user_2)
+        expect(scopes).to eq([rw_scope])
+      end
+
+      describe 'organization shared datasets' do
+        before :each do
+          @org_shared_table = create_table(user_id: @carto_org_user_1.id)
+          non_org_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+          perm = @org_shared_table.table_visualization.permission
+          perm.acl = [
+            {
+              type: Permission::TYPE_ORGANIZATION,
+              entity: { id: @carto_organization.id },
+              access: Permission::ACCESS_READONLY
+            }
+          ]
+          perm.save!
+
+          @org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          @non_org_shared_dataset_scope = "datasets:r:#{@carto_org_user_1.database_schema}.#{non_org_shared_table.name}"
+        end
+
+        it 'validates org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@org_shared_dataset_scope],
+            @carto_org_user_2
+          )
+          expect(scopes).to be_empty
+        end
+
+        it 'returns non org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@non_org_shared_dataset_scope],
+            @carto_org_user_2
+          )
+          expect(scopes).to eq([@non_org_shared_dataset_scope])
+        end
+
+        it 'returns only non org shared dataset' do
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+            [@org_shared_dataset_scope, @non_org_shared_dataset_scope],
+            @carto_org_user_2
+          )
+          expect(scopes).to eq([@non_org_shared_dataset_scope])
+        end
+
+        it 'should fail write scope in org shared dataset with only read perms' do
+          rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@org_shared_table.name}"
+          scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables([rw_scope], @carto_org_user_2)
+          expect(scopes).to eq([rw_scope])
+        end
       end
     end
   end

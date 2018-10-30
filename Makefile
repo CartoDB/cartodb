@@ -335,6 +335,10 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/services/visualization/common_data_service_spec.rb \
 	spec/lib/carto/google_maps_api_spec.rb \
 	spec/lib/tasks/fix_unique_overlays_spec.rb \
+	spec/requests/password_resets_spec.rb \
+	spec/requests/password_resets_controller_spec.rb \
+	spec/models/carto/feature_flag_spec.rb \
+	spec/mailers/user_mailer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

@@ -1,18 +1,18 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{selected: selected, 'card--noHover': !activeHover}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': selected, 'card--noHover': !activeHover}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
-    <span class="checkbox card-select" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+    <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <input class="checkbox-input" @click="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
     </span>
 
-    <div class="card-actions" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <span class="card-actionsSelect">
           <img src="../assets/icons/common/options.svg">
       </span>
@@ -22,7 +22,7 @@
       <div class="card-header">
         <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">
+          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
@@ -46,7 +46,7 @@
 
           <ul class="card-tagList" v-if="numberTags <= maxTags">
             <li v-for="(tag, index) in map.tags" :key="tag">
-              <a href="#" @mouseover="mouseOverElement" @mouseleave="mouseOutOfElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
+              <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!numberTags">
@@ -115,10 +115,10 @@ export default {
     toggleFavorite () {
       this.$props.map.liked = !this.$props.map.liked;
     },
-    mouseOverElement () {
+    mouseOverChildElement () {
       this.activeHover = false;
     },
-    mouseOutOfElement () {
+    mouseOutChildElement () {
       this.activeHover = true;
     },
     onThumbnailError () {

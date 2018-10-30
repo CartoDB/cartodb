@@ -121,7 +121,8 @@ module Carto
           user.in_database(as: :superuser).execute(table_query)
           user.in_database(as: :superuser).execute(schema_query)
           sequences_for_table(schema_table).each do |seq|
-            user.in_database(as: :superuser).execute("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\"")
+            seq_query = "GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\""
+            user.in_database(as: :superuser).execute(seq_query)
           end
         rescue ActiveRecord::StatementInvalid => e
           invalid_scopes << scope

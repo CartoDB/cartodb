@@ -3,7 +3,10 @@
     <li class="Pagination-listItem" v-if="showFirst">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(1)>1</button>
     </li>
-    <li class="Pagination-listItem" v-if="showNPositionPrev(2)">
+    <li class="Pagination-listItem" v-for="item in leftCollapsedItems" :key="item">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link autogen" @click=goToPage(item)>{{ item }}</button>
+    </li>
+    <li class="Pagination-listItem" v-if="hasMoreThanMaximumElements && showNPositionPrev(2)">
       <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
     </li>
     <li class="Pagination-listItem" v-if="showNPositionPrev(1)">
@@ -15,8 +18,11 @@
     <li class="Pagination-listItem" v-if="showNPositionNext(1)">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(nextPage)>{{ nextPage }}</button>
     </li>
-    <li class="Pagination-listItem" v-if="showNPositionNext(2)">
+    <li class="Pagination-listItem" v-if="hasMoreThanMaximumElements && showNPositionNext(2)">
       <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
+    </li>
+    <li class="Pagination-listItem" v-for="item in rightCollapsedItems" :key="item">
+      <button class="Pagination-listItemInner Pagination-listItemInner--link autogen" @click=goToPage(item)>{{ item }}</button>
     </li>
     <li class="Pagination-listItem" v-if="showLast">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(numPages)>{{ numPages }}</button>
@@ -32,6 +38,11 @@ export default {
     page: Number,
     numPages: Number
   },
+  data () {
+    return {
+      maximumElements: 7
+    };
+  },
   computed: {
     prevPage () {
       return this.page - 1;
@@ -44,6 +55,30 @@ export default {
     },
     showLast () {
       return this.page !== this.numPages;
+    },
+    hasMoreThanMaximumElements () {
+      return this.numPages > this.maximumElements;
+    },
+    leftCollapsedItems () {
+      if (!this.numPages ||
+          this.hasMoreThanMaximumElements ||
+          (this.prevPage - 1) < 1) {
+        return [];
+      }
+
+      const numberOfItems = this.prevPage - 2;
+      return [...Array(numberOfItems)].map((_, i) => i + 2);
+    },
+    rightCollapsedItems () {
+      if (!this.numPages ||
+          this.hasMoreThanMaximumElements ||
+          (this.numPages - this.nextPage) <= 0) {
+        return [];
+      }
+
+      const numberOfItems = this.numPages - this.nextPage - 1;
+      const nextPage = this.nextPage;
+      return [...Array(numberOfItems)].map((_, i) => i + nextPage + 1);
     }
   },
   methods: {
@@ -109,8 +144,8 @@ export default {
 .Pagination-listItem.is-current,
 .Pagination-listItem.is-current .Pagination-listItemInner--link,
 .Pagination-listItem.is-current .Pagination-listItemInner--link:hover {
-  color: $text-color;
   background-color: $softblue;
+  color: $text-color;
   text-decoration: none;
   cursor: default;
 }

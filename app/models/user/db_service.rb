@@ -381,7 +381,7 @@ module CartoDB
         }
 
         @user.in_database(as: :superuser) do |database|
-          database.run(query)
+          database.fetch(query)
         end
       end
 

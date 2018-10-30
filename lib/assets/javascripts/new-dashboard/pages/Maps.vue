@@ -19,9 +19,37 @@
       </SectionTitle>
     </div>
 
-    <span class="title is-subheader is-txtGrey" v-if="isFetchingMaps">Loading</span>
+    <ul class="grid" v-if="isFetchingMaps">
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+        <MapCardFake></MapCardFake>
+      </li>
+    </ul>
 
-    <ul class="maps-list-container grid" v-if="!isFetchingMaps">
+    <ul class="grid" v-if="!isFetchingMaps">
       <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
         <MapCard :map=map></MapCard>
       </li>
@@ -53,12 +81,14 @@
 <script>
 import { mapState } from 'vuex';
 import MapCard from '../components/MapCard';
+import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 
 export default {
   name: 'MapsPage',
   components: {
     MapCard,
+    MapCardFake,
     SectionTitle
   },
   computed: mapState({

@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MapCardFake.vue should render correct contents 1`] = `
+<div class="fake-card">
+  <div class="image-placeholder"></div>
+  <div class="text-container-placeholder">
+    <div class="text-placeholder"></div>
+    <div class="text-placeholder text-placeholder--double"></div>
+    <div class="text-placeholder"></div>
+    <div class="text-placeholder"></div>
+    <div class="text-placeholder"></div>
+  </div>
+</div>
+`;

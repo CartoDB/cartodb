@@ -9,5 +9,44 @@
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago"
+  },
+  "MapsPage": {
+    "header": {
+      "titleWhenFilterApplied": {
+        "default": "Your Maps",
+        "shared": "Shared with you",
+        "locked": "Your Locked Maps",
+        "publicPrivacy": "Your public maps",
+        "linkPrivacy": "Your link-shared maps",
+        "passwordPrivacy": "Your password-protected maps",
+        "privatePrivacy": "Your private maps"
+      }
+    }
+  },
+  "FilterDropdown": {
+    "showMe": "Show me",
+    "orderMaps": "Order",
+    "types": {
+      "yourMaps": "Your maps",
+      "shared": "Shared with you ({count})",
+      "locked": "Locked",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    },
+    "order": {
+      "favourites": "Favourites first",
+      "alphabetical": {
+        "title": "Alphabetically",
+        "A-Z": "A-Z",
+        "Z-A": "Z-A"
+      },
+      "date": {
+        "title": "Date Modified",
+        "last": "Last",
+        "first": "First"
+      }
+    }
   }
 }

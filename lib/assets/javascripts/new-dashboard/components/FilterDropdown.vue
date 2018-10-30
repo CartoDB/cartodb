@@ -1,58 +1,136 @@
 <template>
-<div>
-  <button class="button button--ghost">
-    <span class="button-icon">
-      <svg width="18" height="20" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#036FE2" fill-rule="evenodd">
-          <path d="M8.3 6.7l1.4-1.4L5 .58.3 5.29l1.4 1.42L4 4.4v11.6h2V4.4zM16.3 13.3L14 15.58V4h-2V15.6l-2.3-2.3-1.4 1.42 4.7 4.7 4.7-4.7z"/>
-        </g>
-      </svg>
-    </span>
+<section>
+  <button class="dropdown__toggle" @click="toggleDropdown" :class="{ 'dropdown__toggle--active': isDropdownOpen }">
+    <svg width="18" height="20" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#036FE2" fill-rule="evenodd">
+        <path d="M8.3 6.7l1.4-1.4L5 .58.3 5.29l1.4 1.42L4 4.4v11.6h2V4.4zM16.3 13.3L14 15.58V4h-2V15.6l-2.3-2.3-1.4 1.42 4.7 4.7 4.7-4.7z"/>
+      </g>
+    </svg>
   </button>
-  <div class="head-sectionDropdown">
-    <div class="head-sectionDropdownCategory">
-      <h6 class="text is-xsmall is-txtGreyLight u-tupper letter-spacing">Show Me</h6>
-      <ul class="head-sectionDropdownList">
-          <li class="text is-caption is-txtGrey is-selected">All applications</li>
-          <li class="text is-caption is-txtGrey">Favorites only</li>
-          <li class="text is-caption is-txtGrey">Shared with you</li>
+
+  <div class="dropdown" :class="{ 'is-active': isDropdownOpen }">
+    <div class="section">
+      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.showMe') }}</h6>
+      <ul class="list">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('') }" @click="setFilter('')">
+            {{ $t('FilterDropdown.types.yourMaps') }}
+          </a>
+        </li>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('shared') }" @click="setFilter('shared')">
+            {{ $t('FilterDropdown.types.shared', { count: metadata.total_shared }) }}
+          </a>
+        </li>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('locked') }" @click="setFilter('locked')">
+            {{ $t('FilterDropdown.types.locked') }}
+          </a>
+        </li>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterCategorySelected('Privacy') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('publicPrivacy') }" @click="setFilter('publicPrivacy')">{{ $t('FilterDropdown.types.publicPrivacy') }}</a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('privatePrivacy') }" @click="setFilter('privatePrivacy')">{{ $t('FilterDropdown.types.privatePrivacy') }}</a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('linkPrivacy') }" @click="setFilter('linkPrivacy')">{{ $t('FilterDropdown.types.linkPrivacy') }}</a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('passwordPrivacy') }" @click="setFilter('passwordPrivacy')">{{ $t('FilterDropdown.types.passwordPrivacy') }}</a>
+        </li>
       </ul>
-      </div>
-      <div class="head-sectionDropdownCategory">
-      <h6 class="text is-xsmall is-txtGreyLight u-tupper letter-spacing">Order</h6>
-      <ul class="head-sectionDropdownList">
-        <li class="text is-caption is-txtGrey is-selected">Alphabetically</li>
-        <li class="text is-caption is-txtGrey">Newest first</li>
-        <li class="text is-caption is-txtGrey">Oldest first</li>
-        <li class="text is-caption is-txtGrey">Most views first</li>
+    </div>
+    <div class="section">
+      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.orderMaps') }}</h6>
+      <ul class="list">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('favouritesFirst') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('favouritesFirst') }" @click="setOrder('favouritesFirst')">
+            {{ $t('FilterDropdown.order.favourites') }}
+          </a>
+        </li>
+        <li class="type text is-caption is-txtGrey">
+          {{ $t('FilterDropdown.order.alphabetical.title') }}
+          ( <a href="javascript:void(0)" @click="setOrder('alphabetically')">{{ $t('FilterDropdown.order.alphabetical.A-Z') }}</a> |
+          <a href="javascript:void(0)" @click="setOrder('alphabeticallyReverse')">{{ $t('FilterDropdown.order.alphabetical.Z-A') }}</a> )
+        </li>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') || isOrderApplied('updated_atReverse') }">
+          Date Modified
+          ( <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at') }" @click="setOrder('updated_at')">{{ $t('FilterDropdown.order.date.last') }}</a> |
+            <a href="javascript:void(0)" @click="setOrder('updated_atReverse')">{{ $t('FilterDropdown.order.date.first') }}</a> )
+        </li>
       </ul>
     </div>
   </div>
-</div>
+</section>
 </template>
 
 <script>
+export default {
+  name: 'MapCard',
+  props: {
+    filter: String,
+    order: String,
+    metadata: {
+      type: Object,
+      default () {
+        return { total_shared: 0 };
+      }
+    }
+  },
+  data: function () {
+    return {
+      isVisible: false,
+      isDropdownOpen: false
+    };
+  },
+  methods: {
+    isOrderApplied (order) {
+      return this.$props.order === order;
+    },
+    isFilterApplied (filter) {
+      return this.$props.filter === filter;
+    },
+    isFilterCategorySelected (sectionTitle) {
+      if (!this.$props.filter) {
+        return false;
+      }
 
+      return this.$props.filter.indexOf(sectionTitle) > -1;
+    },
+    toggleDropdown () {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+    setFilter (filter) {
+      this.$emit('filterChanged', filter);
+    },
+    setOrder (order) {
+      this.$emit('orderChanged', order);
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.head-sectionDropdown {
+.dropdown {
+  visibility: hidden;
   position: absolute;
   z-index: 1;
   right: 0;
+  width: 310px;
+  margin-top: 8px;
   overflow: hidden;
   transition: all 0.25s linear;
   border: 1px solid $light-grey;
   border-radius: 2px;
   opacity: 0;
   pointer-events: none;
+
+  &.is-active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: initial;
+  }
 }
 
-.head-sectionDropdownCategory {
-  width: 270px;
-  padding: 16px 36px;
+.section {
+  padding: 24px 12px 24px 36px;
   border-bottom: 1px solid $light-grey;
   background-color: #FFF;
 
@@ -65,31 +143,54 @@
   }
 }
 
-.head-sectionDropdownList {
+.list {
   margin-top: 8px;
+}
 
-  li {
-    margin-bottom: 12px;
+.type {
+  margin-bottom: 8px;
 
-    &:last-of-type {
-      margin-bottom: 0;
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  &.type--selected {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: -22px;
+      width: 14px;
+      height: 14px;
+      transform: translateY(-50%);
+      background-image: url("../assets/icons/common/check.svg");
+      background-repeat: no-repeat;
+      background-position: center;
     }
+  }
+}
 
-    &.is-selected {
-      position: relative;
-      color: $primary-color;
+.element {
+  text-decoration: none;
 
-      &::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: -22px;
-        width: 14px;
-        height: 14px;
-        transform: translateY(-50%);
-        background-image: url("/img/icons/check.svg");
-      }
-    }
+  &.element--selected {
+    color: $text-color;
+    pointer-events: none;
+  }
+}
+
+.dropdown__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 2px;
+
+  &.dropdown__toggle--active {
+    background-color: #F2F6F9;
   }
 }
 </style>

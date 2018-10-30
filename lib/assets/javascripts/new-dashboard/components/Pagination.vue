@@ -4,7 +4,7 @@
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(1)>1</button>
     </li>
     <li class="Pagination-listItem" v-for="item in leftCollapsedItems" :key="item">
-      <button class="Pagination-listItemInner Pagination-listItemInner--link autogen" @click=goToPage(item)>{{ item }}</button>
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(item)>{{ item }}</button>
     </li>
     <li class="Pagination-listItem" v-if="hasMoreThanMaximumElements && showNPositionPrev(2)">
       <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
@@ -22,7 +22,7 @@
       <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
     </li>
     <li class="Pagination-listItem" v-for="item in rightCollapsedItems" :key="item">
-      <button class="Pagination-listItemInner Pagination-listItemInner--link autogen" @click=goToPage(item)>{{ item }}</button>
+      <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(item)>{{ item }}</button>
     </li>
     <li class="Pagination-listItem" v-if="showLast">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(numPages)>{{ numPages }}</button>

@@ -91,8 +91,11 @@ module Carto
           rw: "%<table_name>s (read/write access)"
         }.freeze
 
+        attr_reader :table
+        attr_reader :schema
+
         def initialize(scope)
-          _, permission, @table = scope.split(':')
+          @table, @schema, permission = self.class.table_schema_permission(scope)
           super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
           @grant_key = :tables
           @permission = permission.to_sym
@@ -111,9 +114,9 @@ module Carto
           database_section = grant_section(grants)
 
           table_section = {
-            name: @table,
+            name: table,
             permissions: permission,
-            schema: user.database_schema
+            schema: schema || user.database_schema
           }
 
           database_section[@grant_key] << table_section
@@ -123,21 +126,44 @@ module Carto
           scope =~ /^datasets:(?:rw|r):\w+/
         end
 
-        def self.table(scope)
-          scope.split(':')[-1]
-        end
-
         def self.valid_scopes(scopes)
           scopes.select { |scope| DatasetsScope.is_a?(scope) }
         end
 
+        def self.non_dataset_scopes(scopes)
+          scopes.reject { |scope| DatasetsScope.is_a?(scope) }
+        end
+
         def self.valid_scopes_with_table(scopes, user)
-          datasets_scopes = valid_scopes(scopes).map { |scope| [table(scope), scope] }
+          dataset_scopes = valid_scopes(scopes)
 
-          return [] unless datasets_scopes.any?
+          return [] unless dataset_scopes.any?
 
-          user_tables = user.db_service.tables_effective(user.database_schema)
-          datasets_scopes.to_h.select { |table, _| user_tables.include?(table) }.values
+          allowed = user.db_service.all_tables_granted_hashed
+
+          valid_scopes = []
+          dataset_scopes.each do |scope|
+            table, schema, permissions = table_schema_permission(scope)
+            schema = user.database_schema if schema.nil?
+
+            if !allowed[schema].nil? && !allowed[schema][table].nil? &&
+               (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
+              valid_scopes << scope
+            end
+          end
+          valid_scopes
+        end
+
+        def self.permission_from_db_to_scope(permission)
+          permission = permission.split(',').sort
+          return nil if permission.empty? || (permission - (READ_PERMISSIONS + WRITE_PERMISSIONS)).any?
+          PERMISSIONS.find { |_, values| permission == values.sort }.first
+        end
+
+        def self.table_schema_permission(scope)
+          _, permission, table_and_schema = scope.split(':')
+          table, schema = Table.table_and_schema(table_and_schema)
+          [table, schema, permission]
         end
       end
 

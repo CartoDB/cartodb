@@ -349,7 +349,7 @@ module CartoDB
         roles = [@user.database_username]
         if @user.organization_user?
           roles << organization_member_group_role_member_name
-          roles += @user.groups.map(&:databse_role)
+          roles += @user.groups.map(&:database_role)
         end
 
         roles

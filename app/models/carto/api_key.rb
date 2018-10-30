@@ -1,5 +1,4 @@
 require 'securerandom'
-
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/oauth_provider/scopes'

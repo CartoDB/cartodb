@@ -53,6 +53,14 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(["datasets:r:wtf.#{@user_table.name}"])
     end
 
+    it 'returns datasets with 2 schemas scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+        ["datasets:r:#{@user.database_schema}.#{@user.database_schema}.#{@user_table.name}"],
+        @user
+      )
+      expect(scopes).to eq(["datasets:r:#{@user.database_schema}.#{@user.database_schema}.#{@user_table.name}"])
+    end
+
     it 'returns datasets scopes with non existent permissions' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:f:#{@user_table.name}"], @user)
       expect(scopes).to eq(["datasets:f:#{@user_table.name}"])

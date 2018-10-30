@@ -123,7 +123,7 @@ module Carto
         end
 
         def self.is_a?(scope)
-          scope =~ /^datasets:(?:rw|r):\w+/
+          scope =~ /^datasets:(?:rw|r):(?:\w+$|\w+\.\w+$)/
         end
 
         def self.valid_scopes(scopes)

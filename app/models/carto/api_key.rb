@@ -501,6 +501,7 @@ module Carto
 
     def grant_aux_write_privileges_for_schema(s)
       db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
+      db_run("GRANT ALL ON FUNCTION \"#{s}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\"")
     end
 
     def valid_master_key

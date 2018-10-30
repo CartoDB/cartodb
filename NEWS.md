@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- WIP: Forgot password (#14333)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)

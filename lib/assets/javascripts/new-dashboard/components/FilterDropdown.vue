@@ -8,7 +8,7 @@
     </svg>
   </button>
 
-  <div class="dropdown" :class="{ 'is-active': isDropdownOpen }">
+  <div class="dropdown" :class="{ 'is-open': isDropdownOpen }">
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.showMe') }}</h6>
       <ul class="list">
@@ -102,7 +102,7 @@ export default {
       this.$emit('orderChanged', order);
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -122,7 +122,7 @@ export default {
   opacity: 0;
   pointer-events: none;
 
-  &.is-active {
+  &.is-open {
     visibility: visible;
     opacity: 1;
     pointer-events: initial;

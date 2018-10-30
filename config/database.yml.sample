@@ -8,6 +8,7 @@ production:
   username: postgres
   password:
   conn_validator_timeout: 900
+  connect_timeout: 2.5
   prepared_statements: false
 
 staging:
@@ -20,6 +21,7 @@ staging:
   username: postgres
   password:
   conn_validator_timeout: 900
+  connect_timeout: 2.5
   prepared_statements: false
 
 development:
@@ -32,6 +34,7 @@ development:
   username: postgres
   password:
   conn_validator_timeout: 900
+  connect_timeout: 2.5
   pool: 50
   prepared_statements: false
 
@@ -45,5 +48,6 @@ test:
   username: postgres
   password:
   conn_validator_timeout: -1
+  connect_timeout: -1
   prepared_statements: false
 

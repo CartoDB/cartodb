@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- Ensuring right `search_path` for non organization `publicuser`
+- None yet
 
 ### Features
 - OAuth provider (WIP):
@@ -10,7 +10,32 @@ Development
 - Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
-- Allowing views in API Keys (#14309)
+- Scrollbar resized after notifications (#12953)
+- Fix encoding corner case with ICU for some CSV files (https://github.com/CartoDB/support/issues/1808)
+- Add timeout for AR and Sequel connections (#13266)
+- Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
+- Apply code style for "Layer hidden" notification in advanced mode (#13355)
+- Fixed varnish validation for http function due a regexp problem (https://github.com/CartoDB/support/issues/1727)
+- Fix input widths (#13453)
+- Update tags style (#13756)
+- Add more formats to the base datasource class to be used by for example Box connector (#10183)
+- Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
+- Update some old vulnerable dependencies (#14368)
+- Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
+
+4.22.1 (2018-10-18)
+-------------------
+
+### NOTICES
+* Ensuring right `search_path` for non organization `publicuser`
+
+### Features
+* Improve dropping db role of an API key (#14307)
+
+### Bug fixes / enhancements
+* Add `remove_overview_tables` rake
+* Allowing views in API Keys (#14309)
+* Redirect locked users to /lockout page (#14310)
 
 4.22.0 (2018-10-04)
 -------------------

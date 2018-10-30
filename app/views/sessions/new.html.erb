@@ -41,11 +41,9 @@
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                     <% end %>
 
-                    <% unless Cartodb.config[:cartodb_com_hosted] %>
-                      <div class="Sessions-inputLinkAside">
-                        <%= link_to 'Forgot?', forget_password_url %>
-                      </div>
-                    <% end %>
+                    <div class="Sessions-inputLinkAside">
+                      <%= link_to 'Forgot?', forget_password_url %>
+                    </div>
                   </div>
 
                   <div class="Sessions-field">

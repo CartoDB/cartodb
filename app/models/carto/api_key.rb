@@ -382,8 +382,9 @@ module Carto
 
       invalid = []
       databases[:tables].each do |table|
-        if allowed[table[:schema]].nil? || allowed[table[:schema]][table[:name]].nil? ||
-          (table[:permissions] - allowed[table[:schema]][table[:name]]).any?
+        if allowed[table[:schema]].nil? ||
+           allowed[table[:schema]][table[:name]].nil? ||
+           (table[:permissions] - allowed[table[:schema]][table[:name]]).any?
           invalid << table
         end
       end

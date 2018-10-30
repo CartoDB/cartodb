@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeaturesDropdown.vue should render correct contents 1`] = `
+<div class="features-dropdown"><span class="feature-text text is-caption is-txtGrey">1 tag</span>
+  <div class="dropdown-container">
+    <ul class="tag-list">
+      <li class="tag"><a href="#" class="tag-text text is-small">one tag test</a></li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`FeaturesDropdown.vue should render correct multiple elements 1`] = `
+<div class="features-dropdown"><span class="feature-text text is-caption is-txtGrey">4 maps</span>
+  <div class="dropdown-container">
+    <ul class="tag-list">
+      <li class="tag"><a href="#" class="tag-text text is-small">my first map</a></li>
+      <li class="tag"><a href="#" class="tag-text text is-small">another map</a></li>
+      <li class="tag"><a href="#" class="tag-text text is-small">Madrid visualization</a></li>
+      <li class="tag"><a href="#" class="tag-text text is-small">NoSpacesMap</a></li>
+    </ul>
+  </div>
+</div>
+`;

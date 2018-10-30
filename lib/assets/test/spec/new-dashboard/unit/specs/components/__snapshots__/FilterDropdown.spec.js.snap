@@ -19,10 +19,18 @@ exports[`FilterDropdown.vue should open dropdown when clicking toggle 1`] = `
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.locked
           </a></li>
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">FilterDropdown.types.publicPrivacy</a> |
-          <a href="javascript:void(0)" class="element">FilterDropdown.types.privatePrivacy</a> |
-          <a href="javascript:void(0)" class="element">FilterDropdown.types.linkPrivacy</a> |
-          <a href="javascript:void(0)" class="element">FilterDropdown.types.passwordPrivacy</a></li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            FilterDropdown.types.publicPrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.types.privatePrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.types.linkPrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.types.passwordPrivacy
+          </a></li>
       </ul>
     </div>
     <div class="section">
@@ -32,14 +40,24 @@ exports[`FilterDropdown.vue should open dropdown when clicking toggle 1`] = `
             FilterDropdown.order.favourites
           </a></li>
         <li class="type text is-caption is-txtGrey">
-          FilterDropdown.order.alphabetical.title
-          ( <a href="javascript:void(0)">FilterDropdown.order.alphabetical.A-Z</a> |
-          <a href="javascript:void(0)">FilterDropdown.order.alphabetical.Z-A</a> )
+          FilterDropdown.order.alphabetical.title (
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.alphabetical.A-Z
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.alphabetical.Z-A
+          </a>
+          )
         </li>
         <li class="type text is-caption is-txtGrey type--selected">
-          Date Modified
-          ( <a href="javascript:void(0)" class="element element--selected">FilterDropdown.order.date.last</a> |
-          <a href="javascript:void(0)">FilterDropdown.order.date.first</a> )
+          Date Modified (
+          <a href="javascript:void(0)" class="element element--selected">
+            FilterDropdown.order.date.last
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.date.first
+          </a>
+          )
         </li>
       </ul>
     </div>
@@ -66,10 +84,18 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.locked
           </a></li>
-        <li class="type text is-caption is-txtGrey type--selected"><a href="javascript:void(0)" class="element">FilterDropdown.types.publicPrivacy</a> |
-          <a href="javascript:void(0)" class="element">FilterDropdown.types.privatePrivacy</a> |
-          <a href="javascript:void(0)" class="element element--selected">FilterDropdown.types.linkPrivacy</a> |
-          <a href="javascript:void(0)" class="element">FilterDropdown.types.passwordPrivacy</a></li>
+        <li class="type text is-caption is-txtGrey type--selected"><a href="javascript:void(0)" class="element">
+            FilterDropdown.types.publicPrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.types.privatePrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element element--selected">
+            FilterDropdown.types.linkPrivacy
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.types.passwordPrivacy
+          </a></li>
       </ul>
     </div>
     <div class="section">
@@ -79,14 +105,24 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
             FilterDropdown.order.favourites
           </a></li>
         <li class="type text is-caption is-txtGrey">
-          FilterDropdown.order.alphabetical.title
-          ( <a href="javascript:void(0)">FilterDropdown.order.alphabetical.A-Z</a> |
-          <a href="javascript:void(0)">FilterDropdown.order.alphabetical.Z-A</a> )
+          FilterDropdown.order.alphabetical.title (
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.alphabetical.A-Z
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.alphabetical.Z-A
+          </a>
+          )
         </li>
         <li class="type text is-caption is-txtGrey type--selected">
-          Date Modified
-          ( <a href="javascript:void(0)" class="element element--selected">FilterDropdown.order.date.last</a> |
-          <a href="javascript:void(0)">FilterDropdown.order.date.first</a> )
+          Date Modified (
+          <a href="javascript:void(0)" class="element element--selected">
+            FilterDropdown.order.date.last
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.date.first
+          </a>
+          )
         </li>
       </ul>
     </div>

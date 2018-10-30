@@ -28,10 +28,18 @@
           </a>
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterCategorySelected('Privacy') }">
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('publicPrivacy') }" @click="setFilter('publicPrivacy')">{{ $t('FilterDropdown.types.publicPrivacy') }}</a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('privatePrivacy') }" @click="setFilter('privatePrivacy')">{{ $t('FilterDropdown.types.privatePrivacy') }}</a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('linkPrivacy') }" @click="setFilter('linkPrivacy')">{{ $t('FilterDropdown.types.linkPrivacy') }}</a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('passwordPrivacy') }" @click="setFilter('passwordPrivacy')">{{ $t('FilterDropdown.types.passwordPrivacy') }}</a>
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('publicPrivacy') }" @click="setFilter('publicPrivacy')">
+            {{ $t('FilterDropdown.types.publicPrivacy') }}
+          </a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('privatePrivacy') }" @click="setFilter('privatePrivacy')">
+            {{ $t('FilterDropdown.types.privatePrivacy') }}
+          </a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('linkPrivacy') }" @click="setFilter('linkPrivacy')">
+            {{ $t('FilterDropdown.types.linkPrivacy') }}
+          </a> |
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('passwordPrivacy') }" @click="setFilter('passwordPrivacy')">
+            {{ $t('FilterDropdown.types.passwordPrivacy') }}
+          </a>
         </li>
       </ul>
     </div>
@@ -44,14 +52,24 @@
           </a>
         </li>
         <li class="type text is-caption is-txtGrey">
-          {{ $t('FilterDropdown.order.alphabetical.title') }}
-          ( <a href="javascript:void(0)" @click="setOrder('alphabetically')">{{ $t('FilterDropdown.order.alphabetical.A-Z') }}</a> |
-          <a href="javascript:void(0)" @click="setOrder('alphabeticallyReverse')">{{ $t('FilterDropdown.order.alphabetical.Z-A') }}</a> )
+          {{ $t('FilterDropdown.order.alphabetical.title') }} (
+            <a href="javascript:void(0)" class="element" @click="setOrder('alphabetically')">
+              {{ $t('FilterDropdown.order.alphabetical.A-Z') }}
+            </a> |
+            <a href="javascript:void(0)" class="element" @click="setOrder('alphabeticallyReverse')">
+              {{ $t('FilterDropdown.order.alphabetical.Z-A') }}
+            </a>
+          )
         </li>
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') || isOrderApplied('updated_atReverse') }">
-          Date Modified
-          ( <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at') }" @click="setOrder('updated_at')">{{ $t('FilterDropdown.order.date.last') }}</a> |
-            <a href="javascript:void(0)" @click="setOrder('updated_atReverse')">{{ $t('FilterDropdown.order.date.first') }}</a> )
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
+          Date Modified (
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at') }" @click="setOrder('updated_at')">
+              {{ $t('FilterDropdown.order.date.last') }}
+            </a> |
+            <a href="javascript:void(0)" class="element">
+              {{ $t('FilterDropdown.order.date.first') }}
+            </a>
+          )
         </li>
       </ul>
     </div>

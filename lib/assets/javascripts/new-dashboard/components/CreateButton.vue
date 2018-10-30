@@ -10,6 +10,7 @@ import CreateDialog from 'new-dashboard/components/Backbone/Dialogs/CreateDialog
 
 export default {
   name: 'CreateButton',
+  inject: ['backboneViews'],
   props: {
     visualizationType: {
       type: String,
@@ -28,7 +29,7 @@ export default {
       },
       {
         dialogType: this.$props.visualizationType,
-        backgroundPollingView: this.$parent.$parent.$refs.backgroundPollingView.getBackgroundPollingView()
+        backgroundPollingView: this.backboneViews.backgroundPollingView.getBackgroundPollingView()
       },
       {
         width: '100%',

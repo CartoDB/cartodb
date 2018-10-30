@@ -20,6 +20,15 @@ export default {
     user () {
       return this.$store.state.user;
     }
+  },
+  provide () {
+    const backboneViews = {};
+    Object.defineProperty(backboneViews, 'backgroundPollingView', {
+      enumerable: true,
+      get: () => this.$refs.backgroundPollingView
+    });
+
+    return { backboneViews };
   }
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-<section>
+<section v-click-outside="closeDropdown">
   <button class="dropdown__toggle" @click="toggleDropdown" :class="{ 'dropdown__toggle--active': isDropdownOpen }">
     <svg width="18" height="20" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
       <g fill="#036FE2" fill-rule="evenodd">
@@ -112,6 +112,9 @@ export default {
     },
     toggleDropdown () {
       this.isDropdownOpen = !this.isDropdownOpen;
+    },
+    closeDropdown () {
+      this.isDropdownOpen = false;
     },
     setFilter (filter) {
       this.$emit('filterChanged', filter);

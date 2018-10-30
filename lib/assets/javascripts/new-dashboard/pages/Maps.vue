@@ -2,14 +2,18 @@
 <section class="section">
   <div class="container grid">
     <div class="grid-cell grid-cell--col12">
-      <SectionTitle title='Your Maps' description="This is a description test">
+      <SectionTitle
+        :title="pageTitle"
+        description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
         <template slot="dropdownButton">
-          <button class="button button--ghost">
-            Filters
-          </button>
+          <FilterDropdown
+            :filter="appliedFilter"
+            :order="appliedOrder"
+            :metadata="mapsMetadata"
+            @filterChanged="applyFilter"/>
         </template>
         <template slot="actionButton">
           <button class="button is-bgPrimary is-txtWhite">
@@ -52,38 +56,43 @@
 
 <script>
 import { mapState } from 'vuex';
+import FilterDropdown from '../components/FilterDropdown';
 import MapCard from '../components/MapCard';
 import SectionTitle from '../components/SectionTitle';
 
 export default {
   name: 'MapsPage',
   components: {
+    FilterDropdown,
     MapCard,
     SectionTitle
   },
-  computed: mapState({
-    numPages: state => state.maps.numPages,
-    currentPage: state => state.maps.page,
-    maps: state => state.maps.list,
-    isFetchingMaps: state => state.maps.isFetching,
-    featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
-    isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
-  }),
+  computed: {
+    ...mapState({
+      numPages: state => state.maps.numPages,
+      currentPage: state => state.maps.page,
+      appliedFilter: state => state.maps.filterType,
+      appliedOrder: state => state.maps.order,
+      maps: state => state.maps.list,
+      mapsMetadata: state => state.maps.metadata,
+      isFetchingMaps: state => state.maps.isFetching,
+      featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
+      isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
+    }),
+    pageTitle () {
+      const translationKey = `MapsPage.header.titleWhenFilterApplied.${this.appliedFilter || 'default'}`;
+      return this.$t(translationKey);
+    }
+  },
   methods: {
     goToPage (page) {
       this.$store.dispatch('maps/goToPage', page);
     },
-    filterLockedMaps () {
-      this.$store.dispatch('maps/filterLockedMaps');
-    },
-    filterSharedMaps () {
-      this.$store.dispatch('maps/filterSharedMaps');
-    },
-    filterFavoritedMaps () {
-      this.$store.dispatch('maps/filterFavoritedMaps');
-    },
     resetFilters () {
       this.$store.dispatch('maps/resetFilters');
+    },
+    applyFilter (filter) {
+      this.$store.dispatch('maps/filterMaps', filter);
     }
   }
 };

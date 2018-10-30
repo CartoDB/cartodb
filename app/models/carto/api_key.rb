@@ -378,13 +378,16 @@ module Carto
       databases = grants.find { |v| v[:type] == 'database' }
       return [] unless databases.present?
 
-      scopes = []
-      databases[:tables].each do |table|
-        permissions = OauthProvider::Scopes::DatasetsScope.permission_from_db_to_scope(table[:permissions].join(','))
-        scopes << "datasets:#{permissions}:#{table[:schema]}.#{table[:name]}" unless permissions.nil?
-      end
+      allowed = user.db_service.all_tables_granted_hashed
 
-      OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
+      invalid = []
+      databases[:tables].each do |table|
+        if allowed[table[:schema]].nil? || allowed[table[:schema]][table[:name]].nil? ||
+          (table[:permissions] - allowed[table[:schema]][table[:name]]).any?
+          invalid << table
+        end
+      end
+      invalid
     end
 
     def create_db_config

@@ -1,5 +1,4 @@
 # coding: UTF-8
-
 require_relative '../../spec_helper'
 require_relative '../user_shared_examples'
 
@@ -20,20 +19,20 @@ describe Carto::User do
 
   describe '#needs_password_confirmation?' do
     it 'is true for a normal user' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: nil)
+      user = FactoryGirl.build(:carto_user, :google_sign_in => nil)
       user.needs_password_confirmation?.should == true
 
-      user = FactoryGirl.build(:carto_user, google_sign_in: false)
+      user = FactoryGirl.build(:carto_user, :google_sign_in => false)
       user.needs_password_confirmation?.should == true
     end
 
     it 'is false for users that signed in with Google' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true)
+      user = FactoryGirl.build(:carto_user, :google_sign_in => true)
       user.needs_password_confirmation?.should == false
     end
 
     it 'is true for users that signed in with Google but changed the password' do
-      user = FactoryGirl.build(:carto_user, google_sign_in: true, last_password_change_date: Time.now)
+      user = FactoryGirl.build(:carto_user, :google_sign_in => true, :last_password_change_date => Time.now)
       user.needs_password_confirmation?.should == true
     end
   end
@@ -65,36 +64,6 @@ describe Carto::User do
 
       private_tables_user = FactoryGirl.build(:carto_user, private_tables_enabled: true)
       private_tables_user.default_dataset_privacy.should eq Carto::Visualization::PRIVACY_PRIVATE
-    end
-  end
-
-  describe "#send_password_reset!" do
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-    end
-
-    after(:all) do
-      @user.destroy
-    end
-
-    it 'enqueues a job to send an email' do
-      Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::PasswordReset, @user.id)
-
-      @user.send_password_reset!
-    end
-
-    it 'updates password_reset_token' do
-      expect { @user.send_password_reset! }.to change(@user, :password_reset_token)
-    end
-
-    it 'updates password_reset_sent_at' do
-      now = Time.zone.now
-
-      Delorean.time_travel_to(now) do
-        @user.send_password_reset!
-      end
-
-      @user.password_reset_sent_at.to_s.should eql now.to_s
     end
   end
 end

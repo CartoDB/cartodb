@@ -302,4 +302,42 @@ describe Carto::OauthProvider::Scopes do
       end
     end
   end
+
+  describe '#scopes_by_category' do
+    include Carto::OauthProvider::Scopes
+    before :all do
+      @user = Carto::User.find(create_user.id)
+      @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+    end
+
+    after :all do
+      @user_table.destroy
+      @user.destroy
+    end
+
+    it 'read permission having read-write' do
+      new_scopes = ["datasets:r:#{@user_table.name}"]
+      previous_scopes = ["datasets:rw:#{@user_table.name}"]
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq([
+        {
+          description: "User and personal data",
+          icon: nil,
+          scopes: [
+            {
+              description: "Username and organization name",
+              new: false
+            }
+          ]
+        },
+        {
+          description: "Access to your datasets",
+          icon: nil,
+          scopes: [
+            { description: "user_table00000007 (read/write access)", new: false }
+          ]
+        }
+      ]))
+    end
+  end
 end

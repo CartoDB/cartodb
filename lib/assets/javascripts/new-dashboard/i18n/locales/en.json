@@ -30,6 +30,7 @@
     "types": {
       "yourMaps": "Your maps",
       "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
       "locked": "Locked",
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",

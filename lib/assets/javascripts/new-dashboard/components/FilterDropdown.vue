@@ -24,7 +24,7 @@
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
-            {{ $t('FilterDropdown.types.favorited') }}
+            {{ $t('FilterDropdown.types.favorited', { count: metadata.total_likes }) }}
           </a>
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }">

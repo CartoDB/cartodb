@@ -1,0 +1,72 @@
+{
+  "permisionOwner": {
+    "id": "c3459c80-4983-47f0-87e5-12febe8c2358",
+    "owner": {
+      "id": "18f57725-a784-4d3a-bddc-a191295a1381",
+      "name": "",
+      "last_name": "",
+      "username": "cillas",
+      "email": "cillas@cartodb.com",
+      "avatar_url": "//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_planet_orange.png",
+      "website": "",
+      "description": "",
+      "location": null,
+      "twitter_username": "",
+      "disqus_shortname": "",
+      "available_for_hire": false,
+      "base_url": "https://team.carto.com/u/cillas",
+      "google_maps_query_string": "",
+      "quota_in_bytes": 524288000,
+      "table_count": 18,
+      "viewer": false,
+      "org_admin": false,
+      "public_visualization_count": 0,
+      "all_visualization_count": 6,
+      "org_user": true,
+      "remove_logo": true,
+      "db_size_in_bytes": 375508992
+    },
+    "entity": {
+      "id": "f8e13983-bb08-4ca9-b64a-f34e76fe077a",
+      "type": "vis"
+    },
+    "acl": [],
+    "created_at": "2018-06-20T18:21:47.264Z",
+    "updated_at": "2018-06-20T18:21:47.264Z"
+  },
+  "permisionShared": {
+    "id": "faf4522d-b888-4f7e-b353-932695cf8f8a",
+    "owner": {
+      "id": "5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
+      "name": null,
+      "last_name": null,
+      "username": "cdb",
+      "email": "wadus@localhost.lan",
+      "avatar_url": "/assets/unversioned/images/avatars/avatar_ghost_green.png",
+      "website": null,
+      "description": null,
+      "location": null,
+      "twitter_username": null,
+      "disqus_shortname": null,
+      "available_for_hire": false,
+      "base_url": "http://cdb.localhost.lan:3000",
+      "google_maps_query_string": null,
+      "quota_in_bytes": 1073741824,
+      "table_count": 14,
+      "viewer": false,
+      "org_admin": false,
+      "public_visualization_count": 3,
+      "all_visualization_count": 16,
+      "org_user": false,
+      "remove_logo": false,
+      "db_size_in_bytes": 229376
+    },
+    "entity": {
+      "id": "0ba8ffe3-ed32-4294-9a02-d51be0b9df5c",
+      "type": "vis"
+    },
+    "acl": [],
+    "created_at": "2018-10-26T13:14:54.802Z",
+    "updated_at": "2018-10-26T13:14:54.802Z"
+  }
+}

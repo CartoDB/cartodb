@@ -1,0 +1,30 @@
+<%= render :layout => 'form' do %>
+  <% url = CartoDB.url(self, 'edit_password_reset', id: params[:id]) %>
+  <%= form_for @user, url: url, class: "js-Loading-form" do |f| %>
+    <div class="Sessions-fieldsGorup">
+      <div class="Sessions-field">
+        <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
+
+        <% if @user.errors['password'].present? %>
+          <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'].first %>.">!</div>
+        <% end %>
+      </div>
+
+      <div class="Sessions-field">
+        <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
+        <% if @user.errors['password_confirmation'].present? %>
+          <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'].first %>.">!</div>
+        <% end %>
+      </div>
+
+      <div class="Sessions-field">
+        <p>
+          <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
+            <span class="js-Loading-text"><%= 'Save' %></span>
+            <%= render :partial => 'shared/loading_animation' %>
+          </button>
+        </p>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -11,7 +11,7 @@ $colors: (
 
 @each $name, $color in $colors {
   .is-bg#{$name} {
-    background: #{$color};
+    background-color: #{$color};
   }
 
   .is-txt#{$name} {

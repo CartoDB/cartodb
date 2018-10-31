@@ -6,6 +6,9 @@ Development
 
 ### Features
 - Forgot password (#14333)
+- OAuth provider (WIP):
+  - Add scopes for accessing datasets (#14292)
+- Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
@@ -58,10 +61,10 @@ sudo make install
 ```
 
 ### Features
-* Add dataservices permissions in Auth API (#14263)
-* OAuth provider (WIP):
-  * Add scopes for accessing dataservices
-  * Add scopes for accessing user public profile
+- Add dataservices permissions in Auth API (#14263)
+- OAuth provider (WIP):
+  - Add scopes for accessing dataservices (#14276)
+  - Add scopes for accessing user public profile (#14279)
 
 ### Bug fixes / enhancements
 * Fix legacy functions in the data mover that doesn't process multiword type functions

@@ -1879,15 +1879,6 @@ describe User do
     @user.last_password_change_date.should eq last_password_change_date
   end
 
-  it "does not update the password if can_change_password returns false (LDAP is configured)" do
-    original_crypted_password = @user.crypted_password
-    @user.expects(:can_change_password?).returns(false)
-
-    @user.password = 'new_password'
-
-    @user.crypted_password.should eql original_crypted_password
-  end
-
   describe "when user is signed up with google sign-in and don't have any password yet" do
     before(:each) do
       @user.google_sign_in = true

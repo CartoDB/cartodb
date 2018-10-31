@@ -19,7 +19,11 @@
       </SectionTitle>
     </div>
 
-    <span class="title is-subheader is-txtGrey" v-if="isFetchingMaps">Loading</span>
+    <ul class="grid" v-if="isFetchingMaps">
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
+        <MapCardFake></MapCardFake>
+      </li>
+    </ul>
 
     <ul class="grid" v-if="!isFetchingMaps">
       <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
@@ -35,6 +39,7 @@
 <script>
 import { mapState } from 'vuex';
 import MapCard from '../components/MapCard';
+import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
 
@@ -42,6 +47,7 @@ export default {
   name: 'MapsPage',
   components: {
     MapCard,
+    MapCardFake,
     SectionTitle,
     Pagination
   },

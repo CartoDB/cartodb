@@ -201,7 +201,7 @@ export default {
 .card-header {
   display: flex;
   flex-direction: column;
-  max-height: 88px;
+  height: 88px;
 }
 
 .card-title {

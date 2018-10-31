@@ -1,1 +1,13 @@
-{}
+{
+  "mapCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "noDescription": "No description",
+    "noTags": "No tags",
+    "lastUpdate": "Updated {date} ago"
+  }
+}

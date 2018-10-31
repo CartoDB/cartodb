@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MapCard.vue Methods should show thumbnail error 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
   <div class="card-media has-error">
     <!---->
     <div class="MapCard-error"></div>
@@ -10,13 +10,13 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
+        First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -33,21 +33,21 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle favorite state 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/8b378bf8-e74d-4187-9e57-4249db4c0f1f" class="card map-card">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_8b378bf8_e74d_4187_9e57_4249db4c0f1f/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
+        Second map&nbsp;
         <span class="card-favorite is-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -64,21 +64,21 @@ exports[`MapCard.vue Methods should toggle favorite state 1`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card card--noHover">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card card--noHover">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
+        First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -95,21 +95,21 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
+        First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -126,21 +126,21 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle selected state 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card selected">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card selected">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
-        <span class="card-favorite is-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -157,21 +157,21 @@ exports[`MapCard.vue Methods should toggle selected state 1`] = `
 `;
 
 exports[`MapCard.vue should render correct contents 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
-        <span class="card-favorite is-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
@@ -217,21 +217,21 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
 `;
 
 exports[`MapCard.vue should render description and tags 1`] = `
-<a href="https://team.carto.com/u/cillas/viz/f8e13983-bb08-4ca9-b64a-f34e76fe077a" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_f8e13983_bb08_4ca9_b64a_f34e76fe077a/600/280.png?auth_token=feZhHEP4vJEbTbF3PEgyvA&amp;auth_token=00580a1519bad8a50dba717dc0bb82bd357084c01212ba90f6058a226457e77d">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
   <div class="card-text">
     <div class="card-header">
       <h2 class="card-title title is-caption">
-        Airbnb listings VS metro stations&nbsp;
-        <span class="card-favorite is-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--private"></span>
-        <p>mapCard.shared.PRIVATE</p>
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>

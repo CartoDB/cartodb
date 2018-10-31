@@ -1,10 +1,10 @@
 <template>
   <div class="features-dropdown">
-    <span class="feature-text text is-caption is-txtGrey">{{tags.length}} {{feature}}</span>
+    <span class="feature-text text is-caption is-txtGrey">{{list.length}} {{feature}}</span>
     <div class="dropdown-container">
-      <ul class="tag-list">
-        <li class="tag" v-for="tag in tags" :key="tag">
-          <a href="#" class="tag-text text is-small">{{tag}}</a>
+      <ul class="list">
+        <li class="element" v-for="elem in list" :key="elem">
+          <a href="#" class="list-text text is-small">{{elem}}</a>
         </li>
       </ul>
     </div>
@@ -16,7 +16,7 @@
 export default {
   name: 'FeaturesDropdown',
   props: {
-    tags: Array,
+    list: Array,
     feature: String
   }
 };
@@ -38,7 +38,7 @@ export default {
   }
 }
 
-.tag-text {
+.list-text {
   display: inline-block;
   width: 100%;
   padding: 8px 22px;
@@ -55,7 +55,7 @@ export default {
   pointer-events: none;
 }
 
-.tag-list {
+.list {
   position: relative;
   padding: 0;
   border: 1px solid $light-grey;
@@ -78,7 +78,7 @@ export default {
   }
 }
 
-.tag {
+.element {
   &:first-of-type {
     padding-top: 8px;
   }

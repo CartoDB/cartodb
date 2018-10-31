@@ -53,7 +53,7 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="numberTags > maxTags" :tags=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
+          <FeaturesDropdown v-if="numberTags > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
         </li>
       </ul>
     </div>
@@ -207,7 +207,7 @@ export default {
 .card-header {
   display: flex;
   flex-direction: column;
-  max-height: 88px;
+  height: 88px;
 }
 
 .card-title {

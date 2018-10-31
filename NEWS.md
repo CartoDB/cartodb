@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- WIP: Forgot password (#14333)
 - OAuth provider (WIP):
   - Add scopes for accessing datasets (#14292)
 - Improve dropping db role of an API key (#14307)

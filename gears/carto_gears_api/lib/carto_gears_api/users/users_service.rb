@@ -53,6 +53,23 @@ module CartoGearsApi
         CartoGearsApi::Users::User.from_model(user)
       end
 
+      def valid_password?(user_id, password)
+        user = find_user(user_id)
+
+        user.validate_old_password(password)
+      end
+
+      def change_password(user_id, new_password)
+        user = find_user(user_id)
+
+        user.password = new_password
+        user.password_confirmation = new_password
+
+        raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.errors.empty?
+
+        user.save
+      end
+
       private
 
       def find_user(user_id)

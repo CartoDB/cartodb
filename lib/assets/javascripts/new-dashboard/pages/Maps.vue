@@ -12,9 +12,7 @@
           </button>
         </template>
         <template slot="actionButton">
-          <button class="button is-bgPrimary is-txtWhite">
-            New Map
-          </button>
+          <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
     </div>
@@ -42,10 +40,12 @@ import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
   name: 'MapsPage',
   components: {
+    CreateButton,
     MapCard,
     MapCardFake,
     SectionTitle,

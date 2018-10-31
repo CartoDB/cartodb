@@ -109,9 +109,9 @@ export default {
     },
     toggleFavorite () {
       if (this.$props.map.liked) {
-        this.$parent.$store.dispatch('maps/deleteLikeMap', this.$props.map);
+        this.deleteLikeMap(this.$props.map);
       } else {
-        this.$parent.$store.dispatch('maps/likeMap', this.$props.map);
+        this.likeMap(this.$props.map);
       }
     },
     mouseOverElement () {
@@ -123,10 +123,10 @@ export default {
     onThumbnailError () {
       this.isThumbnailErrored = true;
     },
-    ...mapActions([
-      'maps/likeMap',
-      'maps/unlikeMap'
-    ])
+    ...mapActions({
+      likeMap: 'maps/likeMap',
+      deleteLikeMap: 'maps/deleteLikeMap'
+    })
   }
 };
 </script>

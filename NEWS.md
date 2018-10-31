@@ -23,6 +23,7 @@ Development
 - Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
 - Update some old vulnerable dependencies (#14368)
 - Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
+- Sync new password resets fields with central (#14333)
 
 4.22.1 (2018-10-18)
 -------------------

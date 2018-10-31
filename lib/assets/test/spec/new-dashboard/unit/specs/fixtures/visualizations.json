@@ -62,7 +62,35 @@
           "id": "e97e0001-f1c2-425e-8c9b-0fb28da59200",
           "type": "vis"
         },
-        "acl": [],
+        "acl": [{
+          "type": "user",
+          "entity": {
+            "id": "5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
+            "name": null,
+            "last_name": null,
+            "username": "cdb",
+            "email": "wadus@localhost.lan",
+            "avatar_url": "/assets/unversioned/images/avatars/avatar_ghost_green.png",
+            "website": null,
+            "description": null,
+            "location": null,
+            "twitter_username": null,
+            "disqus_shortname": null,
+            "available_for_hire": false,
+            "base_url": "http://cdb.localhost.lan:3000",
+            "google_maps_query_string": null,
+            "quota_in_bytes": 1073741824,
+            "table_count": 14,
+            "viewer": false,
+            "org_admin": false,
+            "public_visualization_count": 3,
+            "all_visualization_count": 16,
+            "org_user": false,
+            "remove_logo": false,
+            "db_size_in_bytes": 229376
+          },
+          "access": "r"
+        }],
         "created_at": "2018-10-29T10:49:19.691Z",
         "updated_at": "2018-10-29T10:49:19.691Z"
       },

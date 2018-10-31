@@ -1,6 +1,6 @@
 <template>
 <section class="section">
-  <div class="container grid">
+  <div class="maps-list-container container grid">
     <div class="grid-cell grid-cell--col12">
       <SectionTitle
         :title="pageTitle"
@@ -16,41 +16,25 @@
             @filterChanged="applyFilter"/>
         </template>
         <template slot="actionButton">
-          <button class="button is-bgPrimary is-txtWhite">
-            New Map
-          </button>
+          <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
     </div>
 
-    <span class="title is-subheader is-txtGrey" v-if="isFetchingMaps">Loading</span>
+    <ul class="grid" v-if="isFetchingMaps">
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
+        <MapCardFake></MapCardFake>
+      </li>
+    </ul>
 
-    <ul class="maps-list-container grid" v-if="!isFetchingMaps">
+    <ul class="grid" v-if="!isFetchingMaps">
       <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
         <MapCard :map=map></MapCard>
       </li>
     </ul>
   </div>
 
-  <div class="temporal">
-    <div>
-      <button class="button" @click="filterLockedMaps()">LOCKED MAPS</button>
-      <button class="button" @click="filterSharedMaps()">SHARED MAPS</button>
-      <button class="button" @click="filterFavoritedMaps()">FAVORITED MAPS</button>
-      <button class="button" @click="resetFilters()">RESET</button>
-    </div>
-
-    <div>
-      <span>Current Page: {{ currentPage }}</span>
-      <span>Num Pages: {{ numPages }}</span>
-    </div>
-
-    <ul class="pageslist">
-      <li class="pageslist-element" v-for="page in numPages" :key="page">
-        <button class="button button--page" @click="goToPage(page)">Page {{ page }}</button>
-      </li>
-    </ul>
-  </div>
+  <Pagination v-if="!isFetchingMaps" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
 </section>
 </template>
 
@@ -58,14 +42,20 @@
 import { mapState } from 'vuex';
 import FilterDropdown from '../components/FilterDropdown';
 import MapCard from '../components/MapCard';
+import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
+import Pagination from 'new-dashboard/components/Pagination';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
   name: 'MapsPage',
   components: {
+    CreateButton,
     FilterDropdown,
     MapCard,
-    SectionTitle
+    MapCardFake,
+    SectionTitle,
+    Pagination
   },
   computed: {
     ...mapState({
@@ -101,25 +91,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
-/* stylelint-disable */
-.temporal {
-  .pageslist {
-    display: flex;
-  }
-  .pageslist-element {
-    padding: 16px;
-  }
-  .button {
-    padding: 8px 20px;
-    border-radius: 4px;
-    margin: 8px;
-    cursor: pointer;
-    box-sizing: border-box;
-    background-color: $primary-color;
-    color: $white;
-  }
-  .button--page {
-    background-color: $light-grey;
-  }
+
+.maps-list-container {
+  margin-bottom: 44px;
 }
 </style>

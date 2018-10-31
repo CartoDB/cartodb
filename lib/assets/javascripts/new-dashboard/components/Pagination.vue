@@ -3,7 +3,7 @@
     <li class="Pagination-listItem" v-if="showFirst">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(1)>1</button>
     </li>
-    <li class="Pagination-listItem" v-for="item in leftCollapsedItems" :key="item">
+    <li class="Pagination-listItem" v-for="item in leftItems" :key="item">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(item)>{{ item }}</button>
     </li>
     <li class="Pagination-listItem" v-if="hasMoreThanMaximumElements && showNPositionPrev(2)">
@@ -21,7 +21,7 @@
     <li class="Pagination-listItem" v-if="hasMoreThanMaximumElements && showNPositionNext(2)">
       <button class="Pagination-listItemInner Pagination-listItemInner--more">&hellip;</button>
     </li>
-    <li class="Pagination-listItem" v-for="item in rightCollapsedItems" :key="item">
+    <li class="Pagination-listItem" v-for="item in rightItems" :key="item">
       <button class="Pagination-listItemInner Pagination-listItemInner--link" @click=goToPage(item)>{{ item }}</button>
     </li>
     <li class="Pagination-listItem" v-if="showLast">
@@ -59,7 +59,7 @@ export default {
     hasMoreThanMaximumElements () {
       return this.numPages > this.maximumElements;
     },
-    leftCollapsedItems () {
+    leftItems () {
       if (!this.numPages ||
           this.hasMoreThanMaximumElements ||
           (this.prevPage - 1) < 1) {
@@ -69,7 +69,7 @@ export default {
       const numberOfItems = this.prevPage - 2;
       return [...Array(numberOfItems)].map((_, i) => i + 2);
     },
-    rightCollapsedItems () {
+    rightItems () {
       if (!this.numPages ||
           this.hasMoreThanMaximumElements ||
           (this.numPages - this.nextPage) <= 0) {

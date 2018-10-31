@@ -44,16 +44,16 @@
         <li class="card-metadataItem text is-caption">
           <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList" v-if="numberTags <= maxTags">
+          <ul class="card-tagList" v-if="tagsLength <= maxTags">
             <li v-for="(tag, index) in map.tags" :key="tag">
               <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
-            <li v-if="!numberTags">
+            <li v-if="!tagsLength">
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="numberTags > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
+          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
         </li>
       </ul>
     </div>
@@ -101,8 +101,8 @@ export default {
     mapThumbnailUrl () {
       return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
     },
-    numberTags () {
-      return !this.$props.map.tags ? 0 : this.$props.map.tags.length;
+    tagsLength () {
+      return this.$props.map.tags ? this.$props.map.tags.length : 0;
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);

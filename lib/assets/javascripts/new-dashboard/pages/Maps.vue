@@ -20,31 +20,7 @@
     </div>
 
     <ul class="grid" v-if="isFetchingMaps">
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-        <MapCardFake></MapCardFake>
-      </li>
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
         <MapCardFake></MapCardFake>
       </li>
     </ul>

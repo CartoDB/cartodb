@@ -1,5 +1,5 @@
 <template>
-  <div class="fake-card">
+  <div class="map-fake-card">
     <div class="image-placeholder"></div>
     <div class="text-container-placeholder">
       <div class="text-placeholder"></div>
@@ -20,7 +20,7 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.fake-card {
+.map-fake-card {
   border: 1px solid $light-grey;
   border-radius: 2px;
   background-color: $white;

@@ -15,6 +15,7 @@
       "titleWhenFilterApplied": {
         "default": "Your Maps",
         "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
         "publicPrivacy": "Your public maps",
         "linkPrivacy": "Your link-shared maps",

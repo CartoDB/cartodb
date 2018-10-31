@@ -22,6 +22,11 @@
             {{ $t('FilterDropdown.types.shared', { count: metadata.total_shared }) }}
           </a>
         </li>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
+            {{ $t('FilterDropdown.types.favorited') }}
+          </a>
+        </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('locked') }" @click="setFilter('locked')">
             {{ $t('FilterDropdown.types.locked') }}

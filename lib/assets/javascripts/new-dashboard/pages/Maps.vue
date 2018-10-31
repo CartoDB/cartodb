@@ -28,22 +28,13 @@
         <span class="maplist-detail">Liked: {{ map.liked }}</span>
       </li>
     </ul>
-
-    <div>
-      <span>Current Page: {{ currentPage }}</span>
-      <span>Num Pages: {{ numPages }}</span>
-    </div>
-    <ul class="pageslist">
-      <li class="pageslist-element" v-for="page in numPages" :key="page">
-        <button class="button button--page" @click="goToPage(page)">Page {{ page }}</button>
-      </li>
-    </ul>
-
+    <Pagination :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import Pagination from 'new-dashboard/components/Pagination';
 
 export default {
   name: 'MapsPage',
@@ -71,6 +62,9 @@ export default {
     resetFilters () {
       this.$store.dispatch('maps/resetFilters');
     }
+  },
+  components: {
+    Pagination
   }
 };
 </script>

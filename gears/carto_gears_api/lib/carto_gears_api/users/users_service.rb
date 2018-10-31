@@ -53,12 +53,27 @@ module CartoGearsApi
         CartoGearsApi::Users::User.from_model(user)
       end
 
+      # Checks the password of a user
+      #
+      # @param user_id [UUID] the user id
+      # @param password [String] password to check
+      # @return [Boolean] true if the password matches with the user, false otherwise
+      #
+      # @raise [Errors::RecordNotFound] if the user could not be found in the database
       def valid_password?(user_id, password)
         user = find_user(user_id)
 
         user.validate_old_password(password)
       end
 
+      # Changes the password of a user
+      #
+      # @param user_id [UUID] the user id
+      # @param password [String] password to set
+      # @return [User] the updated user
+      #
+      # @raise [Errors::RecordNotFound] if the user could not be found in the database
+      # @raise [Errors::ValidationFailed] if the password validation failed
       def change_password(user_id, new_password)
         user = find_user(user_id)
 

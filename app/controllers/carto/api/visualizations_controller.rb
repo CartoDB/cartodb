@@ -83,6 +83,7 @@ module Carto
 
       def index
         page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+        order_direction = params.fetch(:order_direction, :desc).to_sym
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
@@ -92,7 +93,7 @@ module Carto
         # TODO: undesirable table hardcoding, needed for disambiguation. Look for
         # a better approach and/or move it to the query builder
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
+          visualizations: vqb.with_order("visualizations.#{order}", order_direction).build_paged(page, per_page).map { |v|
               VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                     .with_presenter_cache(presenter_cache).to_poro
           },

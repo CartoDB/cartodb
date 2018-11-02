@@ -183,8 +183,8 @@ export default {
   position: relative;
   height: 140px;
   overflow: hidden;
-
   background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
+  background-size: cover;
 
   img {
     width: 100%;

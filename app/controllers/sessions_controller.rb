@@ -18,7 +18,7 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change, :mfa
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -57,7 +57,7 @@ class SessionsController < ApplicationController
 
   def create
     strategies, username = saml_strategy_username || ldap_strategy_username ||
-                           google_strategy_username || credentials_strategy_username
+                           google_strategy_username || mfa_strategy_username || credentials_strategy_username
 
     unless strategies
       return saml_authentication? ? render_403 : render(action: 'new')
@@ -85,16 +85,29 @@ class SessionsController < ApplicationController
     render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}
   end
 
+  def mfa
+    user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
+    user_id ||= params['user_id']
+    @user = Carto::User.find(user_id)
+    @mfa = @user.user_multifactor_auths.first
+    render :action => 'mfa' and return
+  end
+
   def unauthenticated
     username = extract_username(request, params)
     CartoDB::Stats::Authentication.instance.increment_failed_login_counter(username)
 
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
-    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @login_error = if params[:code].presence
+                     'Verification code is not valid'
+                   else
+                     (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+                   end
 
     respond_to do |format|
       format.html do
+        return mfa if params[:code].presence
         render :action => 'new' and return
       end
       format.json do
@@ -272,12 +285,20 @@ class SessionsController < ApplicationController
     end
   end
 
+  def mfa_strategy_username
+    [:mfa, extract_username(request, params)] if mfa_authentication?
+  end
+
   def credentials_strategy_username
     [:password, extract_username(request, params)] if user_password_authentication?
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
+  end
+
+  def mfa_authentication?
+    params && params['email'].present? && params['code'].present?
   end
 
   def google_authentication?

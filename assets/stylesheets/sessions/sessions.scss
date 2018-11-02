@@ -78,12 +78,12 @@ $cWhite: #FFF;
   align-items: center;
   justify-content: center;
   margin-top:180px;
-  
+
   div.header, div.footer {
     text-align:center;
     width: 562px;
   }
-  
+
   div.footer {
     margin-top: 35px;
   }
@@ -109,6 +109,46 @@ $cWhite: #FFF;
     font-size: 13px;
     font-weight: 400;
   }
+
+  p.Sessions-text--qrCode {
+    font-size: 11px;
+  }
+
+  img.qr, p.Sessions-text--qrCode {
+    width: 180px;
+  }
+
+  p.Sessions-text--sharedSecret {
+    color: $cWhite;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+    line-height: 220px;
+  }
+
+  .Sessions-sharedSecretContainer {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    height: 244px;
+    border-radius: 4px;
+  }
+
+  p.Sessions-text--code {
+    color: $cWhite;
+    font-weight: 500;
+    font-size: 12px;
+
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+
+.Sessions-noMargin {
+  margin: 0;
 }
 
 .Sessions-content {
@@ -179,7 +219,8 @@ $cWhite: #FFF;
 }
 
 .Sessions-loggedin,
-.Sessions-notloggedin {
+.Sessions-notloggedin,
+.Sessions-toggle {
   display: none;
 
   &.is-active {

@@ -1,0 +1,143 @@
+<% if @organization %>
+  <% content_for :title do %><%= @organization.name %><% end %>
+<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
+<% end %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="Sessions-notloggedin is-active">
+        <div class="u-inner">
+          <div class="Sessions-left">
+            <div class="Sessions-logoContainer">
+              <picture class="Navbar-brand">
+                <% if @organization.present? && @organization.avatar_url.present? %>
+                  <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
+                <% else %>
+                  <% if @organization.present? %>
+                    <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                  <% else %>
+                    <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                  <% end %>
+                <% end %>
+              </picture>
+            </div>
+
+            <% if @mfa.disabled? %>
+              <div class="Sessions-centered Sessions-noMargin">
+                <img class="qr Sessions-toggle is-active" src="<%= @mfa.qr_code %>">
+                <div class="Sessions-sharedSecretContainer Sessions-toggle">
+                  <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-text--sharedSecret">
+                    <%= @mfa.shared_secret %>
+                  </p>
+                </div>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--qrCode Sessions-toggle is-active">
+                  Use Google Authenticator app to scan the QR code.
+                </p>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle is-active">
+                  If you have any problem with the QR code please,<br> <%= link_to 'try with a manual code', '#', class: 'js-sharedSecret-link' %>
+                </p>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle">
+                  If you have any problem, you can scan the QR code.<br> <%= link_to 'Try with the QR code', '#', class: 'js-sharedSecret-link' %>
+                </p>
+              </div>
+            <% end %>
+
+            <div class="Sessions-form">
+              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
+
+                <%= hidden_field_tag 'user_id', @user.id %>
+                <%= hidden_field_tag 'email', @user.username %>
+
+                <% if @organization.nil? || @organization.auth_username_password_enabled %>
+                  <% if @flash_login_error %>
+                    <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
+                      <%= raw @flash_login_error %>
+                    </p>
+                  <% end %>
+
+                  <div class="Sessions-field">
+                    <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+
+                    <% if @login_error %>
+                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                    <% end %>
+                  </div>
+
+                  <div class="Sessions-field">
+                    <p>
+                      <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
+                        <span class="js-Loading-text">Verify</span>
+                        <span class="js-Loading-anim" style="display: none;">
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--01"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--02"></span>
+                          </span>
+
+                          <span class="Loading-item">
+                            <span class="Loading-itemInner Loading-itemInner--03"></span>
+                          </span>
+                        </span>
+                      </button>
+                    </p>
+                  </div>
+
+                <% end %>
+              <% end %>
+              <% if @oauth_configs.any? %>
+                <div class="Sessions-field Sessions-oauthHeader">
+                  <p>OR LOG IN WITH:</p>
+                </div>
+                <div class="Sessions-field Sessions-oauthContainer">
+                  <% @oauth_configs.each do |config| %>
+                    <%= render partial: config.button_template, locals: { config: config } %>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <% if @user_login_url %>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
+                  Not a member of the <%= @organization.name %> organization? Try the <a href="<%= @user_login_url %>"> general login</a> instead.
+                </p>
+              <% elsif @organization.try(:auth_username_password_enabled) %>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
+                  Please, remember to use an email address belonging to this organization to login to your account.
+                </p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="Sessions-loggedin">
+        <div class="Spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <% if organization_signup_url.present? && !cartodb_com_hosted? %>
+    <footer class="Sessions-footer">
+      <div class="u-inner">
+        <div class="Sessions-notloggedin is-active">
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', organization_signup_url %></p>
+        </div>
+      </div>
+    </footer>
+  <% end %>
+
+  <% if @user.organization_owner? %>
+    <footer class="Sessions-footer">
+      <div class="u-inner">
+        <div class="Sessions-notloggedin is-active">
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">If you have some issues with the configuration you can <%= link_to 'skip this step', '#', onclick: 'alert("Please no!")' %></p>
+        </div>
+      </div>
+    </footer>
+  <% end %>
+</div>

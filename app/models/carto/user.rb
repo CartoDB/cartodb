@@ -691,6 +691,10 @@ class Carto::User < ActiveRecord::Base
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
   end
 
+  def mfa_configured?
+    user_multifactor_auths.any?
+  end
+
   private
 
   def set_database_host

@@ -2,6 +2,7 @@ require 'base64'
 
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/errors'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
@@ -45,6 +46,24 @@ class Warden::SessionSerializer
   end
 end
 
+Warden::Strategies.add(:mfa) do
+  include Carto::UserAuthenticator
+  include Carto::EmailCleaner
+  include CartoStrategy
+
+  def authenticate!
+    if params[:code] && params[:user_id]
+      user = ::User.where(id: params[:user_id]).first
+      user.user_multifactor_auths.first.verify!(params[:code])
+      success!(user, :message => "Success")
+    else
+      fail!
+    end
+  rescue Carto::UnauthorizedError
+    fail!
+  end
+end
+
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
@@ -58,6 +77,9 @@ Warden::Strategies.add(:password) do
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
+          if user.mfa_configured?
+            throw(:warden, action: 'mfa', user_id: user.id)
+          end
           trigger_login_event(user)
 
           success!(user, :message => "Success")

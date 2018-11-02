@@ -1856,6 +1856,10 @@ class User < Sequel::Model
     last_password_change_date || created_at
   end
 
+  def mfa_configured?
+    user_multifactor_auths.any?
+  end
+
   private
 
   def common_data_outdated?

@@ -259,7 +259,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
     <ul class="card-metadata">
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--sharedBy" style="background-image: url(/assets/unversioned/images/avatars/avatar_mountain_green.png);"></span>
-        <p>mapCard.sharedBy hello</p>
+        <p>mapCard.sharedBy</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>

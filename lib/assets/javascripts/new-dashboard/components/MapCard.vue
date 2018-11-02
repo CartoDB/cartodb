@@ -38,7 +38,7 @@
 
         <li class="card-metadataItem text is-caption" v-if="isShared">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
-          <p>{{ $t(`mapCard.sharedBy`) }} {{map.permission.owner.username}}</p>
+          <p>{{ $t(`mapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">

@@ -86,7 +86,6 @@ export default {
   },
   methods: {
     goToPage (page) {
-      // this.$store.dispatch('maps/goToPage', page);
       window.scroll({ top: 0, left: 0 });
       this.$router.push({
         name: 'maps',
@@ -95,11 +94,9 @@ export default {
       });
     },
     resetFilters () {
-      // this.$store.dispatch('maps/resetFilters');
       this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
-      // this.$store.dispatch('maps/filterMaps', filter);
       this.$router.push({ name: 'maps', params: { filter } });
     }
   }

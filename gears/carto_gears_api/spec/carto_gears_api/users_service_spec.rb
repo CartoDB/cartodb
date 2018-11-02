@@ -30,5 +30,4 @@ describe CartoGearsApi::Users::UsersService do
       logged_user.email.should eq user.email
     end
   end
-
 end

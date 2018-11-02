@@ -251,7 +251,7 @@ export default {
 
 .card-metadataItem {
   display: flex;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 
   a {
     color: $text-color;

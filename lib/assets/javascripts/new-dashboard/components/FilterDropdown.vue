@@ -12,9 +12,9 @@
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.showMe') }}</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('') }">
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('') }" @click="setFilter('')">
-            {{ $t('FilterDropdown.types.yourMaps') }}
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('mine') }" @click="setFilter('mine')">
+            {{ $t('FilterDropdown.types.yourMaps', { count: metadata.total_user_entries }) }}
           </a>
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }">
@@ -33,16 +33,16 @@
           </a>
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterCategorySelected('Privacy') }">
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('publicPrivacy') }" @click="setFilter('publicPrivacy')">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('public') }" @click="setFilter('public')">
             {{ $t('FilterDropdown.types.publicPrivacy') }}
           </a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('privatePrivacy') }" @click="setFilter('privatePrivacy')">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('private') }" @click="setFilter('private')">
             {{ $t('FilterDropdown.types.privatePrivacy') }}
           </a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('linkPrivacy') }" @click="setFilter('linkPrivacy')">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('link') }" @click="setFilter('link')">
             {{ $t('FilterDropdown.types.linkPrivacy') }}
           </a> |
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('passwordPrivacy') }" @click="setFilter('passwordPrivacy')">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('password') }" @click="setFilter('password')">
             {{ $t('FilterDropdown.types.passwordPrivacy') }}
           </a>
         </li>

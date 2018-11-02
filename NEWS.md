@@ -7,6 +7,10 @@ Development
 ### Features
 - MFA (WIP)
   - Migration, models and controllers (#14335)
+- Forgot password (#14333)
+- OAuth provider (WIP):
+  - Add scopes for accessing datasets (#14292)
+- Improve dropping db role of an API key (#14307)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)
@@ -19,6 +23,9 @@ Development
 - Update tags style (#13756)
 - Add more formats to the base datasource class to be used by for example Box connector (#10183)
 - Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
+- Update some old vulnerable dependencies (#14368)
+- Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
+- Revert tag style, add color to privacy modal (#13756)
 
 4.22.1 (2018-10-18)
 -------------------
@@ -57,10 +64,10 @@ sudo make install
 ```
 
 ### Features
-* Add dataservices permissions in Auth API (#14263)
-* OAuth provider (WIP):
-  * Add scopes for accessing dataservices
-  * Add scopes for accessing user public profile
+- Add dataservices permissions in Auth API (#14263)
+- OAuth provider (WIP):
+  - Add scopes for accessing dataservices (#14276)
+  - Add scopes for accessing user public profile (#14279)
 
 ### Bug fixes / enhancements
 * Fix legacy functions in the data mover that doesn't process multiword type functions

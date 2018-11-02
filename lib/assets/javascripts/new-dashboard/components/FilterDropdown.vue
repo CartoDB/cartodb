@@ -32,7 +32,7 @@
             {{ $t('FilterDropdown.types.locked') }}
           </a>
         </li>
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterCategorySelected('Privacy') }">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isPrivacyFilterApplied }">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('public') }" @click="setFilter('public')">
             {{ $t('FilterDropdown.types.publicPrivacy') }}
           </a> |
@@ -101,19 +101,17 @@ export default {
       isDropdownOpen: false
     };
   },
+  computed: {
+    isPrivacyFilterApplied () {
+      return ['public', 'private', 'link', 'password'].indexOf(this.$props.filter) > -1;
+    }
+  },
   methods: {
     isOrderApplied (order) {
       return this.$props.order === order;
     },
     isFilterApplied (filter) {
       return this.$props.filter === filter;
-    },
-    isFilterCategorySelected (sectionTitle) {
-      if (!this.$props.filter) {
-        return false;
-      }
-
-      return this.$props.filter.indexOf(sectionTitle) > -1;
     },
     toggleDropdown () {
       this.isDropdownOpen = !this.isDropdownOpen;

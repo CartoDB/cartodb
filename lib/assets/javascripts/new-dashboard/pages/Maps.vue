@@ -59,6 +59,7 @@ export default {
     Pagination
   },
   beforeRouteUpdate (to, from, next) {
+    debugger;
     const urlOptions = { ...to.params, ...to.query };
 
     if (urlOptions.filter && !isAllowed(urlOptions.filter)) {

@@ -419,6 +419,10 @@ class User < Sequel::Model
     Carto::ApiKey.where(user_id: id)
   end
 
+  def user_multifactor_auths
+    Carto::UserMultifactorAuth.where(user_id: id)
+  end
+
   def shared_entities
     CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
   end

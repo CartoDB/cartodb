@@ -89,7 +89,7 @@ export default {
       window.scroll({ top: 0, left: 0 });
       this.$router.push({
         name: 'maps',
-        params: this.$router.params,
+        params: this.$route.params,
         query: { ...this.$route.query, page }
       });
     },

@@ -122,9 +122,11 @@ export default {
       this.isDropdownOpen = false;
     },
     setFilter (filter) {
+      this.closeDropdown();
       this.$emit('filterChanged', filter);
     },
     setOrder (order) {
+      this.closeDropdown();
       this.$emit('orderChanged', order);
     }
   }

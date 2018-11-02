@@ -420,7 +420,7 @@ class User < Sequel::Model
   end
 
   def user_multifactor_auths
-    Carto::UserMultifactorAuths.where(user_id: id)
+    Carto::UserMultifactorAuth.where(user_id: id)
   end
 
   def shared_entities

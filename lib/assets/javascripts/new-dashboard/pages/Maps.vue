@@ -46,6 +46,7 @@ import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import { isAllowed } from '../store/maps/filters';
 
 export default {
   name: 'MapsPage',
@@ -56,6 +57,16 @@ export default {
     MapCardFake,
     SectionTitle,
     Pagination
+  },
+  beforeRouteUpdate (to, from, next) {
+    const urlOptions = { ...to.params, ...to.query };
+
+    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
+      return next({ name: 'maps' });
+    }
+
+    this.$store.dispatch('maps/setURLOptions', urlOptions);
+    next();
   },
   computed: {
     ...mapState({
@@ -70,19 +81,26 @@ export default {
       isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
     }),
     pageTitle () {
-      const translationKey = `MapsPage.header.titleWhenFilterApplied.${this.appliedFilter || 'default'}`;
-      return this.$t(translationKey);
+      return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
     }
   },
   methods: {
     goToPage (page) {
-      this.$store.dispatch('maps/goToPage', page);
+      // this.$store.dispatch('maps/goToPage', page);
+      window.scroll({ top: 0, left: 0 });
+      this.$router.push({
+        name: 'maps',
+        params: this.$router.params,
+        query: { ...this.$route.query, page }
+      });
     },
     resetFilters () {
-      this.$store.dispatch('maps/resetFilters');
+      // this.$store.dispatch('maps/resetFilters');
+      this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
-      this.$store.dispatch('maps/filterMaps', filter);
+      // this.$store.dispatch('maps/filterMaps', filter);
+      this.$router.push({ name: 'maps', params: { filter } });
     }
   }
 };

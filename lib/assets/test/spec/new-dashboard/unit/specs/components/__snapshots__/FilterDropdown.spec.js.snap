@@ -90,7 +90,7 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.locked
           </a></li>
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+        <li class="type text is-caption is-txtGrey type--selected"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.publicPrivacy
           </a> |
           <a href="javascript:void(0)" class="element">

@@ -12,15 +12,15 @@
   },
   "MapsPage": {
     "header": {
-      "titleWhenFilterApplied": {
-        "default": "Your Maps",
+      "title": {
+        "mine": "Your Maps",
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
-        "publicPrivacy": "Your public maps",
-        "linkPrivacy": "Your link-shared maps",
-        "passwordPrivacy": "Your password-protected maps",
-        "privatePrivacy": "Your private maps"
+        "public": "Your public maps",
+        "link": "Your link-shared maps",
+        "password": "Your password-protected maps",
+        "private": "Your private maps"
       }
     }
   },
@@ -28,7 +28,7 @@
     "showMe": "Show me",
     "orderMaps": "Order",
     "types": {
-      "yourMaps": "Your maps",
+      "yourMaps": "Your maps ({count})",
       "shared": "Shared with you ({count})",
       "favorited": "Favorited ({count})",
       "locked": "Locked",

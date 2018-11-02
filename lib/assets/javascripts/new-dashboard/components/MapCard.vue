@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': selected, 'card--noHover': !activeHover}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': selected, 'card--noHover': !activeHover, 'quickactions-open': quickactionsOpen}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -12,11 +12,7 @@
       </span>
     </span>
 
-    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="card-actionsSelect">
-          <img src="../assets/icons/common/options.svg">
-      </span>
-    </div>
+    <QuickActions class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open-quickactions="openQuickactions" @close-quickactions="closeQuickactions"></QuickActions>
 
     <div class="card-text">
       <div class="card-header">
@@ -63,11 +59,15 @@
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
+import QuickActions from 'new-dashboard/components/QuickActions';
 
 export default {
   name: 'MapCard',
   props: {
     map: Object
+  },
+  components: {
+    QuickActions
   },
   data: function () {
     return {
@@ -75,7 +75,8 @@ export default {
       selected: false,
       activeHover: true,
       titleOverflow: false,
-      descriptionOverflow: false
+      descriptionOverflow: false,
+      quickactionsOpen: false
     };
   },
   updated: function () {
@@ -113,6 +114,12 @@ export default {
       } else {
         this.likeMap(this.$props.map);
       }
+    },
+    openQuickactions () {
+      this.quickactionsOpen = true;
+    },
+    closeQuickactions () {
+      this.quickactionsOpen = false;
     },
     mouseOverChildElement () {
       this.activeHover = false;
@@ -175,6 +182,13 @@ export default {
   &.selected {
     background-color: #F2F9FF;
 
+    .card-actions,
+    .card-select {
+      opacity: 1;
+    }
+  }
+
+  &.quickactions-open {
     .card-actions,
     .card-select {
       opacity: 1;

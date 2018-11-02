@@ -1,8 +1,8 @@
 <template>
 <section class="section">
   <div class="maps-list-container container grid">
-    <div class="grid-cell grid-cell--col12">
-      <SectionTitle title='Your Maps' description="This is a description test">
+    <div class="grid-cell--col12">
+      <SectionTitle class="grid-cell" title='Your Maps' description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
@@ -15,22 +15,34 @@
           <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
+
+      <InitialState title="Create your first map to predict key insights" v-if="!isFetchingMaps && numResults <= 0">
+        <template slot="icon">
+          <img src="../assets/icons/maps/initialState.svg">
+        </template>
+        <template slot="description">
+          <p class="text is-caption is-txtGrey">Build your first Location Intelligence analysis or take a look to our <a href="https://carto.com/help">guides and help</a>.</p>
+        </template>
+        <template slot="actionButton">
+          <CreateButton visualizationType="maps">Create your first map</CreateButton>
+        </template>
+      </InitialState>
+
+      <ul class="grid" v-if="isFetchingMaps">
+        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
+          <MapCardFake></MapCardFake>
+        </li>
+      </ul>
+
+      <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
+        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
+          <MapCard :map=map></MapCard>
+        </li>
+      </ul>
+
+      <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
-
-    <ul class="grid" v-if="isFetchingMaps">
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
-        <MapCardFake></MapCardFake>
-      </li>
-    </ul>
-
-    <ul class="grid" v-if="!isFetchingMaps">
-      <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
-        <MapCard :map=map></MapCard>
-      </li>
-    </ul>
   </div>
-
-  <Pagination v-if="!isFetchingMaps" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
 </section>
 </template>
 
@@ -40,6 +52,7 @@ import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
+import InitialState from 'new-dashboard/components/InitialState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
@@ -49,7 +62,8 @@ export default {
     MapCard,
     MapCardFake,
     SectionTitle,
-    Pagination
+    Pagination,
+    InitialState
   },
   computed: mapState({
     numPages: state => state.maps.numPages,
@@ -57,7 +71,8 @@ export default {
     maps: state => state.maps.list,
     isFetchingMaps: state => state.maps.isFetching,
     featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
-    isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
+    isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
+    numResults: state => state.maps.metadata.total_entries
   }),
   methods: {
     goToPage (page) {

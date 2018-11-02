@@ -1,11 +1,11 @@
-require 'spec_helper_min'
+require 'spec_helper'
 require 'carto_gears_api/users/users_service'
 
 describe CartoGearsApi::Users::UsersService do
-  let(:service) { CartoGearsApi::Users::UsersService.new }
-
   describe '#logged_user' do
     module CartoDB; end
+
+    let(:service) { CartoGearsApi::Users::UsersService.new }
 
     # This test is 100% bound to implementation. It's mostly a PoC for unit testing
     # within Gears and should not be used as an example.
@@ -20,11 +20,11 @@ describe CartoGearsApi::Users::UsersService do
         quota_in_bytes: 100000,
         viewer: false
       )
-      warden = mock
-      warden.expects(:user).once.returns(user)
-      request = mock
-      request.expects(:env).once.returns('warden' => warden)
-      CartoDB.expects(:extract_subdomain).with(request).returns(user.username)
+      warden = double
+      warden.should_receive(:user).once.and_return(user)
+      request = double
+      request.should_receive(:env).once.and_return('warden' => warden)
+      CartoDB.should_receive(:extract_subdomain).with(request).and_return(user.username)
 
       logged_user = service.logged_user(request)
       logged_user.email.should eq user.email

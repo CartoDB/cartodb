@@ -1,5 +1,5 @@
 <template>
-  <div class="Dialog-content Dialog-content--expanded" ref="injectionHTMLElement"></div>
+  <div class="Dialog-content Dialog-content--expanded CreateDialog--new-dashboard" ref="injectionHTMLElement"></div>
 </template>
 
 <script>
@@ -70,13 +70,14 @@ export default {
 
 <style lang="scss">
 .Dialog {
-  .Dialog-header,
-  .Dialog-footer,
-  .ImportOptions {
-    box-sizing: content-box;
-
-    * {
+  .CreateDialog--new-dashboard {
+    .Dialog-footer,
+    .ImportOptions {
       box-sizing: content-box;
+
+      * {
+        box-sizing: content-box;
+      }
     }
   }
 }

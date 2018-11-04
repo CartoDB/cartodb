@@ -4,7 +4,7 @@
 
 <script>
 import DialogView from 'dashboard/views/dashboard/dialogs/create-dialog/dialog-view';
-import Factories from 'new-dashboard/plugins/backbone/factories';
+import ModalModel from 'new-dashboard/plugins/backbone/modal-model';
 
 export default {
   name: 'CreateDialog',
@@ -13,10 +13,10 @@ export default {
     backgroundPollingView: Object
   },
   mounted () {
-    this.createDialog = this.renderDialog();
+    this.dialog = this.renderDialog();
   },
   beforeDestroy () {
-    this.createDialog.clean();
+    this.dialog.clean();
   },
   methods: {
     renderDialog () {
@@ -24,8 +24,8 @@ export default {
       const userModel = this.$cartoModels.user;
       const backgroundPollingModel = this.$cartoModels.backgroundPolling;
 
-      const modalModel = Factories.ModalModel({
-        destroy: function () { this.$emit('close'); }.bind(this)
+      const modalModel = ModalModel({
+        destroy: () => this.$emit('close')
       });
 
       const routerModel = {
@@ -72,7 +72,7 @@ export default {
 .Dialog {
   .Dialog-header,
   .Dialog-footer,
-  .Dialog-content {
+  .ImportOptions {
     box-sizing: content-box;
 
     * {

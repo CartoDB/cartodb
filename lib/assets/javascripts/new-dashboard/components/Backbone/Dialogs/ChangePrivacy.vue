@@ -3,12 +3,12 @@
 </template>
 
 <script>
-import MapMetadataDialog from 'builder/components/modals/map-metadata/map-metadata-view';
-import ModalModel from 'new-dashboard/plugins/backbone/modal-model';
+import ChangePrivacyView from 'dashboard/views/dashboard/dialogs/change-privacy/change-privacy-view';
 import VisualizationModel from 'dashboard/data/visualization-model';
+import ModalModel from 'new-dashboard/plugins/backbone/modal-model';
 
 export default {
-  name: 'MapMetadata',
+  name: 'ChangePrivacy',
   props: {
     visualization: Object
   },
@@ -24,28 +24,26 @@ export default {
         destroy: () => this.$emit('close')
       });
 
-      const visDefinitionModel = new VisualizationModel(
-        this.$props.visualization,
-        { configModel: this.$cartoModels.config }
-      );
+      const visModel = new VisualizationModel(this.$props.visualization, {
+        configModel: this.$cartoModels.config
+      });
 
-      visDefinitionModel.on('change', model => {
+      visModel.on('change', model => {
         this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
       });
 
-      const mapMetadataView = new MapMetadataDialog({
+      const changePrivacyView = new ChangePrivacyView({
+        visModel,
+        userModel: this.$cartoModels.user,
+        configModel: this.$cartoModels.config,
+        modals: modalModel,
         modalModel,
-        visDefinitionModel,
         el: this.$refs.injectionHTMLElement
       });
 
-      mapMetadataView.render();
+      changePrivacyView.render();
 
-      // Listen to close button click in Footer
-      const closeButton = mapMetadataView.$el.find('.js-close');
-      closeButton.on('click', () => this.$emit('close'));
-
-      return mapMetadataView;
+      return changePrivacyView;
     }
   }
 };

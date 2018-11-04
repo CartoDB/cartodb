@@ -39,8 +39,7 @@ export default {
       });
 
       viewModel.bind('DeleteItemsDone', () => {
-        // TODO: DO this
-        // this._userModel.fetch(); // needed in order to keep the 'quota' synchronized
+        this.$store.dispatch('user/updateData'); // needed in order to keep the 'quota' synchronized
         this.$store.dispatch('maps/fetchMaps');
       });
 

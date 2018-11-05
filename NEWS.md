@@ -4,7 +4,7 @@ Development
 ### NOTICES
 - None yet
 
-### Features
+### Feature
 - Lock login if too many failed attempts (#14334)
 
 ### Bug fixes / enhancements

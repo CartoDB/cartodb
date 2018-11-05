@@ -1,12 +1,12 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': selected, 'card--noHover': !activeHover, 'quickactions-open': quickactionsOpen}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': quickactionsOpen}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
     <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" @click="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
@@ -64,7 +64,11 @@ import QuickActions from 'new-dashboard/components/QuickActions';
 export default {
   name: 'MapCard',
   props: {
-    map: Object
+    map: Object,
+    isSelected: {
+      type: Boolean,
+      default: false
+    }
   },
   components: {
     QuickActions
@@ -72,7 +76,6 @@ export default {
   data: function () {
     return {
       isThumbnailErrored: false,
-      selected: false,
       activeHover: true,
       titleOverflow: false,
       descriptionOverflow: false,
@@ -106,7 +109,10 @@ export default {
   },
   methods: {
     toggleSelection () {
-      this.selected = !this.selected;
+      this.$emit('toggleSelection', {
+        map: this.$props.map,
+        isSelected: !this.$props.isSelected
+      });
     },
     toggleFavorite () {
       if (this.$props.map.liked) {

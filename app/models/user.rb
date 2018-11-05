@@ -614,7 +614,6 @@ class User < Sequel::Model
 
     # Must be set AFTER validations
     set_last_password_change_date
-    reset_password_rate_limit
 
     self.password = new_password_value
   end
@@ -681,6 +680,7 @@ class User < Sequel::Model
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
+    reset_password_rate_limit
   end
 
   # Database configuration setup

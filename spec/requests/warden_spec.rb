@@ -147,18 +147,8 @@ describe 'Warden' do
     end
   end
 
-  describe 'login locked' do
+  shared_examples_for 'login locked' do
     include HelperMethods
-
-    before(:all) do
-      @user = FactoryGirl.create(:valid_user)
-      @user.password = @user.password_confirmation = 'qwaszx'
-      @user.save
-    end
-
-    after(:all) do
-      @user.destroy
-    end
 
     before(:each) do
       SessionsController.any_instance.stubs(:central_enabled?).returns(false)
@@ -257,14 +247,45 @@ describe 'Warden' do
 
         old_password = @user.password
         new_password = '12345678'
-        @user.change_password(old_password, new_password, new_password)
+        @user.password = new_password
+        @user.password_confirmation = new_password
+
         @user.save
 
         login
         expect_login
 
-        @user.change_password(new_password, old_password, old_password)
+        @user.password = old_password
+        @user.password_confirmation = old_password
         @user.save
+      end
+    end
+  end
+
+  describe 'with Sequel user' do
+    it_behaves_like 'login locked' do
+      before(:all) do
+        @user = FactoryGirl.create(:valid_user)
+        @user.password = @user.password_confirmation = 'qwaszx'
+        @user.save
+      end
+
+      after(:all) do
+        @user.destroy
+      end
+    end
+  end
+
+  describe 'with AR user' do
+    it_behaves_like 'login locked' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @user.password = @user.password_confirmation = 'qwaszx'
+        @user.save
+      end
+
+      after(:all) do
+        @user.destroy
       end
     end
   end

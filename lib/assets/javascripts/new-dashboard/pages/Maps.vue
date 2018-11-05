@@ -2,7 +2,7 @@
 <section class="section">
   <div class="maps-list-container container grid">
     <div class="grid-cell grid-cell--col12">
-      <SectionTitle title='Your Maps' description="This is a description test">
+      <SectionTitle title='Your Maps' :showActionButton="!selectedMaps.length">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
@@ -18,7 +18,7 @@
           </button>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="maps" v-if="!selectedMaps.length">New map</CreateButton>
+          <CreateButton visualizationType="maps" >New map</CreateButton>
         </template>
       </SectionTitle>
     </div>

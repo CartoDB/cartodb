@@ -6,6 +6,13 @@
   <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 <% end %>
 
+<script>
+  setTimeout(() => {
+    window.location = '/logout';
+  }, 120 * 1000);
+
+</script>
+
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
@@ -60,7 +67,7 @@
                   <% end %>
 
                   <div class="Sessions-field">
-                    <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+                    <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "js-verification CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

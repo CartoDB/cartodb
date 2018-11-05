@@ -102,13 +102,13 @@ class SessionsController < ApplicationController
     @login_error = if params[:code].presence
                      'Verification code is not valid'
                    else
-                     (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+                     params[:email].blank? && params[:password].blank? ? 'Can\'t be blank' : 'Your account or your password is not ok'
                    end
 
     respond_to do |format|
       format.html do
         return mfa if params[:code].presence
-        render :action => 'new' and return
+        return render action: 'new'
       end
       format.json do
         head :unauthorized

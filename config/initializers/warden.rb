@@ -55,7 +55,7 @@ Warden::Strategies.add(:mfa) do
     if params[:code] && params[:user_id]
       user = ::User.where(id: params[:user_id]).first
       user.user_multifactor_auths.first.verify!(params[:code])
-      success!(user, :message => "Success")
+      success!(user, message: "Success")
     else
       fail!
     end

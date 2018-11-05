@@ -7,12 +7,18 @@
           <img src="../assets/icons/section-title/map.svg">
         </template>
         <template slot="dropdownButton">
-          <button class="button button--ghost">
+          <MapBulkActions
+            :selectedMaps="selectedMaps"
+            v-if="selectedMaps.length"
+            @selectAll="selectAll"
+            @deselectAll="deselectAll"></MapBulkActions>
+
+          <button class="button button--ghost" v-if="!selectedMaps.length">
             Filters
           </button>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="maps">New map</CreateButton>
+          <CreateButton visualizationType="maps" v-if="!selectedMaps.length">New map</CreateButton>
         </template>
       </SectionTitle>
     </div>
@@ -25,7 +31,7 @@
 
     <ul class="grid" v-if="!isFetchingMaps">
       <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
-        <MapCard :map=map></MapCard>
+        <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
       </li>
     </ul>
   </div>
@@ -41,15 +47,22 @@ import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 
 export default {
   name: 'MapsPage',
   components: {
     CreateButton,
+    MapBulkActions,
     MapCard,
     MapCardFake,
     SectionTitle,
     Pagination
+  },
+  data () {
+    return {
+      selectedMaps: []
+    };
   },
   computed: mapState({
     numPages: state => state.maps.numPages,
@@ -61,6 +74,7 @@ export default {
   }),
   methods: {
     goToPage (page) {
+      this.selectedMaps = [];
       this.$store.dispatch('maps/goToPage', page);
     },
     filterLockedMaps () {
@@ -74,6 +88,23 @@ export default {
     },
     resetFilters () {
       this.$store.dispatch('maps/resetFilters');
+    },
+    toggleSelected ({ map, isSelected }) {
+      if (isSelected) {
+        this.selectedMaps.push(map);
+        return;
+      }
+
+      this.selectedMaps = this.selectedMaps.filter(selectedMap => selectedMap.id !== map.id);
+    },
+    selectAll () {
+      this.selectedMaps = [...Object.values(this.$store.state.maps.list)];
+    },
+    deselectAll () {
+      this.selectedMaps = [];
+    },
+    isMapSelected (map) {
+      return this.selectedMaps.some(selectedMap => selectedMap.id === map.id);
     }
   }
 };

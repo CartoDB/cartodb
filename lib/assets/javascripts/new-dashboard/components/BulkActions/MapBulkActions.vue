@@ -3,14 +3,8 @@
 </template>
 
 <script>
-import Dialog from 'new-dashboard/components/Backbone/Dialog.vue';
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
-
-// Dialogs
-import ChangePrivacy from 'new-dashboard/components/Backbone/Dialogs/ChangePrivacy';
-import DuplicateMap from 'new-dashboard/components/Backbone/Dialogs/DuplicateMap';
-import LockMap from 'new-dashboard/components/Backbone/Dialogs/LockMap';
-import DeleteDialog from 'new-dashboard/components/Backbone/Dialogs/DeleteDialog';
+import * as DialogActions from 'new-dashboard/core/dialog-actions';
 
 export default {
   name: 'MapBulkActions',
@@ -81,88 +75,22 @@ export default {
       this.$emit('deselectAll');
     },
     changePrivacy () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <ChangePrivacy :visualization="visualization" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualization'],
-          components: { Dialog, ChangePrivacy }
-        },
-        { visualization: this.selectedMaps[0] }
-      );
+      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
     },
     duplicateMap () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <DuplicateMap :visualization="visualization" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualization'],
-          components: { Dialog, DuplicateMap }
-        },
-        { visualization: this.selectedMaps[0] }
-      );
+      DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
     },
     lockMap () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <LockMap :visualization="visualization" :contentType="contentType" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualization', 'contentType'],
-          components: { Dialog, LockMap }
-        },
-        { visualization: this.selectedMaps[0], contentType: 'maps' }
-      );
-    },
-    lockMaps () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <LockMap :visualizations="visualization" :contentType="contentType" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualization', 'contentType'],
-          components: { Dialog, LockMap }
-        },
-        { visualization: this.selectedMaps, contentType: 'maps' }
-      );
+      DialogActions.lockVisualization.apply(this, [this.selectedMaps[0], 'maps']);
     },
     deleteMap () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <DeleteDialog :visualization="visualization" :contentType="contentType" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualization', 'contentType'],
-          components: { Dialog, DeleteDialog }
-        },
-        {
-          visualization: this.selectedMaps[0],
-          contentType: 'maps'
-        }
-      );
+      DialogActions.deleteVisualization.apply(this, [this.selectedMaps[0], 'maps']);
+    },
+    lockMaps () {
+      DialogActions.lockVisualizations.apply(this, [this.selectedMaps, 'maps']);
     },
     deleteMaps () {
-      this.showModal(
-        {
-          template: `
-          <Dialog v-on:close="$emit('close')">
-            <DeleteDialog :visualizations="visualizations" :contentType="contentType" v-on:close="$emit('close')"/>
-          </Dialog>`,
-          props: ['visualizations', 'contentType'],
-          components: { Dialog, DeleteDialog }
-        },
-        {
-          visualizations: this.selectedMaps,
-          contentType: 'maps'
-        }
-      );
+      DialogActions.deleteVisualizations.apply(this, [this.selectedMaps, 'maps']);
     }
   }
 };

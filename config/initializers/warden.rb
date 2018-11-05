@@ -28,7 +28,7 @@ module CartoStrategy
   end
 
   def force_skip_multifactor_authentication(user)
-    if skip_multifactor_authentication? && user.mfa_configured?
+    if skip_multifactor_authentication? && user.multifactor_authentication_configured?
       throw(:warden, action: :skip_mulfifactor_authentication, user_id: user.id)
     end
   end

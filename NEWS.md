@@ -7,6 +7,7 @@ Development
 ### Features
 - MFA (WIP)
   - Migration, models and controllers (#14335)
+  - Login (#14336)
 - Forgot password (#14333)
 - OAuth provider (WIP):
   - Add scopes for accessing datasets (#14292)

@@ -88,8 +88,8 @@ module CartoGearsApi
         user.password_confirmation = new_password
 
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.errors.empty?
-
-        user.save
+        user.save(raise_on_failure: true)
+        user.update_in_central
       end
 
       private

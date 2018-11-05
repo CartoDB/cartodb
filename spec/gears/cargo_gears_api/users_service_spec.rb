@@ -89,6 +89,22 @@ describe CartoGearsApi::Users::UsersService do
           service.change_password(@user.id, 'my_pass')
         }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /the same/)
       end
+
+      it 'raises an exception if the save operation fails' do
+        User.any_instance.stubs(:save).raises(Sequel::ValidationFailed, 'Saving error')
+
+        expect {
+          service.change_password(@user.id, 'new_password')
+        }.to raise_error(Sequel::ValidationFailed, 'Saving error')
+      end
+
+      it 'raises an exception if update_in_central operation fails' do
+        User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure, 'Updating error')
+
+        expect {
+          service.change_password(@user.id, 'new_password')
+        }.to raise_error(CartoDB::CentralCommunicationFailure)
+      end
     end
   end
 end

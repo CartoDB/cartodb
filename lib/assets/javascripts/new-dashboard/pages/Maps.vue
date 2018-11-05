@@ -1,7 +1,17 @@
 <template>
-<section class="section">
+<section class="section section--sticky-header">
+  <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
+    <h2 class="title is-caption">
+      {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
+    </h2>
+    <MapBulkActions
+      :selectedMaps="selectedMaps"
+      @selectAll="selectAll"
+      @deselectAll="deselectAll"></MapBulkActions>
+  </StickySubheader>
+
   <div class="maps-list-container container grid">
-    <div class="grid-cell grid-cell--col12">
+    <div class="grid-cell grid-cell--col12" ref="headerContainer">
       <SectionTitle title='Your Maps' :showActionButton="!selectedMaps.length">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
@@ -45,6 +55,7 @@ import { mapState } from 'vuex';
 import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
+import StickySubheader from '../components/StickySubheader';
 import Pagination from 'new-dashboard/components/Pagination';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
@@ -57,10 +68,20 @@ export default {
     MapCard,
     MapCardFake,
     SectionTitle,
+    StickySubheader,
     Pagination
+  },
+  mounted () {
+    this.stickyScrollPosition = this.getHeaderBottomPageOffset();
+    this.$onScrollChange = this.onScrollChange.bind(this);
+    document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+  },
+  beforeDestroy () {
+    document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   data () {
     return {
+      isScrollPastHeader: false,
       selectedMaps: []
     };
   },
@@ -105,6 +126,13 @@ export default {
     },
     isMapSelected (map) {
       return this.selectedMaps.some(selectedMap => selectedMap.id === map.id);
+    },
+    onScrollChange () {
+      this.isScrollPastHeader = window.pageYOffset > this.stickyScrollPosition;
+    },
+    getHeaderBottomPageOffset () {
+      const headerClientRect = this.$refs.headerContainer.getBoundingClientRect();
+      return headerClientRect.top + headerClientRect.height;
     }
   }
 };

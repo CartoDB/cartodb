@@ -11,6 +11,7 @@
     "lastUpdate": "Updated {date} ago"
   },
   "BulkActions": {
+    "selected": "{count} selected",
     "maps": {
       "selectAllMaps": "Select all",
       "deselectAllMaps": "Deselect all",

@@ -17,12 +17,12 @@
             {{ $t('FilterDropdown.types.yourMaps', { count: metadata.total_user_entries }) }}
           </a>
         </li>
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }" v-if="metadata.total_shared">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('shared') }" @click="setFilter('shared')">
             {{ $t('FilterDropdown.types.shared', { count: metadata.total_shared }) }}
           </a>
         </li>
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }" v-if="metadata.total_likes">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
             {{ $t('FilterDropdown.types.favorited', { count: metadata.total_likes }) }}
           </a>

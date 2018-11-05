@@ -1856,7 +1856,7 @@ class User < Sequel::Model
     last_password_change_date || created_at
   end
 
-  def mfa_configured?
+  def multifactor_authentication_configured?
     user_multifactor_auths.any?
   end
 

@@ -27,6 +27,8 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)/login' => 'sessions#new',     as: :login
   match '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout, via: [:get, :post]
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session, via: [:get, :post]
+  get '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication',  as: :multifactor_authentication_session
+  post '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication_verify_code',  as: :multifactor_authentication_verify_code
 
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'

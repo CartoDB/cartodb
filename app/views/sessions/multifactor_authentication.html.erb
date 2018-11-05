@@ -6,13 +6,6 @@
   <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 <% end %>
 
-<script>
-  setTimeout(() => {
-    window.location = '/logout';
-  }, 120 * 1000);
-
-</script>
-
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
     <div class="Sessions-inner">
@@ -54,7 +47,7 @@
             <% end %>
 
             <div class="Sessions-form">
-              <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
+              <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>
 
                 <%= hidden_field_tag 'user_id', @user.id %>
                 <%= hidden_field_tag 'email', @user.username %>
@@ -139,12 +132,19 @@
   <% end %>
 
   <% if @user.organization_owner? %>
-    <footer class="Sessions-footer">
-      <div class="u-inner">
-        <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">If you have some issues with the configuration you can <%= link_to 'skip this step', '#', onclick: 'alert("Please no!")' %></p>
+    <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>
+
+      <%= hidden_field_tag 'user_id', @user.id %>
+      <%= hidden_field_tag 'email', @user.username %>
+      <%= hidden_field_tag 'skip', true %>
+
+      <footer class="Sessions-footer">
+        <div class="u-inner">
+          <div class="Sessions-notloggedin is-active">
+            <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">If you have some issues with the configuration you can <%= link_to 'skip this step', '#', class: 'js-skipMfa-link' %></p>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+    <% end %>
   <% end %>
 </div>

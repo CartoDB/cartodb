@@ -691,7 +691,7 @@ class Carto::User < ActiveRecord::Base
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
   end
 
-  def mfa_configured?
+  def multifactor_authentication_configured?
     user_multifactor_auths.any?
   end
 

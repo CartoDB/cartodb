@@ -13,6 +13,10 @@ end
 # - Include this module
 # - Override the methods as needed
 module CartoStrategy
+  def skip_multifactor_authentication?
+    true
+  end
+
   def affected_by_password_expiration?
     true
   end
@@ -20,6 +24,12 @@ module CartoStrategy
   def check_password_expired(user)
     if affected_by_password_expiration? && user.password_expired?
       throw(:warden, action: :password_change, username: user.username)
+    end
+  end
+
+  def force_skip_multifactor_authentication(user)
+    if skip_multifactor_authentication? && user.mfa_configured?
+      throw(:warden, action: :skip_mulfifactor_authentication, user_id: user.id)
     end
   end
 
@@ -46,24 +56,6 @@ class Warden::SessionSerializer
   end
 end
 
-Warden::Strategies.add(:mfa) do
-  include Carto::UserAuthenticator
-  include Carto::EmailCleaner
-  include CartoStrategy
-
-  def authenticate!
-    if params[:code] && params[:user_id]
-      user = ::User.where(id: params[:user_id]).first
-      user.user_multifactor_auths.first.verify!(params[:code])
-      success!(user, message: "Success")
-    else
-      fail!
-    end
-  rescue Carto::UnauthorizedError
-    fail!
-  end
-end
-
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
@@ -73,13 +65,14 @@ Warden::Strategies.add(:password) do
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
 
+  def skip_multifactor_authentication?
+    false
+  end
+
   def authenticate!
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
         if user.enabled? && valid_password_strategy_for_user(user)
-          if user.mfa_configured?
-            throw(:warden, action: 'mfa', user_id: user.id)
-          end
           trigger_login_event(user)
 
           success!(user, :message => "Success")
@@ -125,6 +118,10 @@ Warden::Strategies.add(:oauth) do
 
   def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
+  end
+
+  def skip_multifactor_authentication?
+    false
   end
 
   def authenticate!
@@ -277,6 +274,10 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  if user.multifactor_authentication_configured?
+    auth.session(opts[:scope])[:multifactor_authentication_required] = true
+    auth.session(opts[:scope])[:multifactor_authentication_last_activity] = Time.now.to_i
+  end
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
   # Only at the editor, and only after new authentications, destroy other sessions

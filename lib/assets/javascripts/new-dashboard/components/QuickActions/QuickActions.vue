@@ -1,17 +1,14 @@
 <template>
   <div class="quick-actions">
     <a href="#" class="quick-actions-select" @click.prevent="toggleDropdown" :class="{'is-active' : isOpen}">
-      <img svg-inline src="../assets/icons/common/options.svg">
+      <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
     <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click.prevent="">
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">Quick actions</h6>
       <ul>
-        <li><a href="#" class="action text is-caption is-txtPrimary">Edit Name &amp; Description</a></li>
-        <li><a href="#" class="action text is-caption is-txtPrimary">Change Privacy</a></li>
-        <li><a href="#" class="action text is-caption is-txtPrimary">Manage Tags</a></li>
-        <li><a href="#" class="action text is-caption is-txtPrimary">Duplicate</a></li>
-        <li><a href="#" class="action text is-caption is-txtPrimary">Lock</a></li>
-        <li><a href="#" class="action text is-caption is-txtRed">Delete</a></li>
+        <li v-for="action in actions" :key="action.name">
+          <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="doAction(action.event)">{{action.name}}</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -26,7 +23,13 @@ export default {
       isOpen: false
     };
   },
+  props: {
+    actions: Array
+  },
   methods: {
+    doAction (action) {
+      this.$emit(action);
+    },
     toggleDropdown () {
       this.isOpen = !this.isOpen;
       if (this.isOpen) {

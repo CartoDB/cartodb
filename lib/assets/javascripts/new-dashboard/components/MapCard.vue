@@ -12,7 +12,7 @@
       </span>
     </span>
 
-    <QuickActions class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open-quickactions="openQuickactions" @close-quickactions="closeQuickactions"></QuickActions>
+    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open-quickactions="openQuickactions" @close-quickactions="closeQuickactions"></MapQuickActions>
 
     <div class="card-text">
       <div class="card-header">
@@ -59,7 +59,7 @@
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
-import QuickActions from 'new-dashboard/components/QuickActions';
+import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 
 export default {
   name: 'MapCard',
@@ -71,7 +71,7 @@ export default {
     }
   },
   components: {
-    QuickActions
+    MapQuickActions
   },
   data: function () {
     return {

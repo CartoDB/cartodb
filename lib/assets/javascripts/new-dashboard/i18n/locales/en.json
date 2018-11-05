@@ -10,6 +10,17 @@
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago"
   },
+  "QuickActions": {
+    "maps": {
+      "editInfo": "Edit Name & description",
+      "changePrivacy": "Change Privacy",
+      "manageTags": "Manage Tags",
+      "duplicate": "Duplicate",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "delete": "Delete"
+    }
+  },
   "BulkActions": {
     "maps": {
       "selectAllMaps": "Select all",

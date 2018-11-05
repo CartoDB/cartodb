@@ -67,6 +67,7 @@
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'MapCard',
@@ -115,7 +116,11 @@ export default {
       this.selected = !this.selected;
     },
     toggleFavorite () {
-      this.$props.map.liked = !this.$props.map.liked;
+      if (this.$props.map.liked) {
+        this.deleteLikeMap(this.$props.map);
+      } else {
+        this.likeMap(this.$props.map);
+      }
     },
     mouseOverChildElement () {
       this.activeHover = false;
@@ -125,7 +130,11 @@ export default {
     },
     onThumbnailError () {
       this.isThumbnailErrored = true;
-    }
+    },
+    ...mapActions({
+      likeMap: 'maps/likeMap',
+      deleteLikeMap: 'maps/deleteLikeMap'
+    })
   }
 };
 </script>
@@ -259,7 +268,7 @@ export default {
 
 .card-metadataItem {
   display: flex;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 
   a {
     color: $text-color;

@@ -119,8 +119,8 @@ module Carto
       end
 
       it 'is authorized only if all requested scopes are already granted' do
-        o1 = "datasets:rw:#{@t1.name}"
-        o2 = "datasets:rw:#{@t2.name}"
+        o1 = "datasets:rw:#{@carto_user.database_schema}.#{@t1.name}"
+        o2 = "datasets:rw:#{@carto_user.database_schema}.#{@t2.name}"
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 

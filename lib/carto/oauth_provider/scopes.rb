@@ -222,7 +222,7 @@ module Carto
         end
       end
 
-      def self.subtract_scopes(scopes1, scopes2, user)
+      def self.subtract_scopes(scopes1, scopes2, user_schema = public)
         datasets1 = {}
         non_datasets1 = []
         datasets2 = {}
@@ -231,7 +231,7 @@ module Carto
         scopes1.each do |scope|
           if DatasetsScope.is_a?(scope)
             table, schema, permissions = DatasetsScope.table_schema_permission(scope)
-            schema = user.database_schema if schema.nil?
+            schema = user_schema if schema.nil?
             schema_table = "#{schema}.#{table}"
 
             if (datasets1[schema_table].present? && datasets1[schema_table] === 'rw') || permissions === 'rw'
@@ -247,7 +247,7 @@ module Carto
         scopes2.each do |scope|
           if DatasetsScope.is_a?(scope)
             table, schema, permissions = DatasetsScope.table_schema_permission(scope)
-            schema = user.database_schema if schema.nil?
+            schema = user_schema if schema.nil?
             schema_table = "#{schema}.#{table}"
 
             if (datasets2[schema_table].present? && datasets2[schema_table] === 'rw') || permissions === 'rw'

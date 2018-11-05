@@ -48,7 +48,7 @@ module Carto
     rescue_from OauthProvider::Errors::BaseError, with: :rescue_oauth_errors
 
     def consent
-      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes)
+      return create_authorization_code if @oauth_app_user.try(:authorized?, @scopes, current_viewer)
       raise OauthProvider::Errors::AccessDenied.new if silent_flow?
 
       unless @oauth_app_user
@@ -56,7 +56,7 @@ module Carto
         validate_oauth_app_user(oauth_app_user)
       end
 
-      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:all_scopes))
     end
 
     def authorize

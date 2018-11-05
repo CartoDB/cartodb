@@ -25,26 +25,29 @@ export default {
           { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy' },
           { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap' },
           { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap' },
-          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap' }
+          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true }
         ],
         multiple: [
           { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll' },
           { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
           { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps' },
-          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps' }
+          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true }
         ],
         lock: [
           { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap' }
+        ],
+        multipleLock: [
+          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps' }
         ]
       }
     };
   },
   computed: {
     actionMode () {
-      const isAnyMapLocked = this.selectedMaps.some(map => map.locked);
+      const isAnyMapLocked = this.selectedMaps.filter(map => map.locked);
 
-      if (isAnyMapLocked) {
-        return 'lock';
+      if (isAnyMapLocked.length) {
+        return isAnyMapLocked.length > 1 ? 'multipleLock' : 'lock';
       }
 
       return this.selectedMaps.length > 1 ? 'multiple' : 'single';
@@ -80,14 +83,20 @@ export default {
     duplicateMap () {
       DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
     },
+    unlockMap () {
+      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps']);
+    },
     lockMap () {
-      DialogActions.lockVisualization.apply(this, [this.selectedMaps[0], 'maps']);
+      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps']);
     },
     deleteMap () {
       DialogActions.deleteVisualization.apply(this, [this.selectedMaps[0], 'maps']);
     },
+    unlockMaps () {
+      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps']);
+    },
     lockMaps () {
-      DialogActions.lockVisualizations.apply(this, [this.selectedMaps, 'maps']);
+      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps']);
     },
     deleteMaps () {
       DialogActions.deleteVisualizations.apply(this, [this.selectedMaps, 'maps']);

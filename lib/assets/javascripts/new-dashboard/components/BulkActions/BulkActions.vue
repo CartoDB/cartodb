@@ -2,7 +2,7 @@
   <section class="bulk-actions">
     <button
       class="button button--ghost"
-      :class="{'button--danger': action.isDestructive}"
+      :class="{'is-txtAlert': action.isDestructive}"
       v-for="action in actions"
       :key="action.event"
       @click="doAction(action.event)">

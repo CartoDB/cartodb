@@ -45,12 +45,6 @@ export default {
         { width: '100%', height: '100%' }
       );
     },
-    selectAll () {
-      this.$emit('selectAll');
-    },
-    deselectAll () {
-      this.$emit('deselectAll');
-    },
     editInfo () {
       DialogActions.editMapMetadata.apply(this, [this.map]);
     },

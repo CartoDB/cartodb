@@ -21,6 +21,25 @@ describe CartoGearsApi::Users::UsersService do
       it 'returns false if the password is incorrect' do
         service.valid_password?(@user.id, 'wrong').should be_false
       end
+
+      context 'with Google/Github sign in' do
+        before(:all) do
+          @user.google_sign_in = true
+          @user.last_password_change_date = nil
+          @user.save
+        end
+
+        after(:all) do
+          @user.google_sign_in = false
+          @user.save
+        end
+
+        it 'raises an error' do
+          expect {
+            service.valid_password?(@user.id, 'whatever')
+          }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /no password/)
+        end
+      end
     end
 
     describe '#change_password' do

@@ -60,8 +60,15 @@ module CartoGearsApi
       # @return [Boolean] true if the password matches with the user, false otherwise
       #
       # @raise [Errors::RecordNotFound] if the user could not be found in the database
+      # @raise [StandardError] if the user has no password set (Google/GitHub sign in)
       def valid_password?(user_id, password)
         user = find_user(user_id)
+
+        # raise CartoGearsApi::Errors::ValidationFailed.new(user.errors)
+        unless user.password_set?
+          user.errors.add(:password, "User has no password set")
+          raise CartoGearsApi::Errors::ValidationFailed.new(user.errors)
+        end
 
         user.validate_old_password(password)
       end

@@ -339,7 +339,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/password_resets_controller_spec.rb \
 	spec/models/carto/feature_flag_spec.rb \
 	spec/mailers/user_mailer_spec.rb \
-	spec/gears/cargo_gears_api/users_service_spec.rb \
+	spec/gears/carto_gears_api/users_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

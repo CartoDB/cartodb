@@ -202,15 +202,6 @@ module Carto
         result
       end
 
-      class ScopesValidator < ActiveModel::EachValidator
-        def validate_each(record, attribute, value)
-          return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
-
-          invalid_scopes = Scopes.invalid_scopes(value)
-          record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
-        end
-      end
-
       def self.scopes_by_category(new_scopes, previous_scopes)
         # If we had previous scopes, DEFAULT was already granted.
         previous_scopes = previous_scopes.nil? ? [] : previous_scopes + [SCOPE_DEFAULT]
@@ -228,6 +219,70 @@ module Carto
               }
             end
           }
+        end
+      end
+
+      def self.subtract_scopes(scopes1, scopes2, user)
+        datasets1 = {}
+        non_datasets1 = []
+        datasets2 = {}
+        non_datasets2 = []
+
+        scopes1.each do |scope|
+          if DatasetsScope.is_a?(scope)
+            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
+            schema = user.database_schema if schema.nil?
+            schema_table = "#{schema}.#{table}"
+
+            if (datasets1[schema_table].present? && datasets1[schema_table] === 'rw') || permissions === 'rw'
+              datasets1[schema_table] = 'rw'
+            else
+              datasets1[schema_table] = permissions
+            end
+          else
+            non_datasets1 << scope
+          end
+        end
+
+        scopes2.each do |scope|
+          if DatasetsScope.is_a?(scope)
+            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
+            schema = user.database_schema if schema.nil?
+            schema_table = "#{schema}.#{table}"
+
+            if (datasets2[schema_table].present? && datasets2[schema_table] === 'rw') || permissions === 'rw'
+              datasets2[schema_table] = 'rw'
+            else
+              datasets2[schema_table] = permissions
+            end
+          else
+            non_datasets2 << scope
+          end
+        end
+
+        subtract_dataset_scopes(datasets1, datasets2)
+        datasets_results = []
+        unless datasets1.empty?
+          datasets1.each { |schema_table, permissions| datasets_results << "datasets:#{permissions}:#{schema_table}" }
+        end
+
+        datasets_results + (non_datasets1 - non_datasets2)
+      end
+
+      def self.subtract_dataset_scopes(datasets1, datasets2)
+        datasets2.each do |schema_table, permissions|
+          if datasets1[schema_table].present? && !(datasets1[schema_table] === 'rw' && permissions === 'r')
+            datasets1.delete(schema_table)
+          end
+        end
+      end
+
+      class ScopesValidator < ActiveModel::EachValidator
+        def validate_each(record, attribute, value)
+          return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
+
+          invalid_scopes = Scopes.invalid_scopes(value)
+          record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
         end
       end
     end

@@ -303,6 +303,78 @@ describe Carto::OauthProvider::Scopes do
     end
   end
 
+  describe '#subtract_scopes' do
+    it 'r - r' do
+      scopes1 = ['datasets:r:schema.table']
+      scopes2 = ['datasets:r:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it 'r - rw' do
+      scopes1 = ['datasets:r:schema.table']
+      scopes2 = ['datasets:rw:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it 'empties' do
+      scopes1 = []
+      scopes2 = []
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it 'rw - r' do
+      scopes1 = ['datasets:rw:schema.table']
+      scopes2 = ['datasets:r:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to(eq(scopes1))
+    end
+
+    it 'rw - rw' do
+      scopes1 = ['datasets:rw:schema.table']
+      scopes2 = ['datasets:rw:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it 'table1 - table2' do
+      scopes1 = ['datasets:rw:schema.table1']
+      scopes2 = ['datasets:rw:schema.table2']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to(eq(scopes1))
+    end
+
+    it 'table - empty' do
+      scopes1 = ['datasets:rw:schema.table']
+      scopes2 = []
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to(eq(scopes1))
+    end
+
+    it 'empty - table' do
+      scopes1 = []
+      scopes2 = ['datasets:rw:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it '(rw & profile) - r' do
+      scopes1 = ['datasets:rw:schema.table', 'user:profile']
+      scopes2 = ['datasets:r:schema.table']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to(eq(scopes1))
+    end
+
+    it 'profile - profile' do
+      scopes1 = ['user:profile']
+      scopes2 = ['user:profile']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+  end
+
   describe '#scopes_by_category' do
     include Carto::OauthProvider::Scopes
     before :all do
@@ -323,19 +395,12 @@ describe Carto::OauthProvider::Scopes do
         {
           description: "User and personal data",
           icon: nil,
-          scopes: [
-            {
-              description: "Username and organization name",
-              new: false
-            }
-          ]
+          scopes: [{ description: "Username and organization name", new: false }]
         },
         {
           description: "Access to your datasets",
           icon: nil,
-          scopes: [
-            { description: "user_table00000007 (read/write access)", new: false }
-          ]
+          scopes: [{ description: "user_table00000007 (read/write access)", new: false }]
         }
       ]))
     end

@@ -6,9 +6,11 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
-    "lastUpdate": "Updated {date} ago"
+    "lastUpdate": "Updated {date} ago",
+    "tags": "tags"
   },
   "BulkActions": {
     "selected": "{count} selected",

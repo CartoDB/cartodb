@@ -31,9 +31,14 @@
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="!isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
+        </li>
+
+        <li class="card-metadataItem text is-caption" v-if="isShared">
+          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
+          <p>{{ $t(`mapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">
@@ -44,15 +49,16 @@
         <li class="card-metadataItem text is-caption">
           <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList">
+          <ul class="card-tagList" v-if="tagsLength <= maxTags">
             <li v-for="(tag, index) in map.tags" :key="tag">
               <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
-            <li v-if="!hasTags">
+            <li v-if="!tagsLength">
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
+          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
         </li>
       </ul>
     </div>
@@ -62,6 +68,7 @@
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
+import FeaturesDropdown from './FeaturesDropdown';
 import { mapActions } from 'vuex';
 
 export default {
@@ -73,12 +80,16 @@ export default {
       default: false
     }
   },
+  components: {
+    FeaturesDropdown
+  },
   data: function () {
     return {
       isThumbnailErrored: false,
       activeHover: true,
       titleOverflow: false,
-      descriptionOverflow: false
+      descriptionOverflow: false,
+      maxTags: 3
     };
   },
   updated: function () {
@@ -99,11 +110,14 @@ export default {
     mapThumbnailUrl () {
       return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
     },
-    hasTags () {
-      return this.$props.map.tags && this.$props.map.tags.length;
+    tagsLength () {
+      return this.$props.map.tags ? this.$props.map.tags.length : 0;
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);
+    },
+    isShared () {
+      return Visualization.isShared(this.$props.map, this.$cartoModels);
     }
   },
   methods: {
@@ -309,6 +323,11 @@ export default {
 
     &.icon--password {
       background-image: url("../assets/icons/maps/privacy/password.svg");
+    }
+
+    &.icon--sharedBy {
+      border-radius: 2px;
+      background-size: contain;
     }
   }
 }

@@ -12,24 +12,21 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
       <h2 class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
         <p>mapCard.shared.PUBLIC</p>
       </li>
+      <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><a href="#">Hi</a><span>, </span></li>
-          <li><a href="#">Hello</a><span>, </span></li>
-          <li><a href="#">CARTO Rules</a>
-            <!---->
-          </li>
-          <!---->
+          <li><span>mapCard.noTags</span></li>
         </ul>
+        <!---->
       </li>
     </ul>
   </div>
@@ -38,77 +35,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
 
 exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card card--noHover">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
-    <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
-  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
-  <div class="card-text">
-    <div class="card-header">
-      <h2 class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    </div>
-    <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
-      </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
-      </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
-          <li><a href="#">Hi</a><span>, </span></li>
-          <li><a href="#">Hello</a><span>, </span></li>
-          <li><a href="#">CARTO Rules</a>
-            <!---->
-          </li>
-          <!---->
-        </ul>
-      </li>
-    </ul>
-  </div>
-</a>
-`;
-
-exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
-    <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
-  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
-  <div class="card-text">
-    <div class="card-header">
-      <h2 class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-    </div>
-    <ul class="card-metadata">
-      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
-      </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
-      </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
-          <li><a href="#">Hi</a><span>, </span></li>
-          <li><a href="#">Hello</a><span>, </span></li>
-          <li><a href="#">CARTO Rules</a>
-            <!---->
-          </li>
-          <!---->
-        </ul>
-      </li>
-    </ul>
-  </div>
-</a>
-`;
-
-exports[`MapCard.vue should render correct contents 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card selected">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
@@ -123,6 +50,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
         <p>mapCard.shared.PUBLIC</p>
       </li>
+      <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
       </li>
@@ -130,15 +58,80 @@ exports[`MapCard.vue should render correct contents 1`] = `
         <ul class="card-tagList">
           <li><span>mapCard.noTags</span></li>
         </ul>
+        <!---->
       </li>
     </ul>
   </div>
 </a>
 `;
 
-exports[`MapCard.vue should render description and tags 1`] = `
+exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
-  <div class="card-media"><img src="http://undefined/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+    <!---->
+  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
+  <div class="card-text">
+    <div class="card-header">
+      <h2 class="card-title title is-caption">
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+    </div>
+    <ul class="card-metadata">
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
+      </li>
+      <!---->
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
+        <p>mapCard.lastUpdate</p>
+      </li>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
+        <ul class="card-tagList">
+          <li><span>mapCard.noTags</span></li>
+        </ul>
+        <!---->
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`MapCard.vue should render correct contents 1`] = `
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card selected">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+    <!---->
+  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
+  <div class="card-text">
+    <div class="card-header">
+      <h2 class="card-title title is-caption">
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+    </div>
+    <ul class="card-metadata">
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
+      </li>
+      <!---->
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
+        <p>mapCard.lastUpdate</p>
+      </li>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
+        <ul class="card-tagList">
+          <li><span>mapCard.noTags</span></li>
+        </ul>
+        <!---->
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`MapCard.vue should render description and tag dropdown 1`] = `
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
@@ -153,6 +146,37 @@ exports[`MapCard.vue should render description and tags 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
         <p>mapCard.shared.PUBLIC</p>
       </li>
+      <!---->
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
+        <p>mapCard.lastUpdate</p>
+      </li>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
+        <!---->
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="mapCard.tags"></featuresdropdown-stub>
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`MapCard.vue should render description and tags 1`] = `
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+    <!---->
+  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
+  <div class="card-text">
+    <div class="card-header">
+      <h2 class="card-title title is-caption">
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    </div>
+    <ul class="card-metadata">
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
+        <p>mapCard.shared.PUBLIC</p>
+      </li>
+      <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
         <p>mapCard.lastUpdate</p>
       </li>
@@ -165,6 +189,39 @@ exports[`MapCard.vue should render description and tags 1`] = `
           </li>
           <!---->
         </ul>
+        <!---->
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`MapCard.vue should show the map is shared 1`] = `
+<a href="http://cdb.localhost.lan:3000/viz/hello.e97e0001-f1c2-425e-8c9b-0fb28da59200" class="card map-card">
+  <div class="card-media"><img src="http://cdb.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+    <!---->
+  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  <div class="card-actions"><span class="card-actionsSelect"><img src="../assets/icons/common/options.svg"></span></div>
+  <div class="card-text">
+    <div class="card-header">
+      <h2 class="card-title title is-caption">
+        First Map&nbsp;
+        <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
+      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+    </div>
+    <ul class="card-metadata">
+      <!---->
+      <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--sharedBy" style="background-image: url(/assets/unversioned/images/avatars/avatar_mountain_green.png);"></span>
+        <p>mapCard.sharedBy</p>
+      </li>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
+        <p>mapCard.lastUpdate</p>
+      </li>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
+        <ul class="card-tagList">
+          <li><span>mapCard.noTags</span></li>
+        </ul>
+        <!---->
       </li>
     </ul>
   </div>

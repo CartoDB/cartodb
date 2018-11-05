@@ -101,6 +101,11 @@ module Carto
           @permission = permission.to_sym
         end
 
+        def name
+          schema_table = @schema.nil? ? @table : "#{@schema}.#{@table}"
+          "datasets:#{@permission}:#{schema_table}"
+        end
+
         def description(permission = @permission, table = @table)
           DESCRIPTIONS[permission] % { table_name: table }
         end
@@ -204,9 +209,11 @@ module Carto
 
       def self.scopes_by_category(new_scopes, previous_scopes)
         # If we had previous scopes, DEFAULT was already granted.
-        previous_scopes = previous_scopes.nil? ? [] : previous_scopes + [SCOPE_DEFAULT]
+        previous_scopes << SCOPE_DEFAULT if previous_scopes.any?
+        new_scopes_filtered = subtract_scopes(new_scopes, previous_scopes)
+        previous_scopes_filtered = subtract_scopes(previous_scopes, new_scopes_filtered)
 
-        all_scopes = ([SCOPE_DEFAULT] + new_scopes + previous_scopes).uniq
+        all_scopes = ([SCOPE_DEFAULT] + new_scopes_filtered + previous_scopes_filtered).uniq
         scopes_by_category = all_scopes.map { |s| build(s) }.group_by(&:category)
         scopes_by_category.map do |category, scopes|
           {
@@ -222,7 +229,7 @@ module Carto
         end
       end
 
-      def self.subtract_scopes(scopes1, scopes2, user_schema = public)
+      def self.subtract_scopes(scopes1, scopes2, user_schema = 'public')
         datasets1 = {}
         non_datasets1 = []
         datasets2 = {}

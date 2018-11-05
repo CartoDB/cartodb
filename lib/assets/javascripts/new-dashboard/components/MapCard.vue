@@ -31,9 +31,14 @@
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="!isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
+        </li>
+
+        <li class="card-metadataItem text is-caption" v-if="isShared">
+          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
+          <p>{{ $t(`mapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">
@@ -101,6 +106,9 @@ export default {
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);
+    },
+    isShared () {
+      return Visualization.isShared(this.$props.map, this.$cartoModels);
     }
   },
   methods: {
@@ -303,6 +311,11 @@ export default {
 
     &.icon--password {
       background-image: url("../assets/icons/maps/privacy/password.svg");
+    }
+
+    &.icon--sharedBy {
+      border-radius: 2px;
+      background-size: contain;
     }
   }
 }

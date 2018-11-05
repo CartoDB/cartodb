@@ -16,15 +16,15 @@
         </template>
       </SectionTitle>
 
-      <InitialState title="Create your first map to predict key insights" v-if="!isFetchingMaps && numResults <= 0">
+      <InitialState :title="$t(`mapCard.zeroCase.title`)" v-if="!isFetchingMaps && numResults <= 0">
         <template slot="icon">
           <img src="../assets/icons/maps/initialState.svg">
         </template>
         <template slot="description">
-          <p class="text is-caption is-txtGrey">Build your first Location Intelligence analysis or take a look to our <a href="https://carto.com/help">guides and help</a>.</p>
+          <p class="text is-caption is-txtGrey" v-html="$t(`mapCard.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="maps">Create your first map</CreateButton>
+          <CreateButton visualizationType="maps">{{ $t(`mapCard.zeroCase.createMap`) }}</CreateButton>
         </template>
       </InitialState>
 

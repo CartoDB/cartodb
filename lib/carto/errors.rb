@@ -59,6 +59,13 @@ module Carto
     end
   end
 
+  class RelationDoesNotExistError < UnprocesableEntityError
+    def initialize(error_messages, error_relations)
+      super(error_messages.join(', '))
+      @user_message = "The following datasets don't exist: #{error_relations.join(', ')}"
+    end
+  end
+
   class MissingParamsError < CartoError
     def initialize(missing_params, status: 400)
       super("The following required params are missing: #{missing_params.join(', ')}", status)

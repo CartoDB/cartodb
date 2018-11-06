@@ -10,11 +10,52 @@
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
-    "tags": "tags",
+    "tags": "tags"
+  },
+  "MapsPage": {
+    "header": {
+      "titleWhenFilterApplied": {
+        "default": "Your Maps",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
+        "locked": "Your Locked Maps",
+        "publicPrivacy": "Your public maps",
+        "linkPrivacy": "Your link-shared maps",
+        "passwordPrivacy": "Your password-protected maps",
+        "privatePrivacy": "Your private maps"
+      }
+    },
     "zeroCase": {
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
       "createMap": "Create your first map"
+    }
+  },
+  "FilterDropdown": {
+    "showMe": "Show me",
+    "orderMaps": "Order",
+    "types": {
+      "yourMaps": "Your maps",
+      "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
+      "locked": "Locked",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    },
+    "order": {
+      "favourites": "Favourites first",
+      "alphabetical": {
+        "title": "Alphabetically",
+        "A-Z": "A-Z",
+        "Z-A": "Z-A"
+      },
+      "date": {
+        "title": "Date Modified",
+        "last": "Last",
+        "first": "First"
+      }
     }
   }
 }

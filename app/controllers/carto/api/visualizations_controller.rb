@@ -54,6 +54,7 @@ module Carto
       before_filter :load_common_data, only: [:index]
 
       rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::OrderDirectionParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -82,8 +83,7 @@ module Carto
       end
 
       def index
-        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
-        order_direction = params.fetch(:order_direction, :desc).to_sym
+        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 

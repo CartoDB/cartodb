@@ -1,6 +1,5 @@
 # coding: UTF-8
 
-require_relative '../acceptance_helper'
 require_relative '../spec_helper_min'
 
 feature "Forgot password" do
@@ -11,7 +10,6 @@ feature "Forgot password" do
   end
 
   before(:each) do
-    Capybara.current_driver = :rack_test
     visit login_path
     click_link 'Forgot?'
     fill_in 'email', with: @user.email

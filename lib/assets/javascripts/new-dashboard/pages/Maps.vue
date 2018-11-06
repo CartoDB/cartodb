@@ -16,8 +16,8 @@
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="!isFetchingMaps && numResults <= 0">
-        <InitialState :title="$t(`mapCard.zeroCase.title`)" >
+      <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
+        <InitialState :title="$t(`mapCard.zeroCase.title`)">
           <template slot="icon">
             <img src="../assets/icons/maps/initialState.svg">
           </template>
@@ -74,7 +74,9 @@ export default {
     isFetchingMaps: state => state.maps.isFetching,
     featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
     isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
-    numResults: state => state.maps.metadata.total_entries
+    numResults: state => state.maps.metadata.total_entries,
+    filterType: state => state.maps.filterType,
+    totalUserEntries: state => state.maps.metadata.total_user_entries
   }),
   methods: {
     goToPage (page) {
@@ -91,6 +93,9 @@ export default {
     },
     resetFilters () {
       this.$store.dispatch('maps/resetFilters');
+    },
+    hasFilterApplied (filter) {
+      return this.filterType === filter;
     }
   }
 };

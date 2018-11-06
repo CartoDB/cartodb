@@ -12,7 +12,7 @@
       </span>
     </span>
 
-    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open-quickactions="openQuickactions" @close-quickactions="closeQuickactions"></MapQuickActions>
+    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @openQuickactions="openQuickactions" @closeQuickactions="closeQuickactions"></MapQuickActions>
 
     <div class="card-text">
       <div class="card-header">

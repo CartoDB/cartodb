@@ -1,5 +1,5 @@
 <template>
-  <QuickActions :actions="actions" v-on="getEventListeners()"></QuickActions>
+  <QuickActions :actions="actions" v-on="getEventListeners()" @openQuickactions="openQuickactions" @closeQuickactions="closeQuickactions"></QuickActions>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
   props: {
     map: Object
   },
-  data () {
+  data: function () {
     return {
       actions: [
         { name: this.$t('QuickActions.maps.editInfo'), event: 'editInfo' },
@@ -30,7 +30,6 @@ export default {
     getEventListeners () {
       const events = this.actions.map(action => action.event);
 
-      console.log(events);
       return events.reduce(
         (eventListeners, action) => {
           eventListeners[action] = this[action].bind(this);
@@ -44,6 +43,12 @@ export default {
         componentPropsData,
         { width: '100%', height: '100%' }
       );
+    },
+    openQuickactions () {
+      this.$emit('openQuickactions');
+    },
+    closeQuickactions () {
+      this.$emit('closeQuickactions');
     },
     editInfo () {
       DialogActions.editMapMetadata.apply(this, [this.map]);

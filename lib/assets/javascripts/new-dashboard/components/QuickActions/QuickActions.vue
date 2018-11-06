@@ -33,14 +33,14 @@ export default {
     toggleDropdown () {
       this.isOpen = !this.isOpen;
       if (this.isOpen) {
-        this.$emit('open-quickactions');
+        this.$emit('openQuickactions');
       } else {
-        this.$emit('close-quickactions');
+        this.$emit('closeQuickactions');
       }
     },
     closeDropdown () {
       this.isOpen = false;
-      this.$emit('close-quickactions');
+      this.$emit('closeQuickactions');
     }
   }
 };

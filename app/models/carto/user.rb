@@ -719,7 +719,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def active_multifactor_authentication
-    user_multifactor_auths.first
+    user_multifactor_auths.order(created_at: :desc).first
   end
 
   private

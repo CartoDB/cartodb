@@ -16,7 +16,7 @@
               <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
             </div>
 
-            <% if @mfa.disabled? %>
+            <% if @mfa.needs_setup? %>
               <div class="Sessions-centered Sessions-noMargin">
                 <img class="qr Sessions-toggle is-active" src="<%= @mfa.qr_code %>">
                 <div class="Sessions-sharedSecretContainer Sessions-toggle">

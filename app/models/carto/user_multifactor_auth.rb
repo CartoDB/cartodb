@@ -28,6 +28,10 @@ module Carto
       !enabled
     end
 
+    def needs_setup?
+      disabled?
+    end
+
     def provisioning_uri
       totp.provisioning_uri(user.username)
     end

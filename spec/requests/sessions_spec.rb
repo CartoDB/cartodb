@@ -116,40 +116,134 @@ feature "Sessions" do
     end
   end
 
-  describe 'valid user with MFA' do
+  describe 'Multifactor Authentication' do
+    shared_examples_for 'login with MFA' do
+      scenario "Login in the application with MFA that needs setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-    before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
-      @user.save!
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa_setup.email
+        fill_in 'password', with: @user_mfa_setup.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.should have_content(@user_mfa_setup.user_multifactor_auths.first.shared_secret)
+        page.body.should include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.should have_content("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa_setup.user_multifactor_auths.first.shared_secret).now
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.should_not have_content(@user_mfa_setup.user_multifactor_auths.first.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should_not include("Verification code")
+        page.should_not have_content("Use Google Authenticator app to scan the QR code")
+      end
+
+      scenario "Login in the application with MFA that does not need setup" do
+        # we use this to avoid generating the static assets in CI
+
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa.email
+        fill_in 'password', with: @user_mfa.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.should_not have_content("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa.user_multifactor_auths.first.shared_secret).now
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should_not include("Verification code")
+        page.should_not have_content("Use Google Authenticator app to scan the QR code")
+      end
+
+      scenario "Failed login in the application with MFA that does not need setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa.email
+        fill_in 'password', with: @user_mfa.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.should_not have_content("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: 'wrong_code'
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.body.should include("Verification code")
+        page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
+        page.should have_css("[@data-content='Verification code is not valid']")
+      end
     end
 
-    after(:all) do
-      @user.destroy
+    describe 'valid user with MFA' do
+      before(:all) do
+        @user_mfa_setup = FactoryGirl.create(:carto_user_mfa_setup)
+        @user_mfa = FactoryGirl.create(:carto_user_mfa)
+      end
+
+      after(:all) do
+        @user_mfa_setup.destroy
+        @user_mfa.destroy
+      end
+
+      it_behaves_like 'login with MFA'
     end
 
-    scenario "Login in the application" do
-      # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+    describe 'org owner with MFA' do
+      it_behaves_like 'login with MFA'
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @user_mfa = @organization.owner
+        @user_mfa_setup = @organization.users.last
+        mfa = @user_mfa_setup.user_multifactor_auths.first
+        mfa.enabled = false
+        mfa.save!
 
-      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
-      visit login_path
-      fill_in 'email', with: @user.email
-      fill_in 'password', with: @user.email.split('@').first
-      click_link_or_button 'Log in'
-      page.status_code.should eq 200
+        mfa = @user_mfa.user_multifactor_auths.first
+        mfa.enabled = true
+        mfa.save!
+      end
 
-      page.should have_content(@user.user_multifactor_auths.first.shared_secret)
-      page.body.should include("Verification code")
-      page.should have_content("Use Google Authenticator app to scan the QR code")
+      after(:all) do
+        @organization.destroy
+      end
 
-      fill_in 'code', with: ROTP::TOTP.new(@user.user_multifactor_auths.first.shared_secret).now
-      click_link_or_button 'Verify'
+      scenario "Organization owner has skip link" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
-      page.status_code.should eq 200
-      page.should_not have_content(@user.user_multifactor_auths.first.shared_secret)
-      page.body.should_not include("Verification code")
-      page.should_not have_content("Use Google Authenticator app to scan the QR code")
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @organization.owner.email
+        fill_in 'password', with: @organization.owner.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should include("Verification code")
+        page.body.should include("skip this step")
+      end
     end
   end
 

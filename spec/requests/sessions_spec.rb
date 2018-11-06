@@ -116,6 +116,43 @@ feature "Sessions" do
     end
   end
 
+  describe 'valid user with MFA' do
+
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
+      @user.save!
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    scenario "Login in the application" do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+      visit login_path
+      fill_in 'email', with: @user.email
+      fill_in 'password', with: @user.email.split('@').first
+      click_link_or_button 'Log in'
+      page.status_code.should eq 200
+
+      page.should have_content(@user.user_multifactor_auths.first.shared_secret)
+      page.body.should include("Verification code")
+      page.should have_content("Use Google Authenticator app to scan the QR code")
+
+      fill_in 'code', with: ROTP::TOTP.new(@user.user_multifactor_auths.first.shared_secret).now
+      click_link_or_button 'Verify'
+
+      page.status_code.should eq 200
+      page.should_not have_content(@user.user_multifactor_auths.first.shared_secret)
+      page.body.should_not include("Verification code")
+      page.should_not have_content("Use Google Authenticator app to scan the QR code")
+    end
+  end
+
   describe "Organization login" do
     include_context 'organization with users helper'
 

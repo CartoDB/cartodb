@@ -90,26 +90,6 @@
 
                 <% end %>
               <% end %>
-              <% if @oauth_configs.any? %>
-                <div class="Sessions-field Sessions-oauthHeader">
-                  <p>OR LOG IN WITH:</p>
-                </div>
-                <div class="Sessions-field Sessions-oauthContainer">
-                  <% @oauth_configs.each do |config| %>
-                    <%= render partial: config.button_template, locals: { config: config } %>
-                  <% end %>
-                </div>
-              <% end %>
-
-              <% if @user_login_url %>
-                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Not a member of the <%= @organization.name %> organization? Try the <a href="<%= @user_login_url %>"> general login</a> instead.
-                </p>
-              <% elsif @organization.try(:auth_username_password_enabled) %>
-                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Please, remember to use an email address belonging to this organization to login to your account.
-                </p>
-              <% end %>
             </div>
           </div>
         </div>
@@ -120,16 +100,6 @@
       </div>
     </div>
   </div>
-
-  <% if organization_signup_url.present? && !cartodb_com_hosted? %>
-    <footer class="Sessions-footer">
-      <div class="u-inner">
-        <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', organization_signup_url %></p>
-        </div>
-      </div>
-    </footer>
-  <% end %>
 
   <% if @user.organization_owner? %>
     <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>

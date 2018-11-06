@@ -82,6 +82,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
+    return render_multifactor_authentication if multifactor_authentication_required?(user)
     redirect_to after_login_url(user)
   end
 

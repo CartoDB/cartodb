@@ -435,6 +435,29 @@ describe SessionsController do
         cleanup
       end
     end
+
+    describe 'user with MFA' do
+      it_behaves_like 'SAML'
+
+      let(:user_domain) { nil }
+
+      before(:each) do
+        stub_domainful(@organization.name)
+      end
+
+      before(:all) do
+        create
+        @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
+        @user.save
+
+        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @admin_user.id)
+        @admin_user.save
+      end
+
+      after(:all) do
+        cleanup
+      end
+    end
   end
 
   describe '#login' do
@@ -530,6 +553,27 @@ describe SessionsController do
       it 'creates _cartodb_base_url cookie' do
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
         response.cookies['_cartodb_base_url'].should eq CartoDB.base_url(@user.username)
+      end
+    end
+
+    describe 'without Central and MFA configured' do
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      end
+
+      before(:all) do
+        @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
+        @user.save
+      end
+
+      after(:all) do
+        @user.user_multifactor_auths.each(&:destroy)
+      end
+
+      it 'redirects to MFA screen' do
+        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
+        response.status.should == 302
+        response.headers['Location'].should include '/multifactor_authentication'
       end
     end
 

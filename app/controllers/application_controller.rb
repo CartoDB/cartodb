@@ -203,9 +203,9 @@ class ApplicationController < ActionController::Base
       render_locked_owner if user.try(:locked?)
     elsif current_user.locked?
       render_locked_user
+    elsif multifactor_authentication_required?
+      render_multifactor_authentication
     end
-
-    render_multifactor_authentication if multifactor_authentication_required?
   end
 
   def render_403
@@ -241,8 +241,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def multifactor_authentication_required?
-    current_viewer && warden.session(current_viewer.username)[:multifactor_authentication_required] == true
+  def multifactor_authentication_required?(user = current_viewer)
+    user && warden.session(user.username)[:multifactor_authentication_required] == true
   rescue Warden::NotAuthenticated
     false
   end

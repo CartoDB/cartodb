@@ -11,8 +11,6 @@ module CartoDB
       # And appended anywhere in the querystring used as callback url with param "state=xxxxxx"
       CALLBACK_STATE_DATA_PLACEHOLDER = '__user__service__'
 
-      SUPPORTED_EXTENSIONS = CartoDB::Importer2::Unp::SUPPORTED_FORMATS
-
       attr_reader :config
 
       def initialize(config, user, mandatory_config_parameters, datasource_name)
@@ -79,6 +77,11 @@ module CartoDB
       def checksum_of(origin)
         #noinspection RubyArgCount
         Zlib::crc32(origin).to_s
+      end
+
+      def supported_extensions
+        CartoDB::Importer2::Unp::SUPPORTED_FORMATS
+        .concat(CartoDB::Importer2::Unp::COMPRESSED_EXTENSIONS)
       end
 
       private

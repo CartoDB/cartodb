@@ -1,7 +1,7 @@
 <template>
 <section class="section">
   <div class="maps-list-container container grid">
-    <div class="grid-cell--col12">
+    <div class="">
       <SectionTitle class="grid-cell" title='Your Maps' description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
@@ -16,17 +16,19 @@
         </template>
       </SectionTitle>
 
-      <InitialState :title="$t(`mapCard.zeroCase.title`)" v-if="!isFetchingMaps && numResults <= 0">
-        <template slot="icon">
-          <img src="../assets/icons/maps/initialState.svg">
-        </template>
-        <template slot="description">
-          <p class="text is-caption is-txtGrey" v-html="$t(`mapCard.zeroCase.description`)"></p>
-        </template>
-        <template slot="actionButton">
-          <CreateButton visualizationType="maps">{{ $t(`mapCard.zeroCase.createMap`) }}</CreateButton>
-        </template>
-      </InitialState>
+      <div class="grid-cell">
+        <InitialState :title="$t(`mapCard.zeroCase.title`)" >
+          <template slot="icon">
+            <img src="../assets/icons/maps/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`mapCard.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="maps">{{ $t(`mapCard.zeroCase.createMap`) }}</CreateButton>
+          </template>
+        </InitialState>
+      </div>
 
       <ul class="grid" v-if="isFetchingMaps">
         <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">

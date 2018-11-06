@@ -6,9 +6,11 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
+    "tags": "tags",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",

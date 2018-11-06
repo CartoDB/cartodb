@@ -31,7 +31,7 @@
     </ul>
     </div>
 
-    <Pagination v-if="!isFetchingDatasets" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
 
@@ -67,7 +67,8 @@ export default {
       appliedOrder: state => state.datasets.order,
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
-      isFetchingDatasets: state => state.datasets.isFetching
+      isFetchingDatasets: state => state.datasets.isFetching,
+      numResults: state => state.datasets.metadata.total_entries
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);

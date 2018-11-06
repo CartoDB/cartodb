@@ -1,7 +1,7 @@
 <template>
 <section class="section">
   <div class="maps-list-container container grid">
-    <div class="">
+    <div class="full-width">
       <SectionTitle class="grid-cell" title='Your Maps' description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
@@ -16,7 +16,7 @@
         </template>
       </SectionTitle>
 
-      <div class="grid-cell">
+      <div class="grid-cell" v-if="!isFetchingMaps && numResults <= 0">
         <InitialState :title="$t(`mapCard.zeroCase.title`)" >
           <template slot="icon">
             <img src="../assets/icons/maps/initialState.svg">
@@ -102,5 +102,9 @@ export default {
 
 .maps-list-container {
   margin-bottom: 44px;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>

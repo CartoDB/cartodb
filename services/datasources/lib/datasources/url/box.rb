@@ -374,7 +374,7 @@ module CartoDB
           self.filter = filter
 
           # Box doesn't have a way to "retrieve everything" but it supports whitespaces for multiple search terms
-          result = client.search(SUPPORTED_EXTENSIONS.join(' '),
+          result = client.search(supported_extensions.join(' '),
                                  scope: nil,
                                  file_extensions: nil,
                                  created_at_range: nil,

@@ -39,7 +39,7 @@ export default {
 .text-placeholder {
   width: 100%;
   height: 24px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   background-color: $softblue;
 
   &.text-placeholder--double {

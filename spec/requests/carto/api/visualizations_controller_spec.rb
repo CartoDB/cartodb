@@ -2847,7 +2847,8 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'orders results by name (descending by default)' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name'), {}, @headers
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              order: 'name'), {}, @headers
 
           last_response.status.should == 200
           response = JSON.parse(last_response.body)
@@ -2858,7 +2859,8 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'orders results by name descending' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name', order_direction: 'desc'), {}, @headers
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
+                                              order_direction: 'desc'), {}, @headers
 
           last_response.status.should == 200
           response = JSON.parse(last_response.body)
@@ -2869,7 +2871,8 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'orders results by name ascending' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name', order_direction: 'asc'), {}, @headers
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
+                                              order_direction: 'asc'), {}, @headers
 
           last_response.status.should == 200
           response = JSON.parse(last_response.body)

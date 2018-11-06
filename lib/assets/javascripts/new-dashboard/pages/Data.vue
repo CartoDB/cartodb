@@ -40,7 +40,7 @@ import { mapState } from 'vuex';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import { isAllowed } from '../store/datasets/filters';
+import { isAllowed } from '../core/filters';
 
 export default {
   name: 'DataPage',

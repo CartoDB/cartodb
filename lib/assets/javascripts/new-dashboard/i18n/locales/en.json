@@ -29,7 +29,8 @@
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
       "createMap": "Create your first map"
-    }
+    },
+    "emptyCase": "There are no maps here."
   },
   "FilterDropdown": {
     "showMe": "Show me",

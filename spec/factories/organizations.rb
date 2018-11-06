@@ -46,13 +46,15 @@ FactoryGirl.define do
       trait :mfa_enabled do
         after :create do |org|
           Carto::Organization.find(org.id).users.each do |user|
-            user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: user.id, enabled: true)
+            user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: user.id)
             user.save!
           end
         end
       end
 
-      factory :organization_with_users_mfa, traits: [:mfa_enabled]
+      factory :organization_with_users_mfa, traits: [:mfa_enabled] do
+        auth_username_password_enabled true
+      end
     end
 
     factory :saml_organization do

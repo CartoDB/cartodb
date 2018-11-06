@@ -447,10 +447,10 @@ describe SessionsController do
 
       before(:all) do
         create
-        @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
+        @user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user.id)
         @user.save
 
-        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @admin_user.id)
+        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @admin_user.id)
         @admin_user.save
       end
 
@@ -556,27 +556,6 @@ describe SessionsController do
       end
     end
 
-    describe 'without Central and MFA configured' do
-      before(:each) do
-        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-      end
-
-      before(:all) do
-        @user.user_multifactor_auths << FactoryGirl.create(:totp, user_id: @user.id)
-        @user.save
-      end
-
-      after(:all) do
-        @user.user_multifactor_auths.each(&:destroy)
-      end
-
-      it 'redirects to MFA screen' do
-        post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
-        response.status.should == 302
-        response.headers['Location'].should include '/multifactor_authentication'
-      end
-    end
-
     describe 'events' do
       # include HttpAuthenticationHelper
       require 'rack/test'
@@ -630,6 +609,204 @@ describe SessionsController do
         end
         post create_session_url(user_domain: @user.username, email: @user.username, password: @user.password)
       end
+    end
+  end
+
+  describe '#multifactor_authentication' do
+    include Warden::Test::Helpers
+    def login(user = @user)
+      logout
+      host! "#{user.username}.localhost.lan"
+      login_as(user, scope: user.username)
+    end
+
+    def create_session
+      post create_session_url(email: @user.username, password: @user.password)
+    end
+
+    def code
+      ROTP::TOTP.new(@user.active_multifactor_authentication.shared_secret).now
+    end
+
+    def expect_login
+      response.status.should eq 302
+      response.headers['Location'].should include "/dashboard"
+    end
+
+    def expect_multifactor_auth
+      response.status.should eq 302
+      response.headers['Location'].should include "/multifactor_authentication"
+    end
+
+    def expect_invalid_code
+      response.status.should eq 200
+      request.path.should include '/multifactor_authentication'
+      response.body.should include 'Verification code is not valid'
+    end
+
+    shared_examples_for 'all users workflow' do
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        @user.user_multifactor_auths.each(&:destroy)
+        @user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user.id)
+        @user.reload
+      end
+
+      after(:each) do
+        SessionsController::MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = 120.seconds
+      end
+
+      it 'redirects to MFA screen' do
+        create_session
+
+        expect_multifactor_auth
+      end
+
+      it 'verifies a valid code' do
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
+
+        expect_login
+      end
+
+      it 'does not verify an invalid code' do
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
+
+        expect_invalid_code
+      end
+
+      it 'does not verify an already used code' do
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
+        expect_login
+
+        logout
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
+
+        expect_invalid_code
+      end
+
+      it 'logout if user inactive' do
+        login
+
+        SessionsController::MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = -1
+        post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
+
+        response.status.should eq 302
+        response.headers['Location'].should include 'login?error=multifactor_authentication_inactivity'
+      end
+
+      it 'rate limits verification code' do
+        login
+
+        Cartodb.with_config(
+          passwords: {
+            'rate_limit' => {
+              'max_burst' => 0,
+              'count' => 1,
+              'period' => 10
+            }
+          }
+        ) do
+          post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
+          post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
+
+          response.status.should eq 302
+          response.headers['Location'].should include '/login?error=password_locked'
+        end
+      end
+
+      it 'allows to login after the locked password period' do
+        Cartodb.with_config(
+          passwords: {
+            'rate_limit' => {
+              'max_burst' => 0,
+              'count' => 1,
+              'period' => 3
+            }
+          }
+        ) do
+          @user.reset_password_rate_limit
+          login
+
+          post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
+          expect_invalid_code
+
+          post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
+          response.status.should eq 302
+          response.headers['Location'].should include '/login?error=password_locked'
+
+          sleep(4)
+
+          login
+          post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
+          expect_login
+        end
+      end
+    end
+
+    describe 'as individual user' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user_mfa)
+      end
+
+      after(:all) do
+        @user.destroy
+      end
+
+      it_behaves_like 'all users workflow'
+    end
+
+    describe 'as org owner' do
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @user = @organization.owner
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_session
+        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
+
+      it 'skips verification' do
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+        expect_login
+      end
+    end
+
+    describe 'as org user' do
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @user = @organization.users.last
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_session
+        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
     end
   end
 

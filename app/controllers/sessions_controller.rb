@@ -123,6 +123,7 @@ class SessionsController < ApplicationController
 
     user.active_multifactor_authentication.verify!(params[:code]) unless params[:skip]
     warden.session(user.username)[:multifactor_authentication_required] = false
+    user.reset_password_rate_limit
 
     redirect_to url
   rescue Carto::UnauthorizedError, Warden::NotAuthenticated
@@ -286,7 +287,8 @@ class SessionsController < ApplicationController
   private
 
   def user_inactive(user)
-    Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity] > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
+    time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
+    time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
   end
 
   def after_login_url(user)

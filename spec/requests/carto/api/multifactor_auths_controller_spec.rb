@@ -16,7 +16,7 @@ describe Carto::Api::MultifactorAuthsController do
 
   before :each do
     @user.user_multifactor_auths.each(&:destroy)
-    @multifactor_auth = FactoryGirl.create(:totp, user: @user)
+    @multifactor_auth = FactoryGirl.create(:totp_active, user: @user)
     @totp = ROTP::TOTP.new(@multifactor_auth.shared_secret)
     @user.reload
   end

@@ -81,6 +81,7 @@ module CartoGearsApi
       #
       # @raise [Errors::RecordNotFound] if the user could not be found in the database
       # @raise [Errors::ValidationFailed] if the password validation failed
+      # @raise [Errors::SavingError] if the password could not be saved because of an internal error
       def change_password(user_id, new_password)
         user = find_user(user_id)
 
@@ -88,8 +89,11 @@ module CartoGearsApi
         user.password_confirmation = new_password
 
         raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.errors.empty?
-        user.save(raise_on_failure: true)
+
         user.update_in_central
+        user.save(raise_on_failure: true)
+      rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed
+        raise CartoGearsApi::Errors::SavingError.new
       end
 
       private

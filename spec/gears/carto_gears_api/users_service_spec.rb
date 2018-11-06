@@ -95,7 +95,7 @@ describe CartoGearsApi::Users::UsersService do
 
         expect {
           service.change_password(@user.id, 'new_password')
-        }.to raise_error(Sequel::ValidationFailed, 'Saving error')
+        }.to raise_error(CartoGearsApi::Errors::SavingError)
       end
 
       it 'raises an exception if update_in_central operation fails' do
@@ -103,7 +103,7 @@ describe CartoGearsApi::Users::UsersService do
 
         expect {
           service.change_password(@user.id, 'new_password')
-        }.to raise_error(CartoDB::CentralCommunicationFailure)
+        }.to raise_error(CartoGearsApi::Errors::SavingError)
       end
     end
   end

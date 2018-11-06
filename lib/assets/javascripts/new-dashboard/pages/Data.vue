@@ -7,7 +7,7 @@
           <img src="../assets/icons/section-title/data.svg" />
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="datasets">New Dataset</CreateButton>
+          <CreateButton visualizationType="dataset">New Dataset</CreateButton>
         </template>
       </SectionTitle>
      </div>

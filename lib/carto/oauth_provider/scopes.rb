@@ -106,8 +106,9 @@ module Carto
           "datasets:#{@permission}:#{schema_table}"
         end
 
-        def description(permission = @permission, table = @table)
-          DESCRIPTIONS[permission] % { table_name: table }
+        def description(permission = @permission, table = @table, schema = @schema)
+          schema_table = (schema.present? && schema != 'public') ? "#{schema}.#{table}" : table
+          DESCRIPTIONS[permission] % { table_name: schema_table }
         end
 
         def permission
@@ -260,7 +261,7 @@ module Carto
             schema = user_schema if schema.nil?
             schema_table = "#{schema}.#{table}"
 
-            if (datasets[schema_table].present? && datasets[schema_table] === 'rw') || permissions === 'rw'
+            if (datasets[schema_table].present? && datasets[schema_table] == 'rw') || permissions == 'rw'
               datasets[schema_table] = 'rw'
             else
               datasets[schema_table] = permissions
@@ -278,7 +279,7 @@ module Carto
         return datasets1 if datasets2.nil?
 
         datasets2.each do |schema_table, permissions|
-          if datasets1[schema_table].present? && !(datasets1[schema_table] === 'rw' && permissions === 'r')
+          if datasets1[schema_table].present? && !(datasets1[schema_table] == 'rw' && permissions == 'r')
             datasets1.delete(schema_table)
           end
         end

@@ -238,11 +238,8 @@ module Carto
         datasets1, non_datasets1 = split_dataset_scopes_for_subtract(scopes1, user_schema)
         datasets2, non_datasets2 = split_dataset_scopes_for_subtract(scopes2, user_schema)
 
-        datasets_results = []
         subtract_dataset_scopes!(datasets1, datasets2)
-        unless datasets1.empty?
-          datasets1.each { |schema_table, permissions| datasets_results << "datasets:#{permissions}:#{schema_table}" }
-        end
+        datasets_results = datasets1.map { |schema_table, permissions| "datasets:#{permissions}:#{schema_table}" }
 
         datasets_results + (non_datasets1 - non_datasets2)
       end

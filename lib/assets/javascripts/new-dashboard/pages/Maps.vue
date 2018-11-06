@@ -44,7 +44,9 @@
         </li>
       </ul>
 
-      <EmptyState :text="$t('MapsPage.emptyCase')" v-if="!isFetchingMaps && !numResults">
+      <EmptyState
+        :text="$t('MapsPage.emptyCase')"
+        v-if="!isFetchingMaps && !numResults && !hasFilterApplied('mine')">
         <img svg-inline src="../assets/icons/maps/compass.svg">
       </EmptyState>
 
@@ -129,7 +131,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 

@@ -3,9 +3,8 @@
     <div class="empty-state-icon">
       <slot />
     </div>
-    <div class="empty-state-text">
-      <h6 class="text is-caption is-txtSoftGrey">{{text}}</h6>
-    </div>
+
+    <h6 class="empty-state-text text is-caption is-txtSoftGrey">{{text}}</h6>
   </div>
 </template>
 
@@ -22,14 +21,8 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
   margin: 20vh 0 8vh;
-  border-radius: 2px;
+  text-align: center;
 }
 
 .empty-state-icon {
@@ -38,5 +31,7 @@ export default {
 
 .empty-state-text {
   max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
 }
 </style>

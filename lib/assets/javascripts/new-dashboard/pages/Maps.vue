@@ -132,7 +132,7 @@ export default {
     },
     getHeaderBottomPageOffset () {
       const headerClientRect = this.$refs.headerContainer.getBoundingClientRect();
-      return headerClientRect.top + headerClientRect.height;
+      return headerClientRect.top;
     }
   }
 };

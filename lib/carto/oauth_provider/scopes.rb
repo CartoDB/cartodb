@@ -236,8 +236,8 @@ module Carto
       end
 
       def self.subtract_scopes(scopes1, scopes2, user_schema = 'public')
-        return [] if scopes1.nil? || scopes1.empty?
-        return scopes1 if scopes2.nil? || scopes2.empty?
+        return [] if scopes1.blank?
+        return scopes1 if scopes2.blank?
 
         datasets1, non_datasets1 = split_dataset_scopes_for_subtract(scopes1, user_schema)
         datasets2, non_datasets2 = split_dataset_scopes_for_subtract(scopes2, user_schema)
@@ -275,9 +275,7 @@ module Carto
         return datasets1 if datasets2.nil?
 
         datasets2.each do |schema_table, permissions|
-          if datasets1[schema_table].present? && !(datasets1[schema_table] == 'rw' && permissions == 'r')
-            datasets1.delete(schema_table)
-          end
+          datasets1.delete(schema_table) unless datasets1[schema_table] == 'rw' && permissions == 'r'
         end
       end
 

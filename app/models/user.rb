@@ -149,6 +149,8 @@ class User < Sequel::Model
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
+  LOGIN_NOT_RATE_LIMITED = -1
+
   include VarnishCacheHandler
 
   def db_service
@@ -413,6 +415,8 @@ class User < Sequel::Model
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+
+    reset_password_rate_limit if changes.include?(:crypted_password)
   end
 
   def api_keys
@@ -1024,6 +1028,10 @@ class User < Sequel::Model
     "limits:timeout:#{username}"
   end
 
+  def rate_limit_password_key
+    "limits:password:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
@@ -1057,6 +1065,21 @@ class User < Sequel::Model
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
     save_rate_limits
+  end
+
+  def password_login_attempt
+    return LOGIN_NOT_RATE_LIMITED unless password_rate_limit_configured?
+
+    rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
+
+    # it returns the number of seconds until the user should retry
+    # -1 means the action was allowed
+    # see https://github.com/brandur/redis-cell#response
+    rate_limit[3]
+  end
+
+  def reset_password_rate_limit
+    $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
   end
 
   def save_rate_limits
@@ -1857,6 +1880,14 @@ class User < Sequel::Model
   end
 
   private
+
+  def password_rate_limit_configured?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    [@max_burst, @count, @period].all?(&:present?)
+  end
 
   def common_data_outdated?
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day

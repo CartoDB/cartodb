@@ -102,8 +102,12 @@ class Carto::User < ActiveRecord::Base
   before_create :set_database_host
   before_create :generate_api_key
 
+  after_save { reset_password_rate_limit if crypted_password_changed? }
+
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
+
+  LOGIN_NOT_RATE_LIMITED = -1
 
   include ::VarnishCacheHandler
 
@@ -128,6 +132,25 @@ class Carto::User < ActiveRecord::Base
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = service.class.password_digest(value, salt)
+  end
+
+  def reset_password_rate_limit
+    $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
+  end
+
+  def rate_limit_password_key
+    "limits:password:#{username}"
+  end
+
+  def password_login_attempt
+    return LOGIN_NOT_RATE_LIMITED unless password_rate_limit_configured?
+
+    rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
+
+    # it returns the number of seconds until the user should retry
+    # -1 means the action was allowed
+    # see https://github.com/brandur/redis-cell#response
+    rate_limit[3]
   end
 
   def password_confirmation=(password_confirmation)
@@ -692,6 +715,14 @@ class Carto::User < ActiveRecord::Base
   end
 
   private
+
+  def password_rate_limit_configured?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    [@max_burst, @count, @period].all?(&:present?)
+  end
 
   def set_database_host
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']

@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)
 
@@ -36,6 +37,7 @@ Development
 * Update some old vulnerable dependencies (#14368)
 * Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
 * Revert tag style, add color to privacy modal (#13756)
+* Fix parallel execution of some acceptance specs (#14391)
 
 4.22.1 (2018-10-18)
 -------------------

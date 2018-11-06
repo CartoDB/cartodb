@@ -390,8 +390,7 @@ describe Carto::OauthProvider::Scopes do
     it 'read-write permission having no one' do
       new_scopes = ["datasets:rw:#{@table.name}"]
       previous_scopes = []
-      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
-      expect(scopes_by_category).to(eq([
+      expected = [
         {
           description: "User and personal data",
           icon: nil,
@@ -402,14 +401,16 @@ describe Carto::OauthProvider::Scopes do
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: true }]
         }
-      ]))
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq(expected))
     end
 
     it 'read permission having read-write' do
       new_scopes = ["datasets:r:#{@table.name}"]
       previous_scopes = ["datasets:rw:#{@table.name}"]
-      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
-      expect(scopes_by_category).to(eq([
+      expected = [
         {
           description: "User and personal data",
           icon: nil,
@@ -420,14 +421,16 @@ describe Carto::OauthProvider::Scopes do
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: false }]
         }
-      ]))
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq(expected))
     end
 
     it 'read-write permission having read-write' do
       new_scopes = ["datasets:rw:#{@table.name}"]
       previous_scopes = ["datasets:rw:#{@table.name}"]
-      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
-      expect(scopes_by_category).to(eq([
+      expected = [
         {
           description: "User and personal data",
           icon: nil,
@@ -438,14 +441,16 @@ describe Carto::OauthProvider::Scopes do
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: false }]
         }
-      ]))
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq(expected))
     end
 
     it 'read-write permission having read' do
       new_scopes = ["datasets:rw:#{@table.name}"]
       previous_scopes = ["datasets:r:#{@table.name}"]
-      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
-      expect(scopes_by_category).to(eq([
+      expected = [
         {
           description: "User and personal data",
           icon: nil,
@@ -456,7 +461,10 @@ describe Carto::OauthProvider::Scopes do
           icon: nil,
           scopes: [{ description: "#{@table.name} (read/write access)", new: true }]
         }
-      ]))
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq(expected))
     end
   end
 end

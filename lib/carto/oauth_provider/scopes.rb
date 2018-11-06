@@ -238,50 +238,39 @@ module Carto
         return [] if scopes1.nil? || scopes1.empty?
         return scopes1 if scopes2.nil? || scopes2.empty?
 
-        datasets1 = {}
-        non_datasets1 = []
-        datasets2 = {}
-        non_datasets2 = []
+        datasets1, non_datasets1 = split_dataset_scopes_for_subtract(scopes1, user_schema)
+        datasets2, non_datasets2 = split_dataset_scopes_for_subtract(scopes2, user_schema)
 
-        scopes1.each do |scope|
-          if DatasetsScope.is_a?(scope)
-            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
-            schema = user_schema if schema.nil?
-            schema_table = "#{schema}.#{table}"
-
-            if (datasets1[schema_table].present? && datasets1[schema_table] === 'rw') || permissions === 'rw'
-              datasets1[schema_table] = 'rw'
-            else
-              datasets1[schema_table] = permissions
-            end
-          else
-            non_datasets1 << scope
-          end
-        end
-
-        scopes2.each do |scope|
-          if DatasetsScope.is_a?(scope)
-            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
-            schema = user_schema if schema.nil?
-            schema_table = "#{schema}.#{table}"
-
-            if (datasets2[schema_table].present? && datasets2[schema_table] === 'rw') || permissions === 'rw'
-              datasets2[schema_table] = 'rw'
-            else
-              datasets2[schema_table] = permissions
-            end
-          else
-            non_datasets2 << scope
-          end
-        end
-
-        subtract_dataset_scopes(datasets1, datasets2)
         datasets_results = []
+        subtract_dataset_scopes(datasets1, datasets2)
         unless datasets1.empty?
           datasets1.each { |schema_table, permissions| datasets_results << "datasets:#{permissions}:#{schema_table}" }
         end
 
         datasets_results + (non_datasets1 - non_datasets2)
+      end
+
+      def self.split_dataset_scopes_for_subtract(scopes, user_schema)
+        datasets = {}
+        non_datasets = []
+
+        scopes.each do |scope|
+          if DatasetsScope.is_a?(scope)
+            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
+            schema = user_schema if schema.nil?
+            schema_table = "#{schema}.#{table}"
+
+            if (datasets[schema_table].present? && datasets[schema_table] === 'rw') || permissions === 'rw'
+              datasets[schema_table] = 'rw'
+            else
+              datasets[schema_table] = permissions
+            end
+          else
+            non_datasets << scope
+          end
+        end
+
+        return [datasets, non_datasets]
       end
 
       def self.subtract_dataset_scopes(datasets1, datasets2)

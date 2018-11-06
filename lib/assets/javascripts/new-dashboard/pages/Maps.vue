@@ -58,11 +58,10 @@
       </ul>
 
       <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
-          <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
-            <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
-          </li>
-        </ul>
-      </div>
+        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
+          <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+        </li>
+      </ul>
 
       <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
@@ -154,9 +153,6 @@ export default {
     applyFilter (filter) {
       this.$router.push({ name: 'maps', params: { filter } });
     },
-    resetFilters () {
-      this.$store.dispatch('maps/resetFilters');
-    },
     toggleSelected ({ map, isSelected }) {
       if (isSelected) {
         this.selectedMaps.push(map);
@@ -178,7 +174,7 @@ export default {
       this.isScrollPastHeader = window.pageYOffset > this.stickyScrollPosition;
     },
     getHeaderBottomPageOffset () {
-      const headerClientRect = this.$refs.headerContainer.getBoundingClientRect();
+      const headerClientRect = this.$refs.headerContainer.$el.getBoundingClientRect();
       return headerClientRect.top;
     },
     hasFilterApplied (filter) {

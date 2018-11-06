@@ -64,7 +64,7 @@ class SessionsController < ApplicationController
           'Too many failed login attempts.' +
           " Please, wait #{wait_text} or reset your password to continue using CARTO."
       elsif params[:error] == MULTIFACTOR_AUTHENTICATION_INACTIVITY
-        @flash_login_error = 'You\'ve been logged out a long time of inactivity. ' + PLEASE_LOGIN
+        @flash_login_error = 'You\'ve been logged out due to a long time of inactivity. ' + PLEASE_LOGIN
       end
       render
     end

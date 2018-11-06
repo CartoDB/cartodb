@@ -270,7 +270,7 @@ module Carto
           end
         end
 
-        return [datasets, non_datasets]
+        [datasets, non_datasets]
       end
 
       def self.subtract_dataset_scopes(datasets1, datasets2)

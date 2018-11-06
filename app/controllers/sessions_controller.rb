@@ -98,7 +98,7 @@ class SessionsController < ApplicationController
     @user = current_viewer
     return redirect_to after_login_url(@user) unless multifactor_authentication_required?
 
-    @mfa = @user.user_multifactor_auths.first
+    @mfa = @user.active_multifactor_authentication
     render action: 'multifactor_authentication'
   end
 
@@ -106,15 +106,13 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    if Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity] > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
-      return multifactor_authentication_inactivity
-    end
+    return multifactor_authentication_inactivity if user_inactive(user)
 
-    user.user_multifactor_auths.first.verify!(params[:code]) unless params[:skip]
+    user.active_multifactor_authentication.verify!(params[:code]) unless params[:skip]
     warden.session(user.username)[:multifactor_authentication_required] = false
 
     redirect_to url
-  rescue Carto::UnauthorizedError
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
     unauthenticated
   end
 
@@ -268,6 +266,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def user_inactive(user)
+    Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity] > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
+  end
 
   def after_login_url(user)
     return login_url unless user

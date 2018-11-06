@@ -695,6 +695,10 @@ class Carto::User < ActiveRecord::Base
     user_multifactor_auths.any?
   end
 
+  def active_multifactor_authentication
+    user_multifactor_auths.first
+  end
+
   private
 
   def set_database_host

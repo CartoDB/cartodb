@@ -129,16 +129,16 @@ feature "Sessions" do
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
-        page.should have_content(@user_mfa_setup.user_multifactor_auths.first.shared_secret)
+        page.should have_content(@user_mfa_setup.active_multifactor_authentication.shared_secret)
         page.body.should include("data:image/png;base64")
         page.body.should include("Verification code")
         page.should have_content("Use Google Authenticator app to scan the QR code")
 
-        fill_in 'code', with: ROTP::TOTP.new(@user_mfa_setup.user_multifactor_auths.first.shared_secret).now
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa_setup.active_multifactor_authentication.shared_secret).now
         click_link_or_button 'Verify'
 
         page.status_code.should eq 200
-        page.should_not have_content(@user_mfa_setup.user_multifactor_auths.first.shared_secret)
+        page.should_not have_content(@user_mfa_setup.active_multifactor_authentication.shared_secret)
         page.body.should_not include("data:image/png;base64")
         page.body.should_not include("Verification code")
         page.should_not have_content("Use Google Authenticator app to scan the QR code")
@@ -156,16 +156,16 @@ feature "Sessions" do
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
-        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.should_not have_content(@user_mfa.active_multifactor_authentication.shared_secret)
         page.body.should_not include("data:image/png;base64")
         page.body.should include("Verification code")
         page.should_not have_content("Use Google Authenticator app to scan the QR code")
 
-        fill_in 'code', with: ROTP::TOTP.new(@user_mfa.user_multifactor_auths.first.shared_secret).now
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa.active_multifactor_authentication.shared_secret).now
         click_link_or_button 'Verify'
 
         page.status_code.should eq 200
-        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.should_not have_content(@user_mfa.active_multifactor_authentication.shared_secret)
         page.body.should_not include("data:image/png;base64")
         page.body.should_not include("Verification code")
         page.should_not have_content("Use Google Authenticator app to scan the QR code")
@@ -182,7 +182,7 @@ feature "Sessions" do
         click_link_or_button 'Log in'
         page.status_code.should eq 200
 
-        page.should_not have_content(@user_mfa.user_multifactor_auths.first.shared_secret)
+        page.should_not have_content(@user_mfa.active_multifactor_authentication.shared_secret)
         page.body.should_not include("data:image/png;base64")
         page.body.should include("Verification code")
         page.should_not have_content("Use Google Authenticator app to scan the QR code")
@@ -217,11 +217,11 @@ feature "Sessions" do
         @organization = FactoryGirl.create(:organization_with_users_mfa)
         @user_mfa = @organization.owner
         @user_mfa_setup = @organization.users.last
-        mfa = @user_mfa_setup.user_multifactor_auths.first
+        mfa = @user_mfa_setup.active_multifactor_authentication
         mfa.enabled = false
         mfa.save!
 
-        mfa = @user_mfa.user_multifactor_auths.first
+        mfa = @user_mfa.active_multifactor_authentication
         mfa.enabled = true
         mfa.save!
       end

@@ -273,10 +273,10 @@ class ApplicationController < ActionController::Base
     validate_session(current_user) if got_auth
   end
 
-  def render_multifactor_authentication
+  def redirect_or_not_found(path)
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, 'multifactor_authentication_session')
+        redirect_to CartoDB.path(self, path)
       end
       format.json do
         head 404
@@ -284,15 +284,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def render_multifactor_authentication
+    redirect_or_not_found('multifactor_authentication_session')
+  end
+
   def render_locked_user
-    respond_to do |format|
-      format.html do
-        redirect_to CartoDB.path(self, 'lockout')
-      end
-      format.json do
-        head 404
-      end
-    end
+    redirect_or_not_found('lockout')
   end
 
   def render_locked_owner

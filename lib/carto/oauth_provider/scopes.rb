@@ -107,7 +107,7 @@ module Carto
         end
 
         def description(permission = @permission, table = @table, schema = @schema)
-          schema_table = (schema.present? && schema != 'public') ? "#{schema}.#{table}" : table
+          schema_table = schema.present? && schema != 'public' ? "#{schema}.#{table}" : table
           DESCRIPTIONS[permission] % { table_name: schema_table }
         end
 

@@ -102,6 +102,8 @@ class Carto::User < ActiveRecord::Base
   before_create :set_database_host
   before_create :generate_api_key
 
+  after_save { reset_password_rate_limit if crypted_password_changed? }
+
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
 
@@ -130,7 +132,6 @@ class Carto::User < ActiveRecord::Base
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = service.class.password_digest(value, salt)
-    reset_password_rate_limit
   end
 
   def reset_password_rate_limit

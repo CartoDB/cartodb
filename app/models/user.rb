@@ -415,6 +415,8 @@ class User < Sequel::Model
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+
+    reset_password_rate_limit if changes.include?(:crypted_password)
   end
 
   def api_keys
@@ -680,7 +682,6 @@ class User < Sequel::Model
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
-    reset_password_rate_limit
   end
 
   # Database configuration setup

@@ -261,11 +261,12 @@ module Carto
             schema = user_schema if schema.nil?
             schema_table = "#{schema}.#{table}"
 
-            if (datasets[schema_table].present? && datasets[schema_table] == 'rw') || permissions == 'rw'
-              datasets[schema_table] = 'rw'
-            else
-              datasets[schema_table] = permissions
-            end
+            should_be_rw = (datasets[schema_table].present? && datasets[schema_table] == 'rw') || permissions == 'rw'
+            datasets[schema_table] = if should_be_rw
+                                       'rw'
+                                     else
+                                       permissions
+                                     end
           else
             non_datasets << scope
           end

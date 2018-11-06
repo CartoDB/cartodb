@@ -1,10 +1,8 @@
 <template>
 <section class="section">
   <div class="maps-list-container container grid">
-    <div class="grid-cell grid-cell--col12">
-      <SectionTitle
-        :title="pageTitle"
-        description="This is a description test">
+    <div class="full-width">
+      <SectionTitle class="grid-cell" :title='pageTitle' description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
@@ -19,22 +17,36 @@
           <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
+
+      <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
+        <InitialState :title="$t(`MapsPage.zeroCase.title`)">
+          <template slot="icon">
+            <img src="../assets/icons/maps/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="maps">{{ $t(`MapsPage.zeroCase.createMap`) }}</CreateButton>
+          </template>
+        </InitialState>
+      </div>
+
+      <ul class="grid" v-if="isFetchingMaps">
+        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
+          <MapCardFake></MapCardFake>
+        </li>
+      </ul>
+
+      <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
+        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
+          <MapCard :map=map></MapCard>
+        </li>
+      </ul>
+
+      <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
-
-    <ul class="grid" v-if="isFetchingMaps">
-      <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
-        <MapCardFake></MapCardFake>
-      </li>
-    </ul>
-
-    <ul class="grid" v-if="!isFetchingMaps">
-      <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
-        <MapCard :map=map></MapCard>
-      </li>
-    </ul>
   </div>
-
-  <Pagination v-if="!isFetchingMaps" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
 </section>
 </template>
 
@@ -45,6 +57,7 @@ import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
+import InitialState from 'new-dashboard/components/InitialState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import { isAllowed } from '../store/maps/filters';
 
@@ -56,7 +69,8 @@ export default {
     MapCard,
     MapCardFake,
     SectionTitle,
-    Pagination
+    Pagination,
+    InitialState
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };
@@ -78,7 +92,10 @@ export default {
       mapsMetadata: state => state.maps.metadata,
       isFetchingMaps: state => state.maps.isFetching,
       featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
-      isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching
+      isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
+      numResults: state => state.maps.metadata.total_entries,
+      filterType: state => state.maps.filterType,
+      totalUserEntries: state => state.maps.metadata.total_user_entries
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
@@ -98,6 +115,9 @@ export default {
     },
     applyFilter (filter) {
       this.$router.push({ name: 'maps', params: { filter } });
+    },
+    hasFilterApplied (filter) {
+      return this.filterType === filter;
     }
   }
 };
@@ -109,5 +129,9 @@ export default {
 
 .maps-list-container {
   margin-bottom: 44px;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>

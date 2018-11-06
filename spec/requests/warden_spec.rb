@@ -247,16 +247,14 @@ describe 'Warden' do
 
         old_password = @user.password
         new_password = '12345678'
-        @user.password = new_password
-        @user.password_confirmation = new_password
+        @user.password = @user.password_confirmation = new_password
 
         @user.save
 
         login
         expect_login
 
-        @user.password = old_password
-        @user.password_confirmation = old_password
+        @user.password = @user.password_confirmation = old_password
         @user.save
       end
     end
@@ -265,9 +263,7 @@ describe 'Warden' do
   describe 'with Sequel user' do
     it_behaves_like 'login locked' do
       before(:all) do
-        @user = FactoryGirl.create(:valid_user)
-        @user.password = @user.password_confirmation = 'qwaszx'
-        @user.save
+        @user = FactoryGirl.create(:user, password: 'qwaszx', password_confirmation: 'qwaszx')
       end
 
       after(:all) do
@@ -279,9 +275,7 @@ describe 'Warden' do
   describe 'with AR user' do
     it_behaves_like 'login locked' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @user.password = @user.password_confirmation = 'qwaszx'
-        @user.save
+        @user = FactoryGirl.create(:carto_user, password: 'qwaszx', password_confirmation: 'qwaszx')
       end
 
       after(:all) do

@@ -254,7 +254,7 @@ module Carto
         scopes.each do |scope|
           if DatasetsScope.is_a?(scope)
             table, schema, permissions = DatasetsScope.table_schema_permission(scope)
-            schema = user_schema if schema.nil?
+            schema ||= user_schema
             schema_table = "#{schema}.#{table}"
 
             datasets[schema_table] = permissions unless datasets[schema_table] == 'rw'

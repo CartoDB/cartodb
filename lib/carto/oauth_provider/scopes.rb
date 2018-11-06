@@ -210,11 +210,7 @@ module Carto
 
       def self.scopes_by_category(new_scopes, previous_scopes)
         # If we had previous scopes, DEFAULT was already granted.
-        if previous_scopes.present? && previous_scopes.any?
-          previous_scopes << SCOPE_DEFAULT
-        else
-          previous_scopes = []
-        end
+        previous_scopes = previous_scopes.blank? ? [] : previous_scopes + [SCOPE_DEFAULT]
 
         new_scopes_filtered = subtract_scopes(new_scopes, previous_scopes)
         previous_scopes_filtered = subtract_scopes(previous_scopes, new_scopes_filtered)
@@ -243,7 +239,7 @@ module Carto
         datasets2, non_datasets2 = split_dataset_scopes_for_subtract(scopes2, user_schema)
 
         datasets_results = []
-        subtract_dataset_scopes(datasets1, datasets2)
+        subtract_dataset_scopes!(datasets1, datasets2)
         unless datasets1.empty?
           datasets1.each { |schema_table, permissions| datasets_results << "datasets:#{permissions}:#{schema_table}" }
         end
@@ -251,7 +247,7 @@ module Carto
         datasets_results + (non_datasets1 - non_datasets2)
       end
 
-      def self.split_dataset_scopes_for_subtract(scopes, user_schema)
+      private_class_method def self.split_dataset_scopes_for_subtract(scopes, user_schema)
         datasets = {}
         non_datasets = []
 
@@ -270,7 +266,7 @@ module Carto
         [datasets, non_datasets]
       end
 
-      def self.subtract_dataset_scopes(datasets1, datasets2)
+      private_class_method def self.subtract_dataset_scopes!(datasets1, datasets2)
         return [] if datasets1.nil?
         return datasets1 if datasets2.nil?
 

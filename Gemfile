@@ -83,6 +83,10 @@ gem 'net-telnet'
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
+# Multifactor Authentication
+gem 'rotp', '~> 3.3', '>= 3.3.1'
+gem 'rqrcode', '~> 0.10.1'
+
 group :test do
   gem 'simplecov', '0.13.0', require: false
   gem 'simplecov-json'

@@ -209,7 +209,12 @@ module Carto
 
       def self.scopes_by_category(new_scopes, previous_scopes)
         # If we had previous scopes, DEFAULT was already granted.
-        previous_scopes << SCOPE_DEFAULT if previous_scopes.any?
+        if previous_scopes.present? && previous_scopes.any?
+          previous_scopes << SCOPE_DEFAULT
+        else
+          previous_scopes = []
+        end
+
         new_scopes_filtered = subtract_scopes(new_scopes, previous_scopes)
         previous_scopes_filtered = subtract_scopes(previous_scopes, new_scopes_filtered)
 
@@ -230,6 +235,9 @@ module Carto
       end
 
       def self.subtract_scopes(scopes1, scopes2, user_schema = 'public')
+        return [] if scopes1.nil? || scopes1.empty?
+        return scopes1 if scopes2.nil? || scopes2.empty?
+
         datasets1 = {}
         non_datasets1 = []
         datasets2 = {}
@@ -277,6 +285,9 @@ module Carto
       end
 
       def self.subtract_dataset_scopes(datasets1, datasets2)
+        return [] if datasets1.nil?
+        return datasets1 if datasets2.nil?
+
         datasets2.each do |schema_table, permissions|
           if datasets1[schema_table].present? && !(datasets1[schema_table] === 'rw' && permissions === 'r')
             datasets1.delete(schema_table)

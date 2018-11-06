@@ -117,11 +117,24 @@ describe Carto::ApiKey do
       api_key.destroy
     end
 
+    it 'can grant only with select and update permissions' do
+      grants = [database_grant(@table1.database_schema, @table1.name, permissions: ['select', 'update']), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'only_update', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{@table1.name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        connection.execute("update #{@table1.name} set name = 'wadus2' where name = 'wadus'")
+      end
+    end
+
     it 'fails to grant to a non-existent table' do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception(Carto::UnprocesableEntityError, /does not exist/)
+      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
     end
 
     it 'fails to grant to system table' do

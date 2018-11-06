@@ -7,7 +7,7 @@ module CartoGearsApi
         @from = from
         @to = to
         @subject = subject
-        mail(to: to, from: from, subject: subject).deliver
+        mail(to: to, from: from, subject: subject).deliver_now
       end
     end
   end

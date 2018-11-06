@@ -8,7 +8,7 @@ Development
 - Lock login if too many failed attempts (#14334)
 
 ### Bug fixes / enhancements
-- None yet
+- Sync new password resets fields with central (#14333)
 
 4.22.2 (2018-11-05)
 -------------------

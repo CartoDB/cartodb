@@ -23,7 +23,8 @@ class SessionsController < ApplicationController
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change, :password_locked, :multifactor_authentication, :multifactor_authentication_verify_code
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change,
+               :password_locked, :multifactor_authentication, :multifactor_authentication_verify_code
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -114,6 +115,12 @@ class SessionsController < ApplicationController
 
     return multifactor_authentication_inactivity if user_inactive(user)
 
+    retry_after = user.password_login_attempt
+    if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
+      cdb_logout
+      return password_locked(retry_after)
+    end
+
     user.active_multifactor_authentication.verify!(params[:code]) unless params[:skip]
     warden.session(user.username)[:multifactor_authentication_required] = false
 
@@ -196,9 +203,9 @@ class SessionsController < ApplicationController
     redirect_to edit_password_change_url(username) if username
   end
 
-  def password_locked
+  def password_locked(retry_after = warden.env['warden.options'][:retry_after])
     warden.custom_failure!
-    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{warden.env['warden.options'][:retry_after]}"
+    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{retry_after}"
   end
 
   def password_expired

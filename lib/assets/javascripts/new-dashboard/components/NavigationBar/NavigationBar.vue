@@ -7,19 +7,19 @@
         </span>
         <span class="title is-caption is-regular is-txtWhite">Home</span>
       </router-link>
-      <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
         <span class="title is-caption is-regular is-txtWhite">Solutions</span>
       </router-link>
-      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
         </span>
         <span class="title is-caption is-regular is-txtWhite">Maps</span>
       </router-link>
-      <router-link :to="{ name: 'data' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'data' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>

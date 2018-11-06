@@ -17,6 +17,9 @@ exports[`FilterDropdown.vue should open dropdown when clicking toggle 1`] = `
             FilterDropdown.types.shared
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            FilterDropdown.types.favorited
+          </a></li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.locked
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
@@ -80,6 +83,9 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.shared
+          </a></li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            FilterDropdown.types.favorited
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             FilterDropdown.types.locked

@@ -2,7 +2,7 @@
 <section class="section">
   <div class="maps-list-container container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title="pageTitle" description="This is a description test">
+      <SectionTitle class="grid-cell" :title='pageTitle' description="This is a description test">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
@@ -19,15 +19,15 @@
       </SectionTitle>
 
       <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
-        <InitialState :title="$t(`mapCard.zeroCase.title`)">
+        <InitialState :title="$t(`MapsPage.zeroCase.title`)">
           <template slot="icon">
             <img src="../assets/icons/maps/initialState.svg">
           </template>
           <template slot="description">
-            <p class="text is-caption is-txtGrey" v-html="$t(`mapCard.zeroCase.description`)"></p>
+            <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
           </template>
           <template slot="actionButton">
-            <CreateButton visualizationType="maps">{{ $t(`mapCard.zeroCase.createMap`) }}</CreateButton>
+            <CreateButton visualizationType="maps">{{ $t(`MapsPage.zeroCase.createMap`) }}</CreateButton>
           </template>
         </InitialState>
       </div>
@@ -59,6 +59,7 @@ import SectionTitle from '../components/SectionTitle';
 import Pagination from 'new-dashboard/components/Pagination';
 import InitialState from 'new-dashboard/components/InitialState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import { isAllowed } from '../store/maps/filters';
 
 export default {
   name: 'MapsPage',
@@ -70,6 +71,16 @@ export default {
     SectionTitle,
     Pagination,
     InitialState
+  },
+  beforeRouteUpdate (to, from, next) {
+    const urlOptions = { ...to.params, ...to.query };
+
+    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
+      return next({ name: 'maps' });
+    }
+
+    this.$store.dispatch('maps/setURLOptions', urlOptions);
+    next();
   },
   computed: {
     ...mapState({
@@ -87,19 +98,23 @@ export default {
       totalUserEntries: state => state.maps.metadata.total_user_entries
     }),
     pageTitle () {
-      const translationKey = `MapsPage.header.titleWhenFilterApplied.${this.appliedFilter || 'default'}`;
-      return this.$t(translationKey);
+      return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
     }
   },
   methods: {
     goToPage (page) {
-      this.$store.dispatch('maps/goToPage', page);
+      window.scroll({ top: 0, left: 0 });
+      this.$router.push({
+        name: 'maps',
+        params: this.$route.params,
+        query: { ...this.$route.query, page }
+      });
     },
     resetFilters () {
-      this.$store.dispatch('maps/resetFilters');
+      this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
-      this.$store.dispatch('maps/filterMaps', filter);
+      this.$router.push({ name: 'maps', params: { filter } });
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;

@@ -137,7 +137,7 @@ export default {
 .dropdown {
   visibility: hidden;
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   right: 0;
   width: 310px;
   margin-top: 8px;

@@ -12,37 +12,39 @@ export default {
     BulkActions
   },
   props: {
+    areAllMapsSelected: {
+      type: Boolean,
+      default: false
+    },
     selectedMaps: {
       type: Array,
       required: true
     }
   },
-  data () {
-    return {
-      actions: {
+  computed: {
+    actions () {
+      return {
         single: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll' },
-          { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy' },
-          { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap' },
-          { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap' },
-          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true }
+          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldShow: true },
+          { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy', shouldShow: true },
+          { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap', shouldShow: true },
+          { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap', shouldShow: true },
+          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true, shouldShow: true }
         ],
         multiple: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll' },
-          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps' },
-          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true }
+          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldShow: !this.areAllMapsSelected },
+          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll', shouldShow: true },
+          { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps', shouldShow: true },
+          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true, shouldShow: true }
         ],
         lock: [
-          { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap' }
+          { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap', shouldShow: true }
         ],
         multipleLock: [
-          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps' }
+          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps', shouldShow: true }
         ]
-      }
-    };
-  },
-  computed: {
+      };
+    },
     actionMode () {
       const isAnyMapLocked = this.selectedMaps.filter(map => map.locked);
 
@@ -91,28 +93,46 @@ export default {
       DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
     },
     unlockMap () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
+      DialogActions.changeLockState.apply(this, [
+        this.selectedMaps[0],
+        'maps',
+        this.getActionHandlers()
+      ]);
     },
     lockMap () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
+      DialogActions.changeLockState.apply(this, [
+        this.selectedMaps[0],
+        'maps',
+        this.getActionHandlers()
+      ]);
     },
     deleteMap () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.deleteVisualization.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
+      DialogActions.deleteVisualization.apply(this, [
+        this.selectedMaps[0],
+        'maps',
+        this.getActionHandlers()
+      ]);
     },
     unlockMaps () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
+      DialogActions.changeVisualizationsLockState.apply(this, [
+        this.selectedMaps,
+        'maps',
+        this.getActionHandlers()
+      ]);
     },
     lockMaps () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
+      DialogActions.changeVisualizationsLockState.apply(this, [
+        this.selectedMaps,
+        'maps',
+        this.getActionHandlers()
+      ]);
     },
     deleteMaps () {
-      const actionHandlers = this.getActionHandlers();
-      DialogActions.deleteVisualizations.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
+      DialogActions.deleteVisualizations.apply(this, [
+        this.selectedMaps,
+        'maps',
+        this.getActionHandlers()
+      ]);
     }
   }
 };

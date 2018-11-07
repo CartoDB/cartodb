@@ -3,6 +3,7 @@
     <button
       class="bulk-actions__button button button--ghost"
       :class="{'is-txtAlert': action.isDestructive}"
+      v-if="action.shouldShow"
       v-for="action in actions"
       :key="action.event"
       @click="doAction(action.event)">

@@ -6,6 +6,7 @@
     </h2>
     <MapBulkActions
       :selectedMaps="selectedMaps"
+      :areAllMapsSelected="areAllMapsSelected"
       @selectAll="selectAll"
       @deselectAll="deselectAll"></MapBulkActions>
   </StickySubheader>
@@ -20,6 +21,7 @@
         <template slot="dropdownButton">
           <MapBulkActions
             :selectedMaps="selectedMaps"
+            :areAllMapsSelected="areAllMapsSelected"
             v-if="selectedMaps.length"
             @selectAll="selectAll"
             @deselectAll="deselectAll"></MapBulkActions>
@@ -136,6 +138,9 @@ export default {
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+    },
+    areAllMapsSelected () {
+      return Object.keys(this.maps).length === this.selectedMaps.length;
     }
   },
   methods: {
@@ -185,7 +190,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 

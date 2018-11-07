@@ -54,6 +54,13 @@ export default {
     }
   },
   methods: {
+    getActionHandlers () {
+      return {
+        deselectAll: () => {
+          this.deselectAll();
+        }
+      };
+    },
     getEventListeners () {
       const events = this.actions[this.actionMode].map(action => action.event);
 
@@ -84,22 +91,28 @@ export default {
       DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
     },
     unlockMap () {
-      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
     },
     lockMap () {
-      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.changeLockState.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
     },
     deleteMap () {
-      DialogActions.deleteVisualization.apply(this, [this.selectedMaps[0], 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.deleteVisualization.apply(this, [this.selectedMaps[0], 'maps', actionHandlers]);
     },
     unlockMaps () {
-      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
     },
     lockMaps () {
-      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.changeVisualizationsLockState.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
     },
     deleteMaps () {
-      DialogActions.deleteVisualizations.apply(this, [this.selectedMaps, 'maps']);
+      const actionHandlers = this.getActionHandlers();
+      DialogActions.deleteVisualizations.apply(this, [this.selectedMaps, 'maps', actionHandlers]);
     }
   }
 };

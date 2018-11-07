@@ -31,7 +31,7 @@ export default {
       const configModel = this.$cartoModels.config;
 
       const modalModel = ModalModel({
-        destroy: function () { this.$emit('close'); }.bind(this)
+        destroy: () => this.$emit('close')
       });
 
       const visualizationItems = this.$props.visualization
@@ -46,6 +46,7 @@ export default {
       viewModel.bind('change:state', () => {
         if (viewModel.get('state') === 'ProcessItemsDone') {
           this.$store.dispatch('maps/fetchMaps');
+          this.$emit('deselectAll');
           this.$emit('close');
         }
       });

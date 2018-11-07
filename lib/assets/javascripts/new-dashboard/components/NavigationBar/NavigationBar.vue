@@ -19,11 +19,7 @@
         </span>
         <span class="title is-caption is-regular is-txtWhite">Maps</span>
       </router-link>
-<<<<<<< HEAD
       <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
-=======
-      <router-link :to="{ name: 'data' }" class="navbar-elementItem" active-class="is-active">
->>>>>>> 46ec008d22db430c10b5d02ab0140be1371ee3c2
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>

@@ -715,6 +715,7 @@ describe SessionsController do
             }
           }
         ) do
+          @user.reset_password_rate_limit
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
 
@@ -733,6 +734,7 @@ describe SessionsController do
             }
           }
         ) do
+          @user.reset_password_rate_limit
           login
 
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')

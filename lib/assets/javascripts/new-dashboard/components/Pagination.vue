@@ -148,5 +148,6 @@ export default {
   color: $text-color;
   text-decoration: none;
   cursor: default;
+  pointer-events: none;
 }
 </style>

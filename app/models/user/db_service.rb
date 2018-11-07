@@ -345,6 +345,60 @@ module CartoDB
         end
       end
 
+      def all_user_roles
+        roles = [@user.database_username]
+        if @user.organization_user?
+          roles << organization_member_group_role_member_name
+          roles += @user.groups.map(&:database_role)
+        end
+
+        roles
+      end
+
+      def all_tables_granted(role = nil)
+        roles = []
+        if role.present?
+          roles << role
+        else
+          roles = all_user_roles
+        end
+        roles_str = roles.map { |r| "'#{r}'" }.join(',')
+
+        query = %{
+          SELECT
+            s.nspname as schema,
+            c.relname as t,
+            string_agg(lower(acl.privilege_type), ',') as permission
+          FROM
+            pg_class c
+            JOIN pg_namespace s ON c.relnamespace = s.oid
+            JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
+            JOIN pg_roles r ON acl.grantee = r.oid
+          WHERE
+            r.rolname IN (#{roles_str}) AND
+            s.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          GROUP BY schema, t;
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_tables_granted_hashed(role = nil)
+        results = all_tables_granted(role)
+        privileges_hashed = {}
+
+        if !results.nil?
+          results.each do |row|
+            privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+            privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+          end
+        end
+
+        privileges_hashed
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end
@@ -1377,7 +1431,8 @@ module CartoDB
 
                   try:
                     client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    cache_key = raw_cache_key.replace('+', r'\+')
                     client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204

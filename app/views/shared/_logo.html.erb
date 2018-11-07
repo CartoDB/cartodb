@@ -1,0 +1,12 @@
+<% organization = local_assigns[:organization] %>
+<picture class="Navbar-brand">
+  <% if organization.present? && organization.avatar_url.present? %>
+    <img src="<%= organization.avatar_url %>" alt="<%= organization.name %> organization">
+  <% else %>
+    <% if organization.present? %>
+      <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+    <% else %>
+      <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+    <% end %>
+  <% end %>
+</picture>

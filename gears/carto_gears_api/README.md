@@ -168,7 +168,7 @@ Sending your own email:
 ```ruby
 class MyMail < ActionMailer::Base
   def a_mail(to)
-    mail(to: to, from: 'contact@carto.com', subject: 'the subject').deliver
+    mail(to: to, from: 'contact@carto.com', subject: 'the subject').deliver_now
   end
 end
 
@@ -181,7 +181,7 @@ Usage example:
 ```ruby
 class MyMail < CartoGearsApi::Mailers::BaseMail
   def a_mail(to)
-    mail(to: to, subject: 'the subject').deliver
+    mail(to: to, subject: 'the subject').deliver_now
   end
 end
 ```

@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MapQuickAction.vue should not render the component if the map is shared 1`] = ``;
+
 exports[`MapQuickAction.vue should render correct contents 1`] = `<quickactions-stub actions="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]"></quickactions-stub>`;

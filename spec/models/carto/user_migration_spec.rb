@@ -899,11 +899,11 @@ describe 'UserMigration' do
       import.stubs(:assert_user_does_not_exist)
       import.run_import
 
-      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
-      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
-
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
+      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 
       user = Carto::User.find(user_attributes['id'])
       user.should be

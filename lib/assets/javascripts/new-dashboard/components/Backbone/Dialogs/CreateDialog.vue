@@ -29,7 +29,7 @@ export default {
       });
 
       const routerModel = {
-        isDatasets: () => this.$props.dialogType === 'datasets',
+        isDatasets: () => this.$props.dialogType === 'dataset',
         isMaps: () => this.$props.dialogType === 'maps'
       };
 
@@ -56,7 +56,8 @@ export default {
         {
           selectedItems: [],
           modalModel,
-          viewElement: this.$refs.injectionHTMLElement
+          viewElement: this.$refs.injectionHTMLElement,
+          type: this.$props.dialogType
         }
       );
 

@@ -113,28 +113,23 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    return multifactor_authentication_inactivity if user_inactive(user)
+    unless params[:skip]
+      return multifactor_authentication_inactivity if user_inactive(user)
 
-    retry_after = user.password_login_attempt
-    if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
-      cdb_logout
-      return password_locked(retry_after)
+      retry_after = user.password_login_attempt
+      if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
+        cdb_logout
+        return password_locked(retry_after)
+      end
+
+      user.active_multifactor_authentication.verify!(params[:code])
+      warden.session(user.username)[:multifactor_authentication_required] = false
+      user.reset_password_rate_limit
     end
-
-    user.active_multifactor_authentication.verify!(params[:code]) unless params[:skip]
-    warden.session(user.username)[:multifactor_authentication_required] = false
-    user.reset_password_rate_limit
 
     redirect_to url
   rescue Carto::UnauthorizedError, Warden::NotAuthenticated
     unauthenticated
-  end
-
-  def skip_multifactor_authentication
-    user_id = warden.env['warden.options'][:user_id] if warden.env['warden.options']
-    params[:skip] = true
-    params[:user_id] = user_id
-    multifactor_authentication_verify_code
   end
 
   def unauthenticated

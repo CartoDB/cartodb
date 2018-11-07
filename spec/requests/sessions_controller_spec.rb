@@ -650,6 +650,7 @@ describe SessionsController do
         @user.user_multifactor_auths.each(&:destroy)
         @user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user.id)
         @user.reload
+        @user.reset_password_rate_limit
       end
 
       after(:each) do
@@ -732,7 +733,6 @@ describe SessionsController do
             }
           }
         ) do
-          @user.reset_password_rate_limit
           login
 
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')

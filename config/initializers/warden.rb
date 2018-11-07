@@ -31,12 +31,6 @@ module CartoStrategy
     end
   end
 
-  def force_skip_multifactor_authentication(user)
-    if skip_multifactor_authentication? && user.multifactor_authentication_configured?
-      throw(:warden, action: :skip_mulfifactor_authentication, user_id: user.id)
-    end
-  end
-
   def reset_password_rate_limit(user)
     user.reset_password_rate_limit if affected_by_reset_password_locked?
   end
@@ -291,6 +285,10 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
     auth.session(opts[:scope])[:multifactor_authentication_required] = true
     auth.session(opts[:scope])[:multifactor_authentication_last_activity] = Time.now.to_i
   end
+
+  skip_multifactor_authentication = auth.winning_strategy && auth.winning_strategy.skip_multifactor_authentication?
+  auth.session(opts[:scope])[:skip_multifactor_authentication] = skip_multifactor_authentication
+
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
   # Only at the editor, and only after new authentications, destroy other sessions
@@ -312,7 +310,6 @@ end
 Warden::Manager.after_set_user do |user, auth, opts|
   # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
-
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
 end
 

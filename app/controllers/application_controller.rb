@@ -242,7 +242,7 @@ class ApplicationController < ActionController::Base
   end
 
   def multifactor_authentication_required?(user = current_viewer)
-    user && warden.session(user.username)[:multifactor_authentication_required] == true
+    user && warden.session(user.username)[:multifactor_authentication_required] == true && !warden.session(user.username)[:skip_multifactor_authentication] == true
   rescue Warden::NotAuthenticated
     false
   end

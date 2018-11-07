@@ -282,7 +282,6 @@ end
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   if user.multifactor_authentication_configured?
-    auth.session(opts[:scope])[:multifactor_authentication_required] = true
     auth.session(opts[:scope])[:multifactor_authentication_last_activity] = Time.now.to_i
   end
 

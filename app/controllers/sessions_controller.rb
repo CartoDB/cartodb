@@ -89,7 +89,6 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    return render_multifactor_authentication if multifactor_authentication_required?(user)
     redirect_to after_login_url(user)
   end
 
@@ -114,7 +113,7 @@ class SessionsController < ApplicationController
     url = after_login_url(user)
 
     unless params[:skip]
-      return multifactor_authentication_inactivity if user_inactive(user)
+      return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
 
       retry_after = user.password_login_attempt
       if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
@@ -123,10 +122,10 @@ class SessionsController < ApplicationController
       end
 
       user.active_multifactor_authentication.verify!(params[:code])
-      warden.session(user.username)[:multifactor_authentication_required] = false
       user.reset_password_rate_limit
     end
 
+    warden.session(user.username)[:multifactor_authentication_performed] = true
     redirect_to url
   rescue Carto::UnauthorizedError, Warden::NotAuthenticated
     unauthenticated
@@ -281,7 +280,7 @@ class SessionsController < ApplicationController
 
   private
 
-  def user_inactive(user)
+  def mfa_inactivity_period_expired?(user)
     time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
     time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
   end

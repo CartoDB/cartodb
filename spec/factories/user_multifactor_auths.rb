@@ -9,13 +9,5 @@ FactoryGirl.define do
     trait :active do
       enabled true
     end
-
-    trait :disabled do
-      enabled false
-    end
-
-    factory :totp_needs_setup, traits: [:needs_setup]
-    factory :totp_active, traits: [:active]
-    factory :totp_disabled, traits: [:disabled]
   end
 end

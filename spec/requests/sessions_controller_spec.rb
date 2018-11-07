@@ -447,10 +447,10 @@ describe SessionsController do
 
       before(:all) do
         create
-        @user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user.id)
+        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.save
 
-        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @admin_user.id)
+        @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
         @admin_user.save
       end
 
@@ -633,11 +633,6 @@ describe SessionsController do
       response.headers['Location'].should include "/dashboard"
     end
 
-    def expect_multifactor_auth
-      response.status.should eq 302
-      response.headers['Location'].should include "/multifactor_authentication"
-    end
-
     def expect_invalid_code
       response.status.should eq 200
       request.path.should include '/multifactor_authentication'
@@ -648,19 +643,13 @@ describe SessionsController do
       before(:each) do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user.user_multifactor_auths.each(&:destroy)
-        @user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user.id)
+        @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.reload
         @user.reset_password_rate_limit
       end
 
       after(:each) do
         SessionsController::MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = 120.seconds
-      end
-
-      it 'redirects to MFA screen' do
-        create_session
-
-        expect_multifactor_auth
       end
 
       it 'verifies a valid code' do
@@ -767,7 +756,7 @@ describe SessionsController do
 
     describe 'as org owner' do
       before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
         @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
         @user.save
@@ -794,7 +783,7 @@ describe SessionsController do
 
     describe 'as org user' do
       before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
         @user.save

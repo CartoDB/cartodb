@@ -119,12 +119,15 @@ feature "Sessions" do
   describe 'Multifactor Authentication' do
     before(:each) do
       @user_mfa_setup.user_multifactor_auths.each(&:destroy)
-      @user_mfa_setup.user_multifactor_auths << FactoryGirl.create(:totp_needs_setup, user_id: @user_mfa_setup.id)
+      @user_mfa_setup.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: @user_mfa_setup.id)
       @user_mfa_setup.reload
 
       @user_mfa.user_multifactor_auths.each(&:destroy)
-      @user_mfa.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: @user_mfa.id)
+      @user_mfa.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user_mfa.id)
       @user_mfa.reload
+
+      @user_mfa.reset_password_rate_limit
+      @user_mfa_setup.reset_password_rate_limit
     end
 
     shared_examples_for 'login with MFA setup' do
@@ -230,7 +233,7 @@ feature "Sessions" do
 
     describe 'org owner with MFA' do
       before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users_mfa)
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user_mfa = @organization.owner
         @user_mfa_setup = @organization.users.last
       end

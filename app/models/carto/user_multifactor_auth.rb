@@ -24,12 +24,8 @@ module Carto
       update!(enabled: true, last_login: timestamp)
     end
 
-    def disabled?
-      !enabled
-    end
-
     def needs_setup?
-      disabled?
+      !enabled
     end
 
     def provisioning_uri

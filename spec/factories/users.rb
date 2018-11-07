@@ -108,13 +108,13 @@ FactoryGirl.define do
 
     trait :mfa_setup do
       after :create do |carto_user|
-        carto_user.user_multifactor_auths << FactoryGirl.create(:totp_needs_setup, user_id: carto_user.id)
+        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: carto_user.id)
       end
     end
 
     trait :mfa_enabled do
       after :create do |carto_user|
-        carto_user.user_multifactor_auths << FactoryGirl.create(:totp_active, user_id: carto_user.id)
+        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: carto_user.id)
       end
     end
 

@@ -138,8 +138,8 @@ export default {
       this.isThumbnailErrored = true;
     },
     ...mapActions({
-      likeMap: 'maps/likeMap',
-      deleteMapLike: 'maps/deleteMapLike'
+      likeMap: 'maps/like',
+      deleteMapLike: 'maps/deleteLike'
     })
   }
 };

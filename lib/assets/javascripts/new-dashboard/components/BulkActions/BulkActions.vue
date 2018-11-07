@@ -6,7 +6,7 @@
       v-if="action.shouldShow"
       v-for="action in actions"
       :key="action.event"
-      @click="doAction(action.event)">
+      @click="emitEvent(action.event)">
       {{ action.name }}
     </button>
   </section>
@@ -22,8 +22,8 @@ export default {
     }
   },
   methods: {
-    doAction (action) {
-      this.$emit(action);
+    emitEvent (eventName) {
+      this.$emit(eventName);
     }
   }
 };

@@ -24,6 +24,7 @@
         "password": "Your password-protected datasets",
         "private": "Your private datasets"
       }
-    }
+    },
+    "createDataset": "New Dataset"
   }
 }

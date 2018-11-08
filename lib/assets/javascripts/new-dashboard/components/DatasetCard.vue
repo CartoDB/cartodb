@@ -88,7 +88,7 @@ export default {
     },
     dataType () {
       let data = this.$props.dataset.table.geometry_types[0];
-      return data.replace('ST_', '').toLowerCase();
+      return data ? data.replace('ST_', '').toLowerCase() : '';
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
@@ -117,6 +117,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
+  height: 80px;
   padding: 12px 14px;
   overflow: hidden;
   border-bottom: 1px solid $light-grey;

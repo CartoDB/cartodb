@@ -42,7 +42,8 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
-  before_action :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
+  after_action  :set_last_mfa_activity, only: [:multifactor_authentication]
+  before_action :set_last_mfa_activity, only: [:multifactor_authentication_verify_code]
 
   PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
 

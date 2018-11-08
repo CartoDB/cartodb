@@ -25,7 +25,12 @@
         "private": "Your private datasets"
       }
     },
-    "createDataset": "New Dataset"
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, create or connect your first dataset",
+      "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
+      "createDataset": "New Dataset"
+    }
   },
   "MapsPage": {
     "header": {
@@ -71,6 +76,7 @@
         "last": "Last",
         "first": "First"
       }
-    }
+    },
+    "initialState": "Change Filters"
   }
 }

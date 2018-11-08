@@ -11,17 +11,24 @@
             :filter="appliedFilter"
             :order="appliedOrder"
             :metadata="mapsMetadata"
-            @filterChanged="applyFilter"/>
+            @filterChanged="applyFilter">
+            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+            <svg v-else width="18" height="20" viewBox="0 0 18 20" xmlns="http://www.w3.org/2000/svg">
+              <g fill="#036FE2" fill-rule="evenodd">
+                <path d="M8.3 6.7l1.4-1.4L5 .58.3 5.29l1.4 1.42L4 4.4v11.6h2V4.4zM16.3 13.3L14 15.58V4h-2V15.6l-2.3-2.3-1.4 1.42 4.7 4.7 4.7-4.7z"/>
+              </g>
+            </svg>
+          </FilterDropdown>
         </template>
-        <template slot="actionButton">
+        <template slot="actionButton" v-if="!initialState">
           <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
+      <div class="grid-cell" v-if="initialState">
         <InitialState :title="$t(`MapsPage.zeroCase.title`)">
           <template slot="icon">
-            <img src="../assets/icons/maps/initialState.svg">
+            <img svg-inline src="../assets/icons/maps/initialState.svg">
           </template>
           <template slot="description">
             <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
@@ -99,6 +106,9 @@ export default {
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+    },
+    initialState () {
+      return (!this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0);
     }
   },
   methods: {

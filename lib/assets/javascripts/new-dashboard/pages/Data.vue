@@ -6,10 +6,24 @@
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" />
         </template>
-        <template slot="actionButton">
+        <template slot="actionButton" v-if="!initialState">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
+
+      <div class="grid-cell" v-if="initialState">
+        <InitialState :title="$t(`DataPage.zeroCase.title`)">
+          <template slot="icon">
+            <img svg-inline src="../assets/icons/datasets/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          </template>
+        </InitialState>
+      </div>
      </div>
 
     <ul v-if="isFetchingDatasets">
@@ -39,7 +53,8 @@
 import { mapState } from 'vuex';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import InitialState from 'new-dashboard/components/InitialState';
+import CreateButton from 'new-dashboard/components/CreateButton';
 import { isAllowed } from '../core/filters';
 
 export default {
@@ -47,7 +62,8 @@ export default {
   components: {
     SectionTitle,
     CreateButton,
-    Pagination
+    Pagination,
+    InitialState
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };
@@ -68,10 +84,15 @@ export default {
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries
+      numResults: state => state.datasets.metadata.total_entries,
+      filterType: state => state.datasets.filterType,
+      totalUserEntries: state => state.datasets.metadata.total_user_entries
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+    },
+    initialState () {
+      return (!this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0);
     }
   },
   methods: {
@@ -84,7 +105,10 @@ export default {
       });
     },
     applyFilter (filter) {
-      this.$router.push({ name: 'maps', params: { filter } });
+      this.$router.push({ name: 'datasets', params: { filter } });
+    },
+    hasFilterApplied (filter) {
+      return this.filterType === filter;
     }
   }
 };

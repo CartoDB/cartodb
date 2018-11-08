@@ -48,8 +48,8 @@
       </ul>
 
       <EmptyState
-        :text="$t('MapsPage.emptyCase')"
-        v-if="!isFetchingMaps && !numResults && !hasFilterApplied('mine')">
+        :text="$t('MapsPage.emptyState')"
+        v-if="emptyState">
         <img svg-inline src="../assets/icons/maps/compass.svg">
       </EmptyState>
 
@@ -113,6 +113,9 @@ export default {
     },
     initialState () {
       return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
     }
   },
   methods: {

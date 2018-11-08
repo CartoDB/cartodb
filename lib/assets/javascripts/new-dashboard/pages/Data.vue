@@ -45,6 +45,12 @@
     </ul>
     </div>
 
+    <EmptyState
+      :text="$t('DataPage.emptyState')"
+      v-if="emptyState">
+      <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+    </EmptyState>
+
     <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
@@ -53,7 +59,8 @@
 import { mapState } from 'vuex';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import InitialState from 'new-dashboard/components/InitialState';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import { isAllowed } from '../core/filters';
 
@@ -63,7 +70,8 @@ export default {
     SectionTitle,
     CreateButton,
     Pagination,
-    InitialState
+    InitialState,
+    EmptyState
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };
@@ -93,6 +101,9 @@ export default {
     },
     initialState () {
       return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingDatasets && !this.numResults && !this.hasFilterApplied('mine');
     }
   },
   methods: {

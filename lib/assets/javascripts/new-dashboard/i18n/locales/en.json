@@ -83,5 +83,16 @@
         "first": "First"
       }
     }
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "lastSynced": "Synced {date} ago",
+    "numberRows": "{rows} rows",
+    "numberRow": "{rows} row"
   }
 }

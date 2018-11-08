@@ -9,7 +9,7 @@ module Carto
       block[schema, table_name, qualified_name]
       overviews_service = Carto::OverviewsService.new(db_connection)
       overviews_service.overview_tables(qualified_name).each do |overview_table|
-        table, schema = Table.table_and_schema(overview_table)
+        table, _ = Table.table_and_schema(overview_table)
         block[schema, table, qualified_table_name(schema, table)]
       end
       # TODO: should we apply also to raster overview tables?

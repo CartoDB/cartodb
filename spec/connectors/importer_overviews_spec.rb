@@ -465,7 +465,7 @@ describe CartoDB::Importer2::Overviews do
   end
 
   it 'given user in organization overviews are granted api key privileges as for base table ' do
-    # Import two tables with overviews for @user
+    # Import two tables with overviews for @org_user_1
     table1 = ov_tables1 = nil
     table2 = ov_tables2 = nil
     user = @org_user_1

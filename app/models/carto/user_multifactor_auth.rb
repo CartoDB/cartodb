@@ -13,6 +13,7 @@ module Carto
     belongs_to :user, inverse_of: :user_multifactor_auths, foreign_key: :user_id
 
     validates :type, inclusion: { in: VALID_TYPES }
+    validates_uniqueness_of :type, scope: :user_id
 
     before_create :create_shared_secret
 

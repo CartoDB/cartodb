@@ -25,11 +25,18 @@ module Carto
       created_at + ACCESS_TOKEN_EXPIRATION_TIME - Time.now
     end
 
+    def user
+      oauth_app_user.user
+    end
+
     private
 
     def create_api_key
       grants = [{ type: 'apis', apis: [] }]
-      scopes.each { |s| SCOPES_BY_NAME[s].add_to_api_key_grants(grants) }
+      scopes.each do |s|
+        scope = OauthProvider::Scopes.build(s)
+        scope.add_to_api_key_grants(grants, user)
+      end
 
       self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(
         name: "oauth_authorization #{SecureRandom.uuid}",

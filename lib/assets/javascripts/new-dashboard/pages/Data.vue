@@ -2,12 +2,12 @@
   <section class="section">
     <div class="container grid">
      <div class="grid-cell grid-cell--col12">
-      <SectionTitle title='Your Data' description="This is a description test">
+      <SectionTitle :title="pageTitle">
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" />
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset">New Dataset</CreateButton>
+          <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
      </div>

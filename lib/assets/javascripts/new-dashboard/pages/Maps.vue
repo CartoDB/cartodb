@@ -11,17 +11,20 @@
             :filter="appliedFilter"
             :order="appliedOrder"
             :metadata="mapsMetadata"
-            @filterChanged="applyFilter"/>
+            @filterChanged="applyFilter">
+            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+            <img svg-inline v-else src="../assets/icons/common/filter.svg">
+          </FilterDropdown>
         </template>
-        <template slot="actionButton">
+        <template slot="actionButton" v-if="!initialState">
           <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
+      <div class="grid-cell" v-if="initialState">
         <InitialState :title="$t(`MapsPage.zeroCase.title`)">
           <template slot="icon">
-            <img src="../assets/icons/maps/initialState.svg">
+            <img svg-inline src="../assets/icons/maps/initialState.svg">
           </template>
           <template slot="description">
             <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
@@ -45,8 +48,8 @@
       </ul>
 
       <EmptyState
-        :text="$t('MapsPage.emptyCase')"
-        v-if="!isFetchingMaps && !numResults && !hasFilterApplied('mine')">
+        :text="$t('MapsPage.emptyState')"
+        v-if="emptyState">
         <img svg-inline src="../assets/icons/maps/compass.svg">
       </EmptyState>
 
@@ -107,6 +110,12 @@ export default {
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+    },
+    initialState () {
+      return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
     }
   },
   methods: {

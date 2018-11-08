@@ -187,11 +187,23 @@ export default {
   }
 
   &.selected {
-    background-color: #F2F9FF;
+    background-color: $softblue;
 
     .card-actions,
     .card-select {
       opacity: 1;
+    }
+
+    .card-title {
+      &.text-overflows::after {
+        background-image: linear-gradient(to right, #FFF0, $softblue 4px);
+      }
+    }
+
+    .card-description {
+      &.text-overflows::after {
+        background-color: $softblue;
+      }
     }
   }
 }
@@ -243,6 +255,7 @@ export default {
       bottom: 0;
       padding-right: 24px;
       padding-left: 6px;
+      transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
       background-image: linear-gradient(to right, #FFF0, #FFFF 4px);
     }
 
@@ -256,6 +269,7 @@ export default {
 }
 
 .card-description {
+  position: relative;
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
@@ -267,6 +281,7 @@ export default {
       right: 0;
       bottom: 0;
       padding-left: 4px;
+      transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
       background-color: #FFF;
     }
   }

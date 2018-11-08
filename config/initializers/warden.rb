@@ -269,10 +269,6 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
-  if user.multifactor_authentication_configured?
-    auth.session(opts[:scope])[:multifactor_authentication_last_activity] = Time.now.to_i
-  end
-
   auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
 
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)

@@ -38,6 +38,21 @@
       "deleteMaps": "Delete maps"
     }
   },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your public datasets",
+        "link": "Your link-shared datasets",
+        "password": "Your password-protected datasets",
+        "private": "Your private datasets"
+      }
+    },
+    "createDataset": "New Dataset"
+  },
   "MapsPage": {
     "header": {
       "title": {

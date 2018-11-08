@@ -135,7 +135,7 @@ paths:
           required: true
       summary: Check import status
       description: |
-        Bla Bla
+        Returns the Import's status and its associated metadata.
       tags:
         - Standard Tables
       operationId: getImportStatus

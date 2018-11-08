@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Sync new password resets fields with central (#14333)
+- Do not concatenate the schema if it's already defined while fetching overview tables #14414
 
 4.22.2 (2018-11-05)
 -------------------

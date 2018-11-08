@@ -130,6 +130,29 @@
     </div>
   <% end %>
 
+  <% if (@user.has_feature_flag?('mfa')) %>
+    <% mfa_enabled = false # TODO: read it from the user %>
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+          Multi-factor authentication
+        </label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <input name="user[mfa]" type="hidden" value="0">
+          <input id="mfa" name="user[mfa]" type="checkbox" value="<%= mfa_enabled %>" <%= mfa_enabled ? 'checked' : '' %>>
+          <%= label_tag(:mfa, '') %>
+        </div>
+        <div class="FormAccount-rowInfo u-lspace-23">
+          <p class="CDB-Text CDB-Size-small u-altTextColor">
+            If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>  
+
   <div class="user-quotas" style="display: none">
     <div class="FormAccount-title">
       <p class="FormAccount-titleText">User quotas</p>

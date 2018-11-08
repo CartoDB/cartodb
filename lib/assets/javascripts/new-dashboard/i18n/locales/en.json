@@ -27,6 +27,21 @@
       "deleteMaps": "Delete maps"
     }
   },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your public datasets",
+        "link": "Your link-shared datasets",
+        "password": "Your password-protected datasets",
+        "private": "Your private datasets"
+      }
+    },
+    "createDataset": "New Dataset"
+  },
   "MapsPage": {
     "header": {
       "title": {
@@ -44,7 +59,8 @@
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
       "createMap": "Create your first map"
-    }
+    },
+    "emptyCase": "There are no maps here."
   },
   "FilterDropdown": {
     "showMe": "Show me",

@@ -65,6 +65,12 @@
         </li>
       </ul>
 
+      <EmptyState
+        :text="$t('MapsPage.emptyCase')"
+        v-if="!isFetchingMaps && !numResults && !hasFilterApplied('mine')">
+        <img svg-inline src="../assets/icons/maps/compass.svg">
+      </EmptyState>
+
       <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
   </div>
@@ -79,7 +85,8 @@ import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import StickySubheader from '../components/StickySubheader';
 import Pagination from 'new-dashboard/components/Pagination';
-import InitialState from 'new-dashboard/components/InitialState';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { isAllowed } from '../store/maps/filters';
@@ -88,6 +95,7 @@ export default {
   name: 'MapsPage',
   components: {
     CreateButton,
+    EmptyState,
     FilterDropdown,
     MapBulkActions,
     MapCard,

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Pagination.vue should render correctly the initial state box 1`] = `
+exports[`InitialState.vue should render correctly the initial state box 1`] = `
 <div class="initial-state">
   <div class="initial-state-icon"><img src="test.svg"></div>
   <div class="initial-state-text">

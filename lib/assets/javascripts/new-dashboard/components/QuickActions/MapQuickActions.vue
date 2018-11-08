@@ -15,29 +15,32 @@ export default {
   props: {
     map: Object
   },
-  data: function () {
-    return {
-      actions: {
+  computed: {
+    actions () {
+      return {
         mine: [
-          { name: this.$t('QuickActions.maps.editInfo'), event: 'editInfo' },
-          { name: this.$t('QuickActions.maps.changePrivacy'), event: 'changePrivacy' },
-          { name: this.$t('QuickActions.maps.manageTags'), event: 'manageTags' },
-          { name: this.$t('QuickActions.maps.duplicate'), event: 'duplicateMap' },
-          { name: this.$t('QuickActions.maps.lock'), event: 'lockMap' },
-          { name: this.$t('QuickActions.maps.delete'), event: 'deleteMap', isDestructive: true }
+          { name: this.$t('QuickActions.maps.editInfo'), event: 'editInfo', shouldShow: true },
+          { name: this.$t('QuickActions.maps.manageTags'), event: 'manageTags', shouldShow: true },
+          { name: this.$t('QuickActions.maps.changePrivacy'), event: 'changePrivacy', shouldShow: true },
+          { name: this.$t('QuickActions.maps.share'), event: 'shareVisualization', shouldShow: this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.maps.duplicate'), event: 'duplicateMap', shouldShow: true },
+          { name: this.$t('QuickActions.maps.lock'), event: 'lockMap', shouldShow: true },
+          { name: this.$t('QuickActions.maps.delete'), event: 'deleteMap', isDestructive: true, shouldShow: true }
         ],
         locked: [
-          { name: this.$t('QuickActions.maps.unlock'), event: 'unlockMap' }
+          { name: this.$t('QuickActions.maps.unlock'), event: 'unlockMap', shouldShow: true }
         ]
-      }
-    };
-  },
-  computed: {
+      };
+    },
     actionMode () {
       return this.map.locked ? 'locked' : 'mine';
     },
     isShared () {
       return Visualization.isShared(this.$props.map, this.$cartoModels);
+    },
+    isUserInsideOrganization () {
+      const userOrganization = this.$store.state.user.organization;
+      return userOrganization && userOrganization.id;
     }
   },
   methods: {
@@ -84,6 +87,9 @@ export default {
     },
     deleteMap () {
       DialogActions.deleteVisualization.apply(this, [this.map, 'maps']);
+    },
+    shareVisualization () {
+      DialogActions.shareVisualization.apply(this, [this.map]);
     }
   }
 };

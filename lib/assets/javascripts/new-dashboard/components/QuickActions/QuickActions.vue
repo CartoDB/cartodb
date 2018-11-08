@@ -6,7 +6,7 @@
     <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click.prevent="">
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">Quick actions</h6>
       <ul>
-        <li v-for="action in actions" :key="action.name">
+        <li v-for="action in actions" :key="action.name" v-if="action.shouldShow">
           <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="doAction(action.event)">{{action.name}}</a>
         </li>
       </ul>

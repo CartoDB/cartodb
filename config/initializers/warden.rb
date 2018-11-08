@@ -13,10 +13,6 @@ end
 # - Include this module
 # - Override the methods as needed
 module CartoStrategy
-  def skip_multifactor_authentication?
-    true
-  end
-
   def affected_by_password_expiration?
     true
   end
@@ -72,10 +68,6 @@ Warden::Strategies.add(:password) do
     user.organization.nil? || user.organization.auth_username_password_enabled
   end
 
-  def skip_multifactor_authentication?
-    false
-  end
-
   def authenticate!
     if params[:email] && params[:password]
       if (user = authenticate(clean_email(params[:email]), params[:password]))
@@ -125,10 +117,6 @@ Warden::Strategies.add(:oauth) do
 
   def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
-  end
-
-  def skip_multifactor_authentication?
-    false
   end
 
   def authenticate!
@@ -285,8 +273,7 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
     auth.session(opts[:scope])[:multifactor_authentication_last_activity] = Time.now.to_i
   end
 
-  skip_multifactor_authentication = auth.winning_strategy && auth.winning_strategy.skip_multifactor_authentication?
-  auth.session(opts[:scope])[:skip_multifactor_authentication] = skip_multifactor_authentication
+  auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
 
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 

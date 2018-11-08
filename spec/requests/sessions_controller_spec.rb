@@ -5,6 +5,37 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
+  def create_ldap_user(admin_user_username, admin_user_password)
+    admin_user_email = "#{@organization.name}-admin@test.com"
+    admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
+    ldap_entry_data = {
+      :dn => admin_user_cn,
+      @user_id_field => [admin_user_username],
+      @user_email_field => [admin_user_email]
+    }
+    FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
+    FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
+
+    create_admin_user(admin_user_username, admin_user_email, admin_user_password)
+    @admin_user.save.reload
+    ::Organization.any_instance.stubs(:owner).returns(@admin_user)
+
+    # INFO: Again, hack to act as if user had organization
+    ::User.stubs(:where).with(username: admin_user_username,
+                              organization_id: @organization.id).returns([@admin_user])
+  end
+
+  def create_admin_user(admin_user_username, admin_user_email, admin_user_password)
+    @admin_user = create_user(
+      username: admin_user_username,
+      email: admin_user_email,
+      password: admin_user_password,
+      private_tables_enabled: true,
+      quota_in_bytes: 12345,
+      organization: nil
+    )
+  end
+
   shared_examples_for 'LDAP' do
     it "doesn't allows to login until admin does first" do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
@@ -102,30 +133,7 @@ describe SessionsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       admin_user_username = "#{@organization.name}-admin"
       admin_user_password = '2{Patrañas}'
-      admin_user_email = "#{@organization.name}-admin@test.com"
-      admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"
-      ldap_entry_data = {
-        :dn => admin_user_cn,
-        @user_id_field => [admin_user_username],
-        @user_email_field => [admin_user_email]
-      }
-      FakeNetLdap.register_user(username: admin_user_cn, password: admin_user_password)
-      FakeNetLdap.register_query(Net::LDAP::Filter.eq('cn', admin_user_username), [ldap_entry_data])
-
-      @admin_user = create_user(
-        username: admin_user_username,
-        email: admin_user_email,
-        password: admin_user_password,
-        private_tables_enabled: true,
-        quota_in_bytes: 12345,
-        organization: nil
-      )
-      @admin_user.save.reload
-      ::Organization.any_instance.stubs(:owner).returns(@admin_user)
-
-      # INFO: Again, hack to act as if user had organization
-      ::User.stubs(:where).with(username: admin_user_username,
-                                organization_id: @organization.id).returns([@admin_user])
+      create_ldap_user(admin_user_username, admin_user_password)
 
       post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
 
@@ -174,6 +182,28 @@ describe SessionsController do
       ::User.unstub(:where)
 
       @admin_user.destroy
+    end
+
+    shared_examples_for 'MFA' do
+      it "Redirects to multifactor_authentication if finds a cartodb username that matches with LDAP credentials" do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        admin_user_username = "#{@organization.name}-admin"
+        admin_user_password = '2{Patrañas}'
+        create_ldap_user(admin_user_username, admin_user_password)
+
+        post create_session_url(user_domain: user_domain, email: admin_user_username, password: admin_user_password)
+
+        response.status.should == 302
+        (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/dashboard\/$/).to_i.should eq 0
+
+        get response.redirect_url
+        response.status.should == 302
+        (response.location =~ /^http\:\/\/#{admin_user_username}(.*)\/multifactor_authentication\/$/).to_i.should eq 0
+
+        ::User.unstub(:where)
+
+        @admin_user.destroy
+      end
     end
   end
 
@@ -235,6 +265,25 @@ describe SessionsController do
       before(:each) do
         stub_domainful(@organization.name)
       end
+
+      describe 'MFA' do
+        def create_admin_user(admin_user_username, admin_user_email, admin_user_password)
+          @admin_user = create_user(
+            username: admin_user_username,
+            email: admin_user_email,
+            password: admin_user_password,
+            private_tables_enabled: true,
+            quota_in_bytes: 12345,
+            organization: nil
+          )
+
+          @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+          @admin_user.save
+        end
+
+        it_behaves_like 'LDAP'
+        it_behaves_like 'MFA'
+      end
     end
 
     describe 'subdomainless' do
@@ -244,6 +293,25 @@ describe SessionsController do
 
       before(:each) do
         stub_subdomainless
+      end
+
+      describe 'MFA' do
+        def create_admin_user(admin_user_username, admin_user_email, admin_user_password)
+          @admin_user = create_user(
+            username: admin_user_username,
+            email: admin_user_email,
+            password: admin_user_password,
+            private_tables_enabled: true,
+            quota_in_bytes: 12345,
+            organization: nil
+          )
+
+          @admin_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @admin_user.id)
+          @admin_user.save
+        end
+
+        it_behaves_like 'LDAP'
+        it_behaves_like 'MFA'
       end
     end
   end
@@ -312,22 +380,6 @@ describe SessionsController do
       response.status.should == 403
     end
 
-    it "authenticates users with casing differences in email" do
-      # we use this to avoid generating the static assets in CI
-      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
-
-      Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
-      Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
-
-      post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
-
-      response.status.should eq 302
-
-      # Double check authentication is correct
-      get response.redirect_url
-      response.status.should eq 200
-    end
-
     describe 'SAML logout' do
       it 'calls SamlService#sp_logout_request from user-initiated logout' do
         stub_saml_service(@user)
@@ -362,6 +414,24 @@ describe SessionsController do
         # needs returning an url to do a redirection
         Carto::SamlService.any_instance.stubs(:process_logout_response).returns('http://carto.com').once
         get logout_url(user_domain: user_domain, SAMLResponse: 'xx')
+      end
+    end
+
+    shared_examples_for 'SAML no MFA' do
+      it "authenticates users with casing differences in email" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email.upcase)
+
+        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+        response.status.should eq 302
+
+        # Double check authentication is correct
+        get response.redirect_url
+        response.status.should eq 200
       end
     end
   end
@@ -402,6 +472,7 @@ describe SessionsController do
 
     describe 'domainful' do
       it_behaves_like 'SAML'
+      it_behaves_like 'SAML no MFA'
 
       let(:user_domain) { nil }
 
@@ -420,6 +491,7 @@ describe SessionsController do
 
     describe 'subdomainless' do
       it_behaves_like 'SAML'
+      it_behaves_like 'SAML no MFA'
 
       let(:user_domain) { @organization.name }
 
@@ -438,6 +510,22 @@ describe SessionsController do
 
     describe 'user with MFA' do
       it_behaves_like 'SAML'
+
+      it "redirects to multifactor_authentication" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        Carto::SamlService.any_instance.stubs(:enabled?).returns(true)
+        Carto::SamlService.any_instance.stubs(:get_user_email).returns(@user.email)
+
+        post create_session_url(user_domain: user_domain, SAMLResponse: 'xx')
+
+        response.status.should eq 302
+
+        get response.redirect_url
+        response.status.should eq 302
+        response.redirect_url.should include '/multifactor_authentication'
+      end
 
       let(:user_domain) { nil }
 

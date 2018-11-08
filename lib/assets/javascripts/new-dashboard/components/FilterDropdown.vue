@@ -14,7 +14,7 @@
       <ul class="list">
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
           <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('mine') }" @click="setFilter('mine')">
-            {{ $t('FilterDropdown.types.yourMaps', { count: metadata.total_user_entries }) }}
+            {{ $t(`FilterDropdown.types.${section}`, { count: metadata.total_user_entries }) }}
           </a>
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }" v-if="metadata.total_shared">
@@ -86,6 +86,7 @@
 export default {
   name: 'MapCard',
   props: {
+    section: String,
     filter: String,
     order: String,
     metadata: {

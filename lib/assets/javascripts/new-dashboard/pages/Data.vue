@@ -6,6 +6,14 @@
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" />
         </template>
+        <template slot="dropdownButton">
+          <FilterDropdown
+            section="datasets"
+            :filter="appliedFilter"
+            :order="appliedOrder"
+            :metadata="datasetsMetadata"
+            @filterChanged="applyFilter"/>
+        </template>
         <template slot="actionButton">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
@@ -37,6 +45,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
@@ -45,9 +54,10 @@ import { isAllowed } from '../core/filters';
 export default {
   name: 'DataPage',
   components: {
-    SectionTitle,
     CreateButton,
-    Pagination
+    FilterDropdown,
+    Pagination,
+    SectionTitle
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };
@@ -84,7 +94,7 @@ export default {
       });
     },
     applyFilter (filter) {
-      this.$router.push({ name: 'maps', params: { filter } });
+      this.$router.push({ name: 'datasets', params: { filter } });
     }
   }
 };

@@ -8,6 +8,7 @@
         </template>
         <template slot="dropdownButton">
           <FilterDropdown
+            section="maps"
             :filter="appliedFilter"
             :order="appliedOrder"
             :metadata="mapsMetadata"

@@ -1,13 +1,13 @@
 <template>
   <div class="quick-actions">
-    <a href="#" class="quick-actions-select" @click.prevent="toggleDropdown" :class="{'is-active' : isOpen}">
+    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active' : isOpen}">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
-    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click.prevent="">
-      <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">Quick actions</h6>
+    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click="killEvent">
+      <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.quickActions`) }}</h6>
       <ul>
         <li v-for="action in actions" :key="action.name" v-if="action.shouldShow">
-          <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="doAction(action.event)">{{action.name}}</a>
+          <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
         </li>
       </ul>
     </div>
@@ -27,20 +27,23 @@ export default {
     actions: Array
   },
   methods: {
-    doAction (action) {
+    emitEvent (action) {
       this.$emit(action);
     },
     toggleDropdown () {
       this.isOpen = !this.isOpen;
       if (this.isOpen) {
-        this.$emit('openQuickactions');
+        this.$emit('open');
       } else {
-        this.$emit('closeQuickactions');
+        this.$emit('close');
       }
     },
     closeDropdown () {
       this.isOpen = false;
-      this.$emit('closeQuickactions');
+      this.$emit('close');
+    },
+    killEvent (event) {
+      event.preventDefault();
     }
   }
 };
@@ -74,7 +77,7 @@ export default {
 
 .quick-actions-dropdown {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   right: 0;
   width: 260px;
   margin-top: 8px;
@@ -92,7 +95,7 @@ export default {
 
 .action {
   display: block;
-  padding: 14.5px 24px 15.5px;
+  padding: 14px 24px 16px;
   border-bottom: 1px solid $softblue;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <QuickActions v-if="!isShared" :actions="actions[actionMode]" v-on="getEventListeners()" @openQuickactions="openQuickactions" @closeQuickactions="closeQuickactions"></QuickActions>
+  <QuickActions v-if="!isShared" :actions="actions[actionMode]" v-on="getEventListeners()" @open="openQuickactions" @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
@@ -62,10 +62,10 @@ export default {
       );
     },
     openQuickactions () {
-      this.$emit('openQuickactions');
+      this.$emit('open');
     },
     closeQuickactions () {
-      this.$emit('closeQuickactions');
+      this.$emit('close');
     },
     editInfo () {
       DialogActions.editMapMetadata.apply(this, [this.map]);

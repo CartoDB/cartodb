@@ -92,7 +92,7 @@ export default {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     initialState () {
-      return (!this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0);
+      return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     }
   },
   methods: {

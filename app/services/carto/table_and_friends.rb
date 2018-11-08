@@ -1,6 +1,6 @@
 module Carto
   # A dataset may be comprised of additional tables other than the main table
-  # For example, if overviews have been creetaed for the dataset.
+  # For example, if overviews have been created for the dataset.
   # This is a utility to apply changes (e.g. privilege modifications) to all
   # the tables than comprise the dataset.
   module TableAndFriends

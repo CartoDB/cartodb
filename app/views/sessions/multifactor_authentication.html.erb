@@ -79,7 +79,7 @@
     </div>
   </div>
 
-  <% if @user.organization_owner? %>
+  <% if @user.organization_owner? && @mfa.needs_setup? %>
     <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>
 
       <%= hidden_field_tag 'user_id', @user.id %>

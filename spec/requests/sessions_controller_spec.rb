@@ -628,6 +628,12 @@ describe SessionsController do
       ROTP::TOTP.new(@user.active_multifactor_authentication.shared_secret).now
     end
 
+    def expect_login_error
+      response.status.should eq 200
+      request.path.should_not include '/dashboard'
+      response.body.should include 'Sessions-fieldError'
+    end
+
     def expect_login
       response.status.should eq 302
       response.headers['Location'].should include "/dashboard"
@@ -752,6 +758,20 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+
+      it 'does not allow to skip verification' do
+        login
+
+        mfa = @user.active_multifactor_authentication
+        mfa.enabled = false
+        mfa.save!
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+        expect_login_error
+        mfa.enabled = true
+        mfa.save!
+      end
     end
 
     describe 'as org owner' do
@@ -772,12 +792,25 @@ describe SessionsController do
 
       it_behaves_like 'all users workflow'
 
-      it 'skips verification' do
+      it 'skips verification only when mfa needs setup' do
         login
+        mfa = @user.active_multifactor_authentication
+        mfa.enabled = false
+        mfa.save!
 
         post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
         expect_login
+        mfa.enabled = true
+        mfa.save!
+      end
+
+      it 'does not allow to skip verification if is active' do
+        login
+
+        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+        expect_login_error
       end
     end
 

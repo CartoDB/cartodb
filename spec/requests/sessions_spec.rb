@@ -245,7 +245,25 @@ feature "Sessions" do
       it_behaves_like 'login with MFA'
       it_behaves_like 'login with MFA setup'
 
-      scenario "Organization owner has skip link" do
+      scenario "Organization owner has skip link when mfa needs setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        mfa = @organization.owner.active_multifactor_authentication
+        mfa.enabled = false
+        mfa.save!
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @organization.owner.email
+        fill_in 'password', with: @organization.owner.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should include("Verification code")
+        page.body.should include("skip this step")
+      end
+
+      scenario "Organization owner does not have skip link when mfa is active" do
         # we use this to avoid generating the static assets in CI
         Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
@@ -257,7 +275,7 @@ feature "Sessions" do
         page.status_code.should eq 200
 
         page.body.should include("Verification code")
-        page.body.should include("skip this step")
+        page.body.should_not include("skip this step")
       end
     end
   end

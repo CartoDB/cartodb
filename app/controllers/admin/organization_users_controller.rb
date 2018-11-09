@@ -166,7 +166,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     if attributes[:mfa].present?
-      Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id).update(enabled: attributes[:mfa] == '1')
+      service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
+      service.update(enabled: attributes[:mfa] == '1')
     end
 
     # update_in_central is duplicated because we don't wan ta local save if Central fails,

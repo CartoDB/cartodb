@@ -97,5 +97,4 @@ describe Carto::User do
       @user.password_reset_sent_at.to_s.should eql now.to_s
     end
   end
-
 end

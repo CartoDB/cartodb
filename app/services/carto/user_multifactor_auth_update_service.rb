@@ -12,5 +12,6 @@ module Carto
         Carto::UserMultifactorAuth.where(user_id: @user_id).each(&:destroy)
       end
     end
+
   end
 end

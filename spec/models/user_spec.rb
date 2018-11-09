@@ -2728,39 +2728,6 @@ describe User do
     end
   end
 
-  describe '#update_multifactor_auth' do
-    after(:each) do
-      @user.user_multifactor_auths.each(&:destroy)
-    end
-
-    context 'with enabled = true' do
-      it 'creates a totp multifactor auth for the user' do
-        expect { @user.update_multifactor_auth(true) }.to change { @user.user_multifactor_auths.count }.by(1)
-        @user.user_multifactor_auths.first.type.should eql 'totp'
-      end
-
-      it 'does nothing if the user already has one multifactor auth' do
-        @user.update_multifactor_auth(true)
-        expect { @user.update_multifactor_auth(true) }.to change { @user.user_multifactor_auths.count }.by(0)
-      end
-    end
-
-    context 'with enabled = false' do
-      it 'removes all the multifactor auths of the user' do
-        @user.update_multifactor_auth(true)
-        @user.user_multifactor_auths.should_not be_empty
-
-        @user.update_multifactor_auth(false)
-
-        @user.user_multifactor_auths.should be_empty
-      end
-
-      it 'does nothing if the user does not have multifactor auths' do
-        expect { @user.update_multifactor_auth(false) }.to change { @user.user_multifactor_auths.count }.by(0)
-      end
-    end
-  end
-
   describe '#rate limits' do
     before :all do
       @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)

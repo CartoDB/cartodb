@@ -427,14 +427,6 @@ class User < Sequel::Model
     Carto::UserMultifactorAuth.where(user_id: id)
   end
 
-  def update_multifactor_auth(enabled)
-    if enabled
-      Carto::UserMultifactorAuth.create(user_id: id, type: Carto::UserMultifactorAuth::TYPE_TOTP)
-    else
-      user_multifactor_auths.each(&:destroy)
-    end
-  end
-
   def shared_entities
     CartoDB::SharedEntity.join(:visualizations, id: :entity_id).where(user_id: id)
   end

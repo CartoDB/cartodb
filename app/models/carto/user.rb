@@ -714,14 +714,6 @@ class Carto::User < ActiveRecord::Base
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
   end
 
-  def update_multifactor_auth(enabled)
-    if enabled
-      Carto::UserMultifactorAuth.create(user_id: id, type: Carto::UserMultifactorAuth::TYPE_TOTP)
-    else
-      user_multifactor_auths.each(&:destroy)
-    end
-  end
-
   private
 
   def password_rate_limit_configured?

@@ -408,6 +408,29 @@ describe Admin::OrganizationUsersController do
           @existing_user.reload
           @existing_user.last_password_change_date.should eq last_change
         end
+
+        it 'creates a multifactor authentication' do
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          @existing_user.update_multifactor_auth(true)
+          @existing_user.user_multifactor_auths.should_not be_empty
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '0' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
       end
 
       describe '#destroy' do

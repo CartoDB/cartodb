@@ -420,8 +420,8 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'removes the multifactor authentications' do
-          @existing_user.update_multifactor_auth(true)
-          @existing_user.user_multifactor_auths.should_not be_empty
+          FactoryGirl.create(:totp, user: @existing_user)
+          @existing_user.reload.user_multifactor_auths.should_not be_empty
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: { mfa: '0' },

@@ -14,7 +14,7 @@ describe Carto::UserMultifactorAuth do
   end
 
   before :each do
-    @carto_user.user_multifactor_auths.each(&:destroy)
+    @carto_user.reload.user_multifactor_auths.each(&:destroy)
   end
 
   after :all do

@@ -131,7 +131,7 @@
   <% end %>
 
   <% if (@user.has_feature_flag?('mfa')) %>
-    <% mfa_enabled = false # TODO: read it from the user %>
+    <% mfa_enabled = @user.user_multifactor_auths.present? %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -141,7 +141,7 @@
       <div class="FormAccount-rowData">
         <div class="Toggler">
           <input name="user[mfa]" type="hidden" value="0">
-          <input id="mfa" name="user[mfa]" type="checkbox" value="<%= mfa_enabled %>" <%= mfa_enabled ? 'checked' : '' %>>
+          <input id="mfa" name="user[mfa]" type="checkbox" value="1" <%= mfa_enabled ? 'checked' : '' %>>
           <%= label_tag(:mfa, '') %>
         </div>
         <div class="FormAccount-rowInfo u-lspace-23">

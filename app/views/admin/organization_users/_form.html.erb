@@ -140,8 +140,7 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <input name="user[mfa]" type="hidden" value="0">
-          <input id="mfa" name="user[mfa]" type="checkbox" value="1" <%= mfa_enabled ? 'checked' : '' %>>
+          <%= f.check_box :mfa, id: "mfa", value: "1", checked: mfa_enabled %>
           <%= label_tag(:mfa, '') %>
         </div>
         <div class="FormAccount-rowInfo u-lspace-23">

@@ -9,9 +9,11 @@ module Carto
         page = (params[:page].present? ? params[:page] : 1).to_i
         per_page = (params[:per_page].present? ? params[:per_page] : default_per_page).to_i
         order = (params[:order].present? ? params[:order] : default_order).to_sym
-        order_direction = (params[:order_direction].present? ?
-          params[:order_direction] :
-            default_order_direction).to_sym
+        order_direction = if params[:order_direction].present?
+          params[:order_direction]
+        else
+          default_order_direction)
+        end.to_sym
 
         if order.present? && !valid_order_values.include?(order)
           raise Carto::OrderParamInvalidError.new(valid_order_values)

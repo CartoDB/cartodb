@@ -12,6 +12,19 @@
     "lastUpdate": "Updated {date} ago",
     "tags": "tags"
   },
+  "QuickActions": {
+    "quickActions": "Quick actions",
+    "maps": {
+      "editInfo": "Edit Name & description",
+      "manageTags": "Manage Tags",
+      "changePrivacy": "Change Privacy",
+      "share": "Share with colleagues",
+      "duplicate": "Duplicate",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "delete": "Delete"
+    }
+  },
   "BulkActions": {
     "selected": "{count} selected",
     "maps": {

@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': areQuickActionsOpen}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -12,11 +12,7 @@
       </span>
     </span>
 
-    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="card-actionsSelect">
-          <img src="../assets/icons/common/options.svg">
-      </span>
-    </div>
+    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
 
     <div class="card-text">
       <div class="card-header">
@@ -70,6 +66,7 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import FeaturesDropdown from './FeaturesDropdown';
 import { mapActions } from 'vuex';
+import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 
 export default {
   name: 'MapCard',
@@ -81,6 +78,7 @@ export default {
     }
   },
   components: {
+    MapQuickActions,
     FeaturesDropdown
   },
   data: function () {
@@ -89,6 +87,7 @@ export default {
       activeHover: true,
       titleOverflow: false,
       descriptionOverflow: false,
+      areQuickActionsOpen: false,
       maxTags: 3
     };
   },
@@ -133,6 +132,12 @@ export default {
       } else {
         this.likeMap(this.$props.map);
       }
+    },
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
+    },
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
     },
     mouseOverChildElement () {
       this.activeHover = false;
@@ -195,6 +200,13 @@ export default {
   &.selected {
     background-color: #F2F9FF;
 
+    .card-actions,
+    .card-select {
+      opacity: 1;
+    }
+  }
+
+  &.quickactions-open {
     .card-actions,
     .card-select {
       opacity: 1;

@@ -1,12 +1,12 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': selected, 'card--noHover': !activeHover}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
-    <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" @click="toggleSelection" type="checkBox">
+    <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <input class="checkbox-input" :checked="isSelected" @click="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
@@ -74,7 +74,11 @@ import { mapActions } from 'vuex';
 export default {
   name: 'MapCard',
   props: {
-    map: Object
+    map: Object,
+    isSelected: {
+      type: Boolean,
+      default: false
+    }
   },
   components: {
     FeaturesDropdown
@@ -82,7 +86,6 @@ export default {
   data: function () {
     return {
       isThumbnailErrored: false,
-      selected: false,
       activeHover: true,
       titleOverflow: false,
       descriptionOverflow: false,
@@ -119,11 +122,14 @@ export default {
   },
   methods: {
     toggleSelection () {
-      this.selected = !this.selected;
+      this.$emit('toggleSelection', {
+        map: this.$props.map,
+        isSelected: !this.$props.isSelected
+      });
     },
     toggleFavorite () {
       if (this.$props.map.liked) {
-        this.deleteLikeMap(this.$props.map);
+        this.deleteMapLike(this.$props.map);
       } else {
         this.likeMap(this.$props.map);
       }
@@ -138,8 +144,8 @@ export default {
       this.isThumbnailErrored = true;
     },
     ...mapActions({
-      likeMap: 'maps/likeMap',
-      deleteLikeMap: 'maps/deleteLikeMap'
+      likeMap: 'maps/like',
+      deleteMapLike: 'maps/deleteLike'
     })
   }
 };

@@ -14,10 +14,24 @@
             :metadata="datasetsMetadata"
             @filterChanged="applyFilter"/>
         </template>
-        <template slot="actionButton">
+        <template slot="actionButton" v-if="!initialState">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
+
+      <div class="grid-cell" v-if="initialState">
+        <InitialState :title="$t(`DataPage.zeroCase.title`)">
+          <template slot="icon">
+            <img svg-inline src="../assets/icons/datasets/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          </template>
+        </InitialState>
+      </div>
      </div>
 
     <ul v-if="isFetchingDatasets">
@@ -39,6 +53,12 @@
     </ul>
     </div>
 
+    <EmptyState
+      :text="$t('DataPage.emptyState')"
+      v-if="emptyState">
+      <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+    </EmptyState>
+
     <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
@@ -48,7 +68,9 @@ import { mapState } from 'vuex';
 import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
+import CreateButton from 'new-dashboard/components/CreateButton';
 import { isAllowed } from '../core/filters';
 
 export default {
@@ -56,8 +78,10 @@ export default {
   components: {
     CreateButton,
     FilterDropdown,
+    SectionTitle,
     Pagination,
-    SectionTitle
+    InitialState,
+    EmptyState
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };
@@ -78,10 +102,18 @@ export default {
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries
+      numResults: state => state.datasets.metadata.total_entries,
+      filterType: state => state.datasets.filterType,
+      totalUserEntries: state => state.datasets.metadata.total_user_entries
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+    },
+    initialState () {
+      return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingDatasets && !this.numResults && !this.hasFilterApplied('mine');
     }
   },
   methods: {
@@ -95,11 +127,10 @@ export default {
     },
     applyFilter (filter) {
       this.$router.push({ name: 'datasets', params: { filter } });
+    },
+    hasFilterApplied (filter) {
+      return this.filterType === filter;
     }
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-</style>

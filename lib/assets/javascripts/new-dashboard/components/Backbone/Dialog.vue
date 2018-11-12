@@ -20,3 +20,13 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.Dialog .Dialog-header {
+  box-sizing: content-box;
+
+  * {
+    box-sizing: content-box;
+  }
+}
+</style>

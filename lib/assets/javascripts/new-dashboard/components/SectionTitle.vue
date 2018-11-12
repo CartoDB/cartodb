@@ -11,7 +11,7 @@
           <slot name="dropdownButton"></slot>
         </li>
 
-        <li class="head-sectionActionsItem">
+        <li class="head-sectionActionsItem" v-if="!!$slots.actionButton">
           <slot name="actionButton"></slot>
         </li>
       </ul>
@@ -26,7 +26,8 @@ export default {
   name: 'SectionTitle',
   props: {
     title: String,
-    description: String
+    description: String,
+    showActionButton: Boolean
   }
 };
 </script>

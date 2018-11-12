@@ -12,6 +12,21 @@
     "lastUpdate": "Updated {date} ago",
     "tags": "tags"
   },
+  "BulkActions": {
+    "selected": "{count} selected",
+    "maps": {
+      "selectAllMaps": "Select all",
+      "deselectAllMaps": "Deselect all",
+      "changeMapPrivacy": "Change privacy",
+      "duplicateMap": "Duplicate map",
+      "unlockMap": "Unlock map",
+      "unlockMaps": "Unlock maps",
+      "lockMap": "Lock map",
+      "lockMaps": "Lock maps",
+      "deleteMap": "Delete map",
+      "deleteMaps": "Delete maps"
+    }
+  },
   "DataPage": {
     "header": {
       "title": {

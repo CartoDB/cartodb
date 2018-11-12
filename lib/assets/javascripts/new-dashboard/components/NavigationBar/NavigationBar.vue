@@ -75,6 +75,8 @@ export default {
 
 .navbar {
   display: flex;
+  position: fixed;
+  z-index: 3;
   align-items: center;
   justify-content: space-between;
   width: 100%;

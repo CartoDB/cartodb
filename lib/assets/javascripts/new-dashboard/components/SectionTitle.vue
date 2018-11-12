@@ -26,7 +26,8 @@ export default {
   name: 'SectionTitle',
   props: {
     title: String,
-    description: String
+    description: String,
+    showActionButton: Boolean
   }
 };
 </script>

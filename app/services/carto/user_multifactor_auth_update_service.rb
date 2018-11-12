@@ -13,7 +13,7 @@ module Carto
       end
     end
 
-    private 
+    private
 
     def create_user_multifactor_auth(type)
       unless Carto::UserMultifactorAuth.where(user_id: @user_id, type: type).present?

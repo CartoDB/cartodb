@@ -117,5 +117,13 @@
     "lastSynced": "Synced {date} ago",
     "numberRows": "{rows} rows",
     "numberRow": "{rows} row"
+  },
+  "datasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
   }
 }

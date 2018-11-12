@@ -7,7 +7,7 @@
       <span class="checkbox row-checkbox" style="margin-right: 20px;" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <input class="checkbox-input" @click="toggleSelection" type="checkBox" name="contact" value="02">
         <span class="checkbox-decoration">
-          <img svg-inline src="../assets/icons/common/checkbox.svg">
+          <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
       </span>
     </div>
@@ -17,20 +17,20 @@
           {{ dataset.name }}
         </h3>
         <span class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img svg-inline src="../assets/icons/common/favorite.svg">
+          <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
       <div class="row-metadataContainer" v-if="numberTags > 0 || isShared">
         <div class="row-metadata" v-if="numberTags > 0">
-          <img class="icon-metadata" svg-inline src="../assets/icons/datasets/tag.svg">
+          <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
           <ul class="tag-list" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}<span v-if="index < numberTags - 1">,&nbsp;</span></a>
+              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="index < numberTags - 1">,&nbsp;</span>
             </li>
           </ul>
         </div>
         <div class="row-metadata" v-if="isShared">
-          <img class="icon-metadata" svg-inline src="../assets/icons/datasets/user.svg">
+          <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
       </div>
@@ -285,19 +285,19 @@ export default {
   background-position: center;
 
   &.icon--private {
-    background-image: url("../assets/icons/datasets/privacy/lock.svg");
+    background-image: url("../../assets/icons/datasets/privacy/lock.svg");
   }
 
   &.icon--public {
-    background-image: url("../assets/icons/datasets/privacy/public.svg");
+    background-image: url("../../assets/icons/datasets/privacy/public.svg");
   }
 
   &.icon--link {
-    background-image: url("../assets/icons/datasets/privacy/link.svg");
+    background-image: url("../../assets/icons/datasets/privacy/link.svg");
   }
 
   &.icon--password {
-    background-image: url("../assets/icons/datasets/privacy/password.svg");
+    background-image: url("../../assets/icons/datasets/privacy/password.svg");
   }
 
   &.icon--sharedBy {
@@ -313,11 +313,11 @@ export default {
   background-size: cover;
 
   &.icon--point {
-    background-image: url("../assets/icons/datasets/data-types/dots.svg");
+    background-image: url("../../assets/icons/datasets/data-types/dots.svg");
   }
 
   &.icon--multipolygon {
-    background-image: url("../assets/icons/datasets/data-types/area.svg");
+    background-image: url("../../assets/icons/datasets/data-types/area.svg");
   }
 }
 

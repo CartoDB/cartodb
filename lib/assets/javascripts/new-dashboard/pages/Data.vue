@@ -25,6 +25,9 @@
           </InitialState>
         </div>
       </div>
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+        <DatasetListHeader></DatasetListHeader>
+      </div>
       <ul class="grid-cell grid-cell--col12">
         <li v-for="dataset in datasets" :key="dataset.id">
           <DatasetCard :dataset="dataset"></DatasetCard>
@@ -59,7 +62,8 @@
 </template>
 
 <script>
-import DatasetCard from '../components/DatasetCard';
+import DatasetCard from '../components/Dataset/DatasetCard';
+import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import { mapState } from 'vuex';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
@@ -76,7 +80,8 @@ export default {
     Pagination,
     DatasetCard,
     InitialState,
-    EmptyState
+    EmptyState,
+    DatasetListHeader
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };

@@ -1,0 +1,116 @@
+<template>
+  <div class="row">
+    <div class="cell cell--start">
+    </div>
+    <div class="cell cell--main">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.name`) }}</span>
+    </div>
+    <div class="cell cell--large">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.lastModified`) }}</span>
+    </div>
+    <div class="cell cell--small">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.rows`) }}</span>
+    </div>
+    <div class="cell cell--small">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.size`) }}</span>
+    </div>
+    <div class="cell cell--small">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.usage`) }}</span>
+    </div>
+    <div class="cell cell--small cell--privacy">
+      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.privacy`) }}</span>
+    </div>
+    <div class="cell">
+    </div>
+  </div>
+</template>
+
+<script>
+</script>
+
+<style scoped lang="scss">
+@import 'stylesheets/new-dashboard/variables';
+
+.row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 8px 14px;
+  overflow: hidden;
+  background-color: $white;
+}
+
+.cell {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:first-of-type {
+    padding-left: 0;
+  }
+
+  &:last-of-type {
+    padding-right: 0;
+  }
+}
+
+.cell--start {
+  display: flex;
+  align-items: center;
+  align-self: flex-start;
+  width: 46px;
+  height: 100%;
+}
+
+.cell--main {
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 200px;
+}
+
+.cell--large {
+  width: 165px;
+}
+
+.cell--medium {
+  width: 120px;
+}
+
+.cell--small {
+  width: 80px;
+}
+
+.cell--privacy {
+  display: flex;
+  align-items: center;
+}
+
+.element-sort {
+  &.is-active,
+  &:hover {
+    color: $text-color;
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 100%;
+      transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+      background-image: url('../../assets/icons/datasets/chevron.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &.reversed {
+      &::after {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+</style>

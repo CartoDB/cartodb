@@ -230,7 +230,8 @@ module Carto
           twitter_username: @user.twitter_username,
           disqus_shortname: @user.disqus_shortname,
           available_for_hire: @user.available_for_hire,
-          location: @user.location
+          location: @user.location,
+          multifactor_authentication_configured: @user.multifactor_authentication_configured?
         }
 
         if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)

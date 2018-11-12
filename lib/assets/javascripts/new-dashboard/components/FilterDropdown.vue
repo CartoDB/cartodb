@@ -52,22 +52,22 @@
             {{ $t('FilterDropdown.order.favourites') }}
           </a>
         </li>
-        <li class="type text is-caption is-txtGrey">
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('name') }">
           {{ $t('FilterDropdown.order.alphabetical.title') }} (
-            <a href="javascript:void(0)" class="element" @click="setOrder('alphabetically')">
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('name', 'asc') }" @click="setOrder('name', 'asc')">
               {{ $t('FilterDropdown.order.alphabetical.A-Z') }}
             </a> |
-            <a href="javascript:void(0)" class="element" @click="setOrder('alphabeticallyReverse')">
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('name', 'desc') }" @click="setOrder('name', 'desc')">
               {{ $t('FilterDropdown.order.alphabetical.Z-A') }}
             </a>
           )
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
           Date Modified (
-            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at') }" @click="setOrder('updated_at')">
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">
               {{ $t('FilterDropdown.order.date.last') }}
             </a> |
-            <a href="javascript:void(0)" class="element">
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'asc') }" @click="setOrder('updated_at', 'asc')">
               {{ $t('FilterDropdown.order.date.first') }}
             </a>
           )
@@ -84,6 +84,7 @@ export default {
   props: {
     filter: String,
     order: String,
+    orderDirection: String,
     metadata: {
       type: Object,
       default () {
@@ -103,8 +104,10 @@ export default {
     }
   },
   methods: {
-    isOrderApplied (order) {
-      return this.$props.order === order;
+    isOrderApplied (order, direction) {
+      return direction
+        ? (this.$props.order === order) && (this.$props.orderDirection === direction)
+        : this.$props.order === order;
     },
     isFilterApplied (filter) {
       return this.$props.filter === filter;
@@ -119,9 +122,9 @@ export default {
       this.closeDropdown();
       this.$emit('filterChanged', filter);
     },
-    setOrder (order) {
+    setOrder (order, direction) {
       this.closeDropdown();
-      this.$emit('orderChanged', order);
+      this.$emit('orderChanged', { order, direction });
     }
   }
 };

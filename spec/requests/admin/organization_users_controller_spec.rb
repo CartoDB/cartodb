@@ -431,6 +431,18 @@ describe Admin::OrganizationUsersController do
           @existing_user.reload
           @existing_user.user_multifactor_auths.should be_empty
         end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
       end
 
       describe '#destroy' do

@@ -51,7 +51,13 @@
         "private": "Your private datasets"
       }
     },
-    "createDataset": "New Dataset"
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, create or connect your first dataset",
+      "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
+      "createDataset": "New Dataset"
+    },
+    "emptyState": "There are no datasets here."
   },
   "MapsPage": {
     "header": {
@@ -70,7 +76,8 @@
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
       "createMap": "Create your first map"
-    }
+    },
+    "emptyState": "There are no maps here."
   },
   "FilterDropdown": {
     "showMe": "Show me",
@@ -96,7 +103,8 @@
         "title": "Date Modified",
         "last": "Last",
         "first": "First"
-      }
+      },
+      "initialState": "Change Filters"
     }
   },
   "DatasetCard": {

@@ -128,7 +128,7 @@ export default {
     },
     toggleFavorite () {
       if (this.$props.map.liked) {
-        this.deleteLikeMap(this.$props.map);
+        this.deleteMapLike(this.$props.map);
       } else {
         this.likeMap(this.$props.map);
       }
@@ -149,8 +149,8 @@ export default {
       this.isThumbnailErrored = true;
     },
     ...mapActions({
-      likeMap: 'maps/likeMap',
-      deleteLikeMap: 'maps/deleteLikeMap'
+      likeMap: 'maps/like',
+      deleteMapLike: 'maps/deleteLike'
     })
   }
 };

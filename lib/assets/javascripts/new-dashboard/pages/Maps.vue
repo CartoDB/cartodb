@@ -6,6 +6,7 @@
     </h2>
     <MapBulkActions
       :selectedMaps="selectedMaps"
+      :areAllMapsSelected="areAllMapsSelected"
       @selectAll="selectAll"
       @deselectAll="deselectAll"></MapBulkActions>
   </StickySubheader>
@@ -20,6 +21,7 @@
         <template slot="dropdownButton">
           <MapBulkActions
             :selectedMaps="selectedMaps"
+            :areAllMapsSelected="areAllMapsSelected"
             v-if="selectedMaps.length"
             @selectAll="selectAll"
             @deselectAll="deselectAll"></MapBulkActions>
@@ -29,18 +31,20 @@
             :filter="appliedFilter"
             :order="appliedOrder"
             :metadata="mapsMetadata"
-            @filterChanged="applyFilter"/>
+            @filterChanged="applyFilter">
+            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+            <img svg-inline v-else src="../assets/icons/common/filter.svg">
+          </FilterDropdown>
         </template>
-
-        <template slot="actionButton">
-          <CreateButton visualizationType="maps" >New map</CreateButton>
+        <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
+          <CreateButton visualizationType="maps">New map</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="!isFetchingMaps && hasFilterApplied('mine') && totalUserEntries <= 0">
+      <div class="grid-cell" v-if="initialState">
         <InitialState :title="$t(`MapsPage.zeroCase.title`)">
           <template slot="icon">
-            <img src="../assets/icons/maps/initialState.svg">
+            <img svg-inline src="../assets/icons/maps/initialState.svg">
           </template>
           <template slot="description">
             <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
@@ -63,6 +67,12 @@
         </li>
       </ul>
 
+      <EmptyState
+        :text="$t('MapsPage.emptyState')"
+        v-if="emptyState">
+        <img svg-inline src="../assets/icons/maps/compass.svg">
+      </EmptyState>
+
       <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
   </div>
@@ -77,7 +87,8 @@ import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
 import StickySubheader from '../components/StickySubheader';
 import Pagination from 'new-dashboard/components/Pagination';
-import InitialState from 'new-dashboard/components/InitialState';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { isAllowed } from '../store/maps/filters';
@@ -86,6 +97,7 @@ export default {
   name: 'MapsPage',
   components: {
     CreateButton,
+    EmptyState,
     FilterDropdown,
     MapBulkActions,
     MapCard,
@@ -136,11 +148,21 @@ export default {
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+    },
+    areAllMapsSelected () {
+      return Object.keys(this.maps).length === this.selectedMaps.length;
+    },
+    initialState () {
+      return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
     }
   },
   methods: {
     goToPage (page) {
       window.scroll({ top: 0, left: 0 });
+      this.deselectAll();
       this.$router.push({
         name: 'maps',
         params: this.$route.params,
@@ -184,7 +206,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 

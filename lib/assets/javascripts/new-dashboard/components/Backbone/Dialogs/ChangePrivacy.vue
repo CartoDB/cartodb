@@ -59,7 +59,7 @@ export default {
 
       this.$modal.show({
         template: `
-        <Dialog v-on:close="$emit('close')">
+        <Dialog @close="$emit('close')">
           <div ref="dialogInjectionNode"></div>
         </Dialog>`,
         components: { Dialog },

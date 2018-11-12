@@ -136,11 +136,11 @@
         "created_at": "2018-11-05T13:29:52.200Z",
         "updated_at": "2018-11-05T13:29:52.200Z"
       },
-      "geometry_types": [],
+      "geometry_types": ["ST_Point"],
       "privacy": "PRIVATE",
       "updated_at": "2018-11-05T13:29:51.557Z",
       "synchronization": null,
-      "size": 16384,
+      "size": 36073472,
       "row_count": 0
     }
   }, {
@@ -280,11 +280,11 @@
         "created_at": "2018-10-29T10:49:12.190Z",
         "updated_at": "2018-10-29T10:49:12.190Z"
       },
-      "geometry_types": [],
+      "geometry_types": ["ST_MultiPolygon"],
       "privacy": "PRIVATE",
       "updated_at": "2018-10-29T10:49:11.935Z",
       "synchronization": null,
-      "size": 16384,
+      "size": 364544,
       "row_count": 0
     }
   }],

@@ -21,8 +21,8 @@ export default {
     openCreateModal () {
       this.$modal.show({
         template: `
-        <Dialog v-on:close="$emit('close')">
-          <CreateDialog :dialogType="dialogType" :backgroundPollingView="backgroundPollingView" v-on:close="$emit('close')"/>
+        <Dialog @close="$emit('close')">
+          <CreateDialog :dialogType="dialogType" :backgroundPollingView="backgroundPollingView" @close="$emit('close')"/>
         </Dialog>`,
         props: ['dialogType', 'backgroundPollingView'],
         components: { Dialog, CreateDialog }

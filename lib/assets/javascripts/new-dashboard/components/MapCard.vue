@@ -20,13 +20,13 @@
 
     <div class="card-text">
       <div class="card-header">
-        <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
+        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': titleOverflow}">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" v-if="map.description" :class="{ 'text-overflows': descriptionOverflow }">{{ map.description }}</p>
+        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': titleOverflow}">{{ map.description }}</p>
         <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
       </div>
 
@@ -85,16 +85,13 @@ export default {
       selected: false,
       activeHover: true,
       titleOverflow: false,
-      descriptionOverflow: false,
       maxTags: 3
     };
   },
   updated: function () {
     this.$nextTick(function () {
       var title = this.$el.querySelector('.card-title');
-      var description = this.$el.querySelector('.card-description');
       this.titleOverflow = title.scrollHeight > title.clientHeight;
-      this.descriptionOverflow = description.scrollHeight > description.clientHeight;
     });
   },
   computed: {
@@ -193,18 +190,6 @@ export default {
     .card-select {
       opacity: 1;
     }
-
-    .card-title {
-      &.text-overflows::after {
-        background-image: linear-gradient(to right, #FFF0, $softblue 4px);
-      }
-    }
-
-    .card-description {
-      &.text-overflows::after {
-        background-color: $softblue;
-      }
-    }
   }
 }
 
@@ -240,6 +225,9 @@ export default {
 }
 
 .card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   position: relative;
   flex-shrink: 0;
   max-height: 48px;
@@ -247,43 +235,22 @@ export default {
   overflow: hidden;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  &.text-overflows {
-    &::after {
-      content: "...";
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      padding-right: 24px;
-      padding-left: 6px;
-      transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      background-image: linear-gradient(to right, #FFF0, #FFFF 4px);
-    }
-
-    .card-favorite {
-      position: absolute;
-      z-index: 1;
-      right: 0;
-      bottom: 0;
-    }
+  &.title-overflow {
+    padding-right: 20px;
   }
 }
 
 .card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   position: relative;
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
 
-  &.text-overflows {
-    &::after {
-      content: "...";
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      padding-left: 4px;
-      transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      background-color: #FFF;
-    }
+  &.single-line {
+    -webkit-line-clamp: 1;
   }
 }
 
@@ -410,6 +377,12 @@ export default {
         stroke: $primary-color;
       }
     }
+  }
+
+  &.favorite-overflow {
+    position: absolute;
+    right: 0;
+    bottom: -4px;
   }
 }
 

@@ -6,6 +6,8 @@ Development
 
 ### Features
 - Lock login if too many failed attempts (#14334)
+- Forgot password (#14333)
+- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 
 ### Bug fixes / enhancements
 - None yet

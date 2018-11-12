@@ -13,10 +13,12 @@
     "tags": "tags"
   },
   "QuickActions": {
+    "quickActions": "Quick actions",
     "maps": {
       "editInfo": "Edit Name & description",
-      "changePrivacy": "Change Privacy",
       "manageTags": "Manage Tags",
+      "changePrivacy": "Change Privacy",
+      "share": "Share with colleagues",
       "duplicate": "Duplicate",
       "lock": "Lock",
       "unlock": "Unlock",

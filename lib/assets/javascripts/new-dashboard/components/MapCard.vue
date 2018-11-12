@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': quickactionsOpen}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': areQuickActionsOpen}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -12,7 +12,7 @@
       </span>
     </span>
 
-    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @openQuickactions="openQuickactions" @closeQuickactions="closeQuickactions"></MapQuickActions>
+    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
 
     <div class="card-text">
       <div class="card-header">
@@ -87,7 +87,7 @@ export default {
       activeHover: true,
       titleOverflow: false,
       descriptionOverflow: false,
-      quickactionsOpen: false,
+      areQuickActionsOpen: false,
       maxTags: 3
     };
   },
@@ -133,11 +133,11 @@ export default {
         this.likeMap(this.$props.map);
       }
     },
-    openQuickactions () {
-      this.quickactionsOpen = true;
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
     },
-    closeQuickactions () {
-      this.quickactionsOpen = false;
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
     },
     mouseOverChildElement () {
       this.activeHover = false;

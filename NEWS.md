@@ -11,6 +11,7 @@ Development
 
 ### Bug fixes / enhancements
 - Sync new password resets fields with central (#14333)
+- Can't add legend due to wrong CartoCSS (#14418)
 
 4.22.2 (2018-11-05)
 -------------------

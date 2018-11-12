@@ -194,7 +194,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'edit', status: e.status
-  rescue Sequel::ValidationFailed => e
+  rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid => e
     flash.now[:error] = e.message
     render 'edit', status: 422
   end

@@ -443,6 +443,18 @@ describe Admin::OrganizationUsersController do
           @existing_user.reload
           @existing_user.user_multifactor_auths.should be_empty
         end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mock = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mock))
+
+          @existing_user.expects(:save).never
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
+        end
       end
 
       describe '#destroy' do

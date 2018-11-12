@@ -60,6 +60,7 @@
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'DatasetCard',
@@ -109,7 +110,7 @@ export default {
       return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     },
     toggleFavorite () {
-      if (this.$props.map.liked) {
+      if (this.$props.dataset.liked) {
         this.deleteLikeDataset(this.$props.dataset);
       } else {
         this.likeDataset(this.$props.dataset);
@@ -120,7 +121,11 @@ export default {
     },
     mouseOutChildElement () {
       this.activeHover = true;
-    }
+    },
+    ...mapActions({
+      likeDataset: 'datasets/like',
+      deleteLikeDataset: 'datasets/deleteLike'
+    })
   }
 };
 </script>

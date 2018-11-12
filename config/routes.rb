@@ -644,6 +644,11 @@ CartoDB::Application.routes.draw do
                                   controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
       end
+
+      # Multi-factor authentication
+      resources :multifactor_auths, only: [:create, :destroy, :show, :index], constraints: { id: /[^\/]+/ } do
+        post 'verify_code', on: :member
+      end
     end
 
     scope 'v2/' do

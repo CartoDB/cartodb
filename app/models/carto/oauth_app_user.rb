@@ -23,7 +23,7 @@ module Carto
     after_destroy :drop_dataset_role
 
     def authorized?(requested_scopes)
-      (requested_scopes - all_scopes).empty?
+      OauthProvider::Scopes.subtract_scopes(requested_scopes, all_scopes, user.database_schema).empty?
     end
 
     def upgrade!(requested_scopes)

@@ -87,6 +87,10 @@ defaults: &defaults
     api_key:
   passwords:
     expiration_in_d:
+    rate_limit:
+      max_burst:
+      count:
+      period:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'

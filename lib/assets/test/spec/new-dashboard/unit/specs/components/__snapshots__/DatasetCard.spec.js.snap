@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatasetCard.vue should be able to select the card 1`] = `
+<a href="http://example.com/tables/untitled_table_13" class="row selected">
+  <div class="cell cell--start">
+    <div class="row-dataType">
+      <div class="icon--dataType icon--"></div>
+    </div> <span class="checkbox row-checkbox" style="margin-right: 20px;"><input type="checkBox" name="contact" value="02" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--main">
+    <div class="title-container">
+      <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+        untitled_table_13
+      </h3> <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span>
+    </div>
+    <!---->
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">16 kB</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
+  <div class="cell"></div>
+</a>
+`;
+
+exports[`DatasetCard.vue should render correct contents 1`] = `
+<a href="http://example.com/tables/untitled_table_13" class="row">
+  <div class="cell cell--start">
+    <div class="row-dataType">
+      <div class="icon--dataType icon--"></div>
+    </div> <span class="checkbox row-checkbox" style="margin-right: 20px;"><input type="checkBox" name="contact" value="02" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--main">
+    <div class="title-container">
+      <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+        untitled_table_13
+      </h3> <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span>
+    </div>
+    <!---->
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">16 kB</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
+  <div class="cell"></div>
+</a>
+`;
+
+exports[`DatasetCard.vue should render tags 1`] = `
+<a href="http://example.com/tables/untitled_table_13" class="row">
+  <div class="cell cell--start">
+    <div class="row-dataType">
+      <div class="icon--dataType icon--"></div>
+    </div> <span class="checkbox row-checkbox" style="margin-right: 20px;"><input type="checkBox" name="contact" value="02" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--main">
+    <div class="title-container">
+      <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+        untitled_table_13
+      </h3> <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span>
+    </div>
+    <div class="row-metadataContainer">
+      <div class="row-metadata"><img svg-inline="" src="../assets/icons/datasets/tag.svg" class="icon-metadata">
+        <ul class="tag-list">
+          <li><a href="#" class="text is-small is-txtSoftGrey">Hi<span>,&nbsp;</span></a></li>
+          <li><a href="#" class="text is-small is-txtSoftGrey">Hello<span>,&nbsp;</span></a></li>
+          <li><a href="#" class="text is-small is-txtSoftGrey">CARTO Rules
+              <!----></a></li>
+        </ul>
+      </div>
+      <!---->
+    </div>
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">16 kB</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
+  <div class="cell"></div>
+</a>
+`;
+
+exports[`DatasetCard.vue should show the map is shared 1`] = `
+<a href="http://example.com/tables/untitled_table_13" class="row">
+  <div class="cell cell--start">
+    <div class="row-dataType">
+      <div class="icon--dataType icon--"></div>
+    </div> <span class="checkbox row-checkbox" style="margin-right: 20px;"><input type="checkBox" name="contact" value="02" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--main">
+    <div class="title-container">
+      <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+        untitled_table_13
+      </h3> <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span>
+    </div>
+    <div class="row-metadataContainer">
+      <!---->
+      <div class="row-metadata"><img svg-inline="" src="../assets/icons/datasets/user.svg" class="icon-metadata"> <span class="text is-small is-txtSoftGrey">cdb</span></div>
+    </div>
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">16 kB</span></div>
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
+  <div class="cell"></div>
+</a>
+`;

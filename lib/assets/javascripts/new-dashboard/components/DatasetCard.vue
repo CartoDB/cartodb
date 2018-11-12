@@ -3,10 +3,8 @@
     <div class="cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="'icon--' + dataType"></div>
-        <!-- <img src="../assets/icons/datasets/data-types/{{dataType}}.svg"> -->
-        <!-- {%include img/icons/rows/data-types/dots.svg%} -->
       </div>
-      <span class="checkbox row-checkbox" style="margin-right: 20px;">
+      <span class="checkbox row-checkbox" style="margin-right: 20px;" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <input class="checkbox-input" @click="toggleSelection" type="checkBox" name="contact" value="02">
         <span class="checkbox-decoration">
           <img svg-inline src="../assets/icons/common/checkbox.svg">
@@ -14,24 +12,26 @@
       </span>
     </div>
     <div class="cell cell--main">
-      <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
-        {{ dataset.name }}
-      </h3>
-      <div class="row-metadataContainer">
+      <div class="title-container">
+        <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+          {{ dataset.name }}
+        </h3>
+        <span class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <img svg-inline src="../assets/icons/common/favorite.svg">
+        </span>
+      </div>
+      <div class="row-metadataContainer" v-if="numberTags > 0 || isShared">
         <div class="row-metadata" v-if="numberTags > 0">
-          <!-- {%include img/icons/rows/tag.svg%} -->
           <img class="icon-metadata" svg-inline src="../assets/icons/datasets/tag.svg">
-          <ul class="tag-list">
+          <ul class="tag-list" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
               <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}<span v-if="index < numberTags - 1">,&nbsp;</span></a>
             </li>
           </ul>
-          <!-- <span class="text is-small is-txtBaseGrey">spain, 2018</span> -->
         </div>
         <div class="row-metadata" v-if="isShared">
           <img class="icon-metadata" svg-inline src="../assets/icons/datasets/user.svg">
-          <!-- {%include img/icons/rows/user.svg%} -->
-          <span class="text is-small is-txtSoftGrey">Timchung</span>
+          <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
       </div>
     </div>
@@ -95,7 +95,6 @@ export default {
     },
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
-      // return false;
     }
   },
   methods: {
@@ -103,8 +102,24 @@ export default {
       this.selected = !this.selected;
     },
     humanFileSize (size) {
+      if (size === 0) {
+        return '0 B';
+      }
       var i = Math.floor(Math.log(size) / Math.log(1024));
       return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    },
+    toggleFavorite () {
+      if (this.$props.map.liked) {
+        this.deleteLikeDataset(this.$props.dataset);
+      } else {
+        this.likeDataset(this.$props.dataset);
+      }
+    },
+    mouseOverChildElement () {
+      this.activeHover = false;
+    },
+    mouseOutChildElement () {
+      this.activeHover = true;
     }
   }
 };
@@ -144,8 +159,14 @@ export default {
   }
 
   &:hover {
-    .row-title {
-      color: $primary-color;
+    &:not(.card--noHover) {
+      .row-title {
+        color: $primary-color;
+      }
+    }
+
+    .card-favorite {
+      opacity: 1;
     }
   }
 }
@@ -297,5 +318,40 @@ export default {
 
 .icon-metadata {
   margin-right: 4px;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+}
+
+.card-favorite {
+  margin-left: 8px;
+  opacity: 0;
+
+  svg {
+    transform: translateY(2px);
+  }
+
+  &:hover {
+    .favorite-icon {
+      stroke: $primary-color;
+    }
+  }
+
+  &.is-favorite {
+    opacity: 1;
+
+    .favorite-icon {
+      stroke: #FFC300;
+      fill: #FFC300;
+    }
+
+    &:hover {
+      .favorite-icon {
+        stroke: $primary-color;
+      }
+    }
+  }
 }
 </style>

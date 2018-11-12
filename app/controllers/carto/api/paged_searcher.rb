@@ -4,18 +4,21 @@ module Carto
 
       VALID_ORDER_DIRECTIONS = [:asc, :desc].freeze
 
-      def page_per_page_order_params(valid_order_values, default_per_page = 20, default_order = 'updated_at', default_order_direction = 'desc')
+      def page_per_page_order_params(valid_order_values, default_per_page = 20,
+                                     default_order = 'updated_at', default_order_direction = 'desc')
         page = (params[:page].present? ? params[:page] : 1).to_i
         per_page = (params[:per_page].present? ? params[:per_page] : default_per_page).to_i
         order = (params[:order].present? ? params[:order] : default_order).to_sym
-        order_direction = (params[:order_direction].present? ? params[:order_direction] : default_order_direction).to_sym
+        order_direction = (params[:order_direction].present? ?
+          params[:order_direction] :
+            default_order_direction).to_sym
 
-        if order.present?
-          raise Carto::OrderParamInvalidError.new(valid_order_values) unless valid_order_values.include?(order)
+        if order.present? && !valid_order_values.include?(order)
+          raise Carto::OrderParamInvalidError.new(valid_order_values)
         end
 
-        if order_direction.present?
-          raise Carto::OrderDirectionParamInvalidError.new(VALID_ORDER_DIRECTIONS) unless VALID_ORDER_DIRECTIONS.include?(order_direction)
+        if order_direction.present? && !VALID_ORDER_DIRECTIONS.include?(order_direction)
+          raise Carto::OrderDirectionParamInvalidError.new(VALID_ORDER_DIRECTIONS)
         end
 
         return page, per_page, order, order_direction

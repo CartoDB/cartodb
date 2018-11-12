@@ -94,8 +94,8 @@ module Carto
         # a better approach and/or move it to the query builder
         visualizations = vqb.with_order("visualizations.#{order}", order_direction)
                             .build_paged(page, per_page).map do |v|
-            VisualizationPresenter.new(v, current_viewer, self, presenter_options)
-                                  .with_presenter_cache(presenter_cache).to_poro
+          VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                .with_presenter_cache(presenter_cache).to_poro
         end
         response = {
           visualizations: visualizations,

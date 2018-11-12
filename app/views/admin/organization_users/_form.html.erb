@@ -131,7 +131,7 @@
   <% end %>
 
   <% if (@user.has_feature_flag?('mfa')) %>
-    <% mfa_enabled = @user.user_multifactor_auths.present? %>
+    <% mfa_enabled = @user.multifactor_authentication_configured? %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">

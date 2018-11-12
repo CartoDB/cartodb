@@ -350,6 +350,14 @@ describe Admin::OrganizationUsersController do
     end
 
     describe 'existing user operations' do
+      before(:all) do
+        @feature_flag = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
+      end
+
+      after(:all) do
+        @feature_flag.destroy
+      end
+
       before(:each) do
         @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end
@@ -445,8 +453,8 @@ describe Admin::OrganizationUsersController do
         end
 
         it 'does not save the user if the multifactor authentication updating operation fails' do
-          mock = Carto::UserMultifactorAuth.new
-          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mock))
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
 
           @existing_user.expects(:save).never
 

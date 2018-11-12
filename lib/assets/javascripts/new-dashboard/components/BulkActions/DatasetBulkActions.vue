@@ -8,6 +8,7 @@ import * as DialogActions from 'new-dashboard/core/dialog-actions';
 
 export default {
   name: 'DatasetBulkActions',
+  inject: ['backboneViews'],
   components: {
     BulkActions
   },
@@ -26,6 +27,7 @@ export default {
       return {
         single: [
           { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll' },
+          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
           { name: this.$t('BulkActions.datasets.changeDatasetPrivacy'), event: 'changePrivacy' },
           { name: this.$t('BulkActions.datasets.duplicateDataset'), event: 'duplicateDataset' },
           { name: this.$t('BulkActions.datasets.lockDataset'), event: 'lockDataset' },
@@ -85,6 +87,12 @@ export default {
     },
     deselectAll () {
       this.$emit('deselectAll');
+    },
+    createMap () {
+      DialogActions.createMap.apply(this, [
+        this.selectedDatasets[0],
+        this.backboneViews.backgroundPollingView.getBackgroundPollingView()
+      ]);
     },
     changePrivacy () {
       DialogActions.changePrivacy.apply(this, [this.selectedDatasets[0]]);

@@ -29,6 +29,7 @@
     "datasets": {
       "selectAllDatasets": "Select all",
       "deselectAllDatasets": "Deselect all",
+      "createMap": "Create map",
       "changeDatasetPrivacy": "Change privacy",
       "duplicateDataset": "Duplicate dataset",
       "unlockDataset": "Unlock dataset",

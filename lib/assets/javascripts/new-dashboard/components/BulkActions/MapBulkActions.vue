@@ -25,23 +25,23 @@ export default {
     actions () {
       return {
         single: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldShow: true },
-          { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy', shouldShow: true },
-          { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap', shouldShow: true },
-          { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap', shouldShow: true },
-          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true, shouldShow: true }
+          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll' },
+          { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy' },
+          { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap' },
+          { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap' },
+          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true }
         ],
         multiple: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldShow: !this.areAllMapsSelected },
-          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll', shouldShow: true },
-          { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps', shouldShow: true },
-          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true, shouldShow: true }
+          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldBeHidden: this.areAllMapsSelected },
+          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
+          { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps' },
+          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true }
         ],
         lock: [
-          { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap', shouldShow: true }
+          { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap' }
         ],
         multipleLock: [
-          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps', shouldShow: true }
+          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps' }
         ]
       };
     },

@@ -93,15 +93,23 @@ module Carto
           user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
 
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
-          user.update_in_central
-          user.save(raise_on_failure: true)
+
+          ActiveRecord::Base.transaction do
+            unless attributes[:mfa].nil?
+              service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
+              service.update(enabled: attributes[:mfa])
+            end
+
+            user.update_in_central
+            user.save(raise_on_failure: true)
+          end
         end
 
         render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
-      rescue Sequel::ValidationFailed
+      rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
       rescue Carto::PasswordConfirmationError
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 403)

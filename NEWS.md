@@ -6,11 +6,15 @@ Development
 
 ### Features
 - Lock login if too many failed attempts (#14334)
+- OAuth provider (WIP):
+  - UI improvements (#14389)
+- Change password functionality for Carto Gears (#14351)
 
 ### Bug fixes / enhancements
 - Sync new password resets fields with central (#14333)
 - Fix parallel execution of some acceptance specs (#14391)
 - Use shared partials for logo and button animation in session views
+- Do not concatenate the schema if it's already defined while fetching overview tables #14414
 
 4.22.2 (2018-11-05)
 -------------------

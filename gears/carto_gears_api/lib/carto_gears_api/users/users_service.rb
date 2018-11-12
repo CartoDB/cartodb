@@ -53,6 +53,48 @@ module CartoGearsApi
         CartoGearsApi::Users::User.from_model(user)
       end
 
+      # Checks the password of a user
+      #
+      # @param user_id [UUID] the user id
+      # @param password [String] password to check
+      # @return [Boolean] true if the password matches with the user, false otherwise
+      #
+      # @raise [Errors::RecordNotFound] if the user could not be found in the database
+      # @raise [Errors::ValidationFailed] if the user has no password set (Google/GitHub sign in)
+      def valid_password?(user_id, password)
+        user = find_user(user_id)
+
+        unless user.password_set?
+          user.errors.add(:password, "User has no password set")
+          raise CartoGearsApi::Errors::ValidationFailed.new(user.errors)
+        end
+
+        user.validate_old_password(password)
+      end
+
+      # Changes the password of a user
+      #
+      # @param user_id [UUID] the user id
+      # @param password [String] password to set
+      # @return [User] the updated user
+      #
+      # @raise [Errors::RecordNotFound] if the user could not be found in the database
+      # @raise [Errors::ValidationFailed] if the password validation failed
+      # @raise [Errors::SavingError] if the password could not be saved because of an internal error
+      def change_password(user_id, new_password)
+        user = find_user(user_id)
+
+        user.password = new_password
+        user.password_confirmation = new_password
+
+        raise CartoGearsApi::Errors::ValidationFailed.new(user.errors) unless user.errors.empty?
+
+        user.update_in_central
+        user.save(raise_on_failure: true)
+      rescue CartoDB::CentralCommunicationFailure, Sequel::ValidationFailed
+        raise CartoGearsApi::Errors::SavingError.new
+      end
+
       private
 
       def find_user(user_id)

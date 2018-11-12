@@ -9,6 +9,7 @@ Development
 - OAuth provider (WIP):
   - Add scopes for accessing datasets (#14292)
 - Improve dropping db role of an API key (#14307)
+- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 
 ### Bug fixes / enhancements
 - Scrollbar resized after notifications (#12953)

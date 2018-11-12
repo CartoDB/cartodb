@@ -10,6 +10,7 @@ Development
   - UI improvements (#14389)
 
 ### Bug fixes / enhancements
+- Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)
 - Sync new password resets fields with central (#14333)
 
 4.22.2 (2018-11-05)

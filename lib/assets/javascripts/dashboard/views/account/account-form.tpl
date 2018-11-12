@@ -76,7 +76,6 @@
   <% } %>
   
   <% if (mfaFeatureFlagEnabled) { %>
-    <% let mfa_enabled = false; // TODO: read it from the user %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -86,12 +85,12 @@
       <div class="FormAccount-rowData u-tspace-s u-vspace-s">
         <div class="Toggler">
           <input name="user[mfa]" type="hidden" value="0">
-          <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="<%= mfa_enabled %>" <% if (mfa_enabled) { %>checked="checked"<% } %>>
+          <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="1" <% if (mfaEnabled) { %>checked="checked"<% } %>>
           <label for="mfa"></label>
         </div>
         <div class="FormAccount-rowInfo u-lSpace--xl">
           <p class="CDB-Text CDB-Size-medium js-mfa-label">
-            <%= mfa_enabled ? _t('account.views.form.mfa_enabled') : _t('account.views.form.mfa_disabled') %>
+            <%= mfaEnabled ? _t('account.views.form.mfa_enabled') : _t('account.views.form.mfa_disabled') %>
           </p>
         </div>
       </div>

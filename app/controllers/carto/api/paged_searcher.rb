@@ -12,7 +12,7 @@ module Carto
         order_direction = if params[:order_direction].present?
           params[:order_direction]
         else
-          default_order_direction)
+          default_order_direction
         end.to_sym
 
         if order.present? && !valid_order_values.include?(order)

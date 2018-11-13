@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="dataset-cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ lastSynced }}</span>
+      <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
     <div class="dataset-cell cell--small">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
@@ -77,8 +77,12 @@ export default {
     privacyIcon () {
       return `icon--${this.$props.dataset.privacy}`.toLowerCase();
     },
-    lastSynced () {
-      return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
+    lastUpdated () {
+      if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {
+        return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.synchronization.updated_at, new Date()) });
+      } else {
+        return this.$t(`DatasetCard.lastUpdated`, { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
+      }
     },
     dataType () {
       let data = this.$props.dataset.table.geometry_types[0];

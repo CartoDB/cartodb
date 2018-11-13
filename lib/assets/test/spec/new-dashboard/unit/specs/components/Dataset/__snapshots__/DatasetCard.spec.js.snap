@@ -15,7 +15,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
     </div>
     <!---->
   </div>
-  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
@@ -50,7 +50,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
       <!---->
     </div>
   </div>
-  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
@@ -74,7 +74,7 @@ exports[`DatasetCard.vue should select the card when the checkbox is clicked 1`]
     </div>
     <!---->
   </div>
-  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
@@ -101,7 +101,7 @@ exports[`DatasetCard.vue should show the owner of the map if it is shared 1`] = 
       <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/user.svg" class="icon-metadata"> <span class="text is-small is-txtSoftGrey">cdb</span></div>
     </div>
   </div>
-  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastSynced</span></div>
+  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>

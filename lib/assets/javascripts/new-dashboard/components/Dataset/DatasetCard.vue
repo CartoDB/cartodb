@@ -21,13 +21,16 @@
         </span>
       </div>
       <div class="row-metadataContainer" v-if="hasTags || isShared">
-        <div class="row-metadata" v-if="hasTags">
+        <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
-          <ul class="tag-list" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <ul v-if="numberTags <= maxTags" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
               <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
+          <FeaturesDropdown v-if="numberTags > maxTags" :list=dataset.tags>
+            <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+          </FeaturesDropdown>
         </div>
         <div class="row-metadata" v-if="isShared">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/user.svg">
@@ -61,16 +64,21 @@
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
+import FeaturesDropdown from '../FeaturesDropdown';
 
 export default {
   name: 'DatasetCard',
   props: {
     dataset: Object
   },
+  components: {
+    FeaturesDropdown
+  },
   data: function () {
     return {
       selected: false,
-      activeHover: true
+      activeHover: true,
+      maxTags: 3
     };
   },
   computed: {
@@ -141,8 +149,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 80px;
-  padding: 12px 14px;
-  overflow: hidden;
+  padding: 0 14px;
   border-bottom: 1px solid $light-grey;
   background-color: $white;
 
@@ -253,6 +260,7 @@ export default {
   align-items: center;
   align-self: flex-start;
   height: 100%;
+  overflow: hidden;
 }
 
 .cell--main {

@@ -47,10 +47,15 @@
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.orderMaps') }}</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('favouritesFirst') }">
-          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('favouritesFirst') }" @click="setOrder('favouritesFirst')">
-            {{ $t('FilterDropdown.order.favourites') }}
-          </a>
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
+          Date Modified (
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">
+              {{ $t('FilterDropdown.order.date.last') }}
+            </a> |
+            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'asc') }" @click="setOrder('updated_at', 'asc')">
+              {{ $t('FilterDropdown.order.date.first') }}
+            </a>
+          )
         </li>
         <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('name') }">
           {{ $t('FilterDropdown.order.alphabetical.title') }} (
@@ -62,15 +67,10 @@
             </a>
           )
         </li>
-        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
-          Date Modified (
-            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">
-              {{ $t('FilterDropdown.order.date.last') }}
-            </a> |
-            <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'asc') }" @click="setOrder('updated_at', 'asc')">
-              {{ $t('FilterDropdown.order.date.first') }}
-            </a>
-          )
+        <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('mapviews', 'desc') }">
+          <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('mapviews', 'desc') }" @click="setOrder('mapviews', 'desc')">
+            {{ $t('FilterDropdown.order.views') }}
+          </a>
         </li>
       </ul>
     </div>

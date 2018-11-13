@@ -83,6 +83,7 @@
     },
     "order": {
       "favourites": "Favourites first",
+      "views": "Most viewed first",
       "alphabetical": {
         "title": "Alphabetically",
         "A-Z": "A-Z",

@@ -749,6 +749,7 @@ describe SessionsController do
       it 'verifies a valid code' do
         login
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
 
         expect_login
@@ -757,6 +758,7 @@ describe SessionsController do
       it 'does not verify an invalid code' do
         login
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
 
         expect_invalid_code
@@ -765,12 +767,14 @@ describe SessionsController do
       it 'does not verify an already used code' do
         login
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
         expect_login
 
         logout
         login
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
 
         expect_invalid_code
@@ -780,6 +784,7 @@ describe SessionsController do
         login
 
         SessionsController::MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = -1
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
 
         response.status.should eq 302
@@ -799,6 +804,7 @@ describe SessionsController do
           }
         ) do
           @user.reset_password_rate_limit
+          get multifactor_authentication_session_url
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
 
@@ -820,6 +826,7 @@ describe SessionsController do
           @user.reset_password_rate_limit
           login
 
+          get multifactor_authentication_session_url
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: 'invalid_code')
           expect_invalid_code
 
@@ -830,6 +837,7 @@ describe SessionsController do
           sleep(4)
 
           login
+          get multifactor_authentication_session_url
           post multifactor_authentication_verify_code_url(user_id: @user.id, code: code)
           expect_login
         end
@@ -854,6 +862,7 @@ describe SessionsController do
         mfa.enabled = false
         mfa.save!
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
         expect_login_error
@@ -886,6 +895,7 @@ describe SessionsController do
         mfa.enabled = false
         mfa.save!
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
         expect_login
@@ -896,6 +906,7 @@ describe SessionsController do
       it 'does not allow to skip verification if is active' do
         login
 
+        get multifactor_authentication_session_url
         post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
         expect_login_error

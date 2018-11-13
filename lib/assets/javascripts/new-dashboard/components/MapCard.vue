@@ -26,7 +26,7 @@
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': titleOverflow}">{{ map.description }}</p>
+        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
         <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
       </div>
 
@@ -85,12 +85,14 @@ export default {
       selected: false,
       activeHover: true,
       titleOverflow: false,
+      multilineTitle: false,
       maxTags: 3
     };
   },
   updated: function () {
     this.$nextTick(function () {
       var title = this.$el.querySelector('.card-title');
+      this.multilineTitle = title.offsetHeight > 30;
       this.titleOverflow = title.scrollHeight > title.clientHeight;
     });
   },

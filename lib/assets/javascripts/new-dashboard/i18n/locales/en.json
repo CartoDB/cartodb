@@ -85,14 +85,14 @@
       "favourites": "Favourites first",
       "views": "Most viewed first",
       "alphabetical": {
-        "title": "Alphabetically",
+        "title": "Name",
         "A-Z": "A-Z",
         "Z-A": "Z-A"
       },
       "date": {
-        "title": "Date Modified",
-        "last": "Last",
-        "first": "First"
+        "title": "Updated",
+        "newest": "Newest",
+        "oldest": "Oldest"
       }
     },
     "initialState": "Change Filters"

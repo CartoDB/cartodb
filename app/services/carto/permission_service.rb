@@ -1,7 +1,7 @@
 module Carto
 
   module PermissionService
-    def self.revokesByUser(old_acl, new_acl)
+    def self.revokesByUser(old_acl, new_acl, table_owner_id)
       old_acl = hashing_acl(old_acl)
       new_acl = hashing_acl(new_acl)
 
@@ -17,7 +17,7 @@ module Carto
           # add org users to diff
           unless org_users_diff.blank?
             org_users_diff['user'].each do |user_id, revoke|
-              diff[user_id] = revoke if diff[user_id].nil?
+              diff[user_id] = revoke if diff[user_id].nil? && user_id != table_owner_id
             end
           end
         end

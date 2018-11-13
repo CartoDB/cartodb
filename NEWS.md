@@ -8,9 +8,18 @@ Development
 - MFA (WIP)
   - Login (#14336)
 - Lock login if too many failed attempts (#14334)
+- OAuth provider (WIP):
+  - UI improvements (#14389)
+- MFA (WIP)
+  - Admin management (#14347)
+- Change password functionality for Carto Gears (#14351)
 
 ### Bug fixes / enhancements
-- None yet
+- Sync new password resets fields with central (#14333)
+- Can't add legend due to wrong CartoCSS (#14418)
+- Fix parallel execution of some acceptance specs (#14391)
+- Use shared partials for logo and button animation in session views
+- Do not concatenate the schema if it's already defined while fetching overview tables #14414
 
 4.22.2 (2018-11-05)
 -------------------
@@ -37,7 +46,6 @@ Development
 * Update some old vulnerable dependencies (#14368)
 * Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
 * Revert tag style, add color to privacy modal (#13756)
-* Fix parallel execution of some acceptance specs (#14391)
 
 4.22.1 (2018-10-18)
 -------------------

@@ -60,6 +60,11 @@ describe Carto::Api::MultifactorAuthsController do
   end
 
   describe '#create' do
+    before(:each) do
+      @user.user_multifactor_auths.each(&:destroy)
+      @user.reload
+    end
+
     it 'creates a totp multifactor auth' do
       post_json multifactor_auths_url, auth_params.merge(create_payload), auth_headers do |response|
         response.status.should eq 201

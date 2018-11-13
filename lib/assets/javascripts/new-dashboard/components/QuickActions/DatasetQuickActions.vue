@@ -26,16 +26,16 @@ export default {
     actions () {
       return {
         mine: [
-          { name: this.$t('QuickActions.editInfo'), event: 'editInfo', shouldShow: true },
-          { name: this.$t('QuickActions.manageTags'), event: 'manageTags', shouldShow: true },
-          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldShow: true },
-          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldShow: this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldShow: true },
-          { name: this.$t('QuickActions.lock'), event: 'lockDataset', shouldShow: true },
-          { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true, shouldShow: true }
+          { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
+          { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
+          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
+          { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
+          { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
         locked: [
-          { name: this.$t('QuickActions.unlock'), event: 'unlockMap', shouldShow: true }
+          { name: this.$t('QuickActions.unlock'), event: 'unlockDataset' }
         ]
       };
     },

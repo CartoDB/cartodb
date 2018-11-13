@@ -6,6 +6,14 @@
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" />
         </template>
+        <template slot="dropdownButton">
+          <FilterDropdown
+            section="datasets"
+            :filter="appliedFilter"
+            :order="appliedOrder"
+            :metadata="datasetsMetadata"
+            @filterChanged="applyFilter"/>
+        </template>
         <template slot="actionButton" v-if="!initialState">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
@@ -57,6 +65,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
@@ -67,8 +76,9 @@ import { isAllowed } from '../core/filters';
 export default {
   name: 'DataPage',
   components: {
-    SectionTitle,
     CreateButton,
+    FilterDropdown,
+    SectionTitle,
     Pagination,
     InitialState,
     EmptyState
@@ -124,7 +134,3 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-</style>

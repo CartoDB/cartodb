@@ -85,7 +85,8 @@
     "showMe": "Show me",
     "orderMaps": "Order",
     "types": {
-      "yourMaps": "Your maps ({count})",
+      "maps": "Your maps ({count})",
+      "datasets": "Your datasets ({count})",
       "shared": "Shared with you ({count})",
       "favorited": "Favorited ({count})",
       "locked": "Locked",

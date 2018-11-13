@@ -27,6 +27,7 @@
             @deselectAll="deselectAll"></MapBulkActions>
 
           <FilterDropdown
+            section="maps"
             v-if="!selectedMaps.length"
             :filter="appliedFilter"
             :order="appliedOrder"

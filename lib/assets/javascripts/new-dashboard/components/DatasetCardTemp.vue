@@ -1,3 +1,4 @@
+<!-- TODO Replace with final DatasetCard -->
 <template>
   <section>
     <span class="checkbox dataset-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @click="toggleSelection">
@@ -21,7 +22,7 @@
 import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
-  name: 'DatasetCard',
+  name: 'DatasetCardTemp',
   props: {
     dataset: Object,
     isSelected: {
@@ -34,14 +35,6 @@ export default {
     return {
       activeHover: true
     };
-  },
-  updated: function () {
-    this.$nextTick(function () {
-      // var title = this.$el.querySelector('.card-title');
-      // var description = this.$el.querySelector('.card-description');
-      // this.titleOverflow = title.scrollHeight > title.clientHeight;
-      // this.descriptionOverflow = description.scrollHeight > description.clientHeight;
-    });
   },
   computed: {
     vizUrl () {

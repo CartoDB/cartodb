@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="section section--sticky-header">
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -65,7 +65,8 @@
 
     <ul v-if="!isFetchingDatasets">
       <li v-for="dataset in datasets" :key="dataset.id">
-        <DatasetCard :dataset=dataset :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"></DatasetCard>
+        <!-- TODO Replace with final DatasetCard -->
+        <DatasetCardTemp :dataset=dataset :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"></DatasetCardTemp>
       </li>
     </ul>
     </div>
@@ -87,10 +88,11 @@ import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
-import DatasetCard from 'new-dashboard/components/DatasetCard';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
 import FilterDropdown from '../components/FilterDropdown';
+/* TODO Replace with final DatasetCard */
+import DatasetCardTemp from 'new-dashboard/components/DatasetCardTemp';
 import { isAllowed } from '../core/filters';
 
 export default {
@@ -101,10 +103,11 @@ export default {
     Pagination,
     InitialState,
     EmptyState,
-    DatasetCard,
     DatasetBulkActions,
     StickySubheader,
-    FilterDropdown
+    FilterDropdown,
+    /* TODO Replace with final DatasetCard */
+    DatasetCardTemp
   },
   data () {
     return {

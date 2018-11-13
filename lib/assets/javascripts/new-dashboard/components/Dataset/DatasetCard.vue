@@ -330,6 +330,10 @@ export default {
   &.icon--multipolygon {
     background-image: url("../../assets/icons/datasets/data-types/area.svg");
   }
+
+  &.icon--line {
+    background-image: url("../../assets/icons/datasets/data-types/line.svg");
+  }
 }
 
 .icon-metadata {

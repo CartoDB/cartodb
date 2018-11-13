@@ -73,7 +73,7 @@
         <img svg-inline src="../assets/icons/maps/compass.svg">
       </EmptyState>
 
-      <Pagination v-if="!isFetchingMaps && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+      <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
   </div>
 </section>
@@ -157,6 +157,9 @@ export default {
     },
     emptyState () {
       return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
+    },
+    shouldShowPagination () {
+      return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
     }
   },
   methods: {

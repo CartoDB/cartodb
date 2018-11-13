@@ -14,6 +14,7 @@ Development
 
 ### Bug fixes / enhancements
 - Sync new password resets fields with central (#14333)
+- Can't add legend due to wrong CartoCSS (#14418)
 - Fix parallel execution of some acceptance specs (#14391)
 - Use shared partials for logo and button animation in session views
 - Do not concatenate the schema if it's already defined while fetching overview tables #14414

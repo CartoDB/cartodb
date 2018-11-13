@@ -614,9 +614,6 @@ class User < Sequel::Model
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
     return unless validate_different_passwords(@old_password, @new_password)
 
-    # Must be set AFTER validations
-    set_last_password_change_date
-
     self.password = new_password_value
   end
 
@@ -682,6 +679,7 @@ class User < Sequel::Model
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
+    set_last_password_change_date
   end
 
   # Database configuration setup
@@ -1881,7 +1879,7 @@ class User < Sequel::Model
 
   def multifactor_authentication_configured?
     user_multifactor_auths.any?
-  end  
+  end
 
   private
 

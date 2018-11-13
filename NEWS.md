@@ -8,6 +8,8 @@ Development
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)
+- MFA (WIP)
+  - Admin management (#14347)
 - Change password functionality for Carto Gears (#14351)
 
 ### Bug fixes / enhancements

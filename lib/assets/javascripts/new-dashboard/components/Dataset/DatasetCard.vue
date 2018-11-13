@@ -52,18 +52,22 @@
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
     <div class="cell">
-      <!-- QUICK ACTIONS -->
+      <DatasetQuickActions v-if="!isShared" :dataset="dataset"/>
     </div>
   </a>
 </template>
 
 <script>
+import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
 
 export default {
   name: 'DatasetCard',
+  components: {
+    DatasetQuickActions
+  },
   props: {
     dataset: Object
   },

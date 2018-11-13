@@ -1,12 +1,12 @@
 <template>
   <div class="quick-actions">
-    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active' : isOpen}">
+    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen, 'has-shadow': hasShadow}">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
     <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click="killEvent">
-      <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.quickActions`) }}</h6>
+      <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.title`) }}</h6>
       <ul>
-        <li v-for="action in actions" :key="action.name" v-if="action.shouldShow">
+        <li v-for="action in actions" :key="action.name" v-if="!action.shouldBeHidden">
           <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
         </li>
       </ul>
@@ -24,7 +24,11 @@ export default {
     };
   },
   props: {
-    actions: Array
+    actions: Array,
+    hasShadow: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     emitEvent (action) {
@@ -60,7 +64,6 @@ export default {
   height: 24px;
   border-radius: 4px;
   background: $white;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
 
   &.is-active {
     background-color: $primary-color;
@@ -68,6 +71,10 @@ export default {
     .path {
       fill: $white;
     }
+  }
+
+  &.has-shadow {
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
   }
 
   &:hover {

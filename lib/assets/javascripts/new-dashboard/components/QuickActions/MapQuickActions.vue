@@ -1,5 +1,11 @@
 <template>
-  <QuickActions v-if="!isShared" :actions="actions[actionMode]" v-on="getEventListeners()" @open="openQuickactions" @close="closeQuickactions"></QuickActions>
+  <QuickActions
+    v-if="!isShared"
+    ref="quickActions"
+    :actions="actions[actionMode]"
+    v-on="getEventListeners()"
+    @open="openQuickactions"
+    @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
@@ -19,16 +25,16 @@ export default {
     actions () {
       return {
         mine: [
-          { name: this.$t('QuickActions.maps.editInfo'), event: 'editInfo', shouldShow: true },
-          { name: this.$t('QuickActions.maps.manageTags'), event: 'manageTags', shouldShow: true },
-          { name: this.$t('QuickActions.maps.changePrivacy'), event: 'changePrivacy', shouldShow: true },
-          { name: this.$t('QuickActions.maps.share'), event: 'shareVisualization', shouldShow: this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.maps.duplicate'), event: 'duplicateMap', shouldShow: true },
-          { name: this.$t('QuickActions.maps.lock'), event: 'lockMap', shouldShow: true },
-          { name: this.$t('QuickActions.maps.delete'), event: 'deleteMap', isDestructive: true, shouldShow: true }
+          { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
+          { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
+          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap' },
+          { name: this.$t('QuickActions.lock'), event: 'lockMap' },
+          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
         ],
         locked: [
-          { name: this.$t('QuickActions.maps.unlock'), event: 'unlockMap', shouldShow: true }
+          { name: this.$t('QuickActions.unlock'), event: 'unlockMap' }
         ]
       };
     },
@@ -44,6 +50,16 @@ export default {
     }
   },
   methods: {
+    getActionHandlers () {
+      return {
+        updateVisualization: (model) => {
+          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+        },
+        fetchList: () => {
+          this.$store.dispatch('maps/fetchMaps');
+        }
+      };
+    },
     getEventListeners () {
       const events = this.actions[this.actionMode].map(action => action.event);
 
@@ -67,29 +83,40 @@ export default {
     closeQuickactions () {
       this.$emit('close');
     },
+    closeDropdown () {
+      this.$refs.quickActions.closeDropdown();
+    },
     editInfo () {
-      DialogActions.editMapMetadata.apply(this, [this.map]);
+      DialogActions.editMapMetadata.apply(this, [this.map, this.getActionHandlers()]);
+      this.closeDropdown();
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.map]);
+      DialogActions.changePrivacy.apply(this, [this.map, this.getActionHandlers()]);
+      this.closeDropdown();
     },
     manageTags () {
       DialogActions.editMapMetadata.apply(this, [this.map]);
+      this.closeDropdown();
     },
     duplicateMap () {
-      DialogActions.duplicateMap.apply(this, [this.map]);
+      DialogActions.duplicateVisualization.apply(this, [this.map]);
+      this.closeDropdown();
     },
     unlockMap () {
-      DialogActions.changeLockState.apply(this, [this.map, 'maps']);
+      DialogActions.changeLockState.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+      this.closeDropdown();
     },
     lockMap () {
-      DialogActions.changeLockState.apply(this, [this.map, 'maps']);
+      DialogActions.changeLockState.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+      this.closeDropdown();
     },
     deleteMap () {
-      DialogActions.deleteVisualization.apply(this, [this.map, 'maps']);
+      DialogActions.deleteVisualization.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+      this.closeDropdown();
     },
     shareVisualization () {
-      DialogActions.shareVisualization.apply(this, [this.map]);
+      DialogActions.shareVisualization.apply(this, [this.map, this.getActionHandlers()]);
+      this.closeDropdown();
     }
   }
 };

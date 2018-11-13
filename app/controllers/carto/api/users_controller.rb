@@ -73,10 +73,7 @@ module Carto
         attributes = params[:user]
 
         if attributes.present?
-          unless password_change?(user, attributes) ||
-                 user.valid_password_confirmation(attributes[:password_confirmation])
-            raise Carto::PasswordConfirmationError.new
-          end
+          raise Carto::PasswordConfirmationError.new unless user.valid_password_confirmation(attributes[:old_password])
 
           update_password_if_needed(user, attributes)
 

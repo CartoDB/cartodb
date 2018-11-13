@@ -124,7 +124,7 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'gives an error if no password_confirmation' do
+      it 'gives an error if there is no old password' do
         payload = { user: { email: 'foo1@bar.baz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
@@ -134,9 +134,9 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'updates account if password_confirmation' do
+      it 'updates account if old password is correct' do
         payload = { user: { email: 'foo1@bar.baz',
-                            password_confirmation: 'foobarbaz' } }
+                            old_password: 'foobarbaz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(200)
@@ -148,7 +148,7 @@ describe Carto::Api::UsersController do
 
       it 'gives an error if email is invalid' do
         payload = { user: { email: 'foo@',
-                            password_confirmation: 'foobarbaz' } }
+                            old_password: 'foobarbaz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
@@ -161,9 +161,9 @@ describe Carto::Api::UsersController do
         payload = { user: { old_password: 'idontknow', new_password: 'barbaz', confirm_password: 'barbaz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
-          expect(response.status).to eq(400)
+          expect(response.status).to eq(403)
           expect(response.body[:message]).to eq("Error updating your account details")
-          expect(response.body[:errors]).to have_key(:old_password)
+          expect(response.body[:errors]).to have_key(:password)
         end
       end
 
@@ -232,7 +232,7 @@ describe Carto::Api::UsersController do
             twitter_username: 'carto',
             disqus_shortname: 'carto',
             avatar_url: 'http://carto.rocks/avatar.jpg',
-            password_confirmation: 'foobarbaz'
+            old_password: 'foobarbaz'
           }
         }
 
@@ -250,11 +250,11 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'does not update profile data if password_confirmation is wrong' do
+      it 'does not update profile data if old password is wrong' do
         payload = {
           user: {
             name: 'Foo2',
-            password_confirmation: 'prapra'
+            old_password: 'prapra'
           }
         }
 
@@ -287,7 +287,7 @@ describe Carto::Api::UsersController do
             name: 'Foo',
             last_name: 'Bar',
             website: 'https://carto.rocks',
-            password_confirmation: 'foobarbaz'
+            old_password: 'foobarbaz'
           }
         }
         old_description = @user.description
@@ -314,7 +314,7 @@ describe Carto::Api::UsersController do
 
         fields_to_check.each do |field|
           payload = { user: { field => nil,
-                              password_confirmation: 'foobarbaz' } }
+                              old_password: 'foobarbaz' } }
 
           put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
             expect(response.status).to eq(200)
@@ -326,7 +326,7 @@ describe Carto::Api::UsersController do
 
       it 'returns 401 if user is not logged in' do
         payload = { user: { name: 'Foo',
-                            password_confirmation: 'foobarbaz' } }
+                            old_password: 'foobarbaz' } }
 
         put_json api_v3_users_update_me_url(url_options.except(:api_key)), payload, @headers do |response|
           expect(response.status).to eq(401)

@@ -20,7 +20,9 @@ exports[`DatasetCard.vue should be able to select the card 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
-  <div class="cell"></div>
+  <div class="cell">
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
+  </div>
 </a>
 `;
 
@@ -44,7 +46,9 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
-  <div class="cell"></div>
+  <div class="cell">
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
+  </div>
 </a>
 `;
 
@@ -79,7 +83,9 @@ exports[`DatasetCard.vue should render tags 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
-  <div class="cell"></div>
+  <div class="cell">
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
+  </div>
 </a>
 `;
 
@@ -106,6 +112,8 @@ exports[`DatasetCard.vue should show the map is shared 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
-  <div class="cell"></div>
+  <div class="cell">
+    <!---->
+  </div>
 </a>
 `;

@@ -28,7 +28,14 @@
       <div class="grid-cell grid-cell--noMargin grid-cell--col12">
         <DatasetListHeader></DatasetListHeader>
       </div>
-      <ul class="grid-cell grid-cell--col12">
+
+      <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
+        <li v-for="n in 12" :key="n">
+          <DatasetCardFake></DatasetCardfake>
+        </li>
+      </ul>
+
+      <ul v-if="!isFetchingDatasets" class="grid-cell grid-cell--col12">
         <li v-for="dataset in datasets" :key="dataset.id">
           <DatasetCard :dataset="dataset"></DatasetCard>
         </li>
@@ -47,6 +54,7 @@
 <script>
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
+import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import { mapState } from 'vuex';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
@@ -62,6 +70,7 @@ export default {
     CreateButton,
     Pagination,
     DatasetCard,
+    DatasetCardFake,
     InitialState,
     EmptyState,
     DatasetListHeader

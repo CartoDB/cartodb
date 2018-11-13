@@ -25,9 +25,6 @@
   </div>
 </template>
 
-<script>
-</script>
-
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 

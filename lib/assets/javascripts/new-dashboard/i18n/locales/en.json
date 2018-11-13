@@ -117,8 +117,7 @@
       "PASSWORD": "Password"
     },
     "lastSynced": "Synced {date} ago",
-    "numberRows": "{rows} rows",
-    "numberRow": "{rows} row"
+    "numberRows": "0 rows | {n} row | {n} rows"
   },
   "datasetListHeader": {
     "name": "Name",

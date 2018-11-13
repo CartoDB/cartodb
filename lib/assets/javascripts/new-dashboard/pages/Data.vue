@@ -33,23 +33,6 @@
           <DatasetCard :dataset="dataset"></DatasetCard>
         </li>
       </ul>
-    <!-- <ul v-if="isFetchingDatasets">
-      <li v-for="n in 12" :key="n">
-        Loading
-      </li>
-    </ul> -->
-
-    <!-- <ul v-if="!isFetchingDatasets">
-      <li v-for="dataset in datasets" :key="dataset.id">
-        <span>{{dataset.name}}</span>
-        <span>FAV: {{ dataset.liked }} - </span>
-        <span>Last Modified: {{dataset.updated_at }} - </span>
-        <span>Rows: {{dataset.table.row_count }} - </span>
-        <span>Size: {{ dataset.table.size }} - </span>
-        <span>Privacy: {{dataset.table.privacy }} - </span>
-        <span>Geometry Types: {{ dataset.table.geometry_types }}</span>
-      </li>
-    </ul> -->
 
       <EmptyState
         :text="$t('DataPage.emptyState')"

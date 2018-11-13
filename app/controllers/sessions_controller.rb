@@ -42,8 +42,7 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
-  after_action  :set_last_mfa_activity, only: [:multifactor_authentication]
-  before_action :set_last_mfa_activity, only: [:multifactor_authentication_verify_code]
+  after_action  :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
 
   PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
 
@@ -108,6 +107,8 @@ class SessionsController < ApplicationController
 
     @mfa = @user.active_multifactor_authentication
     render action: 'multifactor_authentication'
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
+    unauthenticated
   end
 
   def multifactor_authentication_verify_code
@@ -284,12 +285,14 @@ class SessionsController < ApplicationController
 
   def set_last_mfa_activity
     user = ::User.where(id: params[:user_id]).first || current_viewer
-    warden.session(user.username)[:multifactor_authentication_last_activity] = Time.now.to_i
+    warden.session(user.username)[:multifactor_authentication_last_activity] = Time.now.to_i if user
+  rescue Warden::NotAuthenticated
   end
 
   def mfa_inactivity_period_expired?(user)
     time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
     time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
+  rescue Warden::NotAuthenticated
   end
 
   def after_login_url(user)

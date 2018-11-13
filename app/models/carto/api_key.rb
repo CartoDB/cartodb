@@ -180,19 +180,6 @@ module Carto
 
     end
 
-    def self.revoke_org_users_permissions(table, org_revokes)
-      org_revokes.each do |org_id, perms|
-        org = Carto::Organization.find(org_id)
-
-        user_revokes = {}
-        org.users.each do |user|
-          user_revokes[user.id] = perms
-        end
-
-        revoke_users_permissions(table, user_revokes)
-      end
-    end
-
     def granted_apis
       @granted_apis ||= process_granted_apis
     end

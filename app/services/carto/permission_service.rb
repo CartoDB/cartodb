@@ -26,6 +26,8 @@ module Carto
       diff
     end
 
+    private
+
     def self.hashing_acl(acl)
       acl_hash = {}
       acl.each do |p|

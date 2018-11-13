@@ -315,9 +315,11 @@ class Carto::Permission < ActiveRecord::Base
 
   def update_changes
     if !@old_acl.nil?
-      acl_diff = CartoDB::Permission.compare_new_acl(@old_acl, acl)
-      notify_permissions_change(acl_diff)
-      update_api_key_permissions(acl_diff) if entity.table?
+      notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
+      if entity.table?
+        revokes_diff = Carto::PermissionService.revokesByUser(@old_acl, acl)
+        Carto::ApiKey.revoke_users_permissions(entity.table, revokes_diff) unless revokes_diff.blank?
+      end
     end
     update_shared_entities
   end
@@ -328,24 +330,6 @@ class Carto::Permission < ActiveRecord::Base
     # We need to pass the current acl as old_acl and the new_acl as something
     # empty to recreate a revoke by deletion
     notify_permissions_change(CartoDB::Permission.compare_new_acl(acl, []))
-  end
-
-  def update_api_key_permissions(acl_diff)
-    user_revokes = extract_acl_revokes(acl_diff['user'])
-    Carto::ApiKey.revoke_users_permissions(entity.table, user_revokes) unless user_revokes.blank?
-
-    org_revokes = extract_acl_revokes(acl_diff['org'])
-    Carto::ApiKey.revoke_org_users_permissions(entity.table, org_revokes) unless org_revokes.blank?
-    #
-  end
-
-  def extract_acl_revokes(acl_diff_by_type)
-    acl_revokes = {}
-    acl_diff_by_type.each do |id, perms|
-      revokes = perms.select { |perm| perm['action'] == 'revoke' }
-      acl_revokes[id] = revokes if revokes.length > 0
-    end
-    acl_revokes
   end
 
   def update_shared_entities

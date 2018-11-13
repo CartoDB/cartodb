@@ -6,7 +6,7 @@
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent.stop="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
@@ -22,7 +22,7 @@
       <div class="card-header">
         <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent.stop="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>

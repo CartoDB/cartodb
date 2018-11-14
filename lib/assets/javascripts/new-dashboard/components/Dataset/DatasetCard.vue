@@ -95,14 +95,26 @@ export default {
       }
     },
     dataType () {
-      let data = this.$props.dataset.table.geometry_types[0];
-      return data ? data.replace('ST_', '').toLowerCase() : 'empty';
+      const _map = {
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point'
+      };
+      let geometry = '';
+      if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types[0]) {
+        geometry = this.$props.dataset.table.geometry_types[0];
+      }
+      const data = geometry.toLowerCase();
+      return _map[data] ? _map[data] : 'unknown';
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
     },
     tagsChars () {
-      return countCharsArray(this.$props.dataset.tags, 2);
+      return countCharsArray(this.$props.dataset.tags, ', ');
     },
     hasTags () {
       return this.numberTags > 0;
@@ -332,7 +344,7 @@ export default {
     background-image: url("../../assets/icons/datasets/data-types/dots.svg");
   }
 
-  &.icon--multipolygon {
+  &.icon--polygon {
     background-image: url("../../assets/icons/datasets/data-types/area.svg");
   }
 

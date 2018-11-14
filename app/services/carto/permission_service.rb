@@ -1,6 +1,7 @@
 module Carto
   module PermissionService
-    TYPE_ORG = 'org'.freeze
+    TYPE_USER  = 'user'.freeze
+    TYPE_ORG   = 'org'.freeze
     TYPE_GROUP = 'group'.freeze
 
     def self.revokes_by_user(old_acl, new_acl, table_owner_id)
@@ -8,7 +9,7 @@ module Carto
       new_acl = hashing_acl(new_acl)
 
       diff_by_types = diff_by_types(old_acl, new_acl)
-      diff = diff_by_types['user'] || {}
+      diff = diff_by_types[TYPE_USER] || {}
 
       # diff by org users
       diff_by_org_or_group(TYPE_ORG, diff, diff_by_types, table_owner_id)
@@ -55,12 +56,12 @@ module Carto
     def self.diff_by_users(users, revoke, new_acl)
       diff = {}
       users.each do |user|
-        if new_acl['user'].nil? || new_acl['user'][user.id].nil?
-          diff['user'] ||= {}
-          diff['user'][user.id] = revoke
-        elsif (revoke == 'rw' || revoke == 'w') && new_acl['user'][user.id] == 'r'
-          diff['user'] ||= {}
-          diff['user'][user.id] = 'w'
+        if new_acl[TYPE_USER].nil? || new_acl[TYPE_USER][user.id].nil?
+          diff[TYPE_USER] ||= {}
+          diff[TYPE_USER][user.id] = revoke
+        elsif (revoke == 'rw' || revoke == 'w') && new_acl[TYPE_USER][user.id] == 'r'
+          diff[TYPE_USER] ||= {}
+          diff[TYPE_USER][user.id] = 'w'
         end
       end
       diff
@@ -80,7 +81,7 @@ module Carto
 
     def self.add_users_to_diff(diff, users_diff, table_owner_id)
       unless users_diff.blank?
-        users_diff['user'].each do |user_id, revoke|
+        users_diff[TYPE_USER].each do |user_id, revoke|
           diff[user_id] = revoke if diff[user_id].nil? && user_id != table_owner_id
         end
       end

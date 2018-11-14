@@ -7,8 +7,6 @@ Development
 ### Features
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
-  - Add scopes for accessing datasets (#14292)
-- Improve dropping db role of an API key (#14307)
   - UI improvements (#14389)
 - Change password functionality for Carto Gears (#14351)
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)

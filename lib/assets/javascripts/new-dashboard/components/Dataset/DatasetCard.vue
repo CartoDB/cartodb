@@ -23,12 +23,12 @@
       <div class="row-metadataContainer" v-if="hasTags || isShared">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
-          <ul v-if="numberTags <= maxTags" class="tag-list">
+          <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
               <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="numberTags > maxTags" :list=dataset.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
             <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
@@ -65,6 +65,7 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
 import FeaturesDropdown from '../FeaturesDropdown';
+import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'DatasetCard',
@@ -78,7 +79,8 @@ export default {
     return {
       selected: false,
       activeHover: true,
-      maxTags: 3
+      maxTags: 3,
+      maxTagChars: 30
     };
   },
   computed: {
@@ -93,11 +95,27 @@ export default {
       }
     },
     dataType () {
-      let data = this.$props.dataset.table.geometry_types[0];
-      return data ? data.replace('ST_', '').toLowerCase() : 'empty';
+      const geometryTypes = {
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point',
+        '': 'empty'
+      };
+      let geometry = '';
+      if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types.length) {
+        geometry = this.$props.dataset.table.geometry_types[0];
+      }
+      const currentGeometryType = geometry.toLowerCase();
+      return geometryTypes[currentGeometryType] ? geometryTypes[currentGeometryType] : 'unknown';
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
+    },
+    tagsChars () {
+      return countCharsArray(this.$props.dataset.tags, ', ');
     },
     hasTags () {
       return this.numberTags > 0;
@@ -327,8 +345,12 @@ export default {
     background-image: url("../../assets/icons/datasets/data-types/dots.svg");
   }
 
-  &.icon--multipolygon {
+  &.icon--polygon {
     background-image: url("../../assets/icons/datasets/data-types/area.svg");
+  }
+
+  &.icon--line {
+    background-image: url("../../assets/icons/datasets/data-types/line.svg");
   }
 }
 

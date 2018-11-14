@@ -219,7 +219,6 @@ class Admin::VisualizationsController < Admin::AdminController
       return(show_organization_public_map)
     end
 
-
     # Legacy redirect, now all public pages also with org. name
     if eligible_for_redirect?(@visualization.user)
       # INFO: here we only want the presenter to rewrite the url of @visualization.user namespacing it like 'schema.id',
@@ -229,6 +228,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                                 'public_visualizations_public_map') and return
     end
 
+    return(public_map_protected) if @visualization.password_protected?
 
     if @visualization.can_be_cached?
       response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
@@ -342,7 +342,7 @@ class Admin::VisualizationsController < Admin::AdminController
     unless @visualization.password_valid?(submitted_password)
       flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
       flash[:error] = "Invalid password"
-      return(embed_protected)
+      return(public_map_protected)
     end
 
     response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"

@@ -5,6 +5,8 @@ Development
 - None yet
 
 ### Features
+- MFA (WIP)
+  - Login (#14336)
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)
@@ -14,6 +16,7 @@ Development
 - Change password functionality for Carto Gears (#14351)
 
 ### Bug fixes / enhancements
+- Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)
 - Sync new password resets fields with central (#14333)
 - Can't add legend due to wrong CartoCSS (#14418)
 - Fix parallel execution of some acceptance specs (#14391)

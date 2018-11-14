@@ -232,6 +232,19 @@ describe Admin::VisualizationsController do
       last_response.status.should == 403
     end
 
+    it 'go to password protected page if the viz is password protected' do
+      id = factory.fetch('id')
+      visualization = CartoDB::Visualization::Member.new(id: id).fetch
+      visualization.version = 2
+      visualization.password = 'foobar'
+      visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      visualization.store
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 200
+      last_response.body.scan(/Insert your password/).present?.should == true
+    end
+
     it 'returns proper surrogate-keys' do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -253,6 +266,27 @@ describe Admin::VisualizationsController do
       host! "#{org.name}.localhost.lan"
       get "/viz/#{vis_id}/public_map", @headers
       last_response.status.should == 200
+    end
+
+    it 'go to password protected page if the organization viz is password protected' do
+      org = OrganizationFactory.new.new_organization.save
+
+      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+      id = factory(owner=user_a).fetch('id')
+      visualization = CartoDB::Visualization::Member.new(id: id).fetch
+      visualization.version = 2
+      visualization.password = 'foobar'
+      visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      visualization.store
+
+      get "/viz/#{id}/public_map", {}, @headers
+
+      last_response.status.should == 302
+      follow_redirect!
+      last_response.status.should == 200
+      last_response.body.scan(/Insert your password/).present?.should == true
     end
 
     it 'does not load daily mapviews stats' do

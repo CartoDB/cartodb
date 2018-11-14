@@ -8,6 +8,7 @@ Development
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)
+  - Revoke permissions when owner stops sharing you a dataset
 
 ### Bug fixes / enhancements
 - Sync new password resets fields with central (#14333)

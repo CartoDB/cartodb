@@ -6,6 +6,7 @@ require_relative '../../../../app/controllers/carto/api/users_controller'
 
 describe Carto::Api::UsersController do
   include_context 'organization with users helper'
+  include Rack::Test::Methods
   include Warden::Test::Helpers
   include HelperMethods
 
@@ -200,6 +201,50 @@ describe Carto::Api::UsersController do
           @user.refresh
           expect(@user.email).to eq('foo@bar.baz')
           expect(@user.last_password_change_date).to_not eq(last_change)
+        end
+      end
+
+      context 'multifactor authentication' do
+        it 'creates a multifactor authentication' do
+          payload = { user: { old_password: 'foobarbaz', mfa: true } }
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          @user.reload.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          FactoryGirl.create(:totp, user_id: @user.id)
+          payload = { user: { old_password: 'foobarbaz', mfa: false } }
+
+          @user.reload.user_multifactor_auths.should_not be_empty
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 200
+          @user.reload.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+          payload = { user: { old_password: 'foobarbaz', mfa: false } }
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 400
+          @user.reload.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+          payload = { user: { old_password: 'foobarbaz', mfa: true } }
+
+          @user.expects(:save).never
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 400
         end
       end
     end

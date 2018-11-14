@@ -11,8 +11,8 @@ module Carto
       before_action :check_ff
       before_action :load_organization
       before_action :admins_only
-      before_action :load_user, only: [:create, :update, :destroy]
-      before_action :ensure_edit_permissions, only: [:create, :update, :destroy]
+      before_action :load_user
+      before_action :ensure_edit_permissions
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::UnauthorizedError,

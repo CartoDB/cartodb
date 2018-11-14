@@ -7,11 +7,6 @@ describe Carto::Api::MultifactorAuthenticationController do
   include Rack::Test::Methods
   include Warden::Test::Helpers
 
-  before(:all) do
-    @org_user_2.org_admin = true
-    @org_user_2.save
-  end
-
   before(:each) do
     ::User.any_instance.stubs(:validate_credentials_not_taken_in_central).returns(true)
     ::User.any_instance.stubs(:create_in_central).returns(true)

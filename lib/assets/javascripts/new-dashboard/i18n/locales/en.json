@@ -119,9 +119,9 @@
         "title": "Date Modified",
         "last": "Last",
         "first": "First"
-      },
-      "initialState": "Change Filters"
-    }
+      }
+    },
+    "initialState": "Change Filters"
   },
   "DatasetCard": {
     "shared": {

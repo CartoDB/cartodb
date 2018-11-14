@@ -33,7 +33,7 @@
               :order="appliedOrder"
               :metadata="datasetsMetadata"
               @filterChanged="applyFilter">
-              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t(`FilterDropdown.initialState`) }}</span>
               <img svg-inline v-else src="../assets/icons/common/filter.svg">
             </FilterDropdown>
           </template>
@@ -49,7 +49,7 @@
               <img svg-inline src="../assets/icons/datasets/initialState.svg">
             </template>
             <template slot="description">
-              <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCdescription`)"></p>
+              <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
             </template>
             <template slot="actionButton">
               <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>

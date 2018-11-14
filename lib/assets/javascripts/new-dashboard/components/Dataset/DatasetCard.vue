@@ -81,7 +81,6 @@ export default {
   },
   data: function () {
     return {
-      selected: false,
       activeHover: true,
       maxTags: 3,
       maxTagChars: 30

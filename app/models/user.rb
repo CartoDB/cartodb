@@ -1885,6 +1885,10 @@ class User < Sequel::Model
     user_multifactor_auths.any?
   end
 
+  def active_multifactor_authentication
+    user_multifactor_auths.order(created_at: :desc).first
+  end
+
   def multifactor_authentication_status
     if user_multifactor_auths.setup.any?
       MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP

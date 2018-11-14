@@ -9,6 +9,7 @@ module Carto
     DRIFT = 60.seconds
     INTERVAL = 30.seconds
     ISSUER = 'CARTO'.freeze
+    QR_CODE_SIZE = 400
 
     belongs_to :user, inverse_of: :user_multifactor_auths, foreign_key: :user_id
 
@@ -30,7 +31,7 @@ module Carto
       update!(enabled: true, last_login: timestamp)
     end
 
-    def disabled?
+    def needs_setup?
       !enabled
     end
 
@@ -40,7 +41,7 @@ module Carto
 
     def qr_code
       qrcode = RQRCode::QRCode.new(totp.provisioning_uri(user.username))
-      qrcode.as_png.to_data_url
+      qrcode.as_png(size: QR_CODE_SIZE).to_data_url
     end
 
     private

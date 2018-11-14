@@ -280,7 +280,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <!---->
-        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="mapCard.tags"></featuresdropdown-stub>
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown"><span class="feature-text text is-caption is-txtGrey">4 mapCard.tags</span></featuresdropdown-stub>
       </li>
     </ul>
   </div>

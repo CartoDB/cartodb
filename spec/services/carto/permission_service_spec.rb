@@ -28,12 +28,26 @@ describe Carto::PermissionService do
       expect(revokes).to be_blank
 
       old_acl = create_acl_hash([])
-      new_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }, { "type": "user", "id": "2", "access": "rw" }])
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "r" }, { "type": "user", "id": "2", "access": "rw" }
+        ]
+      )
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
       expect(revokes).to be_blank
 
-      old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }, { "type": "org", "id": "1", "access": "r" }])
-      new_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "rw" }, { "type": "org", "id": "1", "access": "r" }])
+      old_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "r" },
+          { "type": "org", "id": "1", "access": "r" }
+        ]
+      )
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "org", "id": "1", "access": "r" }
+        ]
+      )
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
       expect(revokes).to be_blank
     end
@@ -41,28 +55,48 @@ describe Carto::PermissionService do
     it 'should not be empty with revokes by type' do
       old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }])
       new_acl = create_acl_hash([])
+      expected = { "user" => { "1" => "r" } }
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => "r" } })
+      expect(revokes).to eq(expected)
 
       old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "rw" }])
       new_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }])
+      expected = { "user" => { "1" => "w" } }
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => "w" } })
+      expect(revokes).to eq(expected)
 
       old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "rw" }])
       new_acl = create_acl_hash([])
+      expected = { "user" => { "1" => "rw" } }
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => "rw" } })
+      expect(revokes).to eq(expected)
 
-      old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }, { "type": "user", "id": "2", "access": "rw" }])
+      old_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "r" },
+          { "type": "user", "id": "2", "access": "rw" }
+        ]
+      )
       new_acl = create_acl_hash([])
+      expected = { "user" => { "1" => "r", "2" => "rw" } }
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => "r", "2" => "rw" } })
+      expect(revokes).to eq(expected)
 
-      old_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "rw" }, { "type": "org", "id": "1", "access": "r" }])
-      new_acl = create_acl_hash([{ "type": "user", "id": "1", "access": "r" }, { "type": "org", "id": "1", "access": "r" }])
+      old_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "org", "id": "1", "access": "r" }
+        ]
+      )
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "r" },
+          { "type": "org", "id": "1", "access": "r" }
+        ]
+      )
+      expected = { "user" => { "1" => "w" } }
       revokes = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => "w" } })
+      expect(revokes).to eq(expected)
     end
   end
 
@@ -71,6 +105,7 @@ describe Carto::PermissionService do
       def initialize(id)
         @id = id
       end
+
       def id
         @id
       end
@@ -82,49 +117,58 @@ describe Carto::PermissionService do
 
     it 'org: rw ---> r' do
       org_revoke = "w"
-      new_acl = create_acl_hash([
-        { "type": "org", "id": "1", "access": "r" }
-      ])
+      new_acl = create_acl_hash([{ "type": "org", "id": "1", "access": "r" }])
+      expected = { "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
       revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } })
+      expect(revokes).to eq(expected)
     end
 
     it 'org: rw ---> none' do
       org_revoke = "rw"
       new_acl = create_acl_hash([])
       revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
-      expect(revokes).to eq({ "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } })
+      expected = { "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
+      expect(revokes).to eq(expected)
     end
 
     it 'user1: rw, user2: r, org: rw ---> r' do
       org_revoke = "w"
-      new_acl = create_acl_hash([
-        { "type": "user", "id": "1", "access": "rw" },
-        { "type": "user", "id": "2", "access": "r" },
-        { "type": "org", "id": "1", "access": "r" }
-      ])
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "user", "id": "2", "access": "r" },
+          { "type": "org", "id": "1", "access": "r" }
+        ]
+      )
+      expected = { "user" => { "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
       revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
-      expect(revokes).to eq({ "user" => { "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } })
+      expect(revokes).to eq(expected)
     end
 
     it 'user1: rw, user2: r, org: r ---> none' do
       org_revoke = "r"
-      new_acl = create_acl_hash([
-        { "type": "user", "id": "1", "access": "rw" },
-        { "type": "user", "id": "2", "access": "r" }
-      ])
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "user", "id": "2", "access": "r" }
+        ]
+      )
+      expected = { "user" => { "3" => org_revoke, "4" => org_revoke } }
       revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
-      expect(revokes).to eq({ "user" => { "3" => org_revoke, "4" => org_revoke } })
+      expect(revokes).to eq(expected)
     end
 
     it 'user1: rw, user2: r, org: rw ---> none' do
       org_revoke = "rw"
-      new_acl = create_acl_hash([
-        { "type": "user", "id": "1", "access": "rw" },
-        { "type": "user", "id": "2", "access": "r" }
-      ])
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "user", "id": "2", "access": "r" }
+        ]
+      )
+      expected = { "user" => { "2" => "w", "3" => org_revoke, "4" => org_revoke } }
       revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
-      expect(revokes).to eq({ "user" => { "2" => "w", "3" => org_revoke, "4" => org_revoke } })
+      expect(revokes).to eq(expected)
     end
   end
 end

@@ -92,7 +92,7 @@ module Carto
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
 
           ActiveRecord::Base.transaction do
-            unless attributes[:mfa].nil?
+            if !attributes[:mfa].nil? && user.has_feature_flag?('mfa')
               service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
               service.update(enabled: attributes[:mfa])
             end

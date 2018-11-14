@@ -100,7 +100,7 @@ describe Carto::PermissionService do
     end
   end
 
-  describe '#diff_by_org_users' do
+  describe '#diff_by_users' do
     class FakeUser
       def initialize(id)
         @id = id
@@ -112,21 +112,21 @@ describe Carto::PermissionService do
     end
 
     before :all do
-      @org_users = [FakeUser.new("1"), FakeUser.new("2"), FakeUser.new("3"), FakeUser.new("4")]
+      @users = [FakeUser.new("1"), FakeUser.new("2"), FakeUser.new("3"), FakeUser.new("4")]
     end
 
     it 'org: rw ---> r' do
       org_revoke = "w"
       new_acl = create_acl_hash([{ "type": "org", "id": "1", "access": "r" }])
       expected = { "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
-      revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
+      revokes = Carto::PermissionService.diff_by_users(@users, org_revoke, new_acl)
       expect(revokes).to eq(expected)
     end
 
     it 'org: rw ---> none' do
       org_revoke = "rw"
       new_acl = create_acl_hash([])
-      revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
+      revokes = Carto::PermissionService.diff_by_users(@users, org_revoke, new_acl)
       expected = { "user" => { "1" => org_revoke, "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
       expect(revokes).to eq(expected)
     end
@@ -141,7 +141,7 @@ describe Carto::PermissionService do
         ]
       )
       expected = { "user" => { "2" => org_revoke, "3" => org_revoke, "4" => org_revoke } }
-      revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
+      revokes = Carto::PermissionService.diff_by_users(@users, org_revoke, new_acl)
       expect(revokes).to eq(expected)
     end
 
@@ -154,7 +154,7 @@ describe Carto::PermissionService do
         ]
       )
       expected = { "user" => { "3" => org_revoke, "4" => org_revoke } }
-      revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
+      revokes = Carto::PermissionService.diff_by_users(@users, org_revoke, new_acl)
       expect(revokes).to eq(expected)
     end
 
@@ -167,7 +167,7 @@ describe Carto::PermissionService do
         ]
       )
       expected = { "user" => { "2" => "w", "3" => org_revoke, "4" => org_revoke } }
-      revokes = Carto::PermissionService.diff_by_org_users(@org_users, org_revoke, new_acl)
+      revokes = Carto::PermissionService.diff_by_users(@users, org_revoke, new_acl)
       expect(revokes).to eq(expected)
     end
   end

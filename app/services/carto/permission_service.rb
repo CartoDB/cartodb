@@ -1,27 +1,20 @@
 module Carto
   module PermissionService
+    TYPE_ORG = 'org'.freeze
+    TYPE_GROUP = 'group'.freeze
+
     def self.revokes_by_user(old_acl, new_acl, table_owner_id)
       old_acl = hashing_acl(old_acl)
       new_acl = hashing_acl(new_acl)
 
-      byebug
       diff_by_types = diff_by_types(old_acl, new_acl)
       diff = diff_by_types['user'] || {}
 
       # diff by org users
-      if diff_by_types['org'].present?
-        diff_by_types['org'].each do |org_id, revoke|
-          org = Carto::Organization.find(org_id)
-          org_users_diff = diff_by_org_users(org.users, revoke, new_acl)
+      diff_by_org_or_group(TYPE_ORG, diff, diff_by_types, table_owner_id)
 
-          # add org users to diff
-          unless org_users_diff.blank?
-            org_users_diff['user'].each do |user_id, org_revoke|
-              diff[user_id] = org_revoke if diff[user_id].nil? && user_id != table_owner_id
-            end
-          end
-        end
-      end
+      # diff by group users
+      diff_by_org_or_group(TYPE_GROUP, diff, diff_by_types, table_owner_id)
 
       diff
     end
@@ -56,18 +49,41 @@ module Carto
       diff
     end
 
-    def self.diff_by_org_users(org_users, org_revoke, new_acl)
+    # Set the revoked permissions by user
+    # Returns a hash with user ids as hash keys and revokes as values
+    # users param is an array with the users from an organization or group
+    def self.diff_by_users(users, revoke, new_acl)
       diff = {}
-      org_users.each do |user|
+      users.each do |user|
         if new_acl['user'].nil? || new_acl['user'][user.id].nil?
           diff['user'] ||= {}
-          diff['user'][user.id] = org_revoke
-        elsif (org_revoke == 'rw' || org_revoke == 'w') && new_acl['user'][user.id] == 'r'
+          diff['user'][user.id] = revoke
+        elsif (revoke == 'rw' || revoke == 'w') && new_acl['user'][user.id] == 'r'
           diff['user'] ||= {}
           diff['user'][user.id] = 'w'
         end
       end
       diff
+    end
+
+    def self.diff_by_org_or_group(type, diff, diff_by_types, table_owner_id)
+      if diff_by_types[type].present?
+        diff_by_types[type].each do |id, revoke|
+          users = type == TYPE_ORG ? Carto::Organization.find(id).users : Carto::Group.find(id).users
+          users_diff = diff_by_users(users, revoke, new_acl)
+
+          # add users to diff
+          add_users_to_diff(diff, users_diff, table_owner_id)
+        end
+      end
+    end
+
+    def self.add_users_to_diff(diff, users_diff, table_owner_id)
+      unless users_diff.blank?
+        users_diff['user'].each do |user_id, revoke|
+          diff[user_id] = revoke if diff[user_id].nil? && user_id != table_owner_id
+        end
+      end
     end
   end
 end

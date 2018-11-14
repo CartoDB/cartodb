@@ -43,6 +43,14 @@ module Carto
 
     include Carto::AuthTokenGenerator
 
+    READ_PERMISSIONS = ['select'].freeze
+    WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
+    PERMISSIONS = {
+      r: READ_PERMISSIONS,
+      w: WRITE_PERMISSIONS,
+      rw: READ_PERMISSIONS + WRITE_PERMISSIONS
+    }.freeze
+
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
@@ -177,7 +185,27 @@ module Carto
     end
 
     def self.revoke_users_permissions(table, user_revokes)
+      return if user_revokes.blank?
 
+      user_ids = user_revokes.keys
+      apikeys_affected = []
+      ApiKey.where(:user_id => user_ids).find_each do |apikey|
+        revoked_permissions = PERMISSIONS[user_revokes[apikey.user_id].to_sym]
+
+        remove = false
+
+        apikey.table_permissions.each do |table_permission|
+          if table_permission.name == table.name &&
+             table_permission.schema == table.database_schema &&
+             (table_permission.permissions - revoked_permissions).length != table_permission.permissions.length
+            remove = true
+          end
+        end
+
+        apikeys_affected << apikey if remove == true
+      end
+
+      apikeys_affected.each { |apikey| apikey.destroy }
     end
 
     def granted_apis

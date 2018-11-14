@@ -1,23 +1,24 @@
 <template>
-  <section class="section">
+  <section class="section section--sticky-header">
     <div class="container grid">
-     <div class="grid-cell grid-cell--col12">
-      <SectionTitle :title="pageTitle">
-        <template slot="icon">
-          <img src="../assets/icons/section-title/data.svg" />
-        </template>
-        <template slot="dropdownButton">
-          <FilterDropdown
-            section="datasets"
-            :filter="appliedFilter"
-            :order="appliedOrder"
-            :metadata="datasetsMetadata"
-            @filterChanged="applyFilter"/>
-        </template>
-        <template slot="actionButton" v-if="!initialState">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
-        </template>
-      </SectionTitle>
+      <div class="grid-cell grid-cell--col12">
+        <SectionTitle :title="pageTitle">
+          <template slot="icon">
+            <img src="../assets/icons/section-title/data.svg" />
+          </template>
+          <template slot="dropdownButton">
+            <FilterDropdown
+              section="datasets"
+              :filter="appliedFilter"
+              :order="appliedOrder"
+              :metadata="datasetsMetadata"
+              @filterChanged="applyFilter"/>
+          </template>
+          <template slot="actionButton" v-if="!initialState">
+            <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+          </template>
+        </SectionTitle>
+      </div>
 
       <div class="grid-cell" v-if="initialState">
         <InitialState :title="$t(`DataPage.zeroCase.title`)">
@@ -32,38 +33,30 @@
           </template>
         </InitialState>
       </div>
-     </div>
 
-    <ul v-if="isFetchingDatasets">
-      <li v-for="n in 12" :key="n">
-        Loading
-      </li>
-    </ul>
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+        <DatasetListHeader></DatasetListHeader>
+      </div>
 
-    <ul v-if="!isFetchingDatasets">
-      <li v-for="dataset in datasets" :key="dataset.id">
-        <span>{{dataset.name}}</span>
-        <span>FAV: {{ dataset.liked }} - </span>
-        <span>Last Modified: {{dataset.updated_at }} - </span>
-        <span>Rows: {{dataset.table.row_count }} - </span>
-        <span>Size: {{ dataset.table.size }} - </span>
-        <span>Privacy: {{dataset.table.privacy }} - </span>
-        <span>Geometry Types: {{ dataset.table.geometry_types }}</span>
-      </li>
-    </ul>
+      <ul class="grid-cell grid-cell--col12">
+        <li v-for="dataset in datasets" :key="dataset.id">
+          <DatasetCard :dataset="dataset"></DatasetCard>
+        </li>
+      </ul>
+
+      <EmptyState
+        :text="$t('DataPage.emptyState')"
+        v-if="emptyState">
+        <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+      </EmptyState>
     </div>
-
-    <EmptyState
-      :text="$t('DataPage.emptyState')"
-      v-if="emptyState">
-      <img svg-inline src="../assets/icons/datasets/emptyState.svg">
-    </EmptyState>
-
     <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
 
 <script>
+import DatasetCard from '../components/Dataset/DatasetCard';
+import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import { mapState } from 'vuex';
 import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
@@ -80,8 +73,10 @@ export default {
     FilterDropdown,
     SectionTitle,
     Pagination,
+    DatasetCard,
     InitialState,
-    EmptyState
+    EmptyState,
+    DatasetListHeader
   },
   beforeRouteUpdate (to, from, next) {
     const urlOptions = { ...to.params, ...to.query };

@@ -54,7 +54,9 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
+          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags>
+            <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
+          </FeaturesDropdown>
         </li>
       </ul>
     </div>

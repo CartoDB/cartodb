@@ -106,8 +106,28 @@
         "title": "Date Modified",
         "last": "Last",
         "first": "First"
-      }
+      },
+      "initialState": "Change Filters"
+    }
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
     },
-    "initialState": "Change Filters"
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "Updated {date} ago",
+    "numberRows": "0 rows | {n} row | {n} rows",
+    "tags": "tags"
+  },
+  "datasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
   }
 }

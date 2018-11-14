@@ -1,6 +1,6 @@
 <template>
   <div class="features-dropdown">
-    <span class="feature-text text is-caption is-txtGrey">{{list.length}} {{feature}}</span>
+    <slot />
     <div class="dropdown-container">
       <ul class="list">
         <li class="element" v-for="elem in list" :key="elem">

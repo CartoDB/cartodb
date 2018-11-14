@@ -6,50 +6,43 @@
           <template slot="icon">
             <img src="../assets/icons/section-title/data.svg" />
           </template>
+          <template slot="dropdownButton">
+            <FilterDropdown
+              section="datasets"
+              :filter="appliedFilter"
+              :order="appliedOrder"
+              :metadata="datasetsMetadata"
+              @filterChanged="applyFilter"/>
+          </template>
           <template slot="actionButton" v-if="!initialState">
             <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
           </template>
         </SectionTitle>
-
-        <div class="grid-cell" v-if="initialState">
-          <InitialState :title="$t(`DataPage.zeroCase.title`)">
-            <template slot="icon">
-              <img svg-inline src="../assets/icons/datasets/initialState.svg">
-            </template>
-            <template slot="description">
-              <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
-            </template>
-            <template slot="actionButton">
-              <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
-            </template>
-          </InitialState>
-        </div>
       </div>
+
+      <div class="grid-cell" v-if="initialState">
+        <InitialState :title="$t(`DataPage.zeroCase.title`)">
+          <template slot="icon">
+            <img svg-inline src="../assets/icons/datasets/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          </template>
+        </InitialState>
+      </div>
+
       <div class="grid-cell grid-cell--noMargin grid-cell--col12">
         <DatasetListHeader></DatasetListHeader>
       </div>
+
       <ul class="grid-cell grid-cell--col12">
         <li v-for="dataset in datasets" :key="dataset.id">
           <DatasetCard :dataset="dataset"></DatasetCard>
         </li>
       </ul>
-    <!-- <ul v-if="isFetchingDatasets">
-      <li v-for="n in 12" :key="n">
-        Loading
-      </li>
-    </ul> -->
-
-    <!-- <ul v-if="!isFetchingDatasets">
-      <li v-for="dataset in datasets" :key="dataset.id">
-        <span>{{dataset.name}}</span>
-        <span>FAV: {{ dataset.liked }} - </span>
-        <span>Last Modified: {{dataset.updated_at }} - </span>
-        <span>Rows: {{dataset.table.row_count }} - </span>
-        <span>Size: {{ dataset.table.size }} - </span>
-        <span>Privacy: {{dataset.table.privacy }} - </span>
-        <span>Geometry Types: {{ dataset.table.geometry_types }}</span>
-      </li>
-    </ul> -->
 
       <EmptyState
         :text="$t('DataPage.emptyState')"
@@ -65,6 +58,7 @@
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import { mapState } from 'vuex';
+import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
@@ -75,8 +69,9 @@ import { isAllowed } from '../core/filters';
 export default {
   name: 'DataPage',
   components: {
-    SectionTitle,
     CreateButton,
+    FilterDropdown,
+    SectionTitle,
     Pagination,
     DatasetCard,
     InitialState,
@@ -134,7 +129,3 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-</style>

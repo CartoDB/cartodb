@@ -1,37 +1,34 @@
 <template>
-  <div class="row">
-    <div class="cell cell--start">
+  <div class="dataset-list-row">
+    <div class="dataset-list-cell cell--start">
     </div>
-    <div class="cell cell--main">
+    <div class="dataset-list-cell cell--main">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.name`) }}</span>
     </div>
-    <div class="cell cell--large">
+    <div class="dataset-list-cell cell--large">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.lastModified`) }}</span>
     </div>
-    <div class="cell cell--small">
+    <div class="dataset-list-cell cell--small">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.rows`) }}</span>
     </div>
-    <div class="cell cell--small">
+    <div class="dataset-list-cell cell--small">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.size`) }}</span>
     </div>
-    <div class="cell cell--small">
+    <div class="dataset-list-cell cell--small">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.usage`) }}</span>
     </div>
-    <div class="cell cell--small cell--privacy">
+    <div class="dataset-list-cell cell--small cell--privacy">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.privacy`) }}</span>
     </div>
-    <div class="cell">
+    <div class="dataset-list-cell cell--end">
     </div>
   </div>
 </template>
 
-<script>
-</script>
-
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.row {
+.dataset-list-row {
   display: flex;
   align-items: center;
   width: 100%;
@@ -41,7 +38,7 @@
   background-color: $white;
 }
 
-.cell {
+.dataset-list-cell {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
@@ -64,6 +61,10 @@
   align-self: flex-start;
   width: 46px;
   height: 100%;
+}
+
+.cell--end {
+  width: 34px;
 }
 
 .cell--main {

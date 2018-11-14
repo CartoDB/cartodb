@@ -6,7 +6,7 @@
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
@@ -54,7 +54,9 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
+          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags>
+            <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
+          </FeaturesDropdown>
         </li>
       </ul>
     </div>

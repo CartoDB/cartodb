@@ -1,17 +1,17 @@
 <template>
-  <a :href="dataset.url" class="row" :class="{'selected': selected, 'card--noHover': !activeHover}">
-    <div class="cell cell--start">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': selected, 'card--noHover': !activeHover}">
+    <div class="dataset-cell cell--start">
       <div class="row-dataType">
-          <div class="icon--dataType" :class="'icon--' + dataType"></div>
+          <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
-      <span class="checkbox row-checkbox" style="margin-right: 20px;" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" @click="toggleSelection" type="checkBox" name="contact" value="02">
+      <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <input class="checkbox-input" @click="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
       </span>
     </div>
-    <div class="cell cell--main">
+    <div class="dataset-cell cell--main">
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
           {{ dataset.name }}
@@ -20,14 +20,17 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
-      <div class="row-metadataContainer" v-if="numberTags > 0 || isShared">
-        <div class="row-metadata" v-if="numberTags > 0">
+      <div class="row-metadataContainer" v-if="hasTags || isShared">
+        <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
-          <ul class="tag-list" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="index < numberTags - 1">,&nbsp;</span>
+              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
+          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
+            <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+          </FeaturesDropdown>
         </div>
         <div class="row-metadata" v-if="isShared">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/user.svg">
@@ -35,23 +38,23 @@
         </div>
       </div>
     </div>
-    <div class="cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ lastSynced }}</span>
+    <div class="dataset-cell cell--large">
+      <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
-    <div class="cell cell--small">
-      <span class="text is-small is-txtSoftGrey">{{ numberRows }}</span>
+    <div class="dataset-cell cell--small">
+      <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
     </div>
-    <div class="cell cell--small">
+    <div class="dataset-cell cell--small">
       <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
     </div>
-    <div class="cell cell--small">
+    <div class="dataset-cell cell--small">
       <span class="text is-small is-txtSoftGrey">1 map</span>
     </div>
-    <div class="cell cell--small cell--privacy">
+    <div class="dataset-cell cell--small cell--privacy">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
-    <div class="cell">
+    <div class="dataset-cell">
       <DatasetQuickActions v-if="!isShared" :dataset="dataset"/>
     </div>
   </a>
@@ -62,11 +65,14 @@ import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQu
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
+import FeaturesDropdown from '../FeaturesDropdown';
+import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'DatasetCard',
   components: {
-    DatasetQuickActions
+    DatasetQuickActions,
+    FeaturesDropdown
   },
   props: {
     dataset: Object
@@ -74,29 +80,47 @@ export default {
   data: function () {
     return {
       selected: false,
-      activeHover: true
+      activeHover: true,
+      maxTags: 3,
+      maxTagChars: 30
     };
   },
   computed: {
     privacyIcon () {
       return `icon--${this.$props.dataset.privacy}`.toLowerCase();
     },
-    lastSynced () {
-      return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
-    },
-    numberRows () {
-      if (this.$props.dataset.table.row_count === 1) {
-        return this.$t(`DatasetCard.numberRow`, { rows: this.$props.dataset.table.row_count });
+    lastUpdated () {
+      if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {
+        return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.synchronization.updated_at, new Date()) });
       } else {
-        return this.$t(`DatasetCard.numberRows`, { rows: this.$props.dataset.table.row_count });
+        return this.$t(`DatasetCard.lastUpdated`, { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
       }
     },
     dataType () {
-      let data = this.$props.dataset.table.geometry_types[0];
-      return data ? data.replace('ST_', '').toLowerCase() : '';
+      const geometryTypes = {
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point',
+        '': 'empty'
+      };
+      let geometry = '';
+      if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types.length) {
+        geometry = this.$props.dataset.table.geometry_types[0];
+      }
+      const currentGeometryType = geometry.toLowerCase();
+      return geometryTypes[currentGeometryType] ? geometryTypes[currentGeometryType] : 'unknown';
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
+    },
+    tagsChars () {
+      return countCharsArray(this.$props.dataset.tags, ', ');
+    },
+    hasTags () {
+      return this.numberTags > 0;
     },
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
@@ -110,8 +134,8 @@ export default {
       if (size === 0) {
         return '0 B';
       }
-      var i = Math.floor(Math.log(size) / Math.log(1024));
-      return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+      const i = Math.floor(Math.log(size) / Math.log(1024));
+      return `${(size / Math.pow(1024, i)).toFixed(2) * 1} ${['B', 'kB', 'MB', 'GB', 'TB'][i]}`;
     },
     toggleFavorite () {
       if (this.$props.dataset.liked) {
@@ -119,6 +143,9 @@ export default {
       } else {
         this.likeDataset(this.$props.dataset);
       }
+    },
+    isLastTag (index) {
+      return index === this.numberTags - 1;
     },
     mouseOverChildElement () {
       this.activeHover = false;
@@ -137,13 +164,12 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.row {
+.dataset-row {
   display: flex;
   align-items: center;
   width: 100%;
   height: 80px;
-  padding: 12px 14px;
-  overflow: hidden;
+  padding: 0 14px;
   border-bottom: 1px solid $light-grey;
   background-color: $white;
 
@@ -232,7 +258,7 @@ export default {
   }
 }
 
-.cell {
+.dataset-cell {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
@@ -254,6 +280,7 @@ export default {
   align-items: center;
   align-self: flex-start;
   height: 100%;
+  overflow: hidden;
 }
 
 .cell--main {
@@ -320,8 +347,12 @@ export default {
     background-image: url("../../assets/icons/datasets/data-types/dots.svg");
   }
 
-  &.icon--multipolygon {
+  &.icon--polygon {
     background-image: url("../../assets/icons/datasets/data-types/area.svg");
+  }
+
+  &.icon--line {
+    background-image: url("../../assets/icons/datasets/data-types/line.svg");
   }
 }
 

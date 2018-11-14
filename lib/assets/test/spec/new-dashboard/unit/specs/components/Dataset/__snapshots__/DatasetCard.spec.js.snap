@@ -21,7 +21,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
-    <datasetquickactions dataset="[object Object]"></datasetquickactions>
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
   </div>
 </a>
 `;
@@ -53,7 +53,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
-    <datasetquickactions dataset="[object Object]"></datasetquickactions>
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
   </div>
 </a>
 `;
@@ -91,7 +91,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
-    <datasetquickactions dataset="[object Object]"></datasetquickactions>
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
   </div>
 </a>
 `;
@@ -117,7 +117,7 @@ exports[`DatasetCard.vue should select the card when the checkbox is clicked 1`]
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
-    <datasetquickactions dataset="[object Object]"></datasetquickactions>
+    <datasetquickactions-stub dataset="[object Object]"></datasetquickactions-stub>
   </div>
 </a>
 `;

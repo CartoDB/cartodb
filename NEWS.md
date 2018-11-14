@@ -10,6 +10,7 @@ Development
   - UI improvements (#14389)
 - MFA (WIP)
   - Admin management (#14347)
+  - User management (#14403)
 - Change password functionality for Carto Gears (#14351)
 
 ### Bug fixes / enhancements

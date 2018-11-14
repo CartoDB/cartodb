@@ -7,19 +7,19 @@
         </span>
         <span class="title is-caption is-regular is-txtWhite">Home</span>
       </router-link>
-      <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
         <span class="title is-caption is-regular is-txtWhite">Solutions</span>
       </router-link>
-      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
         </span>
         <span class="title is-caption is-regular is-txtWhite">Maps</span>
       </router-link>
-      <router-link :to="{ name: 'data' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
@@ -36,6 +36,8 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': numberNotifications > 0}" v-bind:style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="userModel" :configModel="configModel" :notifications="numberNotifications" :open="this.isDropdownOpen" v-on:dropdownHidden="onDropdownHidden" v-click-outside="hideDropdown"/>
+        <div class="navbar-avatar" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown ref="userDropdown" :open="this.isDropdownOpen" @dropdownHidden="onDropdownHidden"/>
       </div>
   </div>
 </nav>
@@ -50,9 +52,7 @@ export default {
     UserDropdown
   },
   props: {
-    user: Object,
-    userModel: Object,
-    configModel: Object
+    user: Object
   },
   computed: {
     numberNotifications () {
@@ -105,11 +105,13 @@ export default {
 
 .navbar {
   display: flex;
+  position: fixed;
+  z-index: 3;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0 64px;
-  background-color: $primaryColor;
+  background-color: $primary-color;
 }
 
 .navbar-elementsContainer {
@@ -167,7 +169,7 @@ export default {
     background-position: 16px center;
 
     &::placeholder {
-      color: $textColor-light;
+      color: $text-color-light;
     }
 
     &:focus {
@@ -188,7 +190,7 @@ export default {
   margin-left: 30px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $textColor-light;
+  background-color: $text-color-light;
   background-size: cover;
 
   &.has-notification {

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InitialState.vue should render correctly the initial state box 1`] = `
+<div class="initial-state">
+  <div class="initial-state-icon"><img src="test.svg"></div>
+  <div class="initial-state-text">
+    <h6 class="title is-medium is-txtGrey initial-state-title">My title</h6>
+    <p>This is my description</p>
+  </div>
+  <div class="action-button"><button class="test">This is a button test</button></div>
+</div>
+`;

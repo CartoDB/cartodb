@@ -1,1 +1,113 @@
-{}
+{
+  "mapCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "sharedBy": "Shared by {owner}",
+    "noDescription": "No description",
+    "noTags": "No tags",
+    "lastUpdate": "Updated {date} ago",
+    "tags": "tags"
+  },
+  "QuickActions": {
+    "quickActions": "Quick actions",
+    "maps": {
+      "editInfo": "Edit Name & description",
+      "manageTags": "Manage Tags",
+      "changePrivacy": "Change Privacy",
+      "share": "Share with colleagues",
+      "duplicate": "Duplicate",
+      "lock": "Lock",
+      "unlock": "Unlock",
+      "delete": "Delete"
+    }
+  },
+  "BulkActions": {
+    "selected": "{count} selected",
+    "maps": {
+      "selectAllMaps": "Select all",
+      "deselectAllMaps": "Deselect all",
+      "changeMapPrivacy": "Change privacy",
+      "duplicateMap": "Duplicate map",
+      "unlockMap": "Unlock map",
+      "unlockMaps": "Unlock maps",
+      "lockMap": "Lock map",
+      "lockMaps": "Lock maps",
+      "deleteMap": "Delete map",
+      "deleteMaps": "Delete maps"
+    }
+  },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your public datasets",
+        "link": "Your link-shared datasets",
+        "password": "Your password-protected datasets",
+        "private": "Your private datasets"
+      }
+    },
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, create or connect your first dataset",
+      "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
+      "createDataset": "New Dataset"
+    },
+    "emptyState": "There are no datasets here."
+  },
+  "MapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Maps",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
+        "locked": "Your Locked Maps",
+        "public": "Your public maps",
+        "link": "Your link-shared maps",
+        "password": "Your password-protected maps",
+        "private": "Your private maps"
+      }
+    },
+    "zeroCase": {
+      "title": "Create your first map to predict key insights",
+      "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
+      "createMap": "Create your first map"
+    },
+    "emptyState": "There are no maps here."
+  },
+  "FilterDropdown": {
+    "showMe": "Show me",
+    "orderMaps": "Order",
+    "types": {
+      "maps": "Your maps ({count})",
+      "datasets": "Your datasets ({count})",
+      "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
+      "locked": "Locked",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    },
+    "order": {
+      "favourites": "Favourites first",
+      "alphabetical": {
+        "title": "Alphabetically",
+        "A-Z": "A-Z",
+        "Z-A": "Z-A"
+      },
+      "date": {
+        "title": "Date Modified",
+        "last": "Last",
+        "first": "First"
+      }
+    },
+    "initialState": "Change Filters"
+  }
+}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600|Open+Sans:400,600');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:400,600');
 
 .text {
   font-family: 'Open Sans', sans-serif;
@@ -24,6 +24,11 @@
   line-height: 32px;
 }
 
+.is-medium {
+  font-size: 18px;
+  line-height: 24px;
+}
+
 .is-caption {
   font-size: 16px;
   line-height: 24px;
@@ -47,10 +52,13 @@
   font-weight: 600;
 }
 
-.letter-spacing {
-  letter-spacing: 1px;
+.is-bold {
+  font-weight: 700;
 }
 
-.is-txtWhite {
-  color: #FFF;
+.letter-spacing {
+  letter-spacing: 1px;
+
+.letter-spacing {
+  letter-spacing: 1px;
 }

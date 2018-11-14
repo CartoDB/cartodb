@@ -57,13 +57,29 @@ export default {
     }
   },
   methods: {
+    renderView () {
+      const settingsDropdown = new SettingsDropdown({
+        model: this.$cartoModels.user,
+        configModel: this.$cartoModels.config,
+        className: 'Dropdown user-dropdown vertical_bottom horizontal_right tick_right'
+      });
+
+      settingsDropdown.on('onDropdownHidden', () => {
+        this.$emit('dropdownHidden');
+      });
+    },
     toggle (setVisible) {
       this.$props.open = setVisible;
     }
+  },
+  mounted () {
+    this.$dropdownView = this.renderView();
+  },
+  beforeDestroy () {
+    this.$dropdownView.clean();
   }
 };
 </script>
-
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 

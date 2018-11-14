@@ -119,6 +119,9 @@ module Carto
 
     def rescue_generic_errors(exception)
       CartoDB::Logger.error(exception: exception)
+      if exception.is_a?(Carto::RelationDoesNotExistError)
+        return rescue_oauth_errors(OauthProvider::Errors::InvalidScope.new(nil, message: exception.user_message))
+      end
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
@@ -154,7 +157,7 @@ module Carto
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
 
-      invalid_scopes = OauthProvider::Scopes.invalid_scopes(@scopes)
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(@scopes, current_viewer)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 

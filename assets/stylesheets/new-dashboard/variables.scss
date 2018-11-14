@@ -1,20 +1,22 @@
 //colors
-$primaryColor: #0383FF;
-$premiumColor: #F90;
+$primary-color: #047AE6;
+$premium-color: #F90;
 $white: #FFF;
-$textColor: #2E3C43;
-$textColor-light: #BABEC0;
+$text-color: #2E3C43;
+$text-secondary-color: #6F757B;
+$text-color-light: #BABEC0;
 $light-grey: #EBEEF5;
+$grey: #E6E8EB;
 $softblue: #F2F6F9;
-$alert: rgba(250, 20, 20, 0.64);
+$alert: rgba(226, 7, 3, 1);
 $info: rgba(255, 195, 0, 0.48);
 $notification: #74FFA8;
 
 //Progress bar colors
-$goodState: #72EEA8;
-$warningState: #FFC300;
-$errorState: #FA1414;
+$good-state: #72EEA8;
+$warning-state: #FFC300;
+$error-state: #FA1414;
 
 //Dimensions
-$layoutTablet: 800px;
-$layoutMobile: 600px;
+$layout-tablet: 800px;
+$layout-mobile: 600px;

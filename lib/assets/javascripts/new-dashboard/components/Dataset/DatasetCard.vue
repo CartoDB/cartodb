@@ -95,7 +95,7 @@ export default {
       }
     },
     dataType () {
-      const _map = {
+      const geometryTypes = {
         'st_multipolygon': 'polygon',
         'st_polygon': 'polygon',
         'st_multilinestring': 'line',
@@ -108,8 +108,8 @@ export default {
       if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types.length) {
         geometry = this.$props.dataset.table.geometry_types[0];
       }
-      const data = geometry.toLowerCase();
-      return _map[data] ? _map[data] : 'unknown';
+      const currentGeometryType = geometry.toLowerCase();
+      return geometryTypes[currentGeometryType] ? geometryTypes[currentGeometryType] : 'unknown';
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;

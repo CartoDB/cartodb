@@ -16,8 +16,13 @@ module Carto
     validates_uniqueness_of :type, scope: :user_id
 
     before_create :create_shared_secret
+    after_save    :sync_central
+    after_destroy :sync_central
 
     self.inheritance_column = :_type
+
+    scope :enabled, -> { where(enabled: true) }
+    scope :setup, -> { where(enabled: false) }
 
     def verify!(code)
       timestamp = verify(code)
@@ -39,6 +44,10 @@ module Carto
     end
 
     private
+
+    def sync_central
+      ::User[user.id].update_in_central
+    end
 
     def last_login_in_seconds
       last_login.strftime('%s').to_i if last_login

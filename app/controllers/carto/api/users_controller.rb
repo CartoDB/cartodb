@@ -69,34 +69,15 @@ module Carto
 
       def update_me
         user = current_viewer
-
         attributes = params[:user]
 
         if attributes.present?
           raise Carto::PasswordConfirmationError.new unless user.valid_password_confirmation(attributes[:old_password])
-
-          update_password_if_needed(user, attributes)
-
-          if user.can_change_email? && attributes[:email].present?
-            user.set_fields(attributes, [:email])
-          end
-
-          if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
-            user.set_fields(attributes, [:avatar_url])
-          end
-
-          fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
-
-          user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
-
+          update_user_attributes(user, attributes)
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
 
           ActiveRecord::Base.transaction do
-            if !attributes[:mfa].nil? && user.has_feature_flag?('mfa')
-              service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
-              service.update(enabled: attributes[:mfa])
-            end
-
+            update_user_multifactor_authentication(user, attributes[:mfa])
             user.update_in_central
             user.save(raise_on_failure: true)
           end
@@ -224,6 +205,22 @@ module Carto
         @session_user ||= (current_viewer.nil? ? nil : Carto::User.where(id: current_viewer.id).first)
       end
 
+      def update_user_attributes(user, attributes)
+        update_password_if_needed(user, attributes)
+
+        if user.can_change_email? && attributes[:email].present?
+          user.set_fields(attributes, [:email])
+        end
+
+        if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
+          user.set_fields(attributes, [:avatar_url])
+        end
+
+        fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
+
+        user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
+      end
+
       def update_password_if_needed(user, attributes)
         if password_change?(user, attributes)
           user.change_password(
@@ -242,6 +239,13 @@ module Carto
 
       def recalculate_user_db_size
         current_user && Carto::UserDbSizeCache.new.update_if_old(current_user)
+      end
+
+      def update_user_multifactor_authentication(user, mfa_enabled)
+        return if mfa_enabled.nil? || !user.has_feature_flag?('mfa')
+
+        service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
+        service.update(enabled: mfa_enabled)
       end
     end
   end

@@ -23,12 +23,12 @@
       <div class="row-metadataContainer" v-if="hasTags || isShared">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
-          <ul v-if="numberTags <= maxTags" class="tag-list">
+          <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
               <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="numberTags > maxTags" :list=dataset.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
             <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
@@ -65,6 +65,7 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
 import FeaturesDropdown from '../FeaturesDropdown';
+import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'DatasetCard',
@@ -78,7 +79,8 @@ export default {
     return {
       selected: false,
       activeHover: true,
-      maxTags: 3
+      maxTags: 3,
+      maxTagChars: 30
     };
   },
   computed: {
@@ -98,6 +100,9 @@ export default {
     },
     numberTags () {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
+    },
+    tagsChars () {
+      return countCharsArray(this.$props.dataset.tags, 2);
     },
     hasTags () {
       return this.numberTags > 0;

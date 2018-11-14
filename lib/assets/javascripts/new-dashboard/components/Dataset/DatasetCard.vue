@@ -101,10 +101,11 @@ export default {
         'st_multilinestring': 'line',
         'st_linestring': 'line',
         'st_multipoint': 'point',
-        'st_point': 'point'
+        'st_point': 'point',
+        '': 'empty'
       };
       let geometry = '';
-      if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types[0]) {
+      if (this.$props.dataset.table && this.$props.dataset.table.geometry_types && this.$props.dataset.table.geometry_types.length) {
         geometry = this.$props.dataset.table.geometry_types[0];
       }
       const data = geometry.toLowerCase();

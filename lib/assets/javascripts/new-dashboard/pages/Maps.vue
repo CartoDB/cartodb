@@ -1,5 +1,5 @@
 <template>
-<section class="section section--sticky-header">
+<section class="section page page--sticky-header">
   <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
     <h2 class="title is-caption">
       {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}

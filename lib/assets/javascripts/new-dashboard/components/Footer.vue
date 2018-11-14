@@ -16,11 +16,11 @@
       </a>
     </div>
     <div class="grid-cell grid-cell--col4">
-      <a href="https://carto.com/help" class="footer-link">
+      <a href="mailto:support@carto.com" class="footer-link" v-if="isEnterpriseUser">
         <h4 class="title-link title is-caption is-txtGrey">Support</h4>
         <p class="description-link text is-small is-txtSoftGrey">Contact CARTO Support if you have any technical issue.</p>
       </a>
-      <a href="https://carto.com/help" class="footer-link">
+      <a :href="`mailto:${organizationMail}`" class="footer-link" v-if="isOrganizationUser">
         <h4 class="title-link title is-caption is-txtGrey">Contact</h4>
         <p class="description-link text is-small is-txtSoftGrey">Contact your organization administrator if you need help.</p>
       </a>
@@ -30,7 +30,22 @@
 
 <script>
 export default {
-  name: 'Footer'
+  name: 'Footer',
+  computed: {
+    isEnterpriseUser () {
+      return false;
+    },
+
+    isOrganizationUser () {
+      const organization = this.$store.state.user.organization;
+      return Boolean(organization);
+    },
+
+    organizationMail () {
+      const organization = this.$store.state.user.organization;
+      return organization.admin_email;
+    }
+  }
 };
 </script>
 

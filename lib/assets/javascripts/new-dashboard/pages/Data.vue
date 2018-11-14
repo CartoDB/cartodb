@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="section page page--sticky-header">
     <div class="container grid">
      <div class="grid-cell grid-cell--col12">
       <SectionTitle :title="pageTitle">

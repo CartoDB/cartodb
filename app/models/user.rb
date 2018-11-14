@@ -1881,6 +1881,10 @@ class User < Sequel::Model
     user_multifactor_auths.any?
   end
 
+  def active_multifactor_authentication
+    user_multifactor_auths.order(created_at: :desc).first
+  end
+
   private
 
   def password_rate_limit_configured?

@@ -106,6 +106,20 @@ FactoryGirl.define do
       state 'locked'
     end
 
+    trait :mfa_setup do
+      after :create do |carto_user|
+        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: carto_user.id)
+      end
+    end
+
+    trait :mfa_enabled do
+      after :create do |carto_user|
+        carto_user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: carto_user.id)
+      end
+    end
+
     factory :carto_locked_user, traits: [:locked]
+    factory :carto_user_mfa_setup, traits: [:mfa_setup]
+    factory :carto_user_mfa, traits: [:mfa_enabled]
   end
 end

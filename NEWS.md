@@ -5,6 +5,8 @@ Development
 - None yet
 
 ### Features
+- MFA (WIP)
+  - Login (#14336)
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)

@@ -72,6 +72,12 @@
           v-if="emptyState">
           <img svg-inline src="../assets/icons/datasets/emptyState.svg">
         </EmptyState>
+        
+        <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
+          <li v-for="n in 12" :key="n">
+            <DatasetCardFake></DatasetCardfake>
+          </li>
+        </ul>
 
         <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
       </div>
@@ -82,6 +88,7 @@
 <script>
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
+import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import { mapState } from 'vuex';
 import FilterDropdown from '../components/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
@@ -101,6 +108,7 @@ export default {
     SectionTitle,
     Pagination,
     DatasetCard,
+    DatasetCardFake,
     InitialState,
     EmptyState,
     DatasetListHeader,

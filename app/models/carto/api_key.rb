@@ -184,28 +184,43 @@ module Carto
       )
     end
 
-    def self.revoke_users_permissions(table, user_revokes)
+    def self.some_users_permissions_revoked(table, user_revokes)
       return if user_revokes.blank?
 
+      roles_to_revoke = {}
       user_ids = user_revokes.keys
-      apikeys_affected = []
-      ApiKey.where(:user_id => user_ids).find_each do |apikey|
+
+      # regular and oauth api keys
+      ApiKey.where(:user_id => user_ids, :type => [TYPE_REGULAR, TYPE_OAUTH]).find_each do |apikey|
         revoked_permissions = PERMISSIONS[user_revokes[apikey.user_id].to_sym]
+        apikey.revoke_permissions_if_affected(table, revoked_permissions)
+      end
+    end
 
-        remove = false
+    def revoke_permissions_if_affected(table, revoked_permissions)
+      revoke_in_role = false
 
-        apikey.table_permissions.each do |table_permission|
-          if table_permission.name == table.name &&
-             table_permission.schema == table.database_schema &&
-             (table_permission.permissions - revoked_permissions).length != table_permission.permissions.length
-            remove = true
-          end
+      table_permissions.each do |table_permission|
+        if table_permission.name == table.name &&
+           table_permission.schema == table.database_schema &&
+           (table_permission.permissions - revoked_permissions).length != table_permission.permissions.length
+
+          revoke_in_role = true
+          table_permission.merge!((table_permission.permissions - revoked_permissions))
         end
-
-        apikeys_affected << apikey if remove == true
       end
 
-      apikeys_affected.each { |apikey| apikey.destroy }
+      if revoke_in_role == true
+        schema_table = Carto::TableAndFriends.qualified_table_name(table.database_schema, table.name)
+        query = %{
+          REVOKE #{revoked_permissions.join(', ')}
+          ON TABLE #{schema_table}
+          FROM \"#{db_role}\"
+        }
+        db_run(query)
+
+        save!
+      end
     end
 
     def granted_apis

@@ -1,5 +1,6 @@
 <template>
   <section class="BackgroundPolling" ref="injectionHTMLElement">
+  {{ routeType }}
   </section>
 </template>
 
@@ -20,6 +21,12 @@ export default {
   beforeDestroy () {
     this.backgroundPollingView.clean();
   },
+  watch: {
+    routeType () {
+      this.backgroundPollingView.clean();
+      this.backgroundPollingView = this.renderView();
+    }
+  },
   methods: {
     getBackgroundPollingView () {
       return this.backgroundPollingView;
@@ -31,7 +38,6 @@ export default {
 
       const backgroundPollingView = new BackgroundPollingView({
         model: backgroundPollingModel,
-        // TODO: Update view when dataset page is ready
         createVis: this.$props.routeType === 'maps',
         userModel,
         configModel,
@@ -39,6 +45,12 @@ export default {
       });
 
       backgroundPollingView.render();
+      backgroundPollingView.model.on('change', model => {
+        if (model.get('state') === 'complete' &&
+            this.$props.routeType === 'datasets') {
+          this.$store.dispatch('datasets/fetchDatasets');
+        }
+      });
 
       return backgroundPollingView;
     }

@@ -32,6 +32,7 @@ export default {
 
       visModel.on('change', model => {
         this.$emit('updateVisualization', model);
+        this.$emit('deselectAll');
       });
 
       const changePrivacyView = new ChangePrivacyView({

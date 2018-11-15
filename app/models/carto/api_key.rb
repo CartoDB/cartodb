@@ -198,29 +198,18 @@ module Carto
     end
 
     def revoke_permissions_if_affected(table, revoked_permissions)
-      revoke_in_role = false
-
-      table_permissions.each do |table_permission|
-        if table_permission.name == table.name &&
-           table_permission.schema == table.database_schema &&
-           (table_permission.permissions - revoked_permissions).length != table_permission.permissions.length
-
-          revoke_in_role = true
-          table_permission.merge!((table_permission.permissions - revoked_permissions))
-        end
-      end
-
-      if revoke_in_role == true
-        schema_table = Carto::TableAndFriends.qualified_table_name(table.database_schema, table.name)
+      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
         query = %{
           REVOKE #{revoked_permissions.join(', ')}
-          ON TABLE #{schema_table}
+          ON TABLE #{qualified_name}
           FROM \"#{db_role}\"
         }
         db_run(query)
-
-        save!
+        sequences_for_table(s, t).each do |seq|
+          db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
+        end
       end
+
     end
 
     def granted_apis

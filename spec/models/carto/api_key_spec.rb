@@ -576,4 +576,81 @@ describe Carto::ApiKey do
       user2.destroy
     end
   end
+
+  describe 'org shared tables' do
+    include_context 'organization with users helper'
+
+    before :each do
+      @shared_table = create_table(user_id: @carto_org_user_1.id)
+      not_shared_table = create_table(user_id: @carto_org_user_1.id)
+
+      perm = @shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
+      perm.save!
+    end
+
+    it 'should create an api key using a shared table' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{schema_table}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+      api_key.destroy
+    end
+
+    it 'should revoke permissions removing shared permissions (rw to r)' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      # remove shared permissions
+      @shared_table.table_visualization.reload
+      perm = @shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+      perm.save!
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{schema_table}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        expect {
+          connection.execute("insert into #{schema_table} (name) values ('wadus')")
+        }.to raise_exception /permission denied/
+      end
+
+      api_key.destroy
+    end
+
+    it 'should revoke permissions removing shared permissions (rw to none)' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      # remove shared permissions
+      @shared_table.table_visualization.reload
+      perm = @shared_table.table_visualization.permission
+      perm.acl = []
+      perm.save!
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        expect {
+          connection.execute("select count(1) from #{schema_table}")
+        }.to raise_exception /permission denied/
+
+        expect {
+          connection.execute("insert into #{schema_table} (name) values ('wadus')")
+        }.to raise_exception /permission denied/
+      end
+
+      api_key.destroy
+    end
+  end
 end

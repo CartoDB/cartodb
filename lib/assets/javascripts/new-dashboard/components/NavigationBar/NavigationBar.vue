@@ -1,48 +1,49 @@
 <template>
-<nav class="navbar">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
-          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
+          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Home</span>
+        <span class="title is-caption is-txtWhite u-hideOnTablet">Maps</span>
       </router-link>
       <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Solutions</span>
-      </router-link>
-      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
-        <span class="navbar-icon">
-          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
-        </span>
-        <span class="title is-caption is-regular is-txtWhite">Maps</span>
+        <span class="title is-caption is-txtWhite u-hideOnTablet">Solutions</span>
       </router-link>
       <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
-        <span class="title is-caption is-regular is-txtWhite">Data</span>
+        <span class="title is-caption is-txtWhite u-hideOnTablet">Data</span>
       </router-link>
+      <span class="navbar-elementItem navbar-icon u-showOnMobile" @click="toggleSearch">
+        <img svg-inline src="../../assets/icons/navbar/loupe_white.svg" />
+      </span>
   </ul>
-  <div class="navbar-imagotype">
+  <div class="navbar-imagotype u-hideOnMobile">
       <img src="../../assets/icons/navbar/imagotype.svg" />
   </div>
-  <div class="navbar-elementsContainer">
+  <div class="navbar-elementsContainer navbar-searchContainer">
       <form action="#" method="get" class="navbar-search">
-          <input type="text" name="query" class="title is-small is-regular" placeholder="Search">
+          <input type="text" name="query" class="title is-small is-regular navbar-searchInput" placeholder="Search">
       </form>
       <div class="navbar-user">
-        <div class="navbar-avatar" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
-        <UserDropdown ref="userDropdown" :open="this.isDropdownOpen" @dropdownHidden="onDropdownHidden"/>
+        <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
+        <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown"/>
       </div>
+      <span class="navbar-searchClose" @click="toggleSearch">
+        <img svg-inline src="../../assets/icons/navbar/close.svg" />
+      </span>
   </div>
 </nav>
 </template>
 
 <script>
 import UserDropdown from './UserDropdown';
+import { Number } from 'core-js';
 
 export default {
   name: 'NavigationBar',
@@ -50,11 +51,14 @@ export default {
     UserDropdown
   },
   props: {
-    user: Object
+    user: Object,
+    baseUrl: String,
+    notificationsCount: Number
   },
   data () {
     return {
-      isDropdownOpen: false
+      isDropdownOpen: false,
+      isSearchOpen: false
     };
   },
   methods: {
@@ -62,8 +66,27 @@ export default {
       this.isDropdownOpen = !this.isDropdownOpen;
     },
 
-    onDropdownHidden () {
+    closeDropdown () {
       this.isDropdownOpen = false;
+    },
+
+    toggleSearch () {
+      this.isSearchOpen = !this.isSearchOpen;
+    }
+  },
+  directives: {
+    clickOutside: {
+      bind: function (el, binding, vnode) {
+        el.clickOutsideEvent = function (event) {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener('click', el.clickOutsideEvent);
+      },
+      unbind: function (el) {
+        document.body.removeEventListener('click', el.clickOutsideEvent);
+      }
     }
   }
 };
@@ -82,6 +105,15 @@ export default {
   width: 100%;
   padding: 0 64px;
   background-color: $primary-color;
+
+  @media (max-width: $layout-tablet) {
+    padding: 0 24px 0 40px;
+  }
+
+  @media (max-width: $layout-mobile) {
+    padding: 0 16px 0 20px;
+  }
+
 }
 
 .navbar-elementsContainer {
@@ -94,9 +126,17 @@ export default {
 .navbar-elementItem {
   display: flex;
   align-items: center;
-  margin-right: 34px;
+  margin-right: 54px;
   padding: 20px 0 16px;
   border-bottom: 4px solid transparent;
+
+  @media (max-width: $layout-tablet) {
+    margin-right: 48px;
+  }
+
+  @media (max-width: $layout-mobile) {
+    margin-right: 36px;
+  }
 
   &.is-active {
     border-color: $white;
@@ -111,8 +151,15 @@ export default {
   }
 }
 
+.navbar-searchClose {
+  display: none;
+}
+
 .navbar-icon {
   margin-right: 8px;
+    @media (max-width: $layout-tablet) {
+      margin-right: 0;
+  }
 }
 
 .navbar-imagotype {
@@ -124,12 +171,15 @@ export default {
 }
 
 .navbar-search {
-  margin: 0;
+  @media (max-width: $layout-mobile) {
+    visibility: hidden;
+    opacity: 0;
+  }
 
-  input {
-    width: 134px;
+  .navbar-searchInput {
+    width: 120px;
     height: 36px;
-    padding: 0 4px 0 38px;
+    padding-left: 42px;
     transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
     border: 0;
     border-radius: 18px;
@@ -139,12 +189,33 @@ export default {
     background-position: 16px center;
 
     &::placeholder {
-      color: $text-color-light;
+      color: $text-secondary-color;
     }
 
     &:focus {
       width: 280px;
       outline: none;
+    }
+  }
+
+  &:hover {
+    .navbar-searchInput {
+      background-image: url("../../assets/icons/navbar/loupe_primary.svg");
+
+      &::placeholder {
+        color: $primary-color;
+      }
+
+      &:focus {
+        background-image: url("../../assets/icons/navbar/loupe.svg");
+        &::placeholder {
+          color: $text-secondary-color;
+        }
+      }
+
+      &:focus-within {
+        background-color:  #FFF;
+      }
     }
   }
 }
@@ -157,14 +228,62 @@ export default {
   display: flex;
   width: 36px;
   height: 36px;
-  margin-left: 30px;
+  margin-left: 24px;
   overflow: hidden;
   border-radius: 50%;
   background-color: $text-color-light;
   background-size: cover;
 
+  &.has-notification {
+    &::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid $primary-color;
+      border-radius: 50%;
+      background-color: $notification;
+    }
+  }
+
   &:hover {
     cursor: pointer;
   }
+}
+
+.navbar.is-search-open {
+  .navbar-elementsContainer,
+  .navbar-imagotype,
+  .navbar-user {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  .navbar-searchContainer {
+    visibility: visible;
+    opacity: 1;
+    .navbar-search {
+      position: absolute;
+      width: calc(100% - 66px);
+      left: 0;
+      margin-left: 16px;
+      visibility: visible;
+      opacity: 1;
+      .navbar-searchInput {
+        width: 100%;
+        background-image: none;
+        border-radius: 3px;
+        padding: 16px;
+      }
+    }
+    .navbar-searchClose {
+      display: block;
+      position: absolute;
+      right: 16px;
+    }
+  }
+
 }
 </style>

@@ -63,6 +63,13 @@ module Carto
     def rescue_from_record_not_found
       render_jsonp({ errors: 'Record not found' }, 404)
     end
+
+    def rescue_from_central_error
+      CartoDB::Logger.error(exception: e,
+                            message: 'Central error deleting Multifactor authentication from EUMAPI',
+                            user: @user)
+      render_jsonp "Multifactor authentication couldn't be deleted", 500
+    end
   end
 
   module DefaultRescueFroms
@@ -71,6 +78,7 @@ module Carto
       rescue_from CartoError, with: :rescue_from_carto_error
       rescue_from ActiveRecord::RecordNotFound, with: :rescue_from_record_not_found
       rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_validation_error
+      rescue_from CartoDB::CentralCommunicationFailure, with: :rescue_from_central_error
     end
   end
 end

@@ -4,6 +4,7 @@ module Carto
   module Api
     class MultifactorAuthenticationController < ::Api::ApplicationController
       include Carto::ControllerHelper
+      extend  Carto::DefaultRescueFroms
       include OrganizationUsersHelper
 
       ssl_required
@@ -12,21 +13,26 @@ module Carto
       before_action :load_organization
       before_action :admins_only
       before_action :load_user
+      before_action :create_service
       before_action :ensure_edit_permissions
 
-      rescue_from StandardError, with: :rescue_from_standard_error
-      rescue_from Carto::UnauthorizedError,
-                  Carto::UnprocesableEntityError, with: :rescue_from_carto_error
-      rescue_from CartoDB::CentralCommunicationFailure, with: :rescue_from_central_error
-      rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_validation_error
+      setup_default_rescues
 
       def create
-        Carto::UserMultifactorAuth.create!(base_params.merge(user_id: @user.id))
+        if @service.exists?(type: base_params[:type])
+          raise Carto::UnprocesableEntityError.new('Multi-factor authentication already exists')
+        end
+
+        @service.update(enabled: true, type: base_params[:type])
         render_jsonp({ success: true }, 201)
       end
 
       def destroy
-        @user.user_multifactor_auths.where(base_params).each(&:destroy!)
+        unless @service.exists?(type: base_params[:type])
+          raise Carto::UnprocesableEntityError.new('Multi-factor authentication does not exist')
+        end
+
+        @service.update(enabled: false, type: base_params[:type])
         render_jsonp({ success: true }, 204)
       end
 
@@ -37,20 +43,11 @@ module Carto
       end
 
       def base_params
-        params.permit([:type])
+        @params ||= params.permit([:type])
       end
 
-      def ensure_edit_permissions
-        unless @user.editable_by?(current_viewer)
-          render_jsonp({ errors: ['You do not have permissions to edit that user'] }, 401)
-        end
-      end
-
-      def rescue_from_central_error
-        CartoDB::Logger.error(exception: e,
-                              message: 'Central error deleting Multifactor authentication from EUMAPI',
-                              user: @user)
-        render_jsonp "Multifactor authentication couldn't be deleted", 500
+      def create_service
+        @service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
       end
     end
   end

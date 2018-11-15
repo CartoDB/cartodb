@@ -167,6 +167,7 @@ export default {
   },
   methods: {
     goToPage (page) {
+      this.deselectAll();
       window.scroll({ top: 0, left: 0 });
       this.$router.push({
         name: 'datasets',

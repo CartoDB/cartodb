@@ -12,7 +12,10 @@
               :filter="appliedFilter"
               :order="appliedOrder"
               :metadata="datasetsMetadata"
-              @filterChanged="applyFilter"/>
+              @filterChanged="applyFilter">
+              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+              <img svg-inline v-else src="../assets/icons/common/filter.svg">
+            </FilterDropdown>
           </template>
           <template slot="actionButton" v-if="!initialState">
             <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>

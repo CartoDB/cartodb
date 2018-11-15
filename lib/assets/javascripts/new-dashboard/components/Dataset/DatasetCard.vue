@@ -1,11 +1,11 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': selected, 'card--noHover': !activeHover}">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
-      <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" @click="toggleSelection" type="checkBox">
+      <span class="checkbox row-checkbox" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
@@ -75,11 +75,14 @@ export default {
     FeaturesDropdown
   },
   props: {
-    dataset: Object
+    dataset: Object,
+    isSelected: {
+      type: Boolean,
+      default: false
+    }
   },
   data: function () {
     return {
-      selected: false,
       activeHover: true,
       maxTags: 3,
       maxTagChars: 30
@@ -128,7 +131,10 @@ export default {
   },
   methods: {
     toggleSelection () {
-      this.selected = !this.selected;
+      this.$emit('toggleSelection', {
+        dataset: this.$props.dataset,
+        isSelected: !this.$props.isSelected
+      });
     },
     humanFileSize (size) {
       if (size === 0) {

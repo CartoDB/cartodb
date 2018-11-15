@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatasetBulkActions.vue should render all bulk actions 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.selectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.createMap
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.changeDatasetPrivacy
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.duplicateDataset
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.lockDataset
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.datasets.deleteDataset
+  </button></section>
+`;
+
+exports[`DatasetBulkActions.vue should render all multiple actions for all selected "Deselect all", "Lock datasets" and "Delete datasets" actions 1`] = `
+<section class="bulk-actions">
+  <!----><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.deselectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.lockDatasets
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.datasets.deleteDatasets
+  </button></section>
+`;
+
+exports[`DatasetBulkActions.vue should render all multiple actions: "Select all", "Deselect all", "Lock datasets", "Delete datasets" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.selectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.deselectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.lockDatasets
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.datasets.deleteDatasets
+  </button></section>
+`;
+
+exports[`DatasetBulkActions.vue should render all single actions: "Select all", "Create map", "Change privacy", "Duplicate dataset", "Lock dataset", "Delete dataset" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.selectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.createMap
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.changeDatasetPrivacy
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.duplicateDataset
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.lockDataset
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.datasets.deleteDataset
+  </button></section>
+`;
+
+exports[`DatasetBulkActions.vue should render multiple locked action: "Unlock datasets" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.unlockDatasets
+  </button></section>
+`;
+
+exports[`DatasetBulkActions.vue should render single locked action: "Unlock dataset" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.unlockDatasets
+  </button></section>
+`;

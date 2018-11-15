@@ -90,7 +90,7 @@ export default {
       DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
     },
     duplicateMap () {
-      DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
+      DialogActions.duplicateVisualization.apply(this, [this.selectedMaps[0]]);
     },
     unlockMap () {
       DialogActions.changeLockState.apply(this, [

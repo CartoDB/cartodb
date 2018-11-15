@@ -6,14 +6,10 @@ module Carto
 
       def page_per_page_order_params(valid_order_values, default_per_page = 20,
                                      default_order = 'updated_at', default_order_direction = 'desc')
-        page = (params[:page].present? ? params[:page] : 1).to_i
-        per_page = (params[:per_page].present? ? params[:per_page] : default_per_page).to_i
-        order = (params[:order].present? ? params[:order] : default_order).to_sym
-        order_direction = if params[:order_direction].present?
-          params[:order_direction]
-        else
-          default_order_direction
-        end.to_sym
+        page = (params[:page].presence || 1).to_i
+        per_page = (params[:per_page].presence || default_per_page).to_i
+        order = (params[:order].presence || default_order).to_sym
+        order_direction = (params[:order_direction].presence || default_order_direction).to_sym
 
         if order.present? && !valid_order_values.include?(order)
           raise Carto::OrderParamInvalidError.new(valid_order_values)

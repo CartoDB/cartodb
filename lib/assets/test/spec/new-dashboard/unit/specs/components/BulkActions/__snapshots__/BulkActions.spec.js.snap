@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BulkActions.vue should not render option if shouldBeHidden is true 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    Test Action
+  </button>
+  <!---->
+</section>
+`;
+
+exports[`BulkActions.vue should render correct contents 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    Test Action
+  </button></section>
+`;

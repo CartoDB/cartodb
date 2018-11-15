@@ -13,22 +13,6 @@
   </div>
 
   <% if (!hidePasswordFields) { %>
-    <% if (shouldDisplayOldPassword) { %>
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.old_password') %></label>
-        </div>
-        <div class="FormAccount-rowData">
-          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['password']) { %>has-error<% } %> <% if (!canChangePassword) { %>is-disabled<% } %>" id="user_old_password" name="user[old_password]" size="30" type="password" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
-        </div>
-        <div class="FormAccount-rowInfo">
-          <% if (errors['password']) { %>
-            <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= errors['password'][0] %></p>
-          <% } %>
-        </div>
-      </div>
-    <% } %>
-
     <div class="VerticalAligned--FormRow">
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">

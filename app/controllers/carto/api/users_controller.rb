@@ -52,7 +52,6 @@ module Carto
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),
           auth_username_password_enabled: carto_viewer.try(:organization).try(:auth_username_password_enabled),
-          should_display_old_password: carto_viewer.try(:should_display_old_password?),
           can_change_password: carto_viewer.try(:can_change_password?),
           plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
           plan_url: carto_viewer.try(:plan_url, request.protocol),
@@ -73,7 +72,9 @@ module Carto
         attributes = params[:user]
 
         if attributes.present?
-          raise Carto::PasswordConfirmationError.new unless user.valid_password_confirmation(attributes[:old_password])
+          unless user.valid_password_confirmation(attributes[:password_confirmation])
+            raise Carto::PasswordConfirmationError.new
+          end
           update_user_attributes(user, attributes)
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
 
@@ -225,7 +226,7 @@ module Carto
       def update_password_if_needed(user, attributes)
         if password_change?(user, attributes)
           user.change_password(
-            attributes[:old_password],
+            attributes[:password_confirmation],
             attributes[:new_password],
             attributes[:confirm_password]
           )

@@ -319,6 +319,7 @@ class Carto::Permission < ActiveRecord::Base
       if entity.table?
         revokes_diff = Carto::PermissionService.revokes_by_user(@old_acl, acl, entity.table.owner.id)
         Carto::ApiKey.some_shared_permissions_revoked(entity.table, revokes_diff)
+        Carto::OauthAppUser.some_shared_permissions_revoked(entity.table, revokes_diff)
       end
     end
     update_shared_entities

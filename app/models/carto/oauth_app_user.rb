@@ -22,6 +22,14 @@ module Carto
     before_update :grant_dataset_role_privileges
     after_destroy :drop_dataset_role
 
+    READ_PERMISSIONS = ['select'].freeze
+    WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
+    PERMISSIONS = {
+      r: READ_PERMISSIONS,
+      w: WRITE_PERMISSIONS,
+      rw: READ_PERMISSIONS + WRITE_PERMISSIONS
+    }.freeze
+
     def authorized?(requested_scopes)
       OauthProvider::Scopes.subtract_scopes(requested_scopes, all_scopes, user.database_schema).empty?
     end
@@ -32,6 +40,35 @@ module Carto
 
     def all_scopes
       no_dataset_scopes + dataset_scopes
+    end
+
+    def dataset_role_name
+      "carto_oauth_app_#{id}"
+    end
+
+    def revoke_permissions_if_affected(table, revoked_permissions)
+      schema_table = Carto::TableAndFriends.qualified_table_name(table.database_schema, table.name)
+      query = %{
+        REVOKE #{revoked_permissions.join(', ')}
+        ON TABLE #{schema_table}
+        FROM \"#{dataset_role_name}\"
+      }
+      user.in_database(as: :superuser).execute(query)
+
+      sequences_for_table(schema_table).each do |seq|
+        seq_query = "REVOKE ALL ON SEQUENCE #{seq} FROM \"#{dataset_role_name}\""
+        user.in_database(as: :superuser).execute(seq_query)
+      end
+    end
+
+    def self.some_shared_permissions_revoked(table, user_revokes)
+      return if user_revokes.blank?
+
+      user_ids = user_revokes.keys
+
+      Carto::OauthAppUser.where(:user_id => user_ids).find_each do |oau|
+        oau.revoke_permissions_if_affected(table, PERMISSIONS[user_revokes[oau.user_id].to_sym])
+      end
     end
 
     private
@@ -150,10 +187,5 @@ module Carto
 
       user.in_database.execute(query).map { |r| "\"#{r['nspname']}\".#{r['relname']}" }
     end
-
-    def dataset_role_name
-      "carto_oauth_app_#{id}"
-    end
-
   end
 end

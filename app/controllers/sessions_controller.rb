@@ -17,10 +17,14 @@ class SessionsController < ApplicationController
 
   SESSION_EXPIRED = 'session_expired'.freeze
   PASSWORD_LOCKED = 'password_locked'.freeze
+  MULTIFACTOR_AUTHENTICATION_INACTIVITY = 'multifactor_authentication_inactivity'.freeze
+
+  MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = 120.seconds
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change, :password_locked
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change,
+               :password_locked, :multifactor_authentication, :multifactor_authentication_verify_code
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -38,6 +42,9 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
+  after_action  :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
+
+  PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
 
   def new
     if current_viewer
@@ -51,12 +58,14 @@ class SessionsController < ApplicationController
       redirect_to(url)
     else
       if params[:error] == SESSION_EXPIRED
-        @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
+        @flash_login_error = 'Your session has expired. ' + PLEASE_LOGIN
       elsif params[:error] == PASSWORD_LOCKED
         wait_text = time_ago_in_words(Time.now + params[:retry_after].to_i.seconds, include_seconds: true)
         @flash_login_error =
           'Too many failed login attempts.' +
           " Please, wait #{wait_text} or reset your password to continue using CARTO."
+      elsif params[:error] == MULTIFACTOR_AUTHENTICATION_INACTIVITY
+        @flash_login_error = 'You\'ve been logged out due to a long time of inactivity. ' + PLEASE_LOGIN
       end
       render
     end
@@ -81,7 +90,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+    redirect_to after_login_url(user)
   end
 
   def destroy
@@ -92,17 +101,55 @@ class SessionsController < ApplicationController
     render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}
   end
 
+  def multifactor_authentication
+    @user = current_viewer
+    return redirect_to after_login_url(@user) unless multifactor_authentication_required?
+
+    @mfa = @user.active_multifactor_authentication
+    render action: 'multifactor_authentication'
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
+    unauthenticated
+  end
+
+  def multifactor_authentication_verify_code
+    user = ::User.where(id: params[:user_id]).first
+    url = after_login_url(user)
+
+    unless params[:skip] == "true" && user.active_multifactor_authentication.needs_setup? && user.organization_owner?
+      return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
+
+      retry_after = user.password_login_attempt
+      if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
+        cdb_logout
+        return password_locked(retry_after)
+      end
+
+      user.active_multifactor_authentication.verify!(params[:code])
+      user.reset_password_rate_limit
+    end
+
+    warden.session(user.username)[:multifactor_authentication_performed] = true
+    redirect_to url
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
+    unauthenticated
+  end
+
   def unauthenticated
     username = extract_username(request, params)
     CartoDB::Stats::Authentication.instance.increment_failed_login_counter(username)
 
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
-    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @login_error = if params[:code].presence
+                     'Verification code is not valid'
+                   else
+                     params[:email].blank? && params[:password].blank? ? 'Can\'t be blank' : 'Your account or your password is not ok'
+                   end
 
     respond_to do |format|
       format.html do
-        render :action => 'new' and return
+        return multifactor_authentication if params[:code].presence
+        return render action: 'new'
       end
       format.json do
         head :unauthorized
@@ -154,9 +201,9 @@ class SessionsController < ApplicationController
     redirect_to edit_password_change_url(username) if username
   end
 
-  def password_locked
+  def password_locked(retry_after = warden.env['warden.options'][:retry_after])
     warden.custom_failure!
-    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{warden.env['warden.options'][:retry_after]}"
+    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{retry_after}"
   end
 
   def password_expired
@@ -172,6 +219,13 @@ class SessionsController < ApplicationController
         render(json: { error: 'session_expired' }, status: 403)
       end
     end
+  end
+
+  def multifactor_authentication_inactivity
+    warden.custom_failure!
+    cdb_logout
+
+    redirect_to login_url + "?error=#{MULTIFACTOR_AUTHENTICATION_INACTIVITY}"
   end
 
   def create_user(username, organization_id, email, created_via)
@@ -228,6 +282,23 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def set_last_mfa_activity
+    user = ::User.where(id: params[:user_id]).first || current_viewer
+    warden.session(user.username)[:multifactor_authentication_last_activity] = Time.now.to_i if user
+  rescue Warden::NotAuthenticated
+  end
+
+  def mfa_inactivity_period_expired?(user)
+    time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
+    time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
+  rescue Warden::NotAuthenticated
+  end
+
+  def after_login_url(user)
+    return login_url unless user
+    session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+  end
 
   def central_enabled?
     Cartodb::Central.sync_data_with_cartodb_central?

@@ -714,6 +714,14 @@ class Carto::User < ActiveRecord::Base
     Resque.enqueue(::Resque::UserJobs::Mail::PasswordReset, id)
   end
 
+  def multifactor_authentication_configured?
+    user_multifactor_auths.any?
+  end
+
+  def active_multifactor_authentication
+    user_multifactor_auths.order(created_at: :desc).first
+  end
+
   private
 
   def password_rate_limit_configured?

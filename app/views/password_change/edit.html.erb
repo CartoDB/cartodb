@@ -8,17 +8,7 @@
       <div class="u-inner">
         <div class="Sessions-left">
           <div class="Sessions-logoContainer">
-            <picture class="Navbar-brand">
-              <% if @organization.present? && @organization.avatar_url.present? %>
-                <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
-              <% else %>
-                <% if @organization.present? %>
-                  <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
-                <% else %>
-                  <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
-                <% end %>
-              <% end %>
-            </picture>
+            <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
           </div>
 
           <div class="Sessions-form">
@@ -59,19 +49,7 @@
                   <p>
                     <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
                       <span class="js-Loading-text"><%= 'Save' %></span>
-                      <span class="js-Loading-anim" style="display: none;">
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--01"></span>
-                        </span>
-
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--02"></span>
-                        </span>
-
-                        <span class="Loading-item">
-                          <span class="Loading-itemInner Loading-itemInner--03"></span>
-                        </span>
-                      </span>
+                      <%= render :partial => 'shared/loading_animation' %>
                     </button>
                   </p>
                 </div>

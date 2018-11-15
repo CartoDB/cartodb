@@ -184,7 +184,7 @@ module Carto
       )
     end
 
-    def self.some_users_permissions_revoked(table, user_revokes)
+    def self.some_shared_permissions_revoked(table, user_revokes)
       return if user_revokes.blank?
 
       roles_to_revoke = {}

@@ -318,7 +318,7 @@ class Carto::Permission < ActiveRecord::Base
       notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
       if entity.table?
         revokes_diff = Carto::PermissionService.revokes_by_user(@old_acl, acl, entity.table.owner.id)
-        Carto::ApiKey.some_users_permissions_revoked(entity.table, revokes_diff)
+        Carto::ApiKey.some_shared_permissions_revoked(entity.table, revokes_diff)
       end
     end
     update_shared_entities

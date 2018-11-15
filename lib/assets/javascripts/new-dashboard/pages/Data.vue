@@ -72,7 +72,7 @@
           v-if="emptyState">
           <img svg-inline src="../assets/icons/datasets/emptyState.svg">
         </EmptyState>
-        
+
         <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
           <li v-for="n in 12" :key="n">
             <DatasetCardFake></DatasetCardfake>

@@ -43,7 +43,7 @@ module Carto
       end
 
       def base_params
-        @params ||= params.permit([:type])
+        @base_params ||= params.permit([:type])
       end
 
       def create_service

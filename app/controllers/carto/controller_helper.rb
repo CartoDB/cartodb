@@ -66,9 +66,9 @@ module Carto
 
     def rescue_from_central_error
       CartoDB::Logger.error(exception: e,
-                            message: 'Central error deleting Multifactor authentication from EUMAPI',
+                            message: 'Error while updating data in Central',
                             user: @user)
-      render_jsonp "Multifactor authentication couldn't be deleted", 500
+      render_jsonp "Error while updating data in Central", 500
     end
   end
 

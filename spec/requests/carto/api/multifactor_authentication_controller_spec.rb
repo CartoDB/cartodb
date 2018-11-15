@@ -26,6 +26,10 @@ describe Carto::Api::MultifactorAuthenticationController do
         FactoryGirl.create(:feature_flag, restricted: false, name: 'mfa') unless FeatureFlag.where(name: 'mfa').any?
       end
 
+      after(:all) do
+        Carto::FeatureFlag.where(name: 'mfa').first.destroy! if FeatureFlag.where(name: 'mfa').any?
+      end
+
       it 'returns 401 for non authorized calls' do
         post api_v2_organization_users_mfa_create_url(
           id_or_name: @organization.name,

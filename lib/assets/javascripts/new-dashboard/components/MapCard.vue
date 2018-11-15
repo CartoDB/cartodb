@@ -93,7 +93,7 @@ export default {
       maxTags: 3
     };
   },
-  updated: function () {
+  mounted: function () {
     this.$nextTick(function () {
       var title = this.$el.querySelector('.card-title');
       this.multilineTitle = title.offsetHeight > 30;

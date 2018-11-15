@@ -36,10 +36,7 @@ export default {
 
       const permissionModel = visModel.getPermissionModel();
       permissionModel.on('change', model => {
-        this.$store.dispatch('maps/updateMap', {
-          mapId: visModel.get('id'),
-          mapAttributes: { permission: model.attributes }
-        });
+        this.$emit('updateVisualization', visModel);
       });
 
       const viewModel = new ShareView({

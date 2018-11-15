@@ -1,25 +1,26 @@
 <template>
   <QuickActions
-    v-if="!isShared"
-    ref="quickActions"
     :actions="actions[actionMode]"
+    :hasShadow="false"
     v-on="getEventListeners()"
+    ref="quickActions"
     @open="openQuickactions"
-    @close="closeQuickactions"></QuickActions>
+    @close="closeQuickactions" />
 </template>
 
 <script>
+import * as Table from 'new-dashboard/core/table';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
-import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
-  name: 'MapQuickActions',
+  name: 'DatasetQuickActions',
+  inject: ['backboneViews'],
   components: {
     QuickActions
   },
   props: {
-    map: Object
+    dataset: Object
   },
   computed: {
     actions () {
@@ -29,20 +30,17 @@ export default {
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap' },
-          { name: this.$t('QuickActions.lock'), event: 'lockMap' },
-          { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
+          { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
+          { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
         locked: [
-          { name: this.$t('QuickActions.unlock'), event: 'unlockMap' }
+          { name: this.$t('QuickActions.unlock'), event: 'unlockDataset' }
         ]
       };
     },
     actionMode () {
-      return this.map.locked ? 'locked' : 'mine';
-    },
-    isShared () {
-      return Visualization.isShared(this.$props.map, this.$cartoModels);
+      return this.dataset.locked ? 'locked' : 'mine';
     },
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;
@@ -52,11 +50,12 @@ export default {
   methods: {
     getActionHandlers () {
       return {
-        updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
-        },
+        deselectAll: () => {},
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$store.dispatch('datasets/fetchDatasets');
+        },
+        updateVisualization: (model) => {
+          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
         }
       };
     },
@@ -87,35 +86,42 @@ export default {
       this.$refs.quickActions.closeDropdown();
     },
     editInfo () {
-      DialogActions.editMapMetadata.apply(this, [this.map, this.getActionHandlers()]);
+      DialogActions.editDatasetMetadata.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.map, this.getActionHandlers()]);
+      DialogActions.changePrivacy.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
     },
     manageTags () {
-      DialogActions.editMapMetadata.apply(this, [this.map]);
+      DialogActions.editDatasetMetadata.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
     },
-    duplicateMap () {
-      DialogActions.duplicateVisualization.apply(this, [this.map]);
+    duplicateDataset () {
+      const bgPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
+
+      bgPollingView._addDataset({
+        type: 'duplication',
+        table_name: `${Table.getUnqualifiedName(this.dataset.name)}_copy`,
+        value: this.dataset.name,
+        create_vis: false
+      });
       this.closeDropdown();
     },
-    unlockMap () {
-      DialogActions.changeLockState.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+    unlockDataset () {
+      DialogActions.changeLockState.apply(this, [this.dataset, 'datasets', this.getActionHandlers()]);
       this.closeDropdown();
     },
-    lockMap () {
-      DialogActions.changeLockState.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+    lockDataset () {
+      DialogActions.changeLockState.apply(this, [this.dataset, 'datasets', this.getActionHandlers()]);
       this.closeDropdown();
     },
-    deleteMap () {
-      DialogActions.deleteVisualization.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+    deleteDataset () {
+      DialogActions.deleteVisualization.apply(this, [this.dataset, 'datasets', this.getActionHandlers()]);
       this.closeDropdown();
     },
     shareVisualization () {
-      DialogActions.shareVisualization.apply(this, [this.map, this.getActionHandlers()]);
+      DialogActions.shareVisualization.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
     }
   }

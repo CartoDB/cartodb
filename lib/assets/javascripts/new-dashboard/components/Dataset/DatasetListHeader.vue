@@ -20,7 +20,7 @@
     <div class="dataset-list-cell cell--small cell--privacy">
       <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.privacy`) }}</span>
     </div>
-    <div class="dataset-list-cell">
+    <div class="dataset-list-cell cell--end">
     </div>
   </div>
 </template>
@@ -61,6 +61,10 @@
   align-self: flex-start;
   width: 46px;
   height: 100%;
+}
+
+.cell--end {
+  width: 34px;
 }
 
 .cell--main {

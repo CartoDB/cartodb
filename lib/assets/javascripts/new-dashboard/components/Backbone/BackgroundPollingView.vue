@@ -1,6 +1,5 @@
 <template>
   <section class="BackgroundPolling" ref="injectionHTMLElement">
-  {{ routeType }}
   </section>
 </template>
 

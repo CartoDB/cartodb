@@ -66,7 +66,7 @@ module Carto
 
       user_ids = user_revokes.keys
 
-      Carto::OauthAppUser.where(:user_id => user_ids).find_each do |oau|
+      Carto::OauthAppUser.where(user_id: user_ids).find_each do |oau|
         oau.revoke_permissions_if_affected(table, PERMISSIONS[user_revokes[oau.user_id].to_sym])
       end
     end

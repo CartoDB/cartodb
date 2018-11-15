@@ -582,7 +582,6 @@ describe Carto::ApiKey do
 
     before :each do
       @shared_table = create_table(user_id: @carto_org_user_1.id)
-      not_shared_table = create_table(user_id: @carto_org_user_1.id)
 
       perm = @shared_table.table_visualization.permission
       perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]

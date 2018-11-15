@@ -187,11 +187,10 @@ module Carto
     def self.some_shared_permissions_revoked(table, user_revokes)
       return if user_revokes.blank?
 
-      roles_to_revoke = {}
       user_ids = user_revokes.keys
 
       # regular and oauth api keys
-      ApiKey.where(:user_id => user_ids, :type => [TYPE_REGULAR, TYPE_OAUTH]).find_each do |apikey|
+      ApiKey.where(user_id: user_ids, type: [TYPE_REGULAR, TYPE_OAUTH]).find_each do |apikey|
         revoked_permissions = PERMISSIONS[user_revokes[apikey.user_id].to_sym]
         apikey.revoke_permissions_if_affected(table, revoked_permissions)
       end
@@ -209,7 +208,6 @@ module Carto
           db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
         end
       end
-
     end
 
     def granted_apis

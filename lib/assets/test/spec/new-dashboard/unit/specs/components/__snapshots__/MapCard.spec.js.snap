@@ -15,7 +15,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -47,7 +47,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -79,7 +79,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -111,7 +111,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -144,7 +144,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -176,7 +176,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -208,7 +208,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -240,7 +240,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -272,7 +272,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -302,7 +302,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>

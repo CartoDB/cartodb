@@ -6,6 +6,7 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "views": "{views} views (30 days)",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",

@@ -60,6 +60,12 @@ export default {
       return {
         deselectAll: () => {
           this.deselectAll();
+        },
+        fetchList: () => {
+          this.$store.dispatch('maps/fetchList');
+        },
+        updateVisualization: (model) => {
+          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
         }
       };
     },

@@ -68,11 +68,13 @@
         </li>
       </ul>
 
-      <EmptyState
-        :text="$t('DataPage.emptyState')"
-        v-if="emptyState">
-        <img svg-inline src="../assets/icons/datasets/emptyState.svg">
-      </EmptyState>
+      <div class="grid-cell grid-cell--col12">
+        <EmptyState
+          :text="$t('DataPage.emptyState')"
+          v-if="emptyState">
+          <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+        </EmptyState>
+      </div>
 
       <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
         <li v-for="n in 12" :key="n">

@@ -5,6 +5,7 @@
 <script>
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
+import * as Table from 'new-dashboard/core/table';
 
 export default {
   name: 'DatasetBulkActions',
@@ -62,6 +63,12 @@ export default {
       return {
         deselectAll: () => {
           this.deselectAll();
+        },
+        fetchList: () => {
+          this.$store.dispatch('datasets/fetchDatasets');
+        },
+        updateVisualization: (model) => {
+          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
         }
       };
     },
@@ -95,10 +102,19 @@ export default {
       ]);
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.selectedDatasets[0]]);
+      DialogActions.changePrivacy.apply(this, [this.selectedDatasets[0], this.getActionHandlers()]);
     },
     duplicateDataset () {
-      DialogActions.duplicateDataset.apply(this, [this.selectedDatasets[0]]);
+      const selectedDataset = this.selectedDatasets[0];
+      const bgPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
+
+      bgPollingView._addDataset({
+        type: 'duplication',
+        table_name: `${Table.getUnqualifiedName(selectedDataset.name)}_copy`,
+        value: selectedDataset.name,
+        create_vis: false
+      });
+      this.deselectAll();
     },
     unlockDataset () {
       DialogActions.changeLockState.apply(this, [

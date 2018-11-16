@@ -13,7 +13,9 @@ Development
 - MFA (WIP)
   - Admin management (#14347)
   - User management (#14403)
+  - Add support in EUMAPI (#14425)
 - Change password functionality for Carto Gears (#14351)
+- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 
 ### Bug fixes / enhancements
 - Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)

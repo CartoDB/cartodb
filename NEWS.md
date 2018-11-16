@@ -12,6 +12,7 @@ Development
   - UI improvements (#14389)
 - MFA (WIP)
   - Admin management (#14347)
+  - Support user migration (#14337)
 - Change password functionality for Carto Gears (#14351)
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 

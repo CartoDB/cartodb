@@ -20,6 +20,18 @@ module Carto
 
     self.inheritance_column = :_type
 
+    def self.new_from_hash(uma_hash)
+      new(
+        created_at: uma_hash[:created_at],
+        updated_at: uma_hash[:updated_at],
+        last_login: uma_hash[:last_login],
+        type: uma_hash[:type],
+        shared_secret: uma_hash[:shared_secret],
+        user_id: uma_hash[:user_id],
+        enabled: uma_hash[:enabled]
+      )
+    end
+
     def verify!(code)
       timestamp = verify(code)
       raise Carto::UnauthorizedError.new('The code is not valid') unless timestamp
@@ -55,7 +67,7 @@ module Carto
     end
 
     def create_shared_secret
-      self.shared_secret = ROTP::Base32.random_base32
+      self.shared_secret = ROTP::Base32.random_base32 unless shared_secret.present?
     end
   end
 end

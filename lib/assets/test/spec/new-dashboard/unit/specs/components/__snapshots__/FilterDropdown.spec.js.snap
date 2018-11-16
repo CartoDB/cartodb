@@ -39,9 +39,16 @@ exports[`FilterDropdown.vue should open dropdown when clicking toggle 1`] = `
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">FilterDropdown.orderMaps</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
-            FilterDropdown.order.favourites
-          </a></li>
+        <li class="type text is-caption is-txtGrey type--selected">
+          FilterDropdown.order.date.title (
+          <a href="javascript:void(0)" class="element element--selected">
+            FilterDropdown.order.date.newest
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.date.oldest
+          </a>
+          )
+        </li>
         <li class="type text is-caption is-txtGrey">
           FilterDropdown.order.alphabetical.title (
           <a href="javascript:void(0)" class="element">
@@ -52,16 +59,9 @@ exports[`FilterDropdown.vue should open dropdown when clicking toggle 1`] = `
           </a>
           )
         </li>
-        <li class="type text is-caption is-txtGrey type--selected">
-          Date Modified (
-          <a href="javascript:void(0)" class="element element--selected">
-            FilterDropdown.order.date.last
-          </a> |
-          <a href="javascript:void(0)" class="element">
-            FilterDropdown.order.date.first
-          </a>
-          )
-        </li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            FilterDropdown.order.views
+          </a></li>
       </ul>
     </div>
   </div>
@@ -107,9 +107,16 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">FilterDropdown.orderMaps</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
-            FilterDropdown.order.favourites
-          </a></li>
+        <li class="type text is-caption is-txtGrey type--selected">
+          FilterDropdown.order.date.title (
+          <a href="javascript:void(0)" class="element element--selected">
+            FilterDropdown.order.date.newest
+          </a> |
+          <a href="javascript:void(0)" class="element">
+            FilterDropdown.order.date.oldest
+          </a>
+          )
+        </li>
         <li class="type text is-caption is-txtGrey">
           FilterDropdown.order.alphabetical.title (
           <a href="javascript:void(0)" class="element">
@@ -120,16 +127,9 @@ exports[`FilterDropdown.vue should render correct contents based on filter and o
           </a>
           )
         </li>
-        <li class="type text is-caption is-txtGrey type--selected">
-          Date Modified (
-          <a href="javascript:void(0)" class="element element--selected">
-            FilterDropdown.order.date.last
-          </a> |
-          <a href="javascript:void(0)" class="element">
-            FilterDropdown.order.date.first
-          </a>
-          )
-        </li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            FilterDropdown.order.views
+          </a></li>
       </ul>
     </div>
   </div>

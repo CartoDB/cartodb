@@ -72,12 +72,13 @@ module Carto
         diff_by_types[type].each do |id, revoke|
           begin
             users = type == TYPE_ORG ? Carto::Organization.find(id).users : Carto::Group.find(id).users
-          rescue ActiveRecord::RecordNotFound => exception
-            return
+          rescue ActiveRecord::RecordNotFound
           end
-          users_diff = diff_by_users(users, revoke, new_acl)
 
-          add_users_to_diff(diff, users_diff, table_owner_id)
+          if users.present?
+            users_diff = diff_by_users(users, revoke, new_acl)
+            add_users_to_diff(diff, users_diff, table_owner_id)
+          end
         end
       end
     end

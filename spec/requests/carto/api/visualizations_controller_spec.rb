@@ -2747,7 +2747,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'mixed types search should filter only remote without display name' do
-
       post api_v1_visualizations_create_url(api_key: @user.api_key),
            factory(@user, locked: true, type: 'table').to_json, @headers
       vis_1_id = JSON.parse(last_response.body).fetch('id')
@@ -2779,33 +2778,140 @@ describe Carto::Api::VisualizationsController do
       [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
-    it 'validates order param' do
-      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
-      last_response.status.should == 200
 
-      get api_v1_visualizations_index_url(
-        api_key: @user.api_key,
-        types: 'derived',
-        order: '',
-        page: '',
-        per_page: ''
-      ), {}, @headers
-      last_response.status.should == 200
-
-      ['derived', 'slide'].each do |type|
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
+    context 'ordering' do
+      it 'validates order param' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200
+
+        get api_v1_visualizations_index_url(
+          api_key: @user.api_key,
+          types: 'derived',
+          order: '',
+          page: '',
+          per_page: ''
+        ), {}, @headers
+        last_response.status.should == 200
+
+        ['derived', 'slide'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
+          last_response.status.should == 200
+        end
+
+        ['remote', 'table'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
+          last_response.status.should == 200
+        end
+
+        ['derived', 'remote', 'slide', 'table'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
+          last_response.status.should == 400
+          JSON.parse(last_response.body).fetch('error').should_not be_nil
+        end
       end
 
-      ['remote', 'table'].each do |type|
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
+      it 'orders results' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200
+
+        get api_v1_visualizations_index_url(
+          api_key: @user.api_key,
+          types: 'derived',
+          order: '',
+          page: '',
+          per_page: ''
+        ), {}, @headers
+        last_response.status.should == 200
+
+        ['derived', 'slide'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
+          last_response.status.should == 200
+        end
+
+        ['remote', 'table'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
+          last_response.status.should == 200
+        end
+
+        ['derived', 'remote', 'slide', 'table'].each do |type|
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
+          last_response.status.should == 400
+          JSON.parse(last_response.body).fetch('error').should_not be_nil
+        end
       end
 
-      ['derived', 'remote', 'slide', 'table'].each do |type|
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
-        last_response.status.should == 400
-        JSON.parse(last_response.body).fetch('error').should_not be_nil
+      context 'by name' do
+        before(:each) do
+          @visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
+          @visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
+        end
+
+        it 'orders results by name (descending by default)' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              order: 'name'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders results by name descending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
+                                              order_direction: 'desc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders results by name ascending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
+                                              order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+      end
+
+      context 'error handling' do
+        before(:each) do
+          @valid_order = 'updated_at'
+          @invalid_order = 'invalid_order'
+          @valid_order_direction = 'asc'
+          @invalid_order_direction = 'invalid_order_direction'
+        end
+
+        it 'returns an error if an invalid :order is given' do
+          get api_v1_visualizations_index_url(order: @valid_order, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @invalid_order, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order' parameter value"
+        end
+
+        it 'returns an error if an invalid :order_direction is given' do
+          get api_v1_visualizations_index_url(order_direction: @valid_order_direction, order: @valid_order,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order_direction: @invalid_order_direction, order: @valid_order,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order_direction' parameter value"
+        end
       end
     end
   end

@@ -56,7 +56,7 @@ module Carto
         validate_oauth_app_user(oauth_app_user)
       end
 
-      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:all_scopes))
     end
 
     def authorize

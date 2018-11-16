@@ -16,7 +16,7 @@
 
     <div class="card-text">
       <div class="card-header">
-        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': titleOverflow}">
+        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ map.name }}&nbsp;
           <span class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
@@ -45,7 +45,7 @@
         <li class="card-metadataItem text is-caption">
           <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList" v-if="tagsLength <= maxTags">
+          <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in map.tags" :key="tag">
               <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
@@ -54,7 +54,7 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags>
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
@@ -69,6 +69,7 @@ import * as Visualization from 'new-dashboard/core/visualization';
 import FeaturesDropdown from './FeaturesDropdown';
 import { mapActions } from 'vuex';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'MapCard',
@@ -90,14 +91,24 @@ export default {
       titleOverflow: false,
       multilineTitle: false,
       areQuickActionsOpen: false,
-      maxTags: 3
+      isStarInNewLine: false,
+      maxTagsChars: 30
     };
   },
   mounted: function () {
+    function isStarUnderText (textNode, starNode) {
+      const range = document.createRange();
+      range.selectNodeContents(textNode.firstChild);
+      const textBottomPosition = range.getClientRects()[0].bottom;
+      const starBottomPosition = starNode.getBoundingClientRect().bottom;
+      return textBottomPosition !== starBottomPosition;
+    }
+
     this.$nextTick(function () {
       var title = this.$el.querySelector('.card-title');
       this.multilineTitle = title.offsetHeight > 30;
       this.titleOverflow = title.scrollHeight > title.clientHeight;
+      this.isStarInNewLine = isStarUnderText(this.$el.querySelector('.card-title'), this.$el.querySelector('.card-favorite'));
     });
   },
   computed: {
@@ -115,6 +126,9 @@ export default {
     },
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);
+    },
+    tagsChars () {
+      return countCharsArray(this.$props.map.tags, ', ');
     },
     isShared () {
       return Visualization.isShared(this.$props.map, this.$cartoModels);
@@ -267,7 +281,7 @@ export default {
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &.title-overflow {
-    padding-right: 20px;
+    padding-right: 24px;
   }
 }
 

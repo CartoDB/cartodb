@@ -165,14 +165,21 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
-    # update_in_central is duplicated because we don't wan ta local save if Central fails,
-    # but before/after save at user can change some attributes that we also want to persist.
-    # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
-    @user.update_in_central
+    ActiveRecord::Base.transaction do
+      if attributes[:mfa].present? && @user.has_feature_flag?('mfa')
+        service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
+        service.update(enabled: attributes[:mfa] == '1')
+      end
 
-    @user.save(raise_on_failure: true)
+      # update_in_central is duplicated because we don't wan ta local save if Central fails,
+      # but before/after save at user can change some attributes that we also want to persist.
+      # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
+      @user.update_in_central
 
-    @user.update_in_central
+      @user.save(raise_on_failure: true)
+
+      @user.update_in_central
+    end
 
     redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e
@@ -187,7 +194,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'edit', status: e.status
-  rescue Sequel::ValidationFailed => e
+  rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid => e
     flash.now[:error] = e.message
     render 'edit', status: 422
   end

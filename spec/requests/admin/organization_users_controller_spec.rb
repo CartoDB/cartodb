@@ -350,6 +350,14 @@ describe Admin::OrganizationUsersController do
     end
 
     describe 'existing user operations' do
+      before(:all) do
+        @feature_flag = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
+      end
+
+      after(:all) do
+        @feature_flag.destroy
+      end
+
       before(:each) do
         @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end
@@ -407,6 +415,53 @@ describe Admin::OrganizationUsersController do
               user: params
           @existing_user.reload
           @existing_user.last_password_change_date.should eq last_change
+        end
+
+        it 'creates a multifactor authentication' do
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          FactoryGirl.create(:totp, user: @existing_user)
+          @existing_user.reload.user_multifactor_auths.should_not be_empty
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '0' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+
+          @existing_user.expects(:save).never
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
         end
       end
 

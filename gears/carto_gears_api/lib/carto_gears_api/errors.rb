@@ -17,5 +17,12 @@ module CartoGearsApi
         @errors = errors
       end
     end
+
+    # Thrown when data could not be saved due to an internal error
+    class SavingError < StandardError
+      def initialize
+        super("There was an error while saving the data")
+      end
+    end
   end
 end

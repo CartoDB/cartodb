@@ -63,7 +63,8 @@ module Carto
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
           google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil,
-          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil
+          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil,
+          mfa_required: multifactor_authentication_required?
         }
       end
 

@@ -20,7 +20,7 @@ module Carto
       VALID_ORDER_PARAMS = [:id, :name, :type, :avatar_url, :organization_id, :updated_at].freeze
 
       def index
-        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+        page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
         query = params[:q]
 
         grantable_query = Carto::GrantableQueryBuilder.new(@organization).with_filter(query)

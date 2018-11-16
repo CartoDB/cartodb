@@ -1,32 +1,28 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': areQuickActionsOpen}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
     </span>
 
-    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="card-actionsSelect">
-          <img src="../assets/icons/common/options.svg">
-      </span>
-    </div>
+    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
 
     <div class="card-text">
       <div class="card-header">
-        <h2 class="card-title title is-caption" :class="{ 'text-overflows': titleOverflow }">
+        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" v-if="map.description" :class="{ 'text-overflows': descriptionOverflow }">{{ map.description }}</p>
+        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
         <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
       </div>
 
@@ -49,7 +45,7 @@
         <li class="card-metadataItem text is-caption">
           <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList" v-if="tagsLength <= maxTags">
+          <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in map.tags" :key="tag">
               <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
@@ -58,7 +54,9 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsLength > maxTags" :list=map.tags :feature="$t(`mapCard.tags`)"></FeaturesDropdown>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags>
+            <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
+          </FeaturesDropdown>
         </li>
       </ul>
     </div>
@@ -70,6 +68,8 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import FeaturesDropdown from './FeaturesDropdown';
 import { mapActions } from 'vuex';
+import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'MapCard',
@@ -81,6 +81,7 @@ export default {
     }
   },
   components: {
+    MapQuickActions,
     FeaturesDropdown
   },
   data: function () {
@@ -88,16 +89,26 @@ export default {
       isThumbnailErrored: false,
       activeHover: true,
       titleOverflow: false,
-      descriptionOverflow: false,
-      maxTags: 3
+      multilineTitle: false,
+      areQuickActionsOpen: false,
+      isStarInNewLine: false,
+      maxTagsChars: 30
     };
   },
-  updated: function () {
+  mounted: function () {
+    function isStarUnderText (textNode, starNode) {
+      const range = document.createRange();
+      range.selectNodeContents(textNode.firstChild);
+      const textBottomPosition = range.getClientRects()[0].bottom;
+      const starBottomPosition = starNode.getBoundingClientRect().bottom;
+      return textBottomPosition !== starBottomPosition;
+    }
+
     this.$nextTick(function () {
       var title = this.$el.querySelector('.card-title');
-      var description = this.$el.querySelector('.card-description');
+      this.multilineTitle = title.offsetHeight > 30;
       this.titleOverflow = title.scrollHeight > title.clientHeight;
-      this.descriptionOverflow = description.scrollHeight > description.clientHeight;
+      this.isStarInNewLine = isStarUnderText(this.$el.querySelector('.card-title'), this.$el.querySelector('.card-favorite'));
     });
   },
   computed: {
@@ -116,6 +127,9 @@ export default {
     vizUrl () {
       return Visualization.getURL(this.$props.map, this.$cartoModels);
     },
+    tagsChars () {
+      return countCharsArray(this.$props.map.tags, ', ');
+    },
     isShared () {
       return Visualization.isShared(this.$props.map, this.$cartoModels);
     }
@@ -133,6 +147,12 @@ export default {
       } else {
         this.likeMap(this.$props.map);
       }
+    },
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
+    },
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
     },
     mouseOverChildElement () {
       this.activeHover = false;
@@ -193,8 +213,15 @@ export default {
   }
 
   &.selected {
-    background-color: #F2F9FF;
+    background-color: $softblue;
 
+    .card-actions,
+    .card-select {
+      opacity: 1;
+    }
+  }
+
+  &.quickactions-open {
     .card-actions,
     .card-select {
       opacity: 1;
@@ -234,6 +261,9 @@ export default {
 }
 
 .card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   position: relative;
   flex-shrink: 0;
   max-height: 48px;
@@ -241,40 +271,22 @@ export default {
   overflow: hidden;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  &.text-overflows {
-    &::after {
-      content: "...";
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      padding-right: 24px;
-      padding-left: 6px;
-      background-image: linear-gradient(to right, #FFF0, #FFFF 4px);
-    }
-
-    .card-favorite {
-      position: absolute;
-      z-index: 1;
-      right: 0;
-      bottom: 0;
-    }
+  &.title-overflow {
+    padding-right: 24px;
   }
 }
 
 .card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  position: relative;
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
 
-  &.text-overflows {
-    &::after {
-      content: "...";
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      padding-left: 4px;
-      background-color: #FFF;
-    }
+  &.single-line {
+    -webkit-line-clamp: 1;
   }
 }
 
@@ -401,6 +413,12 @@ export default {
         stroke: $primary-color;
       }
     }
+  }
+
+  &.favorite-overflow {
+    position: absolute;
+    right: 0;
+    bottom: -4px;
   }
 }
 

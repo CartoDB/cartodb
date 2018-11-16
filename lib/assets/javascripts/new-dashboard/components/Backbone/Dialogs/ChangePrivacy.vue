@@ -31,7 +31,8 @@ export default {
       });
 
       visModel.on('change', model => {
-        this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+        this.$emit('updateVisualization', model);
+        this.$emit('deselectAll');
       });
 
       const changePrivacyView = new ChangePrivacyView({

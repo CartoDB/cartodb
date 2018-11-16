@@ -40,7 +40,7 @@ export default {
 
       viewModel.bind('DeleteItemsDone', () => {
         this.$store.dispatch('user/updateData'); // needed in order to keep the 'quota' synchronized
-        this.$store.dispatch('maps/fetchMaps');
+        this.$emit('fetchList');
         this.$emit('deselectAll');
       });
 

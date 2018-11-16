@@ -60,6 +60,12 @@ export default {
       return {
         deselectAll: () => {
           this.deselectAll();
+        },
+        fetchList: () => {
+          this.$store.dispatch('maps/fetchList');
+        },
+        updateVisualization: (model) => {
+          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
         }
       };
     },
@@ -90,7 +96,7 @@ export default {
       DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
     },
     duplicateMap () {
-      DialogActions.duplicateMap.apply(this, [this.selectedMaps[0]]);
+      DialogActions.duplicateVisualization.apply(this, [this.selectedMaps[0]]);
     },
     unlockMap () {
       DialogActions.changeLockState.apply(this, [

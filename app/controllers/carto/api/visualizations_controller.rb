@@ -114,6 +114,8 @@ module Carto
         render_jsonp({ error: e.message }, 400)
       rescue Carto::OrderParamInvalidError => e
         render_jsonp({ error: e.message }, e.status)
+      rescue Carto::OrderDirectionParamInvalidError => e
+        render_jsonp({ error: e.message }, e.status)
       rescue => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)

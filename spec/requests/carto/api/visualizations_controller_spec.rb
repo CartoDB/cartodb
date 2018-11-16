@@ -2882,6 +2882,37 @@ describe Carto::Api::VisualizationsController do
           collection[1]['id'].should eq @visualization_b.id
         end
       end
+
+      context 'error handling' do
+        before(:each) do
+          @valid_order = 'updated_at'
+          @invalid_order = 'invalid_order'
+          @valid_order_direction = 'asc'
+          @invalid_order_direction = 'invalid_order_direction'
+        end
+
+        it 'returns an error if an invalid :order is given' do
+          get api_v1_visualizations_index_url(order: @valid_order, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @invalid_order, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order' parameter value"
+        end
+
+        it 'returns an error if an invalid :order_direction is given' do
+          get api_v1_visualizations_index_url(order_direction: @valid_order_direction, order: @valid_order,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order_direction: @invalid_order_direction, order: @valid_order,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order_direction' parameter value"
+        end
+      end
     end
   end
 

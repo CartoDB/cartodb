@@ -2,19 +2,22 @@
   <div id="app">
     <NavigationBar :user="user"/>
     <router-view/>
+    <Footer/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
   </div>
 </template>
 
 <script>
 import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
+import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
 
 export default {
   name: 'App',
   components: {
     NavigationBar,
-    BackgroundPollingView
+    BackgroundPollingView,
+    Footer
   },
   computed: {
     user () {

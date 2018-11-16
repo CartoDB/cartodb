@@ -16,7 +16,7 @@
       </a>
     </div>
     <div class="grid-cell grid-cell--col4">
-      <a href="mailto:support@carto.com" class="footer-link" v-if="isEnterpriseUser">
+      <a href="mailto:support@carto.com" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">Support</h4>
         <p class="description-link text is-small is-txtSoftGrey">Contact CARTO Support if you have any technical issue.</p>
       </a>
@@ -32,10 +32,6 @@
 export default {
   name: 'Footer',
   computed: {
-    isEnterpriseUser () {
-      return false;
-    },
-
     isOrganizationUser () {
       const organization = this.$store.state.user.organization;
       return Boolean(organization);

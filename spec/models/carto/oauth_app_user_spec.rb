@@ -99,24 +99,55 @@ module Carto
       before(:all) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
+      end
+
+      before(:each) do
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @t1 = create_table(user_id: @carto_user.id)
+        @t2 = create_table(user_id: @carto_user.id)
+      end
+
+      after(:each) do
+        @t1.destroy
+        @t2.destroy
+        @app.destroy
       end
 
       after(:all) do
-        @app.destroy
         @user.destroy
         @carto_user.destroy
       end
 
       it 'is authorized only if all requested scopes are already granted' do
-        oau = OauthAppUser.new(user: @carto_user, oauth_app: @app, scopes: ['allowed_1', 'allowed_2'])
+        o1 = "datasets:rw:#{@carto_user.database_schema}.#{@t1.name}"
+        o2 = "datasets:rw:#{@carto_user.database_schema}.#{@t2.name}"
 
-        expect(oau).to(be_authorized(['allowed_1']))
-        expect(oau).to(be_authorized(['allowed_2']))
-        expect(oau).to(be_authorized(['allowed_1', 'allowed_2']))
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
+
+        expect(oau).to(be_authorized([o1]))
+        expect(oau).to(be_authorized([o2]))
+        expect(oau).to(be_authorized([o1, o2]))
 
         expect(oau).not_to(be_authorized(['not_allowed']))
-        expect(oau).not_to(be_authorized(['allowed_1', 'not_allowed']))
+        expect(oau).not_to(be_authorized([o1, 'not_allowed']))
+      end
+
+      it 'should be authenticated if requesting read permission having read-write' do
+        write_read = "datasets:rw:#{@t1.name}"
+        read = "datasets:r:#{@t1.name}"
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [write_read])
+
+        expect(oau).to(be_authorized([read]))
+      end
+
+      it 'should NOT be authenticated if requesting read-write permission having only read' do
+        write_read = "datasets:rw:#{@t1.name}"
+        read = "datasets:r:#{@t1.name}"
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [read])
+
+        expect(oau).not_to(be_authorized([write_read]))
       end
     end
 

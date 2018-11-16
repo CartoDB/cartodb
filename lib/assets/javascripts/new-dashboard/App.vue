@@ -3,7 +3,7 @@
     <NavigationBar :user="user"/>
     <router-view/>
     <Footer/>
-    <BackgroundPollingView ref="backgroundPollingView"/>
+    <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
   </div>
 </template>
 

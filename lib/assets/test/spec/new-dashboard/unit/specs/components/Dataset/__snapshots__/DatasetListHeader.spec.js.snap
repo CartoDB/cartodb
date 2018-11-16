@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatasetListHeader.vue should render correct contents 1`] = `
+<div class="dataset-list-row">
+  <div class="dataset-list-cell cell--start"></div>
+  <div class="dataset-list-cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.name</span></div>
+  <div class="dataset-list-cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.lastModified</span></div>
+  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.rows</span></div>
+  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.size</span></div>
+  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.usage</span></div>
+  <div class="dataset-list-cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">datasetListHeader.privacy</span></div>
+  <div class="dataset-list-cell cell--end"></div>
+</div>
+`;

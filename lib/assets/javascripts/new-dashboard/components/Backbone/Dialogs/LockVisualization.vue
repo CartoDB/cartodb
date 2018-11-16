@@ -11,7 +11,7 @@ import VisualizationModel from 'dashboard/data/visualization-model';
 import ModalModel from 'new-dashboard/plugins/backbone/modal-model';
 
 export default {
-  name: 'DuplicateMap',
+  name: 'LockVisualization',
   props: {
     visualizations: Array,
     visualization: Object,
@@ -45,7 +45,7 @@ export default {
 
       viewModel.bind('change:state', () => {
         if (viewModel.get('state') === 'ProcessItemsDone') {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$emit('fetchList');
           this.$emit('deselectAll');
           this.$emit('close');
         }

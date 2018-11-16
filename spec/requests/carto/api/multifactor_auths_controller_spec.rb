@@ -16,7 +16,7 @@ describe Carto::Api::MultifactorAuthsController do
 
   before :each do
     @user.user_multifactor_auths.each(&:destroy)
-    @multifactor_auth = FactoryGirl.create(:totp, user: @user)
+    @multifactor_auth = FactoryGirl.create(:totp, :active, user: @user)
     @totp = ROTP::TOTP.new(@multifactor_auth.shared_secret)
     @user.reload
   end
@@ -60,6 +60,11 @@ describe Carto::Api::MultifactorAuthsController do
   end
 
   describe '#create' do
+    before(:each) do
+      @user.user_multifactor_auths.each(&:destroy)
+      @user.reload
+    end
+
     it 'creates a totp multifactor auth' do
       post_json multifactor_auths_url, auth_params.merge(create_payload), auth_headers do |response|
         response.status.should eq 201
@@ -110,7 +115,7 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.disabled?.should be_false
+        @multifactor_auth.needs_setup?.should be_false
         @multifactor_auth.last_login.should be
       end
     end
@@ -136,7 +141,7 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.disabled?.should be_false
+        @multifactor_auth.needs_setup?.should be_false
         @multifactor_auth.last_login.year.should eq Time.now.year
       end
     end
@@ -156,7 +161,7 @@ describe Carto::Api::MultifactorAuthsController do
         response[:user].should eq(@user.username)
 
         @multifactor_auth.reload
-        @multifactor_auth.disabled?.should be_false
+        @multifactor_auth.needs_setup?.should be_false
         @multifactor_auth.last_login.should_not eq last_login
       end
       Delorean.back_to_the_present

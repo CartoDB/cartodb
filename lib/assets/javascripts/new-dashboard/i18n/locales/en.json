@@ -6,6 +6,7 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "views": "{views} views (30 days)",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -13,17 +14,15 @@
     "tags": "tags"
   },
   "QuickActions": {
-    "quickActions": "Quick actions",
-    "maps": {
-      "editInfo": "Edit Name & description",
-      "manageTags": "Manage Tags",
-      "changePrivacy": "Change Privacy",
-      "share": "Share with colleagues",
-      "duplicate": "Duplicate",
-      "lock": "Lock",
-      "unlock": "Unlock",
-      "delete": "Delete"
-    }
+    "title": "Quick actions",
+    "editInfo": "Edit Name & description",
+    "manageTags": "Manage Tags",
+    "changePrivacy": "Change Privacy",
+    "share": "Share with colleagues",
+    "duplicate": "Duplicate",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "delete": "Delete"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -38,6 +37,19 @@
       "lockMaps": "Lock maps",
       "deleteMap": "Delete map",
       "deleteMaps": "Delete maps"
+    },
+    "datasets": {
+      "selectAllDatasets": "Select all",
+      "deselectAllDatasets": "Deselect all",
+      "createMap": "Create map",
+      "changeDatasetPrivacy": "Change privacy",
+      "duplicateDataset": "Duplicate dataset",
+      "unlockDataset": "Unlock dataset",
+      "unlockDatasets": "Unlock datasets",
+      "lockDataset": "Lock dataset",
+      "lockDatasets": "Lock datasets",
+      "deleteDataset": "Delete dataset",
+      "deleteDatasets": "Delete datasets"
     }
   },
   "DataPage": {
@@ -97,17 +109,38 @@
     },
     "order": {
       "favourites": "Favourites first",
+      "views": "Most viewed first",
       "alphabetical": {
-        "title": "Alphabetically",
+        "title": "Name",
         "A-Z": "A-Z",
         "Z-A": "Z-A"
       },
       "date": {
-        "title": "Date Modified",
-        "last": "Last",
-        "first": "First"
+        "title": "Updated",
+        "newest": "Newest",
+        "oldest": "Oldest"
       }
     },
     "initialState": "Change Filters"
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "Updated {date} ago",
+    "numberRows": "0 rows | {n} row | {n} rows",
+    "tags": "tags"
+  },
+  "datasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
   }
 }

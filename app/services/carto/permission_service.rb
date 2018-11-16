@@ -68,12 +68,15 @@ module Carto
     end
 
     def self.diff_by_org_or_group(type, diff, diff_by_types, table_owner_id)
-      if diff_by_types[type].present?
+      if diff_by_types[type].present? && (type == TYPE_ORG || type == TYPE_GROUP)
         diff_by_types[type].each do |id, revoke|
-          users = type == TYPE_ORG ? Carto::Organization.find(id).users : Carto::Group.find(id).users
+          begin
+            users = type == TYPE_ORG ? Carto::Organization.find(id).users : Carto::Group.find(id).users
+          rescue ActiveRecord::RecordNotFound => exception
+            return
+          end
           users_diff = diff_by_users(users, revoke, new_acl)
 
-          # add users to diff
           add_users_to_diff(diff, users_diff, table_owner_id)
         end
       end

@@ -103,6 +103,7 @@ export default {
 
 .navbar-elementsContainer {
   display: flex;
+  position: relative;
 }
 
 .navbar-elementItem {

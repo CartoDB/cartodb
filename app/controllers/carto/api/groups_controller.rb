@@ -28,7 +28,7 @@ module Carto
       VALID_ORDER_PARAMS = [:id, :name, :display_name, :organization_id, :updated_at].freeze
 
       def index
-        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+        page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
 
         groups = @user ? @user.groups : @organization.groups
         groups = groups.where('name ilike ?', "%#{params[:q]}%") if params[:q]

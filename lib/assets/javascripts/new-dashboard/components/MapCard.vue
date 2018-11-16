@@ -29,7 +29,7 @@
       <ul class="card-metadata">
         <li class="card-metadataItem text is-caption" v-if="!isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
-          <p>{{ $t(`mapCard.shared.${map.privacy}`) }}</p>
+          <p>{{ $t(`mapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`mapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
         <li class="card-metadataItem text is-caption" v-if="isShared">
@@ -132,6 +132,15 @@ export default {
     },
     isShared () {
       return Visualization.isShared(this.$props.map, this.$cartoModels);
+    },
+    showViews () {
+      const privacy = this.$props.map.privacy;
+      return ['public', 'password', 'link'].includes(privacy.toLowerCase());
+    },
+    numberViews () {
+      const stats = this.$props.map.stats;
+      const totalViews = Object.keys(stats).reduce((total, date) => total + stats[date], 0);
+      return totalViews;
     }
   },
   methods: {

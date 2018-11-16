@@ -1,7 +1,5 @@
 .page {
   min-height: calc(100vh - 392px);
-
-  &.page--sticky-header {
-    padding-top: 128px;
-  }
+  padding: 128px 0 100px;
+  border-bottom: 1px solid $light-grey;
 }

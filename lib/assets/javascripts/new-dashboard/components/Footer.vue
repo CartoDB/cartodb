@@ -7,21 +7,29 @@
     </div>
     <div class="grid-cell grid-cell--col4">
       <a href="https://carto.com/help" class="footer-link">
-        <h4 class="title-link title is-caption is-txtGrey">Help Center</h4>
+        <h4 class="title-link title is-caption is-txtGrey">
+          Help Center<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
+        </h4>
         <p class="description-link text is-small is-txtSoftGrey">Check the most frequent questions and Builder Guides.</p>
       </a>
       <a href="https://carto.com/developers" class="footer-link">
-        <h4 class="title-link title is-caption is-txtGrey">Developers</h4>
+        <h4 class="title-link title is-caption is-txtGrey">
+          Developers<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
+        </h4>
         <p class="description-link text is-small is-txtSoftGrey">Get started building Location Intelligence applications.</p>
       </a>
     </div>
     <div class="grid-cell grid-cell--col4">
       <a href="mailto:support@carto.com" class="footer-link">
-        <h4 class="title-link title is-caption is-txtGrey">Support</h4>
+        <h4 class="title-link title is-caption is-txtGrey">
+          Support<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
+        </h4>
         <p class="description-link text is-small is-txtSoftGrey">Contact CARTO Support if you have any technical issue.</p>
       </a>
       <a :href="`mailto:${organizationMail}`" class="footer-link" v-if="isOrganizationUser">
-        <h4 class="title-link title is-caption is-txtGrey">Contact</h4>
+        <h4 class="title-link title is-caption is-txtGrey">
+          Contact<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
+        </h4>
         <p class="description-link text is-small is-txtSoftGrey">Contact your organization administrator if you need help.</p>
       </a>
     </div>
@@ -63,6 +71,15 @@ export default {
     .title-link {
       color: $primary-color;
     }
+
+    .chevron .chevron-path {
+      fill: $primary-color;
+    }
+  }
+
+  .chevron {
+    display: inline-block;
+    margin-left: 8px;
   }
 }
 

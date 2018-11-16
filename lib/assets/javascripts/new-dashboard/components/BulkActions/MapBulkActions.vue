@@ -38,9 +38,11 @@ export default {
           { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true }
         ],
         lock: [
+          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldBeHidden: this.areAllMapsSelected },
           { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap' }
         ],
         multipleLock: [
+          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
           { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps' }
         ]
       };
@@ -62,7 +64,7 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchList');
+          this.$store.dispatch('maps/fetchMaps');
         },
         updateVisualization: (model) => {
           this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });

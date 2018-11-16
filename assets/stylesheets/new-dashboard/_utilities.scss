@@ -1,16 +1,19 @@
 @media (max-width: $layout-tablet) {
-  .u-hideOnTablet {
+  .u-hideTablet {
     display: none;
   }
 }
 @media (max-width: $layout-mobile) {
-  .u-hideOnMobile {
+  .u-hideMobile {
     display: none;
   }
 }
 
+.u-showMobile {
+  display: none;
+}
 @media (max-width: $layout-mobile) {
-  .u-showOnMobile {
+  .u-showMobile {
     display: flex;
   }
 }

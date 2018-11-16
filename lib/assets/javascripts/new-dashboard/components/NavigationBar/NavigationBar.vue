@@ -3,27 +3,27 @@
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
-          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/applications.svg" />
+          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/maps.svg" />
         </span>
-        <span class="title is-caption is-txtWhite u-hideOnTablet">Maps</span>
+        <span class="title is-caption is-txtWhite u-hideTablet">Maps</span>
       </router-link>
       <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
-        <span class="title is-caption is-txtWhite u-hideOnTablet">Solutions</span>
+        <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span>
       </router-link>
       <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
-        <span class="title is-caption is-txtWhite u-hideOnTablet">Data</span>
+        <span class="title is-caption is-txtWhite u-hideTablet">Data</span>
       </router-link>
-      <span class="navbar-elementItem navbar-icon u-showOnMobile" @click="toggleSearch">
+      <span class="navbar-elementItem navbar-icon u-showMobile" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/loupe_white.svg" />
       </span>
   </ul>
-  <div class="navbar-imagotype u-hideOnMobile">
+  <div class="navbar-imagotype u-hideMobile">
       <img src="../../assets/icons/navbar/imagotype.svg" />
   </div>
   <div class="navbar-elementsContainer navbar-searchContainer">
@@ -73,21 +73,6 @@ export default {
     toggleSearch () {
       this.isSearchOpen = !this.isSearchOpen;
     }
-  },
-  directives: {
-    clickOutside: {
-      bind: function (el, binding, vnode) {
-        el.clickOutsideEvent = function (event) {
-          if (!(el === event.target || el.contains(event.target))) {
-            vnode.context[binding.expression](event);
-          }
-        };
-        document.body.addEventListener('click', el.clickOutsideEvent);
-      },
-      unbind: function (el) {
-        document.body.removeEventListener('click', el.clickOutsideEvent);
-      }
-    }
   }
 };
 </script>
@@ -118,14 +103,10 @@ export default {
 
 .navbar-elementsContainer {
   display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
 }
 
 .navbar-elementItem {
   display: flex;
-  align-items: center;
   margin-right: 54px;
   padding: 20px 0 16px;
   border-bottom: 4px solid transparent;
@@ -176,28 +157,6 @@ export default {
     opacity: 0;
   }
 
-  .navbar-searchInput {
-    width: 120px;
-    height: 36px;
-    padding-left: 42px;
-    transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-    border: 0;
-    border-radius: 18px;
-    background-color: #FFF;
-    background-image: url("../../assets/icons/navbar/loupe.svg");
-    background-repeat: no-repeat;
-    background-position: 16px center;
-
-    &::placeholder {
-      color: $text-secondary-color;
-    }
-
-    &:focus {
-      width: 280px;
-      outline: none;
-    }
-  }
-
   &:hover {
     .navbar-searchInput {
       background-image: url("../../assets/icons/navbar/loupe_primary.svg");
@@ -219,6 +178,34 @@ export default {
     }
   }
 }
+
+.navbar-searchInput {
+    width: 120px;
+    height: 36px;
+    padding-left: 42px;
+    transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+    border: 0;
+    border-radius: 18px;
+    background-color: #FFF;
+    background-image: url("../../assets/icons/navbar/loupe.svg");
+    background-repeat: no-repeat;
+    background-position: 16px center;
+
+    &::placeholder {
+      color: $text-secondary-color;
+    }
+
+    &:focus {
+      width: 280px;
+      outline: none;
+    }
+
+    &:-webkit-autofill {
+      box-shadow: 0 0 0 30px white inset;
+      -webkit-box-shadow: 0 0 0 30px white inset;
+      -webkit-text-fill-color: $text-secondary-color !important;
+    }
+  }
 
 .navbar-user {
   position: relative;
@@ -254,36 +241,37 @@ export default {
 }
 
 .navbar.is-search-open {
+  .navbar-elementsContainer {
+    align-items: center;
+  }
   .navbar-elementsContainer,
   .navbar-imagotype,
   .navbar-user {
     visibility: hidden;
     opacity: 0;
   }
-
   .navbar-searchContainer {
     visibility: visible;
     opacity: 1;
-    .navbar-search {
-      position: absolute;
-      width: calc(100% - 66px);
-      left: 0;
-      margin-left: 16px;
-      visibility: visible;
-      opacity: 1;
-      .navbar-searchInput {
-        width: 100%;
-        background-image: none;
-        border-radius: 3px;
-        padding: 16px;
-      }
-    }
-    .navbar-searchClose {
-      display: block;
-      position: absolute;
-      right: 16px;
-    }
   }
-
+  .navbar-search {
+    position: absolute;
+    width: calc(100% - 66px);
+    left: 0;
+    margin-left: 16px;
+    visibility: visible;
+    opacity: 1;
+  }
+  .navbar-searchInput {
+    width: 100%;
+    background-image: none;
+    border-radius: 3px;
+    padding: 16px;
+  }
+  .navbar-searchClose {
+    display: block;
+    position: absolute;
+    right: 16px;
+  }
 }
 </style>

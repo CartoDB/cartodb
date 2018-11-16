@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserDropdown.vue should render dropdown closed 1`] = `
+<div class="navbar-dropdown is-open">
+  <ul class="navbar-dropdown-container">
+    <li class="navbar-dropdown-profile">
+      <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+      <div class="navbar-dropdown-userInfo">
+        <p class="text is-semibold is-caption">Test user</p>
+        <p class="text is-small">user@test.com</p>
+      </div>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+      <!---->
+    </li>
+  </ul>
+  <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+</div>
+`;
+
+exports[`UserDropdown.vue should render dropdown open with notifications badge 1`] = `
+<div class="navbar-dropdown">
+  <ul class="navbar-dropdown-container">
+    <li class="navbar-dropdown-profile">
+      <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+      <div class="navbar-dropdown-userInfo">
+        <p class="text is-semibold is-caption">Test user</p>
+        <p class="text is-small">user@test.com</p>
+      </div>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+    </li>
+  </ul>
+  <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+</div>
+`;

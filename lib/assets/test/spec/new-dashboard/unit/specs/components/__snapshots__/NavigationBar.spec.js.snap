@@ -1,20 +1,169 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`NavigationBar.vue should render correct contents 1`] = `
+exports[`NavigationBar.vue should render regular navbar with search input open 1`] = `
+<nav class="navbar is-search-open">
+  <ul class="navbar-elementsContainer">
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/maps.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Maps</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Data</span></router-link> <span class="navbar-elementItem navbar-icon u-showMobile"><img svg-inline="" src="../../assets/icons/navbar/loupe_white.svg"></span>
+  </ul>
+  <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer navbar-searchContainer">
+    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <div class="navbar-user">
+      <div class="navbar-avatar" style="background-image: url(undefined);"></div>
+      <div class="navbar-dropdown">
+        <ul class="navbar-dropdown-container">
+          <li class="navbar-dropdown-profile">
+            <div class="avatar-container"><img></div>
+            <div class="navbar-dropdown-userInfo">
+              <p class="text is-semibold is-caption"></p>
+              <p class="text is-small"></p>
+            </div>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <!---->
+          </li>
+        </ul>
+        <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+      </div>
+    </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
+  </div>
+</nav>
+`;
+
+exports[`NavigationBar.vue should render regular navbar with user dropdown close after having opened it 1`] = `
 <nav class="navbar">
   <ul class="navbar-elementsContainer">
-    <router-link-stub to="[object Object]" tag="a" exactactiveclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/home.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Home</span></router-link-stub>
-    <router-link-stub to="[object Object]" tag="a" activeclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Solutions</span></router-link-stub>
-    <router-link-stub to="[object Object]" tag="a" activeclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/applications.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Maps</span></router-link-stub>
-    <router-link-stub to="[object Object]" tag="a" activeclass="is-active" event="click" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-regular is-txtWhite">Data</span></router-link-stub>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/maps.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Maps</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Data</span></router-link> <span class="navbar-elementItem navbar-icon u-showMobile"><img svg-inline="" src="../../assets/icons/navbar/loupe_white.svg"></span>
   </ul>
-  <div class="navbar-imagotype"><img src="../../assets/icons/navbar/imagotype.svg"></div>
-  <div class="navbar-elementsContainer">
-    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular"></form>
+  <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer navbar-searchContainer">
+    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <div class="navbar-user">
+      <div class="navbar-avatar" style="background-image: url(undefined);"></div>
+      <div class="navbar-dropdown">
+        <ul class="navbar-dropdown-container">
+          <li class="navbar-dropdown-profile">
+            <div class="avatar-container"><img></div>
+            <div class="navbar-dropdown-userInfo">
+              <p class="text is-semibold is-caption"></p>
+              <p class="text is-small"></p>
+            </div>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <!---->
+          </li>
+        </ul>
+        <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+      </div>
+    </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
+  </div>
+</nav>
+`;
+
+exports[`NavigationBar.vue should render regular navbar with user dropdown closed 1`] = `
+<nav class="navbar">
+  <ul class="navbar-elementsContainer">
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/maps.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Maps</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Data</span></router-link> <span class="navbar-elementItem navbar-icon u-showMobile"><img svg-inline="" src="../../assets/icons/navbar/loupe_white.svg"></span>
+  </ul>
+  <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer navbar-searchContainer">
+    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
-      <userdropdown-stub></userdropdown-stub>
-    </div>
+      <div class="navbar-dropdown">
+        <ul class="navbar-dropdown-container">
+          <li class="navbar-dropdown-profile">
+            <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+            <div class="navbar-dropdown-userInfo">
+              <p class="text is-semibold is-caption">Test user</p>
+              <p class="text is-small">user@test.com</p>
+            </div>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <!---->
+          </li>
+        </ul>
+        <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+      </div>
+    </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
+  </div>
+</nav>
+`;
+
+exports[`NavigationBar.vue should render regular navbar with user dropdown open 1`] = `
+<nav class="navbar">
+  <ul class="navbar-elementsContainer">
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/maps.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Maps</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/solutions.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span></router-link>
+    <router-link to="[object Object]" active-class="is-active" class="navbar-elementItem"><span class="navbar-icon"><img svg-inline="" src="../../assets/icons/navbar/data.svg" class="navbar-iconFill"></span> <span class="title is-caption is-txtWhite u-hideTablet">Data</span></router-link> <span class="navbar-elementItem navbar-icon u-showMobile"><img svg-inline="" src="../../assets/icons/navbar/loupe_white.svg"></span>
+  </ul>
+  <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
+  <div class="navbar-elementsContainer navbar-searchContainer">
+    <form action="#" method="get" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <div class="navbar-user">
+      <div class="navbar-avatar" style="background-image: url(undefined);"></div>
+      <div class="navbar-dropdown is-open">
+        <ul class="navbar-dropdown-container">
+          <li class="navbar-dropdown-profile">
+            <div class="avatar-container"><img></div>
+            <div class="navbar-dropdown-userInfo">
+              <p class="text is-semibold is-caption"></p>
+              <p class="text is-small"></p>
+            </div>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+          </li>
+          <li class="navbar-dropdown-iconLink">
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <!---->
+          </li>
+        </ul>
+        <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+      </div>
+    </div> <span class="navbar-searchClose"><img svg-inline="" src="../../assets/icons/navbar/close.svg"></span>
   </div>
 </nav>
 `;

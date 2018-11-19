@@ -151,7 +151,7 @@ export default {
   &.is-open {
     visibility: visible;
     opacity: 1;
-    pointer-events: initial;
+    pointer-events: auto;
   }
 }
 

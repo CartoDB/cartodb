@@ -5,12 +5,11 @@ Development
 - None yet
 
 ### Features
-- MFA (WIP)
-  - Login (#14336)
 - Lock login if too many failed attempts (#14334)
 - OAuth provider (WIP):
   - UI improvements (#14389)
 - MFA (WIP)
+  - Login (#14336)
   - Admin management (#14347)
   - Support user migration (#14337)
   - User management (#14403)
@@ -26,6 +25,7 @@ Development
 - Fix parallel execution of some acceptance specs (#14391)
 - Use shared partials for logo and button animation in session views
 - Do not concatenate the schema if it's already defined while fetching overview tables #14414
+- Disable user multifactor auths on skip (#14447)
 
 4.22.2 (2018-11-05)
 -------------------

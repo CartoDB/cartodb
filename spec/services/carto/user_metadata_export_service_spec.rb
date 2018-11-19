@@ -20,7 +20,6 @@ describe Carto::UserMetadataExportService do
     @feature_flag.destroy
     @limits_feature_flag.destroy
     @connector_provider.destroy
-    Cartodb::Central.any_instance.unstub(:update_user)
   end
 
   before(:each) do
@@ -156,9 +155,9 @@ describe Carto::UserMetadataExportService do
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
+      service.save_imported_user(@user)
       @search_tweets = service.build_search_tweets_from_hash_export(export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
-      service.save_imported_user(@user)
 
       expect_export_matches_user(export[:user], @user)
       @user

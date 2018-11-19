@@ -146,6 +146,10 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
 
@@ -1883,6 +1887,16 @@ class User < Sequel::Model
 
   def active_multifactor_authentication
     user_multifactor_auths.order(created_at: :desc).first
+  end
+
+  def multifactor_authentication_status
+    if user_multifactor_auths.setup.any?
+      MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP
+    elsif user_multifactor_auths.enabled.any?
+      MULTIFACTOR_AUTHENTICATION_ENABLED
+    else
+      MULTIFACTOR_AUTHENTICATION_DISABLED
+    end
   end
 
   private

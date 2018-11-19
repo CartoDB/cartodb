@@ -17,8 +17,25 @@ module Carto
     validates_uniqueness_of :type, scope: :user_id
 
     before_create :create_shared_secret
+    after_save    :sync_central
+    after_destroy :sync_central
 
     self.inheritance_column = :_type
+
+    scope :enabled, -> { where(enabled: true) }
+    scope :setup, -> { where(enabled: false) }
+
+    def self.new_from_hash(uma_hash)
+      new(
+        created_at: uma_hash[:created_at],
+        updated_at: uma_hash[:updated_at],
+        last_login: uma_hash[:last_login],
+        type: uma_hash[:type],
+        shared_secret: uma_hash[:shared_secret],
+        user_id: uma_hash[:user_id],
+        enabled: uma_hash[:enabled]
+      )
+    end
 
     def verify!(code)
       timestamp = verify(code)
@@ -39,7 +56,15 @@ module Carto
       qrcode.as_png(size: QR_CODE_SIZE).to_data_url
     end
 
+    def to_h
+      attributes.symbolize_keys
+    end
+
     private
+
+    def sync_central
+      ::User[user.id].update_in_central
+    end
 
     def last_login_in_seconds
       last_login.strftime('%s').to_i if last_login
@@ -55,7 +80,7 @@ module Carto
     end
 
     def create_shared_secret
-      self.shared_secret = ROTP::Base32.random_base32
+      self.shared_secret = ROTP::Base32.random_base32 unless shared_secret.present?
     end
   end
 end

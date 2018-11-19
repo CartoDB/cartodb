@@ -11,7 +11,7 @@
       @deselectAll="deselectAll"></MapBulkActions>
   </StickySubheader>
 
-  <div class="maps-list-container container grid">
+  <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
@@ -226,10 +226,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
-
-.maps-list-container {
-  margin-bottom: 44px;
-}
 
 .map-element {
   margin-bottom: 36px;

@@ -20,6 +20,11 @@ describe Carto::UserMetadataExportService do
     @feature_flag.destroy
     @limits_feature_flag.destroy
     @connector_provider.destroy
+    Cartodb::Central.any_instance.unstub(:update_user)
+  end
+
+  before(:each) do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
   end
 
   def create_user_with_basemaps_assets_visualizations
@@ -114,6 +119,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#export' do
     before(:all) do
+      Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
     end
 

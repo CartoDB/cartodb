@@ -63,7 +63,7 @@ module Carto
     private
 
     def sync_central
-      ::User[user.id].update_in_central
+      ::User[user.id].try(:update_in_central)
     end
 
     def last_login_in_seconds

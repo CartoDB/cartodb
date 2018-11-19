@@ -322,19 +322,19 @@ export default {
   background-position: center;
 
   &.icon--private {
-    background-image: url("../../assets/icons/datasets/privacy/lock.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-lock.svg");
   }
 
   &.icon--public {
-    background-image: url("../../assets/icons/datasets/privacy/public.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-public.svg");
   }
 
   &.icon--link {
-    background-image: url("../../assets/icons/datasets/privacy/link.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-link.svg");
   }
 
   &.icon--password {
-    background-image: url("../../assets/icons/datasets/privacy/password.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-password.svg");
   }
 
   &.icon--sharedBy {
@@ -347,7 +347,7 @@ export default {
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-position: center;
 
   &.icon--point {
     background-image: url("../../assets/icons/datasets/data-types/dots.svg");
@@ -359,6 +359,11 @@ export default {
 
   &.icon--line {
     background-image: url("../../assets/icons/datasets/data-types/line.svg");
+  }
+
+  &.icon--empty,
+  &.icon--unknown {
+    background-image: url("../../assets/icons/datasets/data-types/unknown.svg");
   }
 }
 

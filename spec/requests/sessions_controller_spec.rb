@@ -789,6 +789,10 @@ describe SessionsController do
 
         response.status.should eq 302
         response.headers['Location'].should include 'login?error=multifactor_authentication_inactivity'
+
+        follow_redirect!
+        response.status.should eq 200
+        response.body.should include("You've been logged out due to a long time of inactivity")
       end
 
       it 'rate limits verification code' do
@@ -927,6 +931,36 @@ describe SessionsController do
 
       def create_session
         post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
+    end
+
+    describe 'as org without user pass enabled' do
+      before(:all) do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        @organization = FactoryGirl.create(:organization_with_users,
+                                           :mfa_enabled,
+                                           auth_username_password_enabled: false)
+        @user = @organization.users.last
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+        # CartoDB.stubs(:extract_subdomain).returns(@organization.name)
+      end
+
+      after(:all) do
+        @organization.destroy
+        # CartoDB.unstub(:extract_subdomain)
+      end
+
+      def login(user = @user)
+        logout
+        host! "#{@organization.name}.localhost.lan"
+        login_as(user, scope: user.username)
+      end
+
+      def create_session
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
       end
 
       it_behaves_like 'all users workflow'

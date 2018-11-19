@@ -188,6 +188,25 @@ describe Carto::PermissionService do
   end
 
   describe '#revokes_by_user' do
+    def revokes_by_user_mock(old_acl, new_acl)
+      diff_by_types = Carto::PermissionService.diff_by_types(old_acl, new_acl)
+      diff = diff_by_types['user'] || {}
+
+      # diff by org users
+      diff_by_types['org'].each do |_, revoke|
+        org_diff = Carto::PermissionService.diff_by_users(@users, revoke, new_acl)
+        Carto::PermissionService.add_users_to_diff(diff, org_diff, 'fake_table_owner_id')
+      end
+
+      # diff by group users
+      diff_by_types['group'].each do |_, revoke|
+        group_diff = Carto::PermissionService.diff_by_users(@users, revoke, new_acl)
+        Carto::PermissionService.add_users_to_diff(diff, group_diff, 'fake_table_owner_id')
+      end
+
+      diff
+    end
+
     before :all do
       @users = [FakeUser.new("1"), FakeUser.new("2"), FakeUser.new("3"), FakeUser.new("4")]
     end
@@ -204,19 +223,9 @@ describe Carto::PermissionService do
           { "type": "group", "id": "1", "access": "r" }
         ]
       )
-
-      diff_by_types = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      diff = {}
-
-      # diff by org users
-      org_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['org']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, org_diff, 'fake_table_owner_id')
-
-      # diff by group users
-      group_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['group']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, group_diff, 'fake_table_owner_id')
-
       expected = { "1" => "w", "2" => "w", "3" => "w", "4" => "w" }
+
+      diff = revokes_by_user_mock(old_acl, new_acl)
       expect(diff).to eq(expected)
     end
 
@@ -234,19 +243,9 @@ describe Carto::PermissionService do
           { "type": "group", "id": "1", "access": "r" }
         ]
       )
-
-      diff_by_types = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      diff = {}
-
-      # diff by org users
-      org_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['org']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, org_diff, 'fake_table_owner_id')
-
-      # diff by group users
-      group_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['group']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, group_diff, 'fake_table_owner_id')
-
       expected = { "2" => "w", "3" => "w", "4" => "w" }
+
+      diff = revokes_by_user_mock(old_acl, new_acl)
       expect(diff).to eq(expected)
     end
 
@@ -265,19 +264,31 @@ describe Carto::PermissionService do
           { "type": "group", "id": "1", "access": "r" }
         ]
       )
-
-      diff_by_types = Carto::PermissionService.diff_by_types(old_acl, new_acl)
-      diff = {}
-
-      # diff by org users
-      org_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['org']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, org_diff, 'fake_table_owner_id')
-
-      # diff by group users
-      group_diff = Carto::PermissionService.diff_by_users(@users, diff_by_types['group']['1'], new_acl)
-      Carto::PermissionService.add_users_to_diff(diff, group_diff, 'fake_table_owner_id')
-
       expected = { "2" => "rw", "3" => "w", "4" => "w" }
+
+      diff = revokes_by_user_mock(old_acl, new_acl)
+      expect(diff).to eq(expected)
+    end
+
+    it 'user1: rw; user2: rw ---> none; org: rw ---> none; group: rw ---> r' do
+      old_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "user", "id": "2", "access": "rw" },
+          { "type": "group", "id": "1", "access": "rw" },
+          { "type": "org", "id": "1", "access": "rw" }
+        ]
+      )
+      new_acl = create_acl_hash(
+        [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "user", "id": "2", "access": "r" },
+          { "type": "group", "id": "1", "access": "r" }
+        ]
+      )
+      expected = { "2" => "w", "3" => "w", "4" => "w" }
+
+      diff = revokes_by_user_mock(old_acl, new_acl)
       expect(diff).to eq(expected)
     end
   end

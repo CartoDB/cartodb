@@ -68,7 +68,7 @@ module Carto
     end
 
     def self.diff_by_org_or_group(type, diff, diff_by_types, table_owner_id)
-      if diff_by_types[type].present? && (type == TYPE_ORG || type == TYPE_GROUP)
+      if diff_by_types[type].present?
         diff_by_types[type].each do |id, revoke|
           begin
             users = type == TYPE_ORG ? Carto::Organization.find(id).users : Carto::Group.find(id).users

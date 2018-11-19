@@ -928,7 +928,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_six) do
-    user_hash = full_export[:user].except!(:password_reset_token, :password_reset_sent_at)
+    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at)
 
     full_export[:user] = user_hash
     full_export

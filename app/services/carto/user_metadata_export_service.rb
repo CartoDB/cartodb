@@ -348,7 +348,8 @@ module Carto
     end
 
     def export_user_multifactor_auth(user_multifactor_auth)
-      user_multifactor_auth.to_h.except(:id)
+      exported_keys = %i(user_id type shared_secret enabled last_login created_at updated_at)
+      user_multifactor_auth.to_h.slice(*exported_keys)
     end
 
     def export_rate_limit(rate_limit)

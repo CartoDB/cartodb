@@ -23,6 +23,7 @@ Development
 - Fix parallel execution of some acceptance specs (#14391)
 - Use shared partials for logo and button animation in session views
 - Do not concatenate the schema if it's already defined while fetching overview tables #14414
+- MFA flash login errors (#14456)
 
 4.22.2 (2018-11-05)
 -------------------

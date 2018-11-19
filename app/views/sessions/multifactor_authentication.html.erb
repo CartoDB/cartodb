@@ -42,31 +42,28 @@
                 <%= hidden_field_tag 'user_id', @user.id %>
                 <%= hidden_field_tag 'email', @user.username %>
 
-                <% if @organization.nil? || @organization.auth_username_password_enabled %>
-                  <% if @flash_login_error %>
-                    <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
-                      <%= raw @flash_login_error %>
-                    </p>
-                  <% end %>
-
-                  <div class="Sessions-field">
-                    <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "js-verification CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
-
-                    <% if @login_error %>
-                      <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
-                    <% end %>
-                  </div>
-
-                  <div class="Sessions-field">
-                    <p>
-                      <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                        <span class="js-Loading-text">Verify</span>
-                        <%= render :partial => 'shared/loading_animation' %>
-                      </button>
-                    </p>
-                  </div>
-
+                <% if @flash_login_error %>
+                  <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
+                    <%= raw @flash_login_error %>
+                  </p>
                 <% end %>
+
+                <div class="Sessions-field">
+                  <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "js-verification CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <p>
+                    <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
+                      <span class="js-Loading-text">Verify</span>
+                      <%= render :partial => 'shared/loading_animation' %>
+                    </button>
+                  </p>
+                </div>
               <% end %>
             </div>
           </div>

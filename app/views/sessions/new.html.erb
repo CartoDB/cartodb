@@ -19,7 +19,7 @@
             <div class="Sessions-form">
               <%= form_tag CartoDB.path(self, 'create_session'), class: "js-Loading-form" do %>
 
-                <% if @organization.nil? || @organization.auth_username_password_enabled %>
+                <% if @organization.nil? || @organization.auth_username_password_enabled || @force_flash_login_error %>
                   <% if @flash_login_error %>
                     <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
                       <%= raw @flash_login_error %>

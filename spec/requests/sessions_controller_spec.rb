@@ -945,12 +945,10 @@ describe SessionsController do
         @user = @organization.users.last
         @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
         @user.save
-        # CartoDB.stubs(:extract_subdomain).returns(@organization.name)
       end
 
       after(:all) do
         @organization.destroy
-        # CartoDB.unstub(:extract_subdomain)
       end
 
       def login(user = @user)

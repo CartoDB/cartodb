@@ -51,6 +51,10 @@ module Carto
       qrcode.as_png(size: QR_CODE_SIZE).to_data_url
     end
 
+    def to_h
+      attributes.symbolize_keys
+    end
+
     private
 
     def last_login_in_seconds

@@ -126,8 +126,8 @@ module Carto
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
 
-      umas = exported_user[:user_multifactor_auths] || []
-      user.user_multifactor_auths += umas.map { |uma| Carto::UserMultifactorAuth.new_from_hash(uma) }
+      user_multifactor_auths = exported_user[:user_multifactor_auths] || []
+      user.user_multifactor_auths += user_multifactor_auths.map { |uma| Carto::UserMultifactorAuth.new_from_hash(uma) }
 
       if exported_user[:notifications]
         user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
@@ -348,15 +348,7 @@ module Carto
     end
 
     def export_user_multifactor_auth(user_multifactor_auth)
-      {
-        created_at: user_multifactor_auth.created_at,
-        user_id: user_multifactor_auth.user_id,
-        updated_at: user_multifactor_auth.updated_at,
-        type: user_multifactor_auth.type,
-        shared_secret: user_multifactor_auth.shared_secret,
-        enabled: user_multifactor_auth.enabled,
-        last_login: user_multifactor_auth.last_login
-      }
+      user_multifactor_auth.to_h.except(:id)
     end
 
     def export_rate_limit(rate_limit)

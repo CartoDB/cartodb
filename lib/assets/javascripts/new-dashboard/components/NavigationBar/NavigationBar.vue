@@ -19,7 +19,7 @@
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Data</span>
       </router-link>
-      <span class="navbar-elementItem navbar-icon u-showMobile" @click="toggleSearch">
+      <span class="navbar-elementItem navbar-icon navbar-searchIcon u-showMobile" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/loupe_white.svg" />
       </span>
   </ul>
@@ -103,6 +103,16 @@ export default {
 .navbar-elementsContainer {
   display: flex;
   position: relative;
+
+  a:last-of-type {
+    margin-right: 0;
+  }
+
+  @media (max-width: $layout-mobile) {
+    a:last-of-type {
+      margin-right: 36px;
+    }
+  }
 }
 
 .navbar-elementItem {
@@ -133,6 +143,10 @@ export default {
   }
 }
 
+.navbar-searchIcon {
+  padding-top: 21px;
+}
+
 .navbar-searchClose {
   display: none;
 }
@@ -146,11 +160,8 @@ export default {
 }
 
 .navbar-imagotype {
-  position: absolute;
-  left: 50%;
   width: 24px;
   height: 24px;
-  transform: translateX(-50%);
 }
 
 .navbar-search {

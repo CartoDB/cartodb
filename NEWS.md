@@ -13,7 +13,9 @@ Development
 - MFA (WIP)
   - Admin management (#14347)
   - Sync MFA status to central ([Central#2379](https://github.com/CartoDB/cartodb-central#2379))
+  - Add support in EUMAPI (#14425)
 - Change password functionality for Carto Gears (#14351)
+- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 
 ### Bug fixes / enhancements
 - Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)

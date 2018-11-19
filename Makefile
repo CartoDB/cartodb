@@ -146,6 +146,7 @@ WORKING_SPECS_4 = \
 	spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
 	spec/requests/carto/api/organization_users_controller_spec.rb \
+	spec/requests/carto/api/multifactor_authentication_controller_spec.rb \
 	spec/requests/api/imports_spec.rb \
 	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \

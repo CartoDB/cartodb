@@ -173,12 +173,6 @@ module Carto
       def update_params
         @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
       end
-
-      def ensure_edit_permissions
-        unless @user.editable_by?(current_viewer)
-          render_jsonp({ errors: ['You do not have permissions to edit that user'] }, 401)
-        end
-      end
     end
   end
 end

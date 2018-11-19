@@ -27,7 +27,7 @@
       <img src="../../assets/icons/navbar/imagotype.svg" />
   </div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-      <form action="#" method="get" class="navbar-search">
+      <form action="#" method="get" class="navbar-search" autocomplete="off">
           <input type="text" name="query" class="title is-small is-regular navbar-searchInput" placeholder="Search">
       </form>
       <div class="navbar-user">
@@ -98,7 +98,6 @@ export default {
   @media (max-width: $layout-mobile) {
     padding: 0 16px 0 20px;
   }
-
 }
 
 .navbar-elementsContainer {
@@ -108,8 +107,9 @@ export default {
 
 .navbar-elementItem {
   display: flex;
+  align-items: center;
   margin-right: 54px;
-  padding: 20px 0 16px;
+  padding: 20px 2px 16px;
   border-bottom: 4px solid transparent;
 
   @media (max-width: $layout-tablet) {
@@ -138,9 +138,10 @@ export default {
 }
 
 .navbar-icon {
-  margin-right: 8px;
-    @media (max-width: $layout-tablet) {
-      margin-right: 0;
+  margin-right: 12px;
+
+  @media (max-width: $layout-tablet) {
+    margin-right: 0;
   }
 }
 
@@ -158,55 +159,62 @@ export default {
     opacity: 0;
   }
 
-  &:hover {
-    .navbar-searchInput {
-      background-image: url("../../assets/icons/navbar/loupe_primary.svg");
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    width: 17px;
+    height: 17px;
+    transform: translate3d(0, -50%, 0);
+    background-image: url("../../assets/icons/navbar/loupe.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
 
+  &:hover {
+    &::after {
+      background-image: url("../../assets/icons/navbar/loupe_primary.svg");
+    }
+
+    .navbar-searchInput {
       &::placeholder {
         color: $primary-color;
       }
 
       &:focus {
-        background-image: url("../../assets/icons/navbar/loupe.svg");
         &::placeholder {
           color: $text-secondary-color;
         }
       }
+    }
+  }
 
-      &:focus-within {
-        background-color:  #FFF;
-      }
+  &:focus-within {
+    &::after {
+      background-image: url("../../assets/icons/navbar/loupe.svg");
     }
   }
 }
 
 .navbar-searchInput {
-    width: 120px;
-    height: 36px;
-    padding-left: 42px;
-    transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-    border: 0;
-    border-radius: 18px;
-    background-color: #FFF;
-    background-image: url("../../assets/icons/navbar/loupe.svg");
-    background-repeat: no-repeat;
-    background-position: 16px center;
+  width: 120px;
+  height: 36px;
+  padding-left: 42px;
+  transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+  border: 0;
+  border-radius: 18px;
+  background-color: #FFF;
 
-    &::placeholder {
-      color: $text-secondary-color;
-    }
-
-    &:focus {
-      width: 280px;
-      outline: none;
-    }
-
-    &:-webkit-autofill {
-      box-shadow: 0 0 0 30px white inset;
-      -webkit-box-shadow: 0 0 0 30px white inset;
-      -webkit-text-fill-color: $text-secondary-color !important;
-    }
+  &::placeholder {
+    color: $text-secondary-color;
   }
+
+  &:focus {
+    width: 240px;
+    outline: none;
+  }
+}
 
 .navbar-user {
   position: relative;
@@ -242,33 +250,46 @@ export default {
 }
 
 .navbar.is-search-open {
+  padding: 0;
+
   .navbar-elementsContainer {
     align-items: center;
   }
+
   .navbar-elementsContainer,
   .navbar-imagotype,
   .navbar-user {
     visibility: hidden;
     opacity: 0;
   }
+
   .navbar-searchContainer {
     visibility: visible;
-    opacity: 1;
-  }
-  .navbar-search {
     position: absolute;
-    width: calc(100% - 66px);
-    left: 0;
-    margin-left: 16px;
-    visibility: visible;
+    width: 100%;
     opacity: 1;
   }
+
+  .navbar-search {
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    width: calc(100% - 66px);
+    margin-left: 16px;
+    opacity: 1;
+
+    &::after {
+      display: none;
+    }
+  }
+
   .navbar-searchInput {
     width: 100%;
-    background-image: none;
-    border-radius: 3px;
     padding: 16px;
+    border-radius: 3px;
+    background-image: none;
   }
+
   .navbar-searchClose {
     display: block;
     position: absolute;

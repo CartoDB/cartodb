@@ -13,6 +13,8 @@ Development
 - MFA (WIP)
   - Admin management (#14347)
   - Support user migration (#14337)
+  - User management (#14403)
+  - Sync MFA status to central ([Central#2379](https://github.com/CartoDB/cartodb-central#2379))
   - Add support in EUMAPI (#14425)
 - Change password functionality for Carto Gears (#14351)
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)

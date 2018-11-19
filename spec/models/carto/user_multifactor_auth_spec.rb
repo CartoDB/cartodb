@@ -14,6 +14,7 @@ describe Carto::UserMultifactorAuth do
   end
 
   before :each do
+    Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
     @carto_user.reload.user_multifactor_auths.each(&:destroy!)
   end
 
@@ -46,6 +47,63 @@ describe Carto::UserMultifactorAuth do
     it 'is disabled by default' do
       mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
       expect { mfa.disabled? }.to be_true
+    end
+
+    it 'syncs to central' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central
+        .any_instance
+        .expects(:update_user)
+        .with(@carto_user.username,
+              has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
+        .once
+      Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
+    end
+  end
+
+  describe '#update' do
+    it 'syncs enabled to central' do
+      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+
+      Cartodb::Central
+        .any_instance
+        .expects(:update_user)
+        .with(@carto_user.username,
+              has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_ENABLED))
+        .once
+
+      mfa.enabled = true
+      mfa.save!
+    end
+
+    it 'syncs needs setup to central' do
+      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type, enabled: true)
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+
+      Cartodb::Central
+        .any_instance
+        .expects(:update_user)
+        .with(@carto_user.username,
+              has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP))
+        .once
+
+      mfa.enabled = false
+      mfa.save!
+    end
+
+    it 'syncs disabled to central' do
+      mfa = Carto::UserMultifactorAuth.create!(user_id: @carto_user.id, type: @valid_type)
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+
+      Cartodb::Central
+        .any_instance
+        .expects(:update_user)
+        .with(@carto_user.username,
+              has_entries(multifactor_authentication_status: User::MULTIFACTOR_AUTHENTICATION_DISABLED))
+        .once
+
+      mfa.destroy!
     end
   end
 

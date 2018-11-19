@@ -43,7 +43,6 @@
 
 <script>
 import UserDropdown from './UserDropdown';
-import { Number } from 'core-js';
 
 export default {
   name: 'NavigationBar',
@@ -175,8 +174,8 @@ export default {
     position: absolute;
     top: 50%;
     left: 16px;
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
     transform: translate3d(0, -50%, 0);
     background-image: url("../../assets/icons/navbar/loupe.svg");
     background-repeat: no-repeat;

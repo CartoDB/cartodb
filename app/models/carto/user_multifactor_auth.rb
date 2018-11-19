@@ -23,8 +23,8 @@ module Carto
     self.inheritance_column = :_type
 
     scope :enabled, -> { where(enabled: true) }
-    scope :setup, -> { where(enabled: false) }    
-    
+    scope :setup, -> { where(enabled: false) }
+
     def self.new_from_hash(uma_hash)
       new(
         created_at: uma_hash[:created_at],

@@ -17,8 +17,8 @@ module Carto
     validates_uniqueness_of :type, scope: :user_id
 
     before_create :create_shared_secret
-    after_save    :sync_central
-    after_destroy :sync_central
+    after_save    :sync_central, unless: :skip_central_sync
+    after_destroy :sync_central, unless: :skip_central_sync
 
     self.inheritance_column = :_type
 
@@ -68,7 +68,7 @@ module Carto
     def sync_central
       # due to AR/Sequel transactions the user might not exist in the database yet
       # this happens when cascade saving a new user with user_multifactor_auths (i.e. in user migrations)
-      ::User[user.id].update_in_central unless skip_central_sync
+      ::User[user.id].update_in_central
     end
 
     def last_login_in_seconds

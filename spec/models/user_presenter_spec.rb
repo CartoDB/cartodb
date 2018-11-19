@@ -198,6 +198,7 @@ describe Carto::Api::UserPresenter do
     new_data[:geocoder_provider].should == old_data[:geocoder_provider]
     new_data[:isolines_provider].should == old_data[:isolines_provider]
     new_data[:routing_provider].should == old_data[:routing_provider]
+    new_data[:mfa_configured].should == old_data[:mfa_configured]
 
     if org_user
       new_data[:organization].keys.sort.should == old_data[:organization].keys.sort
@@ -263,6 +264,7 @@ describe Carto::Api::UserPresenter do
   def add_new_keys(user_poro)
     new_poro = user_poro.dup.deep_merge(viewer: false)
     new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
+    new_poro[:mfa_configured] = false
     new_poro
   end
 

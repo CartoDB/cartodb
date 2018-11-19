@@ -12,6 +12,7 @@ Development
   - UI improvements (#14389)
 - MFA (WIP)
   - Admin management (#14347)
+  - User management (#14403)
   - Sync MFA status to central ([Central#2379](https://github.com/CartoDB/cartodb-central#2379))
   - Add support in EUMAPI (#14425)
 - Change password functionality for Carto Gears (#14351)

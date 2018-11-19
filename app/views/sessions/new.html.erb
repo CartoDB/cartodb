@@ -27,7 +27,7 @@
                   <% end %>
 
                   <div class="Sessions-field">
-                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", autofocus: true %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

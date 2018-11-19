@@ -52,6 +52,7 @@ export default {
   methods: {
     getActionHandlers () {
       return {
+        deselectAll: () => {},
         updateVisualization: (model) => {
           this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
         },

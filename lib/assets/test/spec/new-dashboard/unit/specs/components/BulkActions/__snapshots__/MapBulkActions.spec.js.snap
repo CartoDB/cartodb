@@ -53,12 +53,16 @@ exports[`MapBulkActions.vue should render all single actions: "Select all", "Cre
 
 exports[`MapBulkActions.vue should render multiple locked action: "Unlock maps" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAllMaps
+  </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.unlockMaps
   </button></section>
 `;
 
 exports[`MapBulkActions.vue should render single locked action: "Unlock map" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAllMaps
+  </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.unlockMaps
   </button></section>
 `;

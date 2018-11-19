@@ -2,6 +2,7 @@ require 'base64'
 
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/errors'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
@@ -268,6 +269,8 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
+
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
   # Only at the editor, and only after new authentications, destroy other sessions
@@ -289,7 +292,6 @@ end
 Warden::Manager.after_set_user do |user, auth, opts|
   # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
-
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
 end
 

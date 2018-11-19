@@ -14,11 +14,11 @@ describe Carto::UserMultifactorAuth do
   end
 
   before :each do
-    @carto_user.user_multifactor_auths.each(&:destroy)
+    @carto_user.reload.user_multifactor_auths.each(&:destroy!)
   end
 
   after :all do
-    @carto_user.destroy
+    @carto_user.destroy!
   end
 
   describe '#create' do
@@ -85,11 +85,11 @@ describe Carto::UserMultifactorAuth do
 
   describe '#provisioning_uri' do
     before :each do
-      @multifactor_auth = FactoryGirl.create(:totp, user: @carto_user)
+      @multifactor_auth = FactoryGirl.create(:totp, :active, user: @carto_user)
     end
 
     after :each do
-      @multifactor_auth.destroy
+      @multifactor_auth.destroy!
     end
 
     it 'provides a provisioning_uri' do

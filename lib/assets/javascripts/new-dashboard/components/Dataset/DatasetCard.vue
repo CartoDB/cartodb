@@ -13,7 +13,7 @@
     </div>
     <div class="dataset-cell cell--main">
       <div class="title-container">
-        <h3 class="text is-caption is-txtGrey u-ellipsis row-title">
+        <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
           {{ dataset.name }}
         </h3>
         <span class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">

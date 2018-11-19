@@ -1,6 +1,6 @@
 module Carto
   # A dataset may be comprised of additional tables other than the main table
-  # For example, if overviews have been creetaed for the dataset.
+  # For example, if overviews have been created for the dataset.
   # This is a utility to apply changes (e.g. privilege modifications) to all
   # the tables than comprise the dataset.
   module TableAndFriends
@@ -9,7 +9,8 @@ module Carto
       block[schema, table_name, qualified_name]
       overviews_service = Carto::OverviewsService.new(db_connection)
       overviews_service.overview_tables(qualified_name).each do |overview_table|
-        block[schema, overview_table, qualified_table_name(schema, overview_table)]
+        table, _ = Table.table_and_schema(overview_table)
+        block[schema, table, qualified_table_name(schema, table)]
       end
       # TODO: should we apply also to raster overview tables?
       # To do so we could use SupportTables class and modify it to make #tables public.

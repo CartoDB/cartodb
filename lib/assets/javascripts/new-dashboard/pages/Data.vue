@@ -1,5 +1,5 @@
 <template>
-  <section class="section section--sticky-header">
+  <section class="page">
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -68,11 +68,13 @@
         </li>
       </ul>
 
-      <EmptyState
-        :text="$t('DataPage.emptyState')"
-        v-if="emptyState">
-        <img svg-inline src="../assets/icons/datasets/emptyState.svg">
-      </EmptyState>
+      <div class="grid-cell grid-cell--col12">
+        <EmptyState
+          :text="$t('DataPage.emptyState')"
+          v-if="emptyState">
+          <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+        </EmptyState>
+      </div>
 
       <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
         <li v-for="n in 12" :key="n">
@@ -167,6 +169,7 @@ export default {
   },
   methods: {
     goToPage (page) {
+      this.deselectAll();
       window.scroll({ top: 0, left: 0 });
       this.$router.push({
         name: 'datasets',

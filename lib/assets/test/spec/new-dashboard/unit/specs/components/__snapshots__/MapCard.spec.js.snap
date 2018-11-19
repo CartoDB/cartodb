@@ -8,14 +8,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -40,14 +40,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -72,14 +72,14 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -104,14 +104,14 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -137,14 +137,14 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -169,14 +169,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -201,14 +201,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -233,14 +233,14 @@ exports[`MapCard.vue should render correct contents 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -265,14 +265,14 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -295,14 +295,14 @@ exports[`MapCard.vue should render description and tags 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC</p>
+        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
@@ -333,7 +333,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   <mapquickactions-stub map="[object Object]" class="card-actions"></mapquickactions-stub>
   <div class="card-text">
     <div class="card-header">
-      <h2 class="card-title title is-caption">
+      <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>

@@ -1,5 +1,5 @@
 <template>
-<section class="section section--sticky-header">
+<section class="page">
   <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
     <h2 class="title is-caption">
       {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
@@ -31,8 +31,10 @@
             v-if="!selectedMaps.length"
             :filter="appliedFilter"
             :order="appliedOrder"
+            :orderDirection="appliedOrderDirection"
             :metadata="mapsMetadata"
-            @filterChanged="applyFilter">
+            @filterChanged="applyFilter"
+            @orderChanged="applyOrder">
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </FilterDropdown>
@@ -138,6 +140,7 @@ export default {
       currentPage: state => state.maps.page,
       appliedFilter: state => state.maps.filterType,
       appliedOrder: state => state.maps.order,
+      appliedOrderDirection: state => state.maps.orderDirection,
       maps: state => state.maps.list,
       mapsMetadata: state => state.maps.metadata,
       isFetchingMaps: state => state.maps.isFetching,
@@ -178,6 +181,17 @@ export default {
     },
     applyFilter (filter) {
       this.$router.push({ name: 'maps', params: { filter } });
+    },
+    applyOrder (orderParams) {
+      this.$router.push({
+        name: 'maps',
+        params: this.$route.params,
+        query: {
+          ...this.$route.query,
+          order: orderParams.order,
+          order_direction: orderParams.direction
+        }
+      });
     },
     toggleSelected ({ map, isSelected }) {
       if (isSelected) {

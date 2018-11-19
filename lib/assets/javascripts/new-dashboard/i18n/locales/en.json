@@ -6,6 +6,7 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "views": "{views} views (30 days)",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -58,10 +59,10 @@
         "shared": "Shared with you",
         "favorited": "Your Favorited Datasets",
         "locked": "Your Locked Datasets",
-        "public": "Your public datasets",
-        "link": "Your link-shared datasets",
-        "password": "Your password-protected datasets",
-        "private": "Your private datasets"
+        "public": "Your Public Datasets",
+        "link": "Your Link-shared Datasets",
+        "password": "Your Password-protected Datasets",
+        "private": "Your Private Datasets"
       }
     },
     "createDataset": "New Dataset",
@@ -79,10 +80,10 @@
         "shared": "Shared with you",
         "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
-        "public": "Your public maps",
-        "link": "Your link-shared maps",
-        "password": "Your password-protected maps",
-        "private": "Your private maps"
+        "public": "Your Public Maps",
+        "link": "Your Link-shared Maps",
+        "password": "Your Password-protected Maps",
+        "private": "Your Private Maps"
       }
     },
     "zeroCase": {
@@ -108,15 +109,16 @@
     },
     "order": {
       "favourites": "Favourites first",
+      "views": "Most viewed first",
       "alphabetical": {
-        "title": "Alphabetically",
+        "title": "Name",
         "A-Z": "A-Z",
         "Z-A": "Z-A"
       },
       "date": {
-        "title": "Date Modified",
-        "last": "Last",
-        "first": "First"
+        "title": "Updated",
+        "newest": "Newest",
+        "oldest": "Oldest"
       }
     },
     "initialState": "Change Filters"

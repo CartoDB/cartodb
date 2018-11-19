@@ -39,26 +39,6 @@
     </div>
   <% } %>
 
-  <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
-    <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
-    </div>
-
-    <span class="FormAccount-separator"></span>
-
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
-      </div>
-      <div class="FormAccount-rowData">
-        <div class="FormAccount-planTag CDB-Size-medium"><%= planName %></div>
-        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>" class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
-        </div>
-      </div>
-    </div>
-  <% } %>
-  
   <% if (mfaFeatureFlagEnabled) { %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
@@ -83,6 +63,27 @@
       </div>
     </div>
   <% } %>
+  
+  <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
+    <div class="FormAccount-title">
+      <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
+    </div>
+
+    <span class="FormAccount-separator"></span>
+
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="FormAccount-planTag CDB-Size-medium"><%= planName %></div>
+        <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>" class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  
 
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">

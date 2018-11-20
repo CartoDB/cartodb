@@ -1,30 +1,30 @@
 <template>
 <div class="section">
-  <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('FilterDropdown.orderMaps') }}</h6>
+  <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.orderMaps') }}</h6>
   <ul class="list">
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
-      {{ $t('FilterDropdown.order.date.title') }}  (
+      {{ $t('SettingsDropdown.order.date.title') }}  (
         <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">
-          {{ $t('FilterDropdown.order.date.newest') }}
+          {{ $t('SettingsDropdown.order.date.newest') }}
         </a> |
         <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'asc') }" @click="setOrder('updated_at', 'asc')">
-          {{ $t('FilterDropdown.order.date.oldest') }}
+          {{ $t('SettingsDropdown.order.date.oldest') }}
         </a>
       )
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('name') }">
-      {{ $t('FilterDropdown.order.alphabetical.title') }} (
+      {{ $t('SettingsDropdown.order.alphabetical.title') }} (
         <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('name', 'asc') }" @click="setOrder('name', 'asc')">
-          {{ $t('FilterDropdown.order.alphabetical.A-Z') }}
+          {{ $t('SettingsDropdown.order.alphabetical.A-Z') }}
         </a> |
         <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('name', 'desc') }" @click="setOrder('name', 'desc')">
-          {{ $t('FilterDropdown.order.alphabetical.Z-A') }}
+          {{ $t('SettingsDropdown.order.alphabetical.Z-A') }}
         </a>
       )
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('mapviews', 'desc') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('mapviews', 'desc') }" @click="setOrder('mapviews', 'desc')">
-        {{ $t('FilterDropdown.order.views') }}
+        {{ $t('SettingsDropdown.order.views') }}
       </a>
     </li>
   </ul>
@@ -84,7 +84,7 @@ export default {
       width: 14px;
       height: 14px;
       transform: translateY(-50%);
-      background-image: url("../../../assets/icons/common/check.svg");
+      background-image: url("../../assets/icons/common/check.svg");
       background-repeat: no-repeat;
       background-position: center;
     }

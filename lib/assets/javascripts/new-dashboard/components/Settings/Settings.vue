@@ -5,21 +5,21 @@
   </template>
 
   <Filters :section="section" :filter="filter" :metadata="metadata" @filterChanged="setFilter"/>
-  <MapsOrdering :order="order" :orderDirection="orderDirection" @orderChanged="setOrder"/>
+  <Ordering :order="order" :orderDirection="orderDirection" @orderChanged="setOrder"/>
 </Dropdown>
 </template>
 
 <script>
-import Dropdown from './Dropdown';
+import Dropdown from '../Dropdowns/Dropdown';
 import Filters from '../Settings/Filters';
-import MapsOrdering from '../Settings/Ordering/MapsOrdering';
+import Ordering from '../Settings/Ordering';
 
 export default {
-  name: 'FilterDropdown',
+  name: 'SettingsDropdown',
   components: {
     Dropdown,
     Filters,
-    MapsOrdering
+    Ordering
   },
   props: {
     section: String,
@@ -51,20 +51,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
-
-.dropdown__toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  padding: 0 9px;
-  border-radius: 2px;
-
-  &.dropdown__toggle--active {
-    background-color: #F2F6F9;
-  }
-}
-</style>

@@ -4,37 +4,37 @@
     </div>
     <div class="dataset-list-cell cell--main" @click="changeOrder('name')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReversedOrderApplied('name') }">
+            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
         {{ $t(`datasetListHeader.name`) }}
       </span>
     </div>
     <div class="dataset-list-cell cell--large" @click="changeOrder('updated_at')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReversedOrderApplied('updated_at') }">
+            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
         {{ $t(`datasetListHeader.lastModified`) }}
       </span>
     </div>
     <div class="dataset-list-cell cell--small" @click="changeOrder('rows')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('rows'), 'is-reversed': isReversedOrderApplied('rows') }">
+            :class="{ 'is-active': isOrderApplied('rows'), 'is-reversed': isReverseOrderApplied('rows') }">
         {{ $t(`datasetListHeader.rows`) }}
       </span>
     </div>
     <div class="dataset-list-cell cell--small" @click="changeOrder('size')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReversedOrderApplied('size') }">
+            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReverseOrderApplied('size') }">
         {{ $t(`datasetListHeader.size`) }}
       </span>
     </div>
     <div class="dataset-list-cell cell--small" @click="changeOrder('usage')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('usage'), 'is-reversed': isReversedOrderApplied('usage') }">
+            :class="{ 'is-active': isOrderApplied('usage'), 'is-reversed': isReverseOrderApplied('usage') }">
         {{ $t(`datasetListHeader.usage`) }}
       </span>
     </div>
     <div class="dataset-list-cell cell--small cell--privacy" @click="changeOrder('privacy')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReversedOrderApplied('privacy') }">
+            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
         {{ $t(`datasetListHeader.privacy`) }}
       </span>
     </div>
@@ -43,16 +43,18 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-
 export default {
   name: 'DatasetListHeader',
+  props: {
+    order: String,
+    orderDirection: String
+  },
   methods: {
-    changeOrder (order, orderDirection) {
-      if (this.currentOrder === order) {
+    changeOrder (order) {
+      if (this.order === order) {
         return this.setOrder(
           order,
-          this.getOppositeOrderDirection(this.currentOrderDirection)
+          this.getOppositeOrderDirection(this.orderDirection)
         );
       }
 
@@ -70,21 +72,17 @@ export default {
     },
 
     isOrderApplied (order) {
-      return order === this.currentOrder;
+      return order === this.order;
     },
 
-    isReversedOrderApplied (order) {
-      return order === this.currentOrder && this.currentOrderDirection === 'asc';
+    isReverseOrderApplied (order) {
+      return order === this.order && this.orderDirection === 'asc';
     },
 
     setOrder (order, direction = 'desc') {
       this.$emit('changeOrder', { order, direction });
     }
-  },
-  computed: mapState({
-    currentOrder: state => state.datasets.order,
-    currentOrderDirection: state => state.datasets.orderDirection
-  })
+  }
 };
 </script>
 

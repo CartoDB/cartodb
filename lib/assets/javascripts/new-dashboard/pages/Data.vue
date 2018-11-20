@@ -26,17 +26,18 @@
               @selectAll="selectAll"
               @deselectAll="deselectAll"></DatasetBulkActions>
 
-            <FilterDropdown
+            <SettingsDropdown
               section="datasets"
               v-if="!selectedDatasets.length"
               :filter="appliedFilter"
               :order="appliedOrder"
               :orderDirection="appliedOrderDirection"
               :metadata="datasetsMetadata"
-              @filterChanged="applyFilter">
-              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+              @filterChanged="applyFilter"
+              @orderChanged="applyOrder">
+              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
               <img svg-inline v-else src="../assets/icons/common/filter.svg">
-            </FilterDropdown>
+            </SettingsDropdown>
           </template>
 
           <template slot="actionButton" v-if="!initialState && !selectedDatasets.length">
@@ -93,7 +94,7 @@ import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import { mapState } from 'vuex';
-import FilterDropdown from '../components/Dropdowns/FilterDropdown';
+import SettingsDropdown from '../components/Settings/Settings';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
@@ -107,7 +108,7 @@ export default {
   name: 'DataPage',
   components: {
     CreateButton,
-    FilterDropdown,
+    SettingsDropdown,
     SectionTitle,
     Pagination,
     DatasetCard,

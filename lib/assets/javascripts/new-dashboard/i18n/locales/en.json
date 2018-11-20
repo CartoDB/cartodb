@@ -145,10 +145,10 @@
   },
   "UserDropdown": {
     "settings": "Settings",
-    "organizationSettings": "Organization Settings",
+    "organizationSettings": "Your organization",
     "apiKeys": "API Keys & OAuth",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
-    "logout": "Logout"
+    "logout": "LOG OUT"
   }
 }

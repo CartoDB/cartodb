@@ -18,7 +18,7 @@
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
-          <img svg-inline src="../../assets/icons/navbar/dropdown/settings.svg"/>
+          <img svg-inline src="../../assets/icons/navbar/dropdown/organization.svg"/>
         </div>
         <a :href="`${ baseUrl }/organization`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.organizationSettings') }}</a>
       </li>
@@ -42,9 +42,10 @@
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
       </li>
     </ul>
-    <div class="navbar-dropdown-bottom">
-      <a :href="`${ baseUrl }/logout`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.logout') }}</a>
-    </div>
+    <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom">
+      <div class="arrow"><img svg-inline src="../../assets/icons/navbar/dropdown/arrow-right.svg" /></div>
+      <div class="title is-small is-txtAlert">{{ $t('UserDropdown.logout') }}</div>
+    </a>
   </div>
 </template>
 
@@ -142,9 +143,27 @@ export default {
 }
 
 .navbar-dropdown-bottom {
+  display: flex;
+  align-items: baseline;
   padding: 24px 30px;
   border-radius: 0 0 4px 4px;
   background-color: $softblue;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  & .arrow {
+    margin-right: 8px;
+
+    svg {
+      vertical-align: middle;
+    }
+  }
+
+  .title {
+    letter-spacing: 1px;
+  }
 }
 
 .notification-number {

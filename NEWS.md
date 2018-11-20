@@ -9,17 +9,17 @@ Development
 
 ### Bug fixes / enhancements
 - MFA flash login errors (#14456)
+- Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
 
 4.23.0 (2018-11-19)
 -------------------
 
 ### Features
-* MFA (WIP)
-  * Login (#14336)
 * Lock login if too many failed attempts (#14334)
 * OAuth provider (WIP):
   * UI improvements (#14389)
 * MFA (WIP)
+  * Login (#14336)
   * Admin management (#14347)
   * Support user migration (#14337)
   * User management (#14403)

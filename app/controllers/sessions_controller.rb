@@ -116,7 +116,9 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    unless params[:skip] == "true" && user.active_multifactor_authentication.needs_setup? && user.organization_owner?
+    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup? && user.organization_owner?
+      disable_mfa(user.id)
+    else
       return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
 
       retry_after = user.password_login_attempt
@@ -429,5 +431,10 @@ class SessionsController < ApplicationController
     else
       "/404.html"
     end
+  end
+
+  def disable_mfa(user_id)
+    service = Carto::UserMultifactorAuthUpdateService.new(user_id: user_id)
+    service.update(enabled: false)
   end
 end

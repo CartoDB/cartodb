@@ -17,15 +17,17 @@ module Carto
     validates_uniqueness_of :type, scope: :user_id
 
     before_create :create_shared_secret
-    after_save    :sync_central
-    after_destroy :sync_central
+    after_save    :sync_central, unless: :skip_central_sync
+    after_destroy :sync_central, unless: :skip_central_sync
 
     self.inheritance_column = :_type
 
     scope :enabled, -> { where(enabled: true) }
     scope :setup, -> { where(enabled: false) }
 
-    def self.new_from_hash(uma_hash)
+    attr_accessor :skip_central_sync
+
+    def self.new_from_hash(uma_hash, skip_central_sync = true)
       new(
         created_at: uma_hash[:created_at],
         updated_at: uma_hash[:updated_at],
@@ -33,7 +35,8 @@ module Carto
         type: uma_hash[:type],
         shared_secret: uma_hash[:shared_secret],
         user_id: uma_hash[:user_id],
-        enabled: uma_hash[:enabled]
+        enabled: uma_hash[:enabled],
+        skip_central_sync: skip_central_sync
       )
     end
 
@@ -63,6 +66,8 @@ module Carto
     private
 
     def sync_central
+      # due to AR/Sequel transactions the user might not exist in the database yet
+      # this happens when cascade saving a new user with user_multifactor_auths (i.e. in user migrations)
       ::User[user.id].update_in_central
     end
 

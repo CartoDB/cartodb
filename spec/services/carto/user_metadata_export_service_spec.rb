@@ -22,6 +22,10 @@ describe Carto::UserMetadataExportService do
     @connector_provider.destroy
   end
 
+  before(:each) do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+  end
+
   def create_user_with_basemaps_assets_visualizations
     create_account_type_fg('FREE')
     @user = FactoryGirl.create(:carto_user)
@@ -114,6 +118,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#export' do
     before(:all) do
+      Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
     end
 
@@ -150,9 +155,9 @@ describe Carto::UserMetadataExportService do
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
+      service.save_imported_user(@user)
       @search_tweets = service.build_search_tweets_from_hash_export(export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
-      service.save_imported_user(@user)
 
       expect_export_matches_user(export[:user], @user)
       @user
@@ -923,7 +928,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_six) do
-    user_hash = full_export[:user].except!(:password_reset_token, :password_reset_sent_at)
+    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at)
 
     full_export[:user] = user_hash
     full_export

@@ -61,7 +61,7 @@
       </div>
 
       <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState">
-        <DatasetListHeader @changeOrder="applyOrder"></DatasetListHeader>
+        <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
       </div>
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">

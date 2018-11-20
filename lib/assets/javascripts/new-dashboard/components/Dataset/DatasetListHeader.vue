@@ -162,6 +162,7 @@ export default {
       position: absolute;
       width: 14px;
       height: 100%;
+      margin-left: 4px;
       transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
       background-image: url('../../assets/icons/datasets/chevron.svg');
       background-repeat: no-repeat;

@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import format from 'date-fns/format';
 export default {
   name: 'NotificationCard',
   props: {
@@ -17,16 +18,7 @@ export default {
   },
   computed: {
     receivedAtFormatted () {
-      const date = new Date(this.receivedAt);
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    },
-    htmlBodyText () {
-      const element = document.createElement('div');
-      element.innerHTML = this.htmlBody;
-      return element.innerText;
+      return format(new Date(this.receivedAt), 'DD/MM/YYYY');
     }
   }
 };

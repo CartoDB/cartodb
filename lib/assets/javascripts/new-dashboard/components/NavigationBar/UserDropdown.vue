@@ -12,32 +12,38 @@
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
-          <img src="../../assets/icons/navbar/dropdown/settings.svg"/>
+          <img svg-inline src="../../assets/icons/navbar/dropdown/settings.svg"/>
         </div>
-        <a :href="`${ baseUrl }/profile`" class="text is-semibold is-caption is-txtGrey">Settings</a>
+        <a :href="`${ baseUrl }/profile`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.settings') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
-          <img src="../../assets/icons/navbar/dropdown/api-keys.svg"/>
+          <img svg-inline src="../../assets/icons/navbar/dropdown/settings.svg"/>
         </div>
-        <a :href="`${ baseUrl }/your_apps`" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+        <a :href="`${ baseUrl }/organization`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.organizationSettings') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
-          <img src="../../assets/icons/navbar/dropdown/profile.svg"/>
+          <img svg-inline src="../../assets/icons/navbar/dropdown/api-keys.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+        <a :href="`${ baseUrl }/your_apps`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.apiKeys') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
-          <img src="../../assets/icons/navbar/dropdown/notifications.svg"/>
+          <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }#`" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.publicProfile') }}</a>
+      </li>
+      <li class="navbar-dropdown-iconLink">
+        <div class="icon-container">
+          <img svg-inline src="../../assets/icons/navbar/dropdown/notifications.svg"/>
+        </div>
+        <a :href="`${ baseUrl }#`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.notifications') }}</a>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
       </li>
     </ul>
     <div class="navbar-dropdown-bottom">
-      <a :href="`${ baseUrl }/logout`" class="text is-semibold is-caption is-txtGrey">Logout</a>
+      <a :href="`${ baseUrl }/logout`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.logout') }}</a>
     </div>
   </div>
 </template>
@@ -57,15 +63,15 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .navbar-dropdown {
+  visibility: hidden;
   position: absolute;
   right: 0;
   width: 360px;
   margin-top: 18px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
   transition: all 0.25s linear;
-  visibility: hidden;
+  border-radius: 4px;
   opacity: 0;
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
   pointer-events: none;
 
   &::before {
@@ -90,6 +96,7 @@ export default {
 
 .navbar-dropdown-profile {
   display: flex;
+  align-items: center;
   margin-bottom: 36px;
 
   .avatar-container {

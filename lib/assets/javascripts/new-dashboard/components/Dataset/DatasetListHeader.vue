@@ -14,9 +14,9 @@
         {{ $t(`datasetListHeader.lastModified`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell--small" @click="changeOrder('rows')">
+    <div class="dataset-list-cell cell--small" @click="changeOrder('estimated_row_count')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('rows'), 'is-reversed': isReverseOrderApplied('rows') }">
+            :class="{ 'is-active': isOrderApplied('estimated_row_count'), 'is-reversed': isReverseOrderApplied('estimated_row_count') }">
         {{ $t(`datasetListHeader.rows`) }}
       </span>
     </div>

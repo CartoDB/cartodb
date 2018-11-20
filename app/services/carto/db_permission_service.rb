@@ -17,8 +17,10 @@ module Carto
       new_acl = more_permisive_by_user(new_acl)
 
       diff = revokes_by_user(old_acl, new_acl, table.owner.id)
-      shared_apikey_revokes(table, diff) unless diff.blank?
-      shared_oauth_app_user_revokes(table, diff) unless diff.blank?
+      unless diff.blank?
+        shared_apikey_revokes(table, diff)
+        shared_oauth_app_user_revokes(table, diff)
+      end
     end
 
     private_class_method def self.shared_apikey_revokes(table, revokes)
@@ -30,20 +32,6 @@ module Carto
     private_class_method def self.shared_oauth_app_user_revokes(table, revokes)
       Carto::OauthAppUser.where(user_id: revokes.keys).find_each do |oau|
         oau.revoke_permissions(table, PERMISSIONS[revokes[oau.user_id].to_sym])
-      end
-    end
-
-    private_class_method def self.revoke(table, revoked_permissions, db_role)
-      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
-        query = %{
-          REVOKE #{revoked_permissions.join(', ')}
-          ON TABLE #{qualified_name}
-          FROM \"#{db_role}\"
-        }
-        db_run(query)
-        sequences_for_table(s, t).each do |seq|
-          db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
-        end
       end
     end
 

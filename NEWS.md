@@ -6,7 +6,7 @@ Development
 
 ### Features
 - OAuth provider (WIP):
-  - Revoke permissions when owner stops sharing you a dataset (#14433)
+  - Revoke permissions when owner stops sharing you a dataset (#14472)
 
 ### Bug fixes / enhancements
 - None yet

@@ -40,7 +40,7 @@ module Carto
 
     def revoke_permissions(table, revoked_permissions)
       db_connection = user.in_database(as: :superuser)
-      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
+      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |_s, _t, qualified_name|
         query = %{
           REVOKE #{revoked_permissions.join(', ')}
           ON TABLE #{qualified_name}

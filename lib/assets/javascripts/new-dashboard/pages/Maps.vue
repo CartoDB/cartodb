@@ -84,7 +84,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import FilterDropdown from '../components/FilterDropdown';
+import FilterDropdown from '../components/Dropdowns/FilterDropdown';
 import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';

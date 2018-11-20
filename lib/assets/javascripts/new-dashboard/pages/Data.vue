@@ -31,6 +31,7 @@
               v-if="!selectedDatasets.length"
               :filter="appliedFilter"
               :order="appliedOrder"
+              :orderDirection="appliedOrderDirection"
               :metadata="datasetsMetadata"
               @filterChanged="applyFilter">
               <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
@@ -59,7 +60,7 @@
       </div>
 
       <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState">
-        <DatasetListHeader></DatasetListHeader>
+        <DatasetListHeader @changeOrder="applyOrder"></DatasetListHeader>
       </div>
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
@@ -92,7 +93,7 @@ import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import { mapState } from 'vuex';
-import FilterDropdown from '../components/FilterDropdown';
+import FilterDropdown from '../components/Dropdowns/FilterDropdown';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
@@ -147,6 +148,7 @@ export default {
       currentPage: state => state.datasets.page,
       appliedFilter: state => state.datasets.filterType,
       appliedOrder: state => state.datasets.order,
+      appliedOrderDirection: state => state.datasets.orderDirection,
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
       isFetchingDatasets: state => state.datasets.isFetching,
@@ -182,6 +184,17 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
+    },
+    applyOrder (orderParams) {
+      this.$router.push({
+        name: 'datasets',
+        params: this.$route.params,
+        query: {
+          ...this.$route.query,
+          order: orderParams.order,
+          order_direction: orderParams.direction
+        }
+      });
     },
     toggleSelected ({ dataset, isSelected }) {
       if (isSelected) {

@@ -178,8 +178,12 @@ describe Carto::DbPermissionService do
       end
 
       it 'user1: rw; group1: rw ---> r; group2: rw ---> none' do
-        old_acl = [{ "type": "group", "id": "1", "access": "rw" }, { "type": "group", "id": "2", "access": "rw" }]
-        new_acl = [{ "type": "group", "id": "1", "access": "r" }]
+        old_acl = [
+          { "type": "user", "id": "1", "access": "rw" },
+          { "type": "group", "id": "1", "access": "rw" },
+          { "type": "group", "id": "1", "access": "rw" }
+        ]
+        new_acl = [{ "type": "user", "id": "1", "access": "rw" }, { "type": "group", "id": "1", "access": "r" }]
         expected = { "2" => "w", "3" => "w", "4" => "w" }
         diff = DbPermissionServiceMock.shared_entities_revokes(old_acl, new_acl, 'fake_table_owner_id')
         expect(diff).to eq(expected)
@@ -270,13 +274,12 @@ describe Carto::DbPermissionService do
         old_acl = [
           { "type": "user", "id": "1", "access": "rw" },
           { "type": "user", "id": "2", "access": "r" },
-          { "type": "group", "id": "1", "access": "rw" },
-          { "type": "org", "id": "1", "access": "rw" }
+          { "type": "org", "id": "1", "access": "r" },
+          { "type": "group", "id": "1", "access": "rw" }
         ]
         new_acl = [
           { "type": "user", "id": "1", "access": "rw" },
-          { "type": "user", "id": "2", "access": "r" },
-          { "type": "group", "id": "1", "access": "r" }
+          { "type": "user", "id": "2", "access": "r" }
         ]
         expected = { "2" => "w", "3" => "rw", "4" => "rw" }
         diff = DbPermissionServiceMock.shared_entities_revokes(old_acl, new_acl, 'fake_table_owner_id')

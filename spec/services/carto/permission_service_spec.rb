@@ -147,7 +147,7 @@ describe Carto::PermissionService do
           { "type": "group", "id": "1", "access": "rw" },
           { "type": "org", "id": "1", "access": "rw" }
         ]
-        new_acl = [{ "type": "user", "id": "1", "access": "rw" },{ "type": "group", "id": "1", "access": "r" }]
+        new_acl = [{ "type": "user", "id": "1", "access": "rw" }, { "type": "group", "id": "1", "access": "r" }]
         expected = { "2" => "w", "3" => "w", "4" => "w" }
         diff = PermissionServiceMock.revokes_by_user(old_acl, new_acl, 'fake_table_owner_id')
         expect(diff).to eq(expected)

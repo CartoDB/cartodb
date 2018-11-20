@@ -12,9 +12,7 @@ module Carto
       diff_prioritize_by_user(diff_by_types, new_acl)
     end
 
-    private
-
-    def self.diff_by_types(old_acl, new_acl, table_owner_id)
+    private_class_method def self.diff_by_types(old_acl, new_acl, table_owner_id)
       diff_by_types = {}
       old_acl.each do |type, id_access|
         id_access.each do |id, access|
@@ -41,7 +39,7 @@ module Carto
       diff_by_types
     end
 
-    def self.hashing_acl(acl)
+    private_class_method def self.hashing_acl(acl)
       acl_hash = {}
       acl.each do |p|
         acl_hash[p[:type]] ||= {}
@@ -50,7 +48,7 @@ module Carto
       acl_hash
     end
 
-    def self.user_ids(type, id)
+    private_class_method def self.user_ids(type, id)
       if type == TYPE_USER
         [id]
       elsif type == TYPE_ORG
@@ -60,10 +58,11 @@ module Carto
       end
     end
 
-    def self.diff_prioritize_by_user(diff_by_types, new_acl)
+    private_class_method def self.diff_prioritize_by_user(diff_by_types, new_acl)
       diff = {}
       diff_by_types.each do |uid, revoke_by_type|
-        revoke = if revoke_by_type[TYPE_USER].present?
+        revoke =
+        if revoke_by_type[TYPE_USER].present?
           revoke_by_type[TYPE_USER]
         elsif revoke_by_type.length == 1
           revoke_by_type[TYPE_ORG] || revoke_by_type[TYPE_GROUP]

@@ -2887,13 +2887,14 @@ describe Carto::Api::VisualizationsController do
         before(:each) do
           @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id)
           table = FactoryGirl.create(:table, user_id: @user.id)
-          table.insert_row!(:name => 'name1')
+          table.insert_row!(name: 'name1')
           table.update_table_pg_stats
           @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
         end
 
         it 'orders descending by default' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count'), {}, @headers
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              order: 'estimated_row_count'), {}, @headers
 
           last_response.status.should == 200
           response = JSON.parse(last_response.body)

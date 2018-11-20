@@ -25,7 +25,7 @@ describe Carto::DbPermissionService do
 
       old_acl = [{ "type": "user", "id": "1", "access": "r" }]
       new_acl = [{ "type": "user", "id": "1", "access": "r" }]
-      diff = PermissionServnoneiceMock.revokes_by_user(old_acl, new_acl, 'fake_table_owner_id')
+      diff = DbPermissionServiceMock.shared_entities_revokes(old_acl, new_acl, 'fake_table_owner_id')
       expect(diff).to be_blank
 
       old_acl = [{ "type": "user", "id": "1", "access": "r" }]

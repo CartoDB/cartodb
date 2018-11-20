@@ -69,18 +69,17 @@ module Carto
     private_class_method def self.diff_prioritize_by_user(diff_by_types, new_acl)
       diff = {}
       diff_by_types.each do |uid, revoke_by_type|
-        revoke =
-        if revoke_by_type[TYPE_USER].present?
-          revoke_by_type[TYPE_USER]
-        elsif revoke_by_type.length == 1
-          revoke_by_type[TYPE_ORG] || revoke_by_type[TYPE_GROUP]
-        elsif revoke_by_type[TYPE_ORG] == 'w' || revoke_by_type[TYPE_GROUP] == 'w'
-          'w'
-        elsif revoke_by_type[TYPE_ORG] == 'r' || revoke_by_type[TYPE_GROUP] == 'r'
-          'r'
-        else
-          'rw'
-        end
+        revoke = if revoke_by_type[TYPE_USER].present?
+                   revoke_by_type[TYPE_USER]
+                 elsif revoke_by_type.length == 1
+                   revoke_by_type[TYPE_ORG] || revoke_by_type[TYPE_GROUP]
+                 elsif revoke_by_type[TYPE_ORG] == 'w' || revoke_by_type[TYPE_GROUP] == 'w'
+                   'w'
+                 elsif revoke_by_type[TYPE_ORG] == 'r' || revoke_by_type[TYPE_GROUP] == 'r'
+                   'r'
+                 else
+                   'rw'
+                 end
 
         if new_acl[TYPE_USER].nil? || new_acl[TYPE_USER][uid].nil?
           diff[uid] = revoke

@@ -22,14 +22,6 @@ module Carto
     before_update :grant_dataset_role_privileges
     after_destroy :drop_dataset_role
 
-    READ_PERMISSIONS = ['select'].freeze
-    WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
-    PERMISSIONS = {
-      r: READ_PERMISSIONS,
-      w: WRITE_PERMISSIONS,
-      rw: READ_PERMISSIONS + WRITE_PERMISSIONS
-    }.freeze
-
     def authorized?(requested_scopes)
       OauthProvider::Scopes.subtract_scopes(requested_scopes, all_scopes, user.database_schema).empty?
     end
@@ -46,28 +38,18 @@ module Carto
       "carto_oauth_app_#{id}"
     end
 
-    def revoke_permissions_if_affected(table, revoked_permissions)
-      schema_table = Carto::TableAndFriends.qualified_table_name(table.database_schema, table.name)
-      query = %{
-        REVOKE #{revoked_permissions.join(', ')}
-        ON TABLE #{schema_table}
-        FROM \"#{dataset_role_name}\"
-      }
-      user.in_database(as: :superuser).execute(query)
-
-      sequences_for_table(schema_table).each do |seq|
-        seq_query = "REVOKE ALL ON SEQUENCE #{seq} FROM \"#{dataset_role_name}\""
-        user.in_database(as: :superuser).execute(seq_query)
-      end
-    end
-
-    def self.some_shared_permissions_revoked(table, user_revokes)
-      return if user_revokes.blank?
-
-      user_ids = user_revokes.keys
-
-      Carto::OauthAppUser.where(user_id: user_ids).find_each do |oau|
-        oau.revoke_permissions_if_affected(table, PERMISSIONS[user_revokes[oau.user_id].to_sym])
+    def revoke_permissions(table, revoked_permissions)
+      db_connection = user.in_database(as: :superuser)
+      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
+        query = %{
+          REVOKE #{revoked_permissions.join(', ')}
+          ON TABLE #{qualified_name}
+          FROM \"#{dataset_role_name}\"
+        }
+        db_connection.execute(query)
+        sequences_for_table(qualified_name).each do |seq|
+          db_connection.execute("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{dataset_role_name}\"")
+        end
       end
     end
 

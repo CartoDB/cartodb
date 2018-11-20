@@ -1,6 +1,13 @@
 require 'spec_helper_min'
 
 class DbPermissionServiceMock < Carto::DbPermissionService
+  def self.shared_entities_revokes(old_acl, new_acl, table_owner_id)
+    old_acl = more_permisive_by_user(old_acl)
+    new_acl = more_permisive_by_user(new_acl)
+
+    revokes_by_user(old_acl, new_acl, table_owner_id)
+  end
+
   def self.user_ids(type, id)
     if type == 'user'
       [id]

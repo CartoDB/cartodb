@@ -43,14 +43,6 @@ module Carto
 
     include Carto::AuthTokenGenerator
 
-    READ_PERMISSIONS = ['select'].freeze
-    WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
-    PERMISSIONS = {
-      r: READ_PERMISSIONS,
-      w: WRITE_PERMISSIONS,
-      rw: READ_PERMISSIONS + WRITE_PERMISSIONS
-    }.freeze
-
     TYPE_REGULAR = 'regular'.freeze
     TYPE_MASTER = 'master'.freeze
     TYPE_DEFAULT_PUBLIC = 'default'.freeze
@@ -184,19 +176,7 @@ module Carto
       )
     end
 
-    def self.some_shared_permissions_revoked(table, user_revokes)
-      return if user_revokes.blank?
-
-      user_ids = user_revokes.keys
-
-      # regular and oauth api keys
-      ApiKey.where(user_id: user_ids, type: [TYPE_REGULAR, TYPE_OAUTH]).find_each do |apikey|
-        revoked_permissions = PERMISSIONS[user_revokes[apikey.user_id].to_sym]
-        apikey.revoke_permissions_if_affected(table, revoked_permissions)
-      end
-    end
-
-    def revoke_permissions_if_affected(table, revoked_permissions)
+    def revoke_permissions(table, revoked_permissions)
       Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
         query = %{
           REVOKE #{revoked_permissions.join(', ')}

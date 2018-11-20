@@ -297,9 +297,8 @@ describe Carto::PermissionService do
           { "type": "group", "id": "1", "access": "rw" },
           { "type": "org", "id": "1", "access": "rw" }
         ]
-        expected = { "2" => "rw", "2" => "w" }
         diff = PermissionServiceMock.revokes_by_user(old_acl, new_acl, 'fake_table_owner_id')
-        expect(diff).to eq(expected)
+        expect(diff).to be_blank
       end
 
       it 'user1: rw; user2: rw ---> none; org: rw ---> none; group: rw ---> r' do
@@ -310,23 +309,6 @@ describe Carto::PermissionService do
           { "type": "org", "id": "1", "access": "rw" }
         ]
         new_acl = [{ "type": "user", "id": "1", "access": "rw" }, { "type": "group", "id": "1", "access": "r" }]
-        expected = { "2" => "rw", "3" => "w", "4" => "w" }
-        diff = PermissionServiceMock.revokes_by_user(old_acl, new_acl, 'fake_table_owner_id')
-        expect(diff).to eq(expected)
-      end
-
-      it 'user1: rw; user2: rw ---> none; org: rw ---> none; group: rw ---> r' do
-        old_acl = [
-          { "type": "user", "id": "1", "access": "rw" },
-          { "type": "user", "id": "2", "access": "rw" },
-          { "type": "group", "id": "1", "access": "rw" },
-          { "type": "org", "id": "1", "access": "rw" }
-        ]
-        new_acl = [
-          { "type": "user", "id": "1", "access": "rw" },
-          { "type": "user", "id": "2", "access": "r" },
-          { "type": "group", "id": "1", "access": "r" }
-        ]
         expected = { "2" => "w", "3" => "w", "4" => "w" }
         diff = PermissionServiceMock.revokes_by_user(old_acl, new_acl, 'fake_table_owner_id')
         expect(diff).to eq(expected)

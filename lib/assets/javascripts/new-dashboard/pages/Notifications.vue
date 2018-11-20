@@ -7,9 +7,14 @@
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
         </SectionTitle>
-        {{notifications}}
-        <NotificationCard :id='notifications[0].id' :receivedAt='notifications[0].received_at' :readAt='notifications[0].read_at' :htmlBody='notifications[0].html_body'>
-        </NotificationCard>
+        <div class="grid">
+          <NotificationCard class="grid-cell grid-cell--col9 grid-cell--col12--tablet" v-for="notification in notifications"
+            :key="notification.id"
+            :receivedAt='notification.received_at'
+            :readAt='notification.read_at'
+            :htmlBody='notification.html_body'>
+          </NotificationCard>
+        </div>
       </div>
     </div>
   </section>

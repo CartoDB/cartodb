@@ -1,8 +1,10 @@
 <template>
-<div>
-  <div class="notification-receivedDate">{{ receivedAtFormatted }}</div>
-  <div v-html=htmlBody class="notification-htmlBody"></div>
-  <span v-if=readAt class="notification-readCheck"></span>
+<div class="notification">
+  <div class="notification-info">
+    <div class="notification-received text is-small">{{ receivedAtFormatted }}</div>
+    <span v-if=!readAt class="notification-read"></span>
+  </div>
+  <div v-html=htmlBody class="notification-html text is-caption" :class="{'is-unread': !readAt}"></div>
 </div>
 </template>
 
@@ -25,4 +27,42 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
+
+.notification {
+  padding: 34px 0;
+  border-bottom: 1px solid $softblue;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.notification-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.notification-received {
+  color: $text-secondary-color;
+}
+
+.notification-read {
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin-left: 24px;
+  border-radius: 50%;
+  background: $notification;
+}
+
+.notification-html {
+  margin-top: 16px;
+  color: $text-color;
+
+  &.is-unread {
+    font-weight: 600;
+  }
+}
+
 </style>

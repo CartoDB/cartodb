@@ -276,7 +276,7 @@ class ApplicationController < ActionController::Base
     validate_session(current_user) if got_auth
   end
 
-  def redirect_or_forbidden(path, error = 'forbidden')
+  def redirect_or_forbidden(path, error)
     respond_to do |format|
       format.html do
         redirect_to CartoDB.path(self, path)
@@ -287,12 +287,23 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def redirect_or_not_found(path)
+    respond_to do |format|
+      format.html do
+        redirect_to CartoDB.path(self, path)
+      end
+      format.json do
+        head 404
+      end
+    end
+  end
+
   def render_multifactor_authentication
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
   end
 
   def render_locked_user
-    redirect_or_forbidden('lockout')
+    redirect_or_not_found('lockout')
   end
 
   def render_locked_owner

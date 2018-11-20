@@ -10,9 +10,6 @@ Development
 ### Bug fixes / enhancements
 - Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
 
-### Bug fixes / enhancements
-- None yet
-
 4.23.0 (2018-11-19)
 -------------------
 

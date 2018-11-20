@@ -11,20 +11,25 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
       </div>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a>
       <!---->
     </li>
-  </ul>
-  <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+  </ul> <a href="/logout" class="navbar-dropdown-bottom">
+    <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+    <div class="title is-small is-txtAlert">UserDropdown.logout</div>
+  </a>
 </div>
 `;
 
@@ -39,18 +44,23 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
       </div>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">Settings</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">API Keys &amp; OAuth</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
     </li>
-  </ul>
-  <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+    </li>
+  </ul> <a href="/logout" class="navbar-dropdown-bottom">
+    <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+    <div class="title is-small is-txtAlert">UserDropdown.logout</div>
+  </a>
 </div>
 `;

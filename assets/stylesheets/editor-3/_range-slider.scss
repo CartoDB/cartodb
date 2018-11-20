@@ -1,0 +1,126 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.rangeslider,
+.rangesliderFill {
+  display: block;
+}
+
+.rangeslider {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-width: 4px 160px 4px 0;
+    border-style: solid;
+    border-color: transparent #EEE transparent transparent;
+    cursor: pointer;
+  }
+}
+
+.rangeslider--horizontal {
+  width: 160px;
+  height: 20px;
+}
+
+.rangeslider--vertical {
+  width: 20px;
+  min-height: 160px;
+  max-height: 100%;
+}
+
+.rangeslider--disabled {
+  opacity: 0.4;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=40);
+
+  &::before {
+    cursor: not-allowed;
+  }
+}
+
+.rangesliderFill {
+  position: absolute;
+  background: $cMainLine;
+}
+
+.rangeslider--horizontal .rangesliderFill {
+  top: 0;
+  height: 100%;
+}
+
+.rangeslider--vertical .rangesliderFill {
+  bottom: 0;
+  width: 100%;
+}
+
+.rangeslider--no-fill .rangesliderFill {
+  display: none;
+}
+
+.rangesliderHandle {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  transition: transform 200ms;
+  border: 1px solid $cBlue;
+  border-radius: 50%;
+  outline: none;
+  background: #FFF;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.5);
+  }
+
+  .rangeslider--disabled & {
+    border: 1px solid $cMainLine;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.rangeslider--horizontal .rangesliderHandle {
+  top: 5px;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+}
+
+.rangeslider--vertical .rangesliderHandle {
+  left: -10px;
+  -ms-touch-action: pan-x;
+  touch-action: pan-x;
+}
+
+.rangeslider-label {
+  width: 100%;
+  text-align: left;
+}
+
+.rangeslider-ticks {
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.rangeslider-tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background: #CCC;
+}
+
+.rangeslider-tick.is-highlighted {
+  background: #333;
+}

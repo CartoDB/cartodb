@@ -1,0 +1,58 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.CodeMirror-hints {
+  display: block;
+  position: absolute;
+  z-index: 10;
+  width: 220px;
+  max-width: 240px;
+  height: auto;
+  max-height: 128px;
+  overflow-y: auto;
+  border: 1px solid #354148;
+  border-radius: 2px;
+  background: #27333A;
+  box-shadow: 0 3px 6px 0 rgba(#000, 0.16);
+}
+
+.CodeMirror-hint {
+  display: block;
+  position: relative;
+  margin: 0;
+  padding: $baseSize;
+  color: $cAltText;
+  font: 10px 'Monaco', 'Monospace';
+
+  span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .has-letter {
+    width: 60%;
+  }
+
+  .has-letter::after {
+    content: attr(data-type);
+    position: absolute;
+    top: 50%;
+    right: $baseSize;
+    transform: translateY(-50%);
+    color: #768085;
+    font-family: 'Monaco', 'Monospace';
+    letter-spacing: -0.5;
+  }
+}
+
+.CodeMirror-hint-active {
+  background: rgba($cWhite, 0.08);
+  color: $cWhite;
+  text-decoration: none;
+
+  .has-letter::after {
+    color: $cAlert;
+  }
+}

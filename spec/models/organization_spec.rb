@@ -709,6 +709,74 @@ describe Organization do
     end
   end
 
+  it 'should validate password_expiration_in_d' do
+    organization = FactoryGirl.create(:organization)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # minimum 1 day
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 0)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # maximum 1 year
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 365)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 365
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 366)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # nil or blank means unlimited
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: nil)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: '')
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # defaults to global config if no value
+    organization = FactoryGirl.build(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.save
+
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    organization.password_expiration_in_d = nil
+    organization.valid?.should be_true
+    organization.save
+    organization = Carto::Organization.find(organization.id)
+    organization.password_expiration_in_d.should_not be
+
+    # override default config if a value is set
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+
+    # keep values configured
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+  end
+
+  it 'should handle redis keys properly' do
+    @organization = create_organization_with_users(name: 'overquota-org')
+
+    $users_metadata.hkeys(@organization.key).should_not be_empty
+
+    @organization.destroy
+
+    $users_metadata.hkeys(@organization.key).should be_empty
+  end
+
   def random_attributes(attributes = {})
     random = unique_name('viz')
     {

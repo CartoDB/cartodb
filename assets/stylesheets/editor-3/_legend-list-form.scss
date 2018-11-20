@@ -1,0 +1,87 @@
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.LegendItem,
+.ListItem {
+  position: relative;
+  flex: 1;
+
+  [data-fieldsets],
+  [data-fields] {
+    flex: 1;
+  }
+}
+
+.LegendItem.is-movable {
+  cursor: move;
+}
+
+.LegendItem .is-hidden {
+  visibility: hidden;
+}
+
+.ListItem--fixed {
+  cursor: auto;
+}
+
+.LegendItem-deleteButton {
+  position: absolute;
+  top: -1px;
+  right: -24px;
+  padding: 16px 8px 8px;
+  opacity: 0;
+
+  .LegendItem:hover & {
+    opacity: 1;
+  }
+}
+
+.ListItem-deleteButton {
+  visibility: hidden;
+  position: absolute;
+  top: -1px;
+  right: 0;
+  padding: 8px;
+  opacity: 0;
+
+  .ListItem:not(:first-child):hover & {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.LegendItem-listFieldsOrder {
+  position: absolute;
+  top: -1px;
+  left: -24px;
+  padding: 16px 4px 8px;
+  opacity: 0;
+  cursor: move !important;
+
+  .LegendItem:hover & {
+    opacity: 1;
+  }
+}
+
+// To show fill component on the left
+.LegendItem .Editor-FormDialog {
+  left: 0;
+}
+
+.LegendItem .Editor-fieldset {
+  display: flex;
+  justify-content: space-between;
+}
+
+.LegendItem .Editor-fieldset .Editor-formInner:nth-child(1) {
+  flex: 0 100px;
+  margin-right: 4px;
+}
+
+.LegendItem .Editor-fieldset .Editor-formInner:nth-child(2) {
+  flex: 2;
+}
+
+.LegendItems-container {
+  margin-top: -$baseSize;
+}

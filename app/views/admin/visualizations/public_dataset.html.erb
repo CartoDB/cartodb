@@ -8,7 +8,11 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'cartodb', 'common', 'public_table', 'public_map' %>
+  <% if @has_new_dashboard %>
+    <%= stylesheet_link_tag 'common_new', 'public_table_new', 'public_map_new' %>
+  <% else %>
+    <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_table', 'public_map' %>
+  <% end %>
 <% end %>
 
 <% content_for(:js) do %>
@@ -17,9 +21,9 @@
   <% end %>
 
   <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common_dashboard.js', 'public_table_new_vendor.js', 'public_table_new.js' %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'public_table_new' %>
   <% else %>
-    <%= javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
+    <%= editor_javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
   <% end %>
 
   <script>
@@ -75,8 +79,14 @@
   <div class="CDB-Text PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center js-spinner"></div>
 
-    <div class="panes pane_table"></div>
-    <div class="panes pane_map"></div>
+    <% if @has_new_dashboard %>
+      <div class="panes pane_table"></div>
+      <div class="panes pane_map"></div>
+    <% else %>
+      <div class="panes pane_table u-hideOnTablet"></div>
+      <div class="panes pane_map u-hideOnTablet"></div>
+      <div class="panes panes_mobile u-showOnTablet"></div>
+    <% end %>
 
     <div class="navigation u-showOnTablet">
       <ul>

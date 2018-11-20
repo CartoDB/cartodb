@@ -1,0 +1,262 @@
+
+/**
+*  Styles for public table showed in public table
+*
+*/
+
+@import "compass/css3/inline-block";
+@import "../old_common/vars";
+@import "../old_common/mixins";
+@import "compass/reset/utilities";
+@import "../variables/sizes";
+
+html {
+  line-height: 1;
+}
+
+body.public {
+  min-width: inherit; /* Public table CSS */
+
+  .PublicMap-map {
+    display: flex;
+    overflow: hidden;
+
+    @media (max-width: $sMedia-desktop) {
+      flex-direction: column;
+    }
+  }
+
+  .map {
+    position: relative;
+    padding: 0;
+
+    .cartodb-map {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .pane_table {
+    z-index: 10;
+    flex: 1 1 auto;
+    overflow: hidden;
+    border-radius: 3px;
+    text-align: left;
+
+    &.is-active {
+      background: #FFF;
+    }
+  }
+
+  div.panes {
+    position: static;
+    max-height: 100%;
+    margin: 8px;
+    clear: both;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &.pane_map {
+      margin-left: 0;
+    }
+
+    @media (max-width: $sMedia-desktop) {
+      display: none;
+      margin: 16px;
+
+      &.is-active {
+        display: block;
+      }
+
+      &.pane_map {
+        margin-left: 16px;
+      }
+    }
+
+    div.shadow {
+      display: none;
+    }
+
+    div.table table thead tr th > div > div {
+      position: relative;
+    }
+  }
+
+  .pane_map {
+    position: relative;
+    top: 0;
+    flex: 1;
+    min-width: 35%;
+    overflow-x: hidden;
+
+    @media (max-width: $sMedia-desktop) {
+      min-width: initial;
+    }
+  }
+
+  .panes .emptyTableContainer {
+    position: relative;
+  }
+
+  .dialog {
+    position: relative;
+    z-index: 10000;
+
+    .block.modal.api {
+      .content {
+        position: relative;
+        padding: 0;
+      }
+
+      .inner {
+        position: relative;
+        padding: 28px 40px 0;
+      }
+
+      .shadow {
+        @extend .white-gradient-shadow-bottom;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 60px;
+      }
+
+      code {
+        color: #666;
+        font-size: 13px;
+        line-height: 120%;
+      }
+
+      .sample {
+        padding: 23px 40px;
+        border-bottom: 1px solid #E5E5E5;
+        background: #F2F2F2;
+
+        p {
+          color: #999;
+          font-size: 13px;
+        }
+      }
+
+      h4 {
+        margin: 0 0 5px;
+        color: #666;
+        font-family: $text-fonts;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .foot {
+        padding: 38px;
+
+        p {
+          width: 357px;
+          padding: 5px 0;
+          float: left;
+          color: #666;
+          font-size: 13px;
+          line-height: 120%;
+
+          a {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  div.separator.bottom {
+    display: none;
+    position: relative;
+    width: 100%;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  div.table.public table tbody tr td div.cell {
+    cursor: default;
+  }
+
+  div.table.public table tbody tr:hover {
+    border-top: 1px solid #ECECEC;
+    background: inherit;
+
+    & + tr {
+      border-top: 1px solid #ECECEC;
+    }
+  }
+
+  div.table table thead tr th {
+    > div {
+      label.interactuable .coloptions {
+        line-height: 1;
+
+        &::after {
+          display: none;
+        }
+      }
+
+      p {
+        font-weight: normal;
+      }
+    }
+  }
+
+  div.table table tfoot.page_loader {
+    display: none;
+  }
+
+  .navigation {
+    position: relative;
+    z-index: 100;
+    margin: 8px 0 16px;
+    opacity: 0;
+    text-align: center;
+
+    ul {
+      @include clearfix();
+      max-width: 1024px;
+      margin: auto;
+
+      li {
+        display: inline-block;
+        margin: 0 1px 0 0;
+        list-style: none;
+
+        &:last-child {
+          margin-left: $sMargin-group;
+        }
+
+        a {
+          display: block;
+          width: 36px;
+          height: 36px;
+          border: 1px solid #636D72;
+          border-radius: 19px;
+          color: #636D72;
+          text-align: center;
+
+          i {
+            font-size: 14px;
+          }
+        }
+
+        a.selected {
+          border-color: #FFF;
+          color: #FFF;
+          cursor: default;
+        }
+      }
+    }
+  }
+
+  div.table table thead tr th > div p.auto {
+    opacity: 0;
+  }
+
+  .cartodb-map-data {
+    position: relative;
+    z-index: 100;
+    top: 300px;
+  }
+}

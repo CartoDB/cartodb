@@ -466,7 +466,7 @@ module CartoDB
       end
 
       def exportjob_logger
-        @@exportjob_logger ||= ::Logger.new(log_file_path("datamover.log"))
+        @@exportjob_logger ||= CartoDB.unformatted_logger(log_file_path("datamover.log"))
       end
 
       def get_db_size(database)
@@ -502,7 +502,6 @@ module CartoDB
                        status:       nil,
                        trace:        nil
                      }
-
         begin
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
@@ -571,6 +570,7 @@ module CartoDB
             @org_users.each do |org_user|
               CartoDB::DataMover::ExportJob.new(id: org_user['username'],
                                                 data: @options[:data] && @options[:split_user_schemas],
+                                                metadata: @options[:metadata],
                                                 path: @options[:path],
                                                 job_uuid: job_uuid,
                                                 from_org: true,

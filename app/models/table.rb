@@ -208,7 +208,8 @@ class Table
     if table_name =~ /\./
       table_name, schema = table_name.split('.').reverse
       # remove quotes from schema
-      [table_name, schema.gsub('"', '')]
+      schema = schema.delete('"')
+      [table_name, (schema if schema != 'public')]
     else
       [table_name, nil]
     end
@@ -454,13 +455,12 @@ class Table
 
   def remove_table_from_user_database
     owner.in_database(:as => :superuser) do |user_database|
-      begin
-        user_database.run("DROP SEQUENCE IF EXISTS cartodb_id_#{oid}_seq")
-      rescue => e
-        CartoDB::StdoutLogger.info 'Table#after_destroy error', "maybe table #{qualified_table_name} doesn't exist: #{e.inspect}"
+      user_database.transaction do
+        # Give up if it cannot get ExclusiveLocks for DDL operations in a reasonable time
+        user_database.run(%{SET LOCAL lock_timeout = '1s'})
+        Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
+        user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
       end
-      Carto::OverviewsService.new(user_database).delete_overviews qualified_table_name
-      user_database.run(%{DROP TABLE IF EXISTS #{qualified_table_name}})
     end
   end
 
@@ -522,7 +522,7 @@ class Table
     first_columns     = []
     middle_columns    = []
     last_columns      = []
-    owner.in_database.schema(name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
+    owner.in_database.schema(name, schema: owner.database_schema, reload: options.fetch(:reload, true)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
 
       calculate_the_geom_type if column[0] == :the_geom

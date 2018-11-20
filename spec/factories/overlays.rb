@@ -1,6 +1,8 @@
 FactoryGirl.define do
 
   factory :carto_overlay, class: Carto::Overlay do
+    to_create(&:save!)
+
     order 1
     options { { display: true, x: 60, y: 20 } }
 

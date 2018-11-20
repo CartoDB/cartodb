@@ -20,7 +20,7 @@
       <% } %>
     <% } %>
     <% if (state === "error") { %>
-      <%- _t('components.modals.add-layer.imports.service-import.state-error') %>
+      <%- _t('components.modals.add-layer.imports.service-import.state-error', { title: title }) %>
     <% } %>
     <% if (state === "token") { %>
       <%- _t('components.modals.add-layer.imports.service-import.state-token') %>

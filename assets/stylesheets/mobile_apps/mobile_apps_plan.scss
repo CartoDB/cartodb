@@ -1,0 +1,55 @@
+// MobileApps plan
+// --------------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.MobilePlan {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+}
+
+.MobilePlan-items {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.MobilePlan-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+  border-radius: 4px;
+  border-color: #73C86B;
+  color: #73C86B;
+  line-height: 50px;
+  text-align: center;
+
+  i {
+    height: 35px;
+    font-size: 25px;
+  }
+}
+
+.MobilePlan-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.MobilePlan-title--lightGreen {
+  color: $cTypography-paragraphs;
+  font-size: 16px;
+}
+
+.MobilePlan-subtitle {
+  color: $cTypography-secondary;
+  font-size: 13px;
+  font-weight: normal;
+}

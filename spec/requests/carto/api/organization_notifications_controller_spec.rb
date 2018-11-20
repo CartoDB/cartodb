@@ -68,7 +68,7 @@ module Carto
       end
 
       it 'displays validations errors' do
-        create_notification_request(@organization.id, @owner, {}) do |response|
+        create_notification_request(@organization.id, @owner, body: '') do |response|
           expect(response.status).to eq 422
           expect(@organization.notifications).to be_empty
 

@@ -38,7 +38,7 @@ module Carto
                       AND am.amname = 'gist'
                     ) OR (
                       a.attname = '#{::Table::CARTODB_ID}'
-                      AND ir.relname <> '#{origin_table_name}_pkey'
+                      AND i.indisprimary = true
                     )
                   )
               )

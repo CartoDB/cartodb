@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="no-js">
   <head>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="<%= yield :keywords %>">
@@ -23,7 +23,7 @@
     <meta name="twitter:image" content="<%= @avatar_url %>">
     <meta name="twitter:url" content="<%= request.original_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'common', 'data_library' %>
+    <%= stylesheet_link_tag 'common_new', 'data_library' %>
     <%= insert_google_tag_manager('primary') %>
   </head>
 
@@ -42,11 +42,7 @@
     </script>
 
     <%= insert_trackjs() %>
-    <% if @has_new_dashboard %>
-      <%= javascript_include_tag 'common_dashboard', 'data_library_new_vendor', 'data_library_new' %>
-    <% else %>
-      <%= javascript_include_tag 'cdb.js', 'templates', 'data_library_deps', 'data_library' %>
-    <% end %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'data_library' %>
     <%= yield :js %>
     <%= insert_google_analytics('primary', true) %>
     <%= insert_hubspot() %>

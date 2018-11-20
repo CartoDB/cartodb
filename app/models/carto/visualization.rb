@@ -38,6 +38,8 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
 
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
 
@@ -51,13 +53,14 @@ class Carto::Visualization < ActiveRecord::Base
 
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
 
-  scope :remotes, where(type: TYPE_REMOTE)
+  scope :remotes, -> { where(type: TYPE_REMOTE) }
 
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
-  belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
+  belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
+  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, inverse_of: :visualizations,
+                                                primary_key: :id, foreign_key: :user_id
 
   belongs_to :permission, inverse_of: :visualization, dependent: :destroy
 
@@ -67,7 +70,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays, order: '"order"', dependent: :destroy
+  has_many :overlays, -> { order(:order) }, dependent: :destroy, inverse_of: :visualization
 
   belongs_to :active_layer, class_name: Carto::Layer
 
@@ -79,7 +82,7 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
-  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+  has_many :mapcaps, -> { order('created_at DESC') }, class_name: Carto::Mapcap, dependent: :destroy
 
   has_one :state, class_name: Carto::State, autosave: true
 
@@ -87,6 +90,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
+  validates :type, inclusion: { in: VALID_TYPES }
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -99,12 +103,6 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-
-  # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
-  # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
-  # with an update after creation. This is fixed in Rails 4.
-  before_create :delay_saving_tags
-  after_create :save_tags
 
   after_commit :perform_invalidations
 
@@ -415,7 +413,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def widgets
     # Preload widgets for all layers
-    ActiveRecord::Associations::Preloader.new(layers, :widgets).run
+    ActiveRecord::Associations::Preloader.new.preload(layers, :widgets)
     layers.map(&:widgets).flatten
   end
 
@@ -576,7 +574,9 @@ class Carto::Visualization < ActiveRecord::Base
   def invalidate_after_commit
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
-    raise 'invalidate_after_commit should be called within a transaction' if connection.open_transactions.zero?
+    if self.class.connection.open_transactions.zero?
+      raise 'invalidate_after_commit should be called within a transaction'
+    end
     add_to_transaction
     true
   end
@@ -701,15 +701,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def delay_saving_tags
-    @cached_tags = tags
-    self.tags = nil
-  end
-
-  def save_tags
-    update_attribute(:tags, @cached_tags)
   end
 
   def password_digest(password, salt)

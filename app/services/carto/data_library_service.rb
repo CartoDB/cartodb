@@ -1,4 +1,5 @@
 require_relative '../../../services/sql-api/sql_api'
+require_relative '../../../app/controllers/carto/controller_helper'
 
 module Carto
   class DataLibraryService
@@ -6,9 +7,9 @@ module Carto
     # - granted_api_key is stored as the one to use for the importing
     def load_dataset!(carto_api_client,
                       source_dataset:, source_username:, source_api_key:,
-                      target_username:, granted_api_key:)
+                      target_username:, granted_api_key:, format: 'gpkg')
       target_user = Carto::User.find_by_username(target_username)
-      raise Carto::LoadError("User not found: #{target_username}") unless target_user
+      raise Carto::LoadError.new("User not found: #{target_username}") unless target_user
 
       remote_visualization = carto_api_client.get_visualization_v1(
         username: source_username, name: source_dataset, params: { api_key: source_api_key }
@@ -19,7 +20,7 @@ module Carto
 
       base_url = "#{carto_api_client.scheme}://#{carto_api_client.base_url(source_username)}"
       sql_api_url = CartoDB::SQLApi.with_username_api_key(source_username, granted_api_key, privacy, base_url: base_url)
-                                   .export_table_url(source_dataset)
+                                   .export_table_url(source_dataset, format)
       external_source = Carto::ExternalSource.new(
         import_url: sql_api_url,
         rows_counted: remote_table[:row_count],
@@ -42,7 +43,7 @@ module Carto
 
     def load_datasets!(carto_api_client,
                        source_username:, source_api_key:,
-                       target_username:, granted_api_key:)
+                       target_username:, granted_api_key:, format: 'gpkg')
       api_keys = carto_api_client.get_api_keys_v3(username: source_username, params: { api_key: granted_api_key })
       api_key = api_keys[:result].find { |key| key[:token] == granted_api_key }
 
@@ -56,7 +57,8 @@ module Carto
             load_dataset!(carto_api_client,
                           source_dataset: table[:name],
                           source_username: source_username, source_api_key: source_api_key,
-                          target_username: target_username, granted_api_key: granted_api_key)
+                          target_username: target_username, granted_api_key: granted_api_key,
+                          format: format)
           end
         end
       end

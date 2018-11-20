@@ -21,6 +21,10 @@ module ApplicationHelper
     super(CartoDB.extract_subdomain(request))
   end
 
+  def current_viewer
+    controller.current_viewer
+  end
+
   def show_footer?
     (controller_name == 'tables' && action_name != 'show') ||
     (controller_name == 'client_applications') || (controller_name == 'users')
@@ -62,7 +66,7 @@ module ApplicationHelper
     end
   end
 
-  module_function :maps_api_template
+  module_function :maps_api_template, :maps_api_url
   module_function :sql_api_template, :sql_api_url
   module_function :app_assets_base_url
 
@@ -122,17 +126,67 @@ module ApplicationHelper
     render(partial: 'shared/google_maps', locals: { query_string: query_string })
   end
 
+  def sources_with_path(asset_type, sources)
+    path = if sources.first == :editor
+             sources.shift
+             "editor/#{editor_assets_version}"
+           else
+             frontend_version
+           end
+
+    raise_on_asset_absence sources
+
+    sources_with_prefix("/#{path}/#{asset_type}/", sources)
+  end
+
+  def sources_with_prefix(path, sources)
+    options = sources.extract_options!.stringify_keys
+    with_full_path = []
+    sources.each do |source|
+      with_full_path << path + source
+    end
+
+    with_full_path << options
+  end
+
   ##
   # Checks that the precompile list contains this file or raises an error, in dev only
   # Note: You will need to move config.assets.precompile to application.rb from production.rb
-  def javascript_include_tag *sources
-    raise_on_asset_absence sources
-    super *sources
+
+  def javascript_include_tag(*sources)
+    super *sources_with_path('javascripts', sources)
   end
 
-  def stylesheet_link_tag *sources
-    raise_on_asset_absence sources
-    super *sources
+  def stylesheet_link_tag(*sources)
+    super *sources_with_path('stylesheets', sources)
+  end
+
+  def image_path(source, editor = false)
+    if editor
+      super "/editor/#{editor_assets_version}/images/#{source}"
+    else
+      super "/#{frontend_version}/images/#{source}"
+    end
+  end
+
+  def image_tag(source, options={})
+    super "/#{frontend_version}/images/#{source}", options
+  end
+
+  def editor_image_path(source)
+    image_path(source, true)
+  end
+
+  def favicon_link_tag(source)
+    super "/#{frontend_version}/#{source}"
+  end
+
+  def editor_stylesheet_link_tag(*sources)
+    stylesheet_link_tag *([:editor] + sources)
+  end
+
+  def editor_javascript_include_tag(*sources)
+    javascript_include_tag *([:editor] + sources)
   end
 
   def raise_on_asset_absence *sources

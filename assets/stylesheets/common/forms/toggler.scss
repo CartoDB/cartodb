@@ -1,0 +1,92 @@
+@import '../../variables/colors';
+@import '../../variables/sizes';
+
+// Toggler styled checkboxes/radio buttons
+//
+// Example usage:
+//   <div class="Toggler">
+//     <input type="checkbox" id="foobar" />
+//     <label for="foobar" />
+//   </div>
+//
+// --------------------------------------------------------------------------------------------------------------------
+
+$sWidth: 36px;
+$sHeight: 20px;
+
+.Toggler {
+  display: inline-block;
+  position: relative;
+  width: $sWidth;
+  height: $sHeight;
+}
+
+.Toggler.is-disabled {
+  opacity: 0.4;
+
+  label {
+    cursor: default;
+  }
+}
+
+.Toggler input {
+  visibility: hidden;
+}
+
+.Toggler label {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: $sWidth;
+  height: $sHeight;
+  transition: all 150ms ease;
+  border-radius: 30px;
+  background-color: #DDD;
+  cursor: pointer;
+}
+
+.Toggler label::before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  transition: all 150ms ease;
+  border-radius: 30px;
+  background-color: #FFF;
+}
+
+.Toggler input:checked + label::before {
+  left: 20px;
+}
+
+.Toggler input:checked + label {
+  background-color: #73C86B;
+}
+
+// Toggler grey
+$color: #BBB;
+
+.Toggler--grey label {
+  width: $sWidth - 2px;
+  height: $sHeight - 2px;
+  border: 1px solid $color;
+  background: #FFF;
+  box-shadow: none;
+}
+
+.Toggler--grey label::before {
+  top: 3px;
+  background: $color;
+}
+
+.Toggler--grey input:checked + label::before {
+  left: 19px;
+}
+
+.Toggler--grey input:checked + label {
+  background-color: #FFF;
+}

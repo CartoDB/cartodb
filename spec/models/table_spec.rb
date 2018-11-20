@@ -2138,6 +2138,24 @@ describe Table do
       end
     end
 
+    describe 'self.table_and_schema' do
+      it 'returns nil schema if schema is "public"' do
+        Table.table_and_schema("public.sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns the schema if it is different from "public"' do
+        Table.table_and_schema("manolito.sm_org_line_cartotest").should == ["sm_org_line_cartotest", "manolito"]
+      end
+
+      it 'returns the table name when there is no schema' do
+        Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns schema without quotes' do
+        Table.table_and_schema("\"user-hyphen\".table").should == ["table", "user-hyphen"]
+      end
+    end
+
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})

@@ -11,12 +11,12 @@ describe Admin::OrganizationUsersController do
     host! "#{@organization.name}.localhost.lan"
   end
 
-  let(:username) { 'user-1' }
+  let(:username) { unique_name('user') }
 
   let(:user_params) do
     {
       username: username,
-      email: 'user-1@org.com',
+      email: "#{username}@org.com",
       password: 'user-1',
       password_confirmation: 'user-1',
       quota_in_bytes: 1000,
@@ -104,22 +104,38 @@ describe Admin::OrganizationUsersController do
       it 'returns 200 for admin users trying to create an admin' do
         login_as(@admin, scope: @admin.username)
 
-        post create_organization_user_url(user_domain: @admin.username), user: user_params.merge(org_admin: true)
+        post create_organization_user_url(user_domain: @admin.username),
+             user: user_params.merge(org_admin: true),
+             password_confirmation: @admin.password
         last_response.status.should == 200
         last_response.body.should include 'Validation failed: org_admin can only be set by organization owner'
+      end
+
+      it 'returns 403 for admin users trying to create an admin if wrong password_confirmation' do
+        login_as(@admin, scope: @admin.username)
+
+        post create_organization_user_url(user_domain: @admin.username),
+             user: user_params.merge(org_admin: true),
+             password_confirmation: 'wrong'
+        last_response.status.should == 403
+        last_response.body.should include 'Confirmation password sent does not match your current password'
       end
 
       it 'returns 302 for admin users trying to create a non-admin' do
         login_as(@admin, scope: @admin.username)
 
-        post create_organization_user_url(user_domain: @admin.username), user: user_params
+        post create_organization_user_url(user_domain: @admin.username),
+             user: user_params,
+             password_confirmation: @admin.password
         last_response.status.should == 302
       end
 
       it 'returns 302 for owner' do
         login_as(@owner, scope: @owner.username)
 
-        post create_organization_user_url(user_domain: @owner.username), user: user_params.merge(org_admin: true)
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(org_admin: true),
+             password_confirmation: @owner.password
         last_response.status.should == 302
       end
     end
@@ -172,36 +188,56 @@ describe Admin::OrganizationUsersController do
       it 'returns 403 for admin users trying to edit an admin' do
         login_as(@admin, scope: @admin.username)
 
-        put update_organization_user_url(user_domain: @admin.username, id: @owner.username), user: { quota_in_bytes: 7 }
+        put update_organization_user_url(user_domain: @admin.username, id: @owner.username),
+            user: { quota_in_bytes: 7 },
+            password_confirmation: @admin.password
         last_response.status.should == 403
       end
 
       it 'returns 200 with error for admin users trying to convert a user into an admin' do
         login_as(@admin, scope: @admin.username)
 
-        put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { org_admin: true }
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username),
+            user: { org_admin: true },
+            password_confirmation: @admin.password
         last_response.status.should == 422
         expect(last_response.body).to include 'org_admin can only be set by organization owner'
+      end
+
+      it 'returns 403 if wrong password_confirmation' do
+        login_as(@admin, scope: @admin.username)
+
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username),
+            user: { quota_in_bytes: 7 },
+            password_confirmation: 'wrong'
+        last_response.status.should == 403
+        last_response.body.should include 'Confirmation password sent does not match your current password'
       end
 
       it 'returns 302 for admin users trying to edit a non-admin' do
         login_as(@admin, scope: @admin.username)
 
-        put update_organization_user_url(user_domain: @admin.username, id: @user.username), user: { quota_in_bytes: 7 }
+        put update_organization_user_url(user_domain: @admin.username, id: @user.username),
+            user: { quota_in_bytes: 7 },
+            password_confirmation: @admin.password
         last_response.status.should == 302
       end
 
       it 'returns 302 for admin users trying to edit themselves' do
         login_as(@admin, scope: @admin.username)
 
-        put update_organization_user_url(user_domain: @admin.username, id: @admin.username), user: { quota_in_bytes: 7 }
+        put update_organization_user_url(user_domain: @admin.username, id: @admin.username),
+            user: { quota_in_bytes: 7 },
+            password_confirmation: @admin.password
         last_response.status.should == 302
       end
 
       it 'returns 302 for owner' do
         login_as(@owner, scope: @owner.username)
 
-        put update_organization_user_url(user_domain: @owner.username, id: @admin.username), user: { quota_in_bytes: 7 }
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { quota_in_bytes: 7 },
+            password_confirmation: @owner.password
         last_response.status.should == 302
       end
     end
@@ -210,14 +246,16 @@ describe Admin::OrganizationUsersController do
       it 'returns 404 for non admin users' do
         login_as(@user, scope: @user.username)
 
-        delete delete_organization_user_url(user_domain: @user.username, id: @user.username)
+        delete delete_organization_user_url(user_domain: @user.username, id: @user.username),
+               password_confirmation: @user.password
         last_response.status.should == 404
       end
 
       it 'returns 403 for admin users trying to destroy an admin' do
         login_as(@admin, scope: @admin.username)
 
-        delete delete_organization_user_url(user_domain: @admin.username, id: @owner.username)
+        delete delete_organization_user_url(user_domain: @admin.username, id: @owner.username),
+               password_confirmation: @admin.password
         last_response.status.should == 403
       end
 
@@ -225,15 +263,30 @@ describe Admin::OrganizationUsersController do
         doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
         login_as(@admin, scope: @admin.username)
 
-        delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username)
+        delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username),
+               password_confirmation: @admin.password
         last_response.status.should == 302
+      end
+
+      it 'returns error if wrong password_confirmation' do
+        doomed_user = FactoryGirl.create(:valid_user, organization: @organization)
+        login_as(@admin, scope: @admin.username)
+
+        delete delete_organization_user_url(user_domain: @admin.username, id: doomed_user.username),
+               password_confirmation: 'wrong'
+        last_response.status.should == 302
+        follow_redirect!
+        last_response.body.should include 'Confirmation password sent does not match your current password'
       end
 
       it 'returns 302 for owner' do
         doomed_user = FactoryGirl.create(:valid_user, organization: @organization, org_admin: true)
         login_as(@owner, scope: @owner.username)
 
-        delete delete_organization_user_url(user_domain: @owner.username, id: doomed_user.username)
+        delete delete_organization_user_url(
+          user_domain: @owner.username,
+          id: doomed_user.username
+        ), password_confirmation: @owner.password
         last_response.status.should == 302
       end
     end
@@ -254,8 +307,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include 123456789.to_s
       end
 
       it 'quota defaults to remaining quota if the assigned default goes overquota' do
@@ -265,8 +317,7 @@ describe Admin::OrganizationUsersController do
         get new_organization_user_url(user_domain: @org_user_owner.username)
         last_response.status.should eq 200
 
-        input = "<input id=\"user_quota\" name=\"user[quota_in_bytes]\" type=\"hidden\" value=\"#{expected_quota}\" />"
-        last_response.body.should include input
+        last_response.body.should include expected_quota.to_s
       end
     end
 
@@ -282,7 +333,9 @@ describe Admin::OrganizationUsersController do
         ::User.any_instance.stubs(:create_in_central).returns(true)
         User.any_instance.expects(:load_common_data).once.returns(true)
 
-        post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params
+        post create_organization_user_url(user_domain: @org_user_owner.username),
+             user: user_params,
+             password_confirmation: @org_user_owner.password
         last_response.status.should eq 302
 
         user = Carto::User.find_by_username(user_params[:username])
@@ -297,6 +350,14 @@ describe Admin::OrganizationUsersController do
     end
 
     describe 'existing user operations' do
+      before(:all) do
+        @feature_flag = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
+      end
+
+      after(:all) do
+        @feature_flag.destroy
+      end
+
       before(:each) do
         @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end
@@ -309,7 +370,8 @@ describe Admin::OrganizationUsersController do
         it 'updates users' do
           new_quota = @existing_user.quota_in_bytes * 2
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: { quota_in_bytes: new_quota }
+              user: { quota_in_bytes: new_quota },
+              password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           @existing_user.reload
@@ -320,7 +382,8 @@ describe Admin::OrganizationUsersController do
           ::User.any_instance.stubs(:update_in_central).raises(CartoDB::CentralCommunicationFailure.new('Failed'))
           new_quota = @existing_user.quota_in_bytes * 2
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: { quota_in_bytes: new_quota }
+              user: { quota_in_bytes: new_quota },
+              password_confirmation: @org_user_owner.password
           last_response.body.should include('There was a problem while updating this user.')
 
           @existing_user.reload
@@ -335,7 +398,8 @@ describe Admin::OrganizationUsersController do
           }
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: params
+              user: params,
+              password_confirmation: @org_user_owner.password
           last_response.body.should include('match confirmation')
         end
 
@@ -349,15 +413,62 @@ describe Admin::OrganizationUsersController do
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
               user: params
-          last_response.body.should include('New password cannot be the same as old password')
           @existing_user.reload
           @existing_user.last_password_change_date.should eq last_change
+        end
+
+        it 'creates a multifactor authentication' do
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          FactoryGirl.create(:totp, user: @existing_user)
+          @existing_user.reload.user_multifactor_auths.should_not be_empty
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '0' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+
+          @existing_user.expects(:save).never
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
         end
       end
 
       describe '#destroy' do
         it 'deletes users' do
-          delete delete_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username)
+          delete delete_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+                 password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           ::User[@existing_user.id].should be_nil
@@ -448,7 +559,8 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params("1"))
+               user: user_params.merge(soft_limits_params("1")),
+               password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
           Carto::User.exists?(username: user_params[:username]).should be_false
@@ -460,7 +572,8 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, false)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_geocoding_limit: "1")
+               user: user_params.merge(soft_geocoding_limit: "1"),
+               password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
           Carto::User.exists?(username: user_params[:username]).should be_false
@@ -472,7 +585,9 @@ describe Admin::OrganizationUsersController do
         it 'by default soft limits are disabled' do
           old_limits = update_soft_limits(@org_user_owner, false)
 
-          post create_organization_user_url(user_domain: @org_user_owner.username), user: user_params
+          post create_organization_user_url(user_domain: @org_user_owner.username),
+               user: user_params,
+               password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           @user = Carto::User.where(username: user_params[:username]).first
@@ -485,7 +600,8 @@ describe Admin::OrganizationUsersController do
           old_limits = update_soft_limits(@org_user_owner, true)
 
           post create_organization_user_url(user_domain: @org_user_owner.username),
-               user: user_params.merge(soft_limits_params("1"))
+               user: user_params.merge(soft_limits_params("1")),
+               password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           @user = User.where(username: user_params[:username]).first
@@ -507,7 +623,8 @@ describe Admin::OrganizationUsersController do
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("1")
+              user: soft_limits_params("1"),
+              password_confirmation: @org_user_owner.password
           last_response.status.should eq 422
 
           @existing_user.reload
@@ -521,7 +638,8 @@ describe Admin::OrganizationUsersController do
                                               soft_limits_params(false).merge(organization: @carto_organization))
 
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("1")
+              user: soft_limits_params("1"),
+              password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           @existing_user.reload
@@ -534,7 +652,8 @@ describe Admin::OrganizationUsersController do
           @existing_user = FactoryGirl.create(:carto_user,
                                               soft_limits_params(true).merge(organization: @carto_organization))
           put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
-              user: soft_limits_params("0")
+              user: soft_limits_params("0"),
+              password_confirmation: @org_user_owner.password
           last_response.status.should eq 302
 
           @existing_user.reload

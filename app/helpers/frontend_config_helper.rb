@@ -19,6 +19,7 @@ module FrontendConfigHelper
       trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
       google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
       google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
+      google_tag_manager_id:      Cartodb.get_config(:google_tag_manager, 'primary'),
       hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
       fullstory_enabled:          fullstory_enabled?(user),

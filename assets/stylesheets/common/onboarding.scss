@@ -1,0 +1,180 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.Onboarding {
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.AnalysisCompletionDetails {
+  display: flex;
+  height: 100%;
+}
+
+.Onboarding-fake {
+  flex: 0 0 415px;
+  height: 100%;
+
+  .is-editing & {
+    flex: 0 0 560px;
+  }
+}
+
+.Onboarding-body {
+  width: 466px;
+}
+
+.Onboarding-contentWrapper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.88;
+  background: #2E3C43;
+  pointer-events: all;
+}
+
+.Onboarding-headerTitle {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
+.Onboarding-headerText {
+  width: 550px;
+  margin-bottom: $sMargin-group;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.Onboarding-headerDescription {
+  margin-bottom: $sMargin-group;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.Onboarding-description {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-small;
+}
+
+.Onboarding-footer {
+  margin-top: $sMargin-section;
+}
+
+.Onboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.Onboarding-footer--marginRight {
+  margin-right: 16px;
+}
+
+.Onboarding-list {
+  margin-left: $sMargin-group;
+}
+
+.Onboarding-listItem {
+  margin-bottom: $sMargin-elementInline;
+  color: #FFF;
+  list-style: disc;
+}
+
+.Onboarding-listItemValue {
+  display: inline-block;
+  margin-bottom: 2 * $sMargin-min;
+  padding: 4px 5px;
+  border-radius: 2px;
+  background: #1E272B;
+  color: #FFF;
+  font-family: 'Monaco', 'Monospace';
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+}
+
+.Onboarding-listItem .Onboarding-listItemDescription {
+  margin: 0;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-small;
+}
+
+.Onboarding-readMore {
+  color: $cWhite;
+  text-decoration: underline;
+}
+
+.Onboarding-readMore:hover {
+  text-decoration: none;
+}
+
+.Onboarding.is-closing { /* "forwards" to keep the last keyframe's styles after animation ended */
+  animation: fade-and-scale-out 80ms ease-in forwards;
+}
+
+.Onboarding.is-opening {
+  animation: fade-and-scale-in 100ms ease-out;
+}
+
+@keyframes fade-and-scale-out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale(1.4);
+    opacity: 0.05;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-and-scale-in {
+  0% {
+    transform: scale(2);
+    opacity: 0;
+  }
+
+  10% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.has-dark-text {
+  .Onboarding-headerTitle,
+  .Onboarding-headerText,
+  .Onboarding-headerDescription,
+  .Onboarding-description,
+  .Onboarding-listItem,
+  .Onboarding-listItemValue,
+  .Onboarding-readMore {
+    color: #333;
+  }
+}

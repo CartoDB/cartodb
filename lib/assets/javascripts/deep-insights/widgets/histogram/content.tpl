@@ -2,7 +2,7 @@
   <div class="js-title"></div>
   <% if (showSource) { %>
     <dl class="CDB-Widget-info u-tSpace">
-      <div class="u-flex u-alignCenter">
+      <div class="u-flex u-alignCenter u-ellipsis">
         <span class="CDB-Text CDB-Size-small is-semibold u-upperCase" style="color: <%- sourceColor %>;">
           <%- sourceId %>
         </span>

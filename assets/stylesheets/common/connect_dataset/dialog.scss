@@ -1,0 +1,50 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+.ConnectDialog .Dialog-content { width: 100%; }
+
+.Dialog-body.ConnectDialog-body {
+  min-height: 700px;
+  padding: 0;
+  background: $cStructure-grayBkg;
+}
+
+.ConnectDialog .Filters-separator { background: #DDD; }
+
+.ConnectDialog .Filters-row { justify-content: center; }
+
+.ConnectDialog-footer {
+  position: fixed;
+  z-index: 1;
+  bottom: 0;
+  left: 50%;
+  margin-left: -470px;
+  border: none;
+  text-align: center;
+}
+
+.ConnectDialog-footerInfo {
+  color: $cTypography-secondary;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-lighter;
+}
+
+.ConnectDialog-footerInfoIcon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background: #F6D35C;
+  color: white;
+  font-size: $sFontSize-normal;
+  line-height: 20px !important;
+  text-align: center;
+  vertical-align: top;
+}
+
+.ConnectDialog-footerButton { display: none; }
+
+.ConnectDialog-footerButton.is-enabled { display: inline-block; }

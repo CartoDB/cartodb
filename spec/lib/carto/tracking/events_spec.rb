@@ -1110,7 +1110,24 @@ module Carto
         end
 
         describe VisitedPrivatePage do
+          before (:all) { @event_class = self.class.description.constantize }
+          after  (:all) { @event_class = nil }
 
+          it 'reports' do
+            event = @event_class.new(@user.id, user_id: @user.id, page: 'dashboard')
+
+            expect { event.report! }.to_not raise_error
+          end
+
+          it 'updates dashboard_viewed_at for dashboard visits' do
+            event = @event_class.new(@user.id, user_id: @user.id, page: 'dashboard')
+            expect { event.report! }.to(change { @user.reload.dashboard_viewed_at })
+          end
+
+          it 'does not update dashboard_viewed_at for other visits' do
+            event = @event_class.new(@user.id, user_id: @user.id, page: 'dataset')
+            expect { event.report! }.to_not(change { @user.reload.dashboard_viewed_at })
+          end
         end
 
         describe CreatedDataset do

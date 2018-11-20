@@ -1,0 +1,79 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+// Styles for infobox element
+// ------------------------------
+
+.Infobox-wrapper {
+  width: 100%;
+  margin-top: -24px;
+  margin-bottom: -24px;
+}
+
+.Infobox {
+  flex: 2;
+  margin-right: -24px;
+  margin-left: -24px;
+  padding: 21px 24px 24px;
+  background: $cThirdBackground;
+
+  &.is-error {
+    background: $cError;
+    color: $cWhite;
+  }
+
+  &.is-alert {
+    background: rgba($cHighlightYellow, 0.64);
+  }
+
+  &.is-success {
+    background: rgba($cHighlight, 0.18);
+  }
+
+  &.is-dark {
+    background: rgba(#000, 0.4);
+    color: #FEB714;
+
+    .Infobox-buttonLink {
+      color: $cWhite;
+    }
+  }
+}
+
+.Infobox-title {
+  flex: 1;
+}
+
+.Infobox-buttonLink {
+  padding: 4px 0;
+  color: $cBlue;
+
+  &.is-disabled {
+    opacity: 0.24;
+    cursor: default;
+  }
+
+  .is-error & {
+    color: $cWhite;
+  }
+}
+
+.Infobox-quota {
+  flex: 10;
+  margin-right: $baseSize * 5;
+}
+
+.Infobox-buttons {
+  display: flex;
+  flex: 10;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.Infobox-buttons--quota {
+  flex: 1;
+}
+
+.Infobox-button + .Infobox-button {
+  margin-left: 16px;
+}

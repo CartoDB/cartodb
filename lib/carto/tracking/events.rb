@@ -8,6 +8,9 @@ require_dependency 'carto/tracking/validators/layer'
 require_dependency 'carto/tracking/validators/user'
 require_dependency 'carto/tracking/validators/widget'
 
+#  IMPORTANT: Events must be kept in sync with frontend!
+#  See `/lib/assets/javascripts/builder/components/metrics/metrics-types.js`
+
 module Carto
   module Tracking
     module Events
@@ -176,6 +179,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :page
+
+        def report_to_user_model
+          @format.fetch_record!(:user).view_dashboard if @format.to_hash['page'] == 'dashboard'
+        end
       end
 
       class DatasetEvent < Event

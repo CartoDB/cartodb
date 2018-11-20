@@ -36,6 +36,8 @@ class Carto::VisualizationQueryBuilder
     OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
   }
 
+  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
+
   def initialize
     @include_associations = []
     @eager_load_associations = []
@@ -174,8 +176,12 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = tainted_search_pattern
+    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
     self
+  end
+
+  def escape_characters_from_pattern(pattern)
+    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)
@@ -210,7 +216,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build
-    query = Carto::Visualization.scoped
+    query = Carto::Visualization.all
 
     if @name && !(@id || @user_id || @organization_id || @owned_by_or_shared_with_user_id || @shared_with_user_id)
       CartoDB::Logger.error(message: "VQB query by name without user_id nor org_id")
@@ -248,9 +254,31 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @shared_with_user_id
+      # The problem here is to manage to generate a query that Postgres will correctly optimize. The problem is that the
+      # optimizer seems to have problem determining the best plan when there are many JOINS, such as when VQB is called
+      # with many prefetch options, e.g: from visualizations index.
+      # This is hacky but works, without a performance hit. Other approaches:
+      # - Use a WHERE visualization.id IN (SELECT entity_id...).
+      #     psql does a very bad query plan on this, but only when adding the `LEFT OUTER JOIN synchronizations`
+      # - Use a CTE (WITH shared_vizs AS (SELECT entity_id ...) SELECT FROM visualizations JOIN shared_vizs)
+      #     This generates a nice query plan, but I was unable to generate this with ActiveRecord
+      # - Create a view for shared_entities grouped by entity_id, and then create a fake model to join to the
+      #     view instead of the table. Should work, but adds a view just to cover for a failure in Rails
+      # - Use `GROUP BY visualizations.id, synchronizations.id ...`
+      #     For some reason, Rails generates a wrong result when combining `group` with `count`
+      # - Use a JOIN `query.joins("JOIN (#{shared_vizs.to_sql} ...)")`
+      #     Rails insists in putting custom SQL joins at the end, and psql fails at optimizing. This would work
+      #     if this JOIN was written as the first JOIN in the query. psql uses order to inform the optimizer.
+      #     This is precisely what this hacks achieves, by tricking the `FROM` part of the query
+      # Context: https://github.com/CartoDB/cartodb/issues/13970
       user = Carto::User.where(id: @shared_with_user_id).first
-      query = query.joins(:shared_entities)
-                   .where(:shared_entities => { recipient_id: recipient_ids(user) })
+      shared_vizs = Carto::SharedEntity.where(recipient_id: recipient_ids(user)).select(:entity_id).uniq
+      query = query.from([Arel::Nodes::SqlLiteral.new("
+        visualizations
+        JOIN
+          (#{shared_vizs.to_sql}) shared_ent
+        ON
+          visualizations.id = shared_ent.entity_id")])
     end
 
     if @owned_by_or_shared_with_user_id

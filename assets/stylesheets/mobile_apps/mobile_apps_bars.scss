@@ -1,0 +1,62 @@
+// MobileApps bars
+// --------------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+.ProgressBars {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 25px 0;
+}
+
+.ProgressBar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+}
+
+.ProgressBar {
+  display: block;
+  position: relative;
+  width: 380px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #F5F5F5;
+}
+
+.ProgressBar-bar {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  min-width: 1%;
+  margin: 0;
+  border-radius: 3px;
+  background: #1181FB;
+}
+
+.ProgressBar-bar.is-danger {
+  background: $cHighlight-negative;
+}
+
+.ProgressBar-bar.is-caution {
+  background: $cHighlight-caution;
+}
+
+.ProgressBar-legend {
+  margin-left: $sMargin-elementInline;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-smallUpperCase;
+  font-weight: $sFontWeight-lighter;
+  line-height: 12px;
+}

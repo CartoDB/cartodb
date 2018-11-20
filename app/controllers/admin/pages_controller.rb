@@ -305,7 +305,7 @@ class Admin::PagesController < Admin::AdminController
     ff_user = @viewed_user || @viewed_org.try(:owner)
 
     unless ff_user.nil?
-      @has_new_dashboard = ff_user.builder_enabled? && ff_user.has_feature_flag?('dashboard_migration')
+      @has_new_dashboard = ff_user.builder_enabled?
     end
   end
 

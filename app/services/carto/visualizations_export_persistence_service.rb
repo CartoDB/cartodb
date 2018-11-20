@@ -37,7 +37,7 @@ module Carto
 
         sync = visualization.synchronization
         if sync
-          sync.id = random_uuid
+          sync.id = random_uuid unless sync.id && full_restore
           sync.user = user
           sync.log.user_id = user.id if sync.log
         end
@@ -61,8 +61,8 @@ module Carto
           visualization.mapcaps.clear
           visualization.created_at = DateTime.now
           visualization.updated_at = DateTime.now
+          visualization.locked = false
         end
-
 
         unless visualization.save
           raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
@@ -137,9 +137,13 @@ module Carto
     end
 
     def apply_user_limits(user, visualization)
-      visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
-      # Since password is not exported we must fallback to private
-      if visualization.privacy == Carto::Visualization::PRIVACY_PROTECTED
+      can_be_private = visualization.derived? ? user.private_maps_enabled : user.private_tables_enabled
+      unless can_be_private
+        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        visualization.user_table.privacy = Carto::UserTable::PRIVACY_PUBLIC if visualization.canonical?
+      end
+      # If password is not exported we must fallback to private
+      if visualization.password_protected? && !visualization.has_password?
         visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       end
 
@@ -157,7 +161,9 @@ module Carto
             layers.push(layer)
           end
         end
-        visualization.map.layers = layers
+        visualization.map.layers.clear
+        visualization.map.layers_maps.clear
+        layers.each { |l| visualization.map.layers << l }
       end
     end
   end

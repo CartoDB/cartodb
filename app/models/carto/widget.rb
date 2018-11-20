@@ -92,7 +92,7 @@ class Carto::Widget < ActiveRecord::Base
   end
 
   def valid_source_id
-    unless source_id.is_a?(String)
+    unless source_id.is_a?(String) && source_id =~ /^\w*$/
       errors.add(:source_id, "Source id must be a string")
     end
   end

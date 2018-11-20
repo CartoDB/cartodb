@@ -1,0 +1,28 @@
+@import '../variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.UserRoleIndicator {
+  display: inline-block;
+  padding: 0 8px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 2px;
+  background: $cWhite;
+  font: bold 10px 'Open Sans';
+  line-height: 18px;
+  text-transform: uppercase;
+}
+
+.UserRoleIndicator--filled {
+  color: $cWhite;
+}
+
+.UserRoleIndicator--filled.is-green {
+  border-color: #8EB83F;
+  background: #8EB83F;
+}
+
+.UserRoleIndicator--filled.is-grey {
+  border-color: #979EA1;
+  background: #979EA1;
+}

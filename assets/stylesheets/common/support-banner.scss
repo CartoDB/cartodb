@@ -1,0 +1,40 @@
+// Dashboard banner styles
+// --------------------------------------------------
+
+@import "../variables/mixins";
+@import "../variables/sizes";
+@import "../variables/colors";
+
+.SupportBanner {
+  display: block;
+  width: 100%;
+  padding: $sMargin-element 0 $sMargin-section;
+}
+
+.SupportBanner-inner {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.SupportBanner-link {
+  display: block;
+}
+
+.SupportBanner-info {
+  width: 640px;
+}
+
+.SupportBanner-infoDescription {
+  margin-top: 4px;
+}
+
+.SupportBanner-infoDescriptionLink {
+  color: $cTypography-secondary;
+  text-decoration: underline;
+
+  &:hover {
+    color: $cTypography-paragraphs;
+  }
+}

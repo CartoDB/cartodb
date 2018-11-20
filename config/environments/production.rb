@@ -28,8 +28,10 @@ CartoDB::Application.configure do
   # Note that we pass the desired log level to the logger's constructor;
   # assigning to `config.log_level` would have no effect here, since we have set the logger explicitly.
   config.logger = ActiveSupport::TaggedLogging.new(
-    ActiveSupport::BufferedLogger.new(Carto::Conf.new.log_file_path('production.log'), Logger::INFO)
+    ActiveSupport::Logger.new(Carto::Conf.new.log_file_path('production.log'))
   )
+
+  config.log_level = :info
 
   # # Adjust the log level. Note that assigning to `config.log_level` would
   # # have no effect here, since we have set the logger explicitly.
@@ -41,7 +43,7 @@ CartoDB::Application.configure do
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
-  config.serve_static_assets = false
+  config.serve_static_files = false
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
@@ -52,6 +54,8 @@ CartoDB::Application.configure do
 
   # Enable threaded mode
   # config.threadsafe!
+
+  config.eager_load = true
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)

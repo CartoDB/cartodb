@@ -58,9 +58,9 @@ module Carto
 
     def set_tree_as_readonly!(entity)
       set_entity_as_readonly(entity)
-      entity.reflections.keys.each do |dep_name|
+      Carto::Visualization.reflections.each_key do |dep_name|
         dependency = entity.public_send(dep_name)
-        if dependency.is_a? Array
+        if dependency.is_a? ActiveRecord::Associations::CollectionProxy
           dependency.each { |e| set_entity_as_readonly(e) }
         else
           set_entity_as_readonly(dependency)

@@ -103,9 +103,12 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   end
 
   def destroy
+    valid_password_confirmation
     @cartodb_central_client.delete_mobile_app(current_user.username, @app_id)
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been deleted succesfully!' }
-
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id))
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
@@ -147,11 +150,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     if Cartodb.asset_path
       "#{Cartodb.asset_path}/assets/unversioned/images/avatars/mobile_app_default_avatar.png"
     else
-      "#{relative_url_root}/images/avatars/mobile_app_default_avatar.png"
+      "#{relative_url_root}/#{frontend_version}/images/avatars/mobile_app_default_avatar.png"
     end
   end
 
   def check_new_dashboard
-    current_user.builder_enabled? && current_user.has_feature_flag?('dashboard_migration')
+    current_user.builder_enabled?
   end
 end

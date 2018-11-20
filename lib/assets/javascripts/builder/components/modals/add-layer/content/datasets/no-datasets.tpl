@@ -4,7 +4,7 @@
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% var connectDatasetHTML = '<button class="Button--link js-connect">' + _t('components.modals.add-layer.datasets.no-datasets.connect-datasets') + '</button>'; %>
   <% var searchHTML = '<strong>' + _t('components.modals.add-layer.datasets.no-datasets.search') + '</strong>'; %>
-  <%- _t('components.modals.add-layer.datasets.no-datasets.desc', {
+  <%= _t('components.modals.add-layer.datasets.no-datasets.desc', {
       connectDataset: connectDatasetHTML,
       search: searchHTML
     }) %>

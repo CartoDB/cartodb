@@ -2,6 +2,7 @@ module CartoDB
   module DataMover
     module LegacyFunctions
       # functions taken from https://github.com/postgis/postgis/blob/svn-trunk/utils/postgis_restore.pl.in#L473
+      SIGNATURE_RE = /[\d\s;]*(?<type>(?:\S+\s?['class'|'family'|'aggregate'|'domain'|'function'|'cast'|'type']*))\s+(?:[^\s]\s+)?(?<name>[^\(]+)\s*(?:\((?<arguments>.*)\))?/i
       LEGACY_FUNCTIONS = [
         'AGGREGATE accum(geometry)',
         'AGGREGATE accum_old(geometry)',
@@ -85,24 +86,24 @@ module CartoDB
         'COMMENT DOMAIN topoelement',
         'COMMENT DOMAIN topoelementarray',
         'COMMENT FUNCTION addauth(text)',
-        'COMMENT FUNCTION addedge(atopology character varying,aline public.geometry)',
+        'COMMENT FUNCTION addedge(character varying,aline public.geometry)',
         'COMMENT FUNCTION addedge(character varying,public.geometry)',
-        'COMMENT FUNCTION addface(atopology character varying,apoly public.geometry,force_new boolean)',
-        'COMMENT FUNCTION addgeometrycolumn(catalog_namecharacter varying,schema_namecharacter varying,table_namecharacter varying,column_namecharacter varying,new_srid_ininteger,new_typecharacter varying,new_diminteger,use_typmodboolean)',
+        'COMMENT FUNCTION addface(character varying,apoly public.geometry,boolean)',
+        'COMMENT FUNCTION addgeometrycolumn(varying,schema_namecharacter varying,character varying,column_namecharacter varying,new_srid_ininteger,new_typecharacter varying,new_diminteger,use_typmodboolean)',
         'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,character varying,character varying,integer,character varying,integer)',
         'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,character varying,integer,character varying,integer)',
         'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,integer,character varying,integer)',
-        'COMMENT FUNCTION addgeometrycolumn(schema_name character varying,table_name character varying,column_name character varying,new_srid integer,new_type character varying,new_dim integer,use_typmod boolean)',
-        'COMMENT FUNCTION addgeometrycolumn(table_name character varying,column_name character varying,new_srid integer,new_type character varying,new_dim integer,use_typmod boolean)',
-        'COMMENT FUNCTION addnode(atopology character varying,apoint public.geometry,allowedgesplitting boolean,setcontainingface boolean)',
-        'COMMENT FUNCTION addnode(character varying,public.geometry)',
+        'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,character varying,integer,character varying,integer,boolean)',
+        'COMMENT FUNCTION addgeometrycolumn(character varying,character varying,integer,character varying,integer,boolean)',
+        'COMMENT FUNCTION addnode(character varying,apoint public.geometry,allowedgesplitting boolean,setcontainingface boolean)',
+        'COMMENT FUNCTION addnode(varying,public.geometry)',
         'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
         'COMMENT FUNCTION addrasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
         'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,srid boolean,scale_x boolean,scale_y boolean,blocksize_x boolean,blocksize_y boolean,same_alignment boolean,regular_blocking boolean,num_bands boolean,pixel_types boolean,nodata_values boolean,extent boolean)',
         'COMMENT FUNCTION addrasterconstraints(rasttable name,rastcolumn name,variadic constraints text[])',
         'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying)',
         'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying,integer)',
-        'COMMENT FUNCTION addtopogeometrycolumn(toponame character varying,schema character varying,tbl character varying,col character varying,ltype character varying,child integer)',
+        'COMMENT FUNCTION addtopogeometrycolumn(character varying,character varying,character varying,character varying,character varying,integer)',
         'COMMENT FUNCTION asgml(tgtopogeometry)',
         'COMMENT FUNCTION asgml(tgtopogeometry,nsprefix_in text,precision_in integer,options_in integer,visitedtable regclass,idprefix text,gmlver integer)',
         'COMMENT FUNCTION asgml(tgtopogeometry,nsprefix text)',
@@ -116,27 +117,27 @@ module CartoDB
         'COMMENT FUNCTION box3d(raster)',
         'COMMENT FUNCTION checkauth(text,text)',
         'COMMENT FUNCTION checkauth(text,text,text)',
-        'COMMENT FUNCTION copytopology(atopologycharacter varying,newtopocharacter varying)',
+        'COMMENT FUNCTION copytopology(character varying,character varying)',
         'COMMENT FUNCTION createtopogeom(character varying,integer,integer,topoelementarray)',
-        'COMMENT FUNCTION createtopogeom(toponame character varying,tg_type integer,layer_id integer)',
-        'COMMENT FUNCTION createtopogeom(toponame character varying,tg_type integer,layer_id integer,tg_objs topoelementarray)',
-        'COMMENT FUNCTION createtopology(atopology character varying,srid integer,prec double precision,hasz boolean)',
+        'COMMENT FUNCTION createtopogeom(character varying,tg_type integer,layer_id integer)',
+        'COMMENT FUNCTION createtopogeom(character varying,tg_type integer,layer_id integer,tg_objs topoelementarray)',
+        'COMMENT FUNCTION createtopology(character varying,integer,double precision,boolean)',
         'COMMENT FUNCTION createtopology(character varying)',
         'COMMENT FUNCTION createtopology(character varying,integer)',
-        'COMMENT FUNCTION createtopology(toponame character varying,sridinteger,precdouble precision)',
+        'COMMENT FUNCTION createtopology(character varying,sridinteger,precdouble precision)',
         'COMMENT FUNCTION disablelongtransactions()',
-        'COMMENT FUNCTION dropgeometrycolumn(catalog_namecharacter varying,schema_namecharacter varying,table_namecharacter varying,column_namecharacter varying)',
+        'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying,character varying,character varying)',
         'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying)',
         'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying,character varying)',
         'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying,character varying,character varying)',
-        'COMMENT FUNCTION dropgeometrycolumn(schema_namecharacter varying,table_namecharacter varying,column_namecharacter varying)',
-        'COMMENT FUNCTION dropgeometrycolumn(table_namecharacter varying,column_namecharacter varying)',
-        'COMMENT FUNCTION dropgeometrytable(catalog_namecharacter varying,schema_namecharacter varying,table_namecharacter varying)',
+        'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying,character varying)',
+        'COMMENT FUNCTION dropgeometrycolumn(character varying,character varying)',
+        'COMMENT FUNCTION dropgeometrytable(character varying,character varying,character varying)',
         'COMMENT FUNCTION dropgeometrytable(character varying)',
         'COMMENT FUNCTION dropgeometrytable(character varying,character varying)',
         'COMMENT FUNCTION dropgeometrytable(character varying,character varying,character varying)',
-        'COMMENT FUNCTION dropgeometrytable(schema_namecharacter varying,table_namecharacter varying)',
-        'COMMENT FUNCTION dropgeometrytable(table_namecharacter varying)',
+        'COMMENT FUNCTION dropgeometrytable(echaracter varying,character varying)',
+        'COMMENT FUNCTION dropgeometrytable(character varying)',
         'COMMENT FUNCTION droprasterconstraints(rastschema name,rasttable name,rastcolumn name,variadic constraints text[])',
         'COMMENT FUNCTION droprasterconstraints(rasttablename,rastcolumnname,sridboolean,scale_xboolean,scale_yboolean,blocksize_xboolean,blocksize_yboolean,same_alignmentboolean,regular_blockingboolean,num_bandsboolean,pixel_typesboolean,nodata_valuesboolean,extentboolean)',
         'COMMENT FUNCTION droptopogeometrycolumn(character varying,character varying,character varying)',
@@ -152,19 +153,19 @@ module CartoDB
         'COMMENT FUNCTION gettopogeomelementarray(character varying,integer,integer)',
         'COMMENT FUNCTION gettopogeomelementarray(tg topogeometry)',
         'COMMENT FUNCTION gettopogeomelementarray(topogeometry)',
-        'COMMENT FUNCTION gettopogeomelementarray(toponame character varying,layer_id integer,tgid integer)',
+        'COMMENT FUNCTION gettopogeomelementarray(character varying,layer_id integer,tgid integer)',
         'COMMENT FUNCTION gettopogeomelements(character varying,integer,integer)',
         'COMMENT FUNCTION gettopogeomelements(tg topogeometry)',
         'COMMENT FUNCTION gettopogeomelements(topogeometry)',
-        'COMMENT FUNCTION gettopogeomelements(toponame character varying,layerid integer,tgid integer)',
+        'COMMENT FUNCTION gettopogeomelements(character varying,layerid integer,tgid integer)',
         'COMMENT FUNCTION gettopologyid(character varying)',
-        'COMMENT FUNCTION gettopologyid(toponame character varying)',
+        'COMMENT FUNCTION gettopologyid(character varying)',
         'COMMENT FUNCTION gettopologyname(integer)',
         'COMMENT FUNCTION gettopologyname(topoid integer)',
         'COMMENT FUNCTION lockrow(text,text,text)',
         'COMMENT FUNCTION lockrow(text,text,text,text,timestampwithouttimezone)',
         'COMMENT FUNCTION lockrow(text,text,text,timestampwithouttimezone)',
-        'COMMENT FUNCTION polygonize(toponame character varying)',
+        'COMMENT FUNCTION polygonize(character varying)',
         'COMMENT FUNCTION populate_geometry_columns()',
         'COMMENT FUNCTION populate_geometry_columns(tbl_oidoid)',
         'COMMENT FUNCTION populate_geometry_columns(tbl_oidoid,use_typmodboolean)',
@@ -461,8 +462,8 @@ module CartoDB
         'COMMENT FUNCTION st_geomfromwkb(bytea)',
         'COMMENT FUNCTION st_geomfromwkb(bytea,integer)',
         'COMMENT FUNCTION st_georeference(rast raster,formattext)',
-        'COMMENT FUNCTION st_getfaceedges(toponame character varying,face_idinteger)',
-        'COMMENT FUNCTION st_getfacegeometry(toponame character varying,afaceinteger)',
+        'COMMENT FUNCTION st_getfaceedges(character varying,face_idinteger)',
+        'COMMENT FUNCTION st_getfacegeometry(character varying,afaceinteger)',
         'COMMENT FUNCTION st_gmltosql(text)',
         'COMMENT FUNCTION st_gmltosql(text,integer)',
         'COMMENT FUNCTION st_hasarc(geometry)',
@@ -587,7 +588,7 @@ module CartoDB
         'COMMENT FUNCTION st_minimumboundingcircle(inputgeomgeometry,segs_per_quarterinteger)',
         'COMMENT FUNCTION st_mlinefromtext(text)',
         'COMMENT FUNCTION st_mlinefromtext(text,integer)',
-        'COMMENT FUNCTION st_modedgeheal(toponame character varying,e1idinteger,e2idinteger)',
+        'COMMENT FUNCTION st_modedgeheal(character varying,e1idinteger,e2idinteger)',
         'COMMENT FUNCTION st_modedgesplit(atopology character varying,anedge integer,apoint public.geometry)',
         'COMMENT FUNCTION st_modedgesplit(character varying,integer,public.geometry)',
         'COMMENT FUNCTION st_moveisonode(atopology character varying,anode integer,apoint public.geometry)',
@@ -598,7 +599,7 @@ module CartoDB
         'COMMENT FUNCTION st_mpolyfromtext(text,integer)',
         'COMMENT FUNCTION st_multi(geometry)',
         'COMMENT FUNCTION st_ndims(geometry)',
-        'COMMENT FUNCTION st_newedgeheal(toponame character varying,e1idinteger,e2idinteger)',
+        'COMMENT FUNCTION st_newedgeheal(character varying,e1idinteger,e2idinteger)',
         'COMMENT FUNCTION st_newedgessplit(atopology character varying,anedge integer,apoint public.geometry)',
         'COMMENT FUNCTION st_newedgessplit(character varying,integer,public.geometry)',
         'COMMENT FUNCTION st_node(ggeometry)',
@@ -659,8 +660,8 @@ module CartoDB
         'COMMENT FUNCTION st_relate(geometry,geometry,integer)',
         'COMMENT FUNCTION st_relate(geometry,geometry,text)',
         'COMMENT FUNCTION st_relatematch(text,text)',
-        'COMMENT FUNCTION st_remedgemodface(toponame character varying,e1id integer)',
-        'COMMENT FUNCTION st_remedgenewface(toponame character varying,e1id integer)',
+        'COMMENT FUNCTION st_remedgemodface(character varying,e1id integer)',
+        'COMMENT FUNCTION st_remedgenewface(character varying,e1id integer)',
         'COMMENT FUNCTION st_removeisonode(atopology character varying,anode integer)',
         'COMMENT FUNCTION st_removeisonode(character varying,integer)',
         'COMMENT FUNCTION st_removepoint(geometry,integer)',
@@ -787,12 +788,12 @@ module CartoDB
         'COMMENT FUNCTION topologysummary(atopologycharacter varying)',
         'COMMENT FUNCTION totopogeom(ageom public.geometry,atopology character varying,alayer integer,atolerance double precision)',
         'COMMENT FUNCTION unlockrows(text)',
-        'COMMENT FUNCTION updategeometrysrid(catalogn_namecharacter varying,schema_namecharacter varying,table_namecharacter varying,column_namecharacter varying,new_sridinteger)',
+        'COMMENT FUNCTION updategeometrysrid(catalogn_namecharacter varying,schema_namecharacter varying,character varying,column_namecharacter varying,new_sridinteger)',
         'COMMENT FUNCTION updategeometrysrid(character varying,character varying,character varying,character varying,integer)',
         'COMMENT FUNCTION updategeometrysrid(character varying,character varying,character varying,integer)',
         'COMMENT FUNCTION updategeometrysrid(character varying,character varying,integer)',
         'COMMENT FUNCTION validatetopology(character varying)',
-        'COMMENT FUNCTION validatetopology(toponame character varying)',
+        'COMMENT FUNCTION validatetopology(character varying)',
         'COMMENT TYPE box2d',
         'COMMENT TYPE box3d',
         'COMMENT TYPE box3d_extent',
@@ -2405,6 +2406,12 @@ module CartoDB
         'OPERATOR CLASS gist_geometry_ops',
         'OPERATOR CLASS gist_geometry_ops_2d',
         'OPERATOR CLASS gist_geometry_ops_nd',
+        'OPERATOR FAMILY btree_geography_ops',
+        'OPERATOR FAMILY btree_geometry_ops',
+        'OPERATOR FAMILY gist_geography_ops',
+        'OPERATOR FAMILY gist_geometry_ops_2d',
+        'OPERATOR FAMILY gist_geometry_ops_nd',
+        'OPERATOR FAMILY hash_raster_ops',
         'OPERATOR ~=(geography,geography)',
         'OPERATOR ~(geography,geography)',
         'OPERATOR <<|(geography,geography)',
@@ -2498,11 +2505,39 @@ module CartoDB
         'TYPE wktgeomval'
       ].freeze
 
-      LEGACY_ACLS = LEGACY_FUNCTIONS.map { |l|
-        parts = l.split(' ')
-        parts[0] = 'ACL'
-        parts.join(' ')
-      }.freeze
+      def remove_line?(line)
+        arguments, name, type = matches(line)
+        return true if type == 'ACL' && legacy_functions.flat_map { |_, v| v[name] }.compact.include?(arguments)
+        return false unless legacy_functions[type]
+        return false unless legacy_functions[type][name]
+        if arguments.blank?
+          legacy_functions[type].include?(name)
+        else
+          legacy_functions[type][name].include?(arguments)
+        end
+      end
+
+      def legacy_functions
+        @legacy_functions ||= LEGACY_FUNCTIONS.reduce({}) do |res, line|
+          arguments, name, type = matches(line)
+          return res unless type && name
+          res[type] = {} unless res[type]
+          res[type][name] = [] unless res[type][name]
+          res[type][name] << arguments if arguments
+          res
+        end
+      end
+
+      def matches(line)
+        stripped = line.gsub(/(public|postgres|\"|\*)/, "").strip
+        return false unless stripped =~ SIGNATURE_RE
+        match = stripped.match(SIGNATURE_RE)
+        type = match[:type].strip.gsub(/\s+/, ' ')
+        name = match[:name].split(' ').last.strip
+        arguments = match[:arguments]
+        arguments = arguments ? arguments.split(',').map { |arg| arg.split('.').last.strip } : nil
+        [arguments, name, type]
+      end
     end
   end
 end

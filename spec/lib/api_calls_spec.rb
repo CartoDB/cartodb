@@ -101,11 +101,13 @@ describe CartoDB::Stats::APICalls do
         scores[stat_date] = score
       end
 
+      Delorean.time_travel_to today
       calls = @api_calls.get_api_calls_from_redis_source(@username, @type, @options)
+      Delorean.back_to_the_present
       calls.count.should == 30
 
-      date_to = Date.today
-      date_from = Date.today - 29.days
+      date_to = today
+      date_from = today - 29.days
       date_to.downto(date_from) do |date|
         stat_date = date.strftime("%Y%m%d")
         calls[stat_date].should eq(scores[stat_date]), "Failed day #{stat_date}, it was #{calls[stat_date]} instead of #{scores[stat_date]}"

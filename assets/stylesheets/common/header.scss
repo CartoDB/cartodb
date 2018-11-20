@@ -1,0 +1,165 @@
+// Layout Header
+// --------------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+$cHeader-light: rgba(#61AEEC, 1);
+$cHeader-dark: rgba(#3A91D7, 1);
+
+.Header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+  background: $cBlue;
+}
+
+.Header-inner {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Header-navigationList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Header-navigationBreadcrumb {
+  display: flex;
+  align-items: center;
+  margin-left: $sMargin-element;
+}
+
+.Header-navigationBreadcrumbItem {
+  padding-left: 6px;
+  color: rgba($cWhite, 0.6);
+}
+
+.Header-navigationBreadcrumbParagraph {
+  display: inline-block;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.Header-navigationItem {
+  margin-left: $sMargin-section;
+}
+
+.Header-navigationLink {
+  transition: all 0.15s;
+  color: #FFF;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  line-height: $sLineHeight-largest;
+
+  &:hover {
+    color: rgba(#FFF, 0.6);
+    text-decoration: none;
+  }
+}
+
+.Header-navigationBreadcrumbItem:first-child {
+  padding-left: 0;
+}
+
+.Header-navigationBreadcrumbLink {
+  color: $cWhite;
+
+  &.is-disabled {
+    color: rgba(white, 0.8);
+    cursor: default;
+  }
+}
+
+.Header-settingsList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.Header-settingsItem {
+  position: relative;
+  margin-left: $sMargin-section;
+  text-transform: uppercase;
+}
+
+.Header-settingsLink--public {
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  text-transform: none;
+}
+
+.Header-settingsLink {
+  transition: all 0.2s;
+  color: #FFF;
+
+  &:hover {
+    color: rgba(#FFF, 0.6);
+    text-decoration: none;
+  }
+}
+
+.Header-settingsLink.Header-settingsLink--dashboard {
+  color: #FFF;
+}
+
+.Header-settingsLink.Header-settingsLink--dashboard:hover {
+  text-decoration: underline;
+}
+
+.Header-darrow {
+  position: relative;
+  top: -1px;
+  font-size: 6px;
+}
+
+@media (min-width: $sMedia-mobile) {
+  .Header-logoText {
+    margin-left: $sMargin-elementInline;
+  }
+}
+
+@media only screen and (max-width: 360px) {
+  $height: 64px;
+
+  .Header .Header-inner {
+    height: $height;
+  }
+
+  .Header {
+    height: $height;
+  }
+
+  .Header-settingsItem--avatar {
+    height: $height / 2;
+  }
+
+  .Header .Header-settingsList .UserAvatar-img--medium {
+    width: $height / 2;
+    height: $height / 2;
+  }
+
+  .Header .Header-settingsList .Button {
+    height: $height / 2;
+    padding: 0 20px;
+  }
+
+  .Header .Logo--avatar {
+    width: $height / 2;
+    height: $height / 2;
+    line-height: 45px;
+  }
+
+  .Header .Logo--avatar i {
+    font-size: 22px;
+  }
+}

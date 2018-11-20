@@ -17,7 +17,7 @@
   <% if @has_new_dashboard %>
     <%= stylesheet_link_tag 'api_keys_new', :media => 'all' %>
   <% else %>
-    <%= stylesheet_link_tag 'api_keys', :media => 'all' %>
+    <%= editor_stylesheet_link_tag 'api_keys', :media => 'all' %>
   <% end %>
 <% end %>
 
@@ -47,7 +47,7 @@
 <%= render 'admin/shared/footer' %>
 
 <% if @has_new_dashboard %>
-  <%= javascript_include_tag 'common_dashboard', 'api_keys_new_vendor', 'api_keys_new' %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
 <% else %>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>

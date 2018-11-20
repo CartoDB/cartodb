@@ -1,0 +1,60 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.Card {
+  display: flex;
+  box-sizing: border-box;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 205px;
+  margin-right: $baseSize * 2;
+  padding: 20px;
+  border: 1px solid $cWhite;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &.is-disabled {
+    justify-content: center;
+    border: 1px solid rgba($cMainLine, 0.5);
+    background-color: $cThirdBackground;
+  }
+}
+
+.Card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid $cMainLine;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+
+  .is-disabled > & {
+    opacity: 0.5;
+  }
+}
+
+.Card-body {
+  text-align: center;
+}
+
+.Card--privacy {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 25px;
+  cursor: pointer;
+
+  &:hover,
+  &.is-selected {
+    border: 1px solid $cBlue;
+    background-color: $cWhite;
+  }
+}

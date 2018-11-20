@@ -81,6 +81,9 @@ describe 'UserMigration' do
       migrate_metadata ? @user.destroy : drop_user_database(@user)
 
       Cartodb.with_config(agg_ds_config) do
+        # Do not depend on dataservices_client to be installed
+        CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
         import = Carto::UserMigrationImport.create(
           exported_file: export.exported_file,
           database_host: @user_attributes['database_host'],
@@ -216,6 +219,18 @@ describe 'UserMigration' do
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
     end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      Asset.any_instance.stubs(:use_s3?).returns(false)
+      asset = Asset.create(asset_file: Rails.root + 'spec/support/data/cartofante_blue.png', user: @user)
+      local_url = CGI.unescape(asset.public_url.gsub(/(http:)?\/\/#{CartoDB.account_host}/, ''))
+      imp = import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?((asset.public_uploaded_assets_path + local_url).gsub('/uploads/uploads/', '/uploads/')).should eq true
+    end
   end
 
   describe 'failing organization organizations should rollback' do
@@ -299,6 +314,17 @@ describe 'UserMigration' do
       org_import.run_import.should eq true
     end
 
+    it 'import failing import visualizations with metadata_only option' do
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+
+      imp = org_import
+      imp.import_data = false
+      imp.save!
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      imp.reload
+    end
+
     it 'should fail if importing an already existing organization with metadata' do
       org_import.run_import.should eq true
       imp = org_import
@@ -317,6 +343,20 @@ describe 'UserMigration' do
       Carto::Organization.where(id: @carto_organization.id).should be_empty
 
       Carto::UserMigrationImport.any_instance.unstub(:do_import_data)
+    end
+
+    it 'import failing importing visualizations does not remove assets' do
+      Carto::StorageOptions::S3.stubs(:enabled?).returns(false)
+      Carto::UserMetadataExportService.any_instance.stubs(:import_search_tweets_from_directory).raises('Some exception')
+      asset = Carto::Asset.for_organization(
+        organization: @carto_organization,
+        resource: File.open(Rails.root + 'spec/support/data/cartofante_blue.png')
+      )
+      imp = org_import
+
+      imp.run_import.should eq false
+      imp.state.should eq 'failure'
+      File.exists?(asset.storage_info[:identifier]).should eq true
     end
   end
 
@@ -523,12 +563,35 @@ describe 'UserMigration' do
   end
 
   describe 'legacy functions' do
-
-    it 'loads legacy functions' do
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2493
+    before :each do
+      @legacy_functions = CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS
     end
 
-    it 'skips importing legacy functions' do
+    after :each do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = @legacy_functions
+    end
+
+    it 'loads legacy functions' do
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2499
+    end
+
+    it 'matches functions with attributes qualified with namespace' do
+      class DummyTester
+        include CartoDB::DataMover::LegacyFunctions
+      end
+      line = '1880; 1255 5950507 FUNCTION asbinary("geometry", "pg_catalog"."text") postgres'
+      DummyTester.new.remove_line?(line).should be true
+      line2 = '8506; 2753 18284 OPERATOR FAMILY public btree_geography_ops postgres'
+      DummyTester.new.remove_line?(line2).should be true
+      line3 = '18305; 0 0 ACL public st_wkbtosql("bytea") postgres'
+      DummyTester.new.remove_line?(line3).should be true
+      line4 = '18333; 0 0 ACL public st_countagg("raster", integer, boolean, double precision) postgres'
+      DummyTester.new.remove_line?(line4).should be false
+      line5 = '541; 1259 735510 FOREIGN TABLE aggregation agg_admin1 postgres'
+      DummyTester.new.remove_line?(line5).should be false
+    end
+
+    it 'skips importing legacy functions using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
@@ -565,19 +628,18 @@ describe 'UserMigration' do
       user.destroy
     end
 
-    it 'imports functions and tables that are not on the legacy list' do
+    it 'imports functions and tables that are not on the legacy list using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
-      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
+      user.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
       BEGIN
-        RETURN i + 1;
+        RETURN 1;
       END;
       $$ LANGUAGE plpgsql;')
 
-      user.in_database.execute('CREATE OR REPLACE FUNCTION increment2(i INT) RETURNS INT AS $$
+      user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
       BEGIN
         RETURN i + 1;
       END;
@@ -600,10 +662,48 @@ describe 'UserMigration' do
       )
       import.run_import
 
-      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 0
-      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment2'").should eq 1
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+      user.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'increment'").should eq 1
       user.in_database.execute('select count(*) from layer_wadus').should eq 1
       user.destroy
+    end
+
+    describe 'with organization' do
+      include_context 'organization with users helper'
+
+      let(:org_attributes) { @carto_organization.attributes }
+      let(:owner_attributes) { @carto_org_user_owner.attributes }
+
+      it 'should not import acl over deprecated functions' do
+        user1 = @carto_organization.users.first
+        user2 = @carto_organization.users.last
+        user1.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
+        BEGIN
+          RETURN 1;
+        END;
+        $$ LANGUAGE plpgsql;')
+
+        user1.in_database.execute("GRANT ALL ON FUNCTION st_text TO \"#{user2.service.database_public_username}\"")
+
+        export = Carto::UserMigrationExport.create(organization: @carto_organization, export_metadata: true)
+        export.run_export
+        @organization.destroy_cascade
+
+        import = Carto::UserMigrationImport.create(
+          exported_file: export.exported_file,
+          database_host: owner_attributes['database_host'],
+          org_import: true,
+          json_file: export.json_file,
+          import_metadata: true,
+          import_data: true,
+          dry: false
+        )
+        import.run_import
+
+        import.state.should eq 'complete'
+        Organization[@organization.id].users.first.in_database.execute("SELECT prosrc FROM pg_proc WHERE proname = 'st_text'").should eq 0
+
+      end
     end
   end
 
@@ -614,14 +714,21 @@ describe 'UserMigration' do
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 
     shared_examples_for 'migrating metadata' do |migrate_metadata|
-      before :each do
+      before(:each) do
         @table1 = create_table(user_id: @carto_org_user_1.id)
         records.each { |row| @table1.insert_row!(row) }
         create_database('test_migration', @organization.owner) if migrate_metadata
+        @owner_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_owner, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @user1_api_key = Carto::ApiKey.create_regular_key!(user: @carto_org_user_1, name: unique_name('api_key'),
+                                                           grants: [{ type: "apis", apis: ["maps", "sql"] }])
+        @carto_organization.reload
       end
 
-      after :each do
+      after(:each) do
         drop_database('test_migration', @organization.owner) if migrate_metadata
+        @owner_api_key.destroy
+        @user1_api_key.destroy
       end
 
       it "exports and reimports an organization #{migrate_metadata ? 'with' : 'without'} metadata" do
@@ -633,6 +740,9 @@ describe 'UserMigration' do
         migrate_metadata ? @organization.destroy_cascade : drop_user_database(@organization.owner)
 
         Cartodb.with_config(agg_ds_config) do
+          # Do not depend on dataservices_client to be installed
+          CartoDB::UserModule::DBService.any_instance.stubs(:install_geocoder_api_extension)
+
           import = Carto::UserMigrationImport.create(
             exported_file: export.exported_file,
             database_host: owner_attributes['database_host'],
@@ -722,7 +832,7 @@ describe 'UserMigration' do
       @user = FactoryGirl.build(:valid_user)
       @user.save
       @carto_user = Carto::User.find(@user.id)
-      @master_api_key = @carto_user.api_keys.create_master_key!
+      @master_api_key = @carto_user.api_keys.master.first
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
       @regular_api_key = Carto::ApiKey.create_regular_key!(user: @carto_user,
                                                            name: 'Some ApiKey',
@@ -789,11 +899,11 @@ describe 'UserMigration' do
       import.stubs(:assert_user_does_not_exist)
       import.run_import
 
-      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
-      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
-
       puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
       expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      $users_metadata.hmget("api_keys:#{username}:#{@master_api_key.token}", 'user')[0].should eq username
+      $users_metadata.hmget("api_keys:#{username}:#{@regular_api_key.token}", 'user')[0].should eq username
 
       user = Carto::User.find(user_attributes['id'])
       user.should be
@@ -1038,10 +1148,13 @@ describe 'UserMigration' do
     def remove_user(carto_user)
       Carto::Visualization.where(user_id: carto_user.id).each do |v|
         v.overlays.each(&:delete)
+        v.user_table.delete if v.user_table # Delete user_table since it can conflict by name
         v.delete
       end
       gum = CartoDB::GeocoderUsageMetrics.new(carto_user.username)
       $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.now))
+      ::User[carto_user.id].client_application.oauth_tokens.each(&:destroy)
+      ::User[carto_user.id].client_application.destroy
       carto_user.delete
     end
   end

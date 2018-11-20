@@ -1,0 +1,31 @@
+@import "../variables/mixins";
+
+.AssetPane {
+  position: relative;
+  width: 945px;
+  margin: 67px auto 60px;
+}
+
+.AssetsList {
+  display: block;
+  position: relative;
+  height: auto;
+  max-height: none;
+  margin: 35px 0 70px;
+  padding-left: 5px;
+  overflow: auto;
+}
+
+.Form-row.Form-row--streched {
+  width: 780px;
+  margin: auto;
+}
+
+.CreateDialog-footerShadow.CreateDialog-footerShadow--tall {
+  top: -48px;
+  height: 48px;
+}
+
+.ImportPanel-state.is-active {
+  display: block;
+}

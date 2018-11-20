@@ -1,0 +1,91 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// The User info of viewed profile
+//
+// --------------------------------------------------------------------------------------------------------------------
+$sAvatar-publicHalf: $sAvatar-public / 2;
+
+.UserInfo {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: #{$sAvatar-publicHalf + $sMargin-group} 0 $sMargin-group 0;
+  border: 1px solid $cStructure-mainLine;
+  border-right: none;
+  border-left: none;
+  background: $cStructure-grayBkg;
+  text-align: center;
+}
+
+.UserInfo-avatar {
+  position: absolute;
+  z-index: 10000001; // to be placed on top of attribution text on smaller devices
+  top: -$sAvatar-publicHalf;
+  left: 50%;
+  margin-left: -$sAvatar-publicHalf;
+}
+
+.UserInfo-name {
+  margin-bottom: $sMargin-min;
+  color: $cTypography-headers;
+  font-size: 22px;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-larger;
+}
+
+.UserInfo-nameBreadcrumb,
+.UserInfo-nameBreadcrumb a {
+  color: $cTypography-secondary;
+
+  &:hover {
+    color: $cTypography-paragraphs;
+  }
+}
+
+.UserInfo-desc {
+  max-width: 620px;
+  margin: $sMargin-elementInline 0;
+  font-size: 18px;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
+}
+
+.UserInfo-links {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  color: $cIcons-default;
+}
+
+.UserInfo-linksItem {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: $sMargin-elementInline 0;
+  line-height: 1; // to vertical align with icons
+}
+
+.UserInfo-linksItem .CDB-IconFont {
+  margin-right: $sMargin-min;
+}
+
+.UserInfo-linksItem--positive,
+.UserInfo-linksItem--positive a {
+  color: $cHighlight-positive;
+}
+
+@media (min-width: $sMedia-tablet) {
+  .UserInfo-links {
+    flex-direction: row;
+  }
+
+  .UserInfo-linksItem:not(:last-child) {
+    margin-right: $sMargin-group;
+  }
+}

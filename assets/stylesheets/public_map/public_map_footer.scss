@@ -1,0 +1,125 @@
+@import '../variables/sizes';
+
+// PublicMap Footer
+// --------------------------------------------------
+
+.PublicTitle {
+  color: #2E3C43;
+}
+
+.PublicTitle--feature {
+  margin-bottom: 8px;
+  color: #979EA1;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2.3px;
+  line-height: 20px;
+  text-transform: uppercase;
+}
+
+.Feature-text {
+  transition: all 0.2s;
+  color: #636D72;
+  font-size: 15px;
+  line-height: 26px;
+}
+
+hr,
+.Sep {
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: #EEE;
+}
+
+.Sep.u-vspace-l {
+  margin-bottom: 40px;
+}
+
+.Title--sectionMedium {
+  margin-bottom: 20px;
+  color: #2E3C43;
+  font-size: 24px;
+  line-height: 36px;
+}
+
+.Footer-arrow {
+  position: absolute;
+  top: 21px;
+  right: 0;
+  color: #DDD;
+}
+
+.Footer-social {
+  @media (max-width: $sMedia-tablet) {
+    margin-top: 20px;
+  }
+  color: #636D72;
+  line-height: 40px;
+}
+
+.FooterIcon--facebook,
+.FooterIcon--linkedin,
+.FooterIcon--twitter {
+  position: relative;
+  top: -2px;
+}
+
+.FooterIcon--s14 {
+  font-size: 14px;
+}
+
+.FooterIcon {
+  display: inline-block;
+  -moz-osx-font-smoothing: GRAYscale;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+
+  path {
+    transition: all 0.2s ease;
+    fill: #3AA9E3;
+  }
+
+  &:hover {
+    path {
+      fill: #2E3C43;
+    }
+  }
+}
+
+.u-lspace--20 {
+  margin-left: 20px;
+}
+
+.Footer-link {
+  transition: color 0.2s ease;
+  line-height: 28px;
+}
+
+.Footer-item--mobile {
+  display: block;
+  position: relative;
+  margin-bottom: 0;
+  padding: 13px 0;
+  border-bottom: 1px solid #EEE;
+
+  .Footer-link {
+    display: block;
+  }
+}
+
+.FooterIcon--mobile {
+  path {
+    transition: all 0.2s ease;
+    fill: #DDD;
+  }
+
+  &:hover {
+    path {
+      fill: #DDD;
+    }
+  }
+}

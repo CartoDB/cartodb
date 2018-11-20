@@ -1,0 +1,163 @@
+// scss-lint:disable NestingDepth
+
+@import '../variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import '../variables/sizes';
+
+$sRegularDescriptionWidth: 445px;
+$sBigDescriptionWidth: 550px;
+$cBackgroundColor: #2E3C43;
+$sHighlightHeight: 64;
+
+.LayerOnboarding {
+  display: flex;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.LayerOnboarding-footer {
+  margin-top: $sMargin-group;
+}
+
+.LayerOnboarding-footerButtons {
+  margin-bottom: $sMargin-element;
+}
+
+.LayerOnboarding-contentWrapper {
+  display: flex;
+  z-index: 5;
+  flex: 1;
+  align-items: center;
+  height: 100%;
+  background: rgba($cBackgroundColor, 0.88);
+  pointer-events: all;
+}
+
+.LayerOnboarding-headerTitle {
+  margin-bottom: 22px;
+  color: #FFF;
+  font-size: 26px;
+  font-weight: $sFontWeight-lighter;
+}
+
+.LayerOnboarding-body {
+  position: absolute;
+  top: 32px;
+  left: 380px;
+  transition: top 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+
+.LayerOnboarding-contentBody {
+  display: none;
+}
+
+.LayerOnboarding-contentBody.is-step0 {
+  display: block;
+  z-index: 20;
+  width: 0;
+  margin: 0 80px;
+}
+
+.LayerOnboarding-footer,
+.LayerOnboarding-step {
+  display: none;
+}
+
+.LayerOnboarding-footer .LayerOnboarding-footerButtons,
+.LayerOnboarding-contentWrapper .LayerOnboarding-step p {
+  transition: opacity 200ms ease-in-out 1s;
+  opacity: 1;
+}
+
+.LayerOnboarding-header,
+.LayerOnboarding-footer {
+  min-width: 300px;
+}
+
+.LayerOnboarding-headerText {
+  width: $sBigDescriptionWidth;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  color: #FFF;
+  font-size: 26px;
+  line-height: 34px;
+}
+
+.LayerOnboarding-headerText.is-step4 {
+  width: 285px;
+}
+
+.LayerOnboarding-description {
+  width: $sRegularDescriptionWidth;
+  margin-bottom: $sMargin-elementInline;
+  transition: width 100ms ease-in-out;
+  color: #FFF;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-large;
+}
+
+.LayerOnboarding-description.is-step4 {
+  width: 285px;
+}
+
+.Onboarding-listItem .LayerOnboarding-description {
+  font-size: $sFontSize-large;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-pads {
+  z-index: 10;
+  height: 100%;
+  transition: width 300ms ease-in-out;
+}
+
+.LayerOnboarding-padTop,
+.LayerOnboarding-padMiddle,
+.LayerOnboarding-padBottom {
+  display: block;
+  width: 100%;
+  transition: height 300ms ease-in-out;
+}
+
+.LayerOnboarding-toolbarOverlay,
+.LayerOnboarding-padTop,
+.LayerOnboarding-padBottom {
+  opacity: 0.88;
+  background: $cBackgroundColor;
+}
+
+.LayerOnboarding-padMiddle {
+  position: relative;
+  opacity: 1;
+  background: transparent;
+}
+
+.LayerOnboarding-padBottom {
+  position: relative;
+}
+
+// Analysis tab
+
+.LayerOnboarding-contentBody--analysis.is-step0 {
+  width: auto;
+}
+
+.LayerOnboarding--analysis .LayerOnboarding-footer {
+  display: block;
+}
+
+.LayerOnboarding-contentWrapper--analysis {
+  justify-content: center;
+}
+
+.LayerOnboarding-description--analysis {
+  width: $sBigDescriptionWidth;
+}
+
+// Style tab
+
+.LayerOnboarding-description--style {
+  width: $sBigDescriptionWidth;
+}

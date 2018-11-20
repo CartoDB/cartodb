@@ -57,6 +57,8 @@ describe Admin::VisualizationsController do
 
   describe 'GET /viz' do
     it 'returns a list of visualizations' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
       login_as(@user, scope: @user.username)
 
       get "/viz", {}, @headers
@@ -230,6 +232,19 @@ describe Admin::VisualizationsController do
       last_response.status.should == 403
     end
 
+    it 'go to password protected page if the viz is password protected' do
+      id = factory.fetch('id')
+      visualization = CartoDB::Visualization::Member.new(id: id).fetch
+      visualization.version = 2
+      visualization.password = 'foobar'
+      visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      visualization.store
+
+      get "/viz/#{id}/public_map", {}, @headers
+      last_response.status.should == 200
+      last_response.body.scan(/Insert your password/).present?.should == true
+    end
+
     it 'returns proper surrogate-keys' do
       id = table_factory(privacy: ::UserTable::PRIVACY_PUBLIC).table_visualization.id
 
@@ -251,6 +266,27 @@ describe Admin::VisualizationsController do
       host! "#{org.name}.localhost.lan"
       get "/viz/#{vis_id}/public_map", @headers
       last_response.status.should == 200
+    end
+
+    it 'go to password protected page if the organization viz is password protected' do
+      org = OrganizationFactory.new.new_organization.save
+
+      user_a = create_user(quota_in_bytes: 123456789, table_quota: 400)
+      user_org = CartoDB::UserOrganization.new(org.id, user_a.id)
+      user_org.promote_user_to_admin
+      id = factory(owner=user_a).fetch('id')
+      visualization = CartoDB::Visualization::Member.new(id: id).fetch
+      visualization.version = 2
+      visualization.password = 'foobar'
+      visualization.privacy = Carto::Visualization::PRIVACY_PROTECTED
+      visualization.store
+
+      get "/viz/#{id}/public_map", {}, @headers
+
+      last_response.status.should == 302
+      follow_redirect!
+      last_response.status.should == 200
+      last_response.body.scan(/Insert your password/).present?.should == true
     end
 
     it 'does not load daily mapviews stats' do
@@ -443,6 +479,7 @@ describe Admin::VisualizationsController do
 
   describe 'org user visualization redirection' do
     it 'if A shares a (shared) vis link to B with A username, performs a redirect to B username' do
+      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
           :set_from_table_privacy => nil,
@@ -504,6 +541,10 @@ describe Admin::VisualizationsController do
                            organization: org,
                            account_type: 'ORGANIZATION USER')
 
+      # Needed because after_create is stubbed
+      user_a.create_api_keys
+      user_b.create_api_keys
+
       vis_id = factory(user_a).fetch('id')
       vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
       vis.privacy = CartoDB::Visualization::Member::PRIVACY_PRIVATE
@@ -545,6 +586,7 @@ describe Admin::VisualizationsController do
 
     # @see https://github.com/CartoDB/cartodb/issues/6081
     it 'If logged user navigates to legacy url from org user without org name, gets redirected properly' do
+      Carto::ApiKey.any_instance.stubs(:save_cdb_conf_info)
       CartoDB::UserModule::DBService.any_instance.stubs(:move_to_own_schema).returns(nil)
       CartoDB::TablePrivacyManager.any_instance.stubs(
         set_from_table_privacy: nil,
@@ -603,6 +645,10 @@ describe Admin::VisualizationsController do
 
       user_b = create_user(quota_in_bytes: 123456789, table_quota: 400)
 
+      # Needed because after_create is stubbed
+      user_a.create_api_keys
+      user_b.create_api_keys
+
       vis_id = factory(user_a).fetch('id')
       vis = CartoDB::Visualization::Member.new(id: vis_id).fetch
       vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
@@ -623,18 +669,6 @@ describe Admin::VisualizationsController do
       last_response.status.should be(200)
 
       org.destroy
-    end
-  end
-
-  describe '#index' do
-    before(:each) do
-      @user.stubs(:should_load_common_data?).returns(false)
-    end
-
-    it 'invokes user metadata redis caching' do
-      Carto::UserDbSizeCache.any_instance.expects(:update_if_old).with(@user).once
-      login_as(@user, scope: @user.username)
-      get dashboard_path, {}, @headers
     end
   end
 

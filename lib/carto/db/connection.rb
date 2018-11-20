@@ -44,11 +44,9 @@ module Carto
         private
 
         def get_database(options, configuration)
-          resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
-            configuration, get_connection_name(options[:as])
-          )
+          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new([])
           conn = ActiveRecord::Base.connection_handler.establish_connection(
-            get_connection_name(options[:as]), resolver.spec
+            get_connection_name(options[:as]), resolver.spec(configuration)
           ).connection
 
           # TODO: Maybe we should avoid doing this kind of operations here or remove it because
@@ -65,8 +63,15 @@ module Carto
           "#{quote_char}#{user_schema}#{quote_char}, #{SCHEMA_CARTODB}, #{SCHEMA_CDB_DATASERVICES_API}, #{SCHEMA_PUBLIC}"
         end
 
+        class NamedThing
+          def initialize(name)
+            @name = name
+          end
+          attr_reader :name
+        end
+
         def get_connection_name(kind = :carto_db_connection)
-          kind.to_s
+          NamedThing.new(kind.to_s)
         end
 
         def get_db_configuration_for(db_host, db_name, options)
@@ -83,7 +88,8 @@ module Carto
             password: base_config['password'],
             database: db_name,
             port:     base_config['port'],
-            encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding']
+            encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding'],
+            connect_timeout: base_config['connect_timeout']
           }
 
           case options[:as]

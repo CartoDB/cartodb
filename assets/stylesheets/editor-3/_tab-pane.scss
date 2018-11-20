@@ -1,0 +1,22 @@
+.Tab-pane,
+.Tab-paneContent {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.Tab-paneLabelImageContainer {
+  min-width: 16px;
+  height: 16px;
+}
+
+.Tab-paneLabelImage {
+  width: auto;
+  height: 16px;
+}
+
+.Tab-paneContentInner {
+  display: flex;
+  flex: 1 1 auto;
+}

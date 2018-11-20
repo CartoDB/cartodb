@@ -33,6 +33,20 @@ describe Carto::ApiKey do
     }
   end
 
+  def data_services_grant(services = ['geocoding', 'routing', 'isolines', 'observatory'])
+    {
+      type: 'dataservices',
+      services: services
+    }
+  end
+
+  def user_grant(data = ['profile'])
+    {
+      type: 'user',
+      data: data
+    }
+  end
+
   def with_connection_from_api_key(api_key)
     user = api_key.user
 
@@ -54,12 +68,14 @@ describe Carto::ApiKey do
     before(:all) do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
+      @table3 = create_table(user_id: @carto_user1.id)
     end
 
     after(:all) do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @table3.destroy
     end
 
     after(:each) do
@@ -101,11 +117,24 @@ describe Carto::ApiKey do
       api_key.destroy
     end
 
+    it 'can grant only with select and update permissions' do
+      grants = [database_grant(@table1.database_schema, @table1.name, permissions: ['select', 'update']), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'only_update', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{@table1.name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        connection.execute("update #{@table1.name} set name = 'wadus2' where name = 'wadus'")
+      end
+    end
+
     it 'fails to grant to a non-existent table' do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception Carto::UnprocesableEntityError
+      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
     end
 
     it 'fails to grant to system table' do
@@ -127,9 +156,63 @@ describe Carto::ApiKey do
       end
     end
 
+    it 'grants to a double quoted table name' do
+      old_name = @table3.name
+      @user1.in_database.run("ALTER TABLE #{old_name} RENAME TO \"wadus\"\"wadus\"")
+      grants = [database_grant(@carto_user1.database_schema, 'wadus"wadus'), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'valid_table_name', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from \"wadus\"\"wadus\"") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      api_key.destroy
+      @user1.in_database.run("ALTER TABLE \"wadus\"\"wadus\" RENAME TO #{old_name}")
+    end
+
+    it 'grants view' do
+      view_name = 'cool_view'
+
+      validate_view_api_key(
+        view_name,
+        "CREATE VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP VIEW #{view_name}"
+      )
+
+      validate_view_api_key(
+        view_name,
+        "CREATE MATERIALIZED VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP MATERIALIZED VIEW #{view_name}"
+      )
+    end
+
+    def validate_view_api_key(view_name, create_query, drop_query)
+      @user1.in_database.run(create_query)
+      grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        begin
+          connection.execute("select count(1) from #{@table1.name}")
+        rescue Sequel::DatabaseError => e
+          e.message.should include "permission denied for relation #{@table1.name}"
+        end
+
+        connection.execute("select count(1) from #{view_name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      @user1.in_database.run(drop_query)
+      api_key.destroy
+    end
+
+    let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
+
     describe '#destroy' do
       it 'removes the role from DB' do
-        grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         @user1.in_database(as: :superuser) do |db|
@@ -144,7 +227,6 @@ describe Carto::ApiKey do
       end
 
       it 'removes the role from Redis' do
-        grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         $users_metadata.hgetall(api_key.send(:redis_key)).should_not be_empty
@@ -153,11 +235,17 @@ describe Carto::ApiKey do
 
         $users_metadata.hgetall(api_key.send(:redis_key)).should be_empty
       end
+
+      it 'invalidates varnish cache' do
+        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+        api_key.destroy
+      end
     end
 
     describe '#regenerate_token!' do
       it 'regenerates the value in Redis only after save' do
-        grants = [apis_grant, database_grant(@table1.database_schema, @table1.name)]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
         old_redis_key = api_key.send(:redis_key)
@@ -175,6 +263,15 @@ describe Carto::ApiKey do
 
         $users_metadata.hgetall(new_redis_key).should_not be_empty
         $users_metadata.hgetall(old_redis_key).should be_empty
+      end
+
+      it 'invalidates varnish cache' do
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+        CartoDB::Varnish.any_instance.expects(:purge).with("#{@user1.database_name}.*").at_least(1)
+
+        api_key.regenerate_token!
+        api_key.save!
       end
     end
 
@@ -216,6 +313,20 @@ describe Carto::ApiKey do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
         }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one apis section is allowed/)
+      end
+
+      it 'fails with several dataservices sections' do
+        two_apis_grant = [apis_grant, data_services_grant, data_services_grant]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one dataservices section is allowed/)
+      end
+
+      it 'fails with several user sections' do
+        two_apis_grant = [apis_grant, user_grant, user_grant]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one user section is allowed/)
       end
     end
 
@@ -283,6 +394,18 @@ describe Carto::ApiKey do
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
 
+      it 'create master api key works' do
+        api_key = @carto_user1.api_keys.master.first
+        api_key.destroy
+
+        @carto_user1.api_keys.create_master_key!
+
+        api_key = @carto_user1.api_keys.master.first
+        api_key.should be
+        api_key.db_role.should eq @carto_user1.database_username
+        api_key.db_password.should eq @carto_user1.database_password
+      end
+
       it 'cannot create a non master api_key with master as the name' do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: Carto::ApiKey::NAME_MASTER, grants: [apis_grant])
@@ -324,17 +447,85 @@ describe Carto::ApiKey do
         api_key.errors.full_messages.should include "Token must be default_public for default public keys"
       end
     end
+
+    describe 'data services api key' do
+      it 'cdb_conf info with dataservices' do
+        grants = [apis_grant, data_services_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
+        expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines', 'observatory'] }
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'cdb_conf info without dataservices' do
+        grants = [apis_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'testname', grants: grants)
+        expected = { username: @carto_user1.username, permissions: [] }
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          config = db.fetch(query).first[:cdb_conf_getconf]
+          expect(JSON.parse(config, symbolize_names: true)).to eql(expected)
+        end
+
+        api_key.destroy
+
+        @user1.in_database(as: :superuser) do |db|
+          query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
+          db.fetch(query).first[:cdb_conf_getconf].should be_nil
+        end
+      end
+
+      it 'fails with invalid data services' do
+        grants = [apis_grant, data_services_grant(['invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with valid and invalid data services' do
+        grants = [apis_grant, data_services_grant(services: ['geocoding', 'invalid-service'])]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'fails with invalid data services key' do
+        grants = [
+          apis_grant,
+          {
+            type: 'dataservices',
+            invalid: ['geocoding']
+          }
+        ]
+
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
   end
 
   describe 'with plain users' do
     before(:all) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
-      @auth_api_feature_flag.destroy
       @user1.destroy
     end
 
@@ -343,14 +534,12 @@ describe Carto::ApiKey do
 
   describe 'with organization users' do
     before(:all) do
-      @auth_api_feature_flag = FactoryGirl.create(:feature_flag, name: 'auth_api', restricted: false)
       @auth_organization = FactoryGirl.create(:organization, quota_in_bytes: 1.gigabytes)
       @user1 = TestUserFactory.new.create_owner(@auth_organization)
       @carto_user1 = Carto::User.find(@user1.id)
     end
 
     after(:all) do
-      @auth_api_feature_flag.destroy
       @user1.destroy
       @auth_organization.destroy
     end
@@ -367,6 +556,24 @@ describe Carto::ApiKey do
 
       table.destroy
       other_user.destroy
+    end
+
+    it 'drop role with grants of objects owned by other user' do
+      user2 = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table_user2 = create_table(user_id: user2.id)
+      schema_and_table_user2 = "\"#{table_user2.database_schema}\".#{table_user2.name}"
+
+      table_user1 = create_table(user_id: @carto_user1.id)
+      grants = [database_grant(table_user1.database_schema, table_user1.name), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+      user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
+
+      expect { api_key.destroy! }.to_not raise_error
+
+      table_user1.destroy
+      table_user2.destroy
+      user2.destroy
     end
   end
 end

@@ -1,0 +1,148 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+
+$spacing-unit: 20px;
+$blue1: #3AA9E3;
+$grey2: #2E3C43;
+$twitter: #55ACEE;
+$facebook: #3A5999;
+$linkedin: #007BB6;
+
+@mixin button($color1, $color2) {
+  border-color: rgba($color1, 0.3);
+  color: $color1;
+
+  &:hover {
+    border-color: rgba($color1, 0.4);
+  }
+
+  &.is-highlight {
+    background: $color1;
+    color: $color2;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &.is-hover {
+    &:hover {
+      background: $color1;
+      color: $color2;
+    }
+  }
+
+  &.is-hover--dark {
+    &:hover {
+      color: $grey2;
+    }
+  }
+}
+
+// PublicMap buttons
+// --------------------------------------------------
+
+.PublicButton {
+  display: inline-block;
+  transition: all 0.3s;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 4px;
+  outline: none;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  > span {
+    display: inline-block;
+  }
+}
+
+.PublicButton--responsive {
+  width: 100%;
+
+  > span {
+    max-width: 100%;
+  }
+}
+
+.PublicButton--long {
+  > span {
+    min-width: 140px;
+  }
+}
+
+// Sizes
+.PublicButton--sSmall {
+  > span {
+    padding: 8px $spacing-unit;
+  }
+}
+
+.PublicButton--sMedium {
+  > span {
+    padding: $spacing-unit / 2 $spacing-unit;
+  }
+}
+
+.PublicButton--sLarge {
+  > span {
+    padding: 12px $spacing-unit;
+  }
+}
+
+.PublicButton--sXlarge {
+  > span {
+    padding: 14px $spacing-unit * 2;
+  }
+}
+
+// Colors
+.PublicButton--cWhite {
+  @include button(#FFF, $blue1);
+}
+
+.PublicButton--cBlue {
+  @include button($blue1, #FFF);
+
+  &.is-highlight--fb {
+    border-color: $facebook;
+    background: $facebook;
+
+    &:hover {
+      border-color: darken($facebook, 5%);
+      background: darken($facebook, 5%);
+    }
+  }
+
+  &.is-highlight--tw {
+    border: 2px solid $twitter;
+    background: $twitter;
+
+    &:hover {
+      border-color: darken($twitter, 5%);
+      background: darken($twitter, 5%);
+    }
+  }
+
+  &.is-highlight--li {
+    border: 2px solid $linkedin;
+    background: $linkedin;
+
+    &:hover {
+      border-color: darken($linkedin, 5%);
+      background: darken($linkedin, 5%);
+    }
+  }
+}
+
+.PublicButton--public {
+  font-size: $sFontSize-normal;
+  text-transform: none;
+}

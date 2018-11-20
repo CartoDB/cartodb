@@ -7,13 +7,45 @@
 .Editor-formInner {
   display: flex;
   align-items: center;
-  min-height: $baseSize * 4;
-  margin-top: $baseSize;
+  min-height: $baseSize * 3;
+  margin-top: $baseSize * 2;
 }
 
-.Editor-formInner.Editor-formInner--Slider {
-  align-items: flex-start;
-  margin-top: $baseSize * 2;
+.Editor-formInner.Editor-formInner--NoTabs {
+  margin-top: $baseSize;
+  padding: 0;
+
+  .js-menu {
+    display: none;
+  }
+
+  .Editor-formInner--Number {
+    margin-top: 0;
+  }
+}
+
+.Editor-formInner.Editor-formInner--Size {
+  align-items: baseline;
+  padding-top: $baseSize;
+}
+
+.Editor-formInner.Editor-formInner--Size.Editor-formInner--NoTabs {
+  align-items: center;
+}
+
+.Editor-formInner.Editor-formInner--FillColor {
+  align-items: baseline;
+  margin-top: 0;
+
+  .Form-InputFill {
+    margin-top: $baseSize * 2;
+  }
+}
+
+.Editor-formInner.Editor-formInner--FillColor.Editor-formInner--NoTabs {
+  .Form-InputFill {
+    margin-top: $baseSize;
+  }
 }
 
 .Options-form .Editor-formInner {
@@ -36,7 +68,6 @@
 
 .Editor-formInner--noMargin {
   margin-top: 0;
-  padding-top: $baseSize;
 }
 
 .Editor-formInner--nested {
@@ -99,8 +130,11 @@
   }
 }
 
-.Editor-formInner .Editor-formSelect {
-  max-width: 160px;
+.Editor-formInner {
+  &.Editor-formSelect,
+  .Editor-Form-InputSize {
+    max-width: 160px;
+  }
 }
 
 .Editor-formSelect {
@@ -178,10 +212,40 @@
   cursor: pointer;
 }
 
-.Form-InputFill.is-disabled {
-  border-color: #EEE;
-  background: #F9F9F9;
-  cursor: default;
+.Form-InputSize {
+  width: 100%;
+  max-width: 160px;
+
+  .Editor-formInner--Number {
+    margin-top: $baseSize * 2;
+  }
+}
+
+.Form-InputFill {
+  width: 100%;
+  max-width: 160px;
+}
+
+.Form-StyleByValue {
+  margin-top: $baseSize * 2;
+}
+
+.Form-StyleByValue--column {
+  display: flex;
+  justify-content: space-between;
+
+  .by-column-name {
+    padding-right: 4px;
+  }
+
+  .by-column-range {
+    width: 100%;
+    max-width: 40px;
+    padding-left: 8px;
+    border-left: 1px #CCC solid;
+    text-align: right;
+    text-align: center;
+  }
 }
 
 .RampItem-bar {

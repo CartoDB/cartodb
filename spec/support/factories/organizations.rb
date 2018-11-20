@@ -26,6 +26,7 @@ module CartoDB
       organization.google_maps_key = attributes[:google_maps_key] || nil
       organization.google_maps_private_key = attributes[:google_maps_private_key] || nil
       organization.builder_enabled = attributes[:builder_enabled] || false
+      organization.password_expiration_in_d = attributes[:password_expiration_in_d]
 
       organization
     end

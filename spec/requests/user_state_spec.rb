@@ -94,9 +94,26 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
+
+    it 'locked user can delete their own account' do
+      to_be_deleted_user = FactoryGirl.create(:locked_user)
+      to_be_deleted_user.password = 'pwd123'
+      to_be_deleted_user.password_confirmation = 'pwd123'
+      to_be_deleted_user.save
+
+      login(to_be_deleted_user)
+      delete api_v3_users_delete_me_url, deletion_password_confirmation: 'pwd123'
+
+      expect(User.find(id: to_be_deleted_user.id)).to be_nil
+    end
+
     it 'user accessing a locked user resources' do
       login(@non_locked_user)
       host! "#{@locked_user.username}.localhost.lan"
@@ -119,7 +136,11 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
     it 'non-logged user accessing a locked user resources' do
@@ -139,7 +160,11 @@ describe "UserState" do
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == if endpoint == "/api/v3/me"
+                                    200
+                                  else
+                                    404
+                                  end
       end
     end
   end
@@ -153,7 +178,10 @@ describe "UserState" do
       @locked_user.save
     end
     it 'owner accessing their resources' do
+      # we use this to avoid generating the static assets in CI
       Admin::UsersController.any_instance.stubs(:render)
+      Admin::VisualizationsController.any_instance.stubs(:render)
+
       login(@locked_user)
       host! "#{@locked_user.username}.localhost.lan"
       @dashboard_endpoints.each do |endpoint|
@@ -198,6 +226,9 @@ describe "UserState" do
       end
     end
     it 'non locked user accessing a locked user resources' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render)
+
       login(@non_locked_user)
       @user_endpoints.each do |endpoint|
         host! "#{@locked_user.username}.localhost.lan"

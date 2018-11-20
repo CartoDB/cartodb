@@ -7,6 +7,7 @@ defaults: &defaults
   ogr2ogr:
     binary:           'which ogr2ogr'
     csv_guessing:     true
+    memory_limit:
   debug_assets: true
   mandatory_keys:     [layer_opts, sql_api, varnish_management, redis, session_domain]
   session_domain:     '.localhost.lan'
@@ -85,7 +86,11 @@ defaults: &defaults
   segment:
     api_key:
   passwords:
-    expiration_in_s:
+    expiration_in_d:
+    rate_limit:
+      max_burst:
+      count:
+      period:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'

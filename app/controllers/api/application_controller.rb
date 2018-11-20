@@ -34,16 +34,16 @@ class Api::ApplicationController < ApplicationController
     @stats_aggregator = CartoDB::Stats::EditorAPIs.instance
   end
 
+  def valid_password_confirmation
+    unless current_user.valid_password_confirmation(params[:password_confirmation])
+      raise Carto::PasswordConfirmationError.new
+    end
+  end
+
   private
 
   def callback_valid?
     # While only checks basic characters, represents most common use of JS function names
     params[:callback].nil?  || !!(params[:callback] =~ /\A[$a-z_][0-9a-z_$]*\z/i)
-  end
-
-  def json_formatted_request?
-    format = request.format
-
-    format.json? if format
   end
 end

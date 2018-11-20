@@ -40,6 +40,7 @@ module CartoDB
         self.overwrite = false
         self.ogr2ogr_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
+        self.memory_limit = options.fetch(:ogr2ogr_memory_limit, Process::RLIM_INFINITY)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
         self.encoding = options.fetch(:encoding, ENCODING)
         self.shape_encoding = ''
@@ -84,7 +85,10 @@ module CartoDB
 
       def run(use_append_mode=false)
         @append_mode = use_append_mode
-        stdout, stderr, status  = Open3.capture3(environment, *command)
+        open3_options = {
+          rlimit_as: memory_limit
+        }
+        stdout, stderr, status  = Open3.capture3(environment, *command, open3_options)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
         self
@@ -128,6 +132,9 @@ module CartoDB
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
+          (exit_code == 256 && command_output =~ /out of memory/i) ||
+          (exit_code == 134) ||
+          (exit_code == 139) ||
           (exit_code == 35072 && command_output =~ /Killed/i) ||
           (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
       end
@@ -145,7 +152,7 @@ module CartoDB
       end
 
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
-                    :shape_coordinate_system
+                    :shape_coordinate_system, :memory_limit
       attr_reader   :exit_code, :command_output
 
       private

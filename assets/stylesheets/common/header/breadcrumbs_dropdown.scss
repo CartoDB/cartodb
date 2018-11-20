@@ -1,0 +1,62 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+.BreadcrumbsDropdown { width: 260px; }
+.BreadcrumbsDropdown--compact { width: 120px; }
+
+.BreadcrumbsDropdown-list {
+  display: block;
+  width: 100%;
+  margin: 0 !important;
+}
+
+.BreadcrumbsDropdown-listItem {
+  display: block;
+  margin-top: 0 !important;
+  padding: 16px;
+}
+
+.BreadcrumbsDropdown-listItem.is-dark {
+  border-radius: 0 0 2px 2px;
+  background: $cStructure-grayBkg;
+}
+
+.BreadcrumbsDropdown-listItem.is-first {
+  border-radius: 2px;
+}
+
+.BreadcrumbsDropdown-options {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.BreadcrumbsDropdown-icon {
+  width: 20px;
+}
+
+.BreadcrumbsDropdown-optionsItem {
+  display: block;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+}
+.BreadcrumbsDropdown-optionsItem.has-margin { margin-top: 10px; }
+
+.BreadcrumbsDropdown-optionsItem.is-selected {
+  color: $cTypography-linkSelected;
+
+  &:hover {
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.BreadcrumbsDropdown-lockIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  background: $cIcons-default;
+  color: white;
+  font-size: $sFontSize-smaller;
+  font-weight: $sFontWeight-lighter;
+}

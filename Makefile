@@ -7,10 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-PENDING_SPECS = \
-	spec/lib/varnish_spec.rb (#321) \
-	$(NULL)
-
 WORKING_SPECS_INTEGRATIONS = \
 	$(NULL)
 
@@ -150,6 +146,7 @@ WORKING_SPECS_4 = \
 	spec/requests/admin/pages_controller_spec.rb \
 	spec/requests/carto/api/organizations_controller_spec.rb \
 	spec/requests/carto/api/organization_users_controller_spec.rb \
+	spec/requests/carto/api/multifactor_authentication_controller_spec.rb \
 	spec/requests/api/imports_spec.rb \
 	spec/requests/api/json/imports_controller_spec.rb \
 	spec/requests/carto/api/imports_controller_spec.rb \
@@ -258,11 +255,18 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/layer_spec.rb \
 	spec/models/carto/mobile_app_presenter_spec.rb \
 	spec/models/carto/notification_spec.rb \
+	spec/models/carto/oauth_access_token_spec.rb \
+	spec/models/carto/oauth_app_spec.rb \
+	spec/models/carto/oauth_app_user_spec.rb \
+	spec/models/carto/oauth_app_organization_spec.rb \
+	spec/models/carto/oauth_authorization_code_spec.rb \
+	spec/models/carto/oauth_refresh_token_spec.rb \
 	spec/models/carto/overlay_spec.rb \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
 	spec/models/carto/user_db_service_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
+	spec/models/carto/user_multifactor_auth_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/models/carto/user_migration_import_spec.rb \
 	spec/requests/admin/organization_users_controller_spec.rb \
@@ -275,12 +279,13 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/users_controller_spec.rb \
 	spec/requests/carto/api/table_presenter_spec.rb \
 	spec/requests/carto/api/vizjson3_presenter_spec.rb \
+	spec/requests/carto/api/public/users_controller_spec.rb \
+	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/carto/saml_controller_spec.rb \
-	spec/requests/admin/users_controller_spec.rb \
 	spec/services/carto/user_table_index_service_spec.rb \
 	spec/services/carto/user_metadata_export_service_spec.rb \
 	spec/services/carto/organization_metadata_export_service_spec.rb \
@@ -297,6 +302,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/metrics_controller_spec.rb \
 	spec/requests/carto/api/organization_notifications_controller_spec.rb \
 	spec/requests/carto/api/received_notifications_controller_spec.rb \
+	spec/requests/carto/api/multifactor_auths_controller_spec.rb \
 	spec/lib/carto/tracking/events_spec.rb \
 	spec/lib/carto/definition_spec.rb \
 	spec/lib/carto/styles/cartography_spec.rb \
@@ -307,6 +313,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
+	spec/lib/carto/oauth_provider/scopes_spec.rb \
 	spec/models/carto/legend_spec.rb \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
@@ -315,6 +322,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/snapshots_controller_specs.rb \
 	spec/models/carto/snapshot_spec.rb \
 	spec/helpers/application_helper_spec.rb \
+	spec/lib/cartodb/common_data_redis_cache_spec.rb \
 	spec/helpers/carto/html_safe_spec.rb \
 	spec/models/carto/asset_spec.rb \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
@@ -324,11 +332,18 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \
 	spec/lib/tasks/fix_unique_legends_spec.rb \
+	spec/lib/tasks/oauth_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
 	spec/lib/carto/google_maps_api_spec.rb \
 	spec/lib/tasks/fix_unique_overlays_spec.rb \
+	spec/requests/password_resets_spec.rb \
+	spec/requests/password_resets_controller_spec.rb \
+	spec/models/carto/feature_flag_spec.rb \
+	spec/mailers/user_mailer_spec.rb \
+	spec/services/carto/user_multifactor_auth_update_service_spec.rb \
+	spec/gears/carto_gears_api/users_service_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

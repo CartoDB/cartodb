@@ -22,8 +22,8 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.24.0'.freeze
-      ODBC_FDW_VERSION = '0.2.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.26.0'.freeze
+      ODBC_FDW_VERSION = '0.3.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -345,6 +345,60 @@ module CartoDB
         end
       end
 
+      def all_user_roles
+        roles = [@user.database_username]
+        if @user.organization_user?
+          roles << organization_member_group_role_member_name
+          roles += @user.groups.map(&:database_role)
+        end
+
+        roles
+      end
+
+      def all_tables_granted(role = nil)
+        roles = []
+        if role.present?
+          roles << role
+        else
+          roles = all_user_roles
+        end
+        roles_str = roles.map { |r| "'#{r}'" }.join(',')
+
+        query = %{
+          SELECT
+            s.nspname as schema,
+            c.relname as t,
+            string_agg(lower(acl.privilege_type), ',') as permission
+          FROM
+            pg_class c
+            JOIN pg_namespace s ON c.relnamespace = s.oid
+            JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
+            JOIN pg_roles r ON acl.grantee = r.oid
+          WHERE
+            r.rolname IN (#{roles_str}) AND
+            s.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          GROUP BY schema, t;
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_tables_granted_hashed(role = nil)
+        results = all_tables_granted(role)
+        privileges_hashed = {}
+
+        if !results.nil?
+          results.each do |row|
+            privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+            privileges_hashed[row[:schema]][row[:t]] = row[:permission].split(',')
+          end
+        end
+
+        privileges_hashed
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end
@@ -461,11 +515,15 @@ module CartoDB
           # If there's no config we assume there's no need to install the
           # geocoder client as it is an independent API
           return if geocoder_api_config.blank?
-          install_geocoder_api_extension(geocoder_api_config)
-          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_username}\"
-              SET search_path TO #{build_search_path}")
-          @user.in_database(as: :superuser).run("ALTER USER \"#{@user.database_public_username}\"
-              SET search_path TO #{build_search_path}") if @user.organization_user?
+          install_geocoder_api_extension
+          @user.in_database(as: :superuser) do |db|
+            db.transaction do
+              db.run(build_geocoder_server_config_sql(geocoder_api_config))
+              db.run(build_entity_config_sql)
+              db.run("ALTER USER \"#{@user.database_username}\" SET search_path TO #{build_search_path}")
+              db.run("ALTER USER \"#{@user.database_public_username}\" SET search_path TO #{build_search_path}")
+            end
+          end
           return true
         rescue => e
           CartoDB.notify_error(
@@ -475,15 +533,12 @@ module CartoDB
           return false
       end
 
-      def install_geocoder_api_extension(geocoder_api_config)
+      def install_geocoder_api_extension
         @user.in_database(as: :superuser) do |db|
           db.transaction do
             db.run('CREATE EXTENSION IF NOT EXISTS plproxy SCHEMA public')
             db.run("CREATE EXTENSION IF NOT EXISTS cdb_dataservices_client VERSION '#{CDB_DATASERVICES_CLIENT_VERSION}'")
             db.run("ALTER EXTENSION cdb_dataservices_client UPDATE TO '#{CDB_DATASERVICES_CLIENT_VERSION}'")
-            geocoder_server_sql = build_geocoder_server_config_sql(geocoder_api_config)
-            db.run(geocoder_server_sql)
-            db.run(build_entity_config_sql)
           end
         end
       end
@@ -537,7 +592,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.22.0'
+          cdb_extension_target_version = '0.24.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1376,7 +1431,8 @@ module CartoDB
 
                   try:
                     client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    cache_key = raw_cache_key.replace('+', r'\+')
                     client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
                     response = client.getresponse()
                     assert response.status == 204

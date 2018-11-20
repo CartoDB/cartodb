@@ -2,8 +2,10 @@ var _ = require('underscore');
 var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
+var execSync = require('child_process').execSync;
 var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
 var webpackTask = null;
+var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
 var REQUIRED_NODE_VERSION = '6.9.2';
 var REQUIRED_NPM_VERSION = '3.10.9';
@@ -23,6 +25,12 @@ var SHRINKWRAP_MODULES_TO_VALIDATE = [
   'torque.js',
   'turbo-carto'
 ];
+
+// Synchronously check if editor assets have changed
+var diff = execSync('git diff --numstat $(git rev-list --tags --skip=1  --max-count=1) -- $(git symbolic-ref --short HEAD) config/editor_assets_version.json', {
+  cwd: __dirname
+});
+var EDITOR_ASSETS_CHANGED = diff.toString().length > 0;
 
 function requireWebpackTask () {
   if (webpackTask === null) {
@@ -110,6 +118,7 @@ module.exports = function (grunt) {
   var PUBLIC_DIR = './public/';
   var ROOT_ASSETS_DIR = './public/assets/';
   var ASSETS_DIR = './public/assets/<%= pkg.version %>';
+  var EDITOR_ASSETS_DIR = `./public/assets/editor/${EDITOR_ASSETS_VERSION}`;
 
   /**
    * this is being used by `grunt --environment=production release`
@@ -138,6 +147,8 @@ module.exports = function (grunt) {
 
     public_dir: PUBLIC_DIR,
     assets_dir: ASSETS_DIR,
+    editor_assets_dir: EDITOR_ASSETS_DIR,
+    editor_assets_version: EDITOR_ASSETS_VERSION,
     root_assets_dir: ROOT_ASSETS_DIR,
 
     // Concat task
@@ -265,15 +276,11 @@ module.exports = function (grunt) {
     }
   });
 
-  // TODO: migrate mixins to postcss
   grunt.registerTask('css', [
     'copy:vendor',
     'copy:app',
     'copy:css_cartodb',
     'compass',
-    'copy:css_vendor_builder',
-    'copy:css_builder',
-    'copy:css_dashboard',
     'sass',
     'concat:css'
   ]);
@@ -316,46 +323,37 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('beforeDefault', [
-    'clean',
     'config'
   ]);
 
-  grunt.registerTask('pre', [
+  grunt.registerTask('dev-editor', [
     'beforeDefault',
     'js_editor',
     'css',
     'manifest'
   ]);
 
-  registerCmdTask('npm-dev', {cmd: 'npm', args: ['run', 'dev']});
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
-  registerCmdTask('npm-build-dashboard', {cmd: 'npm', args: ['run', 'build:dashboard']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
-  registerCmdTask('npm-dashboard', {cmd: 'npm', args: ['run', 'dashboard']});
+  registerCmdTask('npm-build-dev', {cmd: 'npm', args: ['run', 'build:dev']});
 
   /**
    * `grunt dev`
    */
 
-  grunt.registerTask('dev', [
-    'npm-carto-node',
-    'pre',
-    'npm-build-dashboard',
-    'npm-start'
-  ]);
-
-  grunt.registerTask('dashboard', [
-    'beforeDefault',
-    'css',
-    'manifest',
-    'npm-dashboard'
+  grunt.registerTask('editor', [
+    'build-static',
+    'npm-build-dev',
+    'dev-editor',
+    'watch:css'
   ]);
 
   grunt.registerTask('default', [
-    'pre',
-    'npm-dev'
+    'build-static',
+    'npm-build-dev',
+    'dev-editor'
   ]);
 
   grunt.registerTask('lint', [
@@ -371,15 +369,19 @@ module.exports = function (grunt) {
     'uglify'
   ]);
 
-  grunt.registerTask('build', [
-    'npm-carto-node',
-    'pre',
+  // -- BUILD TASKS
+
+  grunt.registerTask('build', 'build editor, builder, dashboard and static pages', [
+    'build-editor',
+    'build-static',
+    'npm-build'
+  ]);
+
+  grunt.registerTask('build-editor', 'generate editor css and javasript files', [
+    'dev-editor',
     'copy:js',
     'exorcise',
-    'uglify',
-    'npm-build',
-    'build-static',
-    'npm-build-dashboard'
+    'uglify'
   ]);
 
   grunt.registerTask('build-static', 'generate static files and needed vendor scripts', [
@@ -393,9 +395,23 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('release', [
     'check_release',
-    'build',
+    'build-static',
+    'npm-build',
     'compress',
-    's3',
+    's3:js',
+    's3:css',
+    's3:images',
+    's3:fonts',
+    's3:flash',
+    's3:favicons',
+    's3:unversioned',
+    's3:static_pages',
+    'invalidate'
+  ]);
+
+  grunt.registerTask('release_editor_assets', 'builds & uploads editor assets', [
+    'build-editor',
+    's3:frozen',
     'invalidate'
   ]);
 
@@ -423,14 +439,9 @@ module.exports = function (grunt) {
     requireWebpackTask().compile.call(this, 'dashboard_specs');
   });
 
-  /**
-   * `grunt test`
-   */
-  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', [
+  var testTasks = [
     'connect:test',
     'beforeDefault',
-    'js_editor',
-    'jasmine:cartodbui',
     'generate_builder_specs',
     'bootstrap_webpack_builder_specs',
     'webpack:builder_specs',
@@ -440,7 +451,17 @@ module.exports = function (grunt) {
     'webpack:dashboard_specs',
     'jasmine:dashboard',
     'lint'
-  ]);
+  ];
+
+  // If the editor assets version has changed, add the editor tests
+  if (EDITOR_ASSETS_CHANGED) {
+    testTasks.splice(testTasks.indexOf('generate_builder_specs'), 0, 'js_editor', 'jasmine:cartodbui');
+  }
+
+  /**
+   * `grunt test`
+   */
+  grunt.registerTask('test', '(CI env) Re-build JS files and run all tests. For manual testing use `grunt jasmine` directly', testTasks);
 
   /**
    * `grunt test:browser` compile all Builder specs and launch a webpage in the browser.

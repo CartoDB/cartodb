@@ -74,7 +74,8 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled,
+           :password_expiration_in_d]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
            :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -86,7 +87,8 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled,
+           :password_expiration_in_d]
         end
       elsif is_a?(::User)
         [:account_type, :admin, :crypted_password, :database_host,
@@ -112,7 +114,8 @@ module Concerns
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
-         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role]
+         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role,
+         :password_reset_token, :password_reset_sent_at]
       end
     end
 
@@ -122,8 +125,9 @@ module Concerns
         when :create
           raise "Can't create organizations from editor"
         when :update
-          values.slice(:seats, :viewer_seats, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
+          values.slice(:seats, :viewer_seats, :display_name, :description, :website, :discus_shortname,
+                       :twitter_username, :auth_username_password_enabled, :auth_google_enabled,
+                       :password_expiration_in_d)
         end
       elsif self.is_a?(::User)
         attrs = values.slice(
@@ -143,8 +147,10 @@ module Concerns
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
           :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
           :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
-          :industry, :company, :phone, :job_role
+          :industry, :company, :phone, :job_role,
+          :password_reset_token, :password_reset_sent_at
         )
+        attrs[:multifactor_authentication_status] = multifactor_authentication_status
         case action
         when :create
           attrs[:remote_user_id] = self.id

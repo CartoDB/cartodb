@@ -1,0 +1,117 @@
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// OLD FORM SPINNER
+
+/*
+  <div class="form_spinner">
+    <input class="value" type="text" value="0.6" />
+    <a href="#plus" class="plus"></a>
+    <a href="#minus" class="minus"></a>
+  </div>
+*/
+
+.form_spinner {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  min-width: 20px;
+  margin: 0;
+  padding: 2px 19px 2px 4px;
+  border: 1px solid #9E9E9E;
+  border-radius: 3px;
+  background: white;
+  line-height: 20px;
+
+  &:hover { cursor: pointer; }
+
+  &:hover,
+  .input:hover {
+    border: 1px solid #7E7E7E;
+  }
+
+  &:hover input.value { color: #333; }
+
+  input.value {
+    width: 25px;
+    margin: 0;
+    padding: 0;
+    float: none;
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 13px;
+    line-height: 15px;
+    text-align: left;
+
+    &:focus {
+      outline: none;
+      color: #333;
+    }
+  }
+
+  a {
+    position: absolute;
+    right: 0;
+    width: 14px;
+    height: 11px;
+    border-left: 1px solid #A8A8A8;
+    text-indent: -9999px;
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      left: 5px;
+      width: 0;
+      height: 0;
+      border-right: 2px solid transparent;
+      border-left: 2px solid transparent;
+    }
+
+    &.plus {
+      top: 0;
+      border-bottom: 1px solid #A8A8A8;
+
+      &::before {
+        top: 4px;
+        border-bottom: 3px solid #999;
+      }
+    }
+
+    &.minus {
+      bottom: 0;
+      height: 12px;
+
+      &::before {
+        top: 5px;
+        border-top: 3px solid #999;
+      }
+    }
+
+    &:hover {
+      &.plus {
+        &::before { border-bottom: 3px solid #666; }
+      }
+
+      &.minus {
+        bottom: 0;
+        &::before { border-top: 3px solid #666; }
+      }
+    }
+  }
+
+  // Disabled state
+  &.disabled {
+    background: #F4F4F4 !important;
+
+    a {
+      opacity: 0.5;
+      background: #F4F4F4 !important;
+
+      &:hover {
+        cursor: default;
+      }
+    }
+    &:hover { cursor: default; }
+  }
+}

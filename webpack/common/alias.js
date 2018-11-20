@@ -1,4 +1,4 @@
-const {resolve} = require('path');
+const { resolve } = require('path');
 
 module.exports = {
   'fixtures': resolve(resolve('.'), 'lib/assets/test/spec/fixtures'),

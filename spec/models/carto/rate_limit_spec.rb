@@ -30,7 +30,9 @@ describe Carto::RateLimit do
                                            sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                            sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                            sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                           sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                           sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                           sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                           sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
   end
 
   after :each do
@@ -73,6 +75,8 @@ describe Carto::RateLimit do
       rate_limit.sql_job_create.first.to_array.should eq [19, 110, 111]
       rate_limit.sql_job_get.first.to_array.should eq [6, 7, 8]
       rate_limit.sql_job_delete.first.to_array.should eq [0, 1, 2]
+      rate_limit.sql_copy_from.first.to_array.should eq [1, 1, 60]
+      rate_limit.sql_copy_to.first.to_array.should eq [1, 1, 60]
     end
 
     it 'updates a rate_limit' do
@@ -149,6 +153,8 @@ describe Carto::RateLimit do
       $limits_metadata.EXISTS("#{sql_prefix}job_create").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}job_get").should eq 0
       $limits_metadata.EXISTS("#{sql_prefix}job_delete").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}copy_from").should eq 0
+      $limits_metadata.EXISTS("#{sql_prefix}copy_to").should eq 0
 
       @rate_limit.save_to_redis(@user)
 
@@ -173,6 +179,8 @@ describe Carto::RateLimit do
       $limits_metadata.LRANGE("#{sql_prefix}job_create", 0, 2).should == ["19", "110", "111"]
       $limits_metadata.LRANGE("#{sql_prefix}job_get", 0, 2).should == ["6", "7", "8"]
       $limits_metadata.LRANGE("#{sql_prefix}job_delete", 0, 2).should == ["0", "1", "2"]
+      $limits_metadata.LRANGE("#{sql_prefix}copy_from", 0, 2).should == ["1", "1", "60"]
+      $limits_metadata.LRANGE("#{sql_prefix}copy_to", 0, 2).should == ["1", "1", "60"]
 
       @rate_limit.maps_static.first.max_burst = 4
       @rate_limit.save_to_redis(@user)
@@ -219,7 +227,9 @@ describe Carto::RateLimit do
                                  sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                  sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                  sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                 sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                 sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       }.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
 
       expect {
@@ -243,7 +253,9 @@ describe Carto::RateLimit do
                                  sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                  sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                  sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                 sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                 sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                 sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       }.to raise_error(/Error: Number of rate limits needs to be multiple of three/)
     end
 
@@ -268,7 +280,9 @@ describe Carto::RateLimit do
                                                 sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                 sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                                 sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                                sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                                sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                                sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                                sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
@@ -294,7 +308,9 @@ describe Carto::RateLimit do
                                                 sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                 sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                                 sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                                sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                                sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                                sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                                sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
@@ -319,7 +335,9 @@ describe Carto::RateLimit do
                                                   sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                                   sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                                   sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                                  sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                                  sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                                  sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                                  sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
       expect {
         rate_limit_not_saved.save_to_redis(@user)
       }.to raise_error(ActiveRecord::RecordInvalid)
@@ -350,7 +368,9 @@ describe Carto::RateLimit do
                                               sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                               sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                               sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                              sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                              sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                              sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                              sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
 
       @rate_limit.should_not eq @rate_limit2
     end
@@ -376,7 +396,9 @@ describe Carto::RateLimit do
                                               sql_query_format: Carto::RateLimitValues.new([16, 17, 18]),
                                               sql_job_create: Carto::RateLimitValues.new([19, 110, 111]),
                                               sql_job_get: Carto::RateLimitValues.new([6, 7, 8]),
-                                              sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]))
+                                              sql_job_delete: Carto::RateLimitValues.new([0, 1, 2]),
+                                              sql_copy_from: Carto::RateLimitValues.new([1, 1, 60]),
+                                              sql_copy_to: Carto::RateLimitValues.new([1, 1, 60]))
 
       @rate_limit.should eq @rate_limit2
     end

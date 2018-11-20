@@ -10,7 +10,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   before_filter :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
-  before_filter :check_feature_flag
   before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
@@ -42,9 +41,9 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def index
-    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+    page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
 
-    api_keys = Carto::User.find(current_viewer.id).api_keys
+    api_keys = Carto::User.find(current_user.id).api_keys.user_visible.order_weighted_by_type
     api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)
     filtered_api_keys = Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 
@@ -68,17 +67,13 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   private
 
-  def check_feature_flag
-    render_404 unless current_viewer.try(:has_feature_flag?, 'auth_api')
-  end
-
   def check_engine_enabled
     render_404 unless current_viewer.try(:engine_enabled?)
   end
 
   def load_api_key
     name = params[:id]
-    @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).first
+    @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).user_visible.first
     if !@viewed_api_key || !request_api_key.master? && @viewed_api_key != request_api_key
       raise Carto::LoadError.new("API key not found: #{name}")
     end

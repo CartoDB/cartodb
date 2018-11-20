@@ -66,6 +66,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
   # @param String username. No full CN, just the username, e.g. 'administrator1'
   # @param String password
   def authenticate(username, password)
+    return false if username.blank? || password.blank?
     ldap_connection = Net::LDAP.new(connect_timeout: CONNECTION_TIMEOUT)
     ldap_connection.host = self.host
     ldap_connection.port = self.port

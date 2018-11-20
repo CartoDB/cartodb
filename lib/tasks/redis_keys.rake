@@ -1,5 +1,78 @@
 namespace :cartodb do
   namespace :redis_keys do
+    module ExportRedisKeys
+      def get_database(number)
+        db_numbers[number] || raise('Invalid redis db')
+      end
+
+      def db_numbers
+        @db_numbers || {
+          '0' => $tables_metadata,
+          '3' => $api_credentials,
+          '5' => $users_metadata,
+          '6' => $redis_migrator_logs,
+          '8' => $limits_metadata
+        }.freeze
+      end
+
+      def export_key(rdb, key)
+        ttl = rdb.ttl(key)
+        {
+          ttl: ttl < 0 ? 0 : ttl,
+          value: rdb.dump(key)
+        }
+      end
+
+      def import_key(rdb, key, value)
+        rdb.restore(key, value[:ttl], value[:value])
+      end
+    end
+
+    desc 'export keys in file'
+    task :export, [:filename, :db] => :environment do |_, args|
+      include ExportRedisKeys
+
+      if args[:filename].nil?
+        puts "usage: bundle exec rake cartodb:redis_keys:export[filter_file]\n
+              you must pass a file that contains the redis keys you want to export one per line"
+        exit 1
+      end
+
+      rdb = get_database(args[:db])
+
+      result = {}
+      File.foreach(args[:filename]) do |line|
+        line.strip!
+        result[line] = export_key(rdb, line)
+      end
+
+      File.open('redis_export.json', 'w') { |file| file.write(result.to_json) }
+    end
+
+    desc 'import keys in given json file to redis db'
+    task :import, [:filename, :db, :overwrite] => :environment do |_, args|
+      include ExportRedisKeys
+
+      if args[:filename].nil?
+        puts "usage: bundle exec rake cartodb:redis_keys:import[file.json,redis_db,overwrite]\n
+              File containing a json that will be used for restoring keys. Overwrite defaults to false"
+        exit 1
+      end
+      args.with_defaults(overwrite: 'false')
+      overwrite = args[:overwrite] == 'true'
+
+      redis_hash = JSON.parse(File.read(args[:filename])).deep_symbolize_keys
+
+      rdb = get_database(args[:db])
+      redis_hash.each do |key, value|
+        rdb.del(key) if overwrite && rdb.exists(key)
+        if overwrite || !rdb.exists(key)
+          puts "Importing #{key}"
+          import_key(rdb, key, value)
+        end
+      end
+    end
+
     desc 'export named_maps key'
     task :export_named_maps, [:file, :batch_size] => :environment do |_task, args|
       args.with_defaults(batch_size: 100)

@@ -130,6 +130,28 @@
     </div>
   <% end %>
 
+  <% if (@user.has_feature_flag?('mfa')) %>
+    <% mfa_configured = @user.multifactor_authentication_configured? %>
+    <div class="FormAccount-row">
+      <div class="FormAccount-rowLabel">
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+          Multi-factor authentication
+        </label>
+      </div>
+      <div class="FormAccount-rowData">
+        <div class="Toggler">
+          <%= f.check_box :mfa, id: "mfa", checked: mfa_configured %>
+          <%= label_tag(:mfa, '') %>
+        </div>
+        <div class="FormAccount-rowInfo u-lspace-23">
+          <p class="CDB-Text CDB-Size-small u-altTextColor">
+            If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.
+          </p>
+        </div>
+      </div>
+    </div>
+  <% end %>  
+
   <div class="user-quotas" style="display: none">
     <div class="FormAccount-title">
       <p class="FormAccount-titleText">User quotas</p>
@@ -268,14 +290,14 @@
   <% if @user.new? -%>
     <% if @organization.remaining_seats > 0 || @organization.remaining_viewer_seats > 0 %>
       <div class="FormAccount-footer u-justifyEnd">
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer">
         <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.</p>
-        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled">
+        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
       </div>
@@ -287,13 +309,13 @@
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete user</span>
         </button>
 
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer u-justifyEnd">
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>

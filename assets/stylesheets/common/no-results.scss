@@ -1,0 +1,13 @@
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.NoResults {
+  color: $cTypography-help;
+  font-size: $sFontSize-normal;
+  font-style: italic;
+  line-height: $sLineHeight-normal;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,102 @@
+@import '../../../variables/colors';
+@import '../../../variables/sizes';
+
+// Selected dataset styles
+
+$w: 820px;
+$br: 4px;
+
+.DatasetSelected {
+  width: $w;
+  margin: 0 0 0 -20px;
+  border: 1px solid #BBD7F2;
+  border-radius: $br;
+  background: #FFF;
+}
+
+.DatasetSelected-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+.DatasetSelected-itemExt {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  border: 1px solid #199BDB;
+  border-radius: 4px;
+  color: #419CDB;
+  font-size: $sFontSize-smallUpperCase;
+  line-height: 38px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.DatasetSelected-itemInfo {
+  margin-left: 20px;
+}
+
+.DatasetSelected-itemTitle {
+  display: block;
+  color: $cTypography-headers;
+  font-size: $sFontSize-larger;
+  font-weight: $sFontWeight-normal;
+}
+
+.DatasetSelected-itemDescription {
+  display: block;
+  margin-top: 3px;
+  color: $cTypography-secondary;
+  font-size: $sFontSize-normal;
+}
+
+.DatasetSelected-sync {
+  display: block;
+  overflow: hidden;
+  border-bottom-right-radius: $br;
+  border-bottom-left-radius: $br;
+  background: #FFF;
+}
+
+.DatasetSelected-syncOptions {
+  display: flex;
+  align-items: center;
+  margin: 0 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid $cStructure-mainLine;
+}
+
+.DatasetSelected-syncLabel {
+  width: 100px;
+  border-right: 1px solid $cStructure-softLine;
+}
+
+.DatasetSelected-syncOptionsList {
+  display: flex;
+  align-items: center;
+}
+
+.DatasetSelected-syncOptionsList--syncView {
+  margin-left: auto;
+}
+
+.DatasetSelected-syncOptionsItem {
+  margin-left: 24px;
+}
+
+.UpgradeElement.DatasetSelected-upgrade {
+  padding: 20px;
+  border-top: 1px solid #BBD7F2 !important;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.DatasetSelected-upgradeButton {
+  padding-right: 40px;
+  padding-left: 40px;
+}

@@ -42,6 +42,17 @@ FactoryGirl.define do
         user.save
         org.reload
       end
+
+      trait :mfa_enabled do
+        auth_username_password_enabled true
+
+        after :create do |org|
+          Carto::Organization.find(org.id).users.each do |user|
+            user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: user.id)
+            user.save!
+          end
+        end
+      end
     end
 
     factory :saml_organization do
@@ -56,6 +67,26 @@ FactoryGirl.define do
           email_attribute: 'username'
         }.stringify_keys
       end
+    end
+
+    factory :carto_organization, class: Carto::Organization do
+      to_create(&:save!)
+
+      name { unique_name('organization') }
+      seats 10
+      quota_in_bytes 100.megabytes
+      geocoding_quota 1000
+      here_isolines_quota 1000
+      obs_snapshot_quota 1000
+      obs_general_quota 1000
+      map_view_quota 100000
+      website 'carto.com'
+      description 'Lorem ipsum dolor sit amet'
+      display_name 'Vizzuality Inc'
+      discus_shortname 'cartodb'
+      twitter_username 'cartodb'
+      location 'Madrid'
+      builder_enabled false # Most tests still assume editor
     end
   end
 end

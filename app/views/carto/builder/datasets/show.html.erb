@@ -17,8 +17,6 @@
   <%= insert_google_maps(@google_maps_qs) %>
 <% end %>
 
-<%= javascript_include_tag 'common.js' %>
-<%= javascript_include_tag 'dataset_vendor.js' %>
-<%= javascript_include_tag 'dataset.js' %>
+<%= javascript_include_tag 'common', 'common_vendor', 'dataset' %>
 
 <%= insert_fullstory %>

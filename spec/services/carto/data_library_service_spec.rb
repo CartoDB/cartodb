@@ -43,7 +43,8 @@ describe Carto::DataLibraryService do
         source_username: 'wadus-username',
         source_api_key: 'rewadus-api_key',
         target_username: @carto_user1.username,
-        granted_api_key: 'wadus-api_key'
+        granted_api_key: 'wadus-api_key',
+        format: 'gpkg'
       }
 
       client.expects(:get_visualization_v1)
@@ -71,6 +72,7 @@ describe Carto::DataLibraryService do
       external_source.visualization.should be
       import_url = "#{client_p[:scheme]}://#{params[:source_username]}.#{client_p[:base_domain]}"
       external_source.import_url.should start_with import_url
+      /format=gpkg/.match(external_source.import_url).should be
       external_source.geometry_types.should eq ['ST_MultiPolygon']
       external_source.username.should eq params[:source_username]
 
@@ -116,7 +118,8 @@ describe Carto::DataLibraryService do
         source_username: 'wadus-username',
         source_api_key: 'rewadus-api_key',
         target_username: @carto_user1.username,
-        granted_api_key: api_key_at_response[:token]
+        granted_api_key: api_key_at_response[:token],
+        format: 'gpkg'
       }
 
       client.expects(:get_api_keys_v3)

@@ -1,0 +1,63 @@
+// Fullscreen styles for table/map public views!
+
+:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+
+  #map {
+    height: 100% !important;
+  }
+}
+
+:-moz-full-screen {
+  width: 100%;
+  height: 100%;
+
+  #map {
+    height: 100% !important;
+  }
+}
+
+:-moz-full-screen {
+  .cartodb-public-header {
+    display: none;
+  }
+
+  .separator {
+    display: none;
+  }
+}
+
+:-webkit-full-screen {
+  .cartodb-public-header {
+    display: none;
+  }
+
+  .separator {
+    display: none;
+  }
+}
+
+:-ms-fullscreen {
+  .cartodb-public-header {
+    display: none;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  #map {
+    height: 100% !important;
+  }
+}
+
+:fullscreen {
+  .cartodb-public-header {
+    display: none;
+  }
+
+  .separator {
+    display: none;
+  }
+}

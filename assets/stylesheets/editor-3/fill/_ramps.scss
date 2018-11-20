@@ -1,0 +1,41 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+.CustomRamp {
+  display: flex;
+  justify-content: space-between;
+}
+
+.CustomRamp-list {
+  border-top: 1px solid #DDD;
+}
+
+.CustomRamp .CustomRamp-listOptions {
+  flex: 1;
+}
+
+.CustomRamp-clear {
+  $padding: $baseSize + 4;
+  padding: $padding $padding $padding 0;
+  color: $cBlue;
+}
+
+.RampItem-bar {
+  width: 20px;
+}
+
+.RampItem-text {
+  max-width: calc(100% - 30px);
+}
+
+.RampItem-secondaryContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.RampItem-img {
+  min-width: 22px;
+  margin-left: 10px;
+  text-align: center;
+}

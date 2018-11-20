@@ -26,31 +26,33 @@ module CartoDB
       include CacheHelper
       include Carto::VisualizationDependencies
 
-      PRIVACY_PUBLIC       = 'public'        # published and listable in public user profile
-      PRIVACY_PRIVATE      = 'private'       # not published (viz.json and embed_map should return 404)
-      PRIVACY_LINK         = 'link'          # published but not listen in public profile
-      PRIVACY_PROTECTED    = 'password'      # published but password protected
+      PRIVACY_PUBLIC       = 'public'.freeze        # published and listable in public user profile
+      PRIVACY_PRIVATE      = 'private'.freeze       # not published (viz.json and embed_map should return 404)
+      PRIVACY_LINK         = 'link'.freeze          # published but not listen in public profile
+      PRIVACY_PROTECTED    = 'password'.freeze      # published but password protected
 
-      TYPE_CANONICAL  = 'table'
-      TYPE_DERIVED    = 'derived'
-      TYPE_SLIDE      = 'slide'
-      TYPE_REMOTE = 'remote'
+      TYPE_CANONICAL  = 'table'.freeze
+      TYPE_DERIVED    = 'derived'.freeze
+      TYPE_SLIDE      = 'slide'.freeze
+      TYPE_REMOTE = 'remote'.freeze
 
-      KIND_GEOM   = 'geom'
-      KIND_RASTER = 'raster'
+      VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
 
-      PRIVACY_VALUES  = [ PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED ]
-      TEMPLATE_NAME_PREFIX = 'tpl_'
+      KIND_GEOM   = 'geom'.freeze
+      KIND_RASTER = 'raster'.freeze
+
+      PRIVACY_VALUES = [PRIVACY_PUBLIC, PRIVACY_PRIVATE, PRIVACY_LINK, PRIVACY_PROTECTED].freeze
+      TEMPLATE_NAME_PREFIX = 'tpl_'.freeze
 
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
       PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
-      AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'
-      TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'
+      AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
+      TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'.freeze
 
       VERSION_BUILDER = 3
 
-      DEFAULT_OPTIONS_VALUE = '{}'
+      DEFAULT_OPTIONS_VALUE = '{}'.freeze
 
       # Upon adding new attributes modify also:
       # services/data-repository/spec/unit/backend/sequel_spec.rb -> before do
@@ -153,6 +155,7 @@ module CartoDB
       end
 
       def valid?
+        validator.errors.store(:type, "Visualization type is not valid") unless valid_type?
         validator.errors.store(:user, "Viewer users can't store visualizations") if user.viewer
 
         validator.validate_presence_of(name: name, privacy: privacy, type: type, user_id: user_id)
@@ -201,6 +204,10 @@ module CartoDB
         end
 
         validator.valid?
+      end
+
+      def valid_type?
+        VALID_TYPES.include?(type)
       end
 
       def fetch

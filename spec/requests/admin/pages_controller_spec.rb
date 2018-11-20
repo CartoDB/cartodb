@@ -206,6 +206,9 @@ describe Admin::PagesController do
     end
 
     it 'extracts username from redirection for dashboard with subdomainless' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       username = 'endedwithu'
       anyuser = prepare_user(username)
       host! 'localhost.lan'
@@ -372,6 +375,7 @@ describe Admin::PagesController do
     if org_user
       org = mock
       org.stubs(name: @org_name)
+      org.stubs(password_expiration_in_d: nil)
       user.stubs(organization: org)
       Organization.stubs(:where).with(name: @org_name).returns([org])
       Organization.stubs(:where).with(name: @org_user_name).returns([org])

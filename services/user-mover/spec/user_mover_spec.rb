@@ -7,6 +7,13 @@ RSpec.configure do |c|
   c.include Helpers
 end
 describe CartoDB::DataMover::ExportJob do
+  def stub_api_keys
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_org_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_org_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_api_key_roles)
+  end
+
   before :each do
     bypass_named_maps
     @tmp_path = Dir.mktmpdir("mover-test") + '/'
@@ -35,6 +42,10 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   describe "a migrated user" do
+    before(:each) do
+      stub_api_keys
+    end
+
     subject do
       create_tables(first_user)
       first_user.save
@@ -192,6 +203,7 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   it "should not touch an user metadata nor update its oids when update_metadata is not set" do
+    stub_api_keys
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 50, private_tables_enabled: true, sync_tables_enabled: true
     )

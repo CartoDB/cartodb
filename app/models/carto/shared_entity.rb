@@ -9,7 +9,7 @@ module Carto
     RECIPIENT_TYPE_ORGANIZATION = 'org'.freeze
     RECIPIENT_TYPE_GROUP        = 'group'.freeze
 
-    scope :shared_visualizations, where(entity_type: ENTITY_TYPE_VISUALIZATION)
+    scope :shared_visualizations, -> { where(entity_type: ENTITY_TYPE_VISUALIZATION) }
 
     belongs_to :visualization, foreign_key: :entity_id, inverse_of: :shared_entities
 

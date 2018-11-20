@@ -37,6 +37,7 @@ class User < Sequel::Model
   include Carto::BillingCycle
   include Carto::EmailCleaner
   extend Carto::UserAuthenticator
+  include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
     'gdrive' => 'Google Drive',
@@ -145,8 +146,16 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
+
+  LOGIN_NOT_RATE_LIMITED = -1
+
+  include VarnishCacheHandler
 
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
@@ -187,8 +196,6 @@ class User < Sequel::Model
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
-
-    validates_includes JOB_ROLES + DEPRECATED_JOB_ROLES, :job_role if job_role.present?
 
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
@@ -338,11 +345,12 @@ class User < Sequel::Model
   end
 
   def twitter_datasource_enabled
-    if has_organization?
-      organization.twitter_datasource_enabled || super
-    else
-      super
-    end
+    (super || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
+  end
+
+  def twitter_configured?
+    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
+    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   def after_create
@@ -351,7 +359,7 @@ class User < Sequel::Model
     save_metadata
     self.load_avatar
 
-    db.after_commit { create_api_keys } if has_feature_flag?('auth_api')
+    db.after_commit { create_api_keys }
 
     db_service.monitor_user_notification
     sleep 1
@@ -398,9 +406,7 @@ class User < Sequel::Model
        changes.include?(:twitter_username) || changes.include?(:location)
       invalidate_varnish_cache(regex: '.*:vizjson')
     end
-    if changes.include?(:database_host)
-      CartoDB::UserModule::DBService.terminate_database_connections(database_name, previous_changes[:database_host][0])
-    elsif changes.include?(:database_schema)
+    if changes.include?(:database_schema)
       CartoDB::UserModule::DBService.terminate_database_connections(database_name, database_host)
     end
 
@@ -413,10 +419,16 @@ class User < Sequel::Model
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+
+    reset_password_rate_limit if changes.include?(:crypted_password)
   end
 
   def api_keys
     Carto::ApiKey.where(user_id: id)
+  end
+
+  def user_multifactor_auths
+    Carto::UserMultifactorAuth.where(user_id: id)
   end
 
   def shared_entities
@@ -456,7 +468,7 @@ class User < Sequel::Model
 
         if organization.users.count > 1
           msg = 'Attempted to delete owner from organization with other users'
-          CartoDB::StdoutLogger.info msg
+          CartoDB::Logger.info(message: msg)
           raise CartoDB::BaseCartoDBError.new(msg)
         end
       end
@@ -473,7 +485,10 @@ class User < Sequel::Model
       ActiveRecord::Base.transaction do
         delete_external_data_imports
         delete_external_sources
-        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each(&:destroy)
+        Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|
+          v.user.viewer = false
+          v.destroy!
+        end
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
@@ -501,9 +516,11 @@ class User < Sequel::Model
       destroy_shared_with
 
       assign_search_tweets_to_organization_owner
+
+      ClientApplication.where(user_id: id).each(&:destroy)
     rescue StandardError => exception
       error_happened = true
-      CartoDB::StdoutLogger.info "Error destroying user #{username}. #{exception.message}\n#{exception.backtrace}"
+      CartoDB::Logger.error(message: "Error destroying user #{username}", exception: exception)
     end
 
     # Invalidate user cache
@@ -569,11 +586,6 @@ class User < Sequel::Model
     end
   end
 
-  def invalidate_varnish_cache(options = {})
-    options[:regex] ||= '.*'
-    CartoDB::Varnish.new.purge("#{database_name}#{options[:regex]}")
-  end
-
   # allow extra vars for auth
   attr_reader :password
 
@@ -606,9 +618,6 @@ class User < Sequel::Model
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
     return unless validate_different_passwords(@old_password, @new_password)
 
-    # Must be set AFTER validations
-    set_last_password_change_date
-
     self.password = new_password_value
   end
 
@@ -628,12 +637,12 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    (self.class.password_digest(old_password, salt) == crypted_password) ||
+    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
   def valid_password_confirmation(password)
-    valid = password.present? && validate_old_password(password)
+    valid = validate_old_password(password)
     errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
     valid
   end
@@ -674,6 +683,7 @@ class User < Sequel::Model
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
+    set_last_password_change_date
   end
 
   # Database configuration setup
@@ -833,7 +843,7 @@ class User < Sequel::Model
       avatar_color = Cartodb.config[:avatars]['colors'][Random.new.rand(0..Cartodb.config[:avatars]['colors'].length - 1)]
       return "#{avatar_base_url}/avatar_#{avatar_kind}_#{avatar_color}.png"
     else
-      CartoDB::StdoutLogger.info "Attribute avatars_base_url not found in config. Using default avatar"
+      CartoDB::Logger.info(message: "Attribute avatars_base_url not found in config. Using default avatar")
       return default_avatar
     end
   end
@@ -1020,6 +1030,10 @@ class User < Sequel::Model
     "limits:timeout:#{username}"
   end
 
+  def rate_limit_password_key
+    "limits:password:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
@@ -1053,6 +1067,21 @@ class User < Sequel::Model
                           'render',                    user_render_timeout,
                           'render_public',             database_render_timeout
     save_rate_limits
+  end
+
+  def password_login_attempt
+    return LOGIN_NOT_RATE_LIMITED unless password_rate_limit_configured?
+
+    rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
+
+    # it returns the number of seconds until the user should retry
+    # -1 means the action was allowed
+    # see https://github.com/brandur/redis-cell#response
+    rate_limit[3]
+  end
+
+  def reset_password_rate_limit
+    $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
   end
 
   def save_rate_limits
@@ -1387,7 +1416,12 @@ class User < Sequel::Model
       user_data_size_function =
         self.db_service.cartodb_extension_version_pre_mu? ? "CDB_UserDataSize()"
                                                           : "CDB_UserDataSize('#{self.database_schema}')"
-      in_database(:as => :superuser).fetch("SELECT cartodb.#{user_data_size_function}").first[:cdb_userdatasize]
+      in_database(as: :superuser) do |user_database|
+        user_database.transaction do
+          user_database.fetch(%{SET LOCAL lock_timeout = '1s'})
+          user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
+        end
+      end
     rescue => e
       attempts += 1
       begin
@@ -1835,16 +1869,45 @@ class User < Sequel::Model
   end
 
   def password_expired?
-    password_expiration_in_s = Cartodb.get_config(:passwords, 'expiration_in_s')
-    return false unless password_expiration_in_s && password_set?
-    (last_password_change_date || created_at) + password_expiration_in_s < Time.now
+    return false unless password_expiration_in_d && password_set?
+    password_date + password_expiration_in_d.days.to_i < Time.now
   end
 
-  def days_since_last_password_change
-    (Time.now.to_date - (last_password_change_date || created_at).to_date).to_i
+  def password_expiration_in_d
+    organization_user? ? organization.password_expiration_in_d : Cartodb.get_config(:passwords, 'expiration_in_d')
+  end
+
+  def password_date
+    last_password_change_date || created_at
+  end
+
+  def multifactor_authentication_configured?
+    user_multifactor_auths.any?
+  end
+
+  def active_multifactor_authentication
+    user_multifactor_auths.order(created_at: :desc).first
+  end
+
+  def multifactor_authentication_status
+    if user_multifactor_auths.setup.any?
+      MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP
+    elsif user_multifactor_auths.enabled.any?
+      MULTIFACTOR_AUTHENTICATION_ENABLED
+    else
+      MULTIFACTOR_AUTHENTICATION_DISABLED
+    end
   end
 
   private
+
+  def password_rate_limit_configured?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    [@max_burst, @count, @period].all?(&:present?)
+  end
 
   def common_data_outdated?
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day

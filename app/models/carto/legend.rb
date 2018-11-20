@@ -16,11 +16,11 @@ module Carto
       size: %w(bubble)
     }.freeze
 
-    serialize :definition, ::Carto::CartoJsonSerializer
-    serialize :conf, ::Carto::CartoJsonSerializer
+    serialize :definition, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :conf, ::Carto::CartoJsonSymbolizerSerializer
 
     validates :definition, carto_json_symbolizer: true
-    serialize :conf, ::Carto::CartoJsonSerializer
+    serialize :conf, ::Carto::CartoJsonSymbolizerSerializer
     validates :type, :layer, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 

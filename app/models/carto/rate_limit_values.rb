@@ -42,7 +42,7 @@ module Carto
     def self.dump(rate_limit_values)
       return [] if rate_limit_values.nil?
 
-      Carto::InsertableArray.new(rate_limit_values.flat_map(&:to_array))
+      rate_limit_values.flat_map(&:to_array)
     end
 
     def self.load(values)

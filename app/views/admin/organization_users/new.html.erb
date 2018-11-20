@@ -7,11 +7,7 @@
     var config = <%= safe_js_object frontend_config %>;
     var user_data = <%= safe_js_object current_user.data.to_json.html_safe %>;
   </script>
-  <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common_dashboard', 'organization_new_vendor', 'organization_new' %>
-  <% else %>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'organization_templates.js', 'organization_deps.js', 'organization.js' -%>
-  <% end %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'organization' %>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'organization.css',  :media => 'all' %>

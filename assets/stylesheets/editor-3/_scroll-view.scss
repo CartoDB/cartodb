@@ -1,0 +1,79 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.ScrollView {
+  display: flex;
+  flex-direction: column;
+  margin-top: -19px;
+
+  &,
+  .ScrollView-wrapper {
+    display: flex;
+    position: relative;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    margin-right: -24px;
+    margin-left: -24px;
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .ScrollView-content {
+    flex: 1;
+    padding: 18px 0;
+  }
+}
+
+.ScrollView--with-navigation {
+  margin-top: 0;
+}
+
+.ScrollView--horizontal {
+  &,
+  & .ScrollView-wrapper {
+    margin: 0;
+    padding: 0;
+  }
+
+  .ScrollView-content {
+    padding: 0 0 18px;
+  }
+}
+
+.ScrollView--withoutMargins,
+.ScrollView--withoutMargins .ScrollView-wrapper {
+  margin-right: 0;
+  margin-left: 0;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.ScrollView-shadow {
+  display: block;
+  position: absolute;
+  z-index: 100;
+  transition: opacity 400ms;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ScrollView-shadow--top,
+.ScrollView-shadow--bottom {
+  right: -1px;
+  left: -1px;
+  height: 18px;
+}
+
+.ScrollView-shadow--top {
+  top: 0;
+  background-image: linear-gradient(-180deg, rgba(#000, 0.08), rgba(#000, 0) 88%);
+}
+
+.ScrollView-shadow--bottom {
+  bottom: 0;
+  background-image: linear-gradient(0deg, rgba(#000, 0.08), rgba(#000, 0) 88%);
+}
+
+.ScrollView-shadow.is-visible {
+  opacity: 1;
+}

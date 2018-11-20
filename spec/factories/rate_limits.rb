@@ -21,6 +21,8 @@ FactoryGirl.define do
     sql_job_create        Carto::RateLimitValues.new([6, 7, 8])
     sql_job_get           Carto::RateLimitValues.new([9, 10, 11])
     sql_job_delete        Carto::RateLimitValues.new([12, 13, 14])
+    sql_copy_from         Carto::RateLimitValues.new([1, 1, 60])
+    sql_copy_to           Carto::RateLimitValues.new([1, 1, 60])
   end
 
   factory :rate_limits_custom, class: Carto::RateLimit do
@@ -45,6 +47,8 @@ FactoryGirl.define do
     sql_job_create        Carto::RateLimitValues.new([16, 17, 18])
     sql_job_get           Carto::RateLimitValues.new([19, 110, 111])
     sql_job_delete        Carto::RateLimitValues.new([112, 113, 114])
+    sql_copy_from         Carto::RateLimitValues.new([11, 11, 160])
+    sql_copy_to           Carto::RateLimitValues.new([11, 11, 160])
   end
 
   factory :rate_limits_custom2, class: Carto::RateLimit do
@@ -69,6 +73,8 @@ FactoryGirl.define do
     sql_job_create        Carto::RateLimitValues.new([16, 17, 18])
     sql_job_get           Carto::RateLimitValues.new([19, 110, 111])
     sql_job_delete        Carto::RateLimitValues.new([112, 113, 114])
+    sql_copy_from         Carto::RateLimitValues.new([112, 112, 161])
+    sql_copy_to           Carto::RateLimitValues.new([112, 112, 161])
   end
 
   factory :rate_limits_pro, class: Carto::RateLimit do
@@ -93,5 +99,7 @@ FactoryGirl.define do
     sql_job_create        Carto::RateLimitValues.new([3, 7, 8])
     sql_job_get           Carto::RateLimitValues.new([4, 10, 11])
     sql_job_delete        Carto::RateLimitValues.new([5, 13, 14])
+    sql_copy_from         Carto::RateLimitValues.new([2, 2, 61])
+    sql_copy_to           Carto::RateLimitValues.new([2, 2, 61])
   end
 end

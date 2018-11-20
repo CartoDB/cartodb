@@ -1,0 +1,224 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+// PublicMap-map
+// --------------------------------------------------
+
+.PublicMap-map {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: #333 url($assetsDir + '/images/layout/noise.png') repeat 0 0;
+}
+
+.PublicMap-map.js-map::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(#000, 0.25);
+}
+
+.PublicMap-block {
+  display: block;
+  overflow: hidden;
+}
+
+.PublicMap-block.with-padding {
+  padding-top: 40px;
+}
+
+.PublicMap-navmenu {
+  position: relative;
+  z-index: 30;
+}
+
+.PublicMap-navmenu--owner {
+  position: relative;
+  z-index: 10;
+}
+
+.PublicMap-leftBlock {
+  width: 40%;
+  float: left;
+}
+
+.PublicMap-gradient {
+  content: '';
+  display: none;
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(#FFF, 0) 5%, #FFF 10%, #FFF 100%);
+}
+
+.PublicMap-leftBlock.PublicMap-leftBlock--large {
+  width: 100%;
+  max-width: 780px;
+}
+
+.PublicMap-rightBlock {
+  width: 60%;
+  float: right;
+}
+
+.PublicMap-description p {
+  font-size: 20px;
+  font-weight: $sFontWeight-lighter;
+  line-height: 32px;
+}
+
+.PublicMap-secondary {
+  background: #F9F9F9;
+}
+
+.PublicMap-secondary,
+.PublicMap-info {
+  padding: 60px 0;
+}
+
+.PublicMap-secondary--bottom {
+  padding-bottom: 0;
+}
+
+.PublicMap-title,
+.PublicMap-description {
+  margin-bottom: $sMargin-section;
+  color: #333;
+}
+
+.PublicMap-meta {
+  color: #AAA;
+  font-size: $sFontSize-large;
+}
+
+.PublicMap-metaList {
+  display: inline-block;
+  margin-right: 30px;
+}
+
+.PublicMap-metaItem {
+  @media (max-width: $sMedia-desktop) {
+    max-width: 100%;
+  }
+  display: inline-block;
+  max-width: 165px;
+  margin-right: 30px;
+}
+
+.PublicMap-metaItem,
+.PublicMap-metaItem p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.PublicMap-metaItem p,
+.PublicMap-metaItem i {
+  @media (max-width: $sMedia-desktop) {
+    max-width: 100%;
+  }
+  display: inline-block;
+  max-width: 135px;
+  vertical-align: middle;
+}
+
+.PublicMap-metaItem:last-child {
+  margin-right: 0;
+}
+
+.PublicMap-metaLink {
+  transition: all 0.2s;
+  color: $cTypography-linkSecondary;
+  text-decoration: none;
+}
+
+.PublicMap-metaLink:hover {
+  color: $cTypography-linkSecondaryHover;
+  text-decoration: none;
+}
+
+.PublicMap-metaIcon {
+  margin-right: $sMargin-elementInline;
+}
+
+.PublicMap-secondaryTitle {
+  padding: 20px 0;
+  border-bottom: 1px solid #DDD;
+  color: $cTypography-headers;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-normal;
+  line-height: normal;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.PublicMap-privateDatasets {
+  margin-left: $sMargin-element;
+  color: $cTypography-secondary;
+  line-height: 40px;
+}
+
+.PublicMap-mapsList {
+  padding-top: 10px;
+}
+
+@media (min-width: $sMedia-desktop +1) {
+  .PublicMap-metaList.PublicMap-metaList--mobile {
+    display: inline-block !important;
+  }
+}
+
+@media (max-width: $sMedia-desktop) {
+  .PublicMap-gradient {
+    display: block;
+  }
+
+  .PublicMap-leftBlock.PublicMap-leftBlock--owner {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+  }
+
+  .PublicMap-rightBlock.PublicMap-rightBlock--owner {
+    position: absolute;
+    z-index: 30;
+    right: 15px;
+    width: 60%;
+  }
+
+  .PublicMap-metaList {
+    display: block;
+    width: 100%;
+  }
+
+  .PublicMap-metaList + .PublicMap-metaList {
+    border-top: 1px solid #DDD;
+  }
+
+  .PublicMap-metaItem {
+    width: 100%;
+    padding: 20px 0;
+  }
+
+  .PublicMap-metaList.PublicMap-metaList--mobile {
+    display: none;
+  }
+
+  .PublicMap-metaList.PublicMap-metaList--mobile .PublicMap-metaItem {
+    border-top: 1px solid #DDD;
+  }
+
+  .PublicMap-metaList.PublicMap-metaList--mobile .PublicMap-metaItem:first-child {
+    border-top: 0;
+  }
+
+  .DatasetsList-itemMeta {
+    float: right;
+  }
+}

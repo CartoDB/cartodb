@@ -148,7 +148,7 @@ describe Carto::Admin::MobileAppsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       Cartodb::Central.any_instance.stubs(:delete_mobile_app).returns({}).once
       login(@user)
-      delete mobile_app_path(id: TEST_UUID)
+      delete mobile_app_path(id: TEST_UUID), password_confirmation: @carto_user.password
       response.status.should eq 302
       response.location.should end_with 'your_apps/mobile'
     end

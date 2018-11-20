@@ -1,0 +1,107 @@
+$resizeHandlerSize: 8px;
+
+.ExportImageView {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.ExportImageView.is-top {
+  z-index: 1000;
+}
+
+.ExportHelper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(#000, 0.6);
+}
+
+.CanvasExport {
+  position: absolute;
+  border: 1px dashed #FFF;
+  cursor: move;
+}
+
+/* draggable and resizable plugins style overriding */
+.CanvasExport.draggable {
+  z-index: 1000000000;
+}
+
+.CanvasExport.draggable .ExportHelper.ExportHelper--header,
+.CanvasExport.draggable .ExportHelper.ExportHelper--attribution,
+.CanvasExport.draggable .ExportHelper.ExportHelper--legend {
+  opacity: 0.2;
+}
+
+.CanvasExport .ui-resizable {
+  position: relative;
+}
+
+.CanvasExport .ui-resizable-handle {
+  display: block;
+  position: absolute;
+  z-index: 104;
+  width: $resizeHandlerSize;
+  height: $resizeHandlerSize;
+  background: linear-gradient(to bottom, rgba(254, 254, 254, 1) 0%, rgba(229, 229, 229, 1) 100%);
+  box-shadow: 1px 1px 2px rgba(#000, 0.5);
+}
+
+.CanvasExport .ui-resizable-disabled .ui-resizable-handle,
+.CanvasExport .ui-resizable-autohide .ui-resizable-handle {
+  display: none;
+}
+
+.CanvasExport .ui-resizable-n {
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
+  cursor: ns-resize;
+}
+
+.CanvasExport .ui-resizable-s {
+  bottom: -5px;
+  left: 50%;
+  margin-left: -4px;
+  cursor: ns-resize;
+}
+
+.CanvasExport .ui-resizable-e {
+  top: 50%;
+  right: -5px;
+  margin-top: -4px;
+  cursor: ew-resize;
+}
+
+.CanvasExport .ui-resizable-w {
+  top: 50%;
+  left: -5px;
+  margin-top: -4px;
+  cursor: ew-resize;
+}
+
+.CanvasExport .ui-resizable-se {
+  right: -4px;
+  bottom: -4px;
+  cursor: nwse-resize;
+}
+
+.CanvasExport .ui-resizable-sw {
+  bottom: -4px;
+  left: -4px;
+  cursor: nesw-resize;
+}
+
+.CanvasExport .ui-resizable-nw {
+  top: -4px;
+  left: -4px;
+  cursor: nwse-resize;
+}
+
+.CanvasExport .ui-resizable-ne {
+  top: -4px;
+  right: -4px;
+  cursor: nesw-resize;
+}

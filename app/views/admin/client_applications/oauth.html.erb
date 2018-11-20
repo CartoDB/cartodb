@@ -8,7 +8,7 @@
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'keys.css', :media => 'all' %>

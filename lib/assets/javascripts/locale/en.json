@@ -65,22 +65,23 @@
       "form": {
         "username": "Username",
         "subdomain_info": "Subdomain cannot be changed",
-        "email": "Email",
         "old_password": "Old password",
         "new_password": "New password",
         "confirm_password": "Confirm password",
         "account_type": "Account type",
         "billing_plan": "Your billing plan",
         "view_details": "View details",
+        "multifactor_authentication": "Multi-factor authentication",
+        "mfa_enabled": "Enabled",
+        "mfa_disabled": "Disabled",
+        "mfa_description": "Add an additional layer of security to your account to protect all data you store in CARTO. If you change the actual status you will be logged out and redirected to the login page",
         "connect_external_datasources": "Connect to external data sources",
         "save_changes": "Save changes",
         "delete_account": "Delete account",
         "confirm": "Are you sure?",
         "delete_all": "Delete my account and all my data",
-        "your_url": "Your URL",
         "email_google": "Your account is linked to your Google account.",
         "errors": {
-          "email_not_valid": "Email not valid",
           "change_email": "You can change the email if you set a password."
         }
       }
@@ -94,6 +95,11 @@
       "form": {
         "first_name": "First name",
         "last_name": "Last name",
+        "email": "Email",
+        "company_name": "Company Name",
+        "role": "Your Role",
+        "industry": "Industry",
+        "phone": "Phone Number",
         "user_type": "User type",
         "viewer": "VIEWER",
         "read_only": "Read-only access for datasets and maps",
@@ -112,7 +118,11 @@
         "jobs": "Jobs profile",
         "available_for_hire": "Available for hire",
         "show_banner": "Show a banner in your public profile linked to your email",
-        "save": "Save changes"
+        "your_url": "Your URL",
+        "save": "Save changes",
+        "errors": {
+          "email_not_valid": "Email not valid"
+        }
       }
     }
   },
@@ -578,6 +588,9 @@
         "false": "False",
         "null": "Null"
       },
+      "style": {
+        "select-by-column": "Select by column"
+      },
       "fill": {
         "customize": "Custom color set",
         "quantification": {
@@ -594,11 +607,13 @@
         "input-color": {
           "solid": "Solid",
           "value": "By value",
-          "img": "Img"
+          "img": "Img",
+          "select-color": "Select color"
         },
         "input-number": {
           "fixed": "Fixed",
-          "value": "By value"
+          "solid": "Solid",
+          "by-value": "By value"
         },
         "input-ramp": {
           "buckets": "bucket |||| buckets"
@@ -863,6 +878,9 @@
           "cant-select": "You can't select a date in night mode"
         }
       },
+      "create-dialog": {
+        "creating-map": "Creating map"
+      },
       "export-data": {
         "title": "Export data",
         "desc": "Select the preferred file format",
@@ -960,12 +978,12 @@
           },
           "link": {
             "type": "LINK",
-            "title": "Only accessible with link",
+            "title": "Public—with link",
             "body": "Only the people with a shared link can view the data"
           },
           "password": {
             "type": "PASSWORD",
-            "title": "Password",
+            "title": "Public—with password",
             "body": "Set a password and share only with specific people",
             "placeholder": "Type your password"
           },
@@ -1225,7 +1243,7 @@
             "import-url": "Import your data from a %{brand} URL",
             "file-selected": "File selected",
             "paste-url": "Paste a URL %{fileEnabled} ",
-            "select-a-file": "or select a file such as CSV, XLS, ZIP, KML, GPX,",
+            "select-a-file": "or select a file such as CSV, XLS, ZIP, KML, GPX, GPKG, FGDB,",
             "see-all-formats": "see all formats",
             "sync-enabled": "Keep it synchronized with the source",
             "sync-disabled": "Sync options are not available",
@@ -1347,7 +1365,7 @@
         "footer": {
           "guessing-desc": "Let CARTO automatically guess data types and content on import.",
           "deprecated-connector": "Deprecated connector.",
-          "twitter-contact-support": "Please <a href='mailto:support@carto.com'>contact support</a> should you need Twitter data.",
+          "twitter-contact-support": "Please <a href='mailto:support@carto.com'>contact support</a> for more information.",
           "twitter-how-to-historical": "To get access to historical data (older than 30 days) you need to",
           "contact-team": "contact our team",
           "privacy-upgrade": "You cannot change the privacy of your new datasets. Click here to upgrade your account.",
@@ -1369,6 +1387,37 @@
           "desc": "Are you sure you want to delete it?",
           "cancel": "Cancel",
           "confirm": "Ok, delete it"
+        }
+      },
+      "privacy-warning": {
+        "title": {
+          "visualization": {
+            "PUBLIC": "You are about to publish this visualization for public view",
+            "LINK": "You are about to make this visualization available to anyone with the link",
+            "PASSWORD": "You are about to make this visualization available to anyone with the password"
+          },
+          "dataset": {
+            "PUBLIC": "You are about to make this dataset public, making it visible in your public profile",
+            "LINK": "You are about to make this dataset available to anyone with the link"
+          }
+        },
+        "description": {
+          "PUBLIC": "Any personal data that you have used to create it will also be publicly available",
+          "LINK": "Any personal data that you have used to create it will also be publicly available with the link",
+          "PASSWORD": "Any personal data that you have used to create it will also be publicly available with the password"
+        },
+        "cancel": "Cancel",
+        "confirm": "Ok, Change privacy"
+      },
+      "password-confirmation": {
+        "modal-title": "Please confirm your password.",
+        "modal-description": "\"Hey, ho! Let’s Go!\"",
+        "form": {
+          "password-label": "Password"
+        },
+        "actions": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
         }
       }
     },
@@ -1632,6 +1681,15 @@
       "label": "Fix them"
     },
     "messages": {
+      "common": {
+        "cancel": "Cancel"
+      },
+      "deleting-analysis": {
+        "title": "Delete nested analysis",
+        "body": "The selected analysis has one or more nested analysis that would be removed once this analysis is deleted. Proceed?",
+        "delete": "Delete",
+        "cancel": "Cancel"
+      },
       "layer-hidden": {
         "title": "Layer hidden",
         "body": "This layer is hidden. Changes won't be shown until you make it visible.",
@@ -2357,8 +2415,8 @@
       "messages": {
         "custom-html-applied": {
           "title": "CUSTOM HTML APPLIED",
-          "body": "You just applied a legend with HTML. You can continue or clear all custom HTML.",
-          "accept": "CONTINUE"
+          "body": "You just applied custom html with HTML editor. You can continue or clear all custom HTML.",
+          "accept": "Clear custom html"
         }
       }
     },
@@ -2398,8 +2456,8 @@
       "messages": {
         "custom-legend": {
           "title": "CUSTOM LEGEND APPLIED",
-          "body": "You just applied custom html with HTML editor. You can continue and clean all html.",
-          "accept": "Delete custom html"
+          "body": "You just applied custom html with HTML editor. You can continue or clear all custom HTML.",
+          "accept": "Clear custom html"
         },
         "legends-disabled": {
           "title": "LEGENDS DISABLED",
@@ -2514,14 +2572,12 @@
         "cartocss-applied": {
           "title": "CARTOCSS APPLIED",
           "body": "You just applied styles with CartoCSS. You can continue or clear all styles.",
-          "continue": "CONTINUE",
           "clear": "CLEAR"
         },
         "torque-exists": {
           "title": "TORQUE LAYER",
           "body": "There is already a torque layer in the layers collection. If you continue, this layer will use the default style.",
-          "continue": "CONTINUE",
-          "cancel": "CANCEL"
+          "continue": "CONTINUE"
         }
       },
       "tooltips": {
@@ -2536,7 +2592,15 @@
         "heatmap": "heatmap",
         "fill": {
           "size": "Change the %{type} size",
-          "color": "Change the %{type} color"
+          "color": "Change the %{type} color",
+          "color-heatmap": "Change the heatmap's color scheme",
+          "image": "Change the %{type} image",
+          "fixed-tab": "A fixed color for every %{type}",
+          "by-value-tab": "Vary each %{type}'s color by an attribute to create a category or classed %{type} map"
+        },
+        "size": {
+          "fixed-tab": "A fixed size for every %{type}",
+          "by-value-tab": "Vary each %{type}'s size by a numeric attribute to create a classed %{type} map"
         },
         "stroke": {
           "size": "Change the %{type} stroke size",
@@ -2544,13 +2608,28 @@
         }
       },
       "components": {
-        "fill": "Size/Color",
+        "size": "Size",
         "color": "Color",
+        "fillColor": {
+          "label": "Color",
+          "point": "Point",
+          "line": "Line",
+          "polygon": "Polygon"
+        },
         "stroke": {
           "label": "Stroke",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
           "error": "There was an error fetching node schema..."
+        },
+        "stroke-color": {
+          "label": "Stroke Color"
+        },
+        "stroke-size": {
+          "label": "Stroke Size"
+        },
+        "point-size": {
+          "label": "Point Size"
         },
         "blending": {
           "label": "Blending",
@@ -2599,11 +2678,13 @@
           "placeholder": "Select a column",
           "fetching": "Loading node schema...",
           "unavailable": "Error getting node schema",
-          "error": "There was an error fetching node schema..."
+          "error": "There was an error fetching node schema...",
+          "help": "The column from your dataset to be used for labels"
         },
         "labels-font": "font",
         "labels-offset": "offset",
-        "labels-fill": "size/color",
+        "labels-fill-size": "font size",
+        "labels-fill-color": "font color",
         "labels-overlap": {
           "label": "overlap",
           "options": {
@@ -2611,7 +2692,8 @@
             "false": "False"
           }
         },
-        "labels-halo": "halo",
+        "labels-halo-size": "halo size",
+        "labels-halo-color": "halo color",
         "labels-placement": {
           "label": "placement",
           "options": {

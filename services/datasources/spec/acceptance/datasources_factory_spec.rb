@@ -5,6 +5,7 @@ require_relative '../../../../spec/rspec_configuration'
 
 require_relative '../../lib/datasources'
 require_relative '../doubles/user'
+require 'spec_helper_min'
 
 include CartoDB::Datasources
 
@@ -67,7 +68,7 @@ describe DatasourcesFactory do
     end
 
     it 'returns true for a user in an organization with custom config' do
-      organization = FactoryGirl.build(:organization, name: 'wadus-org')
+      organization = Carto::Organization.new(name: 'wadus-org')
       user = FactoryGirl.build(:carto_user, username: 'nowadus', organization: organization)
       @config['datasource_search']['twitter_search']['customized_orgs_list'] = [organization.name]
       DatasourcesFactory.set_config(@config)

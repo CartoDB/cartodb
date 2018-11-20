@@ -29,9 +29,21 @@ if (scope === 'organization') {
     <% } %>
   </p>
 </div>
+<form action="<%- form_action %>" method="post">
+  <% if (passwordNeeded) { %>
+    <div class="CDB-Text Dialog-body">
+      <div class="Form-row Form-row--centered has-label">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your password</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="password" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+        </div>
+      </div>
+    </div>
+  <% } %>
 
-<div class="Dialog-footer u-inner">
-  <form action="<%- form_action %>" method="post">
+  <div class="Dialog-footer u-inner">
     <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">cancel</span>
     </button>
@@ -42,5 +54,5 @@ if (scope === 'organization') {
     <button type="submit" class="CDB-Button CDB-Button--error">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Regenerate <%- type === "api" ? 'API keys' : 'OAuth credentials' %></span>
     </button>
-  </form>
-</div>
+  </div>
+</form>

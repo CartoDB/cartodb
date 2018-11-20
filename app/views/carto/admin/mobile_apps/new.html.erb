@@ -10,11 +10,7 @@
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
 
-  <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common_dashboard', 'mobile_apps_new_vendor', 'mobile_apps_new' %>
-  <% else %>
-    <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'account_deps.js', 'mobile_apps.js' %>
-  <% end %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'mobile_apps' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

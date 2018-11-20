@@ -5,12 +5,15 @@
     "required": [
       "type"
     ],
+    "additionalProperties": false,
     "properties": {
       "type": {
         "type": "string",
         "enum": [
           "apis",
-          "database"
+          "database",
+          "dataservices",
+          "user"
         ]
       },
       "apis": {
@@ -33,6 +36,7 @@
             "name",
             "permissions"
           ],
+          "additionalProperties": false,
           "properties": {
             "schema": {
               "type": "string"
@@ -52,11 +56,30 @@
                 ]
               }
             }
-          },
-          "additionalProperties": false
+          }
+        }
+      },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "geocoding",
+            "routing",
+            "isolines",
+            "observatory"
+          ]
+        }
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "profile"
+          ]
         }
       }
-    },
-    "additionalProperties": false
+    }
   }
 }

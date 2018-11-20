@@ -63,6 +63,15 @@ describe Downloader do
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
 
+    it 'extracts the source_file name from the URL for FGDB ZIP files' do
+      url = "http://s3.amazonaws.com/filegeodatabase.gdb.zip"
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(@user.id, url)
+      downloader.run
+      downloader.source_file.name.should eq 'filegeodatabase.gdb'
+    end
+
     it 'uses Content-Type header for files without extension' do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
       downloader = Downloader.new(@user.id, @file_url_without_extension)

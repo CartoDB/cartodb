@@ -1,0 +1,128 @@
+@import "../variables/mixins";
+@import "../variables/colors";
+@import "../variables/sizes";
+
+.NotificationsDropdown {
+  width: 258px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.NotificationsDropdown-item {
+  position: relative;
+  margin: 15px !important;
+  padding: 0 0 15px 25px !important;
+}
+
+.NotificationsDropdown-item:not(:last-child) {
+  margin: 0 15px;
+  border-bottom: 1px solid $cStructure-mainLine;
+}
+
+.NotificationsDropdown-item:last-child {
+  padding: 0 0 0 25px !important;
+}
+
+.NotificationsDropdown-item ul {
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.NotificationsDropdown-item em {
+  font-style: italic;
+}
+
+.NotificationsDropdown-item strong {
+  font-weight: bold;
+}
+
+.NotificationsDropdown-item code {
+  margin: 0;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: rgba(#000, 0.05);
+  font-size: 85%;
+  line-height: 20px;
+}
+
+.NotificationsDropdown-icon {
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  color: #B1B8C1;
+  font-size: $sFontSize-small;
+
+  line-height: 20px;
+  text-align: center;
+}
+
+.NotificationsDropdown-title {
+  color: $cTypography-headers;
+  font-size: $sFontSize-large;
+  line-height: $sLineHeight-large;
+  text-transform: capitalize;
+}
+
+.NotificationsDropdown-text {
+  margin-top: 0 !important;
+  color: $cTypography-secondary;
+}
+
+.Notifications-iconCount {
+  top: 21px;
+  width: $sLineHeight-normal;
+  height: $sLineHeight-normal;
+  border: none;
+  border-radius: 20px;
+  background: rgba(#CCC, 1);
+  color: white;
+  font-size: $sFontSize-normal;
+  font-weight: $sFontWeight-bold;
+  line-height: $sLineHeight-normal;
+  text-align: center;
+}
+
+.Notifications-iconCount.new--items {
+  background: rgba(#C74B43, 1);
+}
+
+.NotificationsDropdown-header {
+  display: flex;
+  align-items: center;
+  background: none;
+}
+
+.NotificationsDropdown-item.is-new {
+  .NotificationsDropdown-text {
+    color: #162945;
+  }
+
+  .NotificationsDropdown-icon {
+    color: inherit;
+  }
+}
+
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--alert {
+  border-color: $cNotification;
+  color: $cNotification;
+}
+
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--positive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--negative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+
+.NotificationsDropdown-item.is-new .NotificationsDropdown-itemIcon--main {
+  border-color: $cHighlight-main;
+  color: $cHighlight-main;
+}
+
+.NotificationsDropdown-item.NotificationsDropdown-item--no-notifications {
+  padding-left: 0 !important;
+}

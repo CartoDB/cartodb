@@ -78,7 +78,7 @@ module Carto
       private
 
       def update_widget!(widget, json_params)
-        update_params = json_params.slice(:order, :type, :title)
+        update_params = json_params.permit(:order, :type, :title)
         update_params[:source_id] = source_id_from_params(json_params) if source_id_from_params(json_params)
         widget.update_attributes(update_params)
         widget.options = json_params[:options]

@@ -1,0 +1,156 @@
+// API Keys
+// --------------------------------------------------
+
+// -- List
+
+.ApiKeys-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+}
+
+.ApiKeys-list {
+  .Pagination {
+    justify-content: flex-end;
+    margin: 1rem 0;
+  }
+}
+
+.ApiKeys-list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+
+  &:last-child {
+    border: none;
+  }
+}
+
+.ApiKeys-list-loader {
+  padding: 20px 0;
+  list-style: none;
+}
+
+.ApiKeys-list-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.ApiKeys-footer {
+  padding: 20px 0;
+  border-top: 1px solid rgba(#000, 0.1);
+}
+
+.ApiKeys-footer-text {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  color: #999;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 22px;
+}
+
+.ApiKeys-footer-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #F2C000;
+  border-radius: 20px;
+  background: #F6D35C;
+  color: #FFF;
+  font-size: 13px;
+  line-height: 20px !important;
+  text-align: center;
+}
+
+// -- Form
+
+.ApiKeysForm {
+  .CDB-Legend {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .Editor-formInner {
+    margin-top: 24px;
+  }
+}
+
+.ApiKeysForm-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(#000, 0.1);
+}
+
+.ApiKeysForm-tablesList {
+  max-height: 250px;
+  overflow: auto;
+}
+
+.ApiKeysForm-grantsTable {
+  &.showOnlySelect {
+    [data-name='insert'],
+    [data-name='update'],
+    [data-name='delete'] {
+      display: none;
+    }
+  }
+}
+
+.ApiKeysForm-grantsTable-item {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(46, 60, 67, 0.08);
+
+  .Editor-formInner {
+    margin-top: 0;
+  }
+}
+
+.ApiKeysForm-box-modal {
+  margin-top: 16px;
+  box-shadow: none;
+}
+
+.ApiKeys-MultiCheckbox {
+  margin-right: 12px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.Share-copy {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate3d(0, -50%, 0);
+}
+
+.Editor-formInput {
+  position: relative;
+}
+
+.Editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid #DDD;
+}

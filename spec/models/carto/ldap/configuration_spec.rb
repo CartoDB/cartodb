@@ -26,6 +26,16 @@ describe Carto::Ldap::Configuration do
     FakeNetLdap.clear_query_registrations
   end
 
+  it 'returns right away if empty user' do
+    ldap = Carto::Ldap::Configuration.new
+    ldap.authenticate('', 'something').should eq false
+  end
+
+  it 'returns right away if empty password' do
+    ldap = Carto::Ldap::Configuration.new
+    ldap.authenticate('some@one.es', '').should eq false
+  end
+
   it 'tests basic authentication' do
     auth_username = 'admin'
     auth_cn = "cn=#{auth_username},#{@domain_bases[0]}"

@@ -1,0 +1,28 @@
+// Edit overlay
+// ----------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+
+.EditOverlay {
+  position: absolute;
+  z-index: 4;
+  top: 16px;
+  right: 16px;
+  height: auto;
+  transition: all 0.2s;
+  opacity: 1;
+  text-align: center;
+
+  &.is-hidden {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+}
+
+.EditOverlay-inner {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 2px;
+  background: rgba(#000, 0.6);
+}

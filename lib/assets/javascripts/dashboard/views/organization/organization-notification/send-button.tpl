@@ -1,6 +1,6 @@
 <p class="Md-counter CDB-Text CDB-Size-medium u-secondaryTextColor u-rSpace--xl <% if (isNegative) { %>Md-counter--negative<% } %>"><%= counter %></p>
 
-<button type="submit" class="OrganizationNotifications-button CDB-Button CDB-Button--primary <% if (isDisabled) { %>is-disabled<% } %> js-button">
+<button class="OrganizationNotifications-button CDB-Button CDB-Button--primary <% if (isDisabled) { %>is-disabled<% } %> js-button js-save">
   <div class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">
     <% if (isLoading) { %>
       <div class="CDB-LoaderIcon CDB-LoaderIcon--small u-iBlock">

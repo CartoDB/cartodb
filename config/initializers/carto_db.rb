@@ -44,14 +44,11 @@ module CartoDB
   # @param request A request to extract subdomain and parameters from
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
   def self.base_url_from_request(request, user = nil)
-    if user.nil?
-      subdomain = extract_subdomain(request)
-      org_username = nil
-    else
-      subdomain = user.subdomain
-      org_username = organization_username(user)
-    end
-    CartoDB.base_url(subdomain, org_username)
+    user ? base_url_from_user(user) : CartoDB.base_url(extract_subdomain(request), nil)
+  end
+
+  def self.base_url_from_user(user)
+    CartoDB.base_url(user.subdomain, organization_username(user))
   end
 
   # Helper method to encapsulate Rails URL path generation compatible with our subdomainless mode
@@ -287,5 +284,26 @@ module CartoDB
     uri.to_s
   rescue
     nil
+  end
+
+  def self.unformatted_logger(log_file_path)
+    logger = ::Logger.new(log_file_path)
+    logger.formatter = proc do |_severity, _datetime, _progname, msg|
+      "#{logger_msg2str(msg)}\n"
+    end
+    logger
+  end
+
+  # Taken from /usr/lib/ruby/2.2.0/logger.rb (msg2str) to mimic standard Logger behaviour
+  def self.logger_msg2str(msg)
+    case msg
+    when ::String
+      msg
+    when ::Exception
+      "#{msg.message} (#{msg.class})\n" <<
+        (msg.backtrace || []).join("\n")
+    else
+      msg.inspect
+    end
   end
 end

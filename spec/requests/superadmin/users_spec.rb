@@ -632,14 +632,14 @@ feature "Superadmin's users API" do
         expect(response.status).to eq(200)
 
         expect(response.body[:data_imports].size).to eq(1)
-        expect(response.body[:data_imports].first['id']).to eq(successful_data_import.id)
+        expect(response.body[:data_imports].first[:id]).to eq(successful_data_import.id)
       end
 
       get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'failure' }, superadmin_headers) do |response|
         expect(response.status).to eq(200)
 
         expect(response.body[:data_imports].size).to eq(1)
-        expect(response.body[:data_imports].first['id']).to eq(failed_data_import.id)
+        expect(response.body[:data_imports].first[:id]).to eq(failed_data_import.id)
       end
 
       get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
@@ -663,7 +663,7 @@ feature "Superadmin's users API" do
 
         expect(response.body[:total_entries]).to eq(2)
 
-        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0][:id] }
         expect(data_import_ids.size).to eq(1)
       end
 
@@ -675,7 +675,7 @@ feature "Superadmin's users API" do
 
         expect(response.body[:total_entries]).to eq(2)
 
-        data_import_ids.delete_if { |id| id == response.body[:data_imports][0]["id"] }
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0][:id] }
         expect(data_import_ids.size).to eq(0)
       end
     end

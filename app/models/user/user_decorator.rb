@@ -17,7 +17,9 @@ module CartoDB
         email: email,
         name: name,
         last_name: last_name,
+        created_at: created_at,
         username: username,
+        state: state,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
@@ -124,7 +126,11 @@ module CartoDB
         twitter_username: twitter_username,
         disqus_shortname: disqus_shortname,
         available_for_hire: available_for_hire,
-        location: location
+        location: location,
+        industry: industry,
+        company: company,
+        phone: phone,
+        job_role: job_role
       }
 
       if google_maps_geocoder_enabled? && (!organization.present? || organization_owner?)

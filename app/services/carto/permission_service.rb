@@ -52,9 +52,17 @@ module Carto
       if type == TYPE_USER
         [id]
       elsif type == TYPE_ORG
-        Carto::Organization.find(id).users.map(&:id)
+        begin
+          Carto::Organization.find(id).users.map(&:id)
+        rescue ActiveRecord::RecordNotFound
+          []
+        end
       else
-        Carto::Group.find(id).users.map(&:id)
+        begin
+          Carto::Group.find(id).users.map(&:id)
+        rescue ActiveRecord::RecordNotFound
+          []
+        end
       end
     end
 

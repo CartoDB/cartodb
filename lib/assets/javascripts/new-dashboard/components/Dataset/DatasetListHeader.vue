@@ -2,28 +2,91 @@
   <div class="dataset-list-row">
     <div class="dataset-list-cell cell--start">
     </div>
-    <div class="dataset-list-cell cell--main">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.name`) }}</span>
+    <div class="dataset-list-cell cell--main" @click="changeOrder('name')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReversedOrderApplied('name') }">
+        {{ $t(`datasetListHeader.name`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--large">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.lastModified`) }}</span>
+    <div class="dataset-list-cell cell--large" @click="changeOrder('updated_at')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReversedOrderApplied('updated_at') }">
+        {{ $t(`datasetListHeader.lastModified`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.rows`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('rows')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('rows'), 'is-reversed': isReversedOrderApplied('rows') }">
+        {{ $t(`datasetListHeader.rows`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.size`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('size')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReversedOrderApplied('size') }">
+        {{ $t(`datasetListHeader.size`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.usage`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('usage')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('usage'), 'is-reversed': isReversedOrderApplied('usage') }">
+        {{ $t(`datasetListHeader.usage`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small cell--privacy">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.privacy`) }}</span>
+    <div class="dataset-list-cell cell--small cell--privacy" @click="changeOrder('privacy')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReversedOrderApplied('privacy') }">
+        {{ $t(`datasetListHeader.privacy`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--end">
-    </div>
+    <div class="dataset-list-cell cell--end"></div>
   </div>
 </template>
+
+<script>
+import { mapState } from 'vuex';
+
+export default {
+  name: 'DatasetListHeader',
+  methods: {
+    changeOrder (order, orderDirection) {
+      if (this.currentOrder === order) {
+        return this.setOrder(
+          order,
+          this.getOppositeOrderDirection(this.currentOrderDirection)
+        );
+      }
+
+      this.setOrder(order);
+    },
+
+    getOppositeOrderDirection (order) {
+      if (order === 'desc') {
+        return 'asc';
+      }
+
+      if (order === 'asc') {
+        return 'desc';
+      }
+    },
+
+    isOrderApplied (order) {
+      return order === this.currentOrder;
+    },
+
+    isReversedOrderApplied (order) {
+      return order === this.currentOrder && this.currentOrderDirection === 'asc';
+    },
+
+    setOrder (order, direction = 'desc') {
+      this.$emit('changeOrder', { order, direction });
+    }
+  },
+  computed: mapState({
+    currentOrder: state => state.datasets.order,
+    currentOrderDirection: state => state.datasets.orderDirection
+  })
+};
+</script>
 
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
@@ -107,7 +170,7 @@
       background-position: center;
     }
 
-    &.reversed {
+    &.is-reversed {
       &::after {
         transform: rotate(180deg);
       }

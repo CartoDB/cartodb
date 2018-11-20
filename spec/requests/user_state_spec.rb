@@ -89,7 +89,7 @@ describe "UserState" do
       @private_api_endpoints.each do |endpoint|
         get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
         request.path == endpoint
-        response.status.should == 404
+        response.status.should == 403
       end
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
@@ -97,7 +97,7 @@ describe "UserState" do
         response.status.should == if endpoint == "/api/v3/me"
                                     200
                                   else
-                                    404
+                                    403
                                   end
       end
     end

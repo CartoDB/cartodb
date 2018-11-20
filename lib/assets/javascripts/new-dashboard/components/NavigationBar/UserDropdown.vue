@@ -32,7 +32,7 @@
         <div class="icon-container">
           <img src="../../assets/icons/navbar/dropdown/notifications.svg"/>
         </div>
-        <a :href="`${ baseUrl }#`" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
       </li>
     </ul>

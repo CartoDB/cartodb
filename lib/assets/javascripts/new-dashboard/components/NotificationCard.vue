@@ -1,5 +1,9 @@
 <template>
-<div class="notification-receivedDate">{{ receivedAtFormatted }}</div>
+<div>
+  <div class="notification-receivedDate">{{ receivedAtFormatted }}</div>
+  <div v-html=htmlBody class="notification-htmlBody"></div>
+  <span v-if=readAt class="notification-readCheck"></span>
+</div>
 </template>
 
 <script>
@@ -18,6 +22,11 @@ export default {
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
       return `${day}/${month}/${year}`;
+    },
+    htmlBodyText () {
+      const element = document.createElement('div');
+      element.innerHTML = this.htmlBody;
+      return element.innerText;
     }
   }
 };

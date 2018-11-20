@@ -1,10 +1,25 @@
 <template>
-<h2>Hola Iago chapas</h2>
+<div class="notification-receivedDate">{{ receivedAtFormatted }}</div>
 </template>
 
 <script>
 export default {
-  name: 'NotificationCard'
+  name: 'NotificationCard',
+  props: {
+    id: String,
+    receivedAt: String,
+    readAt: String,
+    htmlBody: String
+  },
+  computed: {
+    receivedAtFormatted () {
+      const date = new Date(this.receivedAt);
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  }
 };
 </script>
 <style scoped lang="scss">

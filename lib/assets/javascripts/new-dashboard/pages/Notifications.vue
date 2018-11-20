@@ -8,7 +8,7 @@
           </template>
         </SectionTitle>
         {{notifications}}
-        <NotificationCard>
+        <NotificationCard :id='notifications[0].id' :receivedAt='notifications[0].received_at' :readAt='notifications[0].read_at' :htmlBody='notifications[0].html_body'>
         </NotificationCard>
       </div>
     </div>

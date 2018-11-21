@@ -28,15 +28,6 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.notification {
-  padding: 34px 0;
-  border-bottom: 1px solid $softblue;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
 .notification-info {
   display: flex;
   align-items: center;

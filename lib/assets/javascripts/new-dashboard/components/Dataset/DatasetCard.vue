@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover}">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -55,7 +55,14 @@
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
     <div class="dataset-cell">
-      <DatasetQuickActions v-if="!isShared" :dataset="dataset"/>
+      <DatasetQuickActions
+        v-if="!isShared"
+        :dataset="dataset"
+        class="dataset--quick-actions"
+        @mouseover="mouseOverChildElement"
+        @mouseleave="mouseOutChildElement"
+        @open="openQuickActions"
+        @close="closeQuickActions"/>
     </div>
   </a>
 </template>
@@ -83,6 +90,7 @@ export default {
   },
   data: function () {
     return {
+      areQuickActionsOpen: false,
       activeHover: true,
       maxTags: 3,
       maxTagChars: 30
@@ -159,6 +167,12 @@ export default {
     mouseOutChildElement () {
       this.activeHover = true;
     },
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
+    },
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
+    },
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
@@ -196,6 +210,12 @@ export default {
       transform: translateY(0);
       opacity: 1;
       pointer-events: all;
+    }
+
+    .dataset--quick-actions {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -404,5 +424,11 @@ export default {
       }
     }
   }
+}
+
+.dataset--quick-actions {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

@@ -14,6 +14,7 @@ Development
   - Admin management (#14347)
 - Change password functionality for Carto Gears (#14351)
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+- /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 
 ### Bug fixes / enhancements
 - Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)

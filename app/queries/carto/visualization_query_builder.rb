@@ -10,7 +10,7 @@ require_dependency 'carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = [ 'mapviews', 'likes', 'size' ]
+  SUPPORTED_OFFDATABASE_ORDERS = %w(mapviews likes size estimated_row_count privacy).freeze
 
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)

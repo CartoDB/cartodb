@@ -31,7 +31,8 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
             <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+            <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
             <!---->
           </li>
         </ul>
@@ -73,7 +74,8 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+            <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
             <!---->
           </li>
         </ul>
@@ -115,7 +117,8 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+            <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
             <!---->
           </li>
         </ul>
@@ -157,7 +160,8 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
             <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+            <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+            <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
             <!---->
           </li>
         </ul>

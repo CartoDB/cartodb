@@ -20,7 +20,8 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
       <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a>
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link>
       <!---->
     </li>
   </ul>
@@ -48,7 +49,8 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
       <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">Public Profile</a>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">Notifications</a> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+      <div class="icon-container"><img src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
+      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">Notifications</router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
     </li>
   </ul>
   <div class="navbar-dropdown-bottom"><a href="/logout" class="text is-semibold is-caption is-txtGrey">Logout</a></div>

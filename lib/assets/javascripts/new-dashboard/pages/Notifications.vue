@@ -64,7 +64,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import "stylesheets/new-dashboard/variables";
 
 .notifications-list-container {
   margin-bottom: 44px;

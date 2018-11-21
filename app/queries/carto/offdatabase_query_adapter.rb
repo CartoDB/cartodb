@@ -64,11 +64,11 @@ module Carto
           asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
         end
       end
-      all[@offset, last_index(all)]
+      all[@offset, size(all)]
     end
 
-    def last_index(array)
-      @limit.nil? ? array.count : (@offset + @limit)
+    def size(array)
+      @limit.nil? ? array.count : @limit
     end
 
   end

@@ -380,6 +380,32 @@ describe Carto::VisualizationQueryBuilder do
     expect { @vqb.with_id_or_name(nil) }.to raise_error
   end
 
+  it 'paginates correctly when ordering by size' do
+    table1 = create_random_table(@user1)
+    table2 = create_random_table(@user1)
+    table3 = create_random_table(@user1)
+
+    mocked_vis1 = Carto::Visualization.where(id: table1.table_visualization.id).first
+    mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
+    mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
+
+    mocked_vis1.stubs(:size).returns(200)
+    mocked_vis2.stubs(:size).returns(1)
+    mocked_vis3.stubs(:size).returns(600)
+
+    # Careful to not do anything else on this spec after this size assertions
+    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns(
+      [mocked_vis3, mocked_vis1, mocked_vis2]
+    )
+
+    page = 2
+    per_page = 1
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc)
+              .build_paged(page, per_page).map(&:id)
+
+    ids.should == [table1.table_visualization.id]
+  end
+
   describe '#with_published' do
     it 'is implied by public search, so querying public filters public, unpublished' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })

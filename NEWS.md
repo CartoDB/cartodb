@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Fix visualization URLs avoiding quotes in the database schema ([#14475](https://github.com/CartoDB/cartodb/pull/14475))
 - Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
 
 4.23.0 (2018-11-19)

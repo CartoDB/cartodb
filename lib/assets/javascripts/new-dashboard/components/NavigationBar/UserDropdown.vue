@@ -32,7 +32,7 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.publicProfile') }}</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank">{{ $t('UserDropdown.publicProfile') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">

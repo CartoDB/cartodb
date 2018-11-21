@@ -4,7 +4,8 @@
       "modules": false,
       "targets": {
         "browsers": ["> 1%", "last 2 versions", "not ie < 11"]
-      }
+      },
+      "useBuiltIns": "usage"
     }],
     "stage-2"
   ],

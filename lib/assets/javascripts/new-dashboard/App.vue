@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <NavigationBar :user="user"/>
+    <NavigationBar :user="user" :baseUrl="baseUrl" :notificationsCount="notificationsCount"/>
     <router-view/>
     <Footer/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
@@ -22,6 +22,12 @@ export default {
   computed: {
     user () {
       return this.$store.state.user;
+    },
+    baseUrl () {
+      return this.$store.state.user.base_url;
+    },
+    notificationsCount () {
+      return this.$store.state.user.organizationNotifications.length;
     }
   },
   provide () {

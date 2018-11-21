@@ -18,10 +18,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.5: synchronization_oauths and connector configurations
 # 1.0.6: client_applications & friends and sql_copy rate_limits
 # 1.0.7: export password_reset_token and password_reset_sent_at user fields
+# 1.0.8: user_multifactor_auths
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.7'.freeze
+    CURRENT_VERSION = '1.0.8'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -124,6 +125,9 @@ module Carto
 
       api_keys = exported_user[:api_keys] || []
       user.api_keys += api_keys.map { |api_key| Carto::ApiKey.new_from_hash(api_key) }
+
+      user_multifactor_auths = exported_user[:user_multifactor_auths] || []
+      user.user_multifactor_auths += user_multifactor_auths.map { |uma| Carto::UserMultifactorAuth.new_from_hash(uma) }
 
       if exported_user[:notifications]
         user.static_notifications = Carto::UserNotification.create(notifications: exported_user[:notifications])
@@ -260,6 +264,8 @@ module Carto
 
       user_hash[:api_keys] = user.api_keys.map { |api_key| export_api_key(api_key) }
 
+      user_hash[:user_multifactor_auths] = user.user_multifactor_auths.map { |uma| export_user_multifactor_auth(uma) }
+
       user_hash[:rate_limit] = export_rate_limit(user.rate_limit)
 
       user_hash[:notifications] = user.static_notifications.notifications
@@ -339,6 +345,11 @@ module Carto
         grants: api_key.grants,
         user_id: api_key.user_id
       }
+    end
+
+    def export_user_multifactor_auth(user_multifactor_auth)
+      exported_keys = %i(user_id type shared_secret enabled last_login created_at updated_at)
+      user_multifactor_auth.to_h.slice(*exported_keys)
     end
 
     def export_rate_limit(rate_limit)

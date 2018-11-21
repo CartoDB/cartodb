@@ -31,7 +31,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
+            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" target="_blank" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a>
@@ -78,7 +78,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
+            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" target="_blank" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a>
@@ -125,7 +125,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
+            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" target="_blank" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a>
@@ -172,7 +172,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
           <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
+            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/profile.svg"></div> <a href="/me" target="_blank" class="text is-semibold is-caption is-txtGrey">UserDropdown.publicProfile</a>
           </li>
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div> <a href="#" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</a>

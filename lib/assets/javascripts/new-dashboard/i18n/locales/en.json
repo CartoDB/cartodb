@@ -142,5 +142,13 @@
     "size": "Size",
     "usage": "Usage",
     "privacy": "Privacy"
+  },
+  "UserDropdown": {
+    "settings": "Settings",
+    "organizationSettings": "Your organization",
+    "apiKeys": "API Keys & OAuth",
+    "publicProfile": "Public Profile",
+    "notifications": "Notifications",
+    "logout": "LOG OUT"
   }
 }

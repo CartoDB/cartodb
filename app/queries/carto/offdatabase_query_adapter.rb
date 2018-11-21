@@ -55,7 +55,7 @@ module Carto
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each do |attribute, asc_or_desc|
         # Cache attribute type
-        is_array = all.present? && all.first.send(attribute).respond_to?(:count)
+        is_array = all.present? && all.first.send(attribute).respond_to?(:each)
         all = all.sort do |x, y|
           x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)

@@ -150,6 +150,7 @@ module Concerns
           :industry, :company, :phone, :job_role,
           :password_reset_token, :password_reset_sent_at
         )
+        attrs[:multifactor_authentication_status] = multifactor_authentication_status
         case action
         when :create
           attrs[:remote_user_id] = self.id

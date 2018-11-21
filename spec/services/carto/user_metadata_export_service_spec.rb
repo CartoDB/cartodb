@@ -22,6 +22,10 @@ describe Carto::UserMetadataExportService do
     @connector_provider.destroy
   end
 
+  before(:each) do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+  end
+
   def create_user_with_basemaps_assets_visualizations
     create_account_type_fg('FREE')
     @user = FactoryGirl.create(:carto_user)
@@ -85,6 +89,8 @@ describe Carto::UserMetadataExportService do
       client_application_id: sequel_user.client_application.id
     ).save
 
+    Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
+
     @user.reload
   end
 
@@ -112,6 +118,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#export' do
     before(:all) do
+      Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
     end
 
@@ -148,9 +155,9 @@ describe Carto::UserMetadataExportService do
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
+      service.save_imported_user(@user)
       @search_tweets = service.build_search_tweets_from_hash_export(export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
-      service.save_imported_user(@user)
 
       expect_export_matches_user(export[:user], @user)
       @user
@@ -158,6 +165,12 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.7 (without user_multifactor_auths)' do
+      user = test_import_user_from_export(full_export_one_zero_seven)
+
+      expect(user.user_multifactor_auths).to be_empty
     end
 
     it 'imports 1.0.6 (without password_reset_token and password_reset_sent_at)' do
@@ -357,6 +370,15 @@ describe Carto::UserMetadataExportService do
 
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
     expect_export_matches_client_application(export[:client_application], ::User.find(id: user.id).client_application)
+
+    if export[:user_multifactor_auths]
+      expect(export[:user_multifactor_auths].count).to eq user.user_multifactor_auths.size
+      export[:user_multifactor_auths].zip(user.user_multifactor_auths).each do |exported_uma, uma|
+        expect_export_matches_user_multifactor_auth(exported_uma, uma)
+      end
+    else
+      expect(user.user_multifactor_auths).to be_empty
+    end
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -438,6 +460,24 @@ describe Carto::UserMetadataExportService do
     exported_app[:access_tokens].each do |ex_t|
       expect_exported_token_matches_token(ex_t, app.access_tokens.find { |t| t.token == ex_t[:token] })
     end
+  end
+
+  def expect_export_matches_user_multifactor_auth(exported_uma, uma)
+    expect(exported_uma).to be_nil && return unless uma
+    expect(exported_uma[:user_id]).to eq uma.user_id
+    expect(exported_uma[:type]).to eq uma.type
+    expect(exported_uma[:shared_secret]).to eq uma.shared_secret
+    expect(exported_uma[:enabled]).to eq uma.enabled
+
+    fake_uma = Carto::UserMultifactorAuth.new(
+      last_login: exported_uma[:last_login],
+      created_at: exported_uma[:created_at],
+      updated_at: exported_uma[:updated_at]
+    )
+
+    expect(fake_uma.last_login).to eq uma.last_login
+    expect(fake_uma.created_at).to eq uma.created_at
+    expect(fake_uma.updated_at).to eq uma.updated_at
   end
 
   def expect_exported_token_matches_token(exported_t, token)
@@ -566,7 +606,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.6",
+      version: "1.0.8",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -866,13 +906,29 @@ describe Carto::UserMetadataExportService do
             created_at: "2018-06-11T14:31:46+00:00",
             updated_at: "2018-06-11T14:31:46+00:00"
           }]
-        }
+        },
+        user_multifactor_auths: [{
+          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+          created_at: "2018-11-16T14:31:46+00:00",
+          updated_at: "2018-11-17T16:41:56+00:00",
+          last_login: "2018-11-17T16:41:56+00:00",
+          enabled: true,
+          shared_secret: 'abcdefgh',
+          type: 'totp'
+        }]
       }
     }
   end
 
+  let(:full_export_one_zero_seven) do
+    user_hash = full_export[:user].except!(:user_multifactor_auths)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_six) do
-    user_hash = full_export[:user].except!(:password_reset_token, :password_reset_sent_at)
+    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at)
 
     full_export[:user] = user_hash
     full_export

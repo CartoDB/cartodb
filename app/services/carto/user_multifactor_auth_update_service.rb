@@ -9,10 +9,14 @@ module Carto
       enabled ? create_user_multifactor_auth(type) : destroy_user_multifactor_auth(type)
     end
 
+    def exists?(type: Carto::UserMultifactorAuth::TYPE_TOTP)
+      user_multifactor_auth(type).present?
+    end
+
     private
 
     def create_user_multifactor_auth(type)
-      Carto::UserMultifactorAuth.create!(user_id: @user_id, type: type) unless user_multifactor_auth(type).present?
+      Carto::UserMultifactorAuth.create!(user_id: @user_id, type: type) unless exists?
     end
 
     def destroy_user_multifactor_auth(type)

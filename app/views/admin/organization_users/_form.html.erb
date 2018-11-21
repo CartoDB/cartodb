@@ -131,7 +131,7 @@
   <% end %>
 
   <% if (@user.has_feature_flag?('mfa')) %>
-    <% mfa_enabled = @user.multifactor_authentication_configured? %>
+    <% mfa_configured = @user.multifactor_authentication_configured? %>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
         <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -140,7 +140,7 @@
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
-          <%= f.check_box :mfa, id: "mfa", checked: mfa_enabled %>
+          <%= f.check_box :mfa, id: "mfa", checked: mfa_configured %>
           <%= label_tag(:mfa, '') %>
         </div>
         <div class="FormAccount-rowInfo u-lspace-23">

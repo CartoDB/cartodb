@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+- Fix pagination in visualization API when ordering by size ([#14476](https://github.com/CartoDB/cartodb/issues/14476))
 
 4.23.0 (2018-11-19)
 -------------------

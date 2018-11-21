@@ -7,6 +7,7 @@
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
         </SectionTitle>
+
         <div class="grid" v-if="!emptyState">
           <ul class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
             <li class="notification-item">
@@ -20,9 +21,11 @@
             </li>
           </ul>
         </div>
+
         <EmptyState
-          :text="$t('NotificationsPage.emptyState')"
-          v-if="emptyState">
+          v-if="emptyState"
+          :text="emptyStateText"
+          >
           <img svg-inline src="../assets/icons/maps/compass.svg">
         </EmptyState>
       </div>
@@ -31,11 +34,11 @@
 </template>
 
 <script>
-import SectionTitle from '../components/SectionTitle';
-import EmptyState from '../components/States/EmptyState';
-import NotificationCard from '../components/NotificationCard';
+import SectionTitle from "../components/SectionTitle";
+import EmptyState from "../components/States/EmptyState";
+import NotificationCard from "../components/NotificationCard";
 export default {
-  name: 'NotificationsPage',
+  name: "NotificationsPage",
   components: {
     SectionTitle,
     EmptyState,
@@ -43,32 +46,17 @@ export default {
   },
   props: {},
   computed: {
-    pageTitle () {
+    pageTitle() {
       return this.$t(`NotificationsPage.header.title`);
     },
-    notifications () {
-      // return [];
+    notifications() {
       return this.$store.state.user.organizationNotifications;
-      // return [
-      //   {
-      //     html_body:
-      //       "<p>This is an unread notification, font will be bolder and the green dot should be visible.</p>",
-      //     icon: "alert",
-      //     id: "288dfe6e-1a9d-4157-bd36-41cd8459af62",
-      //     read_at: null,
-      //     received_at: "2018-11-20T15:28:21.792Z"
-      //   },
-      //   {
-      //     html_body: "<p>This notification has been read and should be lighter</p>",
-      //     icon: "alert",
-      //     id: "091a04a7-28d6-4fcf-bd8a-b1c34842bdb4",
-      //     read_at: "2018-11-20T17:11:42.285Z",
-      //     received_at: "2018-11-19T17:11:42.285Z"
-      //   }
-      // ];
     },
-    emptyState () {
+    emptyState() {
       return !this.notifications || !this.notifications.length;
+    },
+    emptyStateText() {
+      return $t('NotificationsPage.emptyState');
     }
   }
 };

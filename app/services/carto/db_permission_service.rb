@@ -13,14 +13,18 @@ module Carto
     }.freeze
 
     def self.shared_entities_revokes(old_acl, new_acl, table)
-      old_acl = more_permisive_by_user(old_acl)
-      new_acl = more_permisive_by_user(new_acl)
-
-      diff = revokes_by_user(old_acl, new_acl, table.owner.id)
+      diff = revokes_by_user_diff(old_acl, new_acl, table.owner.id)
       unless diff.blank?
         shared_apikey_revokes(table, diff)
         shared_oauth_app_user_revokes(table, diff)
       end
+    end
+
+    def self.revokes_by_user_diff(old_acl, new_acl, table_owner_id)
+      old_acl = more_permisive_by_user(old_acl)
+      new_acl = more_permisive_by_user(new_acl)
+
+      revokes_by_user(old_acl, new_acl, table_owner_id)
     end
 
     private_class_method def self.shared_apikey_revokes(table, revokes)
@@ -47,18 +51,13 @@ module Carto
       if type == TYPE_USER
         [id]
       elsif type == TYPE_ORG
-        begin
-          Carto::Organization.find(id).users.map(&:id)
-        rescue ActiveRecord::RecordNotFound
-          []
-        end
+        Carto::Organization.find(id).users.map(&:id)
       else
-        begin
-          Carto::Group.find(id).users.map(&:id)
-        rescue ActiveRecord::RecordNotFound
-          []
-        end
+        Carto::Group.find(id).users.map(&:id)
       end
+    rescue ActiveRecord::RecordNotFound => e
+      CartoDB::Logger.error(exception: e, entity_type: type, entity_id: id)
+      []
     end
 
     private_class_method def self.keep_more_permisive(current, new_one)

@@ -96,7 +96,8 @@
   "NotificationsPage": {
     "header": {
       "title": "Notifications"
-    }
+    },
+    "emptyState": "There are no notifications yet."
   },
   "FilterDropdown": {
     "showMe": "Show me",

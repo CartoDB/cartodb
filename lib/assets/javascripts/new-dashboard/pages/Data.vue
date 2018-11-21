@@ -83,7 +83,7 @@
       </ul>
 
     </div>
-    <Pagination v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <Pagination class="pagination-element" v-if="!isFetchingDatasets && numResults > 0" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
 
@@ -210,3 +210,11 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+@import 'stylesheets/new-dashboard/variables';
+
+.pagination-element {
+  margin-top: 64px;
+}
+</style>

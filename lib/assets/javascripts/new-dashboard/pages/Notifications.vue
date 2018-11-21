@@ -28,11 +28,11 @@
 </template>
 
 <script>
-import SectionTitle from '../components/SectionTitle';
-import EmptyState from '../components/States/EmptyState';
-import NotificationCard from '../components/NotificationCard';
+import SectionTitle from "../components/SectionTitle";
+import EmptyState from "../components/States/EmptyState";
+import NotificationCard from "../components/NotificationCard";
 export default {
-  name: 'NotificationsPage',
+  name: "NotificationsPage",
   components: {
     SectionTitle,
     EmptyState,
@@ -40,52 +40,40 @@ export default {
   },
   props: {},
   computed: {
-    pageTitle () {
+    pageTitle() {
       return this.$t(`NotificationsPage.header.title`);
     },
-    notifications () {
-      // return [
-      //   {
-      //     html_body:
-      //       "<p>Cupcake Ipsum dolor gingerbread chocolate. <em>Pudding</em> wafer ice cream. Powder ice cream carrot cake <strong>liquorice</strong> cookie oat cake.</p>",
-      //     icon: "alert",
-      //     id: "288dfe6e-1a9d-4157-bd36-41cd8459af62",
-      //     read_at: null,
-      //     received_at: "2018-11-20T15:28:21.792Z"
-      //   },
-      //   {
-      //     html_body: "<p>Holi parte 2</p>",
-      //     icon: "alert",
-      //     id: "091a04a7-28d6-4fcf-bd8a-b1c34842bdb4",
-      //     read_at: "2018-11-20T17:11:42.285Z",
-      //     received_at: "2018-11-19T17:11:42.285Z"
-      //   }
-      // ];
+    notifications() {
+      // TODO: We need display the already checked notifications
       return this.$store.state.user.organizationNotifications;
     },
-    emptyState () {
+    emptyState() {
       return !this.notifications || !this.notifications.length;
     },
-    emptyStateText () {
+    emptyStateText() {
       return this.$t(`NotificationsPage.emptyState`);
     }
   },
-  mounted () {
-    window.foo = markNotificationAsRead;
+  mounted() {
+    const now = new Date();
+    this.notifications.forEach(notification => {
+      const baseUrl = this.$store.state.user.base_url
+      const userId = this.$store.state.user.id;
+      const apiKey = this.$store.state.user.api_key;
+      if (!notification.read_at) {
+        const notificationCopy = Object.assign({}, notification);
+        notificationCopy.read_at = now.toISOString();
+        markNotificationAsRead(baseUrl, userId, apiKey, notificationCopy);
+      }
+    });
   },
-  beforeRouteLeave (to, from, next) {
-    next();
-  }
-
 };
-function markNotificationAsRead (id, apiKey, userId) {
-  const URL = `/api/v3/users/${userId}/notifications/${id}?api_key=${apiKey}`;
+function markNotificationAsRead(baseUrl, userId, apiKey, notification) {
+  const URL = `${baseUrl}/api/v3/users/${userId}/notifications/${notification.id}?api_key=${apiKey}`;
   return fetch(URL, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body: JSON.stringify({
-      read_at: new Date()
-    })
+    method: "PUT",
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    body: JSON.stringify({notification})
   });
 }
 </script>

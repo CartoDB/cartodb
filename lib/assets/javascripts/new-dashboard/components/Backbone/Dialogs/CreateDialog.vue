@@ -11,6 +11,7 @@ export default {
   name: 'CreateDialog',
   props: {
     backgroundPollingView: Object,
+    mamufasImportView: Object,
     dialogType: {
       type: String,
       default: 'maps'
@@ -56,11 +57,7 @@ export default {
       });
 
       DialogView.addProperties({
-        // TODO: Update when Mamufas View is ready
-        mamufasView: {
-          enable: () => {},
-          disable: () => {}
-        }
+        mamufasView: this.$props.mamufasImportView
       });
 
       const DialogViewInstance = DialogView.openDialog(

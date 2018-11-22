@@ -24,9 +24,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
           </li>
-          <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
-          </li>
+          <!---->
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
@@ -71,9 +69,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
           </li>
-          <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
-          </li>
+          <!---->
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
@@ -118,9 +114,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
           </li>
-          <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
-          </li>
+          <!---->
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>
@@ -165,9 +159,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/settings.svg"></div> <a href="/profile" class="text is-semibold is-caption is-txtGrey">UserDropdown.settings</a>
           </li>
-          <li class="navbar-dropdown-iconLink">
-            <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/organization.svg"></div> <a href="/organization" class="text is-semibold is-caption is-txtGrey">UserDropdown.organizationSettings</a>
-          </li>
+          <!---->
           <li class="navbar-dropdown-iconLink">
             <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/api-keys.svg"></div> <a href="/your_apps" class="text is-semibold is-caption is-txtGrey">UserDropdown.apiKeys</a>
           </li>

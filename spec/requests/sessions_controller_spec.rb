@@ -889,28 +889,50 @@ describe SessionsController do
 
       it_behaves_like 'all users workflow'
 
-      it 'skips verification only when mfa needs setup' do
-        login
-        mfa = @user.active_multifactor_authentication
-        mfa.enabled = false
-        mfa.save!
+      context 'skipping MFA configuration' do
+        before(:each) do
+          mfa = @user.active_multifactor_authentication
+          mfa.enabled = false
+          mfa.save!
+        end
 
-        get multifactor_authentication_session_url
-        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+        after(:each) do
+          FactoryGirl.create(:totp, :needs_setup, user_id: @user.id)
+          @user.reload
+        end
 
-        expect_login
-        mfa.enabled = true
-        mfa.save!
+        it 'skips configuration only when mfa needs setup' do
+          login
+
+          get multifactor_authentication_session_url
+          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+          expect_login
+        end
+
+        it 'removes user multifactor auths when mfa configuration is skipped' do
+          login
+
+          get multifactor_authentication_session_url
+          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+          @user.reload.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not allow to skip verification if is active' do
+          mfa = @user.active_multifactor_authentication
+          mfa.enabled = true
+          mfa.save!
+
+          login
+
+          get multifactor_authentication_session_url
+          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+
+          expect_login_error
+        end
       end
 
-      it 'does not allow to skip verification if is active' do
-        login
-
-        get multifactor_authentication_session_url
-        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
-
-        expect_login_error
-      end
     end
 
     describe 'as org user' do

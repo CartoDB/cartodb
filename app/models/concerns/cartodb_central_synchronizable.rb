@@ -91,7 +91,7 @@ module Concerns
            :password_expiration_in_d]
         end
       elsif is_a?(::User)
-        [:account_type, :admin, :crypted_password, :database_host,
+        [:account_type, :admin, :org_admin :crypted_password, :database_host,
          :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
          :map_view_quota, :max_layers,

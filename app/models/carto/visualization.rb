@@ -394,7 +394,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def actual_row_count
-    table_service.nil? ? nil : table_service.actual_row_count
+    user_table.try(:actual_row_count)
   end
 
   def license_info

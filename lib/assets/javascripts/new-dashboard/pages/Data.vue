@@ -192,6 +192,7 @@ export default {
         params: this.$route.params,
         query: {
           ...this.$route.query,
+          page: 1,
           order: orderParams.order,
           order_direction: orderParams.direction
         }

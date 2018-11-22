@@ -316,6 +316,7 @@ class Carto::Permission < ActiveRecord::Base
   def update_changes
     if !@old_acl.nil?
       notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
+      Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
     update_shared_entities
   end

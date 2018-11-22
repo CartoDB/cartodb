@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth provider (WIP):
+  - Revoke permissions when owner stops sharing you a dataset (#14472)
 
 ### Bug fixes / enhancements
 - Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))

@@ -44,7 +44,7 @@
         </SectionTitle>
       </div>
 
-      <div class="grid-cell" v-if="initialState">
+      <div class="grid-cell grid-cell--col12" v-if="initialState">
         <InitialState :title="$t(`DataPage.zeroCase.title`)">
           <template slot="icon">
             <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -58,7 +58,7 @@
         </InitialState>
       </div>
 
-      <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState">
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState && !initialState">
         <DatasetListHeader></DatasetListHeader>
       </div>
 

@@ -28,11 +28,11 @@
 </template>
 
 <script>
-import SectionTitle from "../components/SectionTitle";
-import EmptyState from "../components/States/EmptyState";
-import NotificationCard from "../components/NotificationCard";
+import SectionTitle from '../components/SectionTitle';
+import EmptyState from '../components/States/EmptyState';
+import NotificationCard from '../components/NotificationCard';
 export default {
-  name: "NotificationsPage",
+  name: 'NotificationsPage',
   components: {
     SectionTitle,
     EmptyState,
@@ -40,42 +40,28 @@ export default {
   },
   props: {},
   computed: {
-    pageTitle() {
+    pageTitle () {
       return this.$t(`NotificationsPage.header.title`);
     },
-    notifications() {
+    notifications () {
       // TODO: We need display the already checked notifications
-      return this.$store.state.user.organizationNotifications;
+      return this.$store.state.notifications.notifications;
     },
-    emptyState() {
+    emptyState () {
       return !this.notifications || !this.notifications.length;
     },
-    emptyStateText() {
+    emptyStateText () {
       return this.$t(`NotificationsPage.emptyState`);
     }
   },
-  mounted() {
-    const now = new Date();
-    this.notifications.forEach(notification => {
-      const baseUrl = this.$store.state.user.base_url
-      const userId = this.$store.state.user.id;
-      const apiKey = this.$store.state.user.api_key;
-      if (!notification.read_at) {
-        const notificationCopy = Object.assign({}, notification);
-        notificationCopy.read_at = now.toISOString();
-        markNotificationAsRead(baseUrl, userId, apiKey, notificationCopy);
-      }
+  beforeCreate () {
+    this.$store.dispatch('notifications/fetchNotifications', {
+      baseUrl: this.$store.state.user.base_url,
+      userId: this.$store.state.user.id,
+      apiKey: this.$store.state.user.api_key
     });
-  },
+  }
 };
-function markNotificationAsRead(baseUrl, userId, apiKey, notification) {
-  const URL = `${baseUrl}/api/v3/users/${userId}/notifications/${notification.id}?api_key=${apiKey}`;
-  return fetch(URL, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({notification})
-  });
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

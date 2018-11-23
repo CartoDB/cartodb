@@ -5,23 +5,36 @@ Development
 - None yet
 
 ### Features
-- MFA (WIP)
-  - Login (#14336)
-- Lock login if too many failed attempts (#14334)
-- OAuth provider (WIP):
-  - UI improvements (#14389)
-- MFA (WIP)
-  - Admin management (#14347)
-- Change password functionality for Carto Gears (#14351)
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+- /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 
 ### Bug fixes / enhancements
-- Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)
-- Sync new password resets fields with central (#14333)
-- Can't add legend due to wrong CartoCSS (#14418)
-- Fix parallel execution of some acceptance specs (#14391)
-- Use shared partials for logo and button animation in session views
-- Do not concatenate the schema if it's already defined while fetching overview tables #14414
+- Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+
+4.23.0 (2018-11-19)
+-------------------
+
+### Features
+* Lock login if too many failed attempts (#14334)
+* OAuth provider (WIP):
+  * UI improvements (#14389)
+* MFA (WIP)
+  * Login (#14336)
+  * Admin management (#14347)
+  * Support user migration (#14337)
+  * User management (#14403)
+  * Sync MFA status to central ([Central#2379](https://github.com/CartoDB/cartodb-central#2379))
+  * Add support in EUMAPI (#14425)
+* Change password functionality for Carto Gears (#14351)
+* /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+
+### Bug fixes / enhancements
+* Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)
+* Sync new password resets fields with central (#14333)
+* Can't add legend due to wrong CartoCSS (#14418)
+* Fix parallel execution of some acceptance specs (#14391)
+* Use shared partials for logo and button animation in session views
+* Do not concatenate the schema if it's already defined while fetching overview tables #14414
 
 4.22.2 (2018-11-05)
 -------------------

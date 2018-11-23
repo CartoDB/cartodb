@@ -192,18 +192,8 @@ export default {
   position: relative;
   height: 100%;
   transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid $light-grey;
   background-color: $white;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border: 1px solid $light-grey;
-    pointer-events: none;
-  }
 
   &:hover {
     cursor: pointer;

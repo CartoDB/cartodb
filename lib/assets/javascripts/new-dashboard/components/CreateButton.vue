@@ -22,14 +22,19 @@ export default {
       this.$modal.show({
         template: `
         <Dialog @close="$emit('close')">
-          <CreateDialog :dialogType="dialogType" :backgroundPollingView="backgroundPollingView" @close="$emit('close')"/>
+          <CreateDialog
+            :dialogType="dialogType"
+            :backgroundPollingView="backgroundPollingView"
+            :mamufasImportView="mamufasImportView"
+            @close="$emit('close')" />
         </Dialog>`,
-        props: ['dialogType', 'backgroundPollingView'],
+        props: ['dialogType', 'backgroundPollingView', 'mamufasImportView'],
         components: { Dialog, CreateDialog }
       },
       {
         dialogType: this.$props.visualizationType,
-        backgroundPollingView: this.backboneViews.backgroundPollingView.getBackgroundPollingView()
+        backgroundPollingView: this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
+        mamufasImportView: this.backboneViews.mamufasImportView.getView()
       },
       {
         width: '100%',

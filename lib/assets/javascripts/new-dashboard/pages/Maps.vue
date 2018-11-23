@@ -11,7 +11,7 @@
       @deselectAll="deselectAll"></MapBulkActions>
   </StickySubheader>
 
-  <div class="maps-list-container container grid">
+  <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
@@ -59,13 +59,13 @@
       </div>
 
       <ul class="grid" v-if="isFetchingMaps">
-        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="n in 12" :key="n">
+        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="n in 12" :key="n">
           <MapCardFake></MapCardFake>
         </li>
       </ul>
 
       <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
-        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" :key="map.id">
+        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" :key="map.id">
           <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
         </li>
       </ul>
@@ -76,7 +76,7 @@
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
-      <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+      <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
   </div>
 </section>
@@ -227,11 +227,15 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.maps-list-container {
-  margin-bottom: 44px;
+.map-element {
+  margin-bottom: 36px;
 }
 
 .full-width {
   width: 100%;
+}
+
+.pagination-element {
+  margin-top: 28px;
 }
 </style>

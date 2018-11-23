@@ -4,6 +4,7 @@
     <router-view/>
     <Footer/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
+    <MamufasImportView ref="mamufasImportView"/>
   </div>
 </template>
 
@@ -11,13 +12,15 @@
 import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
 import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
+import MamufasImportView from './components/Backbone/MamufasImportView.vue';
 
 export default {
   name: 'App',
   components: {
     NavigationBar,
     BackgroundPollingView,
-    Footer
+    Footer,
+    MamufasImportView
   },
   computed: {
     user () {
@@ -32,9 +35,15 @@ export default {
   },
   provide () {
     const backboneViews = {};
+
     Object.defineProperty(backboneViews, 'backgroundPollingView', {
       enumerable: true,
       get: () => this.$refs.backgroundPollingView
+    });
+
+    Object.defineProperty(backboneViews, 'mamufasImportView', {
+      enumerable: true,
+      get: () => this.$refs.mamufasImportView
     });
 
     return { backboneViews };

@@ -16,7 +16,7 @@
       <label class="Form-label" for="password-confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
     </div>
     <div class="Form-rowData">
-      <input type="password" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value=""/>
+      <input type="password" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value="" autofocus/>
     </div>
   </form>
 </div>

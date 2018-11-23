@@ -2,9 +2,9 @@
 <div class="notification">
   <div class="notification-info">
     <div class="notification-received text is-small">{{ receivedAtFormatted }}</div>
-    <span v-if=!readAt class="notification-read"></span>
+    <span v-if="!readAt" class="notification-read"></span>
   </div>
-  <div v-html=htmlBody class="notification-html text is-caption" :class="{'is-unread': !readAt}"></div>
+  <div v-html="htmlBody" class="notification-html text is-caption" :class="{'is-unread': !readAt}"></div>
 </div>
 </template>
 

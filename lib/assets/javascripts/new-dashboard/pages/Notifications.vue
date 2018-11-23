@@ -2,7 +2,7 @@
   <section class="page">
     <div class="notifications-list-container container grid">
       <div class="full-width">
-        <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="false" ref="headerContainer">
+        <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
           <template slot="icon">
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
@@ -12,9 +12,9 @@
           <ul class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
             <li class="notification-item" v-for="notification in notifications" :key="notification.id">
               <NotificationCard
-                :receivedAt='notification.received_at'
-                :readAt='notification.read_at'
-                :htmlBody='notification.html_body'>
+                :receivedAt="notification.received_at"
+                :readAt="notification.read_at"
+                :htmlBody="notification.html_body">
               </NotificationCard>
             </li>
           </ul>

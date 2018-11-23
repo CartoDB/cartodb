@@ -33,7 +33,7 @@
 
 <script>
 export default {
-  name: 'MapsOrdering',
+  name: 'Ordering',
   props: {
     order: String,
     orderDirection: String

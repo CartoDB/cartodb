@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import SearchSuggestions from './SearchSuggestions';
+import SearchSuggestions from './Suggestions/SearchSuggestions';
 
 export default {
   name: 'Search',

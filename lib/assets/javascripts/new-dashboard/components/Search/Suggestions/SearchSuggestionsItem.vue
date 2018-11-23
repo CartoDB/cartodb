@@ -58,8 +58,4 @@ export default {
     background-image: url('../../../assets/icons/section-title/data.svg');
   }
 }
-
-.suggestions__item--tag {
-
-}
 </style>

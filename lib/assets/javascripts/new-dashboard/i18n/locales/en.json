@@ -146,7 +146,7 @@
   "UserDropdown": {
     "settings": "Settings",
     "organizationSettings": "Your organization",
-    "apiKeys": "API Keys & OAuth",
+    "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
     "logout": "LOG OUT"

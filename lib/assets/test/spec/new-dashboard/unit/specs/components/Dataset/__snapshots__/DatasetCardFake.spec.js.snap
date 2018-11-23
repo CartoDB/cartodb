@@ -23,6 +23,6 @@ exports[`DatasetCardFake.vue should render correct contents 1`] = `
   <div class="cell-placeholder cell--small">
     <div class="text-placeholder"></div>
   </div>
-  <div class="cell-placeholder"></div>
+  <div class="cell-placeholder cell--quick-actions"></div>
 </div>
 `;

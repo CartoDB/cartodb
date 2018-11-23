@@ -21,7 +21,7 @@
     <div class="cell-placeholder cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder">
+    <div class="cell-placeholder cell--quick-actions">
     </div>
   </div>
 </template>
@@ -77,5 +77,9 @@ export default {
 
 .cell--small {
   width: 80px;
+}
+
+.cell--quick-actions {
+  padding: 0 24px;
 }
 </style>

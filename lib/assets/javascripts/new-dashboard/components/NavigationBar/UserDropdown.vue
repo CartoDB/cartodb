@@ -16,7 +16,7 @@
         </div>
         <a :href="`${ baseUrl }/profile`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.settings') }}</a>
       </li>
-      <li class="navbar-dropdown-iconLink">
+      <li class="navbar-dropdown-iconLink" v-if="isOrganizationAdmin">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/organization.svg"/>
         </div>
@@ -32,7 +32,7 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.publicProfile') }}</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank">{{ $t('UserDropdown.publicProfile') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
@@ -57,6 +57,11 @@ export default {
     open: { type: Boolean, default: false },
     userModel: Object,
     notificationsCount: Number
+  },
+  computed: {
+    isOrganizationAdmin () {
+      return this.userModel.org_admin;
+    }
   }
 };
 </script>

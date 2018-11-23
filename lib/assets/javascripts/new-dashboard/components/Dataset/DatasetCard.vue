@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected, 'card--noHover': !activeHover}">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover}">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -55,7 +55,14 @@
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
     <div class="dataset-cell">
-      <DatasetQuickActions v-if="!isShared" :dataset="dataset"/>
+      <DatasetQuickActions
+        v-if="!isShared"
+        :dataset="dataset"
+        class="dataset--quick-actions"
+        @mouseover="mouseOverChildElement"
+        @mouseleave="mouseOutChildElement"
+        @open="openQuickActions"
+        @close="closeQuickActions"/>
     </div>
   </a>
 </template>
@@ -83,6 +90,7 @@ export default {
   },
   data: function () {
     return {
+      areQuickActionsOpen: false,
       activeHover: true,
       maxTags: 3,
       maxTagChars: 30
@@ -159,6 +167,12 @@ export default {
     mouseOutChildElement () {
       this.activeHover = true;
     },
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
+    },
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
+    },
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
@@ -196,6 +210,12 @@ export default {
       transform: translateY(0);
       opacity: 1;
       pointer-events: all;
+    }
+
+    .dataset--quick-actions {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -322,19 +342,19 @@ export default {
   background-position: center;
 
   &.icon--private {
-    background-image: url("../../assets/icons/datasets/privacy/lock.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-lock.svg");
   }
 
   &.icon--public {
-    background-image: url("../../assets/icons/datasets/privacy/public.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-public.svg");
   }
 
   &.icon--link {
-    background-image: url("../../assets/icons/datasets/privacy/link.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-link.svg");
   }
 
   &.icon--password {
-    background-image: url("../../assets/icons/datasets/privacy/password.svg");
+    background-image: url("../../assets/icons/datasets/privacy/dataset-password.svg");
   }
 
   &.icon--sharedBy {
@@ -347,7 +367,7 @@ export default {
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-position: center;
 
   &.icon--point {
     background-image: url("../../assets/icons/datasets/data-types/dots.svg");
@@ -359,6 +379,11 @@ export default {
 
   &.icon--line {
     background-image: url("../../assets/icons/datasets/data-types/line.svg");
+  }
+
+  &.icon--empty,
+  &.icon--unknown {
+    background-image: url("../../assets/icons/datasets/data-types/unknown.svg");
   }
 }
 
@@ -399,5 +424,11 @@ export default {
       }
     }
   }
+}
+
+.dataset--quick-actions {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

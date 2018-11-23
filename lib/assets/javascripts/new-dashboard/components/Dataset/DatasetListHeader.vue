@@ -26,9 +26,9 @@
         {{ $t(`datasetListHeader.size`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell--small" @click="changeOrder('usage')">
+    <div class="dataset-list-cell cell--small" @click="changeOrder('dependent_visualizations')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('usage'), 'is-reversed': isReverseOrderApplied('usage') }">
+            :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
         {{ $t(`datasetListHeader.usage`) }}
       </span>
     </div>

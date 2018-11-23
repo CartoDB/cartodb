@@ -93,7 +93,7 @@
     },
     "emptyState": "There are no maps here."
   },
-  "FilterDropdown": {
+  "SettingsDropdown": {
     "showMe": "Show me",
     "orderMaps": "Order",
     "types": {

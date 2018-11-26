@@ -390,11 +390,11 @@ class Carto::Visualization < ActiveRecord::Base
   alias :can_view_private_info? :has_read_permission?
 
   def estimated_row_count
-    table_service.nil? ? nil : table_service.estimated_row_count
+    user_table.try(:row_count)
   end
 
   def actual_row_count
-    table_service.nil? ? nil : table_service.actual_row_count
+    user_table.try(:actual_row_count)
   end
 
   def license_info

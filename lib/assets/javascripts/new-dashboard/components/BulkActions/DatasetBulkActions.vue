@@ -35,8 +35,8 @@ export default {
           { name: this.$t('BulkActions.datasets.deleteDataset'), event: 'deleteDataset', isDestructive: true }
         ],
         multiple: [
-          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
           { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
+          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
           { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
           { name: this.$t('BulkActions.datasets.lockDatasets'), event: 'lockDatasets' },
           { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true }

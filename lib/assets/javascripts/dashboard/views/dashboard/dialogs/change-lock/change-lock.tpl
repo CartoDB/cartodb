@@ -10,9 +10,17 @@
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (areLocked) { %>
-      Unlocking <%- thisOrTheseStr %> <%- contentTypePluralized %> will show <%- itOrThemStr %> on the dashboard again.
+      <%- _t('components.modals.change-lock.description.locked', {
+          thisOrTheseStr: thisOrTheseStr,
+          contentTypePluralized: contentTypePluralized,
+          itOrThemStr: itOrThemStr
+        }) %>
     <% } else { %>
-      Locking <%- thisOrTheseStr %> <%- contentTypePluralized %> will hide <%- itOrThemStr %> from the dashboard. Reveal <%- itOrThemStr %> using the header menu or the bottom link.
+      <%- _t('components.modals.change-lock.description.unlocked', {
+        thisOrTheseStr: thisOrTheseStr,
+        contentTypePluralized: contentTypePluralized,
+        itOrThemStr: itOrThemStr
+      }) %>
     <% } %>
   </p>
 </div>

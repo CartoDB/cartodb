@@ -2,28 +2,89 @@
   <div class="dataset-list-row">
     <div class="dataset-list-cell cell--start">
     </div>
-    <div class="dataset-list-cell cell--main">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.name`) }}</span>
+    <div class="dataset-list-cell cell--main" @click="changeOrder('name')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
+        {{ $t(`datasetListHeader.name`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--large">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.lastModified`) }}</span>
+    <div class="dataset-list-cell cell--large" @click="changeOrder('updated_at')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
+        {{ $t(`datasetListHeader.lastModified`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.rows`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('estimated_row_count')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('estimated_row_count'), 'is-reversed': isReverseOrderApplied('estimated_row_count') }">
+        {{ $t(`datasetListHeader.rows`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.size`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('size')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReverseOrderApplied('size') }">
+        {{ $t(`datasetListHeader.size`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.usage`) }}</span>
+    <div class="dataset-list-cell cell--small" @click="changeOrder('dependent_visualizations')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
+        {{ $t(`datasetListHeader.usage`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--small cell--privacy">
-      <span class="text element-sort is-small is-txtSoftGrey">{{ $t(`datasetListHeader.privacy`) }}</span>
+    <div class="dataset-list-cell cell--small cell--privacy" @click="changeOrder('privacy')">
+      <span class="text element-sort is-small is-txtSoftGrey"
+            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
+        {{ $t(`datasetListHeader.privacy`) }}
+      </span>
     </div>
-    <div class="dataset-list-cell cell--end">
-    </div>
+    <div class="dataset-list-cell cell--end"></div>
   </div>
 </template>
+
+<script>
+export default {
+  name: 'DatasetListHeader',
+  props: {
+    order: String,
+    orderDirection: String
+  },
+  methods: {
+    changeOrder (order) {
+      if (this.order === order) {
+        return this.setOrder(
+          order,
+          this.getOppositeOrderDirection(this.orderDirection)
+        );
+      }
+
+      this.setOrder(order);
+    },
+
+    getOppositeOrderDirection (order) {
+      if (order === 'desc') {
+        return 'asc';
+      }
+
+      if (order === 'asc') {
+        return 'desc';
+      }
+    },
+
+    isOrderApplied (order) {
+      return order === this.order;
+    },
+
+    isReverseOrderApplied (order) {
+      return order === this.order && this.orderDirection === 'asc';
+    },
+
+    setOrder (order, direction = 'desc') {
+      this.$emit('changeOrder', { order, direction });
+    }
+  }
+};
+</script>
 
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
@@ -101,13 +162,14 @@
       position: absolute;
       width: 14px;
       height: 100%;
+      margin-left: 4px;
       transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
       background-image: url('../../assets/icons/datasets/chevron.svg');
       background-repeat: no-repeat;
       background-position: center;
     }
 
-    &.reversed {
+    &.is-reversed {
       &::after {
         transform: rotate(180deg);
       }

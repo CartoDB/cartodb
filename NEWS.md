@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
 
 4.23.1 (2018-11-26)
 -------------------

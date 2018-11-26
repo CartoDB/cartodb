@@ -52,13 +52,6 @@ export default {
     emptyStateText () {
       return this.$t(`NotificationsPage.emptyState`);
     }
-  },
-  beforeCreate () {
-    this.$store.dispatch('notifications/fetchNotifications', {
-      baseUrl: this.$store.state.user.base_url,
-      userId: this.$store.state.user.id,
-      apiKey: this.$store.state.user.api_key
-    });
   }
 };
 </script>

@@ -38,7 +38,6 @@ export default {
     EmptyState,
     NotificationCard
   },
-  props: {},
   computed: {
     pageTitle () {
       return this.$t(`NotificationsPage.header.title`);

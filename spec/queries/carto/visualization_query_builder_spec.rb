@@ -104,24 +104,24 @@ describe Carto::VisualizationQueryBuilder do
 
     it 'can prefetch dependent visualizations' do
       expect {
-        @vqb.build.where(id: @table_visualization.id).first.dependent_visualizations
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
       }.to make_database_queries(count: 10)
 
       expect {
         @vqb.with_prefetch_dependent_visualizations
-            .build.where(id: @table_visualization.id).first.dependent_visualizations
-      }.to make_database_queries(count: 1..2)
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
     end
 
     it 'can prefetch together two nested associations with the same root' do
       expect {
-        @vqb.build.where(id: @table_visualization.id).first.dependent_visualizations
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
       }.to make_database_queries(count: 10)
 
       expect {
         @vqb.with_prefetch_dependent_visualizations.with_prefetch_table
-            .build.where(id: @table_visualization.id).first.dependent_visualizations
-      }.to make_database_queries(count: 1..2)
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
     end
   end
 

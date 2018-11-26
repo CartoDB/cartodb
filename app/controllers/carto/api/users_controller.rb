@@ -149,7 +149,7 @@ module Carto
       end
 
       def all_organization_notifications(carto_viewer)
-        carto_viewer.received_notifications.limit(10).map |n| do
+        carto_viewer.received_notifications.limit(10).map do |n|
            Carto::Api::ReceivedNotificationPresenter.new(n).to_hash}
         end
       end

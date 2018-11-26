@@ -269,6 +269,33 @@ module Carto
         }.to raise_error(Carto::OauthProvider::Errors::InvalidScope)
       end
 
+      it 'should revoke permissions removing shared permissions' do
+        oau = OauthAppUser.create!(user: @carto_org_user_2, oauth_app: @app, scopes: [@shared_dataset_scope])
+        expect(oau.all_scopes).to(eq([@shared_dataset_scope]))
+
+        expect(oau.authorized?([@shared_dataset_scope])).to eq(true)
+        expect(oau.authorized?([@non_shared_dataset_scope])).to eq(false)
+
+        # remove shared permissions
+        @shared_table.table_visualization.reload
+        perm = @shared_table.table_visualization.permission
+        perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+        perm.save!
+
+        shared_dataset_scope_rw = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@shared_table.name}"
+        expect(oau.authorized?([@shared_dataset_scope])).to eq(true)
+        expect(oau.authorized?([shared_dataset_scope_rw])).to eq(false)
+
+        # remove shared permissions
+        @shared_table.table_visualization.reload
+        perm = @shared_table.table_visualization.permission
+        perm.acl = []
+        perm.save!
+
+        expect(oau.authorized?([@shared_dataset_scope])).to eq(false)
+        expect(oau.authorized?([@non_shared_dataset_scope])).to eq(false)
+      end
+
       describe 'read - write permissions' do
         before :each do
           @only_read_table = create_table(user_id: @carto_org_user_1.id)

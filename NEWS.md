@@ -5,8 +5,17 @@ Development
 - None yet
 
 ### Features
-- OAuth provider (WIP):
-  - Revoke permissions when owner stops sharing you a dataset (#14472)
+- None yet
+
+### Bug fixes / enhancements
+- Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
+
+4.23.1 (2018-11-26)
+-------------------
+
+### Features
+* OAuth provider (WIP):
+  * Revoke permissions when owner stops sharing you a dataset (#14472)
 
 ### Bug fixes / enhancements
 - MFA flash login errors (#14456)

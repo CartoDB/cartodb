@@ -131,7 +131,7 @@ module Concerns
         end
       elsif self.is_a?(::User)
         attrs = values.slice(
-          :account_type, :admin, :crypted_password,
+          :account_type, :admin, :org_admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers,

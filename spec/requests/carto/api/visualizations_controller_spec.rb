@@ -2745,13 +2745,13 @@ describe Carto::Api::VisualizationsController do
       before(:each) do
         table_a = create_random_table(@user)
         @visualization_a = table_a.table_visualization
-        @dependent_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
-        @dependent_visualization.map = FactoryGirl.create(:carto_map, user_id: @user.id)
-        @dependent_visualization.save!
-        layer = FactoryGirl.build(:carto_layer)
-        layer.options[:table_name] = table_a.name
-        layer.save!
-        @dependent_visualization.layers << layer
+        Delorean.time_travel_to "2018/01/01 00:00:00" do
+          @dependencies = Array.new(3) do
+            Delorean.jump(1.day)
+            FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          end
+        end
+        Carto::Visualization.any_instance.stubs(:dependent_visualizations).returns(@dependencies)
       end
 
       it 'does not return the dependent visualizations by default' do
@@ -2762,20 +2762,36 @@ describe Carto::Api::VisualizationsController do
         response = JSON.parse(last_response.body)
         collection = response.fetch('visualizations')
         collection.length.should eq 1
+        collection[0]['dependent_visualizations_count'].should be_nil
         collection[0]['dependent_visualizations'].should be_nil
       end
 
-      it 'returns the dependent visualizations when with_dependent_visualizations is true' do
+      it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
-                                            with_dependent_visualizations: true), {}, @headers
+                                            with_dependent_visualizations: 0), {}, @headers
 
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
         collection = response.fetch('visualizations')
         collection.length.should eq 1
-        collection[0]['dependent_visualizations'].length.should eq 1
-        collection[0]['dependent_visualizations'].first['id'].should eql @dependent_visualization.id
+        collection[0]['dependent_visualizations_count'].should be_nil
+        collection[0]['dependent_visualizations'].should be_nil
+      end
+
+      it 'returns the 2 most recent dependent visualizations when with_dependent_visualizations = 2' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                            with_dependent_visualizations: 2), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations_count'].should eql 3
+        collection[0]['dependent_visualizations'].length.should eq 2
+        collection[0]['dependent_visualizations'].first['id'].should eql @dependencies[2].id
         collection[0]['dependent_visualizations'].first['name'].should_not be_nil
+        collection[0]['dependent_visualizations'].second['id'].should eql @dependencies[1].id
+        collection[0]['dependent_visualizations'].second['name'].should_not be_nil
       end
     end
 

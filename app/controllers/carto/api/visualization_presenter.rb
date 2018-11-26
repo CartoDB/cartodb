@@ -11,7 +11,7 @@ module Carto
                      show_stats: true, show_likes: true, show_liked: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
-                     password: nil, with_dependent_visualizations: false)
+                     password: nil, with_dependent_visualizations: 0)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
@@ -53,8 +53,11 @@ module Carto
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
 
-        if with_dependent_visualizations
-          poro[:dependent_visualizations] = @visualization.dependent_visualizations.map do |dependent_visualization|
+        if with_dependent_visualizations > 0
+          dependencies = @visualization.dependent_visualizations
+          poro[:dependent_visualizations_count] = dependencies.count
+          limited_dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
+          poro[:dependent_visualizations] = limited_dependencies.map do |dependent_visualization|
             VisualizationPresenter.new(dependent_visualization, @current_viewer, @context).to_summarized_poro
           end
         end
@@ -253,6 +256,11 @@ module Carto
                                       fetch_db_size: false,
                                       fetch_basemaps: show_user_basemaps,
                                       fetch_profile: false).to_poro
+      end
+
+      def most_recent_dependencies(dependencies, limit)
+        sorted_dependencies = dependencies.sort_by(&:updated_at).reverse
+        sorted_dependencies.first(limit)
       end
     end
   end

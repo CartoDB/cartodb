@@ -29,7 +29,7 @@ module Carto
         bbox_parameter = params.fetch(:bbox,nil)
         privacy = params.fetch(:privacy,nil)
         only_with_display_name = params[:only_with_display_name] == 'true'
-        with_dependent_visualizations = params[:with_dependent_visualizations] == 'true'
+        with_dependent_visualizations = params[:with_dependent_visualizations].to_i
 
         vqb = VisualizationQueryBuilder.new
                                        .with_prefetch_user
@@ -83,7 +83,7 @@ module Carto
             vqb.with_privacy(privacy)
           end
 
-          vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations
+          vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
 
         else
           # TODO: ok, this looks like business logic, refactor
@@ -109,7 +109,7 @@ module Carto
         options[:show_uses_builder_features] = false if params[:show_uses_builder_features].to_s == 'false'
         options[:show_synchronization] = false if params[:show_synchronization].to_s == 'false'
         options[:show_table_size_and_row_count] = false if params[:show_table_size_and_row_count].to_s == 'false'
-        options[:with_dependent_visualizations] = true if params[:with_dependent_visualizations].to_s == 'true'
+        options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
         options
       end
 

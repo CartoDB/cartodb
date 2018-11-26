@@ -113,7 +113,7 @@ describe Carto::VisualizationQueryBuilder do
       }.to make_database_queries(count: 1..2)
     end
 
-    it 'can prefetch together two nested associations with the same root' do 
+    it 'can prefetch together two nested associations with the same root' do
       expect {
         @vqb.build.where(id: @table_visualization.id).first.dependent_visualizations
       }.to make_database_queries(count: 10)

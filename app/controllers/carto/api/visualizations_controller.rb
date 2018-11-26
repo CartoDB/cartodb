@@ -60,7 +60,8 @@ module Carto
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes estimated_row_count privacy dependent_visualizations).freeze
+      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes estimated_row_count privacy
+                              dependent_visualizations).freeze
 
       def show
         presenter = VisualizationPresenter.new(

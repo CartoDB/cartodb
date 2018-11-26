@@ -5,7 +5,7 @@
         <SearchSuggestionsItem :item="visualization" />
       </li>
     </ul>
-    <router-link :to="{ name: 'search' }" class="suggestions__search-all title is-small" v-if="query && !isFetching">
+    <router-link :to="{ name: 'search', params: { query } }" class="suggestions__search-all title is-small" v-if="query && !isFetching">
       View all results
     </router-link>
   </section>
@@ -61,10 +61,6 @@ export default {
           this.searchResults = data.visualizations;
         }
       );
-    },
-
-    goToSearch () {
-      this.$router.push({ name: 'search' });
     }
   }
 };

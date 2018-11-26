@@ -36,6 +36,7 @@ export default {
         ],
         multiple: [
           { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
+          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
           { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
           { name: this.$t('BulkActions.datasets.lockDatasets'), event: 'lockDatasets' },
           { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true }
@@ -97,7 +98,7 @@ export default {
     },
     createMap () {
       DialogActions.createMap.apply(this, [
-        this.selectedDatasets[0],
+        this.selectedDatasets,
         this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
         this.backboneViews.mamufasImportView.getView()
       ]);

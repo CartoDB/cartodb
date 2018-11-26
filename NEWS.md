@@ -5,11 +5,14 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth provider (WIP):
+  - Revoke permissions when owner stops sharing you a dataset (#14472)
 
 ### Bug fixes / enhancements
 - MFA flash login errors (#14456)
+- Fix visualization URLs avoiding quotes in the database schema ([#14475](https://github.com/CartoDB/cartodb/pull/14475))
 - Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+- Fix pagination in visualization API when ordering by size ([#14476](https://github.com/CartoDB/cartodb/issues/14476))
 
 4.23.0 (2018-11-19)
 -------------------

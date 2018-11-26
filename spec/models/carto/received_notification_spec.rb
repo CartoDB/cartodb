@@ -56,7 +56,7 @@ module Carto
 
         expect(@user.received_notifications.read).to eq [read]
       end
-  
+
       it 'sorted in decreasing date order' do
         read1 = create_received_notification(true)
         Delorean.jump(5.seconds)

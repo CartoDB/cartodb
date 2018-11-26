@@ -40,7 +40,6 @@ export default {
       return this.$t(`NotificationsPage.header.title`);
     },
     notifications () {
-      // TODO: We need display the already checked notifications
       return this.$store.state.notifications.notifications;
     },
     emptyState () {

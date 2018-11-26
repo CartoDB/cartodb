@@ -2781,40 +2781,43 @@ describe Carto::Api::VisualizationsController do
 
     context 'ordering' do
       it 'orders remotes by size with external sources size' do
-        post api_v1_visualizations_create_url(api_key: @user.api_key),
-            factory(@user, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
-        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        vis1 = factory(@user, locked: true, type: 'remote', display_name: 'visu1')
+        post api_v1_visualizations_create_url(api_key: @user.api_key), vis1.to_json, @headers
+        vis1_id = JSON.parse(last_response.body).fetch('id')
         Carto::ExternalSource.new(
-          visualization_id: vis_1_id,
+          visualization_id: vis1_id,
           import_url: 'http://www.fake.com',
           rows_counted: 1,
-          size: 100).save
+          size: 100
+        ).save
 
-        post api_v1_visualizations_create_url(api_key: @user.api_key),
-            factory(@user, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
-        vis_2_id = JSON.parse(last_response.body).fetch('id')
+        vis2 = factory(@user, locked: true, type: 'remote', display_name: 'visu2')
+        post api_v1_visualizations_create_url(api_key: @user.api_key), vis2.to_json, @headers
+        vis2_id = JSON.parse(last_response.body).fetch('id')
         Carto::ExternalSource.new(
-          visualization_id: vis_2_id,
+          visualization_id: vis2_id,
           import_url: 'http://www.fake.com',
           rows_counted: 1,
-          size: 200).save
+          size: 200
+        ).save
 
-        post api_v1_visualizations_create_url(api_key: @user.api_key),
-            factory(@user, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
-        vis_3_id = JSON.parse(last_response.body).fetch('id')
+        vis3 = factory(@user, locked: true, type: 'remote', display_name: 'visu3')
+        post api_v1_visualizations_create_url(api_key: @user.api_key), vis3.to_json, @headers
+        vis3_id = JSON.parse(last_response.body).fetch('id')
         Carto::ExternalSource.new(
-          visualization_id: vis_3_id,
+          visualization_id: vis3_id,
           import_url: 'http://www.fake.com',
-          rows_counted: 1, size: 10).save
+          rows_counted: 1, size: 10
+        ).save
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote', order: 'size'), {}, @headers
         last_response.status.should == 200
         response    = JSON.parse(last_response.body)
         collection  = response.fetch('visualizations')
         collection.length.should eq 3
-        collection[0]['id'].should == vis_2_id
-        collection[1]['id'].should == vis_1_id
-        collection[2]['id'].should == vis_3_id
+        collection[0]['id'].should == vis2_id
+        collection[1]['id'].should == vis1_id
+        collection[2]['id'].should == vis3_id
       end
 
       it 'validates order param' do

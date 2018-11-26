@@ -115,7 +115,7 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup? && user.organization_owner?
+    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup?
       disable_mfa(user.id)
     else
       return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)

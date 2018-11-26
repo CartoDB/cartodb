@@ -846,52 +846,6 @@ describe SessionsController do
           expect_login
         end
       end
-    end
-
-    describe 'as individual user' do
-      before(:all) do
-        @user = FactoryGirl.create(:carto_user_mfa)
-      end
-
-      after(:all) do
-        @user.destroy
-      end
-
-      it_behaves_like 'all users workflow'
-
-      it 'does not allow to skip verification' do
-        login
-
-        mfa = @user.active_multifactor_authentication
-        mfa.enabled = false
-        mfa.save!
-
-        get multifactor_authentication_session_url
-        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
-
-        expect_login_error
-        mfa.enabled = true
-        mfa.save!
-      end
-    end
-
-    describe 'as org owner' do
-      before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
-        @user = @organization.owner
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
-        @user.save
-      end
-
-      after(:all) do
-        @organization.destroy
-      end
-
-      def create_session
-        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
-      end
-
-      it_behaves_like 'all users workflow'
 
       context 'skipping MFA configuration' do
         before(:each) do
@@ -931,12 +885,42 @@ describe SessionsController do
           login
 
           get multifactor_authentication_session_url
-          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
+          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true, code: 'pra')
 
           expect_login_error
         end
       end
+    end
 
+    describe 'as individual user' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user_mfa)
+      end
+
+      after(:all) do
+        @user.destroy
+      end
+
+      it_behaves_like 'all users workflow'
+    end
+
+    describe 'as org owner' do
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
+        @user = @organization.owner
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_session
+        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
     end
 
     describe 'as org user' do

@@ -48,7 +48,7 @@ module Carto
         expect(@user.received_notifications.unread).to eq [unread3, unread2, unread1]
       end
     end
-    
+
     describe 'User#read_received_notifications' do
       it 'does not list unread notifications' do
         read = create_received_notification(true)

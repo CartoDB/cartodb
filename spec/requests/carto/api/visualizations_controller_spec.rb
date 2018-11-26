@@ -2709,43 +2709,6 @@ describe Carto::Api::VisualizationsController do
       @user.destroy
     end
 
-    it 'orders remotes by size with external sources size' do
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
-      vis_1_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_1_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1,
-        size: 100).save
-
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
-      vis_2_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_2_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1,
-        size: 200).save
-
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
-      vis_3_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_3_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1, size: 10).save
-
-      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote', order: 'size'), {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should eq 3
-      collection[0]['id'].should == vis_2_id
-      collection[1]['id'].should == vis_1_id
-      collection[2]['id'].should == vis_3_id
-    end
-
     it 'mixed types search should filter only remote without display name' do
       post api_v1_visualizations_create_url(api_key: @user.api_key),
            factory(@user, locked: true, type: 'table').to_json, @headers
@@ -2778,8 +2741,82 @@ describe Carto::Api::VisualizationsController do
       [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
+    context 'with_dependent_visualizations' do
+      before(:each) do
+        table_a = create_random_table(@user)
+        @visualization_a = table_a.table_visualization
+        @dependent_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+        @dependent_visualization.map = FactoryGirl.create(:carto_map, user_id: @user.id)
+        @dependent_visualization.save!
+        layer = FactoryGirl.build(:carto_layer)
+        layer.options[:table_name] = table_a.name
+        layer.save!
+        @dependent_visualization.layers << layer
+      end
+
+      it 'does not return the dependent visualizations by default' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
+                                            order: 'dependent_visualizations'), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations'].should be_nil
+      end
+
+      it 'returns the dependent visualizations when with_dependent_visualizations is true' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                            with_dependent_visualizations: true), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations'].length.should eq 1
+        collection[0]['dependent_visualizations'].first['id'].should eql @dependent_visualization.id
+        collection[0]['dependent_visualizations'].first['name'].should_not be_nil
+      end
+    end
 
     context 'ordering' do
+      it 'orders remotes by size with external sources size' do
+        post api_v1_visualizations_create_url(api_key: @user.api_key),
+            factory(@user, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
+        vis_1_id = JSON.parse(last_response.body).fetch('id')
+        Carto::ExternalSource.new(
+          visualization_id: vis_1_id,
+          import_url: 'http://www.fake.com',
+          rows_counted: 1,
+          size: 100).save
+
+        post api_v1_visualizations_create_url(api_key: @user.api_key),
+            factory(@user, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
+        vis_2_id = JSON.parse(last_response.body).fetch('id')
+        Carto::ExternalSource.new(
+          visualization_id: vis_2_id,
+          import_url: 'http://www.fake.com',
+          rows_counted: 1,
+          size: 200).save
+
+        post api_v1_visualizations_create_url(api_key: @user.api_key),
+            factory(@user, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
+        vis_3_id = JSON.parse(last_response.body).fetch('id')
+        Carto::ExternalSource.new(
+          visualization_id: vis_3_id,
+          import_url: 'http://www.fake.com',
+          rows_counted: 1, size: 10).save
+
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote', order: 'size'), {}, @headers
+        last_response.status.should == 200
+        response    = JSON.parse(last_response.body)
+        collection  = response.fetch('visualizations')
+        collection.length.should eq 3
+        collection[0]['id'].should == vis_2_id
+        collection[1]['id'].should == vis_1_id
+        collection[2]['id'].should == vis_3_id
+      end
+
       it 'validates order param' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200
@@ -2971,6 +3008,60 @@ describe Carto::Api::VisualizationsController do
           collection.length.should eq 2
           collection[0]['id'].should eq @visualization_a.id
           collection[1]['id'].should eq @visualization_b.id
+        end
+      end
+
+      context 'by dependent visualizations' do
+        before(:each) do
+          table_a = create_random_table(@user)
+          @visualization_a = table_a.table_visualization
+          dependent_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          dependent_visualization.map = FactoryGirl.create(:carto_map, user_id: @user.id)
+          dependent_visualization.save!
+          layer = FactoryGirl.build(:carto_layer)
+          layer.options[:table_name] = table_a.name
+          layer.save!
+          dependent_visualization.layers << layer
+          table_b = create_random_table(@user)
+          @visualization_b = table_b.table_visualization
+        end
+
+        it 'orders descending by default' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+
+        it 'orders descending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true,
+                                              order_direction: 'desc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+
+        it 'orders ascending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true,
+                                              order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
         end
       end
 

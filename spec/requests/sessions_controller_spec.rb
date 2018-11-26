@@ -885,9 +885,9 @@ describe SessionsController do
           login
 
           get multifactor_authentication_session_url
-          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true, code: 'pra')
+          post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
-          expect_login_error
+          expect_invalid_code
         end
       end
     end

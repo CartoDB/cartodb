@@ -98,7 +98,8 @@ export default {
     createMap () {
       DialogActions.createMap.apply(this, [
         this.selectedDatasets[0],
-        this.backboneViews.backgroundPollingView.getBackgroundPollingView()
+        this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
+        this.backboneViews.mamufasImportView.getView()
       ]);
     },
     changePrivacy () {

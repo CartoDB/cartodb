@@ -28,6 +28,7 @@ export default {
         mine: [
           { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
+          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
           { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
@@ -88,6 +89,13 @@ export default {
     editInfo () {
       DialogActions.editDatasetMetadata.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
+    },
+    createMap () {
+      DialogActions.createMap.apply(this, [
+        this.dataset,
+        this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
+        this.backboneViews.mamufasImportView.getView()
+      ]);
     },
     changePrivacy () {
       DialogActions.changePrivacy.apply(this, [this.dataset, this.getActionHandlers()]);

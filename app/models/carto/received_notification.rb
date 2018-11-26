@@ -7,6 +7,7 @@ module Carto
     belongs_to :user, inverse_of: :received_notifications, autosave: false
     belongs_to :notification, inverse_of: :received_notifications, autosave: false
     scope :unread, -> { where(read_at: nil).order('received_at DESC') }
+    scope :read, -> { where.not(read_at: nil).order('received_at DESC') }
 
     delegate :icon, :body, to: :notification
   end

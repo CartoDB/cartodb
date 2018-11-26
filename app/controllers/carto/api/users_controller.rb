@@ -41,7 +41,7 @@ module Carto
         cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
         can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
         viewer_organization_notifications = carto_viewer ? organization_notifications(carto_viewer) : []
-        viewer_all__organization_notifications = carto_viewer ? all_organization_notifications(carto_viewer) : []
+        viewer_unfiltered_notifications = carto_viewer ? unfiltered_organization_notifications(carto_viewer) : []
 
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
@@ -49,7 +49,7 @@ module Carto
           config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
           organization_notifications: viewer_organization_notifications,
-          all_organization_notifications: viewer_all__organization_notifications,
+          unfiltered_organization_notifications: viewer_unfiltered_notifications,
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),
@@ -148,14 +148,18 @@ module Carto
         @google_plus_config.present? ? @google_plus_config.client_id : nil
       end
 
-      def all_organization_notifications(carto_viewer)
-        carto_viewer.received_notifications.limit(10).map do |n|
-           Carto::Api::ReceivedNotificationPresenter.new(n).to_hash}
-        end
+      def unfiltered_organization_notifications(carto_viewer)
+        unread_notifications = organization_notifications(carto_viewer)
+        read_notifications = organization_read_notifications(carto_viewer)
+        return unread_notifications + read_notifications
       end
 
       def organization_notifications(carto_viewer)
         carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
+      end
+
+      def organization_read_notifications(carto_viewer)
+        carto_viewer.received_notifications.read.limit(10).map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
       end
 
       def initialize_google_plus_config

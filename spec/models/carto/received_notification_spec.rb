@@ -48,5 +48,25 @@ module Carto
         expect(@user.received_notifications.unread).to eq [unread3, unread2, unread1]
       end
     end
+    
+    describe 'User#read_received_notifications' do
+      it 'does not list unread notifications' do
+        read = create_received_notification(true)
+        create_received_notification(false)
+
+        expect(@user.received_notifications.read).to eq [read]
+      end
+  
+      it 'sorted in decreasing date order' do
+        read1 = create_received_notification(true)
+        Delorean.jump(5.seconds)
+        read2 = create_received_notification(true)
+        Delorean.jump(5.seconds)
+        read3 = create_received_notification(true)
+        Delorean.back_to_the_present
+
+        expect(@user.received_notifications.read).to eq [read3, read2, read1]
+      end
+    end
   end
 end

@@ -7,18 +7,15 @@
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
         </SectionTitle>
-
-        <div class="grid" v-if="!emptyState">
-          <ul class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
-            <li class="notification-item" v-for="notification in notifications" :key="notification.id">
-              <NotificationCard
-                :receivedAt="notification.received_at"
-                :readAt="notification.read_at"
-                :htmlBody="notification.html_body">
-              </NotificationCard>
-            </li>
-          </ul>
-        </div>
+        <ul v-if="!emptyState" class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
+          <li class="notification-item" v-for="notification in notifications" :key="notification.id">
+            <NotificationCard
+              :receivedAt="notification.received_at"
+              :readAt="notification.read_at"
+              :htmlBody="notification.html_body">
+            </NotificationCard>
+          </li>
+        </ul>
         <EmptyState v-if="emptyState" :text="emptyStateText">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>

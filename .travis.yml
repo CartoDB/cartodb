@@ -23,7 +23,7 @@ jobs:
       before_install:
         - git submodule update --init --recursive
         - git fetch origin master:refs/remotes/origin/master --depth=1
-        - mv npm-shrinkwrap.json.backup
+        - mv npm-shrinkwrap.json npm-shrinkwrap.json.backup
       install:
         - npm ci
       before_script:

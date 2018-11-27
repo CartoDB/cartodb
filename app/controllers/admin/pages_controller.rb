@@ -80,6 +80,7 @@ class Admin::PagesController < Admin::AdminController
       visualizations = Carto::VisualizationQueryBuilder.new
                                                        .with_user_id(@viewed_user.id)
                                                        .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                                       .with_published
                                                        .with_order('visualizations.updated_at', :desc)
                                                        .without_raster
                                                        .with_prefetch_user(true)
@@ -410,6 +411,7 @@ class Admin::PagesController < Admin::AdminController
 
     builder = Carto::VisualizationQueryBuilder.new
                                               .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                              .with_published
                                               .without_raster
                                               .with_order(:updated_at, :desc)
                                               .with_user_id(user_id)

@@ -74,7 +74,7 @@
         <EmptyState
           :text="$t('DataPage.emptyState')"
           v-if="emptyState">
-          <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+          <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
 

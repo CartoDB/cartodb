@@ -93,6 +93,12 @@
     },
     "emptyState": "There are no maps here."
   },
+  "NotificationsPage": {
+    "header": {
+      "title": "Notifications"
+    },
+    "emptyState": "There are no notifications yet."
+  },
   "SettingsDropdown": {
     "showMe": "Show me",
     "orderMaps": "Order",

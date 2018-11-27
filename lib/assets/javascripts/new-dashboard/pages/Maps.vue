@@ -73,7 +73,7 @@
       <EmptyState
         :text="$t('MapsPage.emptyState')"
         v-if="emptyState">
-        <img svg-inline src="../assets/icons/maps/compass.svg">
+        <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>

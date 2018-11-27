@@ -7,8 +7,8 @@ var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.
 var webpackTask = null;
 var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
-var REQUIRED_NODE_VERSION = '6.9.2';
-var REQUIRED_NPM_VERSION = '3.10.9';
+var REQUIRED_NODE_VERSION = '10.13.0';
+var REQUIRED_NPM_VERSION = '6.4.1';
 
 var DEVELOPMENT = 'development';
 

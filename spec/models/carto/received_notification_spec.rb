@@ -33,7 +33,7 @@ module Carto
       it 'does not list read notifications' do
         unread = create_received_notification(false)
         create_received_notification(true)
-         expect(@user.received_notifications.unread).to eq [unread]
+        expect(@user.received_notifications.unread).to eq [unread]
       end
 
       it 'sorted in decreasing date order' do

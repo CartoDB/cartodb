@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover}">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover, 'can-hover': canHover}">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -25,7 +25,7 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
           <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
@@ -86,6 +86,10 @@ export default {
     isSelected: {
       type: Boolean,
       default: false
+    },
+    canHover: {
+      type: Boolean,
+      default: true
     }
   },
   data: function () {
@@ -201,6 +205,15 @@ export default {
   &:hover {
     text-decoration: none;
 
+    .dataset--quick-actions {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &.selected,
+  &.can-hover:hover {
     .row-dataType {
       transform: translateY(-100%);
       opacity: 0;
@@ -210,12 +223,6 @@ export default {
       transform: translateY(0);
       opacity: 1;
       pointer-events: all;
-    }
-
-    .dataset--quick-actions {
-      visibility: visible;
-      opacity: 1;
-      pointer-events: auto;
     }
   }
 

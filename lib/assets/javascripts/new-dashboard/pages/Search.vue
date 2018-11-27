@@ -1,7 +1,9 @@
 <template>
   <section class="page">
     <StickySubheader :is-visible="true">
-      <span class="title">{{ totalResults }} results for "{{ searchTerm }}"</span>
+      <span class="title" v-if="isFirstFetch">{{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}</span>
+      <span class="title" v-else-if="searchTerm">{{ $tc('SearchPage.title.searchTerm', totalResults, { query: searchTerm }) }}</span>
+      <span class="title" v-else-if="tag">{{ $tc('SearchPage.title.tag', totalResults, { query: tag }) }}</span>
     </StickySubheader>
 
     <div class="container grid">
@@ -17,15 +19,15 @@
 
           <ul class="grid" v-if="!isFetchingMaps">
             <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
-              <MapCard :map=map></MapCard>
+              <MapCard :map=map :canHover=false></MapCard>
             </li>
           </ul>
 
           <Pagination
-            class="pagination-element"
-            v-if="!isFetchingMaps && hasMaps"
-            :page=1
-            :numPages=mapsNumPages></Pagination>
+            v-if="hasMaps && mapsNumPages > 1"
+            :page=mapsPage
+            :numPages=mapsNumPages
+            @pageChange="page => onPageChange('maps', page)"></Pagination>
         </section>
 
         <section class="page__section">
@@ -33,7 +35,7 @@
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
             <li v-for="dataset in datasets" :key="dataset.id">
-              <DatasetCard :dataset=dataset></DatasetCard>
+              <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
             </li>
           </ul>
 
@@ -45,9 +47,10 @@
 
           <Pagination
             class="pagination-element"
-            v-if="!isFetchingDatasets && hasDatasets"
-            :page=1
-            :numPages=datasetsNumPages></Pagination>
+            v-if="hasDatasets && datasetsNumPages > 1"
+            :page=datasetsPage
+            :numPages=datasetsNumPages
+            @pageChange="page => onPageChange('datasets', page)"></Pagination>
         </section>
       </div>
     </div>
@@ -62,6 +65,7 @@ import MapCardFake from 'new-dashboard/components/MapCardFake';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
+import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
 import { mapState } from 'vuex';
 
 export default {
@@ -74,17 +78,27 @@ export default {
     Pagination,
     StickySubheader
   },
+  beforeRouteUpdate (to, from, next) {
+    updateSearchParams(to, from, next);
+    window.scroll({ top: 0, left: 0 });
+  },
+  data () {
+    return {
+      isFirstFetch: true
+    };
+  },
   computed: {
     ...mapState({
       searchTerm: state => state.search.searchTerm,
+      tag: state => state.search.tag,
       maps: state => state.search.maps.results,
+      mapsPage: state => state.search.maps.page,
       mapsNumPages: state => state.search.maps.numPages,
       isFetchingMaps: state => state.search.maps.isFetching,
-      // isFetchingMaps: state => true,
       datasets: state => state.search.datasets.results,
+      datasetsPage: state => state.search.datasets.page,
       datasetsNumPages: state => state.search.datasets.numPages,
       isFetchingDatasets: state => state.search.datasets.isFetching,
-      // isFetchingDatasets: state => true,
       totalResults: state => state.search.maps.numResults + state.search.datasets.numResults
     }),
     hasMaps () {
@@ -92,6 +106,21 @@ export default {
     },
     hasDatasets () {
       return Object.keys(this.datasets || {}).length;
+    },
+    allSectionsFetching () {
+      return this.isFetchingMaps || this.isFetchingDatasets;
+    }
+  },
+  methods: {
+    onPageChange (section, page) {
+      this.$store.dispatch('search/changeSectionPage', { section, page });
+    }
+  },
+  watch: {
+    allSectionsFetching (newValue) {
+      if (newValue === false) {
+        this.isFirstFetch = false;
+      }
     }
   }
 };

@@ -94,7 +94,7 @@ import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import { isAllowed } from '../store/maps/filters';
+import { filtersRouterGuard } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'MapsPage',
@@ -124,15 +124,8 @@ export default {
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
-  beforeRouteUpdate (to, from, next) {
-    const urlOptions = { ...to.params, ...to.query };
-
-    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
-      return next({ name: 'maps' });
-    }
-
-    this.$store.dispatch('maps/setURLOptions', urlOptions);
-    next();
+  beforeRouteUpdate (to, _, next) {
+    filtersRouterGuard('maps', 'maps', to, next);
   },
   computed: {
     ...mapState({
@@ -168,6 +161,7 @@ export default {
   },
   methods: {
     goToPage (page) {
+      debugger;
       window.scroll({ top: 0, left: 0 });
       this.deselectAll();
       this.$router.push({

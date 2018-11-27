@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <NavigationBar :user="user" :baseUrl="baseUrl" :notificationsCount="notificationsCount"/>
-    <router-view/>
+    <router-view :key="$route.fullPath"/>
     <Footer/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
     <MamufasImportView ref="mamufasImportView"/>

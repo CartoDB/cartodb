@@ -1,5 +1,11 @@
 <template>
-  <a :href="visualizationURL" class="suggestions__item text is-caption" :class="`suggestions__item--${item.type}`">{{item.name}}</a>
+  <a
+    :href="visualizationURL"
+    class="suggestions__item text is-caption"
+    :class="`suggestions__item--${item.type}`"
+    @click="onItemClicked">
+    {{item.name}}
+  </a>
 </template>
 
 <script>
@@ -13,6 +19,11 @@ export default {
   computed: {
     visualizationURL () {
       return Visualization.getURL(this.$props.item, this.$cartoModels);
+    }
+  },
+  methods: {
+    onItemClicked () {
+      this.$emit('itemClick');
     }
   }
 };

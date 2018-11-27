@@ -100,7 +100,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
-import { isAllowed } from '../core/filters';
+import { filtersRouterGuard } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'DataPage',
@@ -131,15 +131,8 @@ export default {
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
-  beforeRouteUpdate (to, from, next) {
-    const urlOptions = { ...to.params, ...to.query };
-
-    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
-      return next({ name: 'datasets' });
-    }
-
-    this.$store.dispatch('datasets/setURLOptions', urlOptions);
-    next();
+  beforeRouteUpdate (to, _, next) {
+    filtersRouterGuard('datasets', 'datasets', to, next);
   },
   computed: {
     ...mapState({

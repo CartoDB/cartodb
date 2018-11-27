@@ -1,12 +1,14 @@
 <template>
-  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off">
+  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit">
     <input type="text"
            v-model="searchTerm"
+           ref="searchInput"
            class="title is-small is-regular navbar-searchInput"
            :class="{ 'navbar-searchInput--filled': Boolean(searchTerm) }"
            :placeholder="placeholder"
            @focus="onInputFocus"
-           @blur="onInputBlur">
+           @blur="onInputBlur"
+           @pageChange="blurInput">
     <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused"/>
   </form>
 </template>
@@ -49,6 +51,25 @@ export default {
 
     onInputBlur () {
       this.isInputFocused = false;
+    },
+
+    onFormSubmit () {
+      this.blurInput();
+
+      if (this.searchTerm.includes(':')) {
+        this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
+        this.searchTerm = '';
+        return;
+      }
+
+      if (this.searchTerm) {
+        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
+        this.searchTerm = '';
+      }
+    },
+
+    blurInput () {
+      this.$refs.searchInput.blur();
     }
   }
 };

@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': areQuickActionsOpen}">
+  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--child-hover': !activeHover, 'quickactions-open': areQuickActionsOpen, 'card--can-hover': canHover}">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -47,7 +47,7 @@
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in map.tags" :key="tag">
-              <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
@@ -78,6 +78,10 @@ export default {
     isSelected: {
       type: Boolean,
       default: false
+    },
+    canHover: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -198,15 +202,20 @@ export default {
   &:hover {
     cursor: pointer;
 
-    &:not(.card--noHover) {
+    &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
       }
     }
 
-    .card-select,
     .card-actions,
     .card-favorite {
+      opacity: 1;
+    }
+  }
+
+  &.card--can-hover:hover {
+    .card-select {
       opacity: 1;
     }
   }

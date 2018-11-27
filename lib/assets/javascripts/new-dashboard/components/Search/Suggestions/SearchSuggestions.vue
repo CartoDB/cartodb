@@ -2,10 +2,14 @@
   <section class="suggestions" :class="{ 'suggestions--open': isOpen }">
     <ul class="suggestions__content" v-if="searchResults">
       <li v-for="visualization in searchResults" :key="visualization.id">
-        <SearchSuggestionsItem :item="visualization" />
+        <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange" />
       </li>
     </ul>
-    <router-link :to="{ name: 'search', params: { query } }" class="suggestions__search-all title is-small" v-if="query && !isFetching">
+    <router-link
+      :to="{ name: searchRoute, params: searchRouteParameters }"
+      class="suggestions__search-all title is-small"
+      v-if="query && !isFetching"
+      @click="onPageChange">
       View all results
     </router-link>
   </section>
@@ -47,10 +51,46 @@ export default {
       this.fetchSuggestionsDebounced();
     }
   },
+  computed: {
+    isSearchingTags () {
+      return this.query.includes(':');
+    },
+    searchRoute () {
+      if (this.isSearchingTags) {
+        return 'tagSearch';
+      }
+
+      return 'search';
+    },
+    searchRouteParameters () {
+      if (this.isSearchingTags) {
+        return { tag: this.query.substring(1) };
+      }
+
+      return { query: this.query };
+    },
+    queryParameters () {
+      const queryParameters = {
+        types: 'derived,table',
+        per_page: 4
+      };
+
+      if (this.isSearchingTags) {
+        queryParameters.tags = this.query.substring(1);
+      }
+
+      if (!this.isSearchingTags) {
+        queryParameters.q = this.query;
+      }
+
+      return queryParameters;
+    }
+  },
   methods: {
     fetchSuggestions () {
       client.getVisualization('',
-        { types: 'derived,table', q: this.query, per_page: 4 },
+        this.queryParameters,
+
         (err, _, data) => {
           this.isFetching = false;
 
@@ -61,6 +101,9 @@ export default {
           this.searchResults = data.visualizations;
         }
       );
+    },
+    onPageChange () {
+      this.$emit('pageChange');
     }
   }
 };

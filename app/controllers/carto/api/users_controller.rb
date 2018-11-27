@@ -149,19 +149,13 @@ module Carto
       end
 
       def unfiltered_organization_notifications(carto_viewer)
-        unread_notifications = organization_notifications(carto_viewer)
-        read_notifications = organization_read_notifications(carto_viewer)
-        unread_notifications + read_notifications
+        carto_viewer.received_notifications.limit(10).map do |n|
+          Carto::Api::ReceivedNotificationPresenter.new(n).to_hash
+        end
       end
 
       def organization_notifications(carto_viewer)
         carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
-      end
-
-      def organization_read_notifications(carto_viewer)
-        carto_viewer.received_notifications.read.limit(10).map do |n|
-          Carto::Api::ReceivedNotificationPresenter.new(n).to_hash
-        end
       end
 
       def initialize_google_plus_config

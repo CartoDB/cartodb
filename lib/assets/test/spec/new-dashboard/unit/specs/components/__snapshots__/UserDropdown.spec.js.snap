@@ -22,7 +22,9 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</router-link>
+      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.notifications
+      </router-link>
       <!---->
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
@@ -54,7 +56,9 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.notifications
+      </router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
     <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
@@ -87,7 +91,9 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">UserDropdown.notifications</router-link>
+      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.notifications
+      </router-link>
       <!---->
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">

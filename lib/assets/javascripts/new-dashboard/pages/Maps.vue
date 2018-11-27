@@ -26,7 +26,7 @@
             @selectAll="selectAll"
             @deselectAll="deselectAll"></MapBulkActions>
 
-          <FilterDropdown
+          <SettingsDropdown
             section="maps"
             v-if="!selectedMaps.length"
             :filter="appliedFilter"
@@ -35,9 +35,9 @@
             :metadata="mapsMetadata"
             @filterChanged="applyFilter"
             @orderChanged="applyOrder">
-            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
-          </FilterDropdown>
+          </SettingsDropdown>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
           <CreateButton visualizationType="maps">New map</CreateButton>
@@ -73,7 +73,7 @@
       <EmptyState
         :text="$t('MapsPage.emptyState')"
         v-if="emptyState">
-        <img svg-inline src="../assets/icons/maps/compass.svg">
+        <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
@@ -84,7 +84,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import FilterDropdown from '../components/FilterDropdown';
+import SettingsDropdown from '../components/Settings/Settings';
 import MapCard from '../components/MapCard';
 import MapCardFake from '../components/MapCardFake';
 import SectionTitle from '../components/SectionTitle';
@@ -101,7 +101,7 @@ export default {
   components: {
     CreateButton,
     EmptyState,
-    FilterDropdown,
+    SettingsDropdown,
     MapBulkActions,
     MapCard,
     MapCardFake,

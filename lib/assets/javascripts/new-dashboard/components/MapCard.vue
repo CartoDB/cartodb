@@ -68,7 +68,7 @@
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
-import FeaturesDropdown from './FeaturesDropdown';
+import FeaturesDropdown from './Dropdowns/FeaturesDropdown';
 import { mapActions } from 'vuex';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';

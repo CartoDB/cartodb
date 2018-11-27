@@ -26,16 +26,18 @@
               @selectAll="selectAll"
               @deselectAll="deselectAll"></DatasetBulkActions>
 
-            <FilterDropdown
+            <SettingsDropdown
               section="datasets"
               v-if="!selectedDatasets.length"
               :filter="appliedFilter"
               :order="appliedOrder"
+              :orderDirection="appliedOrderDirection"
               :metadata="datasetsMetadata"
-              @filterChanged="applyFilter">
-              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('FilterDropdown.initialState') }}</span>
+              @filterChanged="applyFilter"
+              @orderChanged="applyOrder">
+              <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
               <img svg-inline v-else src="../assets/icons/common/filter.svg">
-            </FilterDropdown>
+            </SettingsDropdown>
           </template>
 
           <template slot="actionButton" v-if="!initialState && !selectedDatasets.length">
@@ -59,7 +61,7 @@
       </div>
 
       <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState && !initialState">
-        <DatasetListHeader></DatasetListHeader>
+        <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
       </div>
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
@@ -72,7 +74,7 @@
         <EmptyState
           :text="$t('DataPage.emptyState')"
           v-if="emptyState">
-          <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+          <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
 
@@ -92,7 +94,7 @@ import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import { mapState } from 'vuex';
-import FilterDropdown from '../components/FilterDropdown';
+import SettingsDropdown from '../components/Settings/Settings';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
@@ -106,7 +108,7 @@ export default {
   name: 'DataPage',
   components: {
     CreateButton,
-    FilterDropdown,
+    SettingsDropdown,
     SectionTitle,
     Pagination,
     DatasetCard,
@@ -140,6 +142,7 @@ export default {
       currentPage: state => state.datasets.page,
       appliedFilter: state => state.datasets.filterType,
       appliedOrder: state => state.datasets.order,
+      appliedOrderDirection: state => state.datasets.orderDirection,
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
       isFetchingDatasets: state => state.datasets.isFetching,
@@ -176,6 +179,18 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
+    },
+    applyOrder (orderParams) {
+      this.$router.push({
+        name: 'datasets',
+        params: this.$route.params,
+        query: {
+          ...this.$route.query,
+          page: 1,
+          order: orderParams.order,
+          order_direction: orderParams.direction
+        }
+      });
     },
     toggleSelected ({ dataset, isSelected }) {
       if (isSelected) {

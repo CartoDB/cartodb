@@ -1,0 +1,11 @@
+{
+  "components": {
+    "modals": {
+      "change-lock": {
+        "description": {
+          "unlocked": "Locking %{thisOrTheseStr} %{contentTypePluralized} will hide %{itOrThemStr} from this list. You can see %{itOrThemStr} using the “Locked” filter."
+        }
+      }
+    }
+  }
+}

@@ -70,7 +70,7 @@ import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQu
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/visualization';
 import { mapActions } from 'vuex';
-import FeaturesDropdown from '../FeaturesDropdown';
+import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {

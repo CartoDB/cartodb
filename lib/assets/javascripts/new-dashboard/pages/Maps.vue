@@ -94,7 +94,7 @@ import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import { isAllowed } from '../store/maps/filters';
+import { isAllowed } from '../core/filters';
 
 export default {
   name: 'MapsPage',

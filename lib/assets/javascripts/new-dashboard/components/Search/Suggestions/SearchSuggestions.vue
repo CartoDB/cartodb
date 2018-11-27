@@ -8,7 +8,7 @@
     <router-link
       :to="{ name: searchRoute, params: searchRouteParameters }"
       class="suggestions__search-all title is-small"
-      v-if="query && !isFetching"
+      v-if="query"
       @click="onPageChange">
       View all results
     </router-link>
@@ -21,7 +21,7 @@ import CartoNode from 'carto-node';
 import SearchSuggestionsItem from './SearchSuggestionsItem';
 
 const client = new CartoNode.AuthenticatedClient();
-const DEBOUNCE_TIME = 500;
+const DEBOUNCE_TIME = 1000;
 
 export default {
   name: 'SearchSuggestions',
@@ -35,14 +35,14 @@ export default {
       default: false
     }
   },
+  created () {
+    this.fetchSuggestionsThrottled = _.throttle(this.fetchSuggestions.bind(this), DEBOUNCE_TIME);
+  },
   data () {
     return {
       isFetching: true,
       searchResults: []
     };
-  },
-  created () {
-    this.fetchSuggestionsDebounced = _.debounce(() => this.fetchSuggestions(), DEBOUNCE_TIME);
   },
   watch: {
     query (newQuery) {
@@ -53,7 +53,7 @@ export default {
       }
 
       this.isFetching = true;
-      this.fetchSuggestionsDebounced();
+      this.fetchSuggestionsThrottled();
     }
   },
   computed: {

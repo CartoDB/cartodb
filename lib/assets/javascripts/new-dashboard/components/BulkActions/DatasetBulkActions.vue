@@ -6,6 +6,7 @@
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Table from 'new-dashboard/core/table';
+import * as Visualization from 'new-dashboard/core/visualization';
 
 export default {
   name: 'DatasetBulkActions',
@@ -29,17 +30,17 @@ export default {
         single: [
           { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll' },
           { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
-          { name: this.$t('BulkActions.datasets.changeDatasetPrivacy'), event: 'changePrivacy' },
+          { name: this.$t('BulkActions.datasets.changeDatasetPrivacy'), event: 'changePrivacy', shouldBeHidden: this.areAllShared },
           { name: this.$t('BulkActions.datasets.duplicateDataset'), event: 'duplicateDataset' },
-          { name: this.$t('BulkActions.datasets.lockDataset'), event: 'lockDataset' },
-          { name: this.$t('BulkActions.datasets.deleteDataset'), event: 'deleteDataset', isDestructive: true }
+          { name: this.$t('BulkActions.datasets.lockDataset'), event: 'lockDataset', shouldBeHidden: this.areAllShared },
+          { name: this.$t('BulkActions.datasets.deleteDataset'), event: 'deleteDataset', isDestructive: true, shouldBeHidden: this.areAllShared }
         ],
         multiple: [
-          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
           { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
           { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.datasets.lockDatasets'), event: 'lockDatasets' },
-          { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true }
+          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
+          { name: this.$t('BulkActions.datasets.lockDatasets'), event: 'lockDatasets', shouldBeHidden: this.areAllShared },
+          { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true, shouldBeHidden: this.areAllShared }
         ],
         lock: [
           { name: this.$t('BulkActions.datasets.unlockDataset'), event: 'unlockDataset' }
@@ -57,6 +58,9 @@ export default {
       }
 
       return this.selectedDatasets.length > 1 ? 'multiple' : 'single';
+    },
+    areAllShared () {
+      return this.selectedDatasets.every(dataset => Visualization.isShared(dataset, this.$cartoModels));
     }
   },
   methods: {

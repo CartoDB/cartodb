@@ -20,7 +20,11 @@ export default {
     QuickActions
   },
   props: {
-    dataset: Object
+    dataset: Object,
+    isShared: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     actions () {
@@ -35,13 +39,23 @@ export default {
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
+        shared: [
+          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' }
+        ],
         locked: [
           { name: this.$t('QuickActions.unlock'), event: 'unlockDataset' }
         ]
       };
     },
     actionMode () {
-      return this.dataset.locked ? 'locked' : 'mine';
+      if (this.dataset.locked) {
+        return 'locked';
+      }
+      if (this.isShared) {
+        return 'shared';
+      }
+      return 'mine';
     },
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;

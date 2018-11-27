@@ -44,6 +44,7 @@ export default {
           { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' }
         ],
         locked: [
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
           { name: this.$t('QuickActions.unlock'), event: 'unlockDataset' }
         ]
       };

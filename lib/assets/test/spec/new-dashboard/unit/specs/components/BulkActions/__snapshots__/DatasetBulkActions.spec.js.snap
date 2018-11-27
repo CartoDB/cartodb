@@ -86,14 +86,18 @@ exports[`DatasetBulkActions.vue should render multiple actions for a single shar
 </section>
 `;
 
-exports[`DatasetBulkActions.vue should render multiple locked action: "Unlock datasets" 1`] = `
+exports[`DatasetBulkActions.vue should render multiple locked actions: "Deselect all" and "Unlock datasets" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.deselectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.unlockDatasets
   </button></section>
 `;
 
-exports[`DatasetBulkActions.vue should render single locked action: "Unlock dataset" 1`] = `
+exports[`DatasetBulkActions.vue should render single locked actions: "Select all", "Duplicate dataset" and "Unlock dataset" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.deselectAllDatasets
+  </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.unlockDatasets
   </button></section>
 `;

@@ -43,9 +43,12 @@ export default {
           { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true, shouldBeHidden: this.isAnyShared }
         ],
         lock: [
+          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
+          { name: this.$t('BulkActions.datasets.duplicateDataset'), event: 'duplicateDataset' },
           { name: this.$t('BulkActions.datasets.unlockDataset'), event: 'unlockDataset' }
         ],
         multipleLock: [
+          { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
           { name: this.$t('BulkActions.datasets.unlockDatasets'), event: 'unlockDatasets' }
         ]
       };

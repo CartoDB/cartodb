@@ -66,10 +66,9 @@ export default {
     }
   },
   methods: {
-    linkClicked (){
+    linkClicked () {
       this.$emit('linkClick');
-      console.log('emiting');
-    }  
+    }
   }
 };
 </script>

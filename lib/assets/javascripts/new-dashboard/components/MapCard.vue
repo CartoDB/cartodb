@@ -12,7 +12,9 @@
       </span>
     </span>
 
-    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
+    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
+    </div>
 
     <div class="card-text">
       <div class="card-header">
@@ -54,7 +56,7 @@
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
@@ -221,18 +223,28 @@ export default {
   }
 
   &.selected {
-    background-color: $softblue;
+    border: 1px solid #047AE6;
 
-    .card-actions,
-    .card-select {
+    .card-actions {
       opacity: 1;
+    }
+
+    &.card--can-hover {
+      .card-select {
+        opacity: 1;
+      }
     }
   }
 
   &.quickactions-open {
-    .card-actions,
-    .card-select {
+    .card-actions {
       opacity: 1;
+    }
+
+    &.card--can-hover {
+      .card-select {
+        opacity: 1;
+      }
     }
   }
 }

@@ -161,8 +161,8 @@ export default {
   },
   methods: {
     goToPage (page) {
-      debugger;
       window.scroll({ top: 0, left: 0 });
+
       this.deselectAll();
       this.$router.push({
         name: 'maps',

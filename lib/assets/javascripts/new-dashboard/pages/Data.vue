@@ -63,7 +63,7 @@
       </div>
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
-        <li v-for="dataset in datasets" :key="dataset.id">
+        <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
           <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"></DatasetCard>
         </li>
       </ul>
@@ -77,7 +77,7 @@
       </div>
 
       <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
-        <li v-for="n in 12" :key="n">
+        <li v-for="n in 12" :key="n" class="dataset-item">
           <DatasetCardFake></DatasetCardfake>
         </li>
       </ul>
@@ -164,6 +164,7 @@ export default {
     goToPage (page) {
       this.deselectAll();
       window.scroll({ top: 0, left: 0 });
+
       this.$router.push({
         name: 'datasets',
         params: this.$route.params,
@@ -209,5 +210,11 @@ export default {
 
 .pagination-element {
   margin-top: 64px;
+}
+
+.dataset-item {
+  &:not(:last-child) {
+    border-bottom: 1px solid $light-grey;
+  }
 }
 </style>

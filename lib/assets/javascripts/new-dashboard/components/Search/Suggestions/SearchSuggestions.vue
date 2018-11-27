@@ -43,10 +43,15 @@ export default {
   },
   created () {
     this.fetchSuggestionsDebounced = _.debounce(() => this.fetchSuggestions(), DEBOUNCE_TIME);
-    this.fetchSuggestions();
   },
   watch: {
     query (newQuery) {
+      if (newQuery === '') {
+        this.isFetching = false;
+        this.searchResults = [];
+        return;
+      }
+
       this.isFetching = true;
       this.fetchSuggestionsDebounced();
     }

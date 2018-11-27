@@ -8,7 +8,7 @@
 
     <div class="container grid">
       <div class="full-width">
-        <section class="page-section">
+        <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }">
           <div class="section-title grid-cell title is-medium">Maps</div>
 
           <ul class="grid" v-if="isFetchingMaps">
@@ -31,16 +31,16 @@
         </section>
 
         <section class="page__section">
-          <div class="section-title grid-cell title is-medium">Datasets</div>
+          <div class="section-title grid-cell title is-medium">Data</div>
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
-            <li v-for="dataset in datasets" :key="dataset.id">
+            <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
               <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
             </li>
           </ul>
 
           <ul class="grid-cell grid-cell--col12" v-if="isFetchingDatasets">
-            <li v-for="n in 6" :key="n">
+            <li v-for="n in 6" :key="n" class="dataset-item">
               <DatasetCardFake></DatasetCardFake>
             </li>
           </ul>
@@ -80,7 +80,6 @@ export default {
   },
   beforeRouteUpdate (to, from, next) {
     updateSearchParams(to, from, next);
-    window.scroll({ top: 0, left: 0 });
   },
   data () {
     return {
@@ -135,7 +134,12 @@ export default {
 }
 
 .page-section {
-  margin-bottom: 48px;
+  margin-bottom: 12px;
+
+  &.has-pagination,
+  &:last-child {
+    margin-bottom: 48px;
+  }
 }
 
 .full-width {
@@ -152,5 +156,11 @@ export default {
 
 .pagination-element {
   margin-top: 36px;
+}
+
+.dataset-item {
+  &:not(:last-child) {
+    border-bottom: 1px solid $light-grey;
+  }
 }
 </style>

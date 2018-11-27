@@ -4,7 +4,9 @@
     <div class="dropdown-container">
       <ul class="list">
         <li class="element" v-for="elem in list" :key="elem">
-          <a href="#" class="list-text text is-small">{{elem}}</a>
+          <router-link :to="{ name: linkRoute, params: routeParams(elem) }" class="list-text text is-small">
+            {{ elem }}
+          </router-link>
         </li>
       </ul>
     </div>
@@ -17,7 +19,13 @@ export default {
   name: 'FeaturesDropdown',
   props: {
     list: Array,
-    feature: String
+    feature: String,
+    linkRoute: String
+  },
+  methods: {
+    routeParams (element) {
+      return { [this.feature]: element };
+    }
   }
 };
 </script>

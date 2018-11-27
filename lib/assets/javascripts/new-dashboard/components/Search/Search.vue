@@ -9,7 +9,7 @@
            @focus="onInputFocus"
            @blur="onInputBlur"
            @pageChange="blurInput">
-    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="Boolean(searchTerm)"/>
   </form>
 </template>
 

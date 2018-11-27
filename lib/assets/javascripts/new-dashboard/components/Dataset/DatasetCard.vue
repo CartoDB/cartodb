@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover, 'can-hover': canHover}">
+  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected, 'card--quick-actions-open': areQuickActionsOpen, 'card--noHover': !activeHover, 'can-hover': canHover}">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -28,7 +28,7 @@
               <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
@@ -54,13 +54,11 @@
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
-    <div class="dataset-cell">
+    <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <DatasetQuickActions
         v-if="!isShared"
         :dataset="dataset"
         class="dataset--quick-actions"
-        @mouseover="mouseOverChildElement"
-        @mouseleave="mouseOutChildElement"
         @open="openQuickActions"
         @close="closeQuickActions"/>
     </div>
@@ -194,14 +192,26 @@ export default {
   width: 100%;
   height: 80px;
   padding: 0 14px;
-  border-bottom: 1px solid $light-grey;
   background-color: $white;
 
   &.selected {
-    background-color: $softblue;
+    box-shadow: inset 0 0 0 1px #047AE6;
+
+    &.can-hover {
+      .row-dataType {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      .row-checkbox {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+    }
   }
 
-  &.selected,
+  &.card--quick-actions-open,
   &:hover {
     text-decoration: none;
 
@@ -212,24 +222,23 @@ export default {
     }
   }
 
-  &.selected,
-  &.can-hover:hover {
-    .row-dataType {
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-
-    .row-checkbox {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
-  }
-
   &:hover {
     &:not(.card--noHover) {
       .row-title {
         color: $primary-color;
+      }
+    }
+
+    &.can-hover {
+      .row-dataType {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      .row-checkbox {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
       }
     }
 
@@ -267,7 +276,6 @@ export default {
 
 .row-checkbox {
   position: absolute;
-  // top: 6px;
   left: 6px;
   transform: translateY(250%);
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);

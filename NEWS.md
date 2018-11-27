@@ -8,9 +8,15 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
-- MFA flash login errors (#14456)
-- Do not intercept marker request (#14491)
+- None yet
+
+4.23.2 (2018-11-27)
+-------------------
+
+### Bug fixes / enhancements
+* Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
+* MFA flash login errors (#14456)
+* Do not intercept marker request (#14491)
 
 4.23.1 (2018-11-26)
 -------------------

@@ -364,7 +364,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(version: @version)
     end
 
-    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+    if @only_published
       # "Published" is only required for builder maps
       # This SQL check should match Ruby `Carto::Visualization#published?` definition
       query = query.where(%{

@@ -177,6 +177,7 @@ export default {
   justify-content: center;
   width: 20px;
   height: 20px;
+  margin-top: 2px;
   margin-left: 24px;
   border-radius: 50%;
   background-color: $notification;

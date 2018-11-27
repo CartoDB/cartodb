@@ -66,7 +66,6 @@ export default {
     },
 
     closeDropdown () {
-      console.log('closeDropdown');
       this.isDropdownOpen = false;
     },
 

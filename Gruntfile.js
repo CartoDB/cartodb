@@ -7,8 +7,8 @@ var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.
 var webpackTask = null;
 var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
-var REQUIRED_NODE_VERSION = '10.13.0';
-var REQUIRED_NPM_VERSION = '6.4.1';
+var REQUIRED_NODE_VERSIONS = ['10.x', '6.9.2'];
+var REQUIRED_NPM_VERSIONS = ['6.x', '3.10.9'];
 
 var DEVELOPMENT = 'development';
 
@@ -39,10 +39,10 @@ function requireWebpackTask () {
   return webpackTask;
 }
 
-function logVersionsError (err, requiredNodeVersion, requiredNpmVersion) {
+function logVersionsError (err, requiredNodeVersions, requiredNpmVersions) {
   if (err) {
     grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
-    grunt.log.fail('PLEASE installed required versions to build CARTO:\n- node: ' + requiredNodeVersion + '\n- node: ' + requiredNpmVersion);
+    grunt.log.fail('PLEASE installed required versions to build CARTO:\n- node: ' + requiredNodeVersions.join(', ') + '\n- npm: ' + requiredNpmVersions.join(', '));
     grunt.log.fail('#################################################');
     process.exit(1);
   }
@@ -77,7 +77,7 @@ module.exports = function (grunt) {
     grunt.log.writeln('Running tasks: ' + runningTasks);
   }
 
-  function preFlight (requiredNodeVersion, requiredNpmVersion, logFn) {
+  function preFlight (requiredNodeVersions, requiredNpmVersions, logFn) {
     function checkVersion (cmd, versionRange, name, logFn) {
       grunt.log.writeln('Required ' + name + ' version: ' + versionRange);
       require('child_process').exec(cmd, function (error, stdout, stderr) {
@@ -86,7 +86,7 @@ module.exports = function (grunt) {
           err = 'failed to check version for ' + name;
         } else {
           var installed = semver.clean(stdout);
-          if (!semver.satisfies(installed, versionRange)) {
+          if (!semver.satisfies(installed, versionRange.join(' || '))) {
             err = 'Installed ' + name + ' version does not match with required [' + versionRange + '] Installed: ' + installed;
           }
         }
@@ -96,13 +96,13 @@ module.exports = function (grunt) {
         logFn && logFn(err ? new Error(err) : null);
       });
     }
-    checkVersion('node -v', requiredNodeVersion, 'node', logFn);
-    checkVersion('npm -v', requiredNpmVersion, 'npm', logFn);
+    checkVersion('node -v', requiredNodeVersions, 'node', logFn);
+    checkVersion('npm -v', requiredNpmVersions, 'npm', logFn);
   }
 
   var mustCheckNodeVersion = grunt.option('no-node-checker');
   if (!mustCheckNodeVersion) {
-    preFlight(REQUIRED_NODE_VERSION, REQUIRED_NPM_VERSION, logVersionsError);
+    preFlight(REQUIRED_NODE_VERSIONS, REQUIRED_NPM_VERSIONS, logVersionsError);
     grunt.log.writeln('');
   }
 

@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- Add support for Node.js and npm 6.
+- Add support for Node.js 10 and npm 6.
 
 ### Bug fixes / enhancements
 - None yet

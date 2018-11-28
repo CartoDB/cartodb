@@ -8,7 +8,7 @@
            :placeholder="placeholder"
            @focus="onInputFocus"
            @blur="onInputBlur"
-           @pageChange="blurInput">
+           @pageChange="resetInput">
     <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled"/>
   </form>
 </template>
@@ -68,6 +68,11 @@ export default {
 
     blurInput () {
       this.$refs.searchInput.blur();
+    },
+
+    resetInput () {
+      this.blurInput();
+      this.searchTerm = '';
     }
   }
 };

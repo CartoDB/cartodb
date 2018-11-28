@@ -3,6 +3,7 @@
     <router-link
       :to="{ name: searchRoute, params: searchRouteParameters }"
       class="suggestions__header is-caption text"
+      :class="{ 'suggestions--loading': isFetching }"
       v-if="query"
       @click="onPageChange">
       {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
@@ -20,8 +21,6 @@
 import _ from 'underscore';
 import SearchSuggestionsItem from './SearchSuggestionsItem';
 
-const DEBOUNCE_TIME = 1000;
-
 export default {
   name: 'SearchSuggestions',
   components: {
@@ -35,7 +34,7 @@ export default {
     }
   },
   created () {
-    this.fetchSuggestionsThrottled = _.throttle(this.fetchSuggestions.bind(this), DEBOUNCE_TIME);
+    this.fetchSuggestionsDebounced = _.debounce(this.fetchSuggestions.bind(this), 500);
   },
   data () {
     return {
@@ -52,7 +51,7 @@ export default {
       }
 
       this.isFetching = true;
-      this.fetchSuggestionsThrottled();
+      this.fetchSuggestionsDebounced();
     }
   },
   computed: {
@@ -166,6 +165,23 @@ export default {
     background-image: url("../../../assets/icons/navbar/dropdown/loupe-dropdown.svg");
     background-repeat: no-repeat;
     background-position: center;
+  }
+
+  &.suggestions--loading {
+    padding-right: 38px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      width: 18px;
+      height: 18px;
+      transform: translate3d(0, -50%, 0);
+      background-image: url("../../../assets/icons/navbar/search/loading.svg");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
   }
 }
 </style>

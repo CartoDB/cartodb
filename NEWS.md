@@ -6,6 +6,8 @@ Development
 
 ### Features
 - Add support for Node.js 10 and npm 6.
+- Send org_admin parameter to central (#14483)
+
 
 ### Bug fixes / enhancements
 - None yet

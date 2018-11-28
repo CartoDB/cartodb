@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
 - None yet

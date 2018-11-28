@@ -3,7 +3,7 @@ var timer = require('grunt-timer');
 var semver = require('semver');
 var jasmineCfg = require('./lib/build/tasks/jasmine.js');
 var execSync = require('child_process').execSync;
-var shrinkwrapDependencies = require('./lib/build/tasks/shrinkwrap-dependencies.js');
+var lockedDependencies = require('./lib/build/tasks/locked-dependencies.js');
 var webpackTask = null;
 var EDITOR_ASSETS_VERSION = require('./config/editor_assets_version.json').version;
 
@@ -106,7 +106,7 @@ module.exports = function (grunt) {
     grunt.log.writeln('');
   }
 
-  var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), LOCKED_MODULES_TO_VALIDATE);
+  var duplicatedModules = lockedDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), LOCKED_MODULES_TO_VALIDATE);
   if (duplicatedModules.length > 0) {
     grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
     grunt.log.fail('Duplicated dependencies found in npm-shrinkwrap.json file.');
@@ -115,7 +115,7 @@ module.exports = function (grunt) {
     process.exit(1);
   }
 
-  duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./package-lock.json'), LOCKED_MODULES_TO_VALIDATE);
+  duplicatedModules = lockedDependencies.checkDuplicatedDependencies(require('./package-lock.json'), LOCKED_MODULES_TO_VALIDATE);
   if (duplicatedModules.length > 0) {
     grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
     grunt.log.fail('Duplicated dependencies found in package-lock.json file.');

@@ -17,10 +17,8 @@
 
 <script>
 import _ from 'underscore';
-import CartoNode from 'carto-node';
 import SearchSuggestionsItem from './SearchSuggestionsItem';
 
-const client = new CartoNode.AuthenticatedClient();
 const DEBOUNCE_TIME = 1000;
 
 export default {
@@ -93,7 +91,7 @@ export default {
   },
   methods: {
     fetchSuggestions () {
-      client.getVisualization('',
+      this.$store.state.client.getVisualization('',
         this.queryParameters,
 
         (err, _, data) => {

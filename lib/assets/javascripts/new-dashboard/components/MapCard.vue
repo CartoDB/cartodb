@@ -216,23 +216,11 @@ export default {
     }
   }
 
-  &.card--can-hover:hover {
-    .card-select {
-      opacity: 1;
-    }
-  }
-
   &.selected {
     border: 1px solid #047AE6;
 
     .card-actions {
       opacity: 1;
-    }
-
-    &.card--can-hover {
-      .card-select {
-        opacity: 1;
-      }
     }
   }
 
@@ -240,8 +228,12 @@ export default {
     .card-actions {
       opacity: 1;
     }
+  }
 
-    &.card--can-hover {
+  &.card--can-hover {
+    &.selected,
+    &.quickactions-open,
+    &:hover {
       .card-select {
         opacity: 1;
       }

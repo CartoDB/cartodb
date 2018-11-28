@@ -3,9 +3,9 @@
     <slot />
     <div class="dropdown-container">
       <ul class="list">
-        <li class="element" v-for="elem in list" :key="elem">
-          <router-link :to="{ name: linkRoute, params: routeParams(elem) }" class="list-text text is-small">
-            {{ elem }}
+        <li class="element" v-for="element in list" :key="element">
+          <router-link :to="{ name: linkRoute, params: routeParams(element) }" class="list-text text is-small">
+            {{ element }}
           </router-link>
         </li>
       </ul>

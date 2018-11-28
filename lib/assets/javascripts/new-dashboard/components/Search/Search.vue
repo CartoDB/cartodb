@@ -4,12 +4,12 @@
            v-model="searchTerm"
            ref="searchInput"
            class="title is-small is-regular navbar-searchInput"
-           :class="{ 'navbar-searchInput--filled': Boolean(searchTerm) }"
+           :class="{ 'navbar-searchInput--filled': isFilled }"
            :placeholder="placeholder"
            @focus="onInputFocus"
            @blur="onInputBlur"
            @pageChange="blurInput">
-    <SearchSuggestions :query="searchTerm" :isOpen="Boolean(searchTerm)"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="isFilled"/>
   </form>
 </template>
 
@@ -36,12 +36,13 @@ export default {
   computed: {
     placeholder () {
       if (this.isInputFocused) {
-        // return this.$t('');
-        return 'By tag, name, or description';
+        return this.$t('SearchComponent.placeholder.active');
       }
 
-      // return this.$t('');
-      return 'Search';
+      return this.$t('SearchComponent.placeholder.default');
+    },
+    isFilled () {
+      return Boolean(this.searchTerm);
     }
   },
   methods: {
@@ -58,14 +59,11 @@ export default {
 
       if (this.searchTerm.includes(':')) {
         this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
-        this.searchTerm = '';
-        return;
+      } else if (this.searchTerm) {
+        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
       }
 
-      if (this.searchTerm) {
-        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
-        this.searchTerm = '';
-      }
+      this.searchTerm = '';
     },
 
     blurInput () {

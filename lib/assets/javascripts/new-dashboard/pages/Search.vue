@@ -8,8 +8,8 @@
 
     <div class="container grid">
       <div class="full-width">
-        <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }">
-          <div class="section-title grid-cell title is-medium">Maps</div>
+        <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
+          <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
 
           <ul class="grid" v-if="isFetchingMaps">
             <li v-for="n in 6" :key="n" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
@@ -30,8 +30,8 @@
             @pageChange="page => onPageChange('maps', page)"></Pagination>
         </section>
 
-        <section class="page__section">
-          <div class="section-title grid-cell title is-medium">Data</div>
+        <section class="page__section" ref="datasets">
+          <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
             <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
@@ -68,6 +68,8 @@ import Pagination from 'new-dashboard/components/Pagination';
 import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
 import { mapState } from 'vuex';
 
+const TWO_HEADERS_HEIGHT = 128;
+
 export default {
   name: 'SearchPage',
   components: {
@@ -79,6 +81,7 @@ export default {
     StickySubheader
   },
   beforeRouteUpdate (to, from, next) {
+    this.isFirstFetch = true;
     updateSearchParams(to, from, next);
   },
   data () {
@@ -113,6 +116,20 @@ export default {
   methods: {
     onPageChange (section, page) {
       this.$store.dispatch('search/changeSectionPage', { section, page });
+      this.scrollToSection(section);
+    },
+    isOutOfViewport (boundingClientRect) {
+      return boundingClientRect.top < TWO_HEADERS_HEIGHT;
+    },
+    scrollToSection (section) {
+      const sectionBoundingClientRect = this.$refs[section].getBoundingClientRect();
+      const offsetDistance = TWO_HEADERS_HEIGHT + 16; // Two headers + margin
+
+      if (!this.isOutOfViewport(sectionBoundingClientRect)) {
+        return;
+      }
+
+      window.scrollBy({ left: 0, top: sectionBoundingClientRect.top - offsetDistance, behavior: 'smooth' });
     }
   },
   watch: {

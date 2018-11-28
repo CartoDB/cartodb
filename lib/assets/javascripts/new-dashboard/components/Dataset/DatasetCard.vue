@@ -196,19 +196,6 @@ export default {
 
   &.selected {
     box-shadow: inset 0 0 0 1px #047AE6;
-
-    &.can-hover {
-      .row-dataType {
-        transform: translateY(-100%);
-        opacity: 0;
-      }
-
-      .row-checkbox {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: all;
-      }
-    }
   }
 
   &.card--quick-actions-open,
@@ -229,6 +216,13 @@ export default {
       }
     }
 
+    .card-favorite {
+      opacity: 1;
+    }
+  }
+
+  &:hover,
+  &.selected {
     &.can-hover {
       .row-dataType {
         transform: translateY(-100%);
@@ -240,10 +234,6 @@ export default {
         opacity: 1;
         pointer-events: all;
       }
-    }
-
-    .card-favorite {
-      opacity: 1;
     }
   }
 }

@@ -57,7 +57,6 @@
       "title": {
         "mine": "Your Datasets",
         "shared": "Shared with you",
-        "favorited": "Your Favorited Datasets",
         "locked": "Your Locked Datasets",
         "public": "Your Public Datasets",
         "link": "Your Link-shared Datasets",
@@ -78,7 +77,6 @@
       "title": {
         "mine": "Your Maps",
         "shared": "Shared with you",
-        "favorited": "Your Favorited Maps",
         "locked": "Your Locked Maps",
         "public": "Your Public Maps",
         "link": "Your Link-shared Maps",
@@ -100,7 +98,6 @@
       "maps": "Your maps",
       "datasets": "Your datasets",
       "shared": "Shared with you ({count})",
-      "favorited": "Favorited ({count})",
       "locked": "Locked ({count})",
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",

@@ -87,6 +87,103 @@ module Carto
       end
     end
 
+    context 'Central sync' do
+      before(:all) do
+        @user_oauth = FactoryGirl.create(:carto_user)
+      end
+
+      before(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth)
+      end
+
+      after(:each) do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+        @oauth_app.destroy! if @oauth_app
+        @oauth_app2.destroy! if @oauth_app2
+      end
+
+      after(:all) do
+        @user_oauth.destroy!
+      end
+
+      describe '#create' do
+        it 'creates app in clouds from Central' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.any_instance
+                          .stubs(:create_oauth_app)
+                          .with(@user_oauth.username,
+                                'name' => 'name1',
+                                'redirect_uris' => ['https://re.dir'],
+                                'icon_url' => 'some.png',
+                                'client_id' => '1234',
+                                'client_secret' => '5678',
+                                'restricted' => false)
+                          .returns({})
+                          .once
+
+          @oauth_app2 = OauthApp.create!(user: @user_oauth,
+                                         name: 'name1',
+                                         redirect_uris: ['https://re.dir'],
+                                         icon_url: 'some.png',
+                                         client_id: '1234',
+                                         client_secret: '5678')
+        end
+
+        it 'creates app if Central is disabled' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          Cartodb::Central.any_instance.stubs(:create_oauth_app).never
+
+          @oauth_app2 = OauthApp.create!(user: @user_oauth,
+                                         name: 'name1',
+                                         redirect_uris: ['https://re.dir'],
+                                         icon_url: 'some.png')
+        end
+      end
+
+      describe '#update' do
+        it 'update app in clouds from Central' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.any_instance
+                          .stubs(:update_oauth_app)
+                          .with(@user_oauth.username, @oauth_app.id, 'name' => 'updated')
+                          .returns({})
+                          .once
+
+          @oauth_app.name = 'updated'
+          @oauth_app.save!
+        end
+
+        it 'update app if Central is disabled' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          Cartodb::Central.any_instance.stubs(:update_oauth_app).never
+
+          @oauth_app.name = 'updated'
+          @oauth_app.save!
+        end
+      end
+
+      describe '#destroy' do
+        it 'deletes app in clouds from Central' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.any_instance
+                          .stubs(:delete_oauth_app)
+                          .with(@user_oauth.username, @oauth_app.id)
+                          .returns({})
+                          .once
+
+          @oauth_app.destroy!
+        end
+
+        it 'deletes app if Central is disabled' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          Cartodb::Central.any_instance.stubs(:delete_oauth_app).never
+
+          @oauth_app.destroy!
+        end
+      end
+    end
+
     it 'fills client id and secret automatically' do
       app = OauthApp.new
       app.save

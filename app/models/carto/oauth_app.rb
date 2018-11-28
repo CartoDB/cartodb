@@ -21,6 +21,11 @@ module Carto
 
     before_validation :ensure_keys_generated
 
+    before_save :sync_with_central, if: :sync_with_central?
+    before_destroy :delete_from_central, if: :sync_with_central?
+
+    ALLOWED_SYNC_ATTRIBUTES = ['name', 'client_id', 'client_secret', 'redirect_uris', 'icon_url', 'restricted'].freeze
+
     private
 
     def ensure_keys_generated
@@ -39,6 +44,34 @@ module Carto
       errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
     rescue URI::InvalidURIError
       errors.add(:redirect_uris, "must be valid")
+    end
+
+    def sync_with_central
+      if persisted?
+        cartodb_central_client.update_oauth_app(user.username, id, attributes_changed)
+      else
+        cartodb_central_client.create_oauth_app(user.username, sync_attributes)
+      end
+    end
+
+    def delete_from_central
+      cartodb_central_client.delete_oauth_app(user.username, id)
+    end
+
+    def cartodb_central_client
+      @cartodb_central_client ||= Cartodb::Central.new
+    end
+
+    def sync_with_central?
+      Cartodb::Central.sync_data_with_cartodb_central?
+    end
+
+    def attributes_changed(attrs = sync_attributes)
+      attrs.select { |x| changes.keys.include?(x.to_s) }
+    end
+
+    def sync_attributes
+      attributes.select { |x| ALLOWED_SYNC_ATTRIBUTES.include?(x.to_s) }
     end
   end
 end

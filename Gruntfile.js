@@ -12,7 +12,7 @@ var REQUIRED_NPM_VERSIONS = ['6.x', '3.10.9'];
 
 var DEVELOPMENT = 'development';
 
-var SHRINKWRAP_MODULES_TO_VALIDATE = [
+var LOCKED_MODULES_TO_VALIDATE = [
   'backbone',
   'camshaft-reference',
   'carto',
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
 
   function preFlight (requiredNodeVersions, requiredNpmVersions, logFn) {
     function checkVersion (cmd, versionRange, name, logFn) {
-      grunt.log.writeln('Required ' + name + ' version: ' + versionRange);
+      grunt.log.writeln('Required ' + name + ' version: ' + versionRange.join(', '));
       require('child_process').exec(cmd, function (error, stdout, stderr) {
         var err = null;
         if (error) {
@@ -87,7 +87,7 @@ module.exports = function (grunt) {
         } else {
           var installed = semver.clean(stdout);
           if (!semver.satisfies(installed, versionRange.join(' || '))) {
-            err = 'Installed ' + name + ' version does not match with required [' + versionRange + '] Installed: ' + installed;
+            err = 'Installed ' + name + ' version does not match with required [' + versionRange.join(', ') + '] Installed: ' + installed;
           }
         }
         if (err) {
@@ -106,10 +106,19 @@ module.exports = function (grunt) {
     grunt.log.writeln('');
   }
 
-  var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), SHRINKWRAP_MODULES_TO_VALIDATE);
+  var duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), LOCKED_MODULES_TO_VALIDATE);
   if (duplicatedModules.length > 0) {
     grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
     grunt.log.fail('Duplicated dependencies found in npm-shrinkwrap.json file.');
+    grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
+    grunt.log.fail('#################################################');
+    process.exit(1);
+  }
+
+  duplicatedModules = shrinkwrapDependencies.checkDuplicatedDependencies(require('./package-lock.json'), LOCKED_MODULES_TO_VALIDATE);
+  if (duplicatedModules.length > 0) {
+    grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
+    grunt.log.fail('Duplicated dependencies found in package-lock.json file.');
     grunt.log.fail(JSON.stringify(duplicatedModules, null, 4));
     grunt.log.fail('#################################################');
     process.exit(1);

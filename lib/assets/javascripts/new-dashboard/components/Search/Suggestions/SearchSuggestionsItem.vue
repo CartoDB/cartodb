@@ -36,19 +36,25 @@ export default {
   display: block;
   position: relative;
   width: 100%;
-  margin: 16px 0;
-  padding-left: 20px;
+  padding: 16px 16px 16px 36px;
   overflow: hidden;
   color: $text-color;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba($primary-color, 0.05);
+    color: #1785FB;
+    text-decoration: none;
+  }
 
   &::after {
     content: '';
     position: absolute;
     top: 50%;
-    left: 0;
-    width: 14px;
+    left: 14px;
+    width: 12px;
     height: 100%;
     transform: translate3d(0, -50%, 0);
     background-repeat: no-repeat;
@@ -59,14 +65,13 @@ export default {
 
 .suggestions__item--derived {
   &::after {
-    background-image: url('../../../assets/icons/section-title/map.svg');
+    background-image: url('../../../assets/icons/navbar/search/search-map.svg');
   }
 }
 
 .suggestions__item--table {
   &::after {
-    width: 12px;
-    background-image: url('../../../assets/icons/section-title/data.svg');
+    background-image: url('../../../assets/icons/navbar/search/search-data.svg');
   }
 }
 </style>

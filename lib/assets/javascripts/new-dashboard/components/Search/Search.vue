@@ -1,7 +1,7 @@
 <template>
   <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit">
     <input type="text"
-           v-model="searchTerm"
+           v-model.trim="searchTerm"
            ref="searchInput"
            class="title is-small is-regular navbar-searchInput"
            :class="{ 'navbar-searchInput--filled': isFilled }"
@@ -9,7 +9,7 @@
            @focus="onInputFocus"
            @blur="onInputBlur"
            @pageChange="blurInput">
-    <SearchSuggestions :query="searchTerm" :isOpen="isFilled"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled"/>
   </form>
 </template>
 

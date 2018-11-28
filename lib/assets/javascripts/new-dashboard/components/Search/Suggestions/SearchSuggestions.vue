@@ -1,17 +1,18 @@
 <template>
   <section class="suggestions" :class="{ 'suggestions--open': isOpen }">
-    <ul class="suggestions__content" v-if="searchResults">
-      <li v-for="visualization in searchResults" :key="visualization.id">
+    <router-link
+      :to="{ name: searchRoute, params: searchRouteParameters }"
+      class="suggestions__header is-caption text"
+      v-if="query"
+      @click="onPageChange">
+      {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
+    </router-link>
+
+    <ul v-if="searchResults" class="suggestions__content">
+      <li v-for="visualization in searchResults.visualizations" :key="visualization.id">
         <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange" />
       </li>
     </ul>
-    <router-link
-      :to="{ name: searchRoute, params: searchRouteParameters }"
-      class="suggestions__search-all title is-small"
-      v-if="query"
-      @click="onPageChange">
-      View all results
-    </router-link>
   </section>
 </template>
 
@@ -101,7 +102,7 @@ export default {
             return;
           }
 
-          this.searchResults = data.visualizations;
+          this.searchResults = data;
         }
       );
     },
@@ -137,20 +138,34 @@ export default {
   }
 }
 
-.suggestions__content {
-  padding: 0 16px;
-}
-
-.suggestions__search-all {
+.suggestions__header {
   display: block;
-  padding: 16px;
-  background-color: $softblue;
-  color: $primary-color;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  position: relative;
+  width: 100%;
+  padding: 16px 16px 16px 38px;
+  overflow: hidden;
+  border-bottom: 1px solid $grey;
+  color: $text-color;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
+    background-color: rgba($primary-color, 0.05);
+    color: #1785FB;
     text-decoration: none;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    transform: translate3d(0, -50%, 0);
+    background-image: url("../../../assets/icons/navbar/dropdown/loupe-dropdown.svg");
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 </style>

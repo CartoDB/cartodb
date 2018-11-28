@@ -129,7 +129,7 @@ export default {
         return;
       }
 
-      window.scrollBy({ left: 0, top: sectionBoundingClientRect.top - offsetDistance, behavior: 'smooth' });
+      window.scrollBy({ top: sectionBoundingClientRect.top - offsetDistance, behavior: 'smooth' });
     }
   },
   watch: {

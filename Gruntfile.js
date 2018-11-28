@@ -110,9 +110,7 @@ module.exports = function (grunt) {
 
   try {
     duplicatedModules = lockedDependencies.checkDuplicatedDependencies(require('./npm-shrinkwrap.json'), LOCKED_MODULES_TO_VALIDATE);
-  } catch (e) {
-    grunt.log.fail('Lock file "npm-shrinkwrap.json" does not exist. Skiping duplicated modules check.');
-  } finally {
+
     if (duplicatedModules.length > 0) {
       grunt.log.fail('############### /!\\ CAUTION /!\\ #################');
       grunt.log.fail('Duplicated dependencies found in npm-shrinkwrap.json file.');
@@ -120,6 +118,8 @@ module.exports = function (grunt) {
       grunt.log.fail('#################################################');
       process.exit(1);
     }
+  } catch (e) {
+    grunt.log.fail('Lock file "npm-shrinkwrap.json" does not exist. Skiping duplicated modules check.');
   }
 
   duplicatedModules = lockedDependencies.checkDuplicatedDependencies(require('./package-lock.json'), LOCKED_MODULES_TO_VALIDATE);

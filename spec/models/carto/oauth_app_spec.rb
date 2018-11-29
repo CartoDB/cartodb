@@ -110,24 +110,23 @@ module Carto
       describe '#create' do
         it 'creates app in clouds from Central' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          params = { id: '26da639b-0b8c-4e81-aeb4-33b81fd0cacb',
+                     name: 'name1',
+                     redirect_uris: ['https://re.dir'],
+                     icon_url: 'some.png',
+                     client_id: '1234',
+                     client_secret: '5678',
+                     restricted: false }
           Cartodb::Central.any_instance
                           .stubs(:create_oauth_app)
                           .with(@user_oauth.username,
-                                'name' => 'name1',
-                                'redirect_uris' => ['https://re.dir'],
-                                'icon_url' => 'some.png',
-                                'client_id' => '1234',
-                                'client_secret' => '5678',
-                                'restricted' => false)
+                                params)
                           .returns({})
                           .once
 
-          @oauth_app2 = OauthApp.create!(user: @user_oauth,
-                                         name: 'name1',
-                                         redirect_uris: ['https://re.dir'],
-                                         icon_url: 'some.png',
-                                         client_id: '1234',
-                                         client_secret: '5678')
+          @oauth_app2 = OauthApp.new(params.merge(user: @user_oauth))
+          @oauth_app2.id = params[:id]
+          @oauth_app2.save!
         end
 
         it 'creates app if Central is disabled' do
@@ -142,11 +141,11 @@ module Carto
       end
 
       describe '#update' do
-        it 'update app in clouds from Central' do
+        it 'updates app in clouds from Central' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
           Cartodb::Central.any_instance
                           .stubs(:update_oauth_app)
-                          .with(@user_oauth.username, @oauth_app.id, 'name' => 'updated')
+                          .with(@user_oauth.username, @oauth_app.id, name: 'updated')
                           .returns({})
                           .once
 
@@ -154,11 +153,19 @@ module Carto
           @oauth_app.save!
         end
 
-        it 'update app if Central is disabled' do
+        it 'updates app if Central is disabled' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.stubs(:update_oauth_app).never
 
           @oauth_app.name = 'updated'
+          @oauth_app.save!
+        end
+
+        it 'updates app if Central is avoid_sync_central' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.any_instance.stubs(:update_oauth_app).never
+
+          @oauth_app.avoid_sync_central = true
           @oauth_app.save!
         end
       end

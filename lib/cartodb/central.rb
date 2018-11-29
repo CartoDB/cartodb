@@ -150,7 +150,7 @@ module Cartodb
 
     def create_oauth_app(username, oauth_app_attributes)
       body = { oauth_app: oauth_app_attributes }
-      send_request("api/users/#{username}/oauth_apps", body, :post, [204])
+      send_request("api/users/#{username}/oauth_apps", body, :post, [201])
     end
 
     def update_oauth_app(username, app_id, oauth_app_attributes)

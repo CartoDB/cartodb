@@ -21,10 +21,23 @@ module Carto
 
     before_validation :ensure_keys_generated
 
-    before_save :sync_with_central, if: :sync_with_central?
-    before_destroy :delete_from_central, if: :sync_with_central?
+    after_save :sync_with_central, if: :sync_with_central?
+    after_destroy :delete_from_central, if: :sync_with_central?
 
-    ALLOWED_SYNC_ATTRIBUTES = ['name', 'client_id', 'client_secret', 'redirect_uris', 'icon_url', 'restricted'].freeze
+    ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris icon_url restricted].freeze
+    ALLOWED_SYNC_PARAMS = ALLOWED_SYNC_ATTRIBUTES + [:user_id, redirect_uris: []].freeze
+
+    attr_writer :avoid_sync_central
+
+    def avoid_sync_central
+      @avoid_sync_central || false
+    end
+
+    # this should be exactly the same method as in Central
+    # mostly used for testing the Superadmin API
+    def api_attributes
+      attributes.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES).merge(user_id: user.id)
+    end
 
     private
 
@@ -47,10 +60,10 @@ module Carto
     end
 
     def sync_with_central
-      if persisted?
-        cartodb_central_client.update_oauth_app(user.username, id, attributes_changed)
-      else
+      if id_changed?
         cartodb_central_client.create_oauth_app(user.username, sync_attributes)
+      else
+        cartodb_central_client.update_oauth_app(user.username, id, attributes_changed)
       end
     end
 
@@ -63,15 +76,16 @@ module Carto
     end
 
     def sync_with_central?
-      Cartodb::Central.sync_data_with_cartodb_central?
+      Cartodb::Central.sync_data_with_cartodb_central? && !avoid_sync_central
     end
 
-    def attributes_changed(attrs = sync_attributes)
-      attrs.select { |x| changes.keys.include?(x.to_s) }
+    def attributes_changed
+      changed_attrs = attributes.symbolize_keys.slice(*changes.symbolize_keys.keys)
+      sync_attributes(changed_attrs)
     end
 
-    def sync_attributes
-      attributes.select { |x| ALLOWED_SYNC_ATTRIBUTES.include?(x.to_s) }
+    def sync_attributes(attrs = attributes)
+      attrs.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES)
     end
   end
 end

@@ -107,7 +107,7 @@ export default {
     },
     createMap () {
       DialogActions.createMap.apply(this, [
-        this.dataset,
+        [this.dataset],
         this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
         this.backboneViews.mamufasImportView.getView()
       ]);

@@ -94,7 +94,7 @@ module Carto
 
       before(:each) do
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-        @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth)
+        @oauth_app = FactoryGirl.create(:oauth_app, user: @user_oauth, avoid_sync_central: false)
       end
 
       after(:each) do

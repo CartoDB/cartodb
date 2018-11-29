@@ -1,7 +1,12 @@
 <template>
   <section class="page">
     <StickySubheader :is-visible="true">
-      <span class="title" v-if="isFirstFetch">{{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}</span>
+      <span class="title" v-if="isFirstFetch">
+        {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
+        <span class="loading">
+          <img svg-inline src="../assets/icons/navbar/search/loading.svg" class="loading__svg"/>
+        </span>
+      </span>
       <span class="title" v-else-if="searchTerm">{{ $tc('SearchPage.title.searchTerm', totalResults, { query: searchTerm }) }}</span>
       <span class="title" v-else-if="tag">{{ $tc('SearchPage.title.tag', totalResults, { query: tag }) }}</span>
     </StickySubheader>
@@ -84,6 +89,10 @@ export default {
     this.isFirstFetch = true;
     updateSearchParams(to, from, next);
   },
+  beforeRouteLeave (to, from, next) {
+    this.$store.dispatch('search/resetState');
+    next();
+  },
   data () {
     return {
       isFirstFetch: true
@@ -156,6 +165,19 @@ export default {
   &.has-pagination,
   &:last-child {
     margin-bottom: 48px;
+  }
+}
+
+.loading {
+  margin-left: 24px;
+
+  &__svg {
+    width: 18px;
+    vertical-align: text-top;
+
+    g {
+      stroke-width: 2px;
+    }
   }
 }
 

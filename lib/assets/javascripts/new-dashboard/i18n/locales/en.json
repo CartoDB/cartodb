@@ -165,7 +165,7 @@
   },
   "SearchPage": {
     "title": {
-      "allFetching": "Searching for \"{query}\"",
+      "allFetching": "Loading results for \"{query}\"",
       "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
       "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
     },

@@ -5,7 +5,7 @@
       class="suggestions__header is-caption text"
       :class="{ 'suggestions--loading': isFetching }"
       v-if="query"
-      @click="onPageChange">
+      @click.native="onPageChange">
       {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
     </router-link>
 

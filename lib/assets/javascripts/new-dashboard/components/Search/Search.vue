@@ -7,9 +7,8 @@
            :class="{ 'navbar-searchInput--filled': isFilled }"
            :placeholder="placeholder"
            @focus="onInputFocus"
-           @blur="onInputBlur"
-           @pageChange="resetInput">
-    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled"/>
+           @blur="onInputBlur">
+    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput"/>
   </form>
 </template>
 
@@ -71,8 +70,8 @@ export default {
     },
 
     resetInput () {
-      this.blurInput();
       this.searchTerm = '';
+      this.blurInput();
     }
   }
 };

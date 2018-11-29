@@ -127,7 +127,7 @@ export default {
 .navbar-searchInput {
   width: 120px;
   height: 36px;
-  padding-left: 42px;
+  padding: 0 14px 0 42px;
   transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border: 0;
   border-radius: 18px;

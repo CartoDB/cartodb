@@ -17,7 +17,7 @@
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
 
           <ul class="grid" v-if="isFetchingMaps">
-            <li v-for="n in 6" :key="n" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
+            <li v-for="n in 3" :key="n" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
               <MapCardFake></MapCardFake>
             </li>
           </ul>
@@ -26,6 +26,10 @@
             <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
               <MapCard :map=map :canHover=false></MapCard>
             </li>
+
+            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!Object.keys(maps).length">
+              {{ $t('SearchPage.placeholderText.maps') }}
+            </div>
           </ul>
 
           <Pagination
@@ -42,10 +46,14 @@
             <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
               <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
             </li>
+
+            <div class="is-caption text" v-if="!Object.keys(datasets).length">
+              {{ $t('SearchPage.placeholderText.datasets') }}
+            </div>
           </ul>
 
           <ul class="grid-cell grid-cell--col12" v-if="isFetchingDatasets">
-            <li v-for="n in 6" :key="n" class="dataset-item">
+            <li v-for="n in 3" :key="n" class="dataset-item">
               <DatasetCardFake></DatasetCardFake>
             </li>
           </ul>
@@ -86,7 +94,9 @@ export default {
     StickySubheader
   },
   beforeRouteUpdate (to, from, next) {
+    this.$store.dispatch('search/resetState');
     this.isFirstFetch = true;
+
     updateSearchParams(to, from, next);
   },
   beforeRouteLeave (to, from, next) {
@@ -201,5 +211,9 @@ export default {
   &:not(:last-child) {
     border-bottom: 1px solid $light-grey;
   }
+}
+
+.maps--empty {
+  margin-bottom: 128px;
 }
 </style>

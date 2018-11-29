@@ -173,6 +173,10 @@
       "maps": "Maps",
       "data": "Data",
       "tags": "Tags"
+    },
+    "placeholderText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
     }
   }
 }

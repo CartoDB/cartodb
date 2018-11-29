@@ -18,7 +18,7 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
   def update
     @oauth_app.update!(oauth_params)
 
-    render json: @oauth_app, status: 200
+    render nothing: true, status: 204
   end
 
   def destroy

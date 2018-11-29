@@ -52,7 +52,7 @@ describe Superadmin::OauthAppsController do
             @oauth_app_param.to_json,
             superadmin_headers
 
-        response.status.should == 200
+        response.status.should == 204
         @oauth_app.reload
         @oauth_app.name.should eq 'updated_name'
       }.to change(Carto::OauthApp, :count).by(0)

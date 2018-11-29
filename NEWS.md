@@ -7,6 +7,7 @@ Development
 ### Features
 - OAuth public release (WIP):
   - Sync `oauth_apps` with Central (#14493)
+- Send org_admin parameter to central (#14483)
 
 ### Bug fixes / enhancements
 - None yet

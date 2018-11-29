@@ -283,6 +283,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
+	spec/requests/carto/superadmin/oauth_apps_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/carto/saml_controller_spec.rb \

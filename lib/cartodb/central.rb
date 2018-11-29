@@ -155,7 +155,7 @@ module Cartodb
 
     def update_oauth_app(username, app_id, oauth_app_attributes)
       body = { oauth_app: oauth_app_attributes }
-      send_request("api/users/#{username}/oauth_apps/#{app_id}", body, :put, [204])
+      send_request("api/users/#{username}/oauth_apps/#{app_id}", body, :put, [200])
     end
 
     def delete_oauth_app(username, app_id)

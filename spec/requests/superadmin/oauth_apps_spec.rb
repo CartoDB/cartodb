@@ -52,6 +52,7 @@ describe Superadmin::OauthAppsController do
             @oauth_app_param.to_json,
             superadmin_headers
 
+        response.status.should == 200
         @oauth_app.reload
         @oauth_app.name.should eq 'updated_name'
       }.to change(Carto::OauthApp, :count).by(0)
@@ -80,6 +81,7 @@ describe Superadmin::OauthAppsController do
     it 'should destroy oauth_app' do
       expect {
         delete superadmin_oauth_app_url(@oauth_app.id), nil, superadmin_headers
+        response.status.should == 204
       }.to change(Carto::OauthApp, :count).by(-1)
 
       expect {

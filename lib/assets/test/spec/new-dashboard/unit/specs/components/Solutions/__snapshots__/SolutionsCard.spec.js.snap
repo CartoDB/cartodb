@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SolutionsCard.vue should render correct contents 1`] = `
+<div class="solutions-card grid">
+  <div class="grid-cell--col4 grid-cell--col12--mobile left-column">
+    <div>
+      <h3 class="title is-body is-txtBaseGrey card-title">Test title 123</h3>
+      <p class="text is-caption is-caption--mobile is-txtBaseGrey card-description">My description test</p>
+    </div> <a href="https://carto.com/info" class="buttonLink card-link is-txtGrey u-no-decoration">solutionsCard.moreExamples</a>
+  </div>
+  <div class="grid-cell--col8 grid-cell--col12--mobile right-column">
+    <div class="image-solutions-map"></div>
+    <div class="demo-image-overlay">
+      <p class="text is-caption is-caption--mobile is-txtBaseGrey">solutionsCard.usedBy</p>
+      <div class="u-flex logos"></div> <a href="https://carto.com/demo" target="_blank" class="button card-demo-button u-no-decoration"><span>solutionsCard.goDemo</span></a>
+    </div>
+  </div>
+</div>
+`;

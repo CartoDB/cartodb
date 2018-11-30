@@ -1,25 +1,34 @@
 <template>
-  <section>
-    <div class="hello">
-      <h1>{{ msg }}</h1>
-    </div>
+  <section class="">
+    <Welcome :user="user"></Welcome>
   </section>
 </template>
 
 <script>
+import Welcome from '../components/Home/Welcome';
+
 export default {
   name: 'Home',
+  components: {
+    Welcome
+  },
   data () {
     return {
       msg: "Welcome to CARTO\'s new dashboard"
     };
+  },
+  computed: {
+    user () {
+      return this.$store.state.user;
+    },
+    isFirst () {
+      return false;
+    }
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped" attributBooe to limit CSS to this component only -->
 <style scoped lang="scss">
-.hello {
-  text-align: center;
-}
+
 </style>

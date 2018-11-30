@@ -1,6 +1,12 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" active-class="is-active">
+        <span class="navbar-icon">
+          <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
+        </span>
+        <span class="title is-caption is-txtWhite u-hideTablet">Home</span>
+      </router-link>
       <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/maps.svg" />
@@ -88,6 +94,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   padding: 0 64px;
+  border-bottom: 1px solid $white;
   background-color: $primary-color;
 
   @media (max-width: $layout-tablet) {

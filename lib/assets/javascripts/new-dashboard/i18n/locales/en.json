@@ -86,6 +86,7 @@
         "private": "Your Private Maps"
       }
     },
+    "createMap": "New Map",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
@@ -156,5 +157,21 @@
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
     "logout": "LOG OUT"
+  },
+  "HomePage": {
+    "welcome": {
+      "first": {
+        "title": "Welcome, {username}",
+        "text": "You have a {account} and you are a member of {organization}. Want to know more about your new dashboard?"
+      },
+      "notification": {
+        "title": "Aloha, {username}",
+        "text": "The {owner} administrator sent you a new notification. Want to read it?",
+        "button": "Go to Notifications"
+      },
+      "rest": {
+        "title": "Kaixo, {username}"
+      }
+    }
   }
 }

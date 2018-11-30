@@ -3,6 +3,7 @@
     display: none;
   }
 }
+
 @media (max-width: $layout-mobile) {
   .u-hideMobile {
     display: none;
@@ -12,6 +13,7 @@
 .u-showMobile {
   display: none;
 }
+
 @media (max-width: $layout-mobile) {
   .u-showMobile {
     display: flex;

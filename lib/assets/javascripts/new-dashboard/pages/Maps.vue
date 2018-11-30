@@ -40,7 +40,7 @@
           </SettingsDropdown>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
-          <CreateButton visualizationType="maps">New map</CreateButton>
+          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 

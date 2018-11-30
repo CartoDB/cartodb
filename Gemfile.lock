@@ -221,12 +221,17 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     pg (0.15.0)
+    pg_array_parser (0.0.9)
     poltergeist (1.0.3)
       capybara (~> 1.1)
       childprocess (~> 0.3)
       faye-websocket (~> 0.4.4)
       http_parser.rb (~> 0.5.3)
       multi_json (~> 1.0)
+    postgres_ext (3.0.1)
+      activerecord (~> 4.0)
+      arel (>= 4.0.1)
+      pg_array_parser (~> 0.0.9)
     power_assert (0.2.7)
     protected_attributes (1.1.3)
       activemodel (>= 4.0.1, < 5.0)
@@ -444,6 +449,7 @@ DEPENDENCIES
   oauth-plugin!
   pg (= 0.15.0)
   poltergeist (>= 1.0.0)
+  postgres_ext
   protected_attributes
   rack
   rack-test (= 0.6.3)

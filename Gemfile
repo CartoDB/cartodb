@@ -8,6 +8,7 @@ gem 'sequel',                  '3.44.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
+gem 'postgres_ext'
 
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'

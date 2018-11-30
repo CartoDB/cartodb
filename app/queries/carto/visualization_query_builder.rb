@@ -17,7 +17,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public_visualizations(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
   end
 
   def self.user_all_visualizations(user)

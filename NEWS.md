@@ -9,7 +9,7 @@ Development
 
 
 ### Bug fixes / enhancements
-- None yet
+- No request made to enable MFA #14505
 
 4.23.2 (2018-11-27)
 -------------------

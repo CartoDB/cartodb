@@ -10,16 +10,17 @@ module Carto
     has_many :oauth_app_users, inverse_of: :oauth_app, dependent: :destroy
     has_many :oauth_app_organizations, inverse_of: :oauth_app, dependent: :destroy
 
-    validates :user, presence: true
+    validates :user, presence: true, if: :sync_with_central?
     validates :name, presence: true
     validates :client_id, presence: true
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
     validates :icon_url, presence: true
-    validates :oauth_app_organizations, absence: true, unless: :restricted?
+    validates :oauth_app_organizations, absence: true, unless: :needs_org?
     validate :validate_uris
 
     before_validation :ensure_keys_generated
+    before_validation :check_sync_with_central
 
     after_save :sync_with_central, if: :sync_with_central?
     after_destroy :delete_from_central, if: :sync_with_central?
@@ -59,6 +60,11 @@ module Carto
       errors.add(:redirect_uris, "must be valid")
     end
 
+    def check_sync_with_central
+      @avoid_sync_central ||= !Carto::User.exists?(id: user.try(:id))
+      true
+    end
+
     def sync_with_central
       if id_changed?
         cartodb_central_client.create_oauth_app(user.username, sync_attributes)
@@ -86,6 +92,10 @@ module Carto
 
     def sync_attributes(attrs = attributes)
       attrs.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES)
+    end
+
+    def needs_org?
+      restricted? && sync_with_central?
     end
   end
 end

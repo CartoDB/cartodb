@@ -9,7 +9,7 @@ module Carto
         @user = FactoryGirl.build(:carto_user)
       end
 
-      it 'requires user' do
+      it 'requires user if sync with central' do
         app = OauthApp.new
         expect(app).to_not(be_valid)
         expect(app.errors[:user]).to(include("can't be blank"))
@@ -85,6 +85,21 @@ module Carto
         app = OauthApp.new(user: @user, name: 'name', redirect_uris: ['https://re.dir'], icon_url: 'some.png')
         expect(app).to(be_valid)
       end
+
+      it 'accepts with no user' do
+        app = OauthApp.new(name: 'name',
+                           redirect_uris: ['https://re.dir'],
+                           icon_url: 'some.png')
+        expect(app).to(be_valid)
+      end
+
+      it 'accepts restricted without organization if user is not present in cloud' do
+        app = Carto::OauthApp.new(name: 'name',
+                                  redirect_uris: ['https://re.dir'],
+                                  icon_url: 'some.png',
+                                  restricted: true)
+        expect(app).to(be_valid)
+      end
     end
 
     context 'Central sync' do
@@ -138,6 +153,15 @@ module Carto
                                          redirect_uris: ['https://re.dir'],
                                          icon_url: 'some.png')
         end
+
+        it 'creates app if Central is disabled and no user' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          Cartodb::Central.any_instance.stubs(:create_oauth_app).never
+
+          @oauth_app2 = OauthApp.create!(name: 'name1',
+                                         redirect_uris: ['https://re.dir'],
+                                         icon_url: 'some.png')
+        end
       end
 
       describe '#update' do
@@ -167,6 +191,16 @@ module Carto
 
           @oauth_app.avoid_sync_central = true
           @oauth_app.save!
+        end
+
+        it 'updates app to no user' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+          Cartodb::Central.any_instance.stubs(:update_oauth_app).never
+
+          @oauth_app.user = nil
+          @oauth_app.save!
+
+          @oauth_app.reload.user.should be_nil
         end
       end
 

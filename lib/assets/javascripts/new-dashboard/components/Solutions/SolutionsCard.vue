@@ -161,8 +161,9 @@ export default {
     animation-play-state: paused;
   }
 
-  #sun {
-    transform-origin: 42px 42px;
+  .sun {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
     animation: 60s rotate infinite linear;
     animation-play-state: paused;
   }

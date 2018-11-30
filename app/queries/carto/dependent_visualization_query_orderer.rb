@@ -3,29 +3,29 @@
 require 'active_record'
 require 'postgres_ext'
 
-class Carto::VisualizationQueryFilterer
+class Carto::DependentVisualizationQueryOrderer
 
-  def initialize(query: Carto::Visualization.all)
+  def initialize(query:)
     @query = query
   end
 
-  def sort
-    @query = query.with(dependencies: dependencies_query)
-    @query = query.select('coalesce(dependent_visualizations_count, 0)')
-    @query = query.joins('LEFT OUTER JOIN dependencies ON dependencies.id = visualizations.id')
-    # TODO: add filters
+  def order(params: {})
+    @query.with(dependencies: dependencies_query(params))
+          .select('coalesce(dependent_visualizations_count, 0)')
+          .joins('LEFT OUTER JOIN dependencies ON dependencies.id = visualizations.id')
     # TODO: sort
   end
 
   private
 
-  def dependencies_query
+  def dependencies_query(params)
     nested_association = { map: { user_table: { layers: { maps: :visualization } } } }
     select_count = 'count(distinct(visualizations.id, visualizations_maps.id)) as dependent_visualizations_count'
     Carto::Visualization.select(:id, select_count)
                         .joins(nested_association)
                         .where(visualizations_maps: { type: 'derived' })
                         .group(:id)
+    # TODO: add filters
   end
 
 end

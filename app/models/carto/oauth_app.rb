@@ -20,7 +20,6 @@ module Carto
     validate :validate_uris
 
     before_validation :ensure_keys_generated
-    before_validation :check_sync_with_central
 
     after_save :sync_with_central, if: :sync_with_central?
     after_destroy :delete_from_central, if: :sync_with_central?
@@ -58,11 +57,6 @@ module Carto
       errors.add(:redirect_uris, "must not contain a fragment") unless uri.fragment.nil?
     rescue URI::InvalidURIError
       errors.add(:redirect_uris, "must be valid")
-    end
-
-    def check_sync_with_central
-      @avoid_sync_central ||= !Carto::User.exists?(id: user.try(:id))
-      true
     end
 
     def sync_with_central

@@ -6,7 +6,6 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
   ssl_required
 
   before_action :load_oauth_app, only: [:update, :destroy]
-  before_action :load_user, only: [:create, :update]
   before_action :avoid_sync_central, only: [:update, :destroy]
 
   def create
@@ -33,10 +32,6 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
     @oauth_app = Carto::OauthApp.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render json: { error: 'ERROR. oauth_app not found' }, status: 404
-  end
-
-  def load_user
-    @user = Carto::User.where(username: params[:oauth_app][:username]).first
   end
 
   def oauth_params

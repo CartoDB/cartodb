@@ -378,7 +378,10 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns locked count' do
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: false).store
       FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: true).store
+      user2 = FactoryGirl.create(:valid_user)
+      FactoryGirl.build(:derived_visualization, user_id: user2.id, locked: true).store
 
       response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_locked'].should == 1
     end

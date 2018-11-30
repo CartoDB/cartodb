@@ -224,6 +224,7 @@ WORKING_SPECS_9 = \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
+	spec/requests/superadmin/oauth_apps_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
 	spec/requests/superadmin/account_types_spec.rb \
 	spec/requests/api/visualizations_spec.rb \
@@ -283,7 +284,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/oauth_provider_controller_spec.rb \
 	spec/requests/carto/superadmin/organizations_controller_spec.rb \
 	spec/requests/carto/superadmin/users_controller_spec.rb \
-	spec/requests/carto/superadmin/oauth_apps_spec.rb \
 	spec/requests/carto/superadmin/user_migration_imports_spec.rb \
 	spec/requests/carto/superadmin/user_migration_exports_spec.rb \
 	spec/requests/carto/saml_controller_spec.rb \

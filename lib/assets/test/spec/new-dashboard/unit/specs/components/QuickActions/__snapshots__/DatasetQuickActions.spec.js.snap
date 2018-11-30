@@ -17,12 +17,12 @@ exports[`DatasetQuickAction.vue should render open dropdown with all actions for
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
+      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.createMap</a></li>
+      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.duplicate</a></li>
+      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.share</a></li>
       <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.editInfo</a></li>
       <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.manageTags</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.createMap</a></li>
       <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.changePrivacy</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.share</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.duplicate</a></li>
       <li><a href="#" class="action text is-caption is-txtPrimary">QuickActions.lock</a></li>
       <li><a href="#" class="action text is-caption is-txtAlert">QuickActions.delete</a></li>
     </ul>

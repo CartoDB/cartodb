@@ -30,12 +30,12 @@ export default {
     actions () {
       return {
         mine: [
+          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
           { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
-          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
-          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],

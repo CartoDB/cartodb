@@ -28,7 +28,7 @@
             </li>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!Object.keys(maps).length">
-              {{ $t('SearchPage.placeholderText.maps') }}
+              {{ $t('SearchPage.emptyText.maps') }}
             </div>
           </ul>
 
@@ -48,7 +48,7 @@
             </li>
 
             <div class="is-caption text" v-if="!Object.keys(datasets).length">
-              {{ $t('SearchPage.placeholderText.datasets') }}
+              {{ $t('SearchPage.emptyText.datasets') }}
             </div>
           </ul>
 

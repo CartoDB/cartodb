@@ -1,5 +1,12 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--child-hover': !activeHover, 'quickactions-open': areQuickActionsOpen, 'card--can-hover': canHover}">
+  <a :href="vizUrl"
+     class="card map-card"
+     :class="{
+       'card--selected': isSelected,
+       'card--child-hover': !activeHover,
+       'card--quick-actions-open': areQuickActionsOpen,
+       'card--can-hover': canHover
+     }">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -216,23 +223,23 @@ export default {
     }
   }
 
-  &.selected {
-    border: 1px solid #047AE6;
+  &.card--selected {
+    border: 1px solid $primary-color;
 
     .card-actions {
       opacity: 1;
     }
   }
 
-  &.quickactions-open {
+  &.card--quick-actions-open {
     .card-actions {
       opacity: 1;
     }
   }
 
   &.card--can-hover {
-    &.selected,
-    &.quickactions-open,
+    &.card--selected,
+    &.card--quick-actions-open,
     &:hover {
       .card-select {
         opacity: 1;

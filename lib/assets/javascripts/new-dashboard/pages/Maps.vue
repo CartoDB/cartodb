@@ -94,7 +94,7 @@ import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import { filtersRouterGuard } from 'new-dashboard/router/hooks/check-navigation';
+import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'MapsPage',
@@ -124,8 +124,8 @@ export default {
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
-  beforeRouteUpdate (to, _, next) {
-    filtersRouterGuard('maps', 'maps', to, next);
+  beforeRouteUpdate (to, from, next) {
+    checkFilters('maps', 'maps', to, from, next);
   },
   computed: {
     ...mapState({

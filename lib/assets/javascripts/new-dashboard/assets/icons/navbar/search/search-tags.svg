@@ -1,24 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
-    <title>tag-1</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.359999985">
-        <g id="Search-Dropdown--/-Max" transform="translate(-19.000000, -79.000000)">
-            <g id="Group-2" transform="translate(18.000000, 73.000000)">
-                <g id="tag-1" transform="translate(0.000000, 5.000000)">
-                    <g id="Frame_-_24px">
-                        <rect id="Rectangle" x="0" y="0" width="14" height="14"></rect>
-                    </g>
-                    <g id="Line_Icons" transform="translate(1.166667, 1.166667)" fill="#2E3C43">
-                        <g id="Group">
-                            <path d="M7,11.6666667 C6.85066667,11.6666667 6.70133333,11.6095 6.58758333,11.49575 L0.170916667,5.07908333 C0.06125,4.97 0,4.82183333 0,4.66666667 L0,0.583333333 C0,0.26075 0.26075,0 0.583333333,0 L4.66666667,0 C4.82183333,0 4.97,0.06125 5.07908333,0.170916667 L11.49575,6.58758333 C11.7238333,6.81566667 11.7238333,7.18433333 11.49575,7.41241667 L7.41241667,11.49575 C7.29866667,11.6095 7.14933333,11.6666667 7,11.6666667 Z M1.16666667,4.42516667 L7,10.2585 L10.2585,7 L4.42516667,1.16666667 L1.16666667,1.16666667 L1.16666667,4.42516667 Z" id="Shape" fill-rule="nonzero"></path>
-                            <circle id="Oval" cx="2.91666667" cy="2.91666667" r="1.16666667"></circle>
-                        </g>
-                    </g>
-                </g>
-            </g>
-        </g>
+<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd" opacity=".36">
+    <path d="M-1-1h14v14H-1z"/>
+    <g transform="translate(.167 .167)" fill="#2E3C43">
+      <path d="M7 11.667a.582.582 0 0 1-.412-.171L.17 5.079A.58.58 0 0 1 0 4.667V.583C0 .261.26 0 .583 0h4.084a.58.58 0 0 1 .412.17l6.417 6.418a.583.583 0 0 1 0 .824l-4.084 4.084a.582.582 0 0 1-.412.17zM1.167 4.425L7 10.258 10.258 7 4.425 1.167H1.167v3.258z" fill-rule="nonzero"/>
+      <circle cx="2.917" cy="2.917" r="1.167"/>
     </g>
+  </g>
 </svg>

@@ -102,7 +102,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
-import { filtersRouterGuard } from 'new-dashboard/router/hooks/check-navigation';
+import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'DataPage',
@@ -133,8 +133,8 @@ export default {
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
-  beforeRouteUpdate (to, _, next) {
-    filtersRouterGuard('datasets', 'datasets', to, next);
+  beforeRouteUpdate (to, from, next) {
+    checkFilters('datasets', 'datasets', to, from, next);
   },
   computed: {
     ...mapState({

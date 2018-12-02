@@ -3,7 +3,7 @@
     <router-link
       :to="{ name: searchRoute, params: searchRouteParameters }"
       class="suggestions__header is-caption text"
-      :class="{ 'suggestions--loading': isFetching }"
+      :class="{ 'suggestions__header--loading': isFetching }"
       v-if="query"
       @click.native="onPageChange">
       {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
@@ -167,7 +167,7 @@ export default {
     background-position: center;
   }
 
-  &.suggestions--loading {
+  &.suggestions__header--loading {
     padding-right: 38px;
 
     &::after {

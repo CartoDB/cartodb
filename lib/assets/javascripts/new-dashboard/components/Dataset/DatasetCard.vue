@@ -1,5 +1,12 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected, 'card--quick-actions-open': areQuickActionsOpen, 'card--noHover': !activeHover, 'can-hover': canHover}">
+  <a :href="dataset.url"
+     class="dataset-row"
+     :class="{
+       'dataset-row--selected': isSelected,
+       'dataset-row--quick-actions-open': areQuickActionsOpen,
+       'dataset-row--no-hover': !activeHover,
+       'dataset-row--can-hover': canHover
+     }">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -194,11 +201,11 @@ export default {
   padding: 0 14px;
   background-color: $white;
 
-  &.selected {
-    box-shadow: inset 0 0 0 1px #047AE6;
+  &.dataset-row--selected {
+    box-shadow: inset 0 0 0 1px $primary-color;
   }
 
-  &.card--quick-actions-open,
+  &.dataset-row--quick-actions-open,
   &:hover {
     text-decoration: none;
 
@@ -210,7 +217,7 @@ export default {
   }
 
   &:hover {
-    &:not(.card--noHover) {
+    &:not(.dataset-row--no-hover) {
       .row-title {
         color: $primary-color;
       }
@@ -222,8 +229,8 @@ export default {
   }
 
   &:hover,
-  &.selected {
-    &.can-hover {
+  &.dataset-row--selected {
+    &.dataset-row--can-hover {
       .row-dataType {
         transform: translateY(-100%);
         opacity: 0;

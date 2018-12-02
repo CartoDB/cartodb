@@ -1,6 +1,6 @@
 <template>
   <section class="page">
-    <StickySubheader :is-visible="true">
+    <StickySubheader :is-visible="true" class="page-subheader">
       <span class="title" v-if="isFirstFetch">
         {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
         <span class="loading">
@@ -27,7 +27,7 @@
               <MapCard :map=map :canHover=false></MapCard>
             </li>
 
-            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!Object.keys(maps).length">
+            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">
               {{ $t('SearchPage.emptyText.maps') }}
             </div>
           </ul>
@@ -47,7 +47,7 @@
               <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
             </li>
 
-            <div class="is-caption text" v-if="!Object.keys(datasets).length">
+            <div class="is-caption text" v-if="!hasDatasets">
               {{ $t('SearchPage.emptyText.datasets') }}
             </div>
           </ul>
@@ -166,7 +166,6 @@ export default {
 
 .page {
   padding-top: 192px;
-  background-color: $softblue;
 }
 
 .page-section {
@@ -176,6 +175,10 @@ export default {
   &:last-child {
     margin-bottom: 48px;
   }
+}
+
+.page-subheader {
+  background-color: $softblue;
 }
 
 .loading {

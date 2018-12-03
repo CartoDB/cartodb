@@ -3,8 +3,10 @@
     <slot />
     <div class="dropdown-container">
       <ul class="list">
-        <li class="element" v-for="elem in list" :key="elem">
-          <a href="#" class="list-text text is-small">{{elem}}</a>
+        <li class="element" v-for="element in list" :key="element">
+          <router-link :to="{ name: linkRoute, params: routeParams(element) }" class="list-text text is-small">
+            {{ element }}
+          </router-link>
         </li>
       </ul>
     </div>
@@ -17,7 +19,13 @@ export default {
   name: 'FeaturesDropdown',
   props: {
     list: Array,
-    feature: String
+    feature: String,
+    linkRoute: String
+  },
+  methods: {
+    routeParams (element) {
+      return { [this.feature]: element };
+    }
   }
 };
 </script>

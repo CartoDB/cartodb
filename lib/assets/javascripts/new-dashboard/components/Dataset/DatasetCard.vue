@@ -1,5 +1,12 @@
 <template>
-  <a :href="dataset.url" class="dataset-row" :class="{'selected': isSelected || areQuickActionsOpen, 'card--noHover': !activeHover}">
+  <a :href="dataset.url"
+     class="dataset-row"
+     :class="{
+       'dataset-row--selected': isSelected,
+       'dataset-row--quick-actions-open': areQuickActionsOpen,
+       'dataset-row--no-hover': !activeHover,
+       'dataset-row--can-hover': canHover
+     }">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -25,10 +32,10 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <a href="#" class="text is-small is-txtSoftGrey">{{ tag }}</a><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
@@ -54,13 +61,11 @@
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
-    <div class="dataset-cell">
+    <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <DatasetQuickActions
         :dataset="dataset"
         :isShared="isShared"
         class="dataset--quick-actions"
-        @mouseover="mouseOverChildElement"
-        @mouseleave="mouseOutChildElement"
         @open="openQuickActions"
         @close="closeQuickActions"/>
     </div>
@@ -86,6 +91,10 @@ export default {
     isSelected: {
       type: Boolean,
       default: false
+    },
+    canHover: {
+      type: Boolean,
+      default: true
     }
   },
   data: function () {
@@ -190,27 +199,15 @@ export default {
   width: 100%;
   height: 80px;
   padding: 0 14px;
-  border-bottom: 1px solid $light-grey;
   background-color: $white;
 
-  &.selected {
-    background-color: $softblue;
+  &.dataset-row--selected {
+    box-shadow: inset 0 0 0 1px $primary-color;
   }
 
-  &.selected,
+  &.dataset-row--quick-actions-open,
   &:hover {
     text-decoration: none;
-
-    .row-dataType {
-      transform: translateY(-100%);
-      opacity: 0;
-    }
-
-    .row-checkbox {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
 
     .dataset--quick-actions {
       visibility: visible;
@@ -220,7 +217,7 @@ export default {
   }
 
   &:hover {
-    &:not(.card--noHover) {
+    &:not(.dataset-row--no-hover) {
       .row-title {
         color: $primary-color;
       }
@@ -228,6 +225,22 @@ export default {
 
     .card-favorite {
       opacity: 1;
+    }
+  }
+
+  &:hover,
+  &.dataset-row--selected {
+    &.dataset-row--can-hover {
+      .row-dataType {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+
+      .row-checkbox {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
     }
   }
 }
@@ -260,7 +273,6 @@ export default {
 
 .row-checkbox {
   position: absolute;
-  // top: 6px;
   left: 6px;
   transform: translateY(250%);
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);

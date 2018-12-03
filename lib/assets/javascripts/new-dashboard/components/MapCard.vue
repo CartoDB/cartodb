@@ -1,5 +1,12 @@
 <template>
-  <a :href="vizUrl" class="card map-card" :class="{'selected': isSelected, 'card--noHover': !activeHover, 'quickactions-open': areQuickActionsOpen}">
+  <a :href="vizUrl"
+     class="card map-card"
+     :class="{
+       'card--selected': isSelected,
+       'card--child-hover': !activeHover,
+       'card--quick-actions-open': areQuickActionsOpen,
+       'card--can-hover': canHover
+     }">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -12,7 +19,9 @@
       </span>
     </span>
 
-    <MapQuickActions class="card-actions" :map="map" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
+    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
+    </div>
 
     <div class="card-text">
       <div class="card-header">
@@ -47,14 +56,14 @@
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in map.tags" :key="tag">
-              <a href="#" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</a><span v-if="index < map.tags.length - 1">,&#32;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
               <span>{{ $t(`mapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
@@ -78,6 +87,10 @@ export default {
     isSelected: {
       type: Boolean,
       default: false
+    },
+    canHover: {
+      type: Boolean,
+      default: true
     }
   },
   components: {
@@ -198,32 +211,39 @@ export default {
   &:hover {
     cursor: pointer;
 
-    &:not(.card--noHover) {
+    &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
       }
     }
 
-    .card-select,
     .card-actions,
     .card-favorite {
       opacity: 1;
     }
   }
 
-  &.selected {
-    background-color: $softblue;
+  &.card--selected {
+    border: 1px solid $primary-color;
 
-    .card-actions,
-    .card-select {
+    .card-actions {
       opacity: 1;
     }
   }
 
-  &.quickactions-open {
-    .card-actions,
-    .card-select {
+  &.card--quick-actions-open {
+    .card-actions {
       opacity: 1;
+    }
+  }
+
+  &.card--can-hover {
+    &.card--selected,
+    &.card--quick-actions-open,
+    &:hover {
+      .card-select {
+        opacity: 1;
+      }
     }
   }
 }

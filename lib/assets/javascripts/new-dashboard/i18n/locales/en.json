@@ -157,5 +157,27 @@
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
     "logout": "LOG OUT"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By :tag, name, or description"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
+    }
   }
 }

@@ -331,13 +331,13 @@ exports[`MapCard.vue should render description and tags 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
           <li>
-            <router-link to="[object Object]">Hi</router-link><span>, </span>
+            <router-link-stub to="[object Object]">Hi</router-link-stub><span>, </span>
           </li>
           <li>
-            <router-link to="[object Object]">Hello</router-link><span>, </span>
+            <router-link-stub to="[object Object]">Hello</router-link-stub><span>, </span>
           </li>
           <li>
-            <router-link to="[object Object]">CARTO Rules</router-link>
+            <router-link-stub to="[object Object]">CARTO Rules</router-link-stub>
             <!---->
           </li>
           <!---->

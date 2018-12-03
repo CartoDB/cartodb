@@ -26,7 +26,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
 </a>
 `;
 
-exports[`DatasetCard.vue should remove the selection checkbox add the name of the owner if the dataset is shared 1`] = `
+exports[`DatasetCard.vue should add the name of the owner if the dataset is shared 1`] = `
 <a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">

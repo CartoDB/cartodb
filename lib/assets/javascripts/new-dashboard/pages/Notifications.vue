@@ -17,7 +17,7 @@
           </li>
         </ul>
         <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
-          <img svg-inline src="../assets/icons/common/compass.svg">
+          <img svg-inline src="../assets/icons/common/check-bubble.svg">
         </EmptyState>
         <LoadingState v-if="isFetching" :text="loadingStateText">
           <img svg-inline src="../assets/icons/common/compass.svg">

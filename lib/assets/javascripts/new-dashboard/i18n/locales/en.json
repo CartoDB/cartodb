@@ -98,7 +98,8 @@
     "header": {
       "title": "Notifications"
     },
-    "emptyState": "There are no notifications yet."
+    "emptyState": "There are no notifications yet.",
+    "loadingState": "Loading your notifications."
   },
   "SettingsDropdown": {
     "showMe": "Show me",

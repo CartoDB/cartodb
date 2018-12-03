@@ -13,11 +13,11 @@ class Carto::VisualizationQueryBuilder
   SUPPORTED_OFFDATABASE_ORDERS = %w(mapviews likes size estimated_row_count privacy).freeze
 
   def self.user_public_tables(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
+    user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
 
   def self.user_public_visualizations(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
+    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
   end
 
   def self.user_all_visualizations(user)

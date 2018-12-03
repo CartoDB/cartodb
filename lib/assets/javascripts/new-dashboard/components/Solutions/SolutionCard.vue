@@ -6,19 +6,19 @@
         <h3 class="title is-body is-txtBaseGrey card-title">{{title}}</h3>
         <p class="text is-caption is-caption--mobile is-txtBaseGrey card-description">{{description}}</p>
       </div>
-      <a :href=infoUrl class="buttonLink card-link is-txtGrey u-no-decoration">{{ $t(`solutionCard.moreExamples`) }}</a>
+      <a :href=infoUrl class="buttonLink card-link is-txtGrey u-no-decoration">{{ $t(`SolutionCard.moreExamples`) }}</a>
     </div>
     <div class="grid-cell--col8 grid-cell--col12--mobile right-column">
       <div class="image-solutions-map">
         <slot name="image"></slot>
       </div>
       <div class="demo-image-overlay">
-        <p class="text is-caption is-caption--mobile is-txtBaseGrey">{{ $t(`solutionCard.usedBy`) }}</p>
+        <p class="text is-caption is-caption--mobile is-txtBaseGrey">{{ $t(`SolutionCard.usedBy`) }}</p>
         <div class="u-flex logos">
           <slot name="demo-logos"></slot>
         </div>
         <a :href=demoUrl target="_blank" class="button card-demo-button u-no-decoration">
-          <span>{{ $t(`solutionCard.goDemo`) }}</span>
+          <span>{{ $t(`SolutionCard.goDemo`) }}</span>
         </a>
       </div>
     </div>

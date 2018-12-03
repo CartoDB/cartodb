@@ -1,14 +1,14 @@
 <template>
 <section class="page is-bgSoftBlue">
   <div class="container grid">
-    <h3 class="title is-body solutions-title">{{ $t(`solutionsPage.solutionsTitle`) }}</h3>
-    <p class="text is-caption solutions-description">{{ $t(`solutionsPage.solutionsDescription`) }}</p>
+    <h3 class="title is-body solutions-title">{{ $t(`SolutionsPage.solutionsTitle`) }}</h3>
+    <p class="text is-caption solutions-description">{{ $t(`SolutionsPage.solutionsDescription`) }}</p>
 
     <ul class="grid-cell--col12 grid">
       <li class="grid-cell--col12 solution-element">
         <SolutionCard
-          :title="$t(`solutionsPage.sitePlanning.title`)"
-          :description="$t(`solutionsPage.sitePlanning.description`)"
+          :title="$t(`SolutionsPage.sitePlanning.title`)"
+          :description="$t(`SolutionsPage.sitePlanning.description`)"
           infoUrl="https://carto.com/solutions/site-planning/"
           demoUrl="https://carto.com/demo/siteplanning-demo/">
           <template slot="icon"><img svg-inline src="../assets/icons/solutions/site-planning.svg"></template>
@@ -22,8 +22,8 @@
 
       <li class="grid-cell--col12 solution-element">
         <SolutionCard
-          :title="$t(`solutionsPage.territoryManagement.title`)"
-          :description="$t(`solutionsPage.territoryManagement.description`)"
+          :title="$t(`SolutionsPage.territoryManagement.title`)"
+          :description="$t(`SolutionsPage.territoryManagement.description`)"
           infoUrl="https://carto.com/solutions/territory-management/"
           demoUrl="https://carto.com/demo/salesquest-demo/">
           <template slot="icon"><img svg-inline src="../assets/icons/solutions/territory.svg"></template>
@@ -38,8 +38,8 @@
 
       <li class="grid-cell--col12 solution-element">
         <SolutionCard
-          :title="$t(`solutionsPage.logisticsOptimization.title`)"
-          :description="$t(`solutionsPage.logisticsOptimization.description`)"
+          :title="$t(`SolutionsPage.logisticsOptimization.title`)"
+          :description="$t(`SolutionsPage.logisticsOptimization.description`)"
           infoUrl="https://carto.com/solutions/logistics-optimization/"
           demoUrl="https://carto.com/demo/logistic-demo/">
           <template slot="icon"><img svg-inline src="../assets/icons/solutions/logistics.svg"></template>
@@ -53,11 +53,11 @@
       </li>
     </ul>
     <div class="talk-us-card">
-      <h3 class="title is-medium">{{ $t(`solutionsPage.talkUsTitle`) }}</h3>
-      <p class="text is-caption card-description">{{ $t(`solutionsPage.talkUsDescription`) }}</p>
+      <h3 class="title is-medium">{{ $t(`SolutionsPage.talkUsTitle`) }}</h3>
+      <p class="text is-caption card-description">{{ $t(`SolutionsPage.talkUsDescription`) }}</p>
       <div class="talk-us-button">
         <a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration">
-          <span>{{ $t(`solutionsPage.talkUsButton`) }}</span>
+          <span>{{ $t(`SolutionsPage.talkUsButton`) }}</span>
         </a>
       </div>
     </div>

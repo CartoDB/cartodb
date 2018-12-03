@@ -1,5 +1,5 @@
 {
-  "mapCard": {
+  "MapCard": {
     "shared": {
       "LINK": "Link",
       "PUBLIC": "Public",
@@ -17,6 +17,7 @@
     "title": "Quick actions",
     "editInfo": "Edit Name & description",
     "manageTags": "Manage Tags",
+    "createMap": "Create map",
     "changePrivacy": "Change Privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
@@ -141,7 +142,7 @@
     "numberRows": "0 rows | {n} row | {n} rows",
     "tags": "tags"
   },
-  "datasetListHeader": {
+  "DatasetListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "rows": "Rows",
@@ -157,7 +158,7 @@
     "notifications": "Notifications",
     "logout": "LOG OUT"
   },
-  "solutionsPage": {
+  "SolutionsPage": {
     "solutionsTitle": "Solutions for every business problem",
     "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
     "talkUsTitle": "Like what you see?",
@@ -176,9 +177,31 @@
       "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
     }
   },
-  "solutionCard": {
+  "SolutionCard": {
     "moreExamples": "View more examples",
     "usedBy": "Used by:",
     "goDemo": "Go to demo"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By :tag, name, or description"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
+    }
   }
 }

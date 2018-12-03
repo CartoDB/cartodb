@@ -4,22 +4,22 @@ exports[`DatasetListHeader.vue should render correct contents 1`] = `
 <div class="dataset-list-row">
   <div class="dataset-list-cell cell--start"></div>
   <div class="dataset-list-cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">
-      datasetListHeader.name
+      DatasetListHeader.name
     </span></div>
   <div class="dataset-list-cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
-      datasetListHeader.lastModified
+      DatasetListHeader.lastModified
     </span></div>
   <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
-      datasetListHeader.rows
+      DatasetListHeader.rows
     </span></div>
   <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey is-active">
-      datasetListHeader.size
+      DatasetListHeader.size
     </span></div>
   <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
-      datasetListHeader.usage
+      DatasetListHeader.usage
     </span></div>
   <div class="dataset-list-cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
-      datasetListHeader.privacy
+      DatasetListHeader.privacy
     </span></div>
   <div class="dataset-list-cell cell--end"></div>
 </div>

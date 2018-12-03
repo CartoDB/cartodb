@@ -789,6 +789,10 @@ describe SessionsController do
 
         response.status.should eq 302
         response.headers['Location'].should include 'login?error=multifactor_authentication_inactivity'
+
+        follow_redirect!
+        response.status.should eq 200
+        response.body.should include("You've been logged out due to a long time of inactivity")
       end
 
       it 'rate limits verification code' do
@@ -842,52 +846,6 @@ describe SessionsController do
           expect_login
         end
       end
-    end
-
-    describe 'as individual user' do
-      before(:all) do
-        @user = FactoryGirl.create(:carto_user_mfa)
-      end
-
-      after(:all) do
-        @user.destroy
-      end
-
-      it_behaves_like 'all users workflow'
-
-      it 'does not allow to skip verification' do
-        login
-
-        mfa = @user.active_multifactor_authentication
-        mfa.enabled = false
-        mfa.save!
-
-        get multifactor_authentication_session_url
-        post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
-
-        expect_login_error
-        mfa.enabled = true
-        mfa.save!
-      end
-    end
-
-    describe 'as org owner' do
-      before(:all) do
-        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
-        @user = @organization.owner
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
-        @user.save
-      end
-
-      after(:all) do
-        @organization.destroy
-      end
-
-      def create_session
-        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
-      end
-
-      it_behaves_like 'all users workflow'
 
       context 'skipping MFA configuration' do
         before(:each) do
@@ -929,10 +887,40 @@ describe SessionsController do
           get multifactor_authentication_session_url
           post multifactor_authentication_verify_code_url(user_id: @user.id, skip: true)
 
-          expect_login_error
+          expect_invalid_code
         end
       end
+    end
 
+    describe 'as individual user' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user_mfa)
+      end
+
+      after(:all) do
+        @user.destroy
+      end
+
+      it_behaves_like 'all users workflow'
+    end
+
+    describe 'as org owner' do
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
+        @user = @organization.owner
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def create_session
+        post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
     end
 
     describe 'as org user' do
@@ -949,6 +937,34 @@ describe SessionsController do
 
       def create_session
         post create_session_url(user_domain: @user.username, email: @user.username, password: '12345678')
+      end
+
+      it_behaves_like 'all users workflow'
+    end
+
+    describe 'as org without user pass enabled' do
+      before(:all) do
+        Carto::Organization.any_instance.stubs(:auth_enabled?).returns(true)
+        @organization = FactoryGirl.create(:organization_with_users,
+                                           :mfa_enabled,
+                                           auth_username_password_enabled: false)
+        @user = @organization.users.last
+        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '12345678'
+        @user.save
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      def login(user = @user)
+        logout
+        host! "#{@organization.name}.localhost.lan"
+        login_as(user, scope: user.username)
+      end
+
+      def create_session
+        post create_session_url(user_domain: @organization.name, email: @user.username, password: @user.password)
       end
 
       it_behaves_like 'all users workflow'

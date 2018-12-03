@@ -5,11 +5,20 @@ Development
 - None yet
 
 ### Features
-- Send org_admin parameter to central (#14483)
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.23.3 (2018-12-03)
+-------------------
+
+### Features
+* Send org_admin parameter to central (#14483)
 
 
 ### Bug fixes / enhancements
-- No request made to enable MFA #14505
+* No request made to enable MFA #14505
 
 4.23.2 (2018-11-27)
 -------------------

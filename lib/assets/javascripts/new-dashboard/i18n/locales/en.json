@@ -1,5 +1,5 @@
 {
-  "mapCard": {
+  "MapCard": {
     "shared": {
       "LINK": "Link",
       "PUBLIC": "Public",
@@ -142,7 +142,7 @@
     "numberRows": "0 rows | {n} row | {n} rows",
     "tags": "tags"
   },
-  "datasetListHeader": {
+  "DatasetListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "rows": "Rows",
@@ -157,6 +157,30 @@
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
     "logout": "LOG OUT"
+  },
+  "SolutionsPage": {
+    "solutionsTitle": "Solutions for every business problem",
+    "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
+    "talkUsTitle": "Like what you see?",
+    "talkUsDescription": "Our account management team will give you a firsthand view and discuss with you how we can help your organization to do the same.",
+    "talkUsButton": "Talk to us!",
+    "sitePlanning": {
+      "title": "Site Planning",
+      "description": "Drive site selection and investment decisions with always-on data streams, enabling more accurate revenue prediction and reduced risk of failed location decisions."
+    },
+    "territoryManagement": {
+      "title": "Territory Management",
+      "description": "Design and align sales and service territories to increase productivity and reduce costs using spatial field operations data."
+    },
+    "logisticsOptimization": {
+      "title": "Logistics Optimization",
+      "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
+    }
+  },
+  "SolutionCard": {
+    "moreExamples": "View more examples",
+    "usedBy": "Used by:",
+    "goDemo": "Go to demo"
   },
   "SearchComponent": {
     "placeholder": {

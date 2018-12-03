@@ -32,18 +32,18 @@
           </span>
         </h2>
         <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
-        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`mapCard.noDescription`) }}</p>
+        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
       </div>
 
       <ul class="card-metadata">
         <li class="card-metadataItem text is-caption" v-if="!isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
-          <p>{{ $t(`mapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`mapCard.views`, { views: numberViews })}}</span></p>
+          <p>{{ $t(`MapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
         <li class="card-metadataItem text is-caption" v-if="isShared">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
-          <p>{{ $t(`mapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
+          <p>{{ $t(`MapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">
@@ -60,11 +60,11 @@
             </li>
 
             <li v-if="!tagsLength">
-              <span>{{ $t(`mapCard.noTags`) }}</span>
+              <span>{{ $t(`MapCard.noTags`) }}</span>
             </li>
           </ul>
           <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
-            <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`mapCard.tags`)}}</span>
+            <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`MapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
       </ul>
@@ -129,7 +129,7 @@ export default {
       return `icon--${this.$props.map.privacy}`.toLowerCase();
     },
     lastUpdated () {
-      return this.$t(`mapCard.lastUpdate`, { date: distanceInWordsStrict(this.$props.map.updated_at, new Date()) });
+      return this.$t(`MapCard.lastUpdate`, { date: distanceInWordsStrict(this.$props.map.updated_at, new Date()) });
     },
     mapThumbnailUrl () {
       return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });

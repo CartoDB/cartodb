@@ -13,19 +13,19 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -47,19 +47,19 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -81,19 +81,19 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -115,19 +115,19 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -150,19 +150,19 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -184,19 +184,19 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -218,19 +218,19 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -252,19 +252,19 @@ exports[`MapCard.vue should render correct contents 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>
@@ -290,15 +290,15 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <!---->
-        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="tag" linkroute="tagSearch"><span class="feature-text text is-caption is-txtGrey">4 mapCard.tags</span></featuresdropdown-stub>
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="tag" linkroute="tagSearch"><span class="feature-text text is-caption is-txtGrey">4 MapCard.tags</span></featuresdropdown-stub>
       </li>
     </ul>
   </div>
@@ -322,11 +322,11 @@ exports[`MapCard.vue should render description and tags 1`] = `
     </div>
     <ul class="card-metadata">
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--public"></span>
-        <p>mapCard.shared.PUBLIC <span>| mapCard.views</span></p>
+        <p>MapCard.shared.PUBLIC <span>| MapCard.views</span></p>
       </li>
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
@@ -363,19 +363,19 @@ exports[`MapCard.vue should show the map is shared 1`] = `
       <h2 title="First Map" class="card-title title is-caption">
         First Map&nbsp;
         <span class="card-favorite"><img svg-inline="" src="../assets/icons/common/favorite.svg"></span></h2>
-      <p class="card-description text is-caption is-txtSoftGrey">mapCard.noDescription</p>
+      <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
       <!---->
       <li class="card-metadataItem text is-caption"><span class="icon icon--privacy icon--sharedBy" style="background-image: url(/assets/unversioned/images/avatars/avatar_mountain_green.png);"></span>
-        <p>mapCard.sharedBy</p>
+        <p>MapCard.sharedBy</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/calendar.svg"></span>
-        <p>mapCard.lastUpdate</p>
+        <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../assets/icons/maps/tag.svg"></span>
         <ul class="card-tagList">
-          <li><span>mapCard.noTags</span></li>
+          <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
       </li>

@@ -239,7 +239,7 @@ module.exports = {
           options: {
             name: `[name].[ext]`,
             outputPath: `${version}/images/`,
-            publicPath: `${http_path_prefix}/assets/${version}/fonts/`
+            publicPath: `${http_path_prefix}/assets/${version}/images/`
           }
         }
       },

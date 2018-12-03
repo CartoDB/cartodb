@@ -18,7 +18,7 @@
         </ul>
         <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
           <img svg-inline src="../assets/icons/common/compass.svg">
-        </EmptyState> 
+        </EmptyState>
         <LoadingState v-if="isFetching" :text="loadingStateText">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </LoadingState>
@@ -56,7 +56,7 @@ export default {
     loadingStateText () {
       return this.$t(`NotificationsPage.loadingState`);
     },
-    isFetching() {
+    isFetching () {
       return this.$store.state.notifications.isFetching;
     }
   }

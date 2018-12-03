@@ -77,7 +77,7 @@ describe Superadmin::OauthAppsController do
         response.status.should == 204
         @oauth_app.reload
         @oauth_app.name.should eq 'updated_name'
-        @oauth_app.user.should be_nil
+        @oauth_app.user_id.should_not eq @oauth_app_param[:oauth_app][:user_id]
       }.to change(Carto::OauthApp, :count).by(0)
     end
 

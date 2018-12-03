@@ -31,8 +31,7 @@ exports[`DatasetCard.vue should remove the selection checkbox add the name of th
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div>
-    <!---->
+    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="dataset-cell cell--main">
     <div class="title-container">
@@ -51,7 +50,7 @@ exports[`DatasetCard.vue should remove the selection checkbox add the name of th
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
-    <!---->
+    <datasetquickactions-stub dataset="[object Object]" isshared="true" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
 `;

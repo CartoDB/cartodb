@@ -6,50 +6,50 @@
 
     <ul class="grid-cell--col12 grid">
       <li class="grid-cell--col12 solution-element">
-        <SolutionsCard
+        <SolutionCard
           :title="$t(`solutionsPage.sitePlanning.title`)"
           :description="$t(`solutionsPage.sitePlanning.description`)"
           infoUrl="https://carto.com/solutions/site-planning/"
           demoUrl="https://carto.com/demo/siteplanning-demo/">
-          <template slot="solution-icon"><img svg-inline src="../assets/icons/solutions/site-planning.svg"></template>
+          <template slot="icon"><img svg-inline src="../assets/icons/solutions/site-planning.svg"></template>
           <template slot="image"><img src="../assets/icons/solutions/screens/site-planning.png"></template>
           <template slot="demo-logos">
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/dhl.svg"/>
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/securitas.svg"/>
           </template>
-        </SolutionsCard>
+        </SolutionCard>
       </li>
 
       <li class="grid-cell--col12 solution-element">
-        <SolutionsCard
+        <SolutionCard
           :title="$t(`solutionsPage.territoryManagement.title`)"
           :description="$t(`solutionsPage.territoryManagement.description`)"
           infoUrl="https://carto.com/solutions/territory-management/"
           demoUrl="https://carto.com/demo/salesquest-demo/">
-          <template slot="solution-icon"><img svg-inline src="../assets/icons/solutions/territory.svg"></template>
+          <template slot="icon"><img svg-inline src="../assets/icons/solutions/territory.svg"></template>
           <template slot="image"><img src="../assets/icons/solutions/screens/territory.png"></template>
           <template slot="demo-logos">
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/fcc.svg"/>
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/dpd.svg"/>
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/la-poste.svg"/>
           </template>
-        </SolutionsCard>
+        </SolutionCard>
       </li>
 
       <li class="grid-cell--col12 solution-element">
-        <SolutionsCard
+        <SolutionCard
           :title="$t(`solutionsPage.logisticsOptimization.title`)"
           :description="$t(`solutionsPage.logisticsOptimization.description`)"
           infoUrl="https://carto.com/solutions/logistics-optimization/"
           demoUrl="https://carto.com/demo/logistic-demo/">
-          <template slot="solution-icon"><img svg-inline src="../assets/icons/solutions/logistics.svg"></template>
+          <template slot="icon"><img svg-inline src="../assets/icons/solutions/logistics.svg"></template>
           <template slot="image"><img src="../assets/icons/solutions/screens/delivery.png"></template>
           <template slot="demo-logos">
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/bonobos.svg"/>
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/ikea.svg"/>
             <img class="demo-card-logo" src="../assets/icons/solutions/logos/sanitas.svg"/>
           </template>
-        </SolutionsCard>
+        </SolutionCard>
       </li>
     </ul>
     <div class="talk-us-card">
@@ -66,12 +66,12 @@
 </template>
 
 <script>
-import SolutionsCard from 'new-dashboard/components/Solutions/SolutionsCard';
+import SolutionCard from 'new-dashboard/components/Solutions/SolutionCard';
 
 export default {
   name: 'SolutionsPage',
   components: {
-    SolutionsCard
+    SolutionCard
   }
 };
 </script>

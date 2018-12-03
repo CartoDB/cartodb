@@ -7,13 +7,13 @@ exports[`Solutions.vue should render correct contents 1`] = `
     <p class="text is-caption solutions-description">solutionsPage.solutionsDescription</p>
     <ul class="grid-cell--col12 grid">
       <li class="grid-cell--col12 solution-element">
-        <solutionscard-stub title="solutionsPage.sitePlanning.title" description="solutionsPage.sitePlanning.description" demourl="https://carto.com/demo/siteplanning-demo/" infourl="https://carto.com/solutions/site-planning/"><template></template> <template></template> <template></template></solutionscard-stub>
+        <solutioncard-stub title="solutionsPage.sitePlanning.title" description="solutionsPage.sitePlanning.description" demourl="https://carto.com/demo/siteplanning-demo/" infourl="https://carto.com/solutions/site-planning/"><template></template> <template></template> <template></template></solutioncard-stub>
       </li>
       <li class="grid-cell--col12 solution-element">
-        <solutionscard-stub title="solutionsPage.territoryManagement.title" description="solutionsPage.territoryManagement.description" demourl="https://carto.com/demo/salesquest-demo/" infourl="https://carto.com/solutions/territory-management/"><template></template> <template></template> <template></template></solutionscard-stub>
+        <solutioncard-stub title="solutionsPage.territoryManagement.title" description="solutionsPage.territoryManagement.description" demourl="https://carto.com/demo/salesquest-demo/" infourl="https://carto.com/solutions/territory-management/"><template></template> <template></template> <template></template></solutioncard-stub>
       </li>
       <li class="grid-cell--col12 solution-element">
-        <solutionscard-stub title="solutionsPage.logisticsOptimization.title" description="solutionsPage.logisticsOptimization.description" demourl="https://carto.com/demo/logistic-demo/" infourl="https://carto.com/solutions/logistics-optimization/"><template></template> <template></template> <template></template></solutionscard-stub>
+        <solutioncard-stub title="solutionsPage.logisticsOptimization.title" description="solutionsPage.logisticsOptimization.description" demourl="https://carto.com/demo/logistic-demo/" infourl="https://carto.com/solutions/logistics-optimization/"><template></template> <template></template> <template></template></solutioncard-stub>
       </li>
     </ul>
     <div class="talk-us-card">

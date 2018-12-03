@@ -183,8 +183,8 @@ class Admin::VisualizationsController < Admin::AdminController
       vis.privacy == Carto::Visualization::PRIVACY_PUBLIC && vis.published?
     end
 
-    @total_nonpublic_total_vis_count = @table.dependent_visualizations.select { |vis|
-      vis.privacy != Carto::Visualization::PRIVACY_PUBLIC
+    @total_nonpublic_total_vis_count = @table.dependent_visualizations.reject { |vis|
+      vis.privacy == Carto::Visualization::PRIVACY_PUBLIC
     }.count
 
     # Public export API SQL url

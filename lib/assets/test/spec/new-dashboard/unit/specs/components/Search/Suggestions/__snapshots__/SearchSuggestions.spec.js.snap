@@ -17,7 +17,7 @@ exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
 
 exports[`SearchSuggestions.vue Rendering should render isFetching state 1`] = `
 <section class="suggestions suggestions--open">
-  <router-link to="[object Object]" class="suggestions__header is-caption text suggestions--loading">
+  <router-link to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
     Query text
     <!---->
   </router-link>

@@ -10,9 +10,11 @@ module Carto
       end
 
       it 'requires user' do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
         app = OauthApp.new
         expect(app).to_not(be_valid)
         expect(app.errors[:user]).to(include("can't be blank"))
+        Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       end
 
       it 'requires name' do

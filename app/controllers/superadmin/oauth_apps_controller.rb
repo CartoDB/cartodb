@@ -5,7 +5,8 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
 
   ssl_required
 
-  before_action :load_oauth_app, :load_user, only: [:update, :destroy]
+  before_action :load_oauth_app, only: [:update, :destroy]
+  before_action :load_user, only: [:update]
   before_action :avoid_sync_central, only: [:update, :destroy]
 
   def create
@@ -35,7 +36,7 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
   end
 
   def load_user
-    @user = Carto::User.where(username: params[:oauth_app][:username]).first
+    @user = Carto::User.where(id: params[:oauth_app][:user_id]).first
   end
 
   def oauth_params

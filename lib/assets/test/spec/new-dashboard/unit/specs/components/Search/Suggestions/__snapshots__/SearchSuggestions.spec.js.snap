@@ -2,8 +2,8 @@
 
 exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
 <section class="suggestions suggestions--open">
-  <router-link to="[object Object]" class="suggestions__header is-caption text">
-    Query text <span>- 1 results</span></router-link>
+  <router-link-stub to="[object Object]" class="suggestions__header is-caption text">
+    Query text <span>- 1 results</span></router-link-stub>
   <ul class="suggestions__content">
     <li>
       <searchsuggestionsitem-stub item="[object Object]"></searchsuggestionsitem-stub>
@@ -17,10 +17,10 @@ exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
 
 exports[`SearchSuggestions.vue Rendering should render isFetching state 1`] = `
 <section class="suggestions suggestions--open">
-  <router-link to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
+  <router-link-stub to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
     Query text
     <!---->
-  </router-link>
+  </router-link-stub>
   <ul class="suggestions__content"></ul>
 </section>
 `;

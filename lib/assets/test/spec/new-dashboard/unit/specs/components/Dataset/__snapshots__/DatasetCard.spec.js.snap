@@ -130,13 +130,13 @@ exports[`DatasetCard.vue should render tags 1`] = `
       <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
         <ul class="tag-list">
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">Hi</router-link-stub><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
           </li>
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">Hello</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">Hello</router-link-stub><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
           </li>
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">CARTO Rules</router-link>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">CARTO Rules</router-link-stub>
             <!---->
           </li>
         </ul>

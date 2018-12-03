@@ -469,7 +469,6 @@ describe Carto::Api::VisualizationsController do
     after(:all) do
       @user_1.destroy
       @user_2.destroy
-      @feature_flag.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
@@ -2042,7 +2041,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    describe 'tests visualization listing filters' do
+    describe 'filters' do
       before(:each) do
         bypass_named_maps
         delete_user_data(@user_1)
@@ -2088,6 +2087,38 @@ describe Carto::Api::VisualizationsController do
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first['id'].should == vis_1_id
+      end
+
+      context 'only_published' do
+        before(:each) do
+          carto_user = Carto::User.find(@user_1.id)
+          unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
+          _, _, _, @unpublished_viz = create_full_visualization(carto_user, visualization_attributes: unpublished_attrs)
+          published_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
+          _, _, _, @published_viz = create_full_visualization(carto_user, visualization_attributes: published_attrs)
+        end
+
+        after(:each) do
+          @unpublished_viz.destroy
+          @published_viz.destroy
+        end
+
+        it 'filters with only_published = true' do
+          get api_v1_visualizations_index_url(api_key: @api_key, only_published: true), {}, @headers
+          last_response.status.should == 200
+          response    = JSON.parse(last_response.body)
+          collection  = response.fetch('visualizations')
+          collection.length.should eq 1
+          collection.first['id'].should == @published_viz.id
+        end
+
+        it 'does not filter without it' do
+          get api_v1_visualizations_index_url(api_key: @api_key), {}, @headers
+          last_response.status.should == 200
+          response    = JSON.parse(last_response.body)
+          collection  = response.fetch('visualizations')
+          collection.length.should eq 2
+        end
       end
 
     end

@@ -34,7 +34,7 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
 <section class="page">
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">
       SearchPage.title.allFetching
-      <span class="loading"><img svg-inline="" src="../assets/icons/navbar/search/loading.svg" class="loading__svg"></span></span></stickysubheader-stub>
+      <span class="loading"><img svg-inline="" src="../assets/icons/common/loading.svg" class="loading__svg"></span></span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
       <section class="page-section">

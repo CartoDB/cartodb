@@ -16,24 +16,27 @@
             </NotificationCard>
           </li>
         </ul>
-        <EmptyState v-if="emptyState" :text="emptyStateText">
-          <img svg-inline src="../assets/icons/common/compass.svg">
+        <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
+          <img svg-inline src="../assets/icons/common/check-bubble.svg">
         </EmptyState>
+        <LoadingState v-if="isFetching" :text="loadingStateText"></LoadingState>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import SectionTitle from '../components/SectionTitle';
 import EmptyState from '../components/States/EmptyState';
+import LoadingState from '../components/States/LoadingState';
 import NotificationCard from '../components/NotificationCard';
+import SectionTitle from '../components/SectionTitle';
 export default {
   name: 'NotificationsPage',
   components: {
-    SectionTitle,
     EmptyState,
-    NotificationCard
+    LoadingState,
+    NotificationCard,
+    SectionTitle
   },
   computed: {
     pageTitle () {
@@ -47,6 +50,12 @@ export default {
     },
     emptyStateText () {
       return this.$t(`NotificationsPage.emptyState`);
+    },
+    loadingStateText () {
+      return this.$t(`NotificationsPage.loadingState`);
+    },
+    isFetching () {
+      return this.$store.state.notifications.isFetching;
     }
   }
 };

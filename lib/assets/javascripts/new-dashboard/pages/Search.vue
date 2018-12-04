@@ -4,7 +4,7 @@
       <span class="title" v-if="isFirstFetch">
         {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
         <span class="loading">
-          <img svg-inline src="../assets/icons/navbar/search/loading.svg" class="loading__svg"/>
+          <img svg-inline src="../assets/icons/common/loading.svg" class="loading__svg"/>
         </span>
       </span>
       <span class="title" v-else-if="searchTerm">{{ $tc('SearchPage.title.searchTerm', totalResults, { query: searchTerm }) }}</span>

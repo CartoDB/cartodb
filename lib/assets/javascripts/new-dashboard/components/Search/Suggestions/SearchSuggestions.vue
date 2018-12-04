@@ -178,7 +178,7 @@ export default {
       width: 18px;
       height: 18px;
       transform: translate3d(0, -50%, 0);
-      background-image: url("../../../assets/icons/navbar/search/loading.svg");
+      background-image: url("../../../assets/icons/common/loading.svg");
       background-repeat: no-repeat;
       background-position: center;
     }

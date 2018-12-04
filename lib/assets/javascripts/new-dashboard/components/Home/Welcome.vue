@@ -1,16 +1,20 @@
 <template>
-  <WelcomeCompact :username="username"></WelcomeCompact>
+  <!-- <WelcomeCompact :username="username"></WelcomeCompact> -->
+  <WelcomeFirst :username="username"></WelcomeFirst>
 </template>
 
 <script>
 import CreateButton from "new-dashboard/components/CreateButton.vue";
 import WelcomeCompact from './WelcomeCompact';
+import WelcomeFirst from './WelcomeFirst';
+
 
 export default {
   name: "Welcome",
   components: {
     CreateButton,
-    WelcomeCompact
+    WelcomeCompact,
+    WelcomeFirst
   },
   props: {
     username: String,

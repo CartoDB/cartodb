@@ -1,7 +1,8 @@
 <template>
   <section class="welcome-first">
     <div class="container">
-      <div class="welcome-first__greeting title is-caption">{{ greeting }}</div>
+      <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
+      <div class="welcome-first__text text is-body">{{ text }}</div>
       <div class="welcome-first__actions">
         <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
@@ -24,6 +25,10 @@ export default {
   computed: {
     greeting() {
       return `Hello, ${this.$props.username}`;
+    },
+    text() {
+      return `You have an [account plan] and you are a of [organization name].
+      Want to know more about your new dashboard?`;
     }
   }
 };
@@ -35,24 +40,30 @@ export default {
 .welcome-first {
   position: relative;
   top: 64px;
-  padding: 24px;
-  border-bottom: 1px solid #E6E8EB;
+  padding: 124px 0;
+  background: #047AE6;
+  color: white;
+  text-align: center;
 
-  &__greeting {
-    display: inline-block;
-    margin-right: 64px;
+  &__text {
+    max-width: 724px;
+    margin: 16px auto 48px;
   }
 
   &__actions {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
   }
 
   .button {
-    margin-right: 36px;
-    padding: 0;
+    border: 1px solid #fff;
     background: none;
-    color: #047AE6;
+    color: #fff;
     text-transform: uppercase;
+
+    &:first-child {
+      margin-right: 36px;
+    }
   }
 }
 </style>

@@ -248,6 +248,7 @@ module Carto
 
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
         service.update(enabled: mfa_enabled)
+        warden.session(user.username)[:multifactor_authentication_performed] = !mfa_enabled
       end
     end
   end

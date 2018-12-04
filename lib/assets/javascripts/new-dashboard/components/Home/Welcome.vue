@@ -1,81 +1,76 @@
 <template>
-  <section>
-    <div class="welcome-navbar" v-if="isRest" :class="{'is-rest': isRest}">
-      <h4 class="title is-caption is-semibold welcome-title">
-        {{ $t(`HomePage.welcome.${section}.title`, { username: user.username }) }}
-      </h4>
-      <ul class="welcome-actions">
-        <li class="welcome-action"><CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton></li>
-        <li class="welcome-action"><CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton></li>
-      </ul>
-    </div>
-
-    <div v-if="!isRest" class="welcome-section"  :class="{'is-first': isFirst, 'has-notification': hasNotification}">
-      <div class="container grid u-flex u-justifyCenter" v-if="section !== 'rest'">
-        <div class="grid-cell grid-cell--col9">
-          <h1 class="welcome-title title is-title" :class="{'is-txtWhite': isFirst}">
-            {{ $t(`HomePage.welcome.${section}.title`, { username: user.username }) }}
-          </h1>
-          <h3 class="welcome-text text is-body"  :class="{'is-txtWhite': isFirst}">
-            {{ $t(`HomePage.welcome.${section}.text`, { account: user.account_type_display_name, organization: user.organization.name, owner: user.organization.owner.username }) }}
-          </h3>
-          <ul class="welcome-actions" v-if="isFirst">
-            <li class="welcome-action"><CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton></li>
-            <li class="welcome-action"><CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton></li>
-          </ul>
-          <ul class="welcome-actions"  v-if="!isFirst">
-            <li class="welcome-action">
-              <router-link :to="{name: 'notifications'}">
-                  <button class="button button--small is-primary">{{ $t(`HomePage.welcome.${section}.button`) }}</button>
-              </router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+  <WelcomeCompact :username="username"></WelcomeCompact>
 </template>
 
 <script>
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import CreateButton from "new-dashboard/components/CreateButton.vue";
+import WelcomeCompact from './WelcomeCompact';
 
 export default {
-  name: 'Welcome',
+  name: "Welcome",
   components: {
-    CreateButton
+    CreateButton,
+    WelcomeCompact
   },
   props: {
-    user: Object,
-    isFirst: {
-      type: Boolean,
-      default: false
-    }
+    username: String,
   },
-  computed: {
-    hasNotification () {
-      return this.user.organizationNotifications.length > 0;
-    },
-    isRest () {
-      return !(this.isFirst || this.hasNotification);
-    },
-    section () {
-      if (this.isFirst) {
-        return 'first';
-      }
-      if (this.hasNotification) {
-        return 'notification';
-      }
-      return 'rest';
-    }
-  }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import "stylesheets/new-dashboard/variables";
 
-.welcome-section {
+.welcome {
+  top: 64px;
+  margin: auto;
   padding: 164px 0 120px;
+  text-align: center;
+
+  &__greeting {
+    font-family: "Montserrat", sans-serif;
+    font-size: 48px;
+    font-weight: 600;
+    line-height: 64px;
+  }
+
+  &__info {
+    margin: 24px auto;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    text-transform: uppercase;
+
+    .button {
+      padding: 0;
+      background: none;
+      color: #047AE6;
+      text-transform: uppercase;
+    }
+  }
+
+  &.compact {
+    position: relative;
+    padding: 16px 0;
+    text-align: initial;
+
+    .welcome__greeting {
+      display: inline-block;
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .welcome__info {
+      display: none;
+    }
+
+    .welcome__actions {
+      display: inline-flex;
+      justify-content: start;
+    }
+  }
 }
 
 .welcome-title {
@@ -130,7 +125,7 @@ export default {
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    background-color: #74FFA8;
+    background-color: #74ffa8;
   }
 }
 

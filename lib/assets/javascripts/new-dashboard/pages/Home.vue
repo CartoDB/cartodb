@@ -1,7 +1,5 @@
 <template>
-  <section class="">
-    <Welcome :user="user"></Welcome>
-  </section>
+  <Welcome :username="username"></Welcome>
 </template>
 
 <script>
@@ -18,8 +16,8 @@ export default {
     };
   },
   computed: {
-    user () {
-      return this.$store.state.user;
+    username () {
+      return this.$store.state.user.username;
     },
     isFirst () {
       return false;
@@ -28,7 +26,4 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attributBooe to limit CSS to this component only -->
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

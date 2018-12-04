@@ -1,7 +1,7 @@
 <template>
   <div class="loading-state">
     <div class="loading-state-icon">
-      <img svg-inline src="../../assets/icons/navbar/search/loading.svg" class="loading-state__svg"/>
+      <img svg-inline src="../../assets/icons/common/loading.svg" class="loading-state__svg"/>
     </div>
 
     <h6 class="loading-state-text text is-caption is-txtSoftGrey">{{text}}</h6>
@@ -26,10 +26,6 @@ export default {
 }
 
 .loading-state-icon {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  justify-content: center;
   margin-bottom: 24px;
 }
 

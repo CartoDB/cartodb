@@ -19,7 +19,7 @@ exports[`NotificationsPage.vue when notifications are being fetched should show 
       <ul class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet"></ul>
       <!---->
       <div class="loading-state">
-        <div class="loading-state-icon"><img svg-inline="" src="../../assets/icons/navbar/search/loading.svg" class="loading-state__svg"></div>
+        <div class="loading-state-icon"><img svg-inline="" src="../../assets/icons/common/loading.svg" class="loading-state__svg"></div>
         <h6 class="loading-state-text text is-caption is-txtSoftGrey">fake_loading_text</h6>
       </div>
     </div>

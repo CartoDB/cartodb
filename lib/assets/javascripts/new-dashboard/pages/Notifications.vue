@@ -19,9 +19,7 @@
         <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
           <img svg-inline src="../assets/icons/common/check-bubble.svg">
         </EmptyState>
-        <LoadingState v-if="isFetching" :text="loadingStateText">
-          <img svg-inline src="../assets/icons/common/compass.svg">
-        </LoadingState>
+        <LoadingState v-if="isFetching" :text="loadingStateText"></LoadingState>
       </div>
     </div>
   </section>

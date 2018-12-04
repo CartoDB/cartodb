@@ -2,7 +2,7 @@
   <section class="welcome-first">
     <div class="container">
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
-      <div class="welcome-first__text text is-body">{{ text }}</div>
+      <div class="welcome-first__text text is-caption">{{ text }}</div>
       <div class="welcome-first__actions">
         <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
@@ -41,8 +41,8 @@ export default {
   position: relative;
   top: 64px;
   padding: 124px 0;
-  background: #047AE6;
-  color: white;
+  background: $primary-color;
+  color: $white;
   text-align: center;
 
   &__text {
@@ -56,9 +56,9 @@ export default {
   }
 
   .button {
-    border: 1px solid #fff;
+    border: 1px solid $white;
     background: none;
-    color: #fff;
+    color: $white;
     text-transform: uppercase;
 
     &:first-child {

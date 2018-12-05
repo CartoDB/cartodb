@@ -160,22 +160,6 @@
     "notifications": "Notifications",
     "logout": "LOG OUT"
   },
-<<<<<<< HEAD
-  "HomePage": {
-    "welcome": {
-      "first": {
-        "title": "Welcome, {username}",
-        "text": "You have a {account} and you are a member of {organization}. Want to know more about your new dashboard?"
-      },
-      "notification": {
-        "title": "Aloha, {username}",
-        "text": "The {owner} administrator sent you a new notification. Want to read it?",
-        "button": "Go to Notifications"
-      },
-      "rest": {
-        "title": "Kaixo, {username}"
-      }
-=======
   "SolutionsPage": {
     "solutionsTitle": "Solutions for every business problem",
     "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
@@ -220,7 +204,6 @@
     "emptyText": {
       "maps": "No maps found.",
       "datasets":  "No datasets found."
->>>>>>> new-dashboard-feature
     }
   }
 }

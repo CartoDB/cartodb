@@ -1,6 +1,7 @@
 <template>
   <ul class="map-list">
     <CreateMapCard></CreateMapCard>
+    <CreateMapCard></CreateMapCard>
   </ul>
 </template>
 
@@ -31,8 +32,15 @@ export default {
 @import "stylesheets/new-dashboard/variables";
 
 .map-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+
   .create-map-card {
-    max-width: 500px;
+    min-width: 380px;
+    max-width: 448px;
+    margin: auto;
   }
 }
 </style>

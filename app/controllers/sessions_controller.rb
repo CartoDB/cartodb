@@ -115,7 +115,7 @@ class SessionsController < ApplicationController
     user = ::User.where(id: params[:user_id]).first
     url = after_login_url(user)
 
-    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup? && user.organization_owner?
+    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup?
       disable_mfa(user.id)
     else
       return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
@@ -142,15 +142,17 @@ class SessionsController < ApplicationController
 
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
-    @login_error = if params[:code].presence
+    @login_error = if mfa_request?
                      'Verification code is not valid'
+                   elsif params[:email].blank? && params[:password].blank?
+                     'Can\'t be blank'
                    else
-                     params[:email].blank? && params[:password].blank? ? 'Can\'t be blank' : 'Your account or your password is not ok'
+                     'Your account or your password is not ok'
                    end
 
     respond_to do |format|
       format.html do
-        return multifactor_authentication if params[:code].presence
+        return multifactor_authentication if mfa_request?
         return render action: 'new'
       end
       format.json do
@@ -284,6 +286,10 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def mfa_request?
+    params[:code].presence || params[:skip].presence
+  end
 
   def set_last_mfa_activity
     user = ::User.where(id: params[:user_id]).first || current_viewer

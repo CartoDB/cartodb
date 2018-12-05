@@ -10,7 +10,12 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
   </ul>
   <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-    <form action="#" method="get" autocomplete="off" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
+      <section class="suggestions">
+        <!---->
+        <ul class="suggestions__content"></ul>
+      </section>
+    </form>
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <div class="navbar-dropdown">
@@ -59,7 +64,12 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   </ul>
   <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-    <form action="#" method="get" autocomplete="off" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
+      <section class="suggestions">
+        <!---->
+        <ul class="suggestions__content"></ul>
+      </section>
+    </form>
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <div class="navbar-dropdown">
@@ -108,7 +118,12 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   </ul>
   <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-    <form action="#" method="get" autocomplete="off" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
+      <section class="suggestions">
+        <!---->
+        <ul class="suggestions__content"></ul>
+      </section>
+    </form>
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <div class="navbar-dropdown">
@@ -157,7 +172,12 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
   </ul>
   <div class="navbar-imagotype u-hideMobile"><img src="../../assets/icons/navbar/imagotype.svg"></div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-    <form action="#" method="get" autocomplete="off" class="navbar-search"><input type="text" name="query" placeholder="Search" class="title is-small is-regular navbar-searchInput"></form>
+    <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
+      <section class="suggestions">
+        <!---->
+        <ul class="suggestions__content"></ul>
+      </section>
+    </form>
     <div class="navbar-user">
       <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <div class="navbar-dropdown is-open">

@@ -33,9 +33,7 @@
       <img src="../../assets/icons/navbar/imagotype.svg" />
   </div>
   <div class="navbar-elementsContainer navbar-searchContainer">
-      <form action="#" method="get" class="navbar-search" autocomplete="off">
-          <input type="text" name="query" class="title is-small is-regular navbar-searchInput" placeholder="Search">
-      </form>
+      <Search />
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
@@ -48,11 +46,13 @@
 </template>
 
 <script>
+import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 
 export default {
   name: 'NavigationBar',
   components: {
+    Search,
     UserDropdown
   },
   props: {
@@ -82,7 +82,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
@@ -151,10 +150,12 @@ export default {
 
 .navbar-searchIcon {
   padding-top: 21px;
+  cursor: pointer;
 }
 
 .navbar-searchClose {
   display: none;
+  cursor: pointer;
 }
 
 .navbar-icon {
@@ -168,69 +169,6 @@ export default {
 .navbar-imagotype {
   width: 24px;
   height: 24px;
-}
-
-.navbar-search {
-  @media (max-width: $layout-mobile) {
-    visibility: hidden;
-    opacity: 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    width: 18px;
-    height: 18px;
-    transform: translate3d(0, -50%, 0);
-    background-image: url("../../assets/icons/navbar/loupe.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-
-  &:hover {
-    &::after {
-      background-image: url("../../assets/icons/navbar/loupe_primary.svg");
-    }
-
-    .navbar-searchInput {
-      &::placeholder {
-        color: $primary-color;
-      }
-
-      &:focus {
-        &::placeholder {
-          color: $text-secondary-color;
-        }
-      }
-    }
-  }
-
-  &:focus-within {
-    &::after {
-      background-image: url("../../assets/icons/navbar/loupe.svg");
-    }
-  }
-}
-
-.navbar-searchInput {
-  width: 120px;
-  height: 36px;
-  padding-left: 42px;
-  transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-  border: 0;
-  border-radius: 18px;
-  background-color: #FFF;
-
-  &::placeholder {
-    color: $text-secondary-color;
-  }
-
-  &:focus {
-    width: 240px;
-    outline: none;
-  }
 }
 
 .navbar-user {
@@ -285,26 +223,6 @@ export default {
     position: absolute;
     width: 100%;
     opacity: 1;
-  }
-
-  .navbar-search {
-    visibility: visible;
-    position: absolute;
-    left: 0;
-    width: calc(100% - 66px);
-    margin-left: 16px;
-    opacity: 1;
-
-    &::after {
-      display: none;
-    }
-  }
-
-  .navbar-searchInput {
-    width: 100%;
-    padding: 16px;
-    border-radius: 3px;
-    background-image: none;
   }
 
   .navbar-searchClose {

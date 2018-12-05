@@ -24,6 +24,7 @@
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
+      <MapList :maps="maps"></MapList>
     </div>
   </section>
 </template>
@@ -32,17 +33,28 @@
 import SectionTitle from "../../SectionTitle.vue";
 import CreateButton from "../../CreateButton.vue";
 import SettingsDropdown from '../../Settings/Settings';
+import MapList from './MapList.vue';
 
 export default {
   name: "MapsSection",
   components: {
     SectionTitle,
     CreateButton,
-    SettingsDropdown
+    SettingsDropdown,
+    MapList
+  },
+  data () {
+    return {
+      maps: []
+    };
   },
   methods: {
-    applyFilter() {},
-    applyOrder() {}
+    applyFilter(filter) {
+      console.log('Filter', filter);
+    },
+    applyOrder(order) {
+      console.log('Order', order);
+    }
   },
   computed: {
     title() {

@@ -45,7 +45,6 @@ export default {
 
 .welcome-basic {
   position: relative;
-  top: 64px;
   padding: 124px 0;
   text-align: center;
 

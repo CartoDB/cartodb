@@ -34,6 +34,21 @@ module Carto
       no_dataset_scopes + dataset_scopes
     end
 
+    def revoke_permissions(table, revoked_permissions)
+      db_connection = user.in_database(as: :superuser)
+      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |_s, _t, qualified_name|
+        query = %{
+          REVOKE #{revoked_permissions.join(', ')}
+          ON TABLE #{qualified_name}
+          FROM \"#{dataset_role_name}\"
+        }
+        db_connection.execute(query)
+        sequences_for_table(qualified_name).each do |seq|
+          db_connection.execute("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{dataset_role_name}\"")
+        end
+      end
+    end
+
     private
 
     def validate_user_authorizable
@@ -154,6 +169,5 @@ module Carto
     def dataset_role_name
       "carto_oauth_app_#{id}"
     end
-
   end
 end

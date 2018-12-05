@@ -14,35 +14,37 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/settings.svg"/>
         </div>
-        <a :href="`${ baseUrl }/profile`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.settings') }}</a>
+        <a :href="`${ baseUrl }/profile`" class="text is-semibold is-caption is-txtGrey" @click="linkClicked">{{ $t('UserDropdown.settings') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink" v-if="isOrganizationAdmin">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/organization.svg"/>
         </div>
-        <a :href="`${ baseUrl }/organization`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.organizationSettings') }}</a>
+        <a :href="`${ baseUrl }/organization`" class="text is-semibold is-caption is-txtGrey" @click="linkClicked">{{ $t('UserDropdown.organizationSettings') }}</a>
       </li>
-      <li class="navbar-dropdown-iconLink">
+      <li @click="linkClicked" class="navbar-dropdown-iconLink">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/api-keys.svg"/>
         </div>
-        <a :href="`${ baseUrl }/your_apps`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.apiKeys') }}</a>
+        <a :href="`${ baseUrl }/your_apps`" class="text is-semibold is-caption is-txtGrey" @click="linkClicked">{{ $t('UserDropdown.apiKeys') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank">{{ $t('UserDropdown.publicProfile') }}</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked" >{{ $t('UserDropdown.publicProfile') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/notifications.svg"/>
         </div>
-        <a :href="`${ baseUrl }#`" class="text is-semibold is-caption is-txtGrey">{{ $t('UserDropdown.notifications') }}</a>
+        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked">
+          {{ $t('UserDropdown.notifications') }}
+        </router-link>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
       </li>
     </ul>
-    <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom">
+    <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom" @click="linkClicked">
       <div class="arrow"><img svg-inline src="../../assets/icons/navbar/dropdown/arrow-right.svg" /></div>
       <div class="title is-small is-txtAlert">{{ $t('UserDropdown.logout') }}</div>
     </a>
@@ -61,6 +63,11 @@ export default {
   computed: {
     isOrganizationAdmin () {
       return this.userModel.org_admin;
+    }
+  },
+  methods: {
+    linkClicked () {
+      this.$emit('linkClick');
     }
   }
 };
@@ -177,6 +184,7 @@ export default {
   justify-content: center;
   width: 20px;
   height: 20px;
+  margin-top: 2px;
   margin-left: 24px;
   border-radius: 50%;
   background-color: $notification;

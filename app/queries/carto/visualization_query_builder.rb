@@ -13,11 +13,11 @@ class Carto::VisualizationQueryBuilder
   SUPPORTED_OFFDATABASE_ORDERS = %w(mapviews likes size estimated_row_count dependent_visualizations).freeze
 
   def self.user_public_tables(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
+    user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
 
   def self.user_public_visualizations(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
   end
 
   def self.user_all_visualizations(user)
@@ -369,7 +369,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(version: @version)
     end
 
-    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+    if @only_published
       # "Published" is only required for builder maps
       # This SQL check should match Ruby `Carto::Visualization#published?` definition
       query = query.where(%{

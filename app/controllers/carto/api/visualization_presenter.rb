@@ -161,7 +161,7 @@ module Carto
         if @visualization.is_privacy_private?
           # Final url will be like ORG.carto.com/u/VIEWER/viz/OWNER_SCHEMA.VIS_ID/public_map
           base_url_username = @current_viewer.username
-          vis_id_schema = @visualization.user.sql_safe_database_schema
+          vis_id_schema = @visualization.user.database_schema
         else
           # Final url will be like ORG.carto.com/u/VIEWER/viz/VIS_ID/public_map
           base_url_username = @visualization.user.username

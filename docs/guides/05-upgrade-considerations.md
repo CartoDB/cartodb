@@ -104,7 +104,7 @@ The following example shows the application skeleton using version 3.15 of CARTO
 </html>
 ```
 
-In order to make this example work with version 4.0 of CARTO.js, modify the code as follows:
+In order to make this example work with version 4 of CARTO.js, modify the code as follows:
 
 ```html
 <!DOCTYPE html>

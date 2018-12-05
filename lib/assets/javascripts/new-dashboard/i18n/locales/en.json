@@ -87,6 +87,7 @@
         "private": "Your Private Maps"
       }
     },
+    "createMap": "New Map",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
@@ -203,6 +204,13 @@
     "emptyText": {
       "maps": "No maps found.",
       "datasets":  "No datasets found."
+    }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {username}",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More"
     }
   }
 }

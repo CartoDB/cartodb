@@ -12,10 +12,10 @@
 </template>
 
 <script>
-import CreateButton from "new-dashboard/components/CreateButton.vue";
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
-  name: "WelcomeFirst",
+  name: 'WelcomeFirst',
   components: {
     CreateButton
   },
@@ -23,10 +23,10 @@ export default {
     username: String
   },
   computed: {
-    greeting() {
+    greeting () {
       return `Hello, ${this.$props.username}`;
     },
-    text() {
+    text () {
       return `You have an [account plan] and you are a of [organization name].
       Want to know more about your new dashboard?`;
     }

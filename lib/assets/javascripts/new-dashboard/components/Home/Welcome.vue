@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import CreateButton from "new-dashboard/components/CreateButton.vue";
-import WelcomeCompact from "./WelcomeCompact";
-import WelcomeFirst from "./WelcomeFirst";
-import WelcomeBasic from "./WelcomeBasic";
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import WelcomeCompact from './WelcomeCompact';
+import WelcomeFirst from './WelcomeFirst';
+import WelcomeBasic from './WelcomeBasic';
 
 export default {
-  name: "Welcome",
+  name: 'Welcome',
   components: {
     CreateButton,
     WelcomeBasic,
@@ -21,18 +21,18 @@ export default {
     WelcomeFirst
   },
   computed: {
-    isCompact() {
+    isCompact () {
       // TODO: Implement this logic
       return false;
     },
-    isFirst() {
+    isFirst () {
       // TODO: Implement this logic
       return true;
     },
-    username() {
+    username () {
       return this.$store.state.user.username;
     },
-    notifications() {
+    notifications () {
       return this.$store.state.user.organizationNotifications;
     }
   }

@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import CreateButton from "new-dashboard/components/CreateButton.vue";
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
-  name: "WelcomeBasic",
+  name: 'WelcomeBasic',
   components: {
     CreateButton
   },
@@ -25,15 +25,15 @@ export default {
     notifications: Array,
   },
   computed: {
-    greeting() {
+    greeting () {
       return `Hello, ${this.$props.username}`;
     },
-    text() {
+    text () {
       return  this.hasNotifications 
         ? `You have unread notifications, do you want to read them now?`
         : 'We just released CARTO VL, our new vector rendering Javascript library to create amazing LI applications.';
     },
-    hasNotifications() {
+    hasNotifications () {
       return this.$props.notifications.length > 0;
     }
   }

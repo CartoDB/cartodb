@@ -22,7 +22,7 @@ export default {
   },
   props: {
     username: String,
-    notifications: Array,
+    notifications: Array
   },
   computed: {
     greeting () {
@@ -30,7 +30,7 @@ export default {
     },
     text () {
       return  this.hasNotifications 
-        ? `You have unread notifications, do you want to read them now?`
+        ? 'You have unread notifications, do you want to read them now?'
         : 'We just released CARTO VL, our new vector rendering Javascript library to create amazing LI applications.';
     },
     hasNotifications () {

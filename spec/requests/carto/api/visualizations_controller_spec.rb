@@ -328,7 +328,15 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns success, empty response for empty user' do
-      response_body.should == { 'visualizations' => [], 'total_entries' => 0, 'total_user_entries' => 0, 'total_likes' => 0, 'total_shared' => 0}
+      expected_response = {
+        'visualizations' => [],
+        'total_entries' => 0,
+        'total_user_entries' => 0,
+        'total_likes' => 0,
+        'total_shared' => 0,
+        'total_locked' => 0
+      }
+      response_body.should == expected_response
     end
 
     it 'returns valid information for a user with one table' do
@@ -359,6 +367,7 @@ describe Carto::Api::VisualizationsController do
       response['total_user_entries'].should eq 1
       response['total_likes'].should eq 0
       response['total_shared'].should eq 0
+      response['total_locked'].should eq 0
     end
 
     it 'returns liked count' do
@@ -366,6 +375,15 @@ describe Carto::Api::VisualizationsController do
       vis.add_like_from(@user_1.id)
 
       response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_likes'].should == 1
+    end
+
+    it 'returns locked count' do
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: false).store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: true).store
+      user2 = FactoryGirl.create(:valid_user)
+      FactoryGirl.build(:derived_visualization, user_id: user2.id, locked: true).store
+
+      response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_locked'].should == 1
     end
 
     it 'does a partial match search' do
@@ -949,6 +967,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 1
         body['total_likes'].should eq 0
         body['total_shared'].should eq 0
+        body['total_locked'].should eq 0
         vis = body['visualizations'].first
         vis['id'].should eq u1_t_1_id
 
@@ -958,6 +977,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 1
         body['total_likes'].should eq 0
         body['total_shared'].should eq 0
+        body['total_locked'].should eq 0
         vis = body['visualizations'].first
         vis['id'].should eq u1_vis_1_id
 
@@ -978,6 +998,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 2
         body['total_likes'].should eq 0
         body['total_shared'].should eq 1
+        body['total_locked'].should eq 0
 
         # Share u2 vis2 with u1
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_2_perm_id),
@@ -996,6 +1017,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
 
@@ -1005,6 +1027,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         # Multiple likes to same vis shouldn't increment total as is per vis
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
@@ -1015,6 +1038,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
 
         # Share u2 table1 with org
@@ -1033,6 +1057,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 2
         body['total_likes'].should eq 0
         body['total_shared'].should eq 1
+        body['total_locked'].should eq 0
 
         # Share u2 table2 with org
         put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
@@ -1050,6 +1075,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
         body['visualizations'][0]['table']['name'].should == "\"#{@org_user_2.database_schema}\".#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
@@ -1060,6 +1086,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         # Multiple likes to same table shouldn't increment total as is per vis
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_2.api_key)
@@ -1070,6 +1097,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
       end
 
     end

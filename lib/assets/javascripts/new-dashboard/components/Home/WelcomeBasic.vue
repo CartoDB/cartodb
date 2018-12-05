@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     greeting () {
-      return this.$t('HomePage.WelcomeSection.greeting', {username: this.props.username});
+      return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
     },
     text () {
       return  this.hasNotifications

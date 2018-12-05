@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     greeting () {
-      return `Hello, ${this.$props.username}`;
+      return this.$t('HomePage.WelcomeSection.greeting', {username: this.props.username});
     }
   }
 };

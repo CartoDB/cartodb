@@ -205,5 +205,12 @@
       "maps": "No maps found.",
       "datasets":  "No datasets found."
     }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {username}",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More"
+    }
   }
 }

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Request login when reactivating mfa from account (#14509)
 
 4.23.3 (2018-12-03)
 -------------------

@@ -29,6 +29,7 @@ module Carto
         bbox_parameter = params.fetch(:bbox,nil)
         privacy = params.fetch(:privacy,nil)
         only_with_display_name = params[:only_with_display_name] == 'true'
+        only_published = params[:only_published] == 'true'
 
         vqb = VisualizationQueryBuilder.new
                                        .with_prefetch_user
@@ -47,6 +48,8 @@ module Carto
         if only_with_display_name
           vqb.with_display_name
         end
+
+        vqb.with_published if only_published
 
         if current_user
           if only_liked

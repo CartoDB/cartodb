@@ -30,7 +30,10 @@
         </template>
 
         <template slot="actionButton">
-          <CreateButton v-if="!isSomeMapSelected" visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton
+            v-if="!isSomeMapSelected"
+            visualizationType="maps"
+          >{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
       <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected"></MapList>
@@ -58,7 +61,12 @@ export default {
   data() {
     return {
       maps: [],
-      selectedMapsData: new Set()
+      selectedMapsData: new Set(),
+      filter: "mine",
+      orderOptions: {
+        order: "updated_at",
+        direction: "asc"
+      }
     };
   },
   created: function() {
@@ -68,10 +76,20 @@ export default {
   },
   methods: {
     applyFilter(filter) {
-      console.log("Filter", filter);
+      this.$data.filter = filter;
+      mapService
+        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
+        .then(maps => {
+          this.$data.maps = maps;
+        });
     },
-    applyOrder(order) {
-      console.log("Order", order);
+    applyOrder(orderOptions) {
+      this.$data.orderOptions = orderOptions;
+      mapService
+        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
+        .then(maps => {
+          this.$data.maps = maps;
+        });
     },
     selectAll() {},
     deselectAll() {},

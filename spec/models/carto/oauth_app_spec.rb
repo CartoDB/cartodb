@@ -170,7 +170,7 @@ module Carto
             @oauth_app2 = OauthApp.create!(user: @user_oauth,
                                            name: 'name1',
                                            redirect_uris: ['https://re.dir'],
-                                            icon_url: 'some.png')
+                                           icon_url: 'some.png')
           }.to change { OauthApp.count }.by(1)
 
         end

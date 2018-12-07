@@ -58,7 +58,7 @@ export default {
   @media all and (min-width: 656px) {
     .card {
       flex: 1;
-      min-width: 270px;
+      min-width: 288px;
       margin: 0 12px 36px;
     }
   }

@@ -13,7 +13,7 @@ This conceptual documentation is designed to let you quickly start exploring and
 The easiest way to start learning about the CARTO.js library is to see a simple example. The following web page displays a map adding a layer over it.
 
 ```html
-      <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>Single layer | CARTO</title>
@@ -129,7 +129,7 @@ The URL contained in the script tag is the location of a JavaScript file that lo
 #### HTTPS or HTTP
 We think security on the web is pretty important, and recommend using HTTPS whenever possible. As part of our efforts to make the web more secure, we've made all of the CARTO components available over HTTPS. Using HTTPS encryption makes your site more secure, and more resistant to snooping or tampering.
 
-We recommend loading the CARTO.js library over HTTPS using the <script> tag provided above.
+We recommend loading the CARTO.js library over HTTPS using the `<script>` tag provided above.
 
 ### Map DOM Elements
 

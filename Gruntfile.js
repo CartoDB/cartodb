@@ -338,6 +338,7 @@ module.exports = function (grunt) {
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});
   registerCmdTask('npm-carto-node', {cmd: 'npm', args: ['run', 'carto-node']});
   registerCmdTask('npm-build-dev', {cmd: 'npm', args: ['run', 'build:dev']});
+  registerCmdTask('npm-lint', {cmd: 'npm', args: ['run', 'lint']});
 
   /**
    * `grunt dev`
@@ -357,7 +358,7 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('lint', [
-    'eslint'
+    'npm-lint'
   ]);
 
   grunt.registerTask('sourcemaps', 'generate sourcemaps, to be used w/ trackjs.com for bughunting', [
@@ -440,6 +441,7 @@ module.exports = function (grunt) {
   });
 
   var testTasks = [
+    'lint',
     'connect:test',
     'beforeDefault',
     'generate_builder_specs',
@@ -449,8 +451,7 @@ module.exports = function (grunt) {
     'generate_dashboard_specs',
     'bootstrap_webpack_dashboard_specs',
     'webpack:dashboard_specs',
-    'jasmine:dashboard',
-    'lint'
+    'jasmine:dashboard'
   ];
 
   // If the editor assets version has changed, add the editor tests

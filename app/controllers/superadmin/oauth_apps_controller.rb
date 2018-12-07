@@ -7,7 +7,6 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
 
   before_action :load_oauth_app, only: [:update, :destroy]
   before_action :load_user, only: [:update]
-  before_action :avoid_sync_central, only: [:update, :destroy]
 
   def create
     @oauth_app = Carto::OauthApp.create!(oauth_params)
@@ -22,6 +21,7 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
   end
 
   def destroy
+    @oauth_app.avoid_sync_central = true
     @oauth_app.destroy!
 
     render nothing: true, status: 204
@@ -43,9 +43,5 @@ class Superadmin::OauthAppsController < Superadmin::SuperadminController
     sync_params = @user ? Carto::OauthApp::ALLOWED_SYNC_PARAMS : Carto::OauthApp::ALLOWED_SYNC_PARAMS - %i(user_id)
     params[:oauth_app].permit(sync_params)
                       .merge(avoid_sync_central: true)
-  end
-
-  def avoid_sync_central
-    @oauth_app.avoid_sync_central = true
   end
 end

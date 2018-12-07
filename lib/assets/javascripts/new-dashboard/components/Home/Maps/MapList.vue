@@ -1,9 +1,9 @@
 <template>
   <ul class="map-list">
-    <li class="card">
+    <li v-if="!maps.length" class="card">
       <CreateMapCard></CreateMapCard>
     </li>
-    <li class="card" v-for="map in maps" :key="map.id">
+    <li v-if="maps.length" class="card" v-for="map in maps" :key="map.id">
       <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
     </li>
   </ul>
@@ -51,9 +51,16 @@ export default {
   width: 100%;
 
   .card {
-    min-width: 380px;
-    max-width: 448px;
-    margin-bottom: 36px;
+    min-width: 280px;
+    margin: 12px auto;
+  }
+
+  @media all and (min-width: 656px) {
+    .card {
+      flex: 1;
+      min-width: 270px;
+      margin: 0 12px 36px;
+    }
   }
 }
 </style>

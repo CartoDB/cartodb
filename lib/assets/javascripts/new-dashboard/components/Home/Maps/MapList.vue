@@ -1,7 +1,11 @@
 <template>
   <ul class="map-list">
-    <CreateMapCard></CreateMapCard>
-    <CreateMapCard></CreateMapCard>
+    <li class="card">
+      <CreateMapCard></CreateMapCard>
+    </li>
+    <li class="card" v-for="map in maps" :key="map.id">
+      <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+    </li>
   </ul>
 </template>
 
@@ -9,22 +13,31 @@
 import MapCard from "../../MapCard.vue";
 import CreateMapCard from "./CreateMapCard.vue";
 
-
 export default {
   name: "MapList",
   props: {
-    maps: Array
+    maps: Array,
+    selectedMaps: Set
   },
   components: {
     MapCard,
     CreateMapCard
   },
-  methods: {},
+  methods: {
+    toggleSelected(event) {
+      this.$emit("toggleSelection", event.map);
+    },
+    isMapSelected(map) {
+      return this.$props.selectedMaps.has(map);
+    }
+  },
+
   computed: {
     hasMaps() {
       return this.$props.maps.length > 0;
     }
-  }
+  },
+  watch: {}
 };
 </script>
 
@@ -37,10 +50,10 @@ export default {
   justify-content: space-between;
   width: 100%;
 
-  .create-map-card {
+  .card {
     min-width: 380px;
     max-width: 448px;
-    margin: auto;
+    margin-bottom: 36px;
   }
 }
 </style>

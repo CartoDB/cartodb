@@ -7,7 +7,16 @@
         </template>
 
         <template slot="dropdownButton">
+          <MapBulkActions
+            v-if="isSomeMapSelected"
+            :selectedMaps="selectedMaps"
+            :areAllMapsSelected="areAllMapsSelected"
+            @selectAll="selectAll"
+            @deselectAll="deselectAll"
+          ></MapBulkActions>
+
           <SettingsDropdown
+            v-if="!isSomeMapSelected"
             section="maps"
             :filter="appliedFilter"
             :order="appliedOrder"
@@ -24,7 +33,7 @@
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
-      <MapList :maps="maps"></MapList>
+      <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected"></MapList>
     </div>
   </section>
 </template>
@@ -32,8 +41,10 @@
 <script>
 import SectionTitle from "../../SectionTitle.vue";
 import CreateButton from "../../CreateButton.vue";
-import SettingsDropdown from '../../Settings/Settings';
-import MapList from './MapList.vue';
+import SettingsDropdown from "../../Settings/Settings";
+import MapList from "./MapList.vue";
+import MapBulkActions from "../../BulkActions/MapBulkActions";
+import mapService from "./MapService";
 
 export default {
   name: "MapsSection",
@@ -41,19 +52,35 @@ export default {
     SectionTitle,
     CreateButton,
     SettingsDropdown,
-    MapList
+    MapList,
+    MapBulkActions
   },
-  data () {
+  data() {
     return {
-      maps: []
+      maps: [],
+      selectedMapsData: new Set()
     };
+  },
+  created: function() {
+    mapService.fetchMaps().then(maps => {
+      this.$data.maps = maps;
+    });
   },
   methods: {
     applyFilter(filter) {
-      console.log('Filter', filter);
+      console.log("Filter", filter);
     },
     applyOrder(order) {
-      console.log('Order', order);
+      console.log("Order", order);
+    },
+    selectAll() {},
+    deselectAll() {},
+    onMapSelected(map) {
+      this.$data.selectedMapsData.has(map)
+        ? this.$data.selectedMapsData.delete(map)
+        : this.$data.selectedMapsData.add(map);
+      // TODO: This line forces component re-render.
+      this.$data.selectedMapsData = new Set(this.$data.selectedMapsData);
     }
   },
   computed: {
@@ -63,7 +90,16 @@ export default {
     appliedFilter() {},
     appliedOrder() {},
     appliedOrderDirection() {},
-    mapsMetadata() {}
+    mapsMetadata() {},
+    selectedMaps() {
+      return Array.from(this.$data.selectedMapsData);
+    },
+    areAllMapsSelected() {
+      return false;
+    },
+    isSomeMapSelected() {
+      return this.selectedMaps.length > 0;
+    }
   }
 };
 </script>

@@ -23,7 +23,7 @@ The easiest way to start learning about the CARTO.js library is to see a simple 
     <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
     <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
     <!-- Include CARTO.js -->
-    <script src="https://libs.cartocdn.com/carto.js/v4.0.8/carto.min.js"></script>
+    <script src="https://libs.cartocdn.com/carto.js/%VERSION%/carto.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:600" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="https://carto.com/developers/carto-js/examples/maps/public/style.css" rel="stylesheet">
@@ -121,7 +121,7 @@ This CSS declaration indicates that the map container <div> (with id map) should
 To load the Maps JavaScript API, use a script tag like the one in the following example:
 
 ```html
-<script src="https://libs.cartocdn.com/carto.js/v4.0.8/carto.min.js"></script>
+<script src="https://libs.cartocdn.com/carto.js/%VERSION%/carto.min.js"></script>
 ```
 
 The URL contained in the script tag is the location of a JavaScript file that loads all of the code you need for using the CARTO.js library. This script tag is required. We are using the minified version of the library.

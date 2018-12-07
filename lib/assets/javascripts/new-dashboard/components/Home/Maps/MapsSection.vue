@@ -30,7 +30,7 @@
         </template>
 
         <template slot="actionButton">
-          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton v-if="!isSomeMapSelected" visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
       <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected"></MapList>

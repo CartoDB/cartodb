@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
 -------------------

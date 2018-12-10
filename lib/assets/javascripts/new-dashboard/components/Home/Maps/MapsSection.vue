@@ -47,15 +47,15 @@
 </template>
 
 <script>
-import SectionTitle from "../../SectionTitle.vue";
-import CreateButton from "../../CreateButton.vue";
-import SettingsDropdown from "../../Settings/Settings";
-import MapList from "./MapList.vue";
-import MapBulkActions from "../../BulkActions/MapBulkActions";
-import mapService from "./MapService";
+import SectionTitle from '../../SectionTitle.vue';
+import CreateButton from '../../CreateButton.vue';
+import SettingsDropdown from '../../Settings/Settings';
+import MapList from './MapList.vue';
+import MapBulkActions from '../../BulkActions/MapBulkActions';
+import mapService from './MapService';
 
 export default {
-  name: "MapsSection",
+  name: 'MapsSection',
   components: {
     SectionTitle,
     CreateButton,
@@ -89,7 +89,7 @@ export default {
     },
     selectAll () {},
     deselectAll () {},
-    onMapSelected(map) {
+    onMapSelected (map) {
       this.$data.selectedMapsData.has(map)
         ? this.$data.selectedMapsData.delete(map)
         : this.$data.selectedMapsData.add(map);

@@ -185,7 +185,7 @@ export default {
     onThumbnailError () {
       this.isThumbnailErrored = true;
     },
-    onDataChanged (){
+    onDataChanged () {
       this.$emit('dataChanged');
     },
     ...mapActions({

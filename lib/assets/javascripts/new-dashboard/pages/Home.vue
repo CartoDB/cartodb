@@ -17,7 +17,7 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to CARTO\'s new dashboard',
+      msg: 'Welcome to CARTO\'s new dashboard'
     };
   }
 };

@@ -52,7 +52,7 @@ import CreateButton from '../../CreateButton.vue';
 import SettingsDropdown from '../../Settings/Settings';
 import MapList from './MapList.vue';
 import MapBulkActions from '../../BulkActions/MapBulkActions';
-import mapService from './MapService';
+import mapService from 'new-dashboard/core/map-service';
 
 export default {
   name: 'MapsSection',

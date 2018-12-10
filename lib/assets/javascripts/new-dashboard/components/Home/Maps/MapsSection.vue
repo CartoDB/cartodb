@@ -36,7 +36,12 @@
           >{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
-      <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected" @dataChanged="fetchMaps"></MapList>
+      <MapList
+        :maps="maps"
+        :selectedMaps.sync="selectedMapsData"
+        @toggleSelection="onMapSelected"
+        @dataChanged="fetchMaps"
+      ></MapList>
     </div>
   </section>
 </template>
@@ -61,6 +66,7 @@ export default {
   data() {
     return {
       maps: [],
+      metadata: {},
       selectedMapsData: new Set(),
       filter: "mine",
       orderOptions: {
@@ -92,9 +98,18 @@ export default {
     },
     fetchMaps() {
       mapService
-        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
-        .then(maps => {
-          this.$data.maps = maps;
+        .fetchMaps({
+          filter: this.$data.filter,
+          orderOpts: this.$data.orderOptions
+        })
+        .then(data => {
+          this.$data.metadata = {
+            total_entries: data.total_entries,
+            total_likes: data.total_likes,
+            total_shared: data.total_shared,
+            total_user_entries: data.total_user_entries
+          };
+          this.$data.maps = data.visualizations;
         });
     }
   },
@@ -102,10 +117,18 @@ export default {
     title() {
       return "Your Maps";
     },
-    appliedFilter() {},
-    appliedOrder() {},
-    appliedOrderDirection() {},
-    mapsMetadata() {},
+    appliedFilter() {
+      this.$data.filter;
+    },
+    appliedOrder() {
+      this.$data.orderOptions.order;
+    },
+    appliedOrderDirection() {
+      this.$data.orderOptions.direction;
+    },
+    mapsMetadata() {
+      return this.$data.metadata;
+    },
     selectedMaps() {
       return Array.from(this.$data.selectedMapsData);
     },

@@ -39,6 +39,10 @@ module Carto
       results.count
     end
 
+    def size
+      results.size
+    end
+
     def first
       results.first
     end

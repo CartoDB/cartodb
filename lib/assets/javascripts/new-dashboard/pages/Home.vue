@@ -9,7 +9,6 @@
 import Welcome from '../components/Home/Welcome/Welcome.vue';
 import MapsSection from '../components/Home/Maps/MapsSection.vue';
 
-
 export default {
   name: 'Home',
   components: {

@@ -10,11 +10,11 @@
 </template>
 
 <script>
-import MapCard from "../../MapCard.vue";
-import CreateMapCard from "./CreateMapCard.vue";
+import MapCard from '../../MapCard.vue';
+import CreateMapCard from './CreateMapCard.vue';
 
 export default {
-  name: "MapList",
+  name: 'MapList',
   props: {
     maps: Array,
     selectedMaps: Set
@@ -24,23 +24,21 @@ export default {
     CreateMapCard
   },
   methods: {
-    toggleSelected(event) {
-      this.$emit("toggleSelection", event.map);
+    toggleSelected (event) {
+      this.$emit('toggleSelection', event.map);
     },
-    isMapSelected(map) {
+    isMapSelected (map) {
       return this.$props.selectedMaps.has(map);
     },
-    onDataChanged() {
+    onDataChanged () {
       this.$emit('dataChanged');
     }
   },
-
   computed: {
-    hasMaps() {
+    hasMaps () {
       return this.$props.maps.length > 0;
     }
-  },
-  watch: {}
+  }
 };
 </script>
 

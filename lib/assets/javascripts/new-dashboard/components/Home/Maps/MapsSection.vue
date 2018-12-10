@@ -63,32 +63,32 @@ export default {
     MapList,
     MapBulkActions
   },
-  data() {
+  data () {
     return {
       maps: [],
       metadata: {},
       selectedMapsData: new Set(),
-      filter: "mine",
+      filter: 'mine',
       orderOptions: {
-        order: "updated_at",
-        direction: "asc"
+        order: 'updated_at',
+        direction: 'asc'
       }
     };
   },
-  created: function() {
+  created: function () {
     this.fetchMaps();
   },
   methods: {
-    applyFilter(filter) {
+    applyFilter (filter) {
       this.$data.filter = filter;
       this.fetchMaps();
     },
-    applyOrder(orderOptions) {
+    applyOrder (orderOptions) {
       this.$data.orderOptions = orderOptions;
       this.fetchMaps();
     },
-    selectAll() {},
-    deselectAll() {},
+    selectAll () {},
+    deselectAll () {},
     onMapSelected(map) {
       this.$data.selectedMapsData.has(map)
         ? this.$data.selectedMapsData.delete(map)
@@ -96,7 +96,7 @@ export default {
       // TODO: This line forces component re-render.
       this.$data.selectedMapsData = new Set(this.$data.selectedMapsData);
     },
-    fetchMaps() {
+    fetchMaps () {
       mapService
         .fetchMaps({
           filter: this.$data.filter,
@@ -114,28 +114,28 @@ export default {
     }
   },
   computed: {
-    title() {
-      return "Your Maps";
+    title () {
+      return 'Your Maps';
     },
-    appliedFilter() {
-      this.$data.filter;
+    appliedFilter () {
+      return this.$data.filter;
     },
-    appliedOrder() {
-      this.$data.orderOptions.order;
+    appliedOrder () {
+      return this.$data.orderOptions.order;
     },
-    appliedOrderDirection() {
-      this.$data.orderOptions.direction;
+    appliedOrderDirection () {
+      return this.$data.orderOptions.direction;
     },
-    mapsMetadata() {
+    mapsMetadata () {
       return this.$data.metadata;
     },
-    selectedMaps() {
+    selectedMaps () {
       return Array.from(this.$data.selectedMapsData);
     },
-    areAllMapsSelected() {
+    areAllMapsSelected () {
       return false;
     },
-    isSomeMapSelected() {
+    isSomeMapSelected () {
       return this.selectedMaps.length > 0;
     }
   }

@@ -8,22 +8,22 @@
 </template>
 
 <script>
-import CreateButton from "../../CreateButton";
+import CreateButton from '../../CreateButton';
 
 export default {
-  name: "CreateMapCard",
+  name: 'CreateMapCard',
   components: {
     CreateButton
   },
   computed: {
-    headerText() {
-      return "Create your first map to predict key insights";
+    headerText () {
+      return 'Create your first map to predict key insights';
     },
-    infoText() {
-      return "Build your first Location Intelligence anañysis or take a look to our guides and help.";
+    infoText () {
+      return 'Build your first Location Intelligence anañysis or take a look to our guides and help.';
     },
-    buttonText() {
-      return "Create your first Map";
+    buttonText () {
+      return 'Create your first Map';
     }
   }
 };

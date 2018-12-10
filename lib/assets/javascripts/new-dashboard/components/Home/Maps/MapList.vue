@@ -4,7 +4,7 @@
       <CreateMapCard></CreateMapCard>
     </li>
     <li v-if="maps.length" class="card" v-for="map in maps" :key="map.id">
-      <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+      <MapCard :canHover="false" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
     </li>
   </ul>
 </template>

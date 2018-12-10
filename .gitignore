@@ -19,3 +19,4 @@ themes/css/all.css
 themes/css/cartodb.ie.css
 themes/css/cartodb.css
 yarn.lock
+.sass-cache

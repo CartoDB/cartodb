@@ -21,8 +21,9 @@ module Carto
 
     before_validation :ensure_keys_generated
 
-    after_save :sync_with_central, if: :sync_with_central?
-    after_destroy :delete_from_central, if: :sync_with_central?
+    after_create :create_central, if: :sync_with_central?
+    after_update :update_central, if: :sync_with_central?
+    after_destroy :delete_central, if: :sync_with_central?
 
     ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris icon_url restricted].freeze
 
@@ -54,15 +55,15 @@ module Carto
       errors.add(:redirect_uris, "must be valid")
     end
 
-    def sync_with_central
-      if id_changed?
-        cartodb_central_client.create_oauth_app(user.username, sync_attributes)
-      else
-        cartodb_central_client.update_oauth_app(user.username, id, sync_attributes)
-      end
+    def create_central
+      cartodb_central_client.create_oauth_app(user.username, sync_attributes)
     end
 
-    def delete_from_central
+    def update_central
+      cartodb_central_client.update_oauth_app(user.username, id, sync_attributes)
+    end
+
+    def delete_central
       cartodb_central_client.delete_oauth_app(user.username, id)
     end
 

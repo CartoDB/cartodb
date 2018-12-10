@@ -9,9 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 4.1.8 - 2018-10-29
+### Fixed
+- Moved 'browserify-shim' to devDependencies, fixing a potential problem with npm shrinkwrap.
+
+## 4.1.7 - 2018-10-18
+### Fixed
+- Client: Fix `serverUrl` parameter: `{username}` replacement, validation and documentation.
+
 ## 4.1.6 - 2018-09-07
 ### Fixed
-- Source Filters: Fix return in get-object-value that was causing unintended behaviours in parameters validation.
+- Source Filters: Fix return in get-object-value that was causing unintended behaviors in parameters validation.
 
 ## 4.1.5 - 2018-09-05
 ### Added

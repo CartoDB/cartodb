@@ -4,7 +4,7 @@
       <CreateMapCard></CreateMapCard>
     </li>
     <li v-if="maps.length" class="card" v-for="map in maps" :key="map.id">
-      <MapCard :canHover="false" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+      <MapCard @dataChanged="onDataChanged" :canHover="false" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
     </li>
   </ul>
 </template>
@@ -29,6 +29,9 @@ export default {
     },
     isMapSelected(map) {
       return this.$props.selectedMaps.has(map);
+    },
+    onDataChanged() {
+      this.$emit('dataChanged');
     }
   },
 

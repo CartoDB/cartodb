@@ -36,7 +36,7 @@
           >{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
-      <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected"></MapList>
+      <MapList :maps="maps" :selectedMaps.sync="selectedMapsData" @toggleSelection="onMapSelected" @dataChanged="fetchMaps"></MapList>
     </div>
   </section>
 </template>
@@ -70,26 +70,16 @@ export default {
     };
   },
   created: function() {
-    mapService.fetchMaps().then(maps => {
-      this.$data.maps = maps;
-    });
+    this.fetchMaps();
   },
   methods: {
     applyFilter(filter) {
       this.$data.filter = filter;
-      mapService
-        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
-        .then(maps => {
-          this.$data.maps = maps;
-        });
+      this.fetchMaps();
     },
     applyOrder(orderOptions) {
       this.$data.orderOptions = orderOptions;
-      mapService
-        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
-        .then(maps => {
-          this.$data.maps = maps;
-        });
+      this.fetchMaps();
     },
     selectAll() {},
     deselectAll() {},
@@ -99,6 +89,13 @@ export default {
         : this.$data.selectedMapsData.add(map);
       // TODO: This line forces component re-render.
       this.$data.selectedMapsData = new Set(this.$data.selectedMapsData);
+    },
+    fetchMaps() {
+      mapService
+        .fetchMaps({ filter: this.$data.filter, orderOpts: this.$data.orderOptions })
+        .then(maps => {
+          this.$data.maps = maps;
+        });
     }
   },
   computed: {

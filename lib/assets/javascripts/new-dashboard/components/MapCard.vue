@@ -20,7 +20,7 @@
     </span>
 
     <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
+      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged"></MapQuickActions>
     </div>
 
     <div class="card-text">
@@ -184,6 +184,9 @@ export default {
     },
     onThumbnailError () {
       this.isThumbnailErrored = true;
+    },
+    onDataChanged(){
+      this.$emit('dataChanged');
     },
     ...mapActions({
       likeMap: 'maps/like',

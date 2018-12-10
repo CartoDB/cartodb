@@ -1,14 +1,15 @@
 <template>
-  <section>
-    <div class="hello">
-      <h1>{{ msg }}</h1>
-    </div>
-  </section>
+  <Welcome></Welcome>
 </template>
 
 <script>
+import Welcome from '../components/Home/Welcome';
+
 export default {
   name: 'Home',
+  components: {
+    Welcome
+  },
   data () {
     return {
       msg: "Welcome to CARTO\'s new dashboard"
@@ -16,10 +17,3 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-.hello {
-  text-align: center;
-}
-</style>

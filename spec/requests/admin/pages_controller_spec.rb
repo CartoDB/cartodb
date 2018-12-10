@@ -311,9 +311,11 @@ describe Admin::PagesController do
         document.child.child.text.should eq "\n"
       end
 
-      it 'returns public visualizations' do
+      it 'returns public and published visualizations' do
         private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
         create_full_visualization(@carto_org_user_1, visualization_attributes: private_attrs)
+        unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
+        create_full_visualization(@carto_org_user_1, visualization_attributes: unpublished_attrs)
         public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
         _, _, _, visualization = create_full_visualization(@carto_org_user_1, visualization_attributes: public_attrs)
         get public_sitemap_url(user_domain: @carto_organization.name)
@@ -334,9 +336,11 @@ describe Admin::PagesController do
         host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
       end
 
-      it 'returns public visualizations' do
+      it 'returns public and published visualizations' do
         private_attrs = { privacy: Carto::Visualization::PRIVACY_PRIVATE }
         create_full_visualization(@carto_user1, visualization_attributes: private_attrs)
+        unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
+        create_full_visualization(@carto_user1, visualization_attributes: unpublished_attrs)
         public_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
         _, _, _, visualization = create_full_visualization(@carto_user1, visualization_attributes: public_attrs)
         get public_sitemap_url(user_domain: @carto_user1.username)

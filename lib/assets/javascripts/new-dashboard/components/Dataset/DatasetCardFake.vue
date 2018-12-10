@@ -41,7 +41,6 @@ export default {
   width: 100%;
   height: 80px;
   padding: 22px 2px;
-  border-bottom: 1px solid $light-grey;
   background-color: $white;
 }
 

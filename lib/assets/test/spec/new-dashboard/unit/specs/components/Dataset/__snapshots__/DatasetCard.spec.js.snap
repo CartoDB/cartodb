@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DatasetCard.vue should add class selected to the card when the property isSelected is true 1`] = `
-<a href="http://example.com/tables/untitled_table_13" class="dataset-row selected">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--selected dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
@@ -27,7 +27,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
 `;
 
 exports[`DatasetCard.vue should add the name of the owner if the dataset is shared 1`] = `
-<a href="http://example.com/tables/untitled_table_13" class="dataset-row">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
@@ -56,7 +56,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
 `;
 
 exports[`DatasetCard.vue should render correct contents 1`] = `
-<a href="http://example.com/tables/untitled_table_13" class="dataset-row">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
@@ -82,7 +82,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
 `;
 
 exports[`DatasetCard.vue should render multiple tags 1`] = `
-<a href="http://example.com/tables/untitled_table_13" class="dataset-row">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
@@ -97,7 +97,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
     <div class="row-metadataContainer">
       <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
         <!---->
-        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Just one more tag here"><span class="feature-text text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Just one more tag here" feature="tag" linkroute="tagSearch"><span class="feature-text text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
       </div>
       <!---->
     </div>
@@ -114,7 +114,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
 `;
 
 exports[`DatasetCard.vue should render tags 1`] = `
-<a href="http://example.com/tables/untitled_table_13" class="dataset-row">
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
   <div class="dataset-cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
@@ -129,9 +129,14 @@ exports[`DatasetCard.vue should render tags 1`] = `
     <div class="row-metadataContainer">
       <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
         <ul class="tag-list">
-          <li><a href="#" class="text is-small is-txtSoftGrey">Hi</a><span class="text is-small is-txtSoftGrey">,&nbsp;</span></li>
-          <li><a href="#" class="text is-small is-txtSoftGrey">Hello</a><span class="text is-small is-txtSoftGrey">,&nbsp;</span></li>
-          <li><a href="#" class="text is-small is-txtSoftGrey">CARTO Rules</a>
+          <li>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">Hi</router-link-stub><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+          </li>
+          <li>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">Hello</router-link-stub><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+          </li>
+          <li>
+            <router-link-stub to="[object Object]" class="text is-small is-txtSoftGrey">CARTO Rules</router-link-stub>
             <!---->
           </li>
         </ul>

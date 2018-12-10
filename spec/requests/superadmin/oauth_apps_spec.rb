@@ -34,7 +34,7 @@ describe Superadmin::OauthAppsController do
 
     it 'should create an oauth_app with nonexistent user' do
       expect {
-        @oauth_app_param[:oauth_app][:user_id] = UUIDTools::UUID.timestamp_create.to_s
+        @oauth_app_param[:oauth_app][:user_id] = nil
         post superadmin_oauth_apps_url, @oauth_app_param.to_json, superadmin_headers
 
         response.status.should == 201
@@ -69,7 +69,7 @@ describe Superadmin::OauthAppsController do
 
     it 'should update an oauth_app with nonexistent user' do
       expect {
-        @oauth_app_param[:oauth_app][:user_id] = UUIDTools::UUID.timestamp_create.to_s
+        @oauth_app_param[:oauth_app][:user_id] = nil
         put superadmin_oauth_app_url(@oauth_app.id),
             @oauth_app_param.to_json,
             superadmin_headers
@@ -77,7 +77,7 @@ describe Superadmin::OauthAppsController do
         response.status.should == 204
         @oauth_app.reload
         @oauth_app.name.should eq 'updated_name'
-        @oauth_app.user_id.should_not eq @oauth_app_param[:oauth_app][:user_id]
+        @oauth_app.user_id.should eq nil
       }.to change(Carto::OauthApp, :count).by(0)
     end
 

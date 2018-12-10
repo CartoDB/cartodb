@@ -16,7 +16,7 @@ module Carto
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
     validates :icon_url, presence: true
-    validates :oauth_app_organizations, absence: true, unless: :needs_org?
+    validates :oauth_app_organizations, absence: true, unless: :restricted?
     validate :validate_uris
 
     before_validation :ensure_keys_generated
@@ -25,13 +25,8 @@ module Carto
     after_destroy :delete_from_central, if: :sync_with_central?
 
     ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris icon_url restricted].freeze
-    ALLOWED_SYNC_PARAMS = ALLOWED_SYNC_ATTRIBUTES + [:user_id, redirect_uris: []].freeze
 
-    attr_writer :avoid_sync_central
-
-    def avoid_sync_central
-      @avoid_sync_central || false
-    end
+    attr_accessor :avoid_sync_central
 
     # this should be exactly the same method as in Central
     # mostly used for testing the Superadmin API
@@ -63,7 +58,7 @@ module Carto
       if id_changed?
         cartodb_central_client.create_oauth_app(user.username, sync_attributes)
       else
-        cartodb_central_client.update_oauth_app(user.username, id, attributes_changed)
+        cartodb_central_client.update_oauth_app(user.username, id, sync_attributes)
       end
     end
 
@@ -79,17 +74,8 @@ module Carto
       Cartodb::Central.sync_data_with_cartodb_central? && !avoid_sync_central
     end
 
-    def attributes_changed
-      changed_attrs = attributes.symbolize_keys.slice(*changes.symbolize_keys.keys)
-      sync_attributes(changed_attrs)
-    end
-
     def sync_attributes(attrs = attributes)
       attrs.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES)
-    end
-
-    def needs_org?
-      restricted? && sync_with_central?
     end
   end
 end

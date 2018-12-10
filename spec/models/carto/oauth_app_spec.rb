@@ -192,7 +192,15 @@ module Carto
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
           Cartodb::Central.any_instance
                           .expects(:update_oauth_app)
-                          .with(@user_oauth.username, @oauth_app.id, name: 'updated')
+                          .with(@user_oauth.username,
+                                @oauth_app.id,
+                                id: @oauth_app.id,
+                                name: 'updated',
+                                client_id: @oauth_app.client_id,
+                                client_secret: @oauth_app.client_secret,
+                                redirect_uris: @oauth_app.redirect_uris,
+                                icon_url: @oauth_app.icon_url,
+                                restricted: @oauth_app.restricted)
                           .returns({})
                           .once
 

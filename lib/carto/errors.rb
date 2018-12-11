@@ -20,6 +20,12 @@ module Carto
     end
   end
 
+  class OrderCombinationParamInvalidError < CartoError
+    def initialize(valid_values)
+      super("Wrong 'order' parameter combination. Valid values to combine: #{valid_values}", 400)
+    end
+  end
+
   class OrderDirectionParamInvalidError < CartoError
     def initialize(valid_values)
       super("Wrong 'order_direction' parameter value. Valid values are one of #{valid_values}", 400)

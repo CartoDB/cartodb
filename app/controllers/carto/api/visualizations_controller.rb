@@ -60,7 +60,8 @@ module Carto
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = [:name, :updated_at, :size, :mapviews, :likes, :favorited].freeze
+      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited).freeze
+      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited).freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -83,7 +84,8 @@ module Carto
       end
 
       def index
-        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
+        opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
+        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 

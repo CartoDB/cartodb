@@ -12,30 +12,43 @@ class Carto::VisualizationQueryOrderer
     @user_id = user_id
   end
 
-  def order(order, direction = "asc")
+  def order(order, direction = "")
     return @query unless order
-    order_hash = prepare_order_params(order, direction)
-    database_orders = order_hash.except(*SUPPORTED_OFFDATABASE_ORDERS)
-    offdatabase_orders = order_hash.slice(*SUPPORTED_OFFDATABASE_ORDERS)
 
-    query = @query
-    query = select_favorited if order_hash.include?("favorited")
+    prepare_order_params(order, direction)
 
     if offdatabase_orders.empty?
-      query.order("#{database_orders.keys.first} #{database_orders.values.first}")
+      query_with_favorited_if_needed.order(database_orders)
     else
-      Carto::OffdatabaseQueryAdapter.new(query, offdatabase_orders)
+      Carto::OffdatabaseQueryAdapter.new(@query, offdatabase_orders)
     end
   end
 
   private
 
-  def prepare_order_params(order, direction)
-    order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
-    { order => direction }
+  def prepare_order_params(order_string, direction_string)
+    @order_hash = {}
+    directions = direction_string.split(',')
+    orders = order_string.split(',')
+
+    orders.each_with_index do |order, index|
+      order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
+      @order_hash[order] = directions[index] || "asc"
+    end
+    @order_hash
   end
 
-  def select_favorited
+  def database_orders
+    db_order_hash = @order_hash.except(*SUPPORTED_OFFDATABASE_ORDERS)
+    db_order_hash.map { |key, value| "#{key} #{value}" }.join(",")
+  end
+
+  def offdatabase_orders
+    @order_hash.slice(*SUPPORTED_OFFDATABASE_ORDERS)
+  end
+
+  def query_with_favorited_if_needed
+    return @query unless @order_hash.include?("favorited")
     raise 'Cannot order by favorited if no user is provided' unless @user_id
 
     @query.select('(likes.actor IS NOT NULL) AS favorited')

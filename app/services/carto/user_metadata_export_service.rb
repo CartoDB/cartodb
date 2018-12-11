@@ -280,29 +280,9 @@ module Carto
       # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
       user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
-      user_hash[:oauth_apps] = user.oauth_apps.map do |oauth_app|
-        user_hash[:oauth_app_organizations] = oauth_app.oauth_app_organizations.map do |oao|
-          export_oauth_app_organization(oao)
-        end
+      user_hash[:oauth_apps] = user.oauth_apps.map { |oauth_app| export_oauth_app(oauth_app) }
 
-        export_oauth_app(oauth_app)
-      end
-
-      user_hash[:oauth_app_users] = user.oauth_app_users.map do |oau|
-        user_hash[:oauth_authorization_codes] = oau.oauth_authorization_codes.map do |oac|
-          export_oauth_authorization_code(oac)
-        end
-
-        user_hash[:oauth_access_tokens] = oau.oauth_access_tokens.map do |oat|
-          export_oauth_access_token(oat)
-        end
-
-        user_hash[:oauth_refresh_tokens] = oau.oauth_refresh_tokens.map do |ort|
-          export_oauth_refresh_token(ort)
-        end
-
-        export_oauth_app_user(oau)
-      end
+      user_hash[:oauth_app_users] = user.oauth_app_users.map { |oau| export_oauth_app_user(oau) }
 
       user_hash
     end
@@ -396,6 +376,8 @@ module Carto
     end
 
     def export_oauth_app(oauth_app)
+      oauth_app_organizations = oauth_app.oauth_app_organizations.map { |oao| export_oauth_app_organization(oao) }
+
       {
         id: oauth_app.id,
         user_id: oauth_app.user_id,
@@ -406,7 +388,8 @@ module Carto
         client_secret: oauth_app.client_secret,
         redirect_uris: oauth_app.redirect_uris,
         icon_url: oauth_app.icon_url,
-        restricted: oauth_app.restricted
+        restricted: oauth_app.restricted,
+        oauth_app_organizations: oauth_app_organizations
       }
     end
 
@@ -422,13 +405,20 @@ module Carto
     end
 
     def export_oauth_app_user(oau)
+      oauth_authorization_codes = oau.oauth_authorization_codes.map { |oac| export_oauth_authorization_code(oac) }
+      oauth_access_tokens = oau.oauth_access_tokens.map { |oat| export_oauth_access_token(oat) }
+      oauth_refresh_tokens = oau.oauth_refresh_tokens.map { |ort| export_oauth_refresh_token(ort) }
+
       {
         id: oau.id,
         oauth_app_id: oau.oauth_app_id,
         user_id: oau.user_id,
         scopes: oau.scopes,
         created_at: oau.created_at,
-        updated_at: oau.updated_at
+        updated_at: oau.updated_at,
+        oauth_authorization_codes: oauth_authorization_codes,
+        oauth_access_tokens: oauth_access_tokens,
+        oauth_refresh_tokens: oauth_refresh_tokens
       }
     end
 

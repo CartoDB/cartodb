@@ -60,7 +60,7 @@ module Carto
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = [:name, :updated_at, :size, :mapviews, :likes].freeze
+      VALID_ORDER_PARAMS = [:name, :updated_at, :size, :mapviews, :likes, :favorited].freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -90,9 +90,7 @@ module Carto
         presenter_cache = Carto::Api::PresenterCache.new
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
-        # TODO: undesirable table hardcoding, needed for disambiguation. Look for
-        # a better approach and/or move it to the query builder
-        visualizations = vqb.with_order("visualizations.#{order}", order_direction)
+        visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                 .with_presenter_cache(presenter_cache).to_poro

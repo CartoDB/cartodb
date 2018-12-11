@@ -2810,7 +2810,7 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      it 'orders results' do
+      it 'returns the expected status' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200
 
@@ -2840,47 +2840,49 @@ describe Carto::Api::VisualizationsController do
         end
       end
 
-      context 'by name' do
-        before(:each) do
-          @visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
-          @visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
-        end
+      it 'orders descending by default' do
+        visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
+        visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
 
-        it 'orders results by name (descending by default)' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
-                                              order: 'name'), {}, @headers
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name'), {}, @headers
 
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_b.id
-          collection[1]['id'].should eq @visualization_a.id
-        end
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 2
+        collection[0]['id'].should eq visualization_b.id
+        collection[1]['id'].should eq visualization_a.id
+      end
 
-        it 'orders results by name descending' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
-                                              order_direction: 'desc'), {}, @headers
+      it 'orders by name' do
+        visualization_a = FactoryGirl.create(:carto_visualization, name: 'Visualization A', user_id: @user.id).store
+        visualization_b = FactoryGirl.create(:carto_visualization, name: 'Visualization B', user_id: @user.id).store
 
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_b.id
-          collection[1]['id'].should eq @visualization_a.id
-        end
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
+                                            order_direction: 'asc'), {}, @headers
 
-        it 'orders results by name ascending' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'name',
-                                              order_direction: 'asc'), {}, @headers
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 2
+        collection[0]['id'].should eq visualization_a.id
+        collection[1]['id'].should eq visualization_b.id
+      end
 
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_a.id
-          collection[1]['id'].should eq @visualization_b.id
-        end
+      it 'orders by favorited' do
+        visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
+        visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
+        visualization_a.add_like_from(@user.id)
+
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                            order: 'favorited', order_direction: 'desc'), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 2
+        collection[0]['id'].should eq visualization_a.id
+        collection[1]['id'].should eq visualization_b.id
       end
 
       context 'error handling' do

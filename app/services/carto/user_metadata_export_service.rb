@@ -279,6 +279,30 @@ module Carto
       # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
       user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
+      user_hash[:oauth_apps] = user.oauth_apps.map do |oauth_app|
+        user_hash[:oauth_app_organizations] = oauth_app.oauth_app_organizations.map do |oao|
+          export_oauth_app_organization(oao)
+        end
+
+        export_oauth_app(oauth_app)
+      end
+
+      user_hash[:oauth_app_users] = user.oauth_app_users.map do |oau|
+        user_hash[:oauth_authorization_codes] = oau.oauth_authorization_codes.map do |oac|
+          export_oauth_authorization_code(oac)
+        end
+
+        user_hash[:oauth_access_tokens] = oau.oauth_access_tokens.map do |oat|
+          export_oauth_access_token(oat)
+        end
+
+        user_hash[:oauth_refresh_tokens] = oau.oauth_refresh_tokens.map do |ort|
+          export_oauth_refresh_token(ort)
+        end
+
+        export_oauth_app_user(oau)
+      end
+
       user_hash
     end
 
@@ -367,6 +391,75 @@ module Carto
         token: sync_oauth.token,
         created_at: sync_oauth.created_at,
         updated_at: sync_oauth.updated_at
+      }
+    end
+
+    def export_oauth_app(oauth_app)
+      {
+        id: oauth_app.id,
+        user_id: oauth_app.user_id,
+        name: oauth_app.name,
+        created_at: oauth_app.created_at,
+        updated_at: oauth_app.updated_at,
+        client_id: oauth_app.client_id,
+        client_secret: oauth_app.client_secret,
+        redirect_uris: oauth_app.redirect_uris,
+        icon_url: oauth_app.icon_url,
+        restricted: oauth_app.restricted
+      }
+    end
+
+    def export_oauth_app_organization(oao)
+      {
+        id: oao.id,
+        oauth_app_id: oao.oauth_app_id,
+        organization_id: oao.organization_id,
+        seats: oao.seats,
+        created_at: oao.created_at,
+        updated_at: oao.updated_at
+      }
+    end
+
+    def export_oauth_app_user(oau)
+      {
+        id: oau.id,
+        oauth_app_id: oau.oauth_app_id,
+        user_id: oau.user_id,
+        scopes: oau.scopes,
+        created_at: oau.created_at,
+        updated_at: oau.updated_at
+      }
+    end
+
+    def export_oauth_authorization_code(oac)
+      {
+        id: oac.id,
+        oauth_app_user_id: oac.oauth_app_user_id,
+        scopes: oac.scopes,
+        code: oac.code,
+        redirect_uri: oac.redirect_uri,
+        created_at: oac.created_at
+      }
+    end
+
+    def export_oauth_access_token(oat)
+      {
+        id: oat.id,
+        oauth_app_user_id: oat.oauth_app_user_id,
+        api_key_id: oat.api_key_id,
+        scopes: oat.scopes,
+        created_at: oat.created_at
+      }
+    end
+
+    def export_oauth_refresh_token(ort)
+      {
+        id: ort.id,
+        oauth_app_user_id: ort.oauth_app_user_id,
+        token: ort.token,
+        scopes: ort.scopes,
+        created_at: ort.created_at,
+        updated_at: ort.updated_at
       }
     end
   end

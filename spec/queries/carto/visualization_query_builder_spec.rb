@@ -31,6 +31,7 @@ describe Carto::VisualizationQueryBuilder do
       config.ignores << /LEFT JOIN pg_namespace n ON n.oid = c.relnamespace/
       config.ignores << /INNER JOIN pg_depend dep ON attr.attrelid = dep.refobjid AND attr.attnum = dep.refobjsubid/
       config.ignores << /WHERE a.attrelid = '".*"'::regclass/
+      config.ignores << /SHOW max_identifier_length/
     end
   end
 
@@ -81,6 +82,47 @@ describe Carto::VisualizationQueryBuilder do
     expect {
       @vqb.with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 1)
+  end
+
+  context '#with_prefetch_dependent_visualizations' do
+    before(:each) do
+      table = create_random_table(@user1)
+      @table_visualization = table.table_visualization
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
+      @visualization.map = FactoryGirl.create(:carto_map, user_id: @user1.id)
+      @visualization.save!
+      layer = FactoryGirl.build(:carto_layer)
+      layer.options[:table_name] = table.name
+      layer.save!
+      @visualization.layers << layer
+    end
+
+    after(:each) do
+      @visualization.destroy
+      @table_visualization.destroy
+    end
+
+    it 'can prefetch dependent visualizations' do
+      expect {
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 10)
+
+      expect {
+        @vqb.with_prefetch_dependent_visualizations
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
+    end
+
+    it 'can prefetch together two nested associations with the same root' do
+      expect {
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 10)
+
+      expect {
+        @vqb.with_prefetch_dependent_visualizations.with_prefetch_table
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
+    end
   end
 
   it 'searches for shared visualizations' do

@@ -19,10 +19,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.6: client_applications & friends and sql_copy rate_limits
 # 1.0.7: export password_reset_token and password_reset_sent_at user fields
 # 1.0.8: user_multifactor_auths
+# 1.0.9: oauth_apps, oauth_app_users and friends
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.8'.freeze
+    CURRENT_VERSION = '1.0.9'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,

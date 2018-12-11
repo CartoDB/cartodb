@@ -140,6 +140,10 @@ module Carto
 
       user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
+      user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps])
+
+      user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -230,6 +234,113 @@ module Carto
       )
 
       [client_application]
+    end
+
+    def build_oauth_apps_from_hash(oauth_apps)
+      return unless oauth_apps
+      oauth_apps.map { |oauth_app| build_oauth_app_from_hash(oauth_app) }
+    end
+
+    def build_oauth_app_from_hash(oauth_app_hash)
+      oauth_app = Carto::OauthApp.new(
+        id: oauth_app_hash[:id],
+        user_id: oauth_app_hash[:user_id],
+        name: oauth_app_hash[:name],
+        created_at: oauth_app_hash[:created_at],
+        updated_at: oauth_app_hash[:updated_at],
+        client_id: oauth_app_hash[:client_id],
+        client_secret: oauth_app_hash[:client_secret],
+        redirect_uris: oauth_app_hash[:redirect_uris],
+        icon_url: oauth_app_hash[:icon_url],
+        restricted: oauth_app_hash[:restricted]
+      )
+
+      if oauth_app_hash[:oauth_app_organizations]
+        oauth_app.oauth_app_organizations = oauth_app_hash[:oauth_app_organizations].map do |oao_hash|
+          build_oauth_app_organization_from_hash(oao_hash)
+        end
+      end
+
+      oauth_app
+    end
+
+    def build_oauth_app_organization_from_hash(oao_hash)
+      Carto::OauthAppOrganization.new(
+        id: oao_hash[:id],
+        oauth_app_id: oao_hash[:oauth_app_id],
+        organization_id: oao_hash[:organization_id],
+        seats: oao_hash[:seats],
+        created_at: oao_hash[:created_at],
+        updated_at: oao_hash[:updated_at]
+      )
+    end
+
+    def build_oauth_app_users_from_hash(oauth_app_users)
+      return unless oauth_app_users
+      oauth_app_users.map { |oau| build_oauth_app_user_from_hash(oau) }
+    end
+
+    def build_oauth_app_user_from_hash(oau_hash)
+      oau = Carto::OauthAppUser.new(
+        id: oau_hash.id,
+        oauth_app_id: oau_hash.oauth_app_id,
+        user_id: oau_hash.user_id,
+        scopes: oau_hash.scopes,
+        created_at: oau_hash.created_at,
+        updated_at: oau_hash.updated_at
+      )
+
+      if oau_hash[:oauth_authorization_codes]
+        oau.oauth_authorization_codes = oau_hash[:oauth_authorization_codes].map do |oac_hash|
+          build_oauth_authorization_code_from_hash(oac_hash)
+        end
+      end
+
+      if oau_hash[:oauth_access_tokens]
+        oau.oauth_access_tokens = oau_hash[:oauth_access_tokens].map do |oat_hash|
+          build_oauth_access_token_from_hash(oat_hash)
+        end
+      end
+
+      if oau_hash[:oauth_refresh_tokens]
+        oau.oauth_refresh_tokens = oau_hash[:oauth_refresh_tokens].map do |ort_hash|
+          build_oauth_refresh_token_from_hash(ort_hash)
+        end
+      end
+
+      oau
+    end
+
+    def build_oauth_authorization_code_from_hash(oac_hash)
+      Carto::OauthAuthorizationCode.new(
+        id: oac_hash[:id],
+        oauth_app_user_id: oac_hash[:oauth_app_user_id],
+        scopes: oac_hash[:scopes],
+        code: oac_hash[:code],
+        redirect_uri: oac_hash[:redirect_uri],
+        created_at: oac_hash[:created_at]
+      )
+    end
+
+    def build_oauth_access_token_from_hash(oat_hash)
+      Carto::OauthAccessToken.new(
+        id: oat_hash[:id],
+        oauth_app_user_id: oat_hash[:oauth_app_user_id],
+        api_key_id: oat_hash[:api_key_id],
+        scopes: oat_hash[:scopes],
+        created_at: oat_hash[:created_at]
+      )
+    end
+
+    def build_oauth_refresh_token_from_hash(ort_hash)
+      Carto::OauthRefreshToken.new(
+        id: ort_hash[:id],
+        oauth_app_user_id: ort_hash[:oauth_app_user_id],
+        token: ort_hash[:token],
+        scopes: ort_hash[:scopes],
+        created_at: ort_hash[:created_at],
+        updated_at: ort_hash[:updated_at]
+      )
     end
   end
 

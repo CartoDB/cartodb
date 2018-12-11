@@ -89,6 +89,42 @@ describe Carto::VisualizationQueryOrderer do
       expect(result.size).to eql 2
       expect(result.first.name).to eql @visualization_b.name
     end
-  end  
+  end
 
+  context 'multiple ordering' do
+    before(:each) do
+      Delorean.jump(2.days)
+      @visualization_c = FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Visualization C')
+      @visualization_c.add_like_from(@user.id)
+      Delorean.back_to_the_present
+    end
+
+    after(:each) do
+      @visualization_c.delete
+    end    
+
+    it 'orders by favorited desc + updated_at desc' do
+      result = @orderer.order('favorited,updated_at', 'desc,desc')
+
+      expect(result.size).to eql 3
+      expect(result.first.name).to eql @visualization_c.name
+      expect(result.second.name).to eql @visualization_b.name
+    end
+
+    it 'orders by favorited desc + updated_at asc' do
+      result = @orderer.order('favorited,updated_at', 'desc,asc')
+
+      expect(result.size).to eql 3
+      expect(result.first.name).to eql @visualization_b.name
+      expect(result.second.name).to eql @visualization_c.name
+    end
+
+    it 'orders by favorited desc + name with default direction (asc)' do
+      result = @orderer.order('favorited,name', 'desc')
+
+      expect(result.size).to eql 3
+      expect(result.first.name).to eql @visualization_b.name
+      expect(result.second.name).to eql @visualization_c.name
+    end    
+  end
 end

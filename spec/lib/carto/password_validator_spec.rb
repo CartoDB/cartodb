@@ -20,7 +20,7 @@ module Carto
 
       user = mock
       user.stubs(:username).returns(PASSWORD)
-      user.stubs(:organization_user?).returns(false)
+      user.stubs(:organization).returns(nil)
 
       errors = validator.validate(PASSWORD, user)
       errors.empty?.should be_false

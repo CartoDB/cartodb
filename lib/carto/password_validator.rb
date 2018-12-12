@@ -15,24 +15,19 @@ module Carto
       password = '' if password.nil?
 
       errors = []
-
-      if COMMON_PASSWORDS.include?(password)
-        errors << "must use a different password"
-      end
-
-      if user
-        if user.username && user.username.casecmp(password).zero?
-          errors << "must be different than the user name"
-        end
-
-        if !@strong_password_validator && user.organization_user? && user.organization.strong_passwords_enabled
-          @strong_password_validator = StrongPasswordValidator.new
-        end
-      end
-
-      errors += @strong_password_validator.validate(password) if @strong_password_validator
+      errors << "must use a different password" if COMMON_PASSWORDS.include?(password)
+      errors << "must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
+      errors += strong_password_validator.validate(password) if strong_password_enabled?(user)
 
       errors
+    end
+
+    def strong_password_enabled?(user)
+      @strong_password_validator || user.organization.try(:strong_passwords_enabled)
+    end
+
+    def strong_password_validator
+      @strong_password_validator ||= StrongPasswordValidator.new
     end
 
     def formatted_error_message(errors)

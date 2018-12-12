@@ -1,0 +1,216 @@
+{
+  "MapCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "views": "{views} views (30 days)",
+    "sharedBy": "Shared by {owner}",
+    "noDescription": "No description",
+    "noTags": "No tags",
+    "lastUpdate": "Updated {date} ago",
+    "tags": "tags"
+  },
+  "QuickActions": {
+    "title": "Quick actions",
+    "editInfo": "Edit Name & description",
+    "manageTags": "Manage Tags",
+    "createMap": "Create map",
+    "changePrivacy": "Change Privacy",
+    "share": "Share with colleagues",
+    "duplicate": "Duplicate",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "delete": "Delete"
+  },
+  "BulkActions": {
+    "selected": "{count} selected",
+    "maps": {
+      "selectAllMaps": "Select all",
+      "deselectAllMaps": "Deselect all",
+      "changeMapPrivacy": "Change privacy",
+      "duplicateMap": "Duplicate map",
+      "unlockMap": "Unlock map",
+      "unlockMaps": "Unlock maps",
+      "lockMap": "Lock map",
+      "lockMaps": "Lock maps",
+      "deleteMap": "Delete map",
+      "deleteMaps": "Delete maps"
+    },
+    "datasets": {
+      "selectAllDatasets": "Select all",
+      "deselectAllDatasets": "Deselect all",
+      "createMap": "Create map",
+      "changeDatasetPrivacy": "Change privacy",
+      "duplicateDataset": "Duplicate dataset",
+      "unlockDataset": "Unlock dataset",
+      "unlockDatasets": "Unlock datasets",
+      "lockDataset": "Lock dataset",
+      "lockDatasets": "Lock datasets",
+      "deleteDataset": "Delete dataset",
+      "deleteDatasets": "Delete datasets"
+    }
+  },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your Public Datasets",
+        "link": "Your Link-shared Datasets",
+        "password": "Your Password-protected Datasets",
+        "private": "Your Private Datasets"
+      }
+    },
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, create or connect your first dataset",
+      "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
+      "createDataset": "New Dataset"
+    },
+    "emptyState": "There are no datasets here."
+  },
+  "MapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Maps",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
+        "locked": "Your Locked Maps",
+        "public": "Your Public Maps",
+        "link": "Your Link-shared Maps",
+        "password": "Your Password-protected Maps",
+        "private": "Your Private Maps"
+      }
+    },
+    "createMap": "New Map",
+    "zeroCase": {
+      "title": "Create your first map to predict key insights",
+      "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
+      "createMap": "Create your first map"
+    },
+    "emptyState": "There are no maps here."
+  },
+  "NotificationsPage": {
+    "header": {
+      "title": "Notifications"
+    },
+    "emptyState": "There are no notifications yet.",
+    "loadingState": "Loading your notifications."
+  },
+  "SettingsDropdown": {
+    "showMe": "Show me",
+    "orderMaps": "Order",
+    "types": {
+      "maps": "Your maps ({count})",
+      "datasets": "Your datasets ({count})",
+      "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
+      "locked": "Locked",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    },
+    "order": {
+      "favourites": "Favourites first",
+      "views": "Most viewed first",
+      "alphabetical": {
+        "title": "Name",
+        "A-Z": "A-Z",
+        "Z-A": "Z-A"
+      },
+      "date": {
+        "title": "Updated",
+        "newest": "Newest",
+        "oldest": "Oldest"
+      }
+    },
+    "initialState": "Change Filters"
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "Updated {date} ago",
+    "numberRows": "0 rows | {n} row | {n} rows",
+    "tags": "tags"
+  },
+  "DatasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
+  "UserDropdown": {
+    "settings": "Settings",
+    "organizationSettings": "Your organization",
+    "apiKeys": "API Keys",
+    "publicProfile": "Public Profile",
+    "notifications": "Notifications",
+    "logout": "LOG OUT"
+  },
+  "SolutionsPage": {
+    "solutionsTitle": "Solutions for every business problem",
+    "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
+    "talkUsTitle": "Like what you see?",
+    "talkUsDescription": "Our account management team will give you a firsthand view and discuss with you how we can help your organization to do the same.",
+    "talkUsButton": "Talk to us!",
+    "sitePlanning": {
+      "title": "Site Planning",
+      "description": "Drive site selection and investment decisions with always-on data streams, enabling more accurate revenue prediction and reduced risk of failed location decisions."
+    },
+    "territoryManagement": {
+      "title": "Territory Management",
+      "description": "Design and align sales and service territories to increase productivity and reduce costs using spatial field operations data."
+    },
+    "logisticsOptimization": {
+      "title": "Logistics Optimization",
+      "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
+    }
+  },
+  "SolutionCard": {
+    "moreExamples": "View more examples",
+    "usedBy": "Used by:",
+    "goDemo": "Go to demo"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By :tag, name, or description"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
+    }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {username}",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More"
+    }
+  }
+}

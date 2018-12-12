@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeaturesDropdown.vue should render correct contents 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element">
+        <router-link-stub to="[object Object]" class="list-text text is-small">
+          one tag test
+        </router-link-stub>
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`FeaturesDropdown.vue should render correct multiple elements 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element">
+        <router-link-stub to="[object Object]" class="list-text text is-small">
+          my first map
+        </router-link-stub>
+      </li>
+      <li class="element">
+        <router-link-stub to="[object Object]" class="list-text text is-small">
+          another map
+        </router-link-stub>
+      </li>
+      <li class="element">
+        <router-link-stub to="[object Object]" class="list-text text is-small">
+          Madrid visualization
+        </router-link-stub>
+      </li>
+      <li class="element">
+        <router-link-stub to="[object Object]" class="list-text text is-small">
+          NoSpacesMap
+        </router-link-stub>
+      </li>
+    </ul>
+  </div>
+</div>
+`;

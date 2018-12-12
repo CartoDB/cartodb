@@ -49,4 +49,12 @@
     width: 100%;
     text-align: center;
   }
+
+  &.no-transform {
+    text-transform: unset;
+  }
+}
+
+.button--large {
+  font: 600 16px/24px "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

@@ -175,7 +175,7 @@ module Carto
 
         end
 
-        it 'creates app if Central is disabled and no user' do
+        it 'raises error if Central is disabled and no user' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
           Cartodb::Central.any_instance.expects(:create_oauth_app).never
 
@@ -183,7 +183,7 @@ module Carto
             @oauth_app2 = OauthApp.create!(name: 'name1',
                                            redirect_uris: ['https://re.dir'],
                                            icon_url: 'some.png')
-          }.to change { OauthApp.count }.by(1)
+          }.to raise_error
         end
       end
 

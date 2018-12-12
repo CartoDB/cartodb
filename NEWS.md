@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Password validation against common passwords & usernames (#14522)
 
 ### Bug fixes / enhancements
 - Fix OAuth consent screen when not logged in (#14518)

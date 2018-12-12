@@ -46,6 +46,8 @@ import MapList from './MapList.vue';
 import SectionTitle from 'new-dashboard/components/SectionTitle.vue';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 
+const MAX_VISIBLE_MAPS = 6;
+
 export default {
   name: 'MapsSection',
   components: {
@@ -57,6 +59,7 @@ export default {
     SettingsDropdown
   },
   created: function () {
+    this.$store.dispatch('maps/setPerPage', MAX_VISIBLE_MAPS);
     this.fetchMaps();
   },
   methods: {

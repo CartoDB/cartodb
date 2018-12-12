@@ -28,16 +28,6 @@ class Carto::VisualizationQueryBuilder
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
 
-  PARTIAL_MATCH_QUERY = %Q{
-    to_tsvector(
-      'english', coalesce("visualizations"."name", '') || ' '
-      || coalesce("visualizations"."description", '')
-    ) @@ plainto_tsquery('english', ?)
-    OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
-  }
-
-  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
-
   def initialize
     @include_associations = []
     @eager_load_associations = []
@@ -183,12 +173,8 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
+    @tainted_search_pattern = tainted_search_pattern
     self
-  end
-
-  def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)
@@ -342,7 +328,7 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tainted_search_pattern
-      query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
+      query = Carto::VisualizationQuerySearcher.new(query).search(@tainted_search_pattern)
     end
 
     if @tags
@@ -387,6 +373,19 @@ class Carto::VisualizationQueryBuilder
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
 
+    order_query(query)
+  end
+
+  def build_paged(page = 1, per_page = 20)
+    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
+  end
+
+  private
+
+  def order_query(query)
+    # Search has its own ordering criteria
+    return query if @tainted_search_pattern
+
     @order.each do |k, v|
       query = query.order(k)
       query = query.reverse_order if v == :desc
@@ -398,12 +397,6 @@ class Carto::VisualizationQueryBuilder
       Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
     end
   end
-
-  def build_paged(page = 1, per_page = 20)
-    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
-  end
-
-  private
 
   def offdatabase_order(order)
     return nil unless order.kind_of? String

@@ -529,6 +529,10 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
     expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
 
+    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
+  end
+
+  def expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
     fake_oauth_app = Carto::OauthApp.new(
       created_at: exported_oauth_app[:created_at],
       updated_at: exported_oauth_app[:updated_at]
@@ -546,13 +550,7 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app_user[:user_id]).to eq oauth_app_user.user_id
     expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
 
-    fake_oauth_app_user = Carto::OauthAppUser.new(
-      created_at: exported_oauth_app_user[:created_at],
-      updated_at: exported_oauth_app_user[:updated_at]
-    )
-
-    expect(fake_oauth_app_user.created_at).to eq oauth_app_user.created_at
-    expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
+    expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
 
     if exported_oauth_app_user[:oauth_authorization_codes]
       expect_export_matches_oauth_authorization_codes(
@@ -576,6 +574,16 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  def expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
+    fake_oauth_app_user = Carto::OauthAppUser.new(
+      created_at: exported_oauth_app_user[:created_at],
+      updated_at: exported_oauth_app_user[:updated_at]
+    )
+
+    expect(fake_oauth_app_user.created_at).to eq oauth_app_user.created_at
+    expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
+  end
+
   def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code)
     expect(exported_oauth_authorization_code).to be_nil && return unless oauth_authorization_code
 
@@ -585,6 +593,10 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_authorization_code[:code]).to eq oauth_authorization_code.code
     expect(exported_oauth_authorization_code[:redirect_uri]).to eq oauth_authorization_code.redirect_uri
 
+    expect_export_matches_oauth_authorization_codes_dates(exported_oauth_authorization_code, oauth_authorization_code)
+  end
+
+  def expect_export_matches_oauth_authorization_codes_dates(exported_oauth_authorization_code, oauth_authorization_code)
     fake_oauth_authorization_code = Carto::OauthAuthorizationCode.new(
       created_at: oauth_authorization_code[:created_at]
     )

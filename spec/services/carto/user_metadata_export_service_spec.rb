@@ -523,13 +523,19 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app[:id]).to eq oauth_app.id
     expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
     expect(exported_oauth_app[:name]).to eq oauth_app.name
-    # expect(exported_oauth_app[:created_at]).to eq oauth_app.created_at
-    # expect(exported_oauth_app[:updated_at]).to eq oauth_app.updated_at
     expect(exported_oauth_app[:client_id]).to eq oauth_app.client_id
     expect(exported_oauth_app[:client_secret]).to eq oauth_app.client_secret
     expect(exported_oauth_app[:redirect_uris]).to eq oauth_app.redirect_uris
     expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
     expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
+
+    fake_oauth_app = Carto::OauthApp.new(
+      created_at: exported_oauth_app[:created_at],
+      updated_at: exported_oauth_app[:updated_at]
+    )
+
+    expect(fake_oauth_app.created_at).to eq oauth_app.created_at
+    expect(fake_oauth_app.updated_at).to eq oauth_app.updated_at
   end
 
   def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)
@@ -539,8 +545,14 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app_user[:oauth_app_id]).to eq oauth_app_user.oauth_app_id
     expect(exported_oauth_app_user[:user_id]).to eq oauth_app_user.user_id
     expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
-    # expect(exported_oauth_app_user[:created_at]).to eq oauth_app_user.created_at
-    # expect(exported_oauth_app_user[:updated_at]).to eq oauth_app_user.updated_at
+
+    fake_oauth_app_user = Carto::OauthAppUser.new(
+      created_at: exported_oauth_app_user[:created_at],
+      updated_at: exported_oauth_app_user[:updated_at]
+    )
+
+    expect(fake_oauth_app_user.created_at).to eq oauth_app_user.created_at
+    expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
   end
 
   def export_import(user)

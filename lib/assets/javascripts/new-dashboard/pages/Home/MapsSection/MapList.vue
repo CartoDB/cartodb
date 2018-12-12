@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import MapCard from '../../MapCard.vue';
+import MapCard from 'new-dashboard/components/MapCard.vue';
 import CreateMapCard from './CreateMapCard.vue';
 
 export default {

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import CreateButton from '../../CreateButton';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
   name: 'CreateMapCard',

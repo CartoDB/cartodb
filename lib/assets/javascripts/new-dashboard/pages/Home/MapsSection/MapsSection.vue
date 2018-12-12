@@ -51,13 +51,13 @@
 </template>
 
 <script>
-import CreateButton from '../../CreateButton.vue';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
-import MapBulkActions from '../../BulkActions/MapBulkActions';
+import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions';
 import MapList from './MapList.vue';
 import mapService from 'new-dashboard/core/map-service';
-import SectionTitle from '../../SectionTitle.vue';
-import SettingsDropdown from '../../Settings/Settings';
+import SectionTitle from 'new-dashboard/components/SectionTitle.vue';
+import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 
 
 export default {

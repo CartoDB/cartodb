@@ -49,15 +49,5 @@ export default {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-
-  .card {
-    
-  }
-
-  @media all and (min-width: 656px) {
-    .card {
-     
-    }
-  }
 }
 </style>

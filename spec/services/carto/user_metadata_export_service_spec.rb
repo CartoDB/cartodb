@@ -517,7 +517,6 @@ describe Carto::UserMetadataExportService do
     expect(fake_app.updated_at).to eq token.updated_at
   end
 
-
   def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
     expect(exported_oauth_app).to be_nil && return unless oauth_app
 

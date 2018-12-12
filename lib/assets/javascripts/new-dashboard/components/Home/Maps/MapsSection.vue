@@ -37,31 +37,38 @@
         </template>
       </SectionTitle>
       <MapList
+        v-if="!isEmptyState"
         :maps="maps"
         :selectedMaps.sync="selectedMapsData"
         @toggleSelection="onMapSelected"
         @dataChanged="fetchMaps"
       ></MapList>
+      <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" > 
+        <img svg-inline src="../../../assets/icons/common/compass.svg">
+      </EmptyState>
     </div>
   </section>
 </template>
 
 <script>
-import SectionTitle from '../../SectionTitle.vue';
 import CreateButton from '../../CreateButton.vue';
-import SettingsDropdown from '../../Settings/Settings';
-import MapList from './MapList.vue';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
 import MapBulkActions from '../../BulkActions/MapBulkActions';
+import MapList from './MapList.vue';
 import mapService from 'new-dashboard/core/map-service';
+import SectionTitle from '../../SectionTitle.vue';
+import SettingsDropdown from '../../Settings/Settings';
+
 
 export default {
   name: 'MapsSection',
   components: {
-    SectionTitle,
     CreateButton,
-    SettingsDropdown,
+    EmptyState,
+    MapBulkActions,
     MapList,
-    MapBulkActions
+    SectionTitle,
+    SettingsDropdown
   },
   data () {
     return {
@@ -137,6 +144,12 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    isEmptyState () {
+      return this.appliedFilter !== 'mine' && !this.numResults;
+    },
+    numResults () {
+      return this.$data.maps.length;
     }
   }
 };
@@ -149,7 +162,8 @@ export default {
   position: relative;
   padding: 64px 0;
 
-  .head-section {
+  .head-section,
+  .empty-state {
     width: 100%;
   }
 }

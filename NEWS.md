@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 
 ### Bug fixes / enhancements
 - None yet

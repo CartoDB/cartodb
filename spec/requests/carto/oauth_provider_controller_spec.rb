@@ -296,12 +296,20 @@ describe Carto::OauthProviderController do
         expect(response.body).to(include('invalid_request'))
       end
 
-      it 'redirects with login_required if not logged in' do
+      it 'redirects with login_required if not logged in and client_id exists' do
         logout
         get oauth_provider_authorize_url(valid_payload)
 
         expect(response.status).to(eq(302))
         expect(response.body).to(include('login_required'))
+      end
+
+      it 'shows consent screen if not logged in and wrong client_id' do
+        logout
+        get oauth_provider_authorize_url(valid_payload.merge(client_id: 'wrong'))
+
+        expect(response.status).to(eq(400))
+        expect(response.body).to(include('Invalid client ID or secret'))
       end
 
       it 'redirects with access_denied if not authorized' do

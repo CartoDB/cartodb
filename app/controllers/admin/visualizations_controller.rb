@@ -179,12 +179,20 @@ class Admin::VisualizationsController < Admin::AdminController
     @disqus_shortname       = @visualization.user.disqus_shortname.presence || 'cartodb'
     @public_tables_count    = @visualization.user.public_table_count
 
-    @total_visualizations = @table.dependent_visualizations.select do |vis|
-      vis.privacy == Carto::Visualization::PRIVACY_PUBLIC && vis.published?
+    @partially_dependent_visualizations = @table.partially_dependent_visualizations.select do |vis|
+      vis.privacy == Carto::Visualization::PRIVACY_PUBLIC
     end
 
-    @total_nonpublic_total_vis_count = @table.dependent_visualizations.reject { |vis|
+    @fully_dependent_visualizations = @table.fully_dependent_visualizations.select do |vis|
       vis.privacy == Carto::Visualization::PRIVACY_PUBLIC
+    end
+
+    @total_visualizations = @partially_dependent_visualizations + @fully_dependent_visualizations
+
+    @total_nonpublic_total_vis_count = @table.partially_dependent_visualizations.select { |vis|
+      vis.privacy != Carto::Visualization::PRIVACY_PUBLIC
+    }.count + @table.fully_dependent_visualizations.select { |vis|
+      vis.privacy != Carto::Visualization::PRIVACY_PUBLIC
     }.count
 
     # Public export API SQL url

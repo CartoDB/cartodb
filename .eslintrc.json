@@ -1,13 +1,9 @@
 {
-  "extends": [
-    "semistandard",
-    "plugin:vue/essential"
-  ],
+  "extends": "semistandard",
   "env": {
     "es6": true,
     "browser": true,
-    "jasmine": true,
-    "jest": true
+    "jasmine": true
   },
   "globals": {
     "_t": true,

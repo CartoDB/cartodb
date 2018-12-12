@@ -5,10 +5,7 @@ Development
 - None yet
 
 ### Features
-- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
-- /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
-- Send org_admin parameter to central (#14483)
-
+- None yet
 
 ### Bug fixes / enhancements
 - None yet

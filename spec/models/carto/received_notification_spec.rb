@@ -33,6 +33,7 @@ module Carto
       it 'does not list read notifications' do
         unread = create_received_notification(false)
         create_received_notification(true)
+
         expect(@user.received_notifications.unread).to eq [unread]
       end
 
@@ -43,6 +44,7 @@ module Carto
         Delorean.jump(5.seconds)
         unread3 = create_received_notification(false)
         Delorean.back_to_the_present
+
         expect(@user.received_notifications.unread).to eq [unread3, unread2, unread1]
       end
     end

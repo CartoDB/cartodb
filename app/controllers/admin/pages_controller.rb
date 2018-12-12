@@ -69,14 +69,21 @@ class Admin::PagesController < Admin::AdminController
       username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       render_404 and return if org.nil?
-      visualizations = public_builder(organization_id: org.id).build
+      visualizations = (org.public_visualizations.to_a || [])
+      visualizations += (org.public_datasets.to_a || [])
     else
       # Redirect to org url if has only user
       if eligible_for_redirect?(@viewed_user)
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
+      visualizations = Carto::VisualizationQueryBuilder.new
+                                                       .with_user_id(@viewed_user.id)
+                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                                       .with_order(:updated_at, :desc)
+                                                       .without_raster
+                                                       .with_prefetch_user(true)
+                                                       .build
     end
 
     @urls = visualizations.map { |vis|
@@ -403,7 +410,6 @@ class Admin::PagesController < Admin::AdminController
 
     builder = Carto::VisualizationQueryBuilder.new
                                               .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
-                                              .with_published
                                               .without_raster
                                               .with_order(:updated_at, :desc)
                                               .with_user_id(user_id)
@@ -411,6 +417,8 @@ class Admin::PagesController < Admin::AdminController
                                               .with_tags(tags)
                                               .with_organization_id(organization_id)
                                               .with_version(version)
+
+    builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder
   end

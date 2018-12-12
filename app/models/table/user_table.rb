@@ -51,7 +51,6 @@ class UserTable < Sequel::Model
     affected_visualizations
     fully_dependent_visualizations
     partially_dependent_visualizations
-    dependent_visualizations
     reload
   }
 
@@ -327,10 +326,6 @@ class UserTable < Sequel::Model
 
   def partially_dependent_visualizations
     affected_visualizations.select { |v| v.partially_dependent_on?(self) }
-  end
-
-  def dependent_visualizations
-    affected_visualizations.select { |v| v.dependent_on?(self) }
   end
 
   def is_owner?(user)

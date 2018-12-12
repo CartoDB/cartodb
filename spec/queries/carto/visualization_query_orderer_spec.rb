@@ -165,7 +165,7 @@ describe Carto::VisualizationQueryOrderer do
 
     after(:each) do
       @visualization_c.delete
-    end
+    end    
 
     it 'orders by favorited desc + updated_at desc' do
       result = @orderer.order('favorited,updated_at', 'desc,desc')
@@ -189,6 +189,6 @@ describe Carto::VisualizationQueryOrderer do
       expect(result.size).to eql 3
       expect(result.first.name).to eql @visualization_b.name
       expect(result.second.name).to eql @visualization_c.name
-    end
+    end    
   end
 end

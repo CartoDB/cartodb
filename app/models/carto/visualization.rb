@@ -613,10 +613,6 @@ class Carto::Visualization < ActiveRecord::Base
     synchronization.present?
   end
 
-  def dependent_visualizations
-    user_table.try(:dependent_visualizations) || []
-  end
-
   private
 
   def generate_salt

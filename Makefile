@@ -396,7 +396,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helpe
 
 check: prepare-test-db check-prepared check-gears
 check-frontend:
-	npm run test
+	./node_modules/.bin/grunt test
 
 
 # update cartodb.js submodule files

@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`SearchSuggestionsItem.vue should render correctly 1`] = `
-<a href="http://cdb.localhost.lan:3000/viz/hello.e97e0001-f1c2-425e-8c9b-0fb28da59200" class="suggestions__item text is-caption suggestions__item--derived">
-  First Map
-</a>
-`;

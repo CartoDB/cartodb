@@ -1419,12 +1419,6 @@
           "confirm": "Confirm",
           "cancel": "Cancel"
         }
-      },
-      "change-lock": {
-        "description": {
-          "locked": "Unlocking %{thisOrTheseStr} %{contentTypePluralized} will show %{itOrThemStr} on the dashboard again.",
-          "unlocked": "Locking %{thisOrTheseStr} %{contentTypePluralized} will hide %{itOrThemStr} from the dashboard. Reveal %{itOrThemStr} using the header menu or the bottom link."
-        }
       }
     },
     "error": {

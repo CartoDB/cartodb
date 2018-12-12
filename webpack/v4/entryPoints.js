@@ -26,13 +26,6 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
-  new_dashboard: [
-    '@babel/polyfill',
-    rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('assets/stylesheets/new-dashboard/main.scss')),
-    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
-  ],
-
   public_table_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
     rootDir('assets/stylesheets/table/table.scss'),

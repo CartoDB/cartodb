@@ -11,11 +11,11 @@ class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
   def self.user_public_tables(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
+    self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
 
   def self.user_public_visualizations(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
+    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
   end
 
   def self.user_all_visualizations(user)
@@ -39,6 +39,7 @@ class Carto::VisualizationQueryBuilder
   def initialize
     @include_associations = []
     @eager_load_associations = []
+    @eager_load_nested_associations = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
     @excluded_kinds = []
@@ -123,19 +124,11 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_table
-    nested_association = { map: :user_table }
-    with_eager_load_of(nested_association)
-  end
-
-  def with_prefetch_dependent_visualizations
-    inner_visualization = { visualization: { map: { layers: :layers_user_tables } } }
-    nested_association = { map: { user_table: { layers: { maps: inner_visualization } } } }
-    with_eager_load_of(nested_association)
+    with_eager_load_of_nested_associations(map: :user_table)
   end
 
   def with_prefetch_permission
-    nested_association = { permission: :owner }
-    with_eager_load_of(nested_association)
+    with_eager_load_of_nested_associations(permission: :owner)
   end
 
   def with_prefetch_external_source
@@ -230,7 +223,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(id: @id)
     end
 
-    if @excluded_ids && !@excluded_ids.empty?
+    if @excluded_ids and !@excluded_ids.empty?
       query = query.where('visualizations.id not in (?)', @excluded_ids)
     end
 
@@ -252,8 +245,8 @@ class Carto::VisualizationQueryBuilder
 
     if @liked_by_user_id
       query = query
-              .joins(:likes)
-              .where(likes: { actor: @liked_by_user_id })
+          .joins(:likes)
+          .where(likes: { actor: @liked_by_user_id })
     end
 
     if @shared_with_user_id
@@ -342,7 +335,9 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tags
-      @tags.each(&:downcase!)
+      @tags.each do |t|
+        t.downcase!
+      end
       query = query.where("array_to_string(visualizations.tags, ', ') ILIKE '%' || array_to_string(ARRAY[?]::text[], ', ') || '%'", @tags)
     end
 
@@ -365,7 +360,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(version: @version)
     end
 
-    if @only_published
+    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
       # "Published" is only required for builder maps
       # This SQL check should match Ruby `Carto::Visualization#published?` definition
       query = query.where(%{
@@ -380,8 +375,15 @@ class Carto::VisualizationQueryBuilder
       })
     end
 
-    query = query.includes(@include_associations)
-    query = query.eager_load(@eager_load_associations)
+    @include_associations.each { |association|
+      query = query.includes(association)
+    }
+
+    @eager_load_associations.each { |association|
+      query = query.eager_load(association)
+    }
+
+    query = query.eager_load(@eager_load_nested_associations) if @eager_load_nested_associations != {}
 
     Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
@@ -399,6 +401,11 @@ class Carto::VisualizationQueryBuilder
 
   def with_eager_load_of(association)
     @eager_load_associations << association
+    self
+  end
+
+  def with_eager_load_of_nested_associations(associations_hash)
+    @eager_load_nested_associations.merge!(associations_hash)
     self
   end
 

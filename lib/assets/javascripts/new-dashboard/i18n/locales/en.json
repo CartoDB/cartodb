@@ -107,7 +107,7 @@
     "orderMaps": "Order",
     "types": {
       "maps": "Your maps",
-      "datasets": "Your datasets ({count})",
+      "datasets": "Your datasets",
       "shared": "Shared with you ({count})",
       "favorited": "Favorited ({count})",
       "locked": "Locked ({count})",

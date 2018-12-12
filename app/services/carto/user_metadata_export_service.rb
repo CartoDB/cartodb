@@ -237,7 +237,7 @@ module Carto
     end
 
     def build_oauth_apps_from_hash(oauth_apps)
-      return unless oauth_apps
+      return [] unless oauth_apps
       oauth_apps.map { |oauth_app| build_oauth_app_from_hash(oauth_app) }
     end
 
@@ -276,18 +276,18 @@ module Carto
     end
 
     def build_oauth_app_users_from_hash(oauth_app_users)
-      return unless oauth_app_users
+      return [] unless oauth_app_users
       oauth_app_users.map { |oau| build_oauth_app_user_from_hash(oau) }
     end
 
     def build_oauth_app_user_from_hash(oau_hash)
       oau = Carto::OauthAppUser.new(
-        id: oau_hash.id,
-        oauth_app_id: oau_hash.oauth_app_id,
-        user_id: oau_hash.user_id,
-        scopes: oau_hash.scopes,
-        created_at: oau_hash.created_at,
-        updated_at: oau_hash.updated_at
+        id: oau_hash[:id],
+        oauth_app_id: oau_hash[:oauth_app_id],
+        user_id: oau_hash[:user_id],
+        scopes: oau_hash[:scopes],
+        created_at: oau_hash[:created_at],
+        updated_at: oau_hash[:updated_at]
       )
 
       if oau_hash[:oauth_authorization_codes]

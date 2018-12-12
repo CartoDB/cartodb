@@ -329,13 +329,13 @@ module Carto
         oauth_app_user_id: oat_hash[:oauth_app_user_id],
         api_key_id: oat_hash[:api_key_id],
         scopes: oat_hash[:scopes],
-        created_at: oat_hash[:created_at]
+        created_at: oat_hash[:created_at],
+        skip_api_key_creation: true
       )
     end
 
     def build_oauth_refresh_token_from_hash(ort_hash)
       Carto::OauthRefreshToken.new(
-        id: ort_hash[:id],
         oauth_app_user_id: ort_hash[:oauth_app_user_id],
         token: ort_hash[:token],
         scopes: ort_hash[:scopes],
@@ -557,7 +557,6 @@ module Carto
 
     def export_oauth_refresh_token(ort)
       {
-        id: ort.id,
         oauth_app_user_id: ort.oauth_app_user_id,
         token: ort.token,
         scopes: ort.scopes,

@@ -553,6 +553,74 @@ describe Carto::UserMetadataExportService do
 
     expect(fake_oauth_app_user.created_at).to eq oauth_app_user.created_at
     expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
+
+    if exported_oauth_app_user[:oauth_authorization_codes]
+      expect_export_matches_oauth_authorization_codes(
+        exported_oauth_app_user[:oauth_authorization_codes].first,
+        oauth_app_user.oauth_authorization_codes.first
+      )
+    end
+
+    if exported_oauth_app_user[:oauth_access_tokens]
+      expect_export_matches_oauth_access_tokens(
+        exported_oauth_app_user[:oauth_access_tokens].first,
+        oauth_app_user.oauth_access_tokens.first
+      )
+    end
+
+    if exported_oauth_app_user[:oauth_refresh_tokens]
+      expect_export_matches_oauth_refresh_tokens(
+        exported_oauth_app_user[:oauth_refresh_tokens].first,
+        oauth_app_user.oauth_refresh_tokens.first
+      )
+    end
+  end
+
+  def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code)
+    expect(exported_oauth_authorization_code).to be_nil && return unless oauth_authorization_code
+
+    expect(exported_oauth_authorization_code[:id]).to eq oauth_authorization_code.id
+    expect(exported_oauth_authorization_code[:oauth_app_user_id]).to eq oauth_authorization_code.oauth_app_user_id
+    expect(exported_oauth_authorization_code[:scopes]).to eq oauth_authorization_code.scopes
+    expect(exported_oauth_authorization_code[:code]).to eq oauth_authorization_code.code
+    expect(exported_oauth_authorization_code[:redirect_uri]).to eq oauth_authorization_code.redirect_uri
+
+    fake_oauth_authorization_code = Carto::OauthAuthorizationCode.new(
+      created_at: oauth_authorization_code[:created_at]
+    )
+
+    expect(fake_oauth_authorization_code.created_at).to eq oauth_authorization_code.created_at
+  end
+
+  def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token)
+    expect(exported_oauth_access_token).to be_nil && return unless oauth_access_token
+
+    expect(exported_oauth_access_token[:id]).to eq oauth_access_token.id
+    expect(exported_oauth_access_token[:oauth_app_user_id]).to eq oauth_access_token.oauth_app_user_id
+    expect(exported_oauth_access_token[:api_key_id]).to eq oauth_access_token.api_key_id
+    expect(exported_oauth_access_token[:scopes]).to eq oauth_access_token.scopes
+
+    fake_oauth_access_token = Carto::OauthAccessToken.new(
+      created_at: oauth_access_token[:created_at]
+    )
+
+    expect(fake_oauth_access_token.created_at).to eq oauth_access_token.created_at
+  end
+
+  def expect_export_matches_oauth_refresh_tokens(exported_oauth_refresh_token, oauth_refresh_token)
+    expect(exported_oauth_refresh_token).to be_nil && return unless oauth_refresh_token
+
+    expect(exported_oauth_refresh_token[:oauth_app_user_id]).to eq oauth_refresh_token.oauth_app_user_id
+    expect(exported_oauth_refresh_token[:token]).not_to be_empty
+    expect(exported_oauth_refresh_token[:scopes]).to eq oauth_refresh_token.scopes
+
+    fake_oauth_refresh_token = Carto::OauthRefreshToken.new(
+      created_at: oauth_refresh_token[:created_at],
+      updated_at: oauth_refresh_token[:updated_at]
+    )
+
+    expect(fake_oauth_refresh_token.created_at).to eq oauth_refresh_token.created_at
+    expect(fake_oauth_refresh_token.updated_at).to eq oauth_refresh_token.updated_at
   end
 
   def export_import(user)
@@ -755,6 +823,7 @@ describe Carto::UserMetadataExportService do
         phone: '1234567',
         api_keys: [
           {
+            id: "yyyyy1",
             created_at: "2018-02-12T16:11:26+00:00",
             db_password: "kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
             db_role: "test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
@@ -775,6 +844,7 @@ describe Carto::UserMetadataExportService do
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
           },
           {
+            id: "yyyyy2",
             created_at: "2018-02-12T16:11:26+00:00",
             db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
             db_role: "user00000001_role_31cf62cd1123fe32b0bf76b048e3af39",
@@ -980,7 +1050,14 @@ describe Carto::UserMetadataExportService do
           icon_url: "icon",
           restricted: false,
           oauth_app_users: [],
-          oauth_app_organizations: []
+          # oauth_app_organizations: [{
+          #   id: "yyyyy",
+          #   oauth_app_id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
+          #   organization_id: nil,
+          #   seats: 5,
+          #   created_at: "2018-11-16T14:31:46+00:00",
+          #   updated_at: "2018-11-17T16:41:56+00:00",
+          # }]
         }],
         oauth_app_users: [{
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
@@ -988,7 +1065,28 @@ describe Carto::UserMetadataExportService do
           user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
           scopes: ["datasets:r:test1", "datasets:rw:test2"],
           created_at: "2018-11-16T14:31:46+00:00",
-          updated_at: "2018-11-17T16:41:56+00:00"
+          updated_at: "2018-11-17T16:41:56+00:00",
+          oauth_authorization_codes: [{
+            id: "3844eb4b-8008-4273-b462-8d6efb65628e",
+            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+            scopes: ["datasets:r:test1"],
+            code: "zzzz",
+            created_at: "2018-11-16T14:31:46+00:00"
+          }],
+          # oauth_access_tokens: [{
+          #   id: "yyyyyy",
+          #   oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+          #   api_key_id: nil,
+          #   scopes: ["datasets:r:test1"],
+          #   created_at: "2018-11-16T14:31:46+00:00"
+          # }],
+          oauth_refresh_tokens: [{
+            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+            token: "zzzzz",
+            scopes: ["datasets:r:test1", "offline"],
+            created_at: "2018-11-16T14:31:46+00:00",
+            updated_at: "2018-06-11T14:31:46+00:00"
+          }]
         }]
       }
     }

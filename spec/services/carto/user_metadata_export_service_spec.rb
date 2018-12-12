@@ -149,6 +149,8 @@ describe Carto::UserMetadataExportService do
       end
       ClientApplication.where(user_id: @user.id).each(&:destroy)
 
+      @user.oauth_app_users.each(&:destroy) unless @user.oauth_app_users.blank?
+
       @user.destroy if @user
     end
 
@@ -379,6 +381,18 @@ describe Carto::UserMetadataExportService do
     else
       expect(user.user_multifactor_auths).to be_empty
     end
+
+    if export[:oauth_apps]
+      expect_export_matches_oauth_apps(export[:oauth_apps].first, user.oauth_apps.first)
+    else
+      expect(user.oauth_apps).to be_empty
+    end
+
+    if export[:oauth_app_users]
+      expect_export_matches_oauth_app_users(export[:oauth_app_users].first, user.oauth_app_users.first)
+    else
+      expect(user.oauth_app_users).to be_empty
+    end
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -501,6 +515,33 @@ describe Carto::UserMetadataExportService do
     expect(fake_app.valid_to).to eq token.valid_to
     expect(fake_app.created_at).to eq token.created_at
     expect(fake_app.updated_at).to eq token.updated_at
+  end
+
+
+  def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
+    expect(exported_oauth_app).to be_nil && return unless oauth_app
+
+    expect(exported_oauth_app[:id]).to eq oauth_app.id
+    expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
+    expect(exported_oauth_app[:name]).to eq oauth_app.name
+    # expect(exported_oauth_app[:created_at]).to eq oauth_app.created_at
+    # expect(exported_oauth_app[:updated_at]).to eq oauth_app.updated_at
+    expect(exported_oauth_app[:client_id]).to eq oauth_app.client_id
+    expect(exported_oauth_app[:client_secret]).to eq oauth_app.client_secret
+    expect(exported_oauth_app[:redirect_uris]).to eq oauth_app.redirect_uris
+    expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
+    expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
+  end
+
+  def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)
+    expect(exported_oauth_app_user).to be_nil && return unless oauth_app_user
+
+    expect(exported_oauth_app_user[:id]).to eq oauth_app_user.id
+    expect(exported_oauth_app_user[:oauth_app_id]).to eq oauth_app_user.oauth_app_id
+    expect(exported_oauth_app_user[:user_id]).to eq oauth_app_user.user_id
+    expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
+    # expect(exported_oauth_app_user[:created_at]).to eq oauth_app_user.created_at
+    # expect(exported_oauth_app_user[:updated_at]).to eq oauth_app_user.updated_at
   end
 
   def export_import(user)

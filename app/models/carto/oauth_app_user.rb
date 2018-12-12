@@ -18,9 +18,9 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_dataset_role, :grant_dataset_role_privileges
+    after_create :create_dataset_role, :grant_dataset_role_privileges, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_dataset_role
+    after_destroy :drop_dataset_role, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 

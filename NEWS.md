@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth public release (WIP):
+  - Include `oauth` and friends in user migrator (#14492)
 
 ### Bug fixes / enhancements
 - None yet

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Fix baseurl in datasets public dashboard page (#14524)
 
 4.23.3 (2018-12-03)
 -------------------

@@ -2,6 +2,7 @@
 
 module Carto
   class StrongPasswordValidator
+
     DEFAULT_MIN_LENGTH = 8
     DEFAULT_MAX_LENGTH = 64
     DEFAULT_MIN_NUMBERS = 1
@@ -46,16 +47,6 @@ module Carto
       end
 
       errors
-    end
-
-    def formatted_error_message(errors)
-      return nil if errors.empty?
-      return errors.first if errors.size == 1
-
-      message = errors.select { |error| error != errors.last }.join(', ')
-      message << " and #{errors.last}"
-
-      message
     end
 
     private

@@ -287,7 +287,8 @@ module Carto
         user_id: oau_hash[:user_id],
         scopes: oau_hash[:scopes],
         created_at: oau_hash[:created_at],
-        updated_at: oau_hash[:updated_at]
+        updated_at: oau_hash[:updated_at],
+        skip_role_setup: true
       )
 
       if oau_hash[:oauth_authorization_codes]

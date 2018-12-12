@@ -606,7 +606,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.8",
+      version: "1.0.9",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -915,13 +915,42 @@ describe Carto::UserMetadataExportService do
           enabled: true,
           shared_secret: 'abcdefgh',
           type: 'totp'
+        }],
+        oauth_apps: [{
+          id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
+          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+          name: "test-app",
+          created_at: "2018-11-16T14:31:46+00:00",
+          updated_at: "2018-11-17T16:41:56+00:00",
+          client_id: "xxxxxxxxxxxxx",
+          client_secret: "yyyyyyyyyyyyy",
+          redirect_uris: ["https://carto.com"],
+          icon_url: "icon",
+          restricted: false,
+          oauth_app_users: [],
+          oauth_app_organizations: []
+        }],
+        oauth_app_users: [{
+          id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+          oauth_app_id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
+          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+          scopes: ["datasets:r:test1", "datasets:rw:trees", "datasets:rw:test1"],
+          created_at: "2018-11-16T14:31:46+00:00",
+          updated_at: "2018-11-17T16:41:56+00:00"
         }]
       }
     }
   end
 
+  let(:full_export_one_zero_eight) do
+    user_hash = full_export[:user].except!(:oauth_apps, :oauth_app_users)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_seven) do
-    user_hash = full_export[:user].except!(:user_multifactor_auths)
+    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths)
 
     full_export[:user] = user_hash
     full_export

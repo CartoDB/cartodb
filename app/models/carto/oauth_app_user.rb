@@ -14,13 +14,15 @@ module Carto
     has_many :oauth_refresh_tokens, inverse_of: :oauth_app_user, dependent: :destroy
 
     validates :user, presence: true, uniqueness: { scope: :oauth_app }
-    validates :oauth_app, presence: true
+    validates :oauth_app, presence: true, unless: :skip_role_setup
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
     after_create :create_dataset_role, :grant_dataset_role_privileges
     before_update :grant_dataset_role_privileges
     after_destroy :drop_dataset_role
+
+    attr_accessor :skip_role_setup
 
     def authorized?(requested_scopes)
       OauthProvider::Scopes.subtract_scopes(requested_scopes, all_scopes, user.database_schema).empty?

@@ -986,7 +986,7 @@ describe Carto::UserMetadataExportService do
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
           oauth_app_id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
           user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
-          scopes: ["datasets:r:test1", "datasets:rw:trees", "datasets:rw:test1"],
+          scopes: ["datasets:r:test1", "datasets:rw:test2"],
           created_at: "2018-11-16T14:31:46+00:00",
           updated_at: "2018-11-17T16:41:56+00:00"
         }]

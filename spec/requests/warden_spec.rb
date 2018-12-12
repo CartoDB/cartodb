@@ -246,7 +246,7 @@ describe 'Warden' do
         expect_password_locked
 
         old_password = @user.password
-        new_password = '12345678'
+        new_password = '00012345678'
         @user.password = @user.password_confirmation = new_password
 
         @user.save

@@ -489,7 +489,7 @@ describe User do
     user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"
-    user.password = user.password_confirmation = '123456'
+    user.password = user.password_confirmation = '000123456'
 
     user.valid?.should be_false
     user.errors[:password].should be_present
@@ -1809,7 +1809,7 @@ describe User do
   end
 
   it "Tests password change" do
-    new_valid_password = '123456'
+    new_valid_password = '000123456'
 
     old_crypted_password = @user.crypted_password
 
@@ -1907,7 +1907,7 @@ describe User do
 
       @user.needs_password_confirmation?.should == false
 
-      new_valid_password = '123456'
+      new_valid_password = '000123456'
       @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
 
       @user.needs_password_confirmation?.should == true

@@ -447,13 +447,13 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
-      user_to_update.password = '12345678'
-      user_to_update.password_confirmation = '12345678'
+      user_to_update.password = '00012345678'
+      user_to_update.password_confirmation = '00012345678'
       user_to_update.save
       user_to_update.reload
       last_change = user_to_update.last_password_change_date
 
-      params = { password: '12345678' }
+      params = { password: '00012345678' }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 

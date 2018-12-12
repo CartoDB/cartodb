@@ -47,7 +47,7 @@ module CartoDB
       user = user_class.new
       user.username              = attributes[:username] || unique_name('user')
       user.email                 = attributes[:email]    || unique_email
-      user.password              = "#{(attributes[:password] || user.email.split('@').first)}000"
+      user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
       user.admin                 = attributes[:admin] == false ? false : true
       user.private_tables_enabled = attributes[:private_tables_enabled] == true ? true : false
@@ -132,7 +132,7 @@ module CartoDB
       user = create_user(
         username: username,
         email: "#{username}@example.com",
-        password: username,
+        password: "#{username}000",
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
         organization: organization,

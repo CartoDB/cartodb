@@ -106,11 +106,11 @@
     "showMe": "Show me",
     "orderMaps": "Order",
     "types": {
-      "maps": "Your maps ({count})",
+      "maps": "Your maps",
       "datasets": "Your datasets ({count})",
       "shared": "Shared with you ({count})",
       "favorited": "Favorited ({count})",
-      "locked": "Locked",
+      "locked": "Locked ({count})",
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",

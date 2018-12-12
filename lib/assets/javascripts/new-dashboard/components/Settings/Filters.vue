@@ -4,7 +4,7 @@
   <ul class="list">
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('mine') }" @click="setFilter('mine')">
-        {{ $t(`SettingsDropdown.types.${section}`, { count: metadata.total_user_entries }) }}
+        {{ $t(`SettingsDropdown.types.${section}`) }}
       </a>
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }" v-if="metadata.total_shared">
@@ -17,9 +17,9 @@
         {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}
       </a>
     </li>
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }">
+    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }" v-if="metadata.total_locked">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('locked') }" @click="setFilter('locked')">
-        {{ $t('SettingsDropdown.types.locked') }}
+        {{ $t('SettingsDropdown.types.locked', { count: metadata.total_locked }) }}
       </a>
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isPrivacyFilterApplied }">

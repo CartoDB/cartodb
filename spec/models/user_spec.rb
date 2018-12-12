@@ -655,19 +655,19 @@ describe User do
 
   describe '#private_maps_enabled?' do
     it 'should not have private maps enabled by default' do
-      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
+      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => '000usermpm'
       user_missing_private_maps.private_maps_enabled?.should eq false
       user_missing_private_maps.destroy
     end
 
     it 'should have private maps if enabled' do
-      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
+      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => '000userwpm', :private_maps_enabled => true
       user_with_private_maps.private_maps_enabled?.should eq true
       user_with_private_maps.destroy
     end
 
     it 'should not have private maps if disabled' do
-      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => '000useropm', :private_maps_enabled => false
       user_without_private_maps.private_maps_enabled?.should eq false
       user_without_private_maps.destroy
     end
@@ -2765,7 +2765,7 @@ describe User do
       uo.promote_user_to_admin
       @organization.reload
       @user_org = FactoryGirl.build(:user, account_type: 'FREE')
-      @user_org.organization_id = @organization.id
+      @user_org.organization = @organization
       @user_org.enabled = true
       @user_org.save
 

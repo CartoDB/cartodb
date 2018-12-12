@@ -250,12 +250,16 @@ class User < Sequel::Model
         errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
       end
 
-      Carto::PasswordValidator.new.validate(value, self).each { |e| errors.add(key, e) }
+      password_validator.validate(value, self).each { |e| errors.add(key, e) }
 
       validate_different_passwords(nil, self.class.password_digest(value, salt), key)
     end
 
     errors[key].empty?
+  end
+
+  def password_validator
+    Carto::PasswordValidator.new
   end
 
   def valid_creation?(creator_user)

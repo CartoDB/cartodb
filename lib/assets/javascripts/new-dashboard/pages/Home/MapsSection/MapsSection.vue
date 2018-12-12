@@ -31,7 +31,7 @@
         :maps="maps"
         @dataChanged="fetchMaps"
       ></MapList>
-      <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" > 
+      <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
         <img svg-inline src="../../../assets/icons/common/compass.svg">
       </EmptyState>
     </div>
@@ -45,7 +45,6 @@ import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions'
 import MapList from './MapList.vue';
 import SectionTitle from 'new-dashboard/components/SectionTitle.vue';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-
 
 export default {
   name: 'MapsSection',
@@ -71,7 +70,7 @@ export default {
     },
     fetchMaps () {
       this.$store.dispatch('maps/fetchMaps');
-    },
+    }
   },
   computed: {
     title () {

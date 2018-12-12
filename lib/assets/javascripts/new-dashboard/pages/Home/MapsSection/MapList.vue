@@ -19,7 +19,7 @@ export default {
     maps: Object,
     selectedMaps: {
       type: Set,
-      default: () => new Set(),
+      default: () => new Set()
     }
   },
   components: {
@@ -35,7 +35,7 @@ export default {
     },
     onDataChanged () {
       this.$emit('dataChanged');
-    },
+    }
   },
   computed: {
     hasMaps () {

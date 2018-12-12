@@ -132,6 +132,7 @@ class Carto::User < ActiveRecord::Base
   def password=(value)
     return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
     return if !value.nil? && value.length >= MAX_PASSWORD_LENGTH
+    return if !value.nil? && Carto::PasswordValidator.new.validate(value, self).any?
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt

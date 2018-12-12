@@ -475,6 +475,26 @@ describe User do
     user.errors[:password].should be_present
   end
 
+  it "should validate password is different than username" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+    user.password = user.password_confirmation = "adminipop"
+
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+  end
+
+  it "should validate password is not a common one" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+    user.password = user.password_confirmation = '123456'
+
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+  end
+
   it "should set default statement timeout values" do
     @user.in_database["show statement_timeout"].first[:statement_timeout].should == "5min"
     @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "5min"

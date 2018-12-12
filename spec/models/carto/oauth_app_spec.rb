@@ -88,21 +88,25 @@ module Carto
         expect(app).to(be_valid)
       end
 
-      it 'accepts with no user if avoid_sync_central' do
+      it 'accepts with no user if avoid_sync_central and central enabled' do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
         app = OauthApp.new(name: 'name',
                            redirect_uris: ['https://re.dir'],
                            icon_url: 'some.png',
                            avoid_sync_central: true)
         expect(app).to(be_valid)
+        Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       end
 
       it 'accepts restricted without organization if user is not present in cloud' do
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
         app = Carto::OauthApp.new(name: 'name',
                                   redirect_uris: ['https://re.dir'],
                                   icon_url: 'some.png',
                                   restricted: true,
                                   avoid_sync_central: true)
         expect(app).to(be_valid)
+        Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       end
     end
 

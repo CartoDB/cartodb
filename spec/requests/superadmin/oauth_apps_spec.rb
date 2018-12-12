@@ -33,12 +33,14 @@ describe Superadmin::OauthAppsController do
     end
 
     it 'should create an oauth_app with nonexistent user' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       expect {
         @oauth_app_param[:oauth_app][:user_id] = nil
         post superadmin_oauth_apps_url, @oauth_app_param.to_json, superadmin_headers
 
         response.status.should == 201
       }.to change(Carto::OauthApp, :count).by(1)
+      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
     end
   end
 
@@ -68,6 +70,7 @@ describe Superadmin::OauthAppsController do
     end
 
     it 'should update an oauth_app with nonexistent user' do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       expect {
         @oauth_app_param[:oauth_app][:user_id] = nil
         put superadmin_oauth_app_url(@oauth_app.id),
@@ -79,6 +82,8 @@ describe Superadmin::OauthAppsController do
         @oauth_app.name.should eq 'updated_name'
         @oauth_app.user_id.should eq nil
       }.to change(Carto::OauthApp, :count).by(0)
+
+      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
     end
 
     it 'should raise an error if non-existent oauth_app' do

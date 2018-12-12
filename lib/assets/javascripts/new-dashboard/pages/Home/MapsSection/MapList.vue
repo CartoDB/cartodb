@@ -1,9 +1,9 @@
 <template>
   <ul class="map-list">
-    <li v-if="!maps.length" class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
+    <li v-if="!hasMaps" class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
       <CreateMapCard></CreateMapCard>
     </li>
-    <li v-if="maps.length" class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="map in maps" :key="map.id">
+    <li v-if="hasMaps" class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="map in maps" :key="map.id">
       <MapCard @dataChanged="onDataChanged" :canHover="false" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
     </li>
   </ul>
@@ -16,8 +16,11 @@ import CreateMapCard from './CreateMapCard.vue';
 export default {
   name: 'MapList',
   props: {
-    maps: Array,
-    selectedMaps: Set
+    maps: Object,
+    selectedMaps: {
+      type: Set,
+      default: () => new Set(),
+    }
   },
   components: {
     MapCard,
@@ -32,11 +35,11 @@ export default {
     },
     onDataChanged () {
       this.$emit('dataChanged');
-    }
+    },
   },
   computed: {
     hasMaps () {
-      return this.$props.maps.length > 0;
+      return Object.keys(this.$props.maps).length > 0;
     }
   }
 };

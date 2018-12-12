@@ -403,7 +403,7 @@ describe User do
   it 'should store feature flags' do
     ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
 
-    user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => 'ff-user-01'
+    user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => '000ff-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
@@ -413,7 +413,7 @@ describe User do
   it 'should delete feature flags assignations to a deleted user' do
     ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
 
-    user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => 'ff2-user-01'
+    user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => '000ff2-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user_id = user.id
@@ -489,7 +489,7 @@ describe User do
     user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"
-    user.password = user.password_confirmation = '000123456'
+    user.password = user.password_confirmation = '123456'
 
     user.valid?.should be_false
     user.errors[:password].should be_present

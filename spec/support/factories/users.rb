@@ -132,7 +132,7 @@ module CartoDB
       user = create_user(
         username: username,
         email: "#{username}@example.com",
-        password: "#{username}000",
+        password: "000#{username}",
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
         organization: organization,

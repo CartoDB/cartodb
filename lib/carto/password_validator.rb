@@ -21,7 +21,7 @@ module Carto
       end
 
       if user
-        if user.username.casecmp(password).zero?
+        if user.username && user.username.casecmp(password).zero?
           errors << "must be different than the user name"
         end
 

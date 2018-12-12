@@ -53,8 +53,8 @@ module Carto
       before_filter :link_ghost_tables, only: [:index]
       before_filter :load_common_data, only: [:index]
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
-      rescue_from Carto::OrderDirectionParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
@@ -108,9 +108,7 @@ module Carto
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
-      rescue Carto::OrderParamInvalidError => e
-        render_jsonp({ error: e.message }, e.status)
-      rescue Carto::OrderDirectionParamInvalidError => e
+      rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
         render_jsonp({ error: e.message }, e.status)
       rescue StandardError => e
         CartoDB::Logger.error(exception: e)

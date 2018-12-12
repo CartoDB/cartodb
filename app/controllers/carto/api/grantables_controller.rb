@@ -15,7 +15,7 @@ module Carto
 
       before_filter :load_organization
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
       VALID_ORDER_PARAMS = [:id, :name, :type, :avatar_url, :organization_id, :updated_at].freeze
 
@@ -31,7 +31,7 @@ module Carto
           grantables: grantables.map { |g| Carto::Api::GrantablePresenter.new(g).to_poro },
           total_entries: total_entries
         }, 200)
-      rescue Carto::OrderParamInvalidError => e
+      rescue Carto::ParamInvalidError => e
         render json: { errors: e.message }, status: e.status
       rescue => e
         CartoDB.notify_exception(e, { params: params })

@@ -3009,18 +3009,6 @@ describe Carto::Api::VisualizationsController do
           @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
         end
 
-        it 'orders descending by default' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
-                                              order: 'estimated_row_count'), {}, @headers
-
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_b.id
-          collection[1]['id'].should eq @visualization_a.id
-        end
-
         it 'orders descending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
                                               order_direction: 'desc'), {}, @headers
@@ -3052,18 +3040,6 @@ describe Carto::Api::VisualizationsController do
           public_privacy = Carto::Visualization::PRIVACY_PUBLIC
           @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: link_privacy).store
           @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: public_privacy).store
-        end
-
-        it 'orders descending by default' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
-                                              order: 'privacy'), {}, @headers
-
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_b.id
-          collection[1]['id'].should eq @visualization_a.id
         end
 
         it 'orders descending' do
@@ -3106,18 +3082,6 @@ describe Carto::Api::VisualizationsController do
           @visualization_b = table_b.table_visualization
         end
 
-        it 'orders descending by default' do
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
-                                              with_dependent_visualizations: true), {}, @headers
-
-          last_response.status.should == 200
-          response = JSON.parse(last_response.body)
-          collection = response.fetch('visualizations')
-          collection.length.should eq 2
-          collection[0]['id'].should eq @visualization_a.id
-          collection[1]['id'].should eq @visualization_b.id
-        end
-
         it 'orders descending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
                                               with_dependent_visualizations: true,
@@ -3151,6 +3115,10 @@ describe Carto::Api::VisualizationsController do
           @invalid_order = 'invalid_order'
           @valid_order_direction = 'asc'
           @invalid_order_direction = 'invalid_order_direction'
+          @valid_order_combination = 'name,updated_at'
+          @invalid_order_combination = 'size,updated_at'
+          @valid_direction_combination = 'asc,desc'
+          @invalid_direction_combination = 'asc,invalid'
         end
 
         it 'returns an error if an invalid :order is given' do
@@ -3173,6 +3141,30 @@ describe Carto::Api::VisualizationsController do
                                               api_key: @user.api_key, types: 'derived'), {}, @headers
           last_response.status.should == 400
           last_response.body.should include "Wrong 'order_direction' parameter value"
+        end
+
+        it 'returns an error if an invalid :order combination is given' do
+          get api_v1_visualizations_index_url(order: @valid_order_combination, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @invalid_order_combination, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order' parameter combination"
+        end
+
+        it 'returns an error if an invalid :order_direction combination is given' do
+          get api_v1_visualizations_index_url(order: @valid_order_combination,
+                                              order_direction: @valid_direction_combination,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @valid_order_combination,
+                                              order_direction: @invalid_direction_combination,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order_direction' parameter combination"
         end
       end
     end

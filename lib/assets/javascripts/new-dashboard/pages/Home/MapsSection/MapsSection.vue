@@ -14,8 +14,7 @@
             :orderDirection="appliedOrderDirection"
             :metadata="metadata"
             @filterChanged="applyFilter"
-            @orderChanged="applyOrder"
-          >
+            @orderChanged="applyOrder">
             <img svg-inline src="../../../assets/icons/common/filter.svg">
           </SettingsDropdown>
         </template>

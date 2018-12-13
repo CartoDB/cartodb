@@ -1,8 +1,8 @@
 <template>
-<main class="app-main">
+<section class="page page--welcome">
   <Welcome></Welcome>
   <MapsSection></MapsSection>
-</main>
+</section>
 </template>
 
 <script>
@@ -21,8 +21,7 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.app-main {
-  position: relative;
-  top: 64px;
+.page--welcome {
+  padding: 0;
 }
 </style>

@@ -2,6 +2,13 @@
 <div class="section">
   <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.orderMaps') }}</h6>
   <ul class="list">
+    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('favorited,updated_at', 'desc,desc') }">
+      <a href="javascript:void(0)"
+         class="element" :class="{ 'element--selected': isOrderApplied('favorited,updated_at', 'desc,desc') }"
+         @click="setOrder('favorited,updated_at', 'desc,desc')">
+        {{ $t('SettingsDropdown.order.favourites') }}
+      </a>
+    </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
       {{ $t('SettingsDropdown.order.date.title') }}  (
         <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">

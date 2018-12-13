@@ -12,11 +12,6 @@
         {{ $t('SettingsDropdown.types.shared', { count: metadata.total_shared }) }}
       </a>
     </li>
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }" v-if="metadata.total_likes">
-      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
-        {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}
-      </a>
-    </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('locked') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('locked') }" @click="setFilter('locked')">
         {{ $t('SettingsDropdown.types.locked') }}

@@ -13,7 +13,7 @@ module Carto
 
       before_filter :load_organization, :load_group
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
       VALID_ORDER_PARAMS = [:username, :updated_at].freeze
 

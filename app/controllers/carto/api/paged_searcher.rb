@@ -35,32 +35,37 @@ module Carto
       end
 
       def order_from_params(valid_order_values, default_order:, valid_order_combinations:)
-        order = (params[:order].presence || default_order)
+        order = (params[:order].presence || default_order).to_sym
+        order_array = order.to_s.split(',').map(&:to_sym)
+        single_parameter = valid_order_combinations.empty? || order_array.size == 1
+        multiple_parameter = valid_order_combinations.present? && order_array.size > 1
 
-        if valid_order_combinations.empty? && valid_order_values.exclude?(order)
-          raise Carto::OrderParamInvalidError.new(valid_order_values)
+        if single_parameter && valid_order_values.exclude?(order)
+          raise Carto::ParamInvalidError.new('order', valid_order_values)
         end
 
-        if valid_order_combinations.present? && (order.split(',').map(&:to_sym) - valid_order_combinations).present?
-          raise Carto::OrderCombinationParamInvalidError.new(valid_order_combinations)
+        if multiple_parameter && (order_array - valid_order_combinations).present?
+          raise Carto::ParamCombinationInvalidError.new('order', valid_order_combinations)
         end
 
-        order.to_sym
+        order
       end
 
       def order_direction_from_params(default_order_direction:, valid_order_combinations:)
-        order_direction = (params[:order_direction].presence || default_order_direction)
+        order_direction = (params[:order_direction].presence || default_order_direction).to_sym
+        order_direction_array = order_direction.to_s.split(',').map(&:to_sym)
+        single_parameter = valid_order_combinations.empty? || order_direction_array.size == 1
+        multiple_parameter = valid_order_combinations.present? && order_direction_array.size > 1
 
-        if valid_order_combinations.empty? && VALID_ORDER_DIRECTIONS.exclude?(order_direction)
-          raise Carto::OrderDirectionParamInvalidError.new(VALID_ORDER_DIRECTIONS)
+        if single_parameter && VALID_ORDER_DIRECTIONS.exclude?(order_direction)
+          raise Carto::ParamInvalidError.new('order_direction', VALID_ORDER_DIRECTIONS)
         end
 
-        if valid_order_combinations.present? &&
-           (order_direction.split(',').map(&:to_sym) - VALID_ORDER_DIRECTIONS).present?
-          raise Carto::OrderCombinationParamInvalidError.new(VALID_ORDER_DIRECTIONS)
+        if multiple_parameter && (order_direction_array - VALID_ORDER_DIRECTIONS).present?
+          raise Carto::ParamCombinationInvalidError.new('order_direction', VALID_ORDER_DIRECTIONS)
         end
 
-        order_direction.to_sym
+        order_direction
       end
     end
   end

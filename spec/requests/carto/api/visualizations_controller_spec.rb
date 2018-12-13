@@ -2891,6 +2891,10 @@ describe Carto::Api::VisualizationsController do
           @invalid_order = 'invalid_order'
           @valid_order_direction = 'asc'
           @invalid_order_direction = 'invalid_order_direction'
+          @valid_order_combination = 'name,updated_at'
+          @invalid_order_combination = 'size,updated_at'
+          @valid_direction_combination = 'asc,desc'
+          @invalid_direction_combination = 'asc,invalid'
         end
 
         it 'returns an error if an invalid :order is given' do
@@ -2913,6 +2917,30 @@ describe Carto::Api::VisualizationsController do
                                               api_key: @user.api_key, types: 'derived'), {}, @headers
           last_response.status.should == 400
           last_response.body.should include "Wrong 'order_direction' parameter value"
+        end
+
+        it 'returns an error if an invalid :order combination is given' do
+          get api_v1_visualizations_index_url(order: @valid_order_combination, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @invalid_order_combination, api_key: @user.api_key,
+                                              types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order' parameter combination"
+        end
+
+        it 'returns an error if an invalid :order_direction combination is given' do
+          get api_v1_visualizations_index_url(order: @valid_order_combination,
+                                              order_direction: @valid_direction_combination,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 200
+
+          get api_v1_visualizations_index_url(order: @valid_order_combination,
+                                              order_direction: @invalid_direction_combination,
+                                              api_key: @user.api_key, types: 'derived'), {}, @headers
+          last_response.status.should == 400
+          last_response.body.should include "Wrong 'order_direction' parameter combination"
         end
       end
     end

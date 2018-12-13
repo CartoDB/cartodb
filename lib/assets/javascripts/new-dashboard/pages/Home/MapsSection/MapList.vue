@@ -16,7 +16,7 @@ import CreateMapCard from './CreateMapCard.vue';
 export default {
   name: 'MapList',
   props: {
-    maps: Object,
+    maps: Object
   },
   components: {
     MapCard,

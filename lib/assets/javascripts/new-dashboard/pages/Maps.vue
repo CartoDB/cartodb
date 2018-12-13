@@ -40,7 +40,7 @@
           </SettingsDropdown>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
-          <CreateButton visualizationType="maps">New map</CreateButton>
+          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -73,7 +73,7 @@
       <EmptyState
         :text="$t('MapsPage.emptyState')"
         v-if="emptyState">
-        <img svg-inline src="../assets/icons/maps/compass.svg">
+        <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
@@ -94,7 +94,7 @@ import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import { isAllowed } from '../store/maps/filters';
+import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'MapsPage',
@@ -125,14 +125,7 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    const urlOptions = { ...to.params, ...to.query };
-
-    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
-      return next({ name: 'maps' });
-    }
-
-    this.$store.dispatch('maps/setURLOptions', urlOptions);
-    next();
+    checkFilters('maps', 'maps', to, from, next);
   },
   computed: {
     ...mapState({
@@ -169,6 +162,7 @@ export default {
   methods: {
     goToPage (page) {
       window.scroll({ top: 0, left: 0 });
+
       this.deselectAll();
       this.$router.push({
         name: 'maps',

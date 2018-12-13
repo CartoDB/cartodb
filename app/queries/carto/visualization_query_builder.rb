@@ -15,7 +15,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public_visualizations(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
   end
 
   def self.user_all_visualizations(user)
@@ -25,8 +25,6 @@ class Carto::VisualizationQueryBuilder
   def self.user_public(user)
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
-
-  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
 
   def initialize
     @include_associations = []
@@ -161,12 +159,8 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_partial_match(tainted_search_pattern)
-    @filtering_params[:tainted_search_pattern] = escape_characters_from_pattern(tainted_search_pattern)
+    @filtering_params[:tainted_search_pattern] = tainted_search_pattern
     self
-  end
-
-  def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)
@@ -208,7 +202,7 @@ class Carto::VisualizationQueryBuilder
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
 
-    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
+    order_query(query)
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -216,6 +210,13 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
+
+  def order_query(query)
+    # Search has its own ordering criteria
+    return query if @tainted_search_pattern
+
+    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
+  end
 
   def with_include_of(association)
     @include_associations << association

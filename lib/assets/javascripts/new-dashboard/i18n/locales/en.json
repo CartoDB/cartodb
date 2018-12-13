@@ -1,5 +1,5 @@
 {
-  "mapCard": {
+  "MapCard": {
     "shared": {
       "LINK": "Link",
       "PUBLIC": "Public",
@@ -17,6 +17,7 @@
     "title": "Quick actions",
     "editInfo": "Edit Name & description",
     "manageTags": "Manage Tags",
+    "createMap": "Create map",
     "changePrivacy": "Change Privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
@@ -86,12 +87,20 @@
         "private": "Your Private Maps"
       }
     },
+    "createMap": "New Map",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
       "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
       "createMap": "Create your first map"
     },
     "emptyState": "There are no maps here."
+  },
+  "NotificationsPage": {
+    "header": {
+      "title": "Notifications"
+    },
+    "emptyState": "There are no notifications yet.",
+    "loadingState": "Loading your notifications."
   },
   "SettingsDropdown": {
     "showMe": "Show me",
@@ -135,7 +144,7 @@
     "numberRows": "0 rows | {n} row | {n} rows",
     "tags": "tags"
   },
-  "datasetListHeader": {
+  "DatasetListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "rows": "Rows",
@@ -150,5 +159,58 @@
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
     "logout": "LOG OUT"
+  },
+  "SolutionsPage": {
+    "solutionsTitle": "Solutions for every business problem",
+    "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
+    "talkUsTitle": "Like what you see?",
+    "talkUsDescription": "Our account management team will give you a firsthand view and discuss with you how we can help your organization to do the same.",
+    "talkUsButton": "Talk to us!",
+    "sitePlanning": {
+      "title": "Site Planning",
+      "description": "Drive site selection and investment decisions with always-on data streams, enabling more accurate revenue prediction and reduced risk of failed location decisions."
+    },
+    "territoryManagement": {
+      "title": "Territory Management",
+      "description": "Design and align sales and service territories to increase productivity and reduce costs using spatial field operations data."
+    },
+    "logisticsOptimization": {
+      "title": "Logistics Optimization",
+      "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
+    }
+  },
+  "SolutionCard": {
+    "moreExamples": "View more examples",
+    "usedBy": "Used by:",
+    "goDemo": "Go to demo"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By :tag, name, or description"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
+    }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {username}",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More"
+    }
   }
 }

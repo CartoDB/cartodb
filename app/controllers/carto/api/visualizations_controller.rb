@@ -87,7 +87,7 @@ module Carto
       def index
         opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
         page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
-        types, total_types = get_types_parameters
+        _, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new
@@ -103,23 +103,14 @@ module Carto
           total_entries: vqb.build.size
         }
         if current_user && (params[:load_totals].to_s != 'false')
-          # Prefetching at counts removes duplicates
-          response.merge!(
-            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id)
-                                                             .build.size,
-            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id)
-                                                      .build.size,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types)
-                                                       .with_shared_with_user_id(current_user.id)
-                                                       .with_user_id_not(current_user.id).with_prefetch_table.build.size
-          )
+          response.merge!(calculate_totals(total_types))
         end
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
       rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
         render_jsonp({ error: e.message }, e.status)
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end
@@ -515,6 +506,20 @@ module Carto
           CartoDB.notify_exception(e, {user:current_user})
           return true
         end
+      end
+
+      def calculate_totals(total_types)
+        # Prefetching at counts removes duplicates
+        {
+          total_user_entries: VisualizationQueryBuilder.new.with_types(total_types)
+                                                       .with_user_id(current_user.id).build.size,
+          total_locked: VisualizationQueryBuilder.new.with_types(total_types)
+                                                 .with_user_id(current_user.id).with_locked(true).build.size,
+          total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id)
+                                                .build.size,
+          total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id)
+                                                 .with_user_id_not(current_user.id).with_prefetch_table.build.size
+        }
       end
     end
   end

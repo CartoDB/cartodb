@@ -20,27 +20,43 @@ export default {
     QuickActions
   },
   props: {
-    dataset: Object
+    dataset: Object,
+    isShared: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     actions () {
       return {
         mine: [
+          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
+          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
           { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
-          { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
+        shared: [
+          { name: this.$t('QuickActions.createMap'), event: 'createMap' },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' }
+        ],
         locked: [
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset' },
           { name: this.$t('QuickActions.unlock'), event: 'unlockDataset' }
         ]
       };
     },
     actionMode () {
-      return this.dataset.locked ? 'locked' : 'mine';
+      if (this.dataset.locked) {
+        return 'locked';
+      }
+      if (this.isShared) {
+        return 'shared';
+      }
+      return 'mine';
     },
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;
@@ -88,6 +104,13 @@ export default {
     editInfo () {
       DialogActions.editDatasetMetadata.apply(this, [this.dataset, this.getActionHandlers()]);
       this.closeDropdown();
+    },
+    createMap () {
+      DialogActions.createMap.apply(this, [
+        [this.dataset],
+        this.backboneViews.backgroundPollingView.getBackgroundPollingView(),
+        this.backboneViews.mamufasImportView.getView()
+      ]);
     },
     changePrivacy () {
       DialogActions.changePrivacy.apply(this, [this.dataset, this.getActionHandlers()]);

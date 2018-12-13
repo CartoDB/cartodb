@@ -65,7 +65,7 @@
       </div>
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
-        <li v-for="dataset in datasets" :key="dataset.id">
+        <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
           <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"></DatasetCard>
         </li>
       </ul>
@@ -74,12 +74,12 @@
         <EmptyState
           :text="$t('DataPage.emptyState')"
           v-if="emptyState">
-          <img svg-inline src="../assets/icons/datasets/emptyState.svg">
+          <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
 
       <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
-        <li v-for="n in 12" :key="n">
+        <li v-for="n in 12" :key="n" class="dataset-item">
           <DatasetCardFake></DatasetCardfake>
         </li>
       </ul>
@@ -102,7 +102,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
-import { isAllowed } from '../core/filters';
+import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 
 export default {
   name: 'DataPage',
@@ -134,14 +134,7 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    const urlOptions = { ...to.params, ...to.query };
-
-    if (urlOptions.filter && !isAllowed(urlOptions.filter)) {
-      return next({ name: 'datasets' });
-    }
-
-    this.$store.dispatch('datasets/setURLOptions', urlOptions);
-    next();
+    checkFilters('datasets', 'datasets', to, from, next);
   },
   computed: {
     ...mapState({
@@ -174,6 +167,7 @@ export default {
     goToPage (page) {
       this.deselectAll();
       window.scroll({ top: 0, left: 0 });
+
       this.$router.push({
         name: 'datasets',
         params: this.$route.params,
@@ -231,5 +225,11 @@ export default {
 
 .pagination-element {
   margin-top: 64px;
+}
+
+.dataset-item {
+  &:not(:last-child) {
+    border-bottom: 1px solid $light-grey;
+  }
 }
 </style>

@@ -449,16 +449,6 @@ describe Carto::VisualizationQueryBuilder do
   end
 
   describe '#with_published' do
-    it 'is implied by public search, so querying public filters public, unpublished' do
-      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
-
-      visualizations = @vqb.with_privacy(Carto::Visualization::PRIVACY_PUBLIC).build
-      visualization.published?.should be false
-      visualizations.map(&:id).should_not include visualization.id
-
-      destroy_full_visualization(map, table, table_visualization, visualization)
-    end
-
     it 'selects public v2' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 

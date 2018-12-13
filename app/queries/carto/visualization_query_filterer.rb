@@ -4,14 +4,6 @@ require 'active_record'
 
 class Carto::VisualizationQueryFilterer
 
-  PARTIAL_MATCH_QUERY = %{
-    to_tsvector(
-      'english', coalesce("visualizations"."name", '') || ' '
-      || coalesce("visualizations"."description", '')
-    ) @@ plainto_tsquery('english', ?)
-    OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
-    }.freeze
-
   def initialize(query:)
     @query = query
   end
@@ -141,7 +133,7 @@ class Carto::VisualizationQueryFilterer
     end
 
     if params[:tainted_search_pattern]
-      query = query.where(PARTIAL_MATCH_QUERY, params[:tainted_search_pattern], "%#{params[:tainted_search_pattern]}%")
+      query = Carto::VisualizationQuerySearcher.new(query).search(params[:tainted_search_pattern])
     end
 
     if params[:tags]
@@ -172,7 +164,7 @@ class Carto::VisualizationQueryFilterer
       query = query.where(version: params[:version])
     end
 
-    if params[:only_published] || params[:privacy] == Carto::Visualization::PRIVACY_PUBLIC
+    if params[:only_published]
       # "Published" is only required for builder maps
       # This SQL check should match Ruby `Carto::Visualization#published?` definition
       query = query.where(

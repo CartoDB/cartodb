@@ -11,6 +11,7 @@ Development
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
 - /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
+- Send org_admin parameter to central (#14483)
 
 ### Bug fixes / enhancements
 - Fix OAuth consent screen when not logged in (#14518)
@@ -20,6 +21,7 @@ Development
 
 ### Features
 * Send org_admin parameter to central (#14483)
+>>>>>>> origin/master
 
 
 ### Bug fixes / enhancements

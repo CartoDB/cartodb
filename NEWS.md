@@ -9,7 +9,8 @@ Development
   - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
-- None yet
+- Added new security header X-Content-Type-Options (#14530)
+- Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
 -------------------

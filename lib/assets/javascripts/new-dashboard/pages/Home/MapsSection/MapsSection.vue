@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     title () {
-      return 'Your Maps';
+      return this.$t('HomePage.MapsSection.title');
     },
     appliedFilter () {
       return this.$store.state.maps.filterType;

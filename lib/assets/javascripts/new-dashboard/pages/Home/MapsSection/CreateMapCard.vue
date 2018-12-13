@@ -17,13 +17,13 @@ export default {
   },
   computed: {
     headerText () {
-      return 'Create your first map to predict key insights';
+      return this.$t('HomePage.MapList.header');
     },
     infoText () {
-      return 'Build your first Location Intelligence anañysis or take a look to our guides and help.';
+      return this.$t('HomePage.MapList.info');
     },
     buttonText () {
-      return 'Create your first Map';
+      return this.$t('HomePage.MapList.button');
     }
   }
 };

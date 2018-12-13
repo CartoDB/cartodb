@@ -1,32 +1,34 @@
 <template>
   <section class="page">
     <Welcome></Welcome>
-    <div class="container">
-      <div class="full-width">
-        <SectionTitle class="grid-cell" :title="$t(`Limits.usage-quotas`)">
-          <template slot="icon">
-            <img src="../assets/icons/section-title/map.svg">
-          </template>
-      </SectionTitle>
+    <div class="section is-bgSoftBlue">
+      <div class="container">
+        <div class="full-width">
+          <SectionTitle class="grid-cell" :title="$t(`Limits.usage-quotas`)">
+            <template slot="icon">
+              <img src="../assets/icons/section-title/quota.svg">
+            </template>
+        </SectionTitle>
 
-        <ul class="grid">
-          <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <QuotaContainer>
-              <QuotaWidget :name="$t(`Limits.storage`)" :amount="$t(`Limits.quota`)" :usedCapacity="divideBaseTwo(usedStorage, getBaseTwo)" :availableCapacity="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
-            </QuotaContainer>
-          </li>
-          <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <QuotaContainer>
-              <QuotaWidget :name="$t(`Limits.geocoding`)" :amount="$t(`Limits.credits`)" :usedCapacity="geocodingUsed" :availableCapacity="geocodingAvailable"></QuotaWidget>
-            </QuotaContainer>
-          </li>
-          <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <QuotaContainer>
-              <QuotaWidget :name="$t(`Limits.isolines`)" :amount="$t(`Limits.credits`)" :usedCapacity="isolinesUsed" :availableCapacity="isolinesAvailable" type="compact"></QuotaWidget>
-              <QuotaWidget :name="$t(`Limits.routing`)" :amount="$t(`Limits.credits`)" :usedCapacity="routingUsed" :availableCapacity="routingAvailable" type="compact"></QuotaWidget>
-            </QuotaContainer>
-          </li>
-        </ul>
+          <ul class="grid">
+            <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <QuotaContainer>
+                <QuotaWidget :name="$t(`Limits.storage`)" :amount="$t(`Limits.quota`)" :usedCapacity="divideBaseTwo(usedStorage, getBaseTwo)" :availableCapacity="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
+              </QuotaContainer>
+            </li>
+            <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <QuotaContainer>
+                <QuotaWidget :name="$t(`Limits.geocoding`)" :amount="$t(`Limits.credits`)" :usedCapacity="geocodingUsed" :availableCapacity="geocodingAvailable"></QuotaWidget>
+              </QuotaContainer>
+            </li>
+            <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <QuotaContainer>
+                <QuotaWidget :name="$t(`Limits.isolines`)" :amount="$t(`Limits.credits`)" :usedCapacity="isolinesUsed" :availableCapacity="isolinesAvailable" type="compact"></QuotaWidget>
+                <QuotaWidget :name="$t(`Limits.routing`)" :amount="$t(`Limits.credits`)" :usedCapacity="routingUsed" :availableCapacity="routingAvailable" type="compact"></QuotaWidget>
+              </QuotaContainer>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>

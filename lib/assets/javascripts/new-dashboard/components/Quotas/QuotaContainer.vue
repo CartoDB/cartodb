@@ -18,6 +18,6 @@ export default {
   padding: 24px;
   border: 1px solid $light-grey;
   border-radius: 2px;
-  box-shadow: 1px 1px 1px 0 #EEE;
+  background-color: $white;
 }
 </style>

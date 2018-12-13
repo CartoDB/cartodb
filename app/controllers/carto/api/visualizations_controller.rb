@@ -103,11 +103,15 @@ module Carto
         }
         if current_user && (params[:load_totals].to_s != 'false')
           # Prefetching at counts removes duplicates
-          response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.size,
-            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.size,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.size
-          })
+          response.merge!(
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id)
+                                                             .build.size,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id)
+                                                      .build.size,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types)
+                                                       .with_shared_with_user_id(current_user.id)
+                                                       .with_user_id_not(current_user.id).with_prefetch_table.build.size
+          )
         end
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e

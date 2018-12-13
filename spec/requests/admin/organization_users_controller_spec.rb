@@ -94,6 +94,41 @@ describe Admin::OrganizationUsersController do
         Carto::User.find_by_username(user_params[:username]).try(:destroy)
       end
 
+      it 'fails if password is the username' do
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: username, password_confirmation: username),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include 'must be different than the user name'
+      end
+
+      it 'fails if password is a common one' do
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: 'galina', password_confirmation: 'galina'),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include 'must use a different password'
+      end
+
+      it 'fails if password is not strong' do
+        @owner.organization.stubs(:strong_passwords_enabled).returns(true)
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: 'galinaa', password_confirmation: 'galinaa'),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include 'must be at least 8 characters long'
+        @owner.organization.unstub(:strong_passwords_enabled)
+      end
+
       it 'returns 404 for non admin users' do
         login_as(@user, scope: @user.username)
 
@@ -239,6 +274,41 @@ describe Admin::OrganizationUsersController do
             user: { quota_in_bytes: 7 },
             password_confirmation: @owner.password
         last_response.status.should == 302
+      end
+
+      it 'fails if password is the username' do
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: @admin.username, password_confirmation: @admin.username },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include 'must be different than the user name'
+      end
+
+      it 'fails if password is a common one' do
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: 'galina', password_confirmation: 'galina' },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include 'must use a different password'
+      end
+
+      it 'fails if password is not strong' do
+        Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: 'galinaa', password_confirmation: 'galinaa' },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include 'must be at least 8 characters long'
+        Organization.any_instance.unstub(:strong_passwords_enabled)
       end
     end
 

@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions';
@@ -76,30 +77,20 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      appliedFilter: state => state.maps.filterType,
+      appliedOrder: state => state.maps.order,
+      appliedOrderDirection: state => state.maps.orderDirection,
+      metadata: state => state.maps.metadata,
+      maps: state => state.maps.list,
+      numResults: state => state.maps.metadata.total_entries
+    }),
     title () {
       return this.$t('HomePage.MapsSection.title');
-    },
-    appliedFilter () {
-      return this.$store.state.maps.filterType;
-    },
-    appliedOrder () {
-      return this.$store.state.maps.order;
-    },
-    appliedOrderDirection () {
-      return this.$store.state.maps.orderDirection;
-    },
-    metadata () {
-      return this.$store.state.maps.metadata;
     },
     isEmptyState () {
       return this.appliedFilter !== 'mine' && !this.numResults;
     },
-    numResults () {
-      return this.metadata.total_entries;
-    },
-    maps () {
-      return this.$store.state.maps.list;
-    }
   }
 };
 </script>

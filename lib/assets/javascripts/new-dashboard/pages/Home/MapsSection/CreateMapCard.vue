@@ -17,13 +17,13 @@ export default {
   },
   computed: {
     headerText () {
-      return this.$t('HomePage.MapList.header');
+      return this.$t('HomePage.CreateMapCard.header');
     },
     infoText () {
-      return this.$t('HomePage.MapList.info');
+      return this.$t('HomePage.CreateMapCard.info');
     },
     buttonText () {
-      return this.$t('HomePage.MapList.button');
+      return this.$t('HomePage.CreateMapCard.button');
     }
   }
 };

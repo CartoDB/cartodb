@@ -382,13 +382,13 @@ describe Carto::UserMetadataExportService do
       expect(user.user_multifactor_auths).to be_empty
     end
 
-    if export[:oauth_apps] && !export[:oauth_apps].blank?
+    if export[:oauth_apps]
       expect_export_matches_oauth_apps(export[:oauth_apps].first, user.oauth_apps.first)
     else
       expect(user.oauth_apps).to be_empty
     end
 
-    if export[:oauth_app_users] && !export[:oauth_app_users].blank?
+    if export[:oauth_app_users]
       expect_export_matches_oauth_app_users(export[:oauth_app_users].first, user.oauth_app_users.first)
     else
       expect(user.oauth_app_users).to be_empty
@@ -518,6 +518,13 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
+    expect(exported_oauth_app).to be_nil && return unless oauth_app
+
+    expect_export_matches_oauth_apps_no_dates(exported_oauth_app, oauth_app)
+    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
+  end
+
+  def expect_export_matches_oauth_apps_no_dates(exported_oauth_app, oauth_app)
     expect(exported_oauth_app[:id]).to eq oauth_app.id
     expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
     expect(exported_oauth_app[:name]).to eq oauth_app.name
@@ -526,8 +533,6 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app[:redirect_uris]).to eq oauth_app.redirect_uris
     expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
     expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
-
-    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
   end
 
   def expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
@@ -541,6 +546,8 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)
+    expect(exported_oauth_app_user).to be_nil && return unless oauth_app_user
+
     expect(exported_oauth_app_user[:id]).to eq oauth_app_user.id
     expect(exported_oauth_app_user[:oauth_app_id]).to eq oauth_app_user.oauth_app_id
     expect(exported_oauth_app_user[:user_id]).to eq oauth_app_user.user_id

@@ -520,11 +520,6 @@ describe Carto::UserMetadataExportService do
   def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
     expect(exported_oauth_app).to be_nil && return unless oauth_app
 
-    expect_export_matches_oauth_apps_no_dates(exported_oauth_app, oauth_app)
-    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
-  end
-
-  def expect_export_matches_oauth_apps_no_dates(exported_oauth_app, oauth_app)
     expect(exported_oauth_app[:id]).to eq oauth_app.id
     expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
     expect(exported_oauth_app[:name]).to eq oauth_app.name
@@ -533,6 +528,8 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app[:redirect_uris]).to eq oauth_app.redirect_uris
     expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
     expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
+
+    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
   end
 
   def expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)

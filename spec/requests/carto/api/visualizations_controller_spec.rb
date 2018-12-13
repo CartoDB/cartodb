@@ -2780,36 +2780,6 @@ describe Carto::Api::VisualizationsController do
 
 
     context 'ordering' do
-      it 'validates order param' do
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
-        last_response.status.should == 200
-
-        get api_v1_visualizations_index_url(
-          api_key: @user.api_key,
-          types: 'derived',
-          order: '',
-          page: '',
-          per_page: ''
-        ), {}, @headers
-        last_response.status.should == 200
-
-        ['derived', 'slide'].each do |type|
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :mapviews), {}, @headers
-          last_response.status.should == 200
-        end
-
-        ['remote', 'table'].each do |type|
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :size), {}, @headers
-          last_response.status.should == 200
-        end
-
-        ['derived', 'remote', 'slide', 'table'].each do |type|
-          get api_v1_visualizations_index_url(api_key: @user.api_key, types: type, order: :whatever), {}, @headers
-          last_response.status.should == 400
-          JSON.parse(last_response.body).fetch('error').should_not be_nil
-        end
-      end
-
       it 'returns the expected status' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200

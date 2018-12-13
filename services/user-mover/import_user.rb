@@ -183,11 +183,13 @@ module CartoDB
               create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
               grant_org_api_key_roles(@target_org_id)
+              create_user_oauth_db_entities(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
               create_db(@target_dbname, true)
               create_user_api_key_roles(@target_userid)
               import_pgdump("user_#{@target_userid}.dump")
               grant_user_api_key_roles(@target_userid)
+              create_user_oauth_db_entities(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
               create_db(@target_dbname, false)
               run_file_restore_schema("#{@target_username}.schema.sql")
@@ -494,6 +496,33 @@ module CartoDB
         Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
           k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
         end
+      end
+
+      def create_org_oauth_db_entities(org_id)
+        Carto::Organization.find(org_id).users.each { |u| create_user_oauth_db_entities(u.id) }
+      end
+
+      def create_user_oauth_db_entities(user_id)
+        user = Carto::User.find(user_id)
+
+        # oauth_app_user
+        user.oauth_app_users.each { |oau| create_oauth_app_user_db_entities(oau) }
+      end
+
+      def create_oauth_app_user_db_entities(oau)
+        begin
+          oau.create_dataset_role
+          oau.grant_dataset_role_privileges
+
+          oau.oauth_access_tokens.each { |oat| create_oauth_access_token_db_entities(oat) }
+        rescue PG::Error => e
+          # Ignore managed oauth_app_user errors
+          throw e unless e.is_a?(OauthProvider::Errors::ServerError) || e.is_a?(OauthProvider::Errors::InvalidScope)
+        end
+      end
+
+      def create_oauth_access_token_db_entities(oat)
+        oat.create_api_key
       end
 
       def org_role_name(database_name)

@@ -89,7 +89,7 @@ export default {
     },
     isEmptyState () {
       return this.appliedFilter !== 'mine' && !this.numResults;
-    },
+    }
   }
 };
 </script>

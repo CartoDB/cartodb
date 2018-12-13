@@ -377,17 +377,11 @@ class Carto::VisualizationQueryBuilder
     build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
 
-  private
-
   def order_query(query)
     # Search has its own ordering criteria
     return query if @tainted_search_pattern
 
     Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
-  end
-
-  def build_paged(page = 1, per_page = 20)
-    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
 
   private

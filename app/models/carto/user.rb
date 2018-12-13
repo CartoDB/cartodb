@@ -531,6 +531,45 @@ class Carto::User < ActiveRecord::Base
     valid
   end
 
+  def valid_password?(key, value, confirmation_value)
+    if value.nil?
+      errors.add(key, "New password can't be blank")
+    else
+      if value != confirmation_value
+        errors.add(key, "New password doesn't match confirmation")
+      end
+
+      if value.length < MIN_PASSWORD_LENGTH
+        errors.add(key, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
+      end
+
+      if value.length >= MAX_PASSWORD_LENGTH
+        errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
+      end
+
+      password_validator.validate(value, self).each { |e| errors.add(key, e) }
+
+      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
+    end
+
+    errors[key].empty?
+  end
+
+  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
+    unless different_passwords?(old_password, new_password)
+      errors.add(key, 'New password cannot be the same as old password')
+    end
+    errors[key].empty?
+  end
+
+  def different_passwords?(old_password = nil, new_password = nil)
+    return true if new_record? || (@changing_passwords && !old_password)
+    old_password = crypted_password_was unless old_password.present?
+    new_password = crypted_password unless old_password.present? && new_password.present?
+
+    old_password.present? && old_password != new_password
+  end
+
   alias_method :should_display_old_password?, :needs_password_confirmation?
   alias_method :password_set?, :needs_password_confirmation?
 

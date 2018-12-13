@@ -5,10 +5,10 @@ Development
 - None yet
 
 ### Features
+- Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
-- Send org_admin parameter to central (#14483)
-- None yet
 
 ### Bug fixes / enhancements
 - Fix OAuth consent screen when not logged in (#14518)
@@ -18,7 +18,6 @@ Development
 
 ### Features
 * Send org_admin parameter to central (#14483)
->>>>>>> origin/master
 
 
 ### Bug fixes / enhancements

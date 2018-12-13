@@ -13,7 +13,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
-  rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error

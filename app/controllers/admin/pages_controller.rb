@@ -76,7 +76,13 @@ class Admin::PagesController < Admin::AdminController
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
+      visualizations = Carto::VisualizationQueryBuilder.new
+                                                       .with_user_id(@viewed_user.id)
+                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                                       .with_order(:updated_at, :desc)
+                                                       .without_raster
+                                                       .with_prefetch_user(true)
+                                                       .build
     end
 
     @urls = visualizations.map { |vis|
@@ -304,7 +310,7 @@ class Admin::PagesController < Admin::AdminController
 
   def set_layout_vars_for_user(user, content_type)
     builder = user_maps_public_builder(user, visualization_version)
-    most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
+    most_viewed = builder.with_order(:mapviews, :desc).build_paged(1, 1).first
 
     set_layout_vars({
         most_viewed_vis_map: most_viewed ? Carto::Admin::VisualizationPublicMapAdapter.new(most_viewed, current_user, self) : nil,

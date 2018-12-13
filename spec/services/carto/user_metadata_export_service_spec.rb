@@ -518,7 +518,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
-    expect(exported_oauth_app).to be_nil && return unless oauth_app
+    return unless oauth_app
 
     expect(exported_oauth_app[:id]).to eq oauth_app.id
     expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
@@ -551,7 +551,10 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
 
     expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
+    expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user)
+  end
 
+  def expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user)
     if exported_oauth_app_user[:oauth_authorization_codes]
       expect_export_matches_oauth_authorization_codes(
         exported_oauth_app_user[:oauth_authorization_codes].first,
@@ -598,7 +601,7 @@ describe Carto::UserMetadataExportService do
 
   def expect_export_matches_oauth_authorization_codes_dates(exported_oauth_authorization_code, oauth_authorization_code)
     fake_oauth_authorization_code = Carto::OauthAuthorizationCode.new(
-      created_at: oauth_authorization_code[:created_at]
+      created_at: exported_oauth_authorization_code[:created_at]
     )
 
     expect(fake_oauth_authorization_code.created_at).to eq oauth_authorization_code.created_at

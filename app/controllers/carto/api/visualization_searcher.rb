@@ -50,6 +50,8 @@ module Carto
         end
 
         if current_user
+          vqb.with_current_user_id(current_user.id)
+
           if only_liked
             vqb.with_liked_by_user_id(current_user.id)
           end

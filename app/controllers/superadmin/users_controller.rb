@@ -14,7 +14,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
   before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
-  rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
   layout 'application'
 

@@ -7,9 +7,43 @@ Development
 ### Features
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
+- /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
+- /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
 
 ### Bug fixes / enhancements
-- Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+- Fix OAuth consent screen when not logged in (#14518)
+
+4.23.3 (2018-12-03)
+-------------------
+
+### Features
+* Send org_admin parameter to central (#14483)
+
+
+### Bug fixes / enhancements
+* No request made to enable MFA #14505
+
+4.23.2 (2018-11-27)
+-------------------
+
+### Bug fixes / enhancements
+* Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
+* MFA flash login errors (#14456)
+* Do not intercept marker request (#14491)
+
+4.23.1 (2018-11-26)
+-------------------
+
+### Features
+* OAuth provider (WIP):
+  * Revoke permissions when owner stops sharing you a dataset (#14472)
+
+### Bug fixes / enhancements
+* Fix visualization URLs avoiding quotes in the database schema ([#14475](https://github.com/CartoDB/cartodb/pull/14475))
+* Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+* Fix pagination in visualization API when ordering by size ([#14476](https://github.com/CartoDB/cartodb/issues/14476))
 
 4.23.0 (2018-11-19)
 -------------------

@@ -176,6 +176,20 @@ module Carto
       )
     end
 
+    def revoke_permissions(table, revoked_permissions)
+      Carto::TableAndFriends.apply(db_connection, table.database_schema, table.name) do |s, t, qualified_name|
+        query = %{
+          REVOKE #{revoked_permissions.join(', ')}
+          ON TABLE #{qualified_name}
+          FROM \"#{db_role}\"
+        }
+        db_run(query)
+        sequences_for_table(s, t).each do |seq|
+          db_run("REVOKE ALL ON SEQUENCE #{seq} FROM \"#{db_role}\"")
+        end
+      end
+    end
+
     def granted_apis
       @granted_apis ||= process_granted_apis
     end

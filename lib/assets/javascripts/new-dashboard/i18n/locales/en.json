@@ -212,5 +212,14 @@
       "notificationsButton": "Go to Notifications",
       "learnMoreButton": "Learn More"
     }
+  },
+  "Limits": {
+    "usage-quotas": "Your Usage &amp; Quotas",
+    "storage": "Storage",
+    "geocoding": "Geocoding",
+    "isolines": "Isolines",
+    "routing": "Routing",
+    "quota": "quota",
+    "credits": "credits"
   }
 }

@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
 - Added new security header X-Content-Type-Options (#14530)
@@ -16,7 +17,6 @@ Development
 
 ### Features
 * Send org_admin parameter to central (#14483)
-
 
 ### Bug fixes / enhancements
 * No request made to enable MFA #14505

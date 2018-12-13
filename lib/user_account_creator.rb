@@ -153,13 +153,16 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if requires_strong_password_validation?
-          password_validator = Carto::PasswordValidator.new(Carto::StrongPasswordValidator.new)
-          password_errors = password_validator.validate(@user.password, @user)
+        password_validator = if requires_strong_password_validation?
+                               Carto::PasswordValidator.new(Carto::StrongPasswordValidator.new)
+                             else
+                               Carto::PasswordValidator.new
+                             end
 
-          unless password_errors.empty?
-            @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
-          end
+        password_errors = password_validator.validate(@user_params[PARAM_PASSWORD], @user)
+
+        unless password_errors.empty?
+          @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
         end
       end
 

@@ -53,6 +53,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # The error is deferred to display values in the form in the error scenario.
     validation_failure = !soft_limits_validation(@user, params[:user], @organization.owner)
 
+    # set organization first, so some validations related to org users are applied (i.e. strong passwords)
     @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
     @user.organization = @organization
 
@@ -76,7 +77,9 @@ class Admin::OrganizationUsersController < Admin::AdminController
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
-    model_validation_ok = @user.valid_password?(:password, params[:user][:password], params[:user][:password_confirmation]) &&
+    model_validation_ok = @user.valid_password?(:password,
+                                                params[:user][:password],
+                                                params[:user][:password_confirmation]) &&
                           @user.valid_creation?(current_user)
 
     valid_password_confirmation

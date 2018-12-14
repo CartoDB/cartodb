@@ -196,12 +196,8 @@ class Carto::VisualizationQueryBuilder
 
   def build
     query = Carto::Visualization.all
-
-    query = Carto::VisualizationQueryFilterer.new(query: query).filter(params: @filtering_params)
-
-    query = query.includes(@include_associations)
-    query = query.eager_load(@eager_load_associations)
-
+    query = Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
+    query = with_associations(query)
     order_query(query)
   end
 
@@ -215,7 +211,8 @@ class Carto::VisualizationQueryBuilder
     # Search has its own ordering criteria
     return query if @tainted_search_pattern
 
-    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
+    orderer = Carto::VisualizationQueryOrderer.new(query)
+    orderer.order(@order, @direction)
   end
 
   def with_include_of(association)
@@ -226,6 +223,27 @@ class Carto::VisualizationQueryBuilder
   def with_eager_load_of(association)
     @eager_load_associations << association
     self
+  end
+
+  def with_associations(query)
+    query = query.includes(@include_associations)
+    query = query.eager_load(@eager_load_associations)
+    query = with_favorited(query)
+    query = with_dependent_visualization_count(query)
+    query
+  end
+
+  def with_favorited(query)
+    return query unless @order && @order.include?("favorited")
+    raise 'Cannot order by favorited if no user is provided' unless @current_user_id
+
+    Carto::VisualizationQueryIncluder.new(query).select_favorited(@current_user_id)
+  end
+
+  def with_dependent_visualization_count(query)
+    return query unless @order && @order.include?("dependent_visualizations")
+
+    Carto::VisualizationQueryIncluder.new(query).select_dependent_visualizations(@filtering_params)
   end
 
 end

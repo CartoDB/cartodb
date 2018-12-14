@@ -6,11 +6,11 @@ class Carto::VisualizationQueryFilterer
 
   REGULAR_FILTERS = %i(id name user_id privacy type version locked).freeze
 
-  def initialize(query:)
+  def initialize(query)
     @query = query
   end
 
-  def filter(params: {})
+  def filter(params = {})
     query = @query
 
     if params[:name] &&

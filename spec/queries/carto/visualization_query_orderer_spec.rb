@@ -12,7 +12,7 @@ describe Carto::VisualizationQueryOrderer do
     Delorean.back_to_the_present
 
     query = Carto::Visualization.all.select("visualizations.*").where(user_id: @user.id)
-    @orderer = Carto::VisualizationQueryOrderer.new(query: query, user_id: @user.id)
+    @orderer = Carto::VisualizationQueryOrderer.new(query)
   end
 
   after(:all) do

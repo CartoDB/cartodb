@@ -2826,7 +2826,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                             with_dependent_visualizations: 0), {}, @headers
 
         last_response.status.should == 200
@@ -2838,7 +2838,7 @@ describe Carto::Api::VisualizationsController do
       end
 
       it 'returns the 2 most recent dependent visualizations when with_dependent_visualizations = 2' do
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
                                             with_dependent_visualizations: 2), {}, @headers
 
         last_response.status.should == 200
@@ -3078,7 +3078,7 @@ describe Carto::Api::VisualizationsController do
 
         it 'orders descending by default' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
-                                              with_dependent_visualizations: true), {}, @headers
+                                              with_dependent_visualizations: 10), {}, @headers
 
           last_response.status.should == 200
           response = JSON.parse(last_response.body)
@@ -3090,7 +3090,7 @@ describe Carto::Api::VisualizationsController do
 
         it 'orders descending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
-                                              with_dependent_visualizations: true,
+                                              with_dependent_visualizations: 10,
                                               order_direction: 'desc'), {}, @headers
 
           last_response.status.should == 200
@@ -3103,7 +3103,7 @@ describe Carto::Api::VisualizationsController do
 
         it 'orders ascending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
-                                              with_dependent_visualizations: true,
+                                              with_dependent_visualizations: 10,
                                               order_direction: 'asc'), {}, @headers
 
           last_response.status.should == 200

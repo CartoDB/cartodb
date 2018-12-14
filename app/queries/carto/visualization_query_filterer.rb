@@ -4,6 +4,8 @@ require 'active_record'
 
 class Carto::VisualizationQueryFilterer
 
+  REGULAR_FILTERS = %i(id name user_id privacy type version locked).freeze
+
   def initialize(query:)
     @query = query
   end
@@ -18,28 +20,14 @@ class Carto::VisualizationQueryFilterer
       raise 'VQB query by name without user_id nor org_id'
     end
 
-    if params[:id]
-      query = query.where(id: params[:id])
-    end
+    query = query.where(params.slice(*REGULAR_FILTERS).compact)
 
-    if params[:excluded_ids].present?
+    if params[:excluded_ids]
       query = query.where('visualizations.id not in (?)', params[:excluded_ids])
-    end
-
-    if params[:name]
-      query = query.where(name: params[:name])
-    end
-
-    if params[:user_id]
-      query = query.where(user_id: params[:user_id])
     end
 
     if params[:user_id_not]
       query = query.where('visualizations.user_id != ?', params[:user_id_not])
-    end
-
-    if params[:privacy]
-      query = query.where(privacy: params[:privacy])
     end
 
     if params[:liked_by_user_id]
@@ -124,14 +112,6 @@ class Carto::VisualizationQueryFilterer
       end
     end
 
-    if params[:types]
-      query = query.where(type: params[:types])
-    end
-
-    if params.key?(:locked)
-      query = query.where(locked: params[:locked])
-    end
-
     if params[:tainted_search_pattern]
       query = Carto::VisualizationQuerySearcher.new(query).search(params[:tainted_search_pattern])
     end
@@ -158,10 +138,6 @@ class Carto::VisualizationQueryFilterer
 
     if params[:organization_id]
       query = query.joins(:user).where(users: { organization_id: params[:organization_id] })
-    end
-
-    if params[:version]
-      query = query.where(version: params[:version])
     end
 
     if params[:only_published]

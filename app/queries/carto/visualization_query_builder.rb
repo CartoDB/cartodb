@@ -136,12 +136,12 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_types(types)
-    @filtering_params[:types] = types.blank? ? nil : types
+  def with_type(type)
+    @filtering_params[:type] = type
     self
   end
 
-  alias with_type with_types
+  alias with_types with_type
 
   def with_locked(locked)
     @filtering_params[:locked] = locked

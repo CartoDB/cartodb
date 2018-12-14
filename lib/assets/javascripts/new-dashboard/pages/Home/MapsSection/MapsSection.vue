@@ -29,6 +29,7 @@
         <MapList
           v-if="!isEmptyState"
           :maps="maps"
+          :isFetchingMaps="isFetchingMaps"
           @dataChanged="fetchMaps"
         ></MapList>
         <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
@@ -82,8 +83,9 @@ export default {
       appliedFilter: state => state.maps.filterType,
       appliedOrder: state => state.maps.order,
       appliedOrderDirection: state => state.maps.orderDirection,
-      metadata: state => state.maps.metadata,
+      isFetchingMaps: state => state.maps.isFetching,
       maps: state => state.maps.list,
+      metadata: state => state.maps.metadata,
       numResults: state => state.maps.metadata.total_entries
     }),
     title () {

@@ -233,6 +233,13 @@
             "leaflet": "public/misc/custom-search-dataset-leaflet.html",
             "gmaps": "public/misc/custom-search-dataset-gmaps.html"
           }
+        },
+        {
+          "title": "Storymap using CARTO.js and Storymap.js",
+          "desc": "Create a storytelling map using Storymap.js",
+          "file": {
+            "leaflet": "public/misc/storymap-leaflet.html"
+          }
         }
       ]
     }

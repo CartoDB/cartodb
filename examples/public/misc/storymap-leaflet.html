@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Storytelling map using Storymap.js | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <!--jquery-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!--boostrap-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--leaflet.ajax for asynchronously adding geojson data-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+    <!--story map plugin-->
+    <script src="https://cdn.rawgit.com/jakobzhao/storymap/master/dist/storymap.2.3.js"></script>
+    
+    <link href="../style.css" rel="stylesheet">
+    <!--add required stylesheets-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--animation-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <!--Google Font-->
+    <link href="https://fonts.googleapis.com/css?family=Cairo" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/jakobzhao/storymap/master/dist/storymap.2.3.css">
+
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="storymap" class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6 col-md-8 storymap-map"></div>
+            <div class="col-sm-6 col-md-4 storymap-story">
+                <section data-scene="scene1">
+                    <h1>Spain, France and Portugal</h1>
+                </section>
+                <section data-scene="scene2">
+                    <h1>Spain</h1>
+                    <p>
+                        <a href="https://en.wikipedia.org/wiki/Spain">Source Wikipedia</a>
+                    </p>
+
+                    <p>
+                        Spain (Spanish: España [esˈpaɲa] (About this sound listen)), officially the Kingdom of Spain (Spanish: Reino de España),[a][b]
+                        is a sovereign state located on the Iberian Peninsula in southwestern Europe, with two large archipelagoes,
+                        the Balearic Islands in the Mediterranean Sea and the Canary Islands off the North African Atlantic
+                        coast, two cities, Ceuta and Melilla, in the North African mainland and several small islands in
+                        the Alboran Sea near the Moroccan coast. The country's mainland is bordered to the south and east
+                        by the Mediterranean Sea except for a small land boundary with Gibraltar; to the north and northeast
+                        by France, Andorra, and the Bay of Biscay; and to the west and northwest by Portugal and the Atlantic
+                        Ocean. It is the only European country to have a border with an African country (Morocco)[h] and
+                        its African territory accounts for nearly 5% of its population, mostly in the Canary Islands but
+                        also in Ceuta and Melilla.
+                    </p>
+                </section>
+                <section data-scene="scene3">
+                    <h1>France</h1>
+                    <p>
+                        <a href="https://en.wikipedia.org/wiki/France">Source Wikipedia</a>
+                    </p>
+                    <p>
+                        France (French IPA: [fʁɑ̃s]), officially the French Republic (French: République française [ʁepyblik fʁɑ̃sɛz]), is a country
+                        whose territory consists of metropolitan France in western Europe, as well as several overseas regions
+                        and territories.[XIII] The metropolitan area of France extends from the Mediterranean Sea to the
+                        English Channel and the North Sea, and from the Rhine to the Atlantic Ocean. The overseas territories
+                        include French Guiana in South America and several islands in the Atlantic, Pacific and Indian oceans.
+                        The country's 18 integral regions (5 of which are situated overseas) span a combined area of 643,801
+                        square kilometres (248,573 sq mi) which, as of October 2017, has a population of 67.15 million people.[10]
+                        France is a unitary semi-presidential republic with its capital in Paris, the country's largest city
+                        and main cultural and commercial centre. Other major urban centres include Marseille, Lyon, Lille,
+                        Nice, Toulouse and Bordeaux.
+                    </p>
+                </section>
+                <section data-scene="scene4">
+                    <h1>Portugal</h1>
+                    <p>
+                        <a href="https://en.wikipedia.org/wiki/Portugal">Source Wikipedia</a>
+                    </p>
+                    <p>
+                        Portugal (Portuguese: [puɾtuˈɣaɫ]), officially the Portuguese Republic (Portuguese: República Portuguesa [ʁɛ'puβlikɐ puɾtu'ɣezɐ]),[note
+                        1] is a sovereign state located on the Iberian Peninsula in southwestern Europe. It is the westernmost
+                        country of mainland Europe, being bordered to the west and south by the Atlantic Ocean and to the
+                        north and east by Spain. Its territory also includes the Atlantic archipelagos of the Azores and
+                        Madeira, both autonomous regions with their own regional governments. At 1.7 million km2, its Exclusive
+                        Economic Zone is the 3rd largest in the European Union and the 11th largest in the world.
+                    </p>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Storytelling map</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Storytelling map using Storymap.js and CARTO.js.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+      <script>
+        // set map with initial zoom and coodinates view
+        const map = L.map('map').setView([40, 2], 4);
+        // define scenes
+        let scenes = {
+            scene1: { lat: 30, lng: 0, zoom: 3, layers: ['basemap'], name: "1" },
+            scene2: { lat: 40.40002626, lng: -3.68335169, zoom: 5, layers: ['basemap','cartoLayer'], name: "2" },
+            scene3: { lat: 47.08372683, lng: 2.39999792, zoom: 5, layers: ['basemap','cartoLayer'], name: "3" },
+            scene4: { lat: 38.52995953, lng: -8.90001001, zoom: 7, layers: ['basemap','cartoLayer'], name: "4" }
+        };
+        // disable scroll wheel zoom
+        map.scrollWheelZoom.disable();
+
+
+        // add basemaps to map
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+          maxZoom: 18
+        }).addTo(map);
+
+        // set CARTO client
+        const client = new carto.Client({
+          apiKey: 'default_public',
+          username: 'cartojs-test'
+        });
+
+        const source = new carto.source.SQL(`
+            SELECT * FROM ne_10m_populated_places_simple 
+            WHERE adm0name IN ('Spain', 'Portugal', 'France')
+        `);
+        // define CartoCSS code to style data on map
+        const style = new carto.style.CartoCSS(`
+            #layer[adm0name = "Spain"]{
+                marker-fill: #fbb4ae;
+                marker-allow-overlap: true;
+            }
+            #layer[adm0name = "Portugal"]{
+                marker-fill: #ccebc5;
+                marker-allow-overlap: true;
+            }
+            #layer[adm0name = "France"]{
+                marker-fill: #b3cde3;
+                marker-allow-overlap: true;
+            }
+            
+        `);
+        // create CARTO layer from source and style variables
+        const Cartolayer = new carto.layer.Layer(source, style);
+
+        // add CARTO layer to the client
+        client.addLayer(Cartolayer);
+        
+        // define layers that will be used on the map
+        var layers = {
+            cartoLayer: {
+                layer: client.getLeafletLayer()
+            },
+            basemap: {
+                layer: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png')
+            }
+        };
+        
+        // initializaze storymap
+        $('#storymap').storymap({
+            scenes: scenes,
+            layers: layers,
+            baselayer: layers.basemap,
+            legend: true,
+            loader: true,
+            flyto: false,
+            scalebar: true,
+            scrolldown: true,
+            progressline: true,
+            navwidget: true,
+            createMap: function () {
+                let map = L.map($(".storymap-map")[0], { zoomControl: false }).setView([30, 0], 3);
+                // add basemap
+                this.baselayer.layer.addTo(map);
+                // add carto layer
+                layers.cartoLayer.layer.addTo(map)
+                return map;
+            }
+        });
+        
+    </script>
+  </body>
+</html>

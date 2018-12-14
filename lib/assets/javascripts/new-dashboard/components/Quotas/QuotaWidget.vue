@@ -28,7 +28,7 @@ export default {
         return 100;
       }
       const width = (this.usedCapacity / this.availableCapacity) * 100;
-      return width > 100 ? 100 : width;
+      return width;
     },
     getStatusBar () {
       const usedPercent = this.getUsedPercent;
@@ -61,6 +61,7 @@ export default {
 
 .progressbar {
   width: 100%;
+  max-width: 100%;
   height: 8px;
   margin-top: 24px;
   border-radius: 4px;

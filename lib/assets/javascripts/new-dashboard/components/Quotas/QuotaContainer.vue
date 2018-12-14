@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'QuotaCard'
+  name: 'QuotaContainer'
 };
 </script>
 

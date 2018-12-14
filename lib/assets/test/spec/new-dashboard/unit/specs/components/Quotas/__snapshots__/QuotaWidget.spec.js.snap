@@ -1,17 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`QuotaWidget.vue should put as maximum 100% width in the quota bar 1`] = `
-<div class="quota-widget">
-  <div class="info-container">
-    <h4 class="title is-caption is-txtGrey card-title">Another test <span class="is-regular">credits</span></h4>
-    <p class="text is-subheader is-txtGrey is-subheader">2000 / 1234 </p>
-  </div>
-  <div class="progressbar">
-    <div class="progressbar progressbar--problem" style="width: 100%;"></div>
-  </div>
-</div>
-`;
-
 exports[`QuotaWidget.vue should render correct contents 1`] = `
 <div class="quota-widget">
   <div class="info-container">

@@ -20,22 +20,29 @@
             </SettingsDropdown>
           </template>
 
-          <template slot="actionButton">
+          <template slot="actionButton" v-if="!isInitialState">
             <CreateButton visualizationType="maps">
               {{ $t(`MapsPage.createMap`) }}
             </CreateButton>
           </template>
         </SectionTitle>
+
+        <div class="grid-cell">
+          <CreateMapCard v-if="isInitialState"/>
+        </div>
+
         <MapList
-          v-if="!isEmptyState"
+          v-if="!isEmptyState && !isInitialState"
           :maps="maps"
           :isFetchingMaps="isFetchingMaps"
           @dataChanged="fetchMaps"
         ></MapList>
+
         <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
-        <MapsLink :text="mapsLinkText"></MapsLink>
+
+        <MapsLink :text="mapsLinkText" v-if="!isInitialState"></MapsLink>
       </div>
     </div>
   </section>
@@ -44,6 +51,7 @@
 <script>
 import { mapState } from 'vuex';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import CreateMapCard from 'new-dashboard/components/CreateMapCard.vue';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions';
 import MapList from './MapList.vue';
@@ -57,6 +65,7 @@ export default {
   name: 'MapsSection',
   components: {
     CreateButton,
+    CreateMapCard,
     EmptyState,
     MapBulkActions,
     MapList,
@@ -95,7 +104,10 @@ export default {
       return this.$t('HomePage.MapsSection.title');
     },
     isEmptyState () {
-      return this.appliedFilter !== 'mine' && !this.numResults;
+      return !this.isFetchingMaps && this.appliedFilter !== 'mine' && !this.numResults;
+    },
+    isInitialState () {
+      return !this.isFetchingMaps && this.appliedFilter === 'mine' && !this.numResults;
     },
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.allMapsLink');

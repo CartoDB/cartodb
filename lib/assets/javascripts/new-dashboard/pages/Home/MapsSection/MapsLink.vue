@@ -18,7 +18,8 @@ export default {
 
 .action-link {
   display: block;
-  margin: 64px 0;
+  margin-top: 28px;
+  letter-spacing: 1px;
   text-align: center;
   text-transform: uppercase;
 }

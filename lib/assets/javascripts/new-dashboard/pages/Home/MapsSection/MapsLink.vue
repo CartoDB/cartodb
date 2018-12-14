@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{ name: 'maps' }" class="action-link title is-small">
+  <router-link :to="{ name: 'maps' }" class="action-link title is-small" :class="{ 'action-link--empty-state': isEmptyState }">
     {{ text }}
   </router-link>
 </template>
@@ -8,7 +8,8 @@
 export default {
   name: 'MapsLink',
   props: {
-    text: String
+    text: String,
+    isEmptyState: String
   }
 };
 </script>
@@ -22,5 +23,9 @@ export default {
   letter-spacing: 1px;
   text-align: center;
   text-transform: uppercase;
+
+  &.action-link--empty-state {
+    margin-top: 64px;
+  }
 }
 </style>

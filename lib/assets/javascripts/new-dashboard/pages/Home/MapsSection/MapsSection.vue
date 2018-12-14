@@ -42,7 +42,7 @@
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 
-        <MapsLink :text="mapsLinkText" v-if="!isInitialState"></MapsLink>
+        <MapsLink :text="mapsLinkText" :isEmptyState="isEmptyState" v-if="!isInitialState"></MapsLink>
       </div>
     </div>
   </section>
@@ -120,9 +120,6 @@ export default {
 @import "stylesheets/new-dashboard/variables";
 
 .maps-section {
-  position: relative;
-  padding: 64px 0;
-
   .full-width {
     width: 100%;
   }

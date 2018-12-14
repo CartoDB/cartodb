@@ -17,6 +17,10 @@ export default {
     Welcome,
     MapsSection,
     DatasetsSection
+  },
+  beforeRouteLeave (to, from, next) {
+    this.$store.dispatch('datasets/resetFilters', false);
+    next();
   }
 };
 </script>

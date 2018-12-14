@@ -1,58 +1,63 @@
 <template>
   <section class="datasets-section">
     <div class="container grid">
-      <SectionTitle :title="title" class="remove">
-        <template slot="icon">
-          <img src="../../../assets/icons/section-title/data.svg">
-        </template>
-        <template slot="dropdownButton">
-          <SettingsDropdown
-            section="datasets"
-            :filter="appliedFilter"
-            :order="appliedOrder"
-            :orderDirection="appliedOrderDirection"
-            :metadata="metadata"
-            @filterChanged="applyFilter"
-            @orderChanged="applyOrder">
-            <img svg-inline src="../../../assets/icons/common/filter.svg">
-          </SettingsDropdown>
-        </template>
-        <template slot="actionButton" v-if="!isInitialState">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
-        </template>
-      </SectionTitle>
+      <div class="full-width">
+        <SectionTitle class="grid-cell" :title="title">
+          <template slot="icon">
+            <img src="../../../assets/icons/section-title/data.svg">
+          </template>
+          <template slot="dropdownButton">
+            <SettingsDropdown
+              section="datasets"
+              :filter="appliedFilter"
+              :order="appliedOrder"
+              :orderDirection="appliedOrderDirection"
+              :metadata="metadata"
+              @filterChanged="applyFilter"
+              @orderChanged="applyOrder">
+              <img svg-inline src="../../../assets/icons/common/filter.svg">
+            </SettingsDropdown>
+          </template>
+          <template slot="actionButton" v-if="!isInitialState">
+            <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+          </template>
+        </SectionTitle>
 
-      <InitialState :title="$t(`DataPage.zeroCase.title`)" v-if="isInitialState">
-        <template slot="icon">
-          <img svg-inline src="../../../assets/icons/datasets/initialState.svg">
-        </template>
-        <template slot="description">
-          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
-        </template>
-        <template slot="actionButton">
-          <CreateButton visualizationType="maps">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
-        </template>
-      </InitialState>
+        <InitialState :title="$t(`DataPage.zeroCase.title`)" v-if="isInitialState">
+          <template slot="icon">
+            <img svg-inline src="../../../assets/icons/datasets/initialState.svg">
+          </template>
+          <template slot="description">
+            <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          </template>
+          <template slot="actionButton">
+            <CreateButton visualizationType="maps">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          </template>
+        </InitialState>
 
-      <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyState')" >
-        <img svg-inline src="../../../assets/icons/common/compass.svg">
-      </EmptyState>
+        <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyState')" >
+          <img svg-inline src="../../../assets/icons/common/compass.svg">
+        </EmptyState>
 
-      <DatasetsList
-        class="remove"
-        v-if="numResults"
-        :isFetchingDatasets="isFetchingDatasets"
-        :datasets="datasets"
-        :appliedOrder="appliedOrder"
-        :appliedOrderDirection="appliedOrderDirection"
-        @applyOrder="applyOrder">
-      </DatasetsList>
+        <DatasetsList
+          v-if="numResults"
+          :isFetchingDatasets="isFetchingDatasets"
+          :datasets="datasets"
+          :appliedOrder="appliedOrder"
+          :appliedOrderDirection="appliedOrderDirection"
+          @applyOrder="applyOrder">
+        </DatasetsList>
 
-      <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
-        <li v-for="n in 6" :key="n" class="dataset-item">
-          <DatasetCardFake></DatasetCardfake>
-        </li>
-      </ul>
+        <ul v-if="isFetchingDatasets" class="grid-cell--col12">
+          <li v-for="n in 6" :key="n" class="dataset-item">
+            <DatasetCardFake></DatasetCardfake>
+          </li>
+        </ul>
+
+        <router-link :to="{ name: 'datasets' }" class="title is-small go-to-datasets">
+          VIEW ALL DATASETS
+        </router-link>
+      </div>
     </div>
   </section>
 </template>
@@ -124,7 +129,7 @@ export default {
 @import "stylesheets/new-dashboard/variables";
 
 .datasets-section {
-  padding: 64px 0;
+  margin-bottom: 128px;
 
   .head-section,
   .empty-state {
@@ -132,7 +137,8 @@ export default {
   }
 }
 
-.remove {
-  width: 100%;
+.go-to-datasets {
+  margin-top: 64px;
+  letter-spacing: 1px;
 }
 </style>

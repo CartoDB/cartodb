@@ -1081,13 +1081,7 @@ describe Carto::UserMetadataExportService do
             code: "zzzz",
             created_at: "2018-11-16T14:31:46+00:00"
           }],
-          # oauth_access_tokens: [{ # no db, no api key here
-          #   id: "yyyyyy",
-          #   oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
-          #   api_key_id: nil,
-          #   scopes: ["datasets:r:test1"],
-          #   created_at: "2018-11-16T14:31:46+00:00"
-          # }],
+          oauth_access_tokens: [], # no db, no api key here
           oauth_refresh_tokens: [{
             oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
             token: "zzzzz",

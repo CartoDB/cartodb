@@ -503,22 +503,17 @@ module CartoDB
       end
 
       def create_user_oauth_db_entities(user_id)
-        user = Carto::User.find(user_id)
-
-        # oauth_app_user
-        user.oauth_app_users.each { |oau| create_oauth_app_user_db_entities(oau) }
+        Carto::User.find(user_id).oauth_app_users.each { |oau| create_oauth_app_user_db_entities(oau) }
       end
 
       def create_oauth_app_user_db_entities(oau)
-        begin
-          oau.create_dataset_role
-          oau.grant_dataset_role_privileges
+        oau.create_dataset_role
+        oau.grant_dataset_role_privileges
 
-          oau.oauth_access_tokens.each { |oat| create_oauth_access_token_db_entities(oat) }
-        rescue PG::Error => e
-          # Ignore managed oauth_app_user errors
-          throw e unless e.is_a?(OauthProvider::Errors::ServerError) || e.is_a?(OauthProvider::Errors::InvalidScope)
-        end
+        oau.oauth_access_tokens.each { |oat| create_oauth_access_token_db_entities(oat) }
+      rescue PG::Error => e
+        # Ignore managed oauth_app_user errors
+        throw e unless e.is_a?(OauthProvider::Errors::ServerError) || e.is_a?(OauthProvider::Errors::InvalidScope)
       end
 
       def create_oauth_access_token_db_entities(oat)

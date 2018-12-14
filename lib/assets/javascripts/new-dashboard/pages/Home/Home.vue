@@ -1,8 +1,8 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
-  <MapsSection />
-  <DatasetsSection />
+  <MapsSection class="section" />
+  <DatasetsSection class="section" />
 </section>
 </template>
 

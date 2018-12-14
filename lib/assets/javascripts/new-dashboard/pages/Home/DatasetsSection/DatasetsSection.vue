@@ -129,8 +129,6 @@ export default {
 @import "stylesheets/new-dashboard/variables";
 
 .datasets-section {
-  margin-bottom: 128px;
-
   .head-section,
   .empty-state {
     width: 100%;
@@ -138,7 +136,13 @@ export default {
 }
 
 .go-to-datasets {
-  margin-top: 64px;
+  display: block;
+  padding-top: 64px;
   letter-spacing: 1px;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>

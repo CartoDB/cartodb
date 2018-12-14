@@ -36,30 +36,30 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.orderMaps</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+        <li class="type text is-caption is-txtGrey"><a class="element">
             SettingsDropdown.order.favourites
           </a></li>
         <li class="type text is-caption is-txtGrey type--selected">
           SettingsDropdown.order.date.title (
-          <a href="javascript:void(0)" class="element element--selected">
+          <a class="element element--selected">
             SettingsDropdown.order.date.newest
           </a> |
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.date.oldest
           </a>
           )
         </li>
         <li class="type text is-caption is-txtGrey">
           SettingsDropdown.order.alphabetical.title (
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.alphabetical.A-Z
           </a> |
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.alphabetical.Z-A
           </a>
           )
         </li>
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+        <li class="type text is-caption is-txtGrey"><a class="element">
             SettingsDropdown.order.views
           </a></li>
       </ul>
@@ -104,30 +104,30 @@ exports[`Settings.vue should render correct contents based on filter and order 1
     <div class="section">
       <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.orderMaps</h6>
       <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+        <li class="type text is-caption is-txtGrey"><a class="element">
             SettingsDropdown.order.favourites
           </a></li>
         <li class="type text is-caption is-txtGrey type--selected">
           SettingsDropdown.order.date.title (
-          <a href="javascript:void(0)" class="element element--selected">
+          <a class="element element--selected">
             SettingsDropdown.order.date.newest
           </a> |
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.date.oldest
           </a>
           )
         </li>
         <li class="type text is-caption is-txtGrey">
           SettingsDropdown.order.alphabetical.title (
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.alphabetical.A-Z
           </a> |
-          <a href="javascript:void(0)" class="element">
+          <a class="element">
             SettingsDropdown.order.alphabetical.Z-A
           </a>
           )
         </li>
-        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+        <li class="type text is-caption is-txtGrey"><a class="element">
             SettingsDropdown.order.views
           </a></li>
       </ul>

@@ -140,7 +140,7 @@ module Carto
 
       user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
-      user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps])
+      user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps], exported_user[:id])
 
       user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
 
@@ -236,24 +236,15 @@ module Carto
       [client_application]
     end
 
-    def build_oauth_apps_from_hash(oauth_apps)
+    def build_oauth_apps_from_hash(oauth_apps, user_id)
       return [] unless oauth_apps
-      oauth_apps.map { |oauth_app| build_oauth_app_from_hash(oauth_app) }
+      oauth_apps.map { |oauth_app| build_oauth_app_from_hash(oauth_app, user_id) }
     end
 
-    def build_oauth_app_from_hash(oauth_app_hash)
-      oauth_app = Carto::OauthApp.new(
-        id: oauth_app_hash[:id],
-        user_id: oauth_app_hash[:user_id],
-        name: oauth_app_hash[:name],
-        created_at: oauth_app_hash[:created_at],
-        updated_at: oauth_app_hash[:updated_at],
-        client_id: oauth_app_hash[:client_id],
-        client_secret: oauth_app_hash[:client_secret],
-        redirect_uris: oauth_app_hash[:redirect_uris],
-        icon_url: oauth_app_hash[:icon_url],
-        restricted: oauth_app_hash[:restricted]
-      )
+    def build_oauth_app_from_hash(oauth_app_hash, user_id)
+      # the OauthApp should be synchronized (exists in destination)
+      oauth_app = destination_oauth_app(oauth_app_hash)
+      oauth_app.user_id = user_id
 
       if oauth_app_hash[:oauth_app_organizations]
         oauth_app.oauth_app_organizations = oauth_app_hash[:oauth_app_organizations].map do |oao_hash|
@@ -262,6 +253,10 @@ module Carto
       end
 
       oauth_app
+    end
+
+    def destination_oauth_app(oauth_app_hash)
+      Carto::OauthApp.find(oauth_app_hash[:id])
     end
 
     def build_oauth_app_organization_from_hash(oao_hash)

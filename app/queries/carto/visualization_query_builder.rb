@@ -117,7 +117,7 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_dependent_visualizations
-    inner_visualization = { visualization: { map: { layers: :layers_user_tables } } }
+    inner_visualization = { visualization: { map: { layers: :layers_user_tables }, permission: :owner } }
     nested_association = { map: { user_table: { layers: { maps: inner_visualization } } } }
     with_eager_load_of(nested_association)
   end

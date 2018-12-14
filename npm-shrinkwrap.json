@@ -934,6 +934,11 @@
       "from": "date-now@>=0.1.4 <0.2.0",
       "resolved": "https://registry.npmjs.org/date-now/-/date-now-0.1.4.tgz"
     },
+    "de-indent": {
+      "version": "1.0.2",
+      "from": "de-indent@>=1.0.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/de-indent/-/de-indent-1.0.2.tgz"
+    },
     "debug": {
       "version": "2.2.0",
       "from": "debug@2.2.0",
@@ -3203,9 +3208,9 @@
       "resolved": "https://registry.npmjs.org/vm-browserify/-/vm-browserify-0.0.4.tgz"
     },
     "vue": {
-      "version": "2.5.20",
+      "version": "2.5.21",
       "from": "vue@>=2.5.20 <3.0.0",
-      "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.20.tgz"
+      "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.21.tgz"
     },
     "vue-i18n": {
       "version": "8.4.0",
@@ -3223,9 +3228,9 @@
       "resolved": "https://registry.npmjs.org/vue-router/-/vue-router-3.0.2.tgz"
     },
     "vue-svg-inline-loader": {
-      "version": "1.2.5",
+      "version": "1.2.6",
       "from": "vue-svg-inline-loader@>=1.2.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/vue-svg-inline-loader/-/vue-svg-inline-loader-1.2.5.tgz",
+      "resolved": "https://registry.npmjs.org/vue-svg-inline-loader/-/vue-svg-inline-loader-1.2.6.tgz",
       "dependencies": {
         "loader-utils": {
           "version": "1.1.0",
@@ -3233,6 +3238,11 @@
           "resolved": "https://registry.npmjs.org/loader-utils/-/loader-utils-1.1.0.tgz"
         }
       }
+    },
+    "vue-template-compiler": {
+      "version": "2.5.21",
+      "from": "vue-template-compiler@>=2.5.20 <3.0.0",
+      "resolved": "https://registry.npmjs.org/vue-template-compiler/-/vue-template-compiler-2.5.21.tgz"
     },
     "vuex": {
       "version": "3.0.1",

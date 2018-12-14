@@ -232,4 +232,8 @@ export default {
     border-bottom: 1px solid $light-grey;
   }
 }
+
+.empty-state {
+  margin: 20vh 0 8vh;
+}
 </style>

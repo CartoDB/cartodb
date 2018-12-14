@@ -1,6 +1,6 @@
 ## Authentication
 
-CARTO.js 4.0 requires using an API Key. From your CARTO dashboard, click _[Your API keys](https://carto.com/login)_ from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
+CARTO.js v4 requires using an API Key. From your CARTO dashboard, click _[Your API keys](https://carto.com/login)_ from the avatar drop-down menu to view your uniquely generated API Key for managing data with CARTO Engine.
 
 ![Your API Keys](../img/avatar.gif)
 

@@ -1,6 +1,6 @@
 ## FAQs
 
-CARTO.js 4.0 introduces new concepts that in some cases, change the behavior of old components. This section clarifies those changes and describe new functionality.
+CARTO.js v4 introduces new concepts that in some cases, change the behavior of old components. This section clarifies those changes and describe new functionality.
 
 ### Do I need an API Key?
 
@@ -42,7 +42,7 @@ No, you cannot.
 
 While `cartodb.createVis` and `viz.json` URLs were convenient and allowed you to prototype a map using CARTO Editor (the former version of Builder) to create a custom app, the functionality of the library has changed.
 
-In CARTO.js 4.0, we are taking a more programmatic, low-level approach and identifying components that are separate from the front-end tool (CARTO Builder). This will make the API easier to use and more intuitive, giving developers greater flexibility in maintaining their core application.
+In CARTO.js v4, we are taking a more programmatic, low-level approach and identifying components that are separate from the front-end tool (CARTO Builder). This will make the API easier to use and more intuitive, giving developers greater flexibility in maintaining their core application.
 
 ### Is CartoDB.js v.3.15 still available?
 

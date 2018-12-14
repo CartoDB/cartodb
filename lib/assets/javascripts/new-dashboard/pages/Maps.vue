@@ -145,7 +145,7 @@ export default {
       return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;

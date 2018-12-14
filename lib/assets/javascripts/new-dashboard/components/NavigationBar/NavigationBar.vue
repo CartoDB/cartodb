@@ -1,7 +1,7 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" active-class="is-active">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>

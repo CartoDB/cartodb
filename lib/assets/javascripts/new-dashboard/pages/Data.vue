@@ -160,7 +160,7 @@ export default {
       return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingDatasets && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     }
   },
   methods: {

@@ -340,7 +340,8 @@ module Carto
         token: ort_hash[:token],
         scopes: ort_hash[:scopes],
         created_at: ort_hash[:created_at],
-        updated_at: ort_hash[:updated_at]
+        updated_at: ort_hash[:updated_at],
+        skip_token_regeneration: true
       )
     end
   end

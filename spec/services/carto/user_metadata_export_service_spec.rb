@@ -626,7 +626,7 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_refresh_token).to be_nil && return unless oauth_refresh_token
 
     expect(exported_oauth_refresh_token[:oauth_app_user_id]).to eq oauth_refresh_token.oauth_app_user_id
-    expect(exported_oauth_refresh_token[:token]).not_to be_empty
+    expect(exported_oauth_refresh_token[:token]).to eq oauth_refresh_token.token
     expect(exported_oauth_refresh_token[:scopes]).to eq oauth_refresh_token.scopes
 
     fake_oauth_refresh_token = Carto::OauthRefreshToken.new(
@@ -1065,14 +1065,7 @@ describe Carto::UserMetadataExportService do
           icon_url: "icon",
           restricted: false,
           oauth_app_users: [],
-          # oauth_app_organizations: [{
-          #   id: "yyyyy",
-          #   oauth_app_id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
-          #   organization_id: nil,
-          #   seats: 5,
-          #   created_at: "2018-11-16T14:31:46+00:00",
-          #   updated_at: "2018-11-17T16:41:56+00:00",
-          # }]
+          oauth_app_organizations: [] # no db, no org here
         }],
         oauth_app_users: [{
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
@@ -1088,7 +1081,7 @@ describe Carto::UserMetadataExportService do
             code: "zzzz",
             created_at: "2018-11-16T14:31:46+00:00"
           }],
-          # oauth_access_tokens: [{
+          # oauth_access_tokens: [{ # no db, no api key here
           #   id: "yyyyyy",
           #   oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
           #   api_key_id: nil,

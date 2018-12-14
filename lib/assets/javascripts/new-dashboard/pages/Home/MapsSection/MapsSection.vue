@@ -35,6 +35,7 @@
         <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
+        <MapsLink text="View All Maps"></MapsLink>
       </div>
     </div>
   </section>
@@ -46,6 +47,7 @@ import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions';
 import MapList from './MapList.vue';
+import MapsLink from './MapsLink.vue';
 import SectionTitle from 'new-dashboard/components/SectionTitle.vue';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 
@@ -58,6 +60,7 @@ export default {
     EmptyState,
     MapBulkActions,
     MapList,
+    MapsLink,
     SectionTitle,
     SettingsDropdown
   },

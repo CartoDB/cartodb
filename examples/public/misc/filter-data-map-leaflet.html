@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title> Filter data on map | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include Leaflet Draw plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.13/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.13/leaflet.draw.css" />
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <!-- map element -->
+    <div id="map"></div>
+
+    <!-- Description -->
+    <aside class="toolbox">
+        <div class="box">
+            <header>
+                <h1>Filter data based on drawn circle</h1>
+                <button class="github-logo js-source-link"></button>
+            </header>
+            <section>
+                <p class="description open-sans">Filter data based on drawn circle.</p>
+            </section>
+            <footer class="js-footer"></footer>
+        </div>
+    </aside>
+
+    <script>
+        // set map with initial zoom and coodinates view
+        const map = L.map('map').setView([40, -80], 7);
+        // disable scroll wheel zoom
+        map.scrollWheelZoom.disable();
+
+        // add basemaps to map
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+            maxZoom: 18
+        }).addTo(map);
+
+        // set CARTO client
+        const client = new carto.Client({
+                apiKey: 'default_public',
+                username: 'cartojs-test'
+            });
+
+        // set SQL query to create the grid of hexagons
+        const source = new carto.source.SQL(`
+                SELECT * FROM ne_10m_populated_places_simple
+            `);
+
+        // define styles of layer.        
+        const style = new carto.style.CartoCSS(`
+                #layer {
+                        marker-fill: red;
+                    }
+            `);
+
+        // set the CARTO layer using the source and style defines previously
+        const layer = new carto.layer.Layer(source, style);
+
+        // add CARTO layer to the client
+        client.addLayer(layer);
+
+        client.getLeafletLayer().addTo(map);
+
+        let drawControl = new L.Control.Draw({
+            draw: {
+                polygon: false,
+                polyline: false,
+                line: false,
+                marker: false,
+                rectangle: false,
+                circle: {
+                    shapeOptions: {
+                        color: 'green',
+                        weight: 0.1,
+                        opacity: 0.5
+                    }
+                },
+                circlemarker: false,
+            },
+            edit: false
+        });
+
+        // initialise the draw controls
+        map.addControl(drawControl);
+
+        // get radius and center of drawn circle and change source of the CARTO layer
+        map.on(L.Draw.Event.CREATED, function (e) {
+            let layer = e.layer;
+            map.addLayer(layer);
+            let radius = layer.getRadius();
+            let centerLat = layer.getLatLng().lat;
+            let centerLng = layer.getLatLng().lng;
+            circleCountPointsIntersect(radius, centerLat, centerLng)
+        });
+
+        // function to change the source of the CARTO layer based on radius and 
+        // center of the circle
+        function circleCountPointsIntersect(radius, lat,lng){
+            source.setQuery(`
+              SELECT cartodb_id, the_geom, the_geom_webmercator
+              FROM ne_10m_populated_places_simple
+              WHERE ST_intersects(
+                  the_geom,
+                  ST_Buffer(
+                    ST_SetSRID(ST_Point(${lng},${lat}),4326)::geography,
+                    ${radius})::geometry
+                  )
+                `);
+          };
+    </script>
+</body>
+
+</html>

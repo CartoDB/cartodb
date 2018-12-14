@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom search dataset | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+    <style>
+        #selectDrop {
+            background-color: #d2eaef;
+            opacity: 0.8;
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            display: block;
+            z-index: 9000;
+
+        }
+
+        #selectDrop input {
+            width: 200px;
+        }
+
+        div#results {
+            background: #FFF;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="searchbox">
+        <select id="selectDrop">
+                <option selected value="">Please Select</option>
+        </select>
+    </div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Look for data within your dataset</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Look for data within your dataset using dropdown menu.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+      <script>
+        let input;
+        // set map with initial zoom and coodinates view
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 40, lng: 2 },
+            zoom: 4,
+            fullscreenControl: false,
+            gestureHandling: 'cooperative'
+        });
+
+        // Hide the map labels and geometry strokes
+        map.set('styles', [{
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+        }, {
+            elementType: 'geometry.stroke',
+            stylers: [{ visibility: 'off' }]
+        }]);
+
+        // populate dropdown menu
+        populateDrowpDown()
+
+
+
+        // set CARTO client
+        const client = new carto.Client({
+          apiKey: 'default_public',
+          username: 'cartojs-test'
+        });
+
+        const source = new carto.source.SQL(`
+            SELECT * FROM ne_adm0_europe
+        `);
+        // define CartoCSS code to style data on map
+        const style = new carto.style.CartoCSS(`
+            #ne_adm0_europe {
+                polygon-fill: #3E7BB6;
+                polygon-opacity: 0.7;
+                line-color: #FFF;
+                line-width: 0.5;
+                line-opacity: 1;
+                }
+
+            #layer::labels {
+                text-name: [admin];
+                text-face-name: 'DejaVu Sans Book';
+                text-size: 10;
+                text-fill: #FFFFFF;
+                text-label-position-tolerance: 0;
+                text-halo-radius: 1;
+                text-halo-fill: #6F808D;
+                text-dy: -10;
+                text-allow-overlap: true;
+                text-placement: point;
+                text-placement-type: dummy;
+            }
+        `);
+        // create CARTO layer from source and style variables
+        const Cartolayer = new carto.layer.Layer(source, style);
+
+        // add CARTO layer to the client
+        client.addLayer(Cartolayer);
+
+        // get tile from client and add them to the map object
+        map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+
+        // function to get list of country names to populate dropdown menu
+        function populateDrowpDown(){
+            return fetch(
+                `https://cartojs-test.carto.com/api/v2/sql?format=geojson&q=SELECT the_geom, admin FROM ne_adm0_europe ORDER BY admin ASC`
+                ).then((resp) => resp.json())
+                .then((response) => {
+                    return response['features'].map(function(feature){
+                        option = document.createElement("option")
+                        option.setAttribute("value", feature.properties.admin)
+                        option.textContent = feature.properties.admin
+                        document.getElementById("selectDrop").appendChild(option);
+                    });
+                }).catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        // when select option from downdown menu, change bounding box of map
+        // to geometry of the selected country
+        document.getElementById('selectDrop').addEventListener("change", function (e) {
+            input = e.currentTarget.selectedOptions[0].attributes[0].value;
+            // calculate the xmax, ymax, xmin, ymin coordinates of the bounding box
+            // of the country polygon of the CARTO dataset
+            return  fetch(
+                `https://cartojs-test.carto.com/api/v2/sql?format=geojson&q=
+                    WITH bbox as (
+                        SELECT ST_Envelope(the_geom) as the_geom
+                        FROM ne_adm0_europe
+                        WHERE admin Ilike '${input}'
+                    )
+                    SELECT the_geom, ST_Xmax(the_geom) as xmax,
+                            ST_Ymax(the_geom) as ymax,
+                            ST_Xmin(the_geom) as  xmin,
+                            ST_Ymin(the_geom) as ymin
+                    FROM bbox
+                    `)
+            .then((resp) => resp.json())
+            .then((response) => {
+                // get coordinates
+                coordinates = response['features'][0].properties
+
+                // set LatLng objects from coordinates from CARTO
+                let sw = new google.maps.LatLng(coordinates.ymin, coordinates.xmin);
+                let ne = new google.maps.LatLng(coordinates.ymax, coordinates.xmax);
+
+                // instantiate Google bounds
+                bounds = new google.maps.LatLngBounds(sw, ne)
+
+                // set bounds of map to the geometry from CARTO
+                map.fitBounds(bounds);
+            })
+        });
+    </script>
+  </body>
+</html>

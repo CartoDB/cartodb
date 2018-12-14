@@ -183,7 +183,7 @@ module CartoDB
               create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
               grant_org_api_key_roles(@target_org_id)
-              create_user_oauth_db_entities(@target_org_id)
+              create_org_oauth_db_entities(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
               create_db(@target_dbname, true)
               create_user_api_key_roles(@target_userid)

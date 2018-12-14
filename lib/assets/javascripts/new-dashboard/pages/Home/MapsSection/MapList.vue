@@ -1,5 +1,5 @@
 <template>
-  <ul class="map-list">
+  <ul class="grid">
     <li class="grid-cell--col12" v-if="!hasMaps">
       <CreateMapCard></CreateMapCard>
     </li>
@@ -29,13 +29,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
-
-.map-list {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-</style>

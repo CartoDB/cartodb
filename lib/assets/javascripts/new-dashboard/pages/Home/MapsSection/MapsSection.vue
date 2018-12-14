@@ -1,38 +1,40 @@
 <template>
   <section class="maps-section">
     <div class="container grid">
-      <SectionTitle :title="title">
-        <template slot="icon">
-          <img src="../../../assets/icons/section-title/map.svg">
-        </template>
+      <div class="full-width">
+        <SectionTitle class="grid-cell" :title="title">
+          <template slot="icon">
+            <img src="../../../assets/icons/section-title/map.svg">
+          </template>
 
-        <template slot="dropdownButton">
-          <SettingsDropdown
-            section="maps"
-            :filter="appliedFilter"
-            :order="appliedOrder"
-            :orderDirection="appliedOrderDirection"
-            :metadata="metadata"
-            @filterChanged="applyFilter"
-            @orderChanged="applyOrder">
-            <img svg-inline src="../../../assets/icons/common/filter.svg">
-          </SettingsDropdown>
-        </template>
+          <template slot="dropdownButton">
+            <SettingsDropdown
+              section="maps"
+              :filter="appliedFilter"
+              :order="appliedOrder"
+              :orderDirection="appliedOrderDirection"
+              :metadata="metadata"
+              @filterChanged="applyFilter"
+              @orderChanged="applyOrder">
+              <img svg-inline src="../../../assets/icons/common/filter.svg">
+            </SettingsDropdown>
+          </template>
 
-        <template slot="actionButton">
-          <CreateButton visualizationType="maps">
-            {{ $t(`MapsPage.createMap`) }}
-          </CreateButton>
-        </template>
-      </SectionTitle>
-      <MapList
-        v-if="!isEmptyState"
-        :maps="maps"
-        @dataChanged="fetchMaps"
-      ></MapList>
-      <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
-        <img svg-inline src="../../../assets/icons/common/compass.svg">
-      </EmptyState>
+          <template slot="actionButton">
+            <CreateButton visualizationType="maps">
+              {{ $t(`MapsPage.createMap`) }}
+            </CreateButton>
+          </template>
+        </SectionTitle>
+        <MapList
+          v-if="!isEmptyState"
+          :maps="maps"
+          @dataChanged="fetchMaps"
+        ></MapList>
+        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
+          <img svg-inline src="../../../assets/icons/common/compass.svg">
+        </EmptyState>
+      </div>
     </div>
   </section>
 </template>
@@ -101,8 +103,7 @@ export default {
   position: relative;
   padding: 64px 0;
 
-  .head-section,
-  .empty-state {
+  .full-width {
     width: 100%;
   }
 }

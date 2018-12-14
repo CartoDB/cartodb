@@ -13,29 +13,25 @@
 </template>
 
 <script>
-import CreateButton from "new-dashboard/components/CreateButton.vue";
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import InitialState from 'new-dashboard/components/States/InitialState';
 
 export default {
-  name: "CreateMapCard",
+  name: 'CreateMapCard',
   components: {
     CreateButton,
     InitialState
   },
   computed: {
-    headerText() {
+    headerText () {
       return this.$t(`MapsPage.zeroCase.title`);
     },
-    infoText() {
+    infoText () {
       return this.$t(`MapsPage.zeroCase.description`);
     },
-    buttonText() {
-      return this.$t(`MapsPage.zeroCase.createMap`)
+    buttonText () {
+      return this.$t(`MapsPage.zeroCase.createMap`);
     }
   }
 };
 </script>
-
-<style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
-</style>

@@ -5,18 +5,20 @@ Development
 - None yet
 
 ### Features
-- None yet
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
-* Fix baseurl in datasets public dashboard page (#14524)
-* Fix OAuth consent screen when not logged in (#14518)
+- Fix baseurl in datasets public dashboard page (#14524)
+- Request login when reactivating mfa from account (#14509)
+- Added new security header X-Content-Type-Options (#14530)
+- Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
 -------------------
 
 ### Features
 * Send org_admin parameter to central (#14483)
-
 
 ### Bug fixes / enhancements
 * No request made to enable MFA #14505

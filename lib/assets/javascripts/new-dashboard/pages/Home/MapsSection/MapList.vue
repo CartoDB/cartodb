@@ -23,9 +23,9 @@ export default {
   name: 'MapList',
   props: {
     maps: Object,
-    isFetchingMaps : {
+    isFetchingMaps: {
       type: Boolean,
-      default: false,
+      default: false
     }
   },
   components: {

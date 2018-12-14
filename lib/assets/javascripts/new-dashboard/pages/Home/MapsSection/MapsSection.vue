@@ -35,7 +35,7 @@
         <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
-        <MapsLink text="View All Maps"></MapsLink>
+        <MapsLink :text="mapsLinkText"></MapsLink>
       </div>
     </div>
   </section>
@@ -96,7 +96,10 @@ export default {
     },
     isEmptyState () {
       return this.appliedFilter !== 'mine' && !this.numResults;
-    }
+    },
+    mapsLinkText () {
+      return this.$t('HomePage.MapsSection.allMapsLink');
+    },
   }
 };
 </script>

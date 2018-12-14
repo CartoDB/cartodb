@@ -213,7 +213,8 @@
       "learnMoreButton": "Learn More"
     },
     "MapsSection": {
-      "title": "Your Maps"
+      "title": "Your Maps",
+      "allMapsLink" : "VIEW ALL MAPS"
     },
     "CreateMapCard": {
       "header": "Create your first map to predict key insights",

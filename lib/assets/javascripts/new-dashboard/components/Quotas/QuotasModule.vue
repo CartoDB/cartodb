@@ -2,18 +2,18 @@
   <ul class="grid">
     <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
       <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.storage`)" :amount="$t(`Limits.quota`)" :usedCapacity="divideBaseTwo(usedStorage, getBaseTwo)" :availableCapacity="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
+        <QuotaWidget :name="$t(`Limits.storage`)" :quotaType="$t(`Limits.quota`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
       </QuotaContainer>
     </li>
     <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
       <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.geocoding`)" :amount="$t(`Limits.credits`)" :usedCapacity="geocodingUsed" :availableCapacity="geocodingAvailable"></QuotaWidget>
+        <QuotaWidget :name="$t(`Limits.geocoding`)" :quotaType="$t(`Limits.credits`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
       </QuotaContainer>
     </li>
     <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
       <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.isolines`)" :amount="$t(`Limits.credits`)" :usedCapacity="isolinesUsed" :availableCapacity="isolinesAvailable" type="compact"></QuotaWidget>
-        <QuotaWidget :name="$t(`Limits.routing`)" :amount="$t(`Limits.credits`)" :usedCapacity="routingUsed" :availableCapacity="routingAvailable" type="compact"></QuotaWidget>
+        <QuotaWidget :name="$t(`Limits.isolines`)" :quotaType="$t(`Limits.credits`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" mode="compact"></QuotaWidget>
+        <QuotaWidget :name="$t(`Limits.routing`)" :quotaType="$t(`Limits.credits`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" mode="compact"></QuotaWidget>
       </QuotaContainer>
     </li>
   </ul>

@@ -1,8 +1,8 @@
 <template>
   <div class="quota-widget">
     <div class="info-container">
-      <h4 class="title is-caption is-txtGrey card-title">{{name}} <span class="is-regular">{{amount}}</span></h4>
-      <p class="text is-subheader is-txtGrey" :class="{'is-subheader': !isCompact, 'is-caption': isCompact}">{{roundOneDecimal(usedCapacity)}} / {{roundOneDecimal(availableCapacity)}} {{unit}}</p>
+      <h4 class="title is-caption is-txtGrey card-title">{{name}} <span class="is-regular">{{quotaType}}</span></h4>
+      <p class="text is-subheader is-txtGrey" :class="{'is-subheader': !isCompact, 'is-caption': isCompact}">{{roundOneDecimal(usedQuota)}} / {{roundOneDecimal(availableQuota)}} {{unit}}</p>
     </div>
     <div class="progressbar">
         <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
@@ -16,18 +16,18 @@ export default {
   name: 'QuotaCard',
   props: {
     name: String,
-    amount: String,
-    availableCapacity: Number,
-    usedCapacity: Number,
+    quotaType: String,
+    availableQuota: Number,
+    usedQuota: Number,
     unit: String,
-    type: String
+    mode: String
   },
   computed: {
     getUsedPercent () {
-      if (this.availableCapacity === 0) {
+      if (this.availableQuota === 0) {
         return 100;
       }
-      const width = (this.usedCapacity / this.availableCapacity) * 100;
+      const width = (this.usedQuota / this.availableQuota) * 100;
       return width;
     },
     getStatusBar () {
@@ -41,7 +41,7 @@ export default {
       }
     },
     isCompact () {
-      return this.type === 'compact';
+      return this.mode === 'compact';
     }
   },
   methods: {

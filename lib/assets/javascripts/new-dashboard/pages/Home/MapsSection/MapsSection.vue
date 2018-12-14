@@ -99,7 +99,7 @@ export default {
     },
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.allMapsLink');
-    },
+    }
   }
 };
 </script>

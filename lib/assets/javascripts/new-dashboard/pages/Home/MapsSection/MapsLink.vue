@@ -5,10 +5,6 @@
 </template>
 
 <script>
-import CreateMapCard from 'new-dashboard/components/CreateMapCard.vue';
-import MapCard from 'new-dashboard/components/MapCard.vue';
-import MapCardFake from 'new-dashboard/components/MapCardFake.vue';
-
 export default {
   name: 'MapsLink',
   props: {
@@ -27,4 +23,3 @@ export default {
   text-transform: uppercase;
 }
 </style>
-

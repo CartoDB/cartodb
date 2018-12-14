@@ -45,17 +45,7 @@
       </SectionTitle>
 
       <div class="grid-cell" v-if="initialState">
-        <InitialState :title="$t(`MapsPage.zeroCase.title`)">
-          <template slot="icon">
-            <img svg-inline src="../assets/icons/maps/initialState.svg">
-          </template>
-          <template slot="description">
-            <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
-          </template>
-          <template slot="actionButton">
-            <CreateButton visualizationType="maps">{{ $t(`MapsPage.zeroCase.createMap`) }}</CreateButton>
-          </template>
-        </InitialState>
+        <CreateMapCard></CreateMapCard>
       </div>
 
       <ul class="grid" v-if="isFetchingMaps">
@@ -95,11 +85,13 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 
 export default {
   name: 'MapsPage',
   components: {
     CreateButton,
+    CreateMapCard,
     EmptyState,
     SettingsDropdown,
     MapBulkActions,
@@ -153,7 +145,7 @@ export default {
       return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;

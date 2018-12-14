@@ -3,6 +3,24 @@ require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
 require 'helpers/account_types_helper'
 
+class UserMetadataExportServiceMock < Carto::UserMetadataExportService
+  def destination_oauth_app(oauth_app_hash)
+    Carto::OauthApp.new(
+      id: oauth_app_hash[:id],
+      user_id: oauth_app_hash[:user_id],
+      name: oauth_app_hash[:name],
+      created_at: oauth_app_hash[:created_at],
+      updated_at: oauth_app_hash[:updated_at],
+      client_id: oauth_app_hash[:client_id],
+      client_secret: oauth_app_hash[:client_secret],
+      redirect_uris: oauth_app_hash[:redirect_uris],
+      icon_url: oauth_app_hash[:icon_url],
+      restricted: oauth_app_hash[:restricted],
+      avoid_sync_central: true
+    )
+  end
+end
+
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper
   include RateLimitsHelper
@@ -114,7 +132,7 @@ describe Carto::UserMetadataExportService do
     ::User[user.id].before_destroy(skip_table_drop: true)
   end
 
-  let(:service) { Carto::UserMetadataExportService.new }
+  let(:service) { UserMetadataExportServiceMock.new }
 
   describe '#export' do
     before(:all) do

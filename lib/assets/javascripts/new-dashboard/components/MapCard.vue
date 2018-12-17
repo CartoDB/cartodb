@@ -162,7 +162,7 @@ export default {
     },
     showCardActions () {
       return !this.$props.preventClick;
-    },
+    }
   },
   methods: {
     toggleSelection () {

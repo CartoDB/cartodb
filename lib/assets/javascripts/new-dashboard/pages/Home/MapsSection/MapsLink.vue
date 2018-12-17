@@ -9,7 +9,7 @@ export default {
   name: 'MapsLink',
   props: {
     text: String,
-    isEmptyState: String
+    isEmptyState: Boolean
   }
 };
 </script>

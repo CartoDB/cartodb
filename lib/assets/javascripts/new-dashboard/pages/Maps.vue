@@ -224,4 +224,8 @@ export default {
 .pagination-element {
   margin-top: 28px;
 }
+
+.empty-state {
+  margin: 20vh 0 8vh;
+}
 </style>

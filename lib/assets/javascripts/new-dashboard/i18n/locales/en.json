@@ -216,6 +216,10 @@
       "title": "Your Maps",
       "allMapsLink" : "VIEW ALL MAPS"
     },
+    "DatasetsSection": {
+      "title": "Your Datasets",
+      "viewAll": "VIEW ALL DATASETS"
+    },
     "CreateMapCard": {
       "header": "Create your first map to predict key insights",
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",

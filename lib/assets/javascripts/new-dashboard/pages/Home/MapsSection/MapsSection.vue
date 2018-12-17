@@ -102,7 +102,7 @@ export default {
       totalUserEntries: state => state.maps.metadata.total_user_entries
     }),
     title () {
-      return this.$t('HomePage.MapsSection.title');
+      return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
     },
     isEmptyState () {
       return !this.isFetchingMaps && !this.numResults && (this.appliedFilter !== 'mine' || this.totalUserEntries > 0);

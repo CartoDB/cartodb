@@ -19,8 +19,6 @@ class Carto::User < ActiveRecord::Base
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
 
-  MIN_PASSWORD_LENGTH = 6
-  MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
@@ -134,8 +132,6 @@ class Carto::User < ActiveRecord::Base
   end
 
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
-    return if !value.nil? && value.length >= MAX_PASSWORD_LENGTH
     return if !value.nil? && password_validator.validate(value, self).any?
 
     @password = value
@@ -532,25 +528,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def valid_password?(key, value, confirmation_value)
-    if value.nil?
-      errors.add(key, "New password can't be blank")
-    else
-      if value != confirmation_value
-        errors.add(key, "New password doesn't match confirmation")
-      end
-
-      if value.length < MIN_PASSWORD_LENGTH
-        errors.add(key, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
-      end
-
-      if value.length >= MAX_PASSWORD_LENGTH
-        errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
-      end
-
-      password_validator.validate(value, self).each { |e| errors.add(key, e) }
-
-      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
-    end
+    password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
+    validate_different_passwords(nil, self.class.password_digest(value, salt), key)
 
     errors[key].empty?
   end

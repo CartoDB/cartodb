@@ -7,17 +7,25 @@ module Carto
   class PasswordValidator
     include Carto::CommonPasswords
 
+    MIN_PASSWORD_LENGTH = 6
+    MAX_PASSWORD_LENGTH = 64
+
     def initialize(strong_password_validator = nil)
       @strong_password_validator = strong_password_validator
     end
 
-    def validate(password, user = nil)
-      password = '' if password.nil?
-
+    def validate(password, password_confirmation, user = nil)
       errors = []
-      errors << "common passwords are not allowed" if COMMON_PASSWORDS.include?(password)
-      errors << "must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
-      errors += strong_password_validator.validate(password) if strong_password_enabled?(user)
+      if password.nil?
+        errors << "New password can't be blank"
+      else
+        errors << "New password doesn't match confirmation" if password != password_confirmation
+        errors << "Must be at least #{MIN_PASSWORD_LENGTH} characters long" if password.length < MIN_PASSWORD_LENGTH
+        errors << "Must be at most #{MAX_PASSWORD_LENGTH} characters long" if password.length >= MAX_PASSWORD_LENGTH
+        errors << "Common passwords are not allowed" if COMMON_PASSWORDS.include?(password)
+        errors << "Must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
+        errors += strong_password_validator.validate(password) if strong_password_enabled?(user)
+      end
 
       errors
     end

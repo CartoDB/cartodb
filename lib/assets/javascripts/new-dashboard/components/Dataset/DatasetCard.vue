@@ -55,7 +55,19 @@
       <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
     </div>
     <div class="dataset-cell cell--small">
-      <span class="text is-small is-txtSoftGrey">1 map</span>
+      <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
+        {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
+      </span>
+
+      <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
+          <span class="text is-small is-txtSoftGrey">
+            {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
+          </span>
+
+          <template slot="footer" v-if="dataset.dependent_visualizations_count > 10">
+            + {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count - 10, { n: dataset.dependent_visualizations_count - 10 }) }}
+          </template>
+      </FeaturesDropdown>
     </div>
     <div class="dataset-cell cell--small cell--privacy">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
@@ -144,6 +156,12 @@ export default {
     },
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
+    },
+    dependentVisualizationsWithUrl () {
+      return this.$props.dataset.dependent_visualizations.map(visualization => {
+        visualization.url = Visualization.getURL(visualization, this.$cartoModels);
+        return visualization;
+      });
     }
   },
   methods: {

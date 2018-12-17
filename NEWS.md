@@ -10,6 +10,7 @@ Development
 
 ### Bug fixes / enhancements
 - Request login when reactivating mfa from account (#14509)
+- Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Added new security header X-Content-Type-Options (#14530)
 - Fix OAuth consent screen when not logged in (#14518)
 

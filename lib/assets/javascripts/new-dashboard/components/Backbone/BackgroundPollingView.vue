@@ -20,12 +20,6 @@ export default {
   beforeDestroy () {
     this.backgroundPollingView.clean();
   },
-  watch: {
-    routeType () {
-      this.backgroundPollingView.clean();
-      this.backgroundPollingView = this.renderView();
-    }
-  },
   methods: {
     getBackgroundPollingView () {
       return this.backgroundPollingView;

@@ -84,7 +84,7 @@ export default {
     SettingsDropdown
   },
   created: function () {
-    this.$store.dispatch('datasets/setResultsPerPage', 6);
+    this.$store.dispatch('datasets/setResultsPerPage', 8);
     this.fetchDatasets();
   },
   computed: {

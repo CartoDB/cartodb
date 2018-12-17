@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     applyOrder (orderOptions) {
-      this.$store.dispatch('datasets/orderMaps', orderOptions);
+      this.$store.dispatch('datasets/orderDatasets', orderOptions);
     },
     applyFilter (filterType) {
       this.$store.dispatch('datasets/filterDatasets', filterType);

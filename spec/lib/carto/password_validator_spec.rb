@@ -24,7 +24,7 @@ module Carto
 
       errors = validator.validate(PASSWORD, user)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must be different than the user name"
+      validator.formatted_error_message(errors).should == "Must be different than the user name"
     end
 
     it 'should check strong passwords for org users with strong_passwords_enabled' do
@@ -40,7 +40,7 @@ module Carto
 
       errors = validator.validate(PASSWORD, user)
       errors.empty?.should be_false
-      error = "must be different than the user name and must be at least #{PASSWORD.length + 1} characters long"
+      error = "Must be different than the user name and must be at least #{PASSWORD.length + 1} characters long"
       validator.formatted_error_message(errors).should == error
     end
 
@@ -50,7 +50,7 @@ module Carto
 
       errors = validator.validate('123456789q')
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "common passwords are not allowed"
+      validator.formatted_error_message(errors).should == "Common passwords are not allowed"
     end
 
     it 'should be invalid when password too long' do

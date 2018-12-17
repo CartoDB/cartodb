@@ -50,7 +50,7 @@ module Carto
 
       errors = validator.validate('123456789q', '123456789q')
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "common passwords are not allowed"
+      validator.formatted_error_message(errors).should == "can't be a common password"
     end
 
     it 'should be invalid when password too long' do
@@ -104,7 +104,7 @@ module Carto
 
       errors = validator.validate(nil, nil)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "New password can't be blank"
+      validator.formatted_error_message(errors).should == "can't be blank"
     end
 
     it 'should invalidate an empty password' do
@@ -126,7 +126,7 @@ module Carto
       errors.empty?.should be_false
 
       message = validator.formatted_error_message(errors)
-      message.should == "New password can't be blank"
+      message.should == "can't be blank"
 
       errors.each do |error|
         message.should include(error)

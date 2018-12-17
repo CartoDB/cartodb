@@ -190,7 +190,7 @@ describe Carto::Api::OrganizationUsersController do
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
-      last_response.body.include?('common passwords are not allowed').should be true
+      last_response.body.include?("can't be a common password").should be true
     end
 
     it 'returns 410 if password is not strong' do
@@ -520,7 +520,7 @@ describe Carto::Api::OrganizationUsersController do
           params
 
       last_response.status.should == 410
-      last_response.body.should include 'common passwords are not allowed'
+      last_response.body.should include "can't be a common password"
     end
 
     it 'fails to update password if strongs passwords enabled' do

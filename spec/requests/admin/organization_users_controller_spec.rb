@@ -113,7 +113,7 @@ describe Admin::OrganizationUsersController do
              password_confirmation: @owner.password
 
         last_response.status.should == 200
-        last_response.body.should include 'common passwords are not allowed'
+        last_response.body.should include "can't be a common password"
       end
 
       it 'fails if password is not strong' do
@@ -295,7 +295,7 @@ describe Admin::OrganizationUsersController do
             password_confirmation: @owner.password
 
         last_response.status.should == 422
-        last_response.body.should include 'common passwords are not allowed'
+        last_response.body.should include "can't be a common password"
       end
 
       it 'fails if password is not strong' do

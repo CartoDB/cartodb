@@ -1827,7 +1827,7 @@ describe User do
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid") # "to_s" of validation msg
+    }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/) # "to_s" of validation msg
 
     @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
     @user.valid?.should eq false
@@ -1849,7 +1849,7 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password Must be at least 6 characters long")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
 
     long_password = 'long' * 20
     @user.change_password(@user_password, long_password, long_password)
@@ -1857,28 +1857,28 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password Must be at most 64 characters long")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
 
     @user.change_password('aaaaaa', nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
 
     @user.change_password(@user_password, nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
 
     @user.change_password(nil, nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
 
     @user.change_password(nil, new_valid_password, new_valid_password)
     @user.valid?.should eq false

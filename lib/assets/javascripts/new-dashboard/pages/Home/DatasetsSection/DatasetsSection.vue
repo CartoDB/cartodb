@@ -99,7 +99,7 @@ export default {
       totalUserEntries: state => state.datasets.metadata.total_user_entries
     }),
     title () {
-      return this.$t('HomePage.DatasetsSection.title');
+      return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     isEmptyState () {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);

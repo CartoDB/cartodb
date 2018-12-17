@@ -151,7 +151,14 @@ describe Carto::UserMetadataExportService do
       end
       ClientApplication.where(user_id: @user.id).each(&:destroy)
 
-      @user.oauth_app_users.each(&:destroy) unless @user.oauth_app_users.blank?
+      @user.oauth_app_users.each do |oau|
+        unless oau.oauth_access_tokens.blank?
+          oau.oauth_access_tokens.each do |oat|
+            oat.api_key.skip_role_setup = true
+            oat.api_key.skip_cdb_conf_info = true
+          end
+        end
+      end
 
       @user.destroy if @user
     end
@@ -826,7 +833,6 @@ describe Carto::UserMetadataExportService do
         phone: '1234567',
         api_keys: [
           {
-            id: "yyyyy1",
             created_at: "2018-02-12T16:11:26+00:00",
             db_password: "kkkkkkkkktest_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
             db_role: "test_cartodb_user_5f02aa9a-100f-11e8-a8b7-080027eb929e",
@@ -847,7 +853,6 @@ describe Carto::UserMetadataExportService do
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
           },
           {
-            id: "yyyyy2",
             created_at: "2018-02-12T16:11:26+00:00",
             db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
             db_role: "user00000001_role_31cf62cd1123fe32b0bf76b048e3af39",
@@ -858,6 +863,34 @@ describe Carto::UserMetadataExportService do
             grants: [{
               type: "apis",
               apis: []
+            }],
+            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+          },
+          {
+            id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            created_at: "2018-02-12T16:11:26+00:00",
+            db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
+            db_role: "user00000001_role_31cf62cd112354340bf76b048e3af398",
+            name: "oauth_authorization 2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            token: "OHP1p6jPwG5Lbabr4jq202",
+            type: "oauth",
+            updated_at: "2018-02-12T16:11:26+00:00",
+            grants: [{
+              type: "apis",
+              apis: ["sql","maps"]
+            }, {
+              type: "user",
+              data: ["profile"]
+            }, {
+              type: "dataservices",
+              services: ["routing","isolines","observatory","geocoding"]
+            }, {
+              type: "database",
+              tables: [{
+                  name: "st",
+                  permissions: ["select"],
+                  schema: "test1"
+              }]
             }],
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
           }
@@ -1052,7 +1085,7 @@ describe Carto::UserMetadataExportService do
         #   }]
         # }],
         oauth_app_users: [{
-          id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+          id: "d881e0f1-cf35-4c35-b44a-6dc31608a435", # necessary for role creation
           oauth_app_id: @oauth_app.id,
           scopes: ["datasets:r:test1", "datasets:rw:test2"],
           created_at: "2018-11-16T14:31:46+00:00",
@@ -1062,7 +1095,19 @@ describe Carto::UserMetadataExportService do
             code: "zzzz",
             created_at: "2018-11-16T14:31:46+00:00"
           }],
-          oauth_access_tokens: [], # no db, no api key here
+          oauth_access_tokens: [{
+            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
+            api_key_id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            scopes: [
+              "user:profile",
+              "dataservices:routing",
+              "dataservices:isolines",
+              "dataservices:observatory",
+              "dataservices:geocoding",
+              "datasets:r:test1"
+            ],
+            created_at: "2018-11-16T14:31:46+00:00"
+          }],
           oauth_refresh_tokens: [{
             token: "zzzzz",
             scopes: ["datasets:r:test1", "offline"],

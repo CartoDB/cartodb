@@ -102,7 +102,7 @@ module Carto
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
-    after_destroy :drop_db_role, if: :needs_setup?
+    after_destroy :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
@@ -162,6 +162,7 @@ module Carto
 
     def self.new_from_hash(api_key_hash)
       new(
+        id: api_key_hash[:id],
         created_at: api_key_hash[:created_at],
         db_password: api_key_hash[:db_password],
         db_role: api_key_hash[:db_role],

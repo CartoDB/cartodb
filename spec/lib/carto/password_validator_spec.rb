@@ -7,8 +7,8 @@ module Carto
     PASSWORD = '2{Patrañas}'.freeze
 
     it 'should be invalid when password too short' do
-      strong_validator = Carto::StrongPasswordValidator.new(min_length: PASSWORD.length + 1)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_length: PASSWORD.length + 1)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
@@ -35,8 +35,8 @@ module Carto
       user.stubs(:organization_user?).returns(true)
       user.stubs(:organization).returns(org)
 
-      strong_validator = Carto::StrongPasswordValidator.new(min_length: PASSWORD.length + 1)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_length: PASSWORD.length + 1)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD, user)
       errors.empty?.should be_false
@@ -45,8 +45,8 @@ module Carto
     end
 
     it 'should be invalid when in common password list' do
-      strong_validator = Carto::StrongPasswordValidator.new
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate('123456789q', '123456789q')
       errors.empty?.should be_false
@@ -54,8 +54,8 @@ module Carto
     end
 
     it 'should be invalid when password too long' do
-      strong_validator = Carto::StrongPasswordValidator.new(max_length: PASSWORD.length - 1)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(max_length: PASSWORD.length - 1)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
@@ -63,8 +63,8 @@ module Carto
     end
 
     it 'should be invalid when password does not have enough letters' do
-      strong_validator = Carto::StrongPasswordValidator.new(min_letters: 9)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_letters: 9)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
@@ -72,8 +72,8 @@ module Carto
     end
 
     it 'should be invalid when password does not have enough numbers or symbols' do
-      strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 2)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_symbols: 3, min_numbers: 2)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
@@ -81,8 +81,8 @@ module Carto
     end
 
     it 'should be valid when password has enough numbers but not enough symbols' do
-      strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 1)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_symbols: 3, min_numbers: 1)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true
@@ -90,8 +90,8 @@ module Carto
     end
 
     it 'should be valid when password has enough symbols but not enough numbers' do
-      strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 2, min_numbers: 3)
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new(min_symbols: 2, min_numbers: 3)
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true
@@ -99,8 +99,8 @@ module Carto
     end
 
     it 'should invalidate a nil password' do
-      strong_validator = Carto::StrongPasswordValidator.new
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(nil, nil)
       errors.empty?.should be_false
@@ -108,8 +108,8 @@ module Carto
     end
 
     it 'should invalidate an empty password' do
-      strong_validator = Carto::StrongPasswordValidator.new
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate('', '')
       errors.empty?.should be_false
@@ -119,8 +119,8 @@ module Carto
     end
 
     it 'should return an error array' do
-      strong_validator = Carto::StrongPasswordValidator.new
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(nil, nil)
       errors.empty?.should be_false
@@ -134,8 +134,8 @@ module Carto
     end
 
     it 'should validate a good password' do
-      strong_validator = Carto::StrongPasswordValidator.new
-      validator = Carto::PasswordValidator.new(strong_validator)
+      strategy = Carto::StrongPasswordStrategy.new
+      validator = Carto::PasswordValidator.new(strategy)
 
       errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true

@@ -239,7 +239,11 @@ class User < Sequel::Model
   end
 
   def password_validator
-    Carto::PasswordValidator.new
+    if organization.try(:strong_passwords_enabled)
+      Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
+    else
+      Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
+    end
   end
 
   def valid_creation?(creator_user)

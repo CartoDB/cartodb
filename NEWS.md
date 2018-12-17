@@ -9,6 +9,7 @@ Development
   - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
+- Fix baseurl in datasets public dashboard page (#14524)
 - Request login when reactivating mfa from account (#14509)
 - Added new security header X-Content-Type-Options (#14530)
 - Fix OAuth consent screen when not logged in (#14518)

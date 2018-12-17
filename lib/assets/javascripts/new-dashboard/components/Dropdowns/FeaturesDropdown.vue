@@ -11,7 +11,7 @@
           </router-link>
         </li>
 
-        <li class="element" v-if="$slots.footer">
+        <li class="element" v-if="$slots.footer" @click.stop.prevent="noop">
           <span class="list-text text is-small footer">
             <slot name="footer" />
           </span>
@@ -32,7 +32,8 @@ export default {
   methods: {
     routeParams (element) {
       return { [this.feature]: element };
-    }
+    },
+    noop () {}
   }
 };
 </script>

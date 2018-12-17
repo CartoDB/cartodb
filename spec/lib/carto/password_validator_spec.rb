@@ -10,7 +10,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_length: PASSWORD.length + 1)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must be at least #{PASSWORD.length + 1} characters long"
     end
@@ -22,9 +22,9 @@ module Carto
       user.stubs(:username).returns(PASSWORD)
       user.stubs(:organization).returns(nil)
 
-      errors = validator.validate(PASSWORD, user)
+      errors = validator.validate(PASSWORD, PASSWORD, user)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "Must be different than the user name"
+      validator.formatted_error_message(errors).should == "must be different than the user name"
     end
 
     it 'should check strong passwords for org users with strong_passwords_enabled' do
@@ -38,9 +38,9 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_length: PASSWORD.length + 1)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD, user)
+      errors = validator.validate(PASSWORD, PASSWORD, user)
       errors.empty?.should be_false
-      error = "Must be different than the user name and must be at least #{PASSWORD.length + 1} characters long"
+      error = "must be different than the user name and must be at least #{PASSWORD.length + 1} characters long"
       validator.formatted_error_message(errors).should == error
     end
 
@@ -48,16 +48,16 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate('123456789q')
+      errors = validator.validate('123456789q', '123456789q')
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "Common passwords are not allowed"
+      validator.formatted_error_message(errors).should == "common passwords are not allowed"
     end
 
     it 'should be invalid when password too long' do
       strong_validator = Carto::StrongPasswordValidator.new(max_length: PASSWORD.length - 1)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must be at most #{PASSWORD.length - 1} characters long"
     end
@@ -66,7 +66,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_letters: 9)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must contain at least 9 letters"
     end
@@ -75,7 +75,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 2)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == "must contain at least 3 symbols or 2 numbers"
     end
@@ -84,7 +84,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 3, min_numbers: 1)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
     end
@@ -93,7 +93,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new(min_symbols: 2, min_numbers: 3)
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
     end
@@ -102,18 +102,16 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(nil)
+      errors = validator.validate(nil, nil)
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == 'must be at least 8 characters long, must contain at ' +
-                                                          'least 1 letter and must contain at least 1 symbol or ' +
-                                                          '1 number'
+      validator.formatted_error_message(errors).should == "New password can't be blank"
     end
 
     it 'should invalidate an empty password' do
       strong_validator = Carto::StrongPasswordValidator.new
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate('')
+      errors = validator.validate('', '')
       errors.empty?.should be_false
       validator.formatted_error_message(errors).should == 'must be at least 8 characters long, must contain at ' +
                                                           'least 1 letter and must contain at least 1 symbol or ' +
@@ -124,12 +122,11 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(nil)
+      errors = validator.validate(nil, nil)
       errors.empty?.should be_false
 
       message = validator.formatted_error_message(errors)
-      message.should == 'must be at least 8 characters long, must contain at least 1 letter and must ' +
-                        'contain at least 1 symbol or 1 number'
+      message.should == "New password can't be blank"
 
       errors.each do |error|
         message.should include(error)
@@ -140,7 +137,7 @@ module Carto
       strong_validator = Carto::StrongPasswordValidator.new
       validator = Carto::PasswordValidator.new(strong_validator)
 
-      errors = validator.validate(PASSWORD)
+      errors = validator.validate(PASSWORD, PASSWORD)
       errors.empty?.should be_true
       validator.formatted_error_message(errors).should be_nil
     end

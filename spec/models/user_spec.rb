@@ -1834,7 +1834,7 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password New password doesn't match confirmation")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
 
     @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
     @user.valid?.should eq false
@@ -1842,7 +1842,7 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password doesn't match confirmation")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password doesn't match confirmation")
 
     @user.change_password(@user_password, 'tiny', 'tiny')
     @user.valid?.should eq false

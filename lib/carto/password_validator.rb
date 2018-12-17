@@ -17,13 +17,15 @@ module Carto
     def validate(password, password_confirmation, user = nil)
       errors = []
       if password.nil?
-        errors << "New password can't be blank"
+        errors << "can't be blank"
       else
-        errors << "New password doesn't match confirmation" if password != password_confirmation
-        errors << "Must be at least #{MIN_PASSWORD_LENGTH} characters long" if password.length < MIN_PASSWORD_LENGTH
-        errors << "Must be at most #{MAX_PASSWORD_LENGTH} characters long" if password.length >= MAX_PASSWORD_LENGTH
-        errors << "Common passwords are not allowed" if COMMON_PASSWORDS.include?(password)
-        errors << "Must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
+        errors << "doesn't match confirmation" if password != password_confirmation
+        unless strong_password_enabled?(user)
+          errors << "must be at least #{MIN_PASSWORD_LENGTH} characters long" if password.length < MIN_PASSWORD_LENGTH
+          errors << "must be at most #{MAX_PASSWORD_LENGTH} characters long" if password.length >= MAX_PASSWORD_LENGTH
+        end
+        errors << "can't be a common password" if COMMON_PASSWORDS.include?(password)
+        errors << "must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
         errors += strong_password_validator.validate(password) if strong_password_enabled?(user)
       end
 

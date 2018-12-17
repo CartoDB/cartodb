@@ -20,6 +20,7 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('datasets/resetFilters', false);
+    this.$store.dispatch('maps/resetFilters', false);
     next();
   }
 };

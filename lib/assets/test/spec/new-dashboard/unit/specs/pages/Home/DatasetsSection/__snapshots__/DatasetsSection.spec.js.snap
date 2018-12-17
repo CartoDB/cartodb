@@ -4,7 +4,7 @@ exports[`DatasetsSection.vue should render emptyState 1`] = `
 <section class="datasets-section">
   <div class="container grid">
     <div class="full-width">
-      <sectiontitle-stub title="HomePage.DatasetsSection.title" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+      <sectiontitle-stub title="DataPage.header.title['locked']" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
       <!---->
       <emptystate-stub text="DataPage.emptyState"><img svg-inline="" src="../../../assets/icons/common/compass.svg"></emptystate-stub>
       <!---->
@@ -21,7 +21,7 @@ exports[`DatasetsSection.vue should render initial state 1`] = `
 <section class="datasets-section">
   <div class="container grid">
     <div class="full-width">
-      <sectiontitle-stub title="HomePage.DatasetsSection.title" class="grid-cell"><template></template> <template></template>
+      <sectiontitle-stub title="DataPage.header.title['mine']" class="grid-cell"><template></template> <template></template>
         <!---->
       </sectiontitle-stub>
       <initialstate-stub title="DataPage.zeroCase.title"><template></template> <template></template> <template></template></initialstate-stub>
@@ -40,7 +40,7 @@ exports[`DatasetsSection.vue should render properly 1`] = `
 <section class="datasets-section">
   <div class="container grid">
     <div class="full-width">
-      <sectiontitle-stub title="HomePage.DatasetsSection.title" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+      <sectiontitle-stub title="DataPage.header.title['mine']" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
       <!---->
       <!---->
       <datasetslist-stub appliedorder="updated_at" appliedorderdirection="desc"></datasetslist-stub>

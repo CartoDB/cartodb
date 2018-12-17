@@ -21,7 +21,6 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .empty-state {
-  margin: 20vh 0 8vh;
   text-align: center;
 }
 

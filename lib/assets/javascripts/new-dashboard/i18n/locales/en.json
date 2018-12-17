@@ -142,7 +142,8 @@
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
     "numberRows": "0 rows | {n} row | {n} rows",
-    "tags": "tags"
+    "tags": "tags",
+    "maps": "0 maps | 1 map | {n} maps"
   },
   "DatasetListHeader": {
     "name": "Name",

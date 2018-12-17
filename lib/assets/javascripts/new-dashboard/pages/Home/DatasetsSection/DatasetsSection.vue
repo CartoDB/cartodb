@@ -102,7 +102,7 @@ export default {
       return this.$t('HomePage.DatasetsSection.title');
     },
     isEmptyState () {
-      return !this.isFetchingDatasets && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     isInitialState () {
       return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;

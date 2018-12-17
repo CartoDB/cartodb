@@ -7,7 +7,7 @@ Development
 ### Features
 - OAuth public release (WIP):
   - Sync `oauth_apps` with Central (#14493)
-  - Include `oauth` and friends in user migrator (#14492)
+  - Include `oauth_app` and friends in user migrator (#14492)
 
 ### Bug fixes / enhancements
 - Request login when reactivating mfa from account (#14509)

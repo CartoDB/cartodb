@@ -55,7 +55,7 @@
         </ul>
 
         <router-link :to="{ name: 'datasets' }" class="title is-small go-to-datasets">
-          VIEW ALL DATASETS
+          {{ $t('HomePage.DatasetsSection.viewAll') }}
         </router-link>
       </div>
     </div>

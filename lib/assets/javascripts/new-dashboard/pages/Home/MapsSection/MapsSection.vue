@@ -124,8 +124,4 @@ export default {
     width: 100%;
   }
 }
-
-.empty-state {
-  margin: 20vh 0 8vh;
-}
 </style>

@@ -10,7 +10,7 @@ exports[`DatasetsSection.vue should render emptyState 1`] = `
       <!---->
       <!---->
       <router-link to="[object Object]" class="title is-small go-to-datasets">
-        VIEW ALL DATASETS
+        HomePage.DatasetsSection.viewAll
       </router-link>
     </div>
   </div>
@@ -29,7 +29,7 @@ exports[`DatasetsSection.vue should render initial state 1`] = `
       <!---->
       <!---->
       <router-link to="[object Object]" class="title is-small go-to-datasets">
-        VIEW ALL DATASETS
+        HomePage.DatasetsSection.viewAll
       </router-link>
     </div>
   </div>
@@ -46,7 +46,7 @@ exports[`DatasetsSection.vue should render properly 1`] = `
       <datasetslist-stub appliedorder="updated_at" appliedorderdirection="desc"></datasetslist-stub>
       <!---->
       <router-link to="[object Object]" class="title is-small go-to-datasets">
-        VIEW ALL DATASETS
+        HomePage.DatasetsSection.viewAll
       </router-link>
     </div>
   </div>

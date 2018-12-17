@@ -217,7 +217,8 @@
       "allMapsLink" : "VIEW ALL MAPS"
     },
     "DatasetsSection": {
-      "title": "Your Datasets"
+      "title": "Your Datasets",
+      "viewAll": "VIEW ALL DATASETS"
     },
     "CreateMapCard": {
       "header": "Create your first map to predict key insights",

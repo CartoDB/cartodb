@@ -14,6 +14,10 @@ export default {
   components: {
     Welcome,
     MapsSection
+  },
+  beforeRouteLeave (to, from, next) {
+    this.$store.dispatch('maps/resetFilters', false);
+    next();
   }
 };
 </script>

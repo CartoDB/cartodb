@@ -7,8 +7,12 @@ Development
 ### Features
 - Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
 
 ### Bug fixes / enhancements
+- Request login when reactivating mfa from account (#14509)
+- Added new security header X-Content-Type-Options (#14530)
 - Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
@@ -16,7 +20,6 @@ Development
 
 ### Features
 * Send org_admin parameter to central (#14483)
-
 
 ### Bug fixes / enhancements
 * No request made to enable MFA #14505

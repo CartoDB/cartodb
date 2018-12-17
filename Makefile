@@ -224,6 +224,7 @@ WORKING_SPECS_9 = \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
+	spec/requests/superadmin/oauth_apps_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
 	spec/requests/superadmin/account_types_spec.rb \
 	spec/requests/api/visualizations_spec.rb \

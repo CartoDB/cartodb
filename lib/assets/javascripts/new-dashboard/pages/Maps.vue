@@ -66,7 +66,7 @@
 
       <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
         <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" :key="map.id">
-          <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+          <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :preventClick="isSomeMapSelected"></MapCard>
         </li>
       </ul>
 
@@ -157,6 +157,9 @@ export default {
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
+    },
+    isSomeMapSelected () {
+      return this.selectedMaps.length > 0;
     }
   },
   methods: {
@@ -213,6 +216,9 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
+    },
+    onclick (params) {
+      console.warn(params)
     }
   }
 };

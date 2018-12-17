@@ -6,7 +6,8 @@
        'card--child-hover': !activeHover,
        'card--quick-actions-open': areQuickActionsOpen,
        'card--can-hover': canHover
-     }">
+     }"
+    v-on:click="onclick">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -19,7 +20,7 @@
       </span>
     </span>
 
-    <div class="card-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+    <div class="card-actions" v-if="showCardActions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
     </div>
 
@@ -27,7 +28,7 @@
       <div class="card-header">
         <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ map.name }}&nbsp;
-          <span class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span v-if="showCardActions" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
@@ -91,6 +92,10 @@ export default {
     canHover: {
       type: Boolean,
       default: true
+    },
+    preventClick: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -154,7 +159,10 @@ export default {
       const stats = this.$props.map.stats;
       const totalViews = Object.keys(stats).reduce((total, date) => total + stats[date], 0);
       return totalViews;
-    }
+    },
+    showCardActions () {
+      return !this.$props.preventClick;
+    },
   },
   methods: {
     toggleSelection () {
@@ -188,7 +196,13 @@ export default {
     ...mapActions({
       likeMap: 'maps/like',
       deleteMapLike: 'maps/deleteLike'
-    })
+    }),
+    onclick (event) {
+      if (this.$props.preventClick) {
+        event.preventDefault();
+        this.toggleSelection();
+      }
+    }
   }
 };
 </script>

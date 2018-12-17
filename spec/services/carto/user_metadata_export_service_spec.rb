@@ -877,19 +877,19 @@ describe Carto::UserMetadataExportService do
             updated_at: "2018-02-12T16:11:26+00:00",
             grants: [{
               type: "apis",
-              apis: ["sql","maps"]
+              apis: ["sql", "maps"]
             }, {
               type: "user",
               data: ["profile"]
             }, {
               type: "dataservices",
-              services: ["routing","isolines","observatory","geocoding"]
+              services: ["routing", "isolines", "observatory", "geocoding"]
             }, {
               type: "database",
               tables: [{
-                  name: "st",
-                  permissions: ["select"],
-                  schema: "test1"
+                name: "st",
+                permissions: ["select"],
+                schema: "test1"
               }]
             }],
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"

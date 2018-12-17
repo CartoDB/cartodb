@@ -159,7 +159,8 @@ module CartoDB
                                Carto::PasswordValidator.new
                              end
 
-        password_errors = password_validator.validate(@user_params[PARAM_PASSWORD], @user_params[PARAM_PASSWORD], @user)
+        password = @user_params[PARAM_PASSWORD] || @user.password
+        password_errors = password_validator.validate(password, password, @user)
 
         unless password_errors.empty?
           @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]

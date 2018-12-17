@@ -14,7 +14,7 @@ module Carto
     has_many :oauth_refresh_tokens, inverse_of: :oauth_app_user, dependent: :destroy
 
     validates :user, presence: true, uniqueness: { scope: :oauth_app }
-    validates :oauth_app, presence: true, unless: :skip_role_setup
+    validates :oauth_app, presence: true
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 

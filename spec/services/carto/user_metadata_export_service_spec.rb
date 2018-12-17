@@ -3,24 +3,6 @@ require 'factories/carto_visualizations'
 require 'helpers/rate_limits_helper'
 require 'helpers/account_types_helper'
 
-class UserMetadataExportServiceMock < Carto::UserMetadataExportService
-  def destination_oauth_app(oauth_app_hash)
-    Carto::OauthApp.new(
-      id: oauth_app_hash[:id],
-      user_id: oauth_app_hash[:user_id],
-      name: oauth_app_hash[:name],
-      created_at: oauth_app_hash[:created_at],
-      updated_at: oauth_app_hash[:updated_at],
-      client_id: oauth_app_hash[:client_id],
-      client_secret: oauth_app_hash[:client_secret],
-      redirect_uris: oauth_app_hash[:redirect_uris],
-      icon_url: oauth_app_hash[:icon_url],
-      restricted: oauth_app_hash[:restricted],
-      avoid_sync_central: true
-    )
-  end
-end
-
 describe Carto::UserMetadataExportService do
   include NamedMapsHelper
   include RateLimitsHelper
@@ -32,6 +14,7 @@ describe Carto::UserMetadataExportService do
     @feature_flag = FactoryGirl.create(:carto_feature_flag)
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     @connector_provider = FactoryGirl.create(:connector_provider)
+    @oauth_app = FactoryGirl.create(:oauth_app)
   end
 
   after(:all) do
@@ -132,7 +115,7 @@ describe Carto::UserMetadataExportService do
     ::User[user.id].before_destroy(skip_table_drop: true)
   end
 
-  let(:service) { UserMetadataExportServiceMock.new }
+  let(:service) { Carto::UserMetadataExportService.new }
 
   describe '#export' do
     before(:all) do
@@ -565,7 +548,6 @@ describe Carto::UserMetadataExportService do
 
     expect(exported_oauth_app_user[:id]).to eq oauth_app_user.id
     expect(exported_oauth_app_user[:oauth_app_id]).to eq oauth_app_user.oauth_app_id
-    expect(exported_oauth_app_user[:user_id]).to eq oauth_app_user.user_id
     expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
 
     expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
@@ -608,8 +590,6 @@ describe Carto::UserMetadataExportService do
   def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code)
     expect(exported_oauth_authorization_code).to be_nil && return unless oauth_authorization_code
 
-    expect(exported_oauth_authorization_code[:id]).to eq oauth_authorization_code.id
-    expect(exported_oauth_authorization_code[:oauth_app_user_id]).to eq oauth_authorization_code.oauth_app_user_id
     expect(exported_oauth_authorization_code[:scopes]).to eq oauth_authorization_code.scopes
     expect(exported_oauth_authorization_code[:code]).to eq oauth_authorization_code.code
     expect(exported_oauth_authorization_code[:redirect_uri]).to eq oauth_authorization_code.redirect_uri
@@ -628,7 +608,6 @@ describe Carto::UserMetadataExportService do
   def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token)
     expect(exported_oauth_access_token).to be_nil && return unless oauth_access_token
 
-    expect(exported_oauth_access_token[:id]).to eq oauth_access_token.id
     expect(exported_oauth_access_token[:oauth_app_user_id]).to eq oauth_access_token.oauth_app_user_id
     expect(exported_oauth_access_token[:api_key_id]).to eq oauth_access_token.api_key_id
     expect(exported_oauth_access_token[:scopes]).to eq oauth_access_token.scopes
@@ -643,7 +622,6 @@ describe Carto::UserMetadataExportService do
   def expect_export_matches_oauth_refresh_tokens(exported_oauth_refresh_token, oauth_refresh_token)
     expect(exported_oauth_refresh_token).to be_nil && return unless oauth_refresh_token
 
-    expect(exported_oauth_refresh_token[:oauth_app_user_id]).to eq oauth_refresh_token.oauth_app_user_id
     expect(exported_oauth_refresh_token[:token]).to eq oauth_refresh_token.token
     expect(exported_oauth_refresh_token[:scopes]).to eq oauth_refresh_token.scopes
 
@@ -1071,37 +1049,23 @@ describe Carto::UserMetadataExportService do
           shared_secret: 'abcdefgh',
           type: 'totp'
         }],
-        oauth_apps: [{
-          id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
-          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
-          name: "test-app",
-          created_at: "2018-11-16T14:31:46+00:00",
-          updated_at: "2018-11-17T16:41:56+00:00",
-          client_id: "xxxxxxxxxxxxx",
-          client_secret: "yyyyyyyyyyyyy",
-          redirect_uris: ["https://carto.com"],
-          icon_url: "icon",
-          restricted: false,
-          oauth_app_users: [],
-          oauth_app_organizations: [] # no db, no org here
-        }],
+        # oauth_apps: [{
+        #   id: @oauth_app.id,
+        #   oauth_app_organizations: []
+        # }],
         oauth_app_users: [{
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
-          oauth_app_id: "d4e6ab84-3e69-42ee-a957-86c8017e0544",
-          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+          oauth_app_id: @oauth_app.id,
           scopes: ["datasets:r:test1", "datasets:rw:test2"],
           created_at: "2018-11-16T14:31:46+00:00",
           updated_at: "2018-11-17T16:41:56+00:00",
           oauth_authorization_codes: [{
-            id: "3844eb4b-8008-4273-b462-8d6efb65628e",
-            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
             scopes: ["datasets:r:test1"],
             code: "zzzz",
             created_at: "2018-11-16T14:31:46+00:00"
           }],
           oauth_access_tokens: [], # no db, no api key here
           oauth_refresh_tokens: [{
-            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
             token: "zzzzz",
             scopes: ["datasets:r:test1", "offline"],
             created_at: "2018-11-16T14:31:46+00:00",

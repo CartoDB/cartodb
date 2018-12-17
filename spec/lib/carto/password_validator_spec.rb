@@ -50,7 +50,7 @@ module Carto
 
       errors = validator.validate('123456789q')
       errors.empty?.should be_false
-      validator.formatted_error_message(errors).should == "must use a different password"
+      validator.formatted_error_message(errors).should == "common passwords are not allowed"
     end
 
     it 'should be invalid when password too long' do

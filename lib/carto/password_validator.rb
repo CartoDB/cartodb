@@ -15,7 +15,7 @@ module Carto
       password = '' if password.nil?
 
       errors = []
-      errors << "must use a different password" if COMMON_PASSWORDS.include?(password)
+      errors << "common passwords are not allowed" if COMMON_PASSWORDS.include?(password)
       errors << "must be different than the user name" if user.try(:username) && user.username.casecmp(password).zero?
       errors += strong_password_validator.validate(password) if strong_password_enabled?(user)
 

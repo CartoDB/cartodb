@@ -91,7 +91,7 @@ describe PasswordResetsController do
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
       response.status.should == 200
-      response.body.should include "must use a different password"
+      response.body.should include "common passwords are not allowed"
     end
 
     it 'shows an error if the password is not strong' do

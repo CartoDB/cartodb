@@ -81,7 +81,7 @@ describe CartoGearsApi::Users::UsersService do
       it 'raises a validation error if the new password is a common one' do
         expect {
           service.change_password(@user.id, 'galina')
-        }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /must use a different password/)
+        }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /common passwords are not allowed/)
       end
 
       it 'raises a validation error if the new password is not strong' do

@@ -29,6 +29,7 @@ class Carto::VisualizationQueryBuilder
   def initialize
     @include_associations = []
     @eager_load_associations = []
+    @joins = []
     @filtering_params = {}
   end
 
@@ -113,12 +114,6 @@ class Carto::VisualizationQueryBuilder
 
   def with_prefetch_table
     nested_association = { map: :user_table }
-    with_eager_load_of(nested_association)
-  end
-
-  def with_prefetch_dependent_visualizations
-    inner_visualization = { visualization: { map: { layers: :layers_user_tables }, permission: :owner } }
-    nested_association = { map: { user_table: { layers: { maps: inner_visualization } } } }
     with_eager_load_of(nested_association)
   end
 
@@ -225,9 +220,21 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_join(join)
+    @joins << join
+    self
+  end
+
+  def with_preload(preload)
+    @preload = preload
+    self
+  end
+
   def with_associations(query)
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
+    query = query.joins(@join)
+    query = query.preload(@preload)
     query = with_favorited(query)
     query = with_dependent_visualization_count(query)
     query

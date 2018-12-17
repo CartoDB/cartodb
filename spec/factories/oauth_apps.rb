@@ -5,5 +5,6 @@ FactoryGirl.define do
     name { unique_name('Oauth application') }
     redirect_uris ['https://redirect.uri']
     icon_url 'http://localhost/some_icon.png'
+    avoid_sync_central true
   end
 end

@@ -453,5 +453,6 @@ class ApplicationController < ActionController::Base
   def set_security_headers
     headers['X-Frame-Options'] = 'DENY'
     headers['X-XSS-Protection'] = '1; mode=block'
+    headers['X-Content-Type-Options'] = 'nosniff'
   end
 end

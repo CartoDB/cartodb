@@ -30,6 +30,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
+    before_action :allow_silent_flow_iframe, only: :consent, if: :silent_flow?
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
@@ -40,8 +41,6 @@ module Carto
     before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
-
-    after_action :allow_silent_flow_iframe, only: :consent
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
@@ -212,7 +211,7 @@ module Carto
     end
 
     def allow_silent_flow_iframe
-      response.headers.except! 'X-Frame-Options' if silent_flow?
+      response.headers.except! 'X-Frame-Options'
     end
   end
 end

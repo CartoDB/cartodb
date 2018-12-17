@@ -132,7 +132,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def password=(value)
-    return if !value.nil? && password_validator.validate(value, self).any?
+    return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt

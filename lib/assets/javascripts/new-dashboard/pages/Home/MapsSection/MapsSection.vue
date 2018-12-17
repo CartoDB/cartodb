@@ -98,16 +98,17 @@ export default {
       isFetchingMaps: state => state.maps.isFetching,
       maps: state => state.maps.list,
       metadata: state => state.maps.metadata,
-      numResults: state => state.maps.metadata.total_entries
+      numResults: state => state.maps.metadata.total_entries,
+      totalUserEntries: state => state.maps.metadata.total_user_entries
     }),
     title () {
       return this.$t('HomePage.MapsSection.title');
     },
     isEmptyState () {
-      return !this.isFetchingMaps && this.appliedFilter !== 'mine' && !this.numResults;
+      return !this.isFetchingMaps && !this.numResults && (this.appliedFilter !== 'mine' || this.totalUserEntries > 0);
     },
     isInitialState () {
-      return !this.isFetchingMaps && this.appliedFilter === 'mine' && !this.numResults;
+      return !this.isFetchingMaps && this.appliedFilter === 'mine' && this.totalUserEntries <= 0;
     },
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.allMapsLink');

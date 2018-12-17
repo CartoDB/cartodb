@@ -216,9 +216,6 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
-    },
-    onclick (params) {
-      console.warn(params)
     }
   }
 };

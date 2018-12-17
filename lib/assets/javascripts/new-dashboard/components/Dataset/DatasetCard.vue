@@ -95,6 +95,10 @@ export default {
     canHover: {
       type: Boolean,
       default: true
+    },
+    preventClick: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {

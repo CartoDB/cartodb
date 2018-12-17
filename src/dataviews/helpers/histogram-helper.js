@@ -60,12 +60,15 @@ helper.fillTimestampBuckets = function (buckets, start, aggregation, numberOfBin
 
 helper.fillNumericBuckets = function (buckets, start, width, numberOfBins) {
   for (var i = 0; i < numberOfBins; i++) {
-    buckets[i] = _.extend({
+    var bucketStart = start + (i * width);
+    var bucketEnd = (((i + 1) === numberOfBins) && buckets[i]) ? buckets[i].max : start + ((i + 1) * width);
+    var filledBucket = _.extend({}, {
       bin: i,
-      start: start + (i * width),
-      end: start + ((i + 1) * width),
+      start: bucketStart,
+      end: bucketEnd,
       freq: 0
     }, buckets[i]);
+    buckets[i] = filledBucket;
   }
 };
 

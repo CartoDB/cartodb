@@ -63,4 +63,20 @@ describe('dataview/helpers/histogram-helper', function () {
       }).toThrowError('aggregation "wrong" is not defined');
     });
   });
+
+  describe('fillNumericBuckets', function () {
+    it('should set as last bucket end the max value', function () {
+      var buckets = [
+        {min: 0, freq: 1},
+        {},
+        {max: 10, freq: 1}
+      ];
+      var start = 0;
+      var width = 3.3333333333333;
+      var numberOfBins = 3;
+
+      helper.fillNumericBuckets(buckets, start, width, numberOfBins);
+      expect(buckets[2].end).toBe(10);
+    });
+  });
 });

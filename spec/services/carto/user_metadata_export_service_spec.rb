@@ -15,6 +15,7 @@ describe Carto::UserMetadataExportService do
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     @connector_provider = FactoryGirl.create(:connector_provider)
     @oauth_app = FactoryGirl.create(:oauth_app)
+    # @organization = FactoryGirl.create(:organization)
   end
 
   after(:all) do
@@ -522,15 +523,6 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app).to be_nil && return unless oauth_app
 
     expect(exported_oauth_app[:id]).to eq oauth_app.id
-    expect(exported_oauth_app[:user_id]).to eq oauth_app.user_id
-    expect(exported_oauth_app[:name]).to eq oauth_app.name
-    expect(exported_oauth_app[:client_id]).to eq oauth_app.client_id
-    expect(exported_oauth_app[:client_secret]).to eq oauth_app.client_secret
-    expect(exported_oauth_app[:redirect_uris]).to eq oauth_app.redirect_uris
-    expect(exported_oauth_app[:icon_url]).to eq oauth_app.icon_url
-    expect(exported_oauth_app[:restricted]).to eq oauth_app.restricted
-
-    expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
   end
 
   def expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
@@ -1051,7 +1043,13 @@ describe Carto::UserMetadataExportService do
         }],
         # oauth_apps: [{
         #   id: @oauth_app.id,
-        #   oauth_app_organizations: []
+        #   oauth_app_organizations: [{
+        #     oauth_app_id: @oauth_app.id,
+        #     organization_id: @organization.id,
+        #     seats: 5,
+        #     created_at: "2018-11-16T14:31:46+00:00",
+        #     updated_at: "2018-11-17T16:41:56+00:00"
+        #   }]
         # }],
         oauth_app_users: [{
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",

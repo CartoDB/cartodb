@@ -140,7 +140,7 @@ module Carto
 
       user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
-      user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps])
+      # user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps])
 
       user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
 
@@ -260,7 +260,6 @@ module Carto
 
     def build_oauth_app_organization_from_hash(oao_hash)
       Carto::OauthAppOrganization.new(
-        id: oao_hash[:id],
         oauth_app_id: oao_hash[:oauth_app_id],
         organization_id: oao_hash[:organization_id],
         seats: oao_hash[:seats],

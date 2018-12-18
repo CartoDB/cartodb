@@ -183,7 +183,7 @@ describe SignupController do
 
       name = 'sixtythreecharacterslongiswaytoomanycharactersmatewhydoyoueventry'
       email = "testemail@#{@organization.whitelisted_email_domains[0]}"
-      password = '12345678'
+      password = '00012345678'
       user = { username: name, email: email, password: password }
       org_name = @organization.name
       host! "#{@organization.name}.localhost.lan"

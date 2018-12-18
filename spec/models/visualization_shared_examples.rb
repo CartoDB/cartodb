@@ -2,7 +2,7 @@
 shared_examples_for 'visualization models' do
   describe '#password' do
     it 'checks that when using password protected type, encrypted password is generated and stored correctly' do
-      password_value = '123456'
+      password_value = '000123456'
       password_second_value = '456789'
 
       visualization = build_visualization(type: Visualization::Member::TYPE_DERIVED)

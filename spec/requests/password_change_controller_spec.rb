@@ -89,7 +89,7 @@ describe PasswordChangeController do
 
       put password_change_url(@user.username), payload_password_short, @headers
       response.status.should == 200
-      response.body.should include 'Must be at least'
+      response.body.should include 'must be at least'
     end
 
     it 'changes password and authenticate session' do

@@ -27,7 +27,7 @@ export default {
       return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
     },
     text () {
-      return 'You have an [account plan] and you are a of [organization name]. Want to know more about your new dashboard?';
+      return 'You have an [account plan] and you are a of [organization name]. Want to know more about your new dashboard?';
     }
   }
 };

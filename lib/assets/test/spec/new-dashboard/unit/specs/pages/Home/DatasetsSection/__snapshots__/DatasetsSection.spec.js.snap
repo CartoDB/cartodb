@@ -28,9 +28,7 @@ exports[`DatasetsSection.vue should render initial state 1`] = `
       <!---->
       <!---->
       <!---->
-      <router-link to="[object Object]" class="title is-small go-to-datasets">
-        HomePage.DatasetsSection.viewAll
-      </router-link>
+      <!---->
     </div>
   </div>
 </section>

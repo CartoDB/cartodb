@@ -45,7 +45,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
             <!---->
           </li>
         </ul> <a href="/logout" class="navbar-dropdown-bottom">
-          <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+          <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
           <div class="title is-small is-txtAlert">UserDropdown.logout</div>
         </a>
       </div>
@@ -99,7 +99,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <!---->
           </li>
         </ul> <a href="/logout" class="navbar-dropdown-bottom">
-          <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+          <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
           <div class="title is-small is-txtAlert">UserDropdown.logout</div>
         </a>
       </div>
@@ -153,7 +153,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
             <!---->
           </li>
         </ul> <a href="/logout" class="navbar-dropdown-bottom">
-          <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+          <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
           <div class="title is-small is-txtAlert">UserDropdown.logout</div>
         </a>
       </div>
@@ -207,7 +207,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
             <!---->
           </li>
         </ul> <a href="/logout" class="navbar-dropdown-bottom">
-          <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+          <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
           <div class="title is-small is-txtAlert">UserDropdown.logout</div>
         </a>
       </div>

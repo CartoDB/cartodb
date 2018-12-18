@@ -53,14 +53,13 @@ module Carto
       before_filter :link_ghost_tables, only: [:index]
       before_filter :load_common_data, only: [:index]
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
-      rescue_from Carto::OrderDirectionParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = [:name, :updated_at, :size, :mapviews, :likes].freeze
+      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited).freeze
+      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited).freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -83,40 +82,41 @@ module Carto
       end
 
       def index
-        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
+        opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
+        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
         types, total_types = get_types_parameters
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
-        # TODO: undesirable table hardcoding, needed for disambiguation. Look for
-        # a better approach and/or move it to the query builder
-        visualizations = vqb.with_order("visualizations.#{order}", order_direction)
+        visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
           VisualizationPresenter.new(v, current_viewer, self, presenter_options)
                                 .with_presenter_cache(presenter_cache).to_poro
         end
         response = {
           visualizations: visualizations,
-          total_entries: vqb.build.count
+          total_entries: vqb.build.size
         }
         if current_user && (params[:load_totals].to_s != 'false')
           # Prefetching at counts removes duplicates
-          response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
-          })
+          response.merge!(
+            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id)
+                                                             .build.size,
+            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id)
+                                                      .build.size,
+            total_shared: VisualizationQueryBuilder.new.with_types(total_types)
+                                                       .with_shared_with_user_id(current_user.id)
+                                                       .with_user_id_not(current_user.id).with_prefetch_table.build.size
+          )
         end
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
-      rescue Carto::OrderParamInvalidError => e
+      rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
         render_jsonp({ error: e.message }, e.status)
-      rescue Carto::OrderDirectionParamInvalidError => e
-        render_jsonp({ error: e.message }, e.status)
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end

@@ -10,8 +10,6 @@ require_dependency 'carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = [ 'mapviews', 'likes', 'size' ]
-
   def self.user_public_tables(user)
     self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
@@ -42,8 +40,6 @@ class Carto::VisualizationQueryBuilder
     @include_associations = []
     @eager_load_associations = []
     @eager_load_nested_associations = {}
-    @order = {}
-    @off_database_order = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
     @excluded_kinds = []
@@ -165,13 +161,13 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_order(order, asc_desc = :asc)
-    offdb_order = offdatabase_order(order)
-    if offdb_order
-      @off_database_order[offdb_order] = asc_desc
-    else
-      @order[order] = asc_desc
-    end
+  def with_current_user_id(user_id)
+    @current_user_id = user_id
+  end
+
+  def with_order(order, direction = 'asc')
+    @order = order.to_s
+    @direction = direction.to_s
     self
   end
 
@@ -389,16 +385,7 @@ class Carto::VisualizationQueryBuilder
 
     query = query.eager_load(@eager_load_nested_associations) if @eager_load_nested_associations != {}
 
-    @order.each { |k, v|
-      query = query.order(k)
-      query = query.reverse_order if v == :desc
-    }
-
-    if @off_database_order.empty?
-      query
-    else
-      Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
-    end
+    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -406,13 +393,6 @@ class Carto::VisualizationQueryBuilder
   end
 
   private
-
-  def offdatabase_order(order)
-    return nil unless order.kind_of? String
-    fragments = order.split('.')
-    order_attribute = fragments[fragments.count - 1]
-    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
-  end
 
   def with_include_of(association)
     @include_associations << association

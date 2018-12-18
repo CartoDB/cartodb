@@ -11,7 +11,20 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Fix OAuth consent screen when not logged in (#14518)
+- Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+
+4.23.4 (2018-12-18)
+-------------------
+
+### Features
+* OAuth public release (WIP):
+  * Sync `oauth_apps` with Central (#14493)
+
+### Bug fixes / enhancements
+* Fix baseurl in datasets public dashboard page (#14524)
+* Request login when reactivating mfa from account (#14509)
+* Added new security header X-Content-Type-Options (#14530)
+* Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
 -------------------
@@ -19,7 +32,6 @@ Development
 ### Features
 * Send org_admin parameter to central (#14483)
 >>>>>>> origin/master
-
 
 ### Bug fixes / enhancements
 * No request made to enable MFA #14505

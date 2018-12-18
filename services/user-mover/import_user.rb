@@ -478,7 +478,7 @@ module CartoDB
       end
 
       def create_user_api_key_roles(user_id)
-        Carto::User.find(user_id).api_keys.regular.each do |k|
+        Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
           begin
             k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
           rescue PG::Error => e
@@ -509,15 +509,9 @@ module CartoDB
       def create_oauth_app_user_db_entities(oau)
         oau.create_dataset_role
         oau.grant_dataset_role_privileges
-
-        oau.oauth_access_tokens.each { |oat| create_oauth_access_token_db_entities(oat) }
       rescue PG::Error => e
         # Ignore managed oauth_app_user errors
         throw e unless e.is_a?(OauthProvider::Errors::ServerError) || e.is_a?(OauthProvider::Errors::InvalidScope)
-      end
-
-      def create_oauth_access_token_db_entities(oat)
-        oat.create_api_key
       end
 
       def org_role_name(database_name)

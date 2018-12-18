@@ -6,7 +6,6 @@ require 'carto/user_authenticator'
 
 include AccountTypesHelper
 include UniqueNamesHelper
-include Carto::UserAuthenticator
 
 FactoryGirl.define do
   factory :user, class: ::User do
@@ -94,7 +93,7 @@ FactoryGirl.define do
     end
 
     after(:build) do |carto_user|
-      carto_user.crypted_password = password_digest(carto_user.password, carto_user.salt)
+      carto_user.crypted_password = carto_user.service.class.password_digest(carto_user.password, carto_user.salt)
     end
 
     after(:create) do |carto_user|

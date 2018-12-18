@@ -6,7 +6,8 @@
        'dataset-row--quick-actions-open': areQuickActionsOpen,
        'dataset-row--no-hover': !activeHover,
        'dataset-row--can-hover': canHover
-     }">
+     }"
+     @click="onClick">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -75,6 +76,7 @@
     </div>
     <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <DatasetQuickActions
+        v-if="showInteractiveElements"
         :dataset="dataset"
         :isShared="isShared"
         class="dataset--quick-actions"
@@ -107,6 +109,10 @@ export default {
     canHover: {
       type: Boolean,
       default: true
+    },
+    selectMode: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -157,6 +163,9 @@ export default {
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
     },
+    showInteractiveElements () {
+      return !this.$props.selectMode;
+    },
     dependentVisualizationsWithUrl () {
       return this.$props.dataset.dependent_visualizations.map(visualization => {
         visualization.url = Visualization.getURL(visualization, this.$cartoModels);
@@ -203,7 +212,13 @@ export default {
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
-    })
+    }),
+    onClick (event) {
+      if (this.$props.selectMode) {
+        event.preventDefault();
+        this.toggleSelection();
+      }
+    }
   }
 };
 </script>

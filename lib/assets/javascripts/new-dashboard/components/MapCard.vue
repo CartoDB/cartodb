@@ -7,7 +7,7 @@
        'card--quick-actions-open': areQuickActionsOpen,
        'card--can-hover': canHover
      }"
-    v-on:click="onclick">
+    @click="onClick">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -20,7 +20,7 @@
       </span>
     </span>
 
-    <div class="card-actions" v-if="showCardActions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+    <div class="card-actions" v-if="showInteractiveElements" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions"></MapQuickActions>
     </div>
 
@@ -28,7 +28,7 @@
       <div class="card-header">
         <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ map.name }}&nbsp;
-          <span v-if="showCardActions" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../assets/icons/common/favorite.svg">
           </span>
         </h2>
@@ -160,7 +160,7 @@ export default {
       const totalViews = Object.keys(stats).reduce((total, date) => total + stats[date], 0);
       return totalViews;
     },
-    showCardActions () {
+    showInteractiveElements () {
       return !this.$props.preventClick;
     }
   },
@@ -197,7 +197,7 @@ export default {
       likeMap: 'maps/like',
       deleteMapLike: 'maps/deleteLike'
     }),
-    onclick (event) {
+    onClick (event) {
       if (this.$props.preventClick) {
         event.preventDefault();
         this.toggleSelection();

@@ -7,7 +7,7 @@
        'dataset-row--no-hover': !activeHover,
        'dataset-row--can-hover': canHover
      }"
-     v-on:click="onclick">
+     @click="onClick">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -76,7 +76,7 @@
     </div>
     <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <DatasetQuickActions
-        v-if="showCardActions"
+        v-if="showInteractiveElements"
         :dataset="dataset"
         :isShared="isShared"
         class="dataset--quick-actions"
@@ -163,7 +163,7 @@ export default {
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
     },
-    showCardActions () {
+    showInteractiveElements () {
       return !this.$props.preventClick;
     },
     dependentVisualizationsWithUrl () {
@@ -213,7 +213,7 @@ export default {
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
     }),
-    onclick (event) {
+    onClick (event) {
       if (this.$props.preventClick) {
         event.preventDefault();
         this.toggleSelection();

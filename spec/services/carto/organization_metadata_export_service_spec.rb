@@ -8,6 +8,7 @@ describe Carto::OrganizationMetadataExportService do
 
   before(:all) do
     @connector_provider = FactoryGirl.create(:connector_provider)
+    @oauth_app = FactoryGirl.create(:oauth_app)
   end
 
   after(:all) do
@@ -88,6 +89,13 @@ describe Carto::OrganizationMetadataExportService do
       organization = service.build_organization_from_hash_export(full_export)
 
       expect_export_matches_organization(full_export[:organization], organization)
+    end
+
+    it 'imports 1.0.2 (without oauth_app_organizations)' do
+      organization = service.build_organization_from_hash_export(full_export_one_zero_two)
+
+      expect_export_matches_organization(full_export_one_zero_two[:organization], organization)
+      expect(organization.oauth_app_organizations).to be_empty
     end
 
     it 'imports 1.0.1 (without connector configurations)' do
@@ -233,6 +241,15 @@ describe Carto::OrganizationMetadataExportService do
     else
       expect(organization.connector_configurations).to be_empty
     end
+
+    if export[:oauth_app_organizations]
+      expect(export[:oauth_app_organizations].count).to eq organization.oauth_app_organizations.size
+      export[:oauth_app_organizations].zip(organization.oauth_app_organizations).each do |exported_oao, oao|
+        expect_export_matches_oauth_app_organization(exported_oao, oao)
+      end
+    else
+      expect(organization.oauth_app_organizations).to be_empty
+    end
   end
 
   def expect_export_matches_asset(exported_asset, asset)
@@ -280,6 +297,21 @@ describe Carto::OrganizationMetadataExportService do
     expect(exported_cc[:provider_name]).to eq cc.connector_provider.name
   end
 
+  def expect_export_matches_oauth_app_organization(exported_oao, oao)
+    expect(exported_oao[:oauth_app_id]).to eq oao.oauth_app_id
+    expect(exported_oao[:seats]).to eq oao.seats
+    expect(exported_oao[:oauth_app_id]).to eq oao.oauth_app_id
+    expect(exported_oao[:oauth_app_id]).to eq oao.oauth_app_id
+
+    fake_oao = Carto::OauthAppOrganization.new(
+      created_at: exported_oao[:created_at],
+      updated_at: exported_oao[:updated_at]
+    )
+
+    expect(fake_oao.created_at).to eq oao.created_at
+    expect(fake_oao.updated_at).to eq oao.updated_at
+  end
+
   def expect_redis_restored(org)
     expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username, org.name).get(:geocoder_here, :success_responses)).to eq(1)
     expect(CartoDB::GeocoderUsageMetrics.new(org.owner.username).get(:geocoder_here, :success_responses)).to eq(1)
@@ -287,7 +319,7 @@ describe Carto::OrganizationMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.2",
+      version: "1.0.3",
       organization: {
         id: "189d642c-c7da-40aa-bffd-517aa0eb7999",
         seats: 100,
@@ -381,13 +413,27 @@ describe Carto::OrganizationMetadataExportService do
             max_rows: 100000,
             provider_name: @connector_provider.name
           }
+        ],
+        oauth_app_organizations: [
+          {
+            oauth_app_id: @oauth_app.id,
+            seats: 5,
+            created_at: "2018-11-16T14:31:46+00:00",
+            updated_at: "2018-11-17T16:41:56+00:00"
+          }
         ]
       }
     }
   end
 
+  let(:full_export_one_zero_two) do
+    organizations_hash = full_export[:organization].except!(:oauth_app_organizations)
+    full_export[:organization] = organizations_hash
+    full_export
+  end
+
   let(:full_export_one_zero_one) do
-    organizations_hash = full_export[:organization].except!(:connector_configurations)
+    organizations_hash = full_export_one_zero_two[:organization].except!(:connector_configurations)
     full_export[:organization] = organizations_hash
     full_export
   end

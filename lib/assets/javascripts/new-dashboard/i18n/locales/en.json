@@ -70,7 +70,7 @@
     "zeroCase": {
       "title": "Upload, create or connect your first dataset",
       "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
-      "createDataset": "New Dataset"
+      "createDataset": "Create your first dataset"
     },
     "emptyState": "There are no datasets here."
   },

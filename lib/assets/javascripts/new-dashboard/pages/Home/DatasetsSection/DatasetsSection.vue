@@ -54,7 +54,7 @@
           </li>
         </ul>
 
-        <router-link :to="{ name: 'datasets' }" class="title is-small go-to-datasets">
+        <router-link :to="{ name: 'datasets' }" class="title is-small go-to-datasets" v-if="!isInitialState">
           {{ $t('HomePage.DatasetsSection.viewAll') }}
         </router-link>
       </div>

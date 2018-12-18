@@ -8,7 +8,8 @@ Development
 - /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 - Send org_admin parameter to central (#14483)
-- None yet
+- Add support for Node.js 10 and npm 6 (#14501).
+- Password validation against common passwords & usernames (#14522)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)

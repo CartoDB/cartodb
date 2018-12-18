@@ -2,7 +2,9 @@
 
 require 'securerandom'
 require_dependency 'google_plus_api'
-require_dependency 'carto/strong_password_validator'
+require_dependency 'carto/password_validator'
+require_dependency 'carto/strong_password_strategy'
+require_dependency 'carto/standard_password_strategy'
 require_dependency 'dummy_password_generator'
 
 # This class is quite coupled to UserCreation.
@@ -152,13 +154,17 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if requires_strong_password_validation?
-          password_validator = Carto::StrongPasswordValidator.new
-          password_errors = password_validator.validate(@user.password)
+        password_validator = if requires_strong_password_validation?
+                               Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
+                             else
+                               Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
+                             end
 
-          unless password_errors.empty?
-            @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
-          end
+        password = @user_params[PARAM_PASSWORD] || @user.password
+        password_errors = password_validator.validate(password, password, @user)
+
+        unless password_errors.empty?
+          @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
         end
       end
 

@@ -19,7 +19,7 @@ describe Visualization::Relator do
     @user = create_user({
         email: 'admin@cartotest.com',
         username: 'admin',
-        password: '123456'
+        password: '000123456'
       })
     @carto_user = Carto::User.find(@user.id)
   end

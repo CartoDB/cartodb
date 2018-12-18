@@ -521,7 +521,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
+    (old_password.present? && service.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -533,7 +533,7 @@ class Carto::User < ActiveRecord::Base
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, self.class.password_digest(value, salt), key)
+    validate_different_passwords(nil, service.class.password_digest(value, salt), key)
 
     errors[key].empty?
   end

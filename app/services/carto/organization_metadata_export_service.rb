@@ -55,11 +55,15 @@ module Carto
 
     def build_organization_from_hash(exported_organization)
       organization = Organization.new(exported_organization.slice(*EXPORTED_ORGANIZATION_ATTRIBUTES - [:id]))
-
       organization.assets = exported_organization[:assets].map { |asset| build_asset_from_hash(asset.symbolize_keys) }
       organization.groups = exported_organization[:groups].map { |group| build_group_from_hash(group.symbolize_keys) }
       organization.notifications = exported_organization[:notifications].map do |notification|
         build_notification_from_hash(notification.symbolize_keys)
+      end
+      if exported_organization[:oauth_app_organizations]
+        organization.oauth_app_organizations = exported_organization[:oauth_app_organizations].map do |oao|
+          build_oauth_app_organization_from_hash(oao.symbolize_keys)
+        end
       end
 
       organization.connector_configurations = build_connector_configurations_from_hash(
@@ -111,6 +115,16 @@ module Carto
         read_at: received_notification[:read_at]
       )
     end
+
+    def build_oauth_app_organization_from_hash(oao_hash)
+      Carto::OauthAppOrganization.new(
+        oauth_app_id: oao_hash[:oauth_app_id],
+        organization_id: oao_hash[:organization_id],
+        seats: oao_hash[:seats],
+        created_at: oao_hash[:created_at],
+        updated_at: oao_hash[:updated_at]
+      )
+    end
   end
 
   module OrganizationMetadataExportServiceExporter
@@ -139,6 +153,9 @@ module Carto
       organization_hash[:notifications] = organization.notifications.map { |n| export_notification(n) }
       organization_hash[:connector_configurations] = organization.connector_configurations.map do |cc|
         export_connector_configuration(cc)
+      end
+      organization_hash[:oauth_app_organizations] = organization.oauth_app_organizations.map do |n|
+        export_oauth_app_organization(oao)
       end
 
       organization_hash
@@ -178,6 +195,17 @@ module Carto
         user_id: received_notification.user_id,
         received_at: received_notification.received_at,
         read_at: received_notification.read_at
+      }
+    end
+
+    def export_oauth_app_organization(oao)
+      {
+        id: oao.id,
+        oauth_app_id: oao.oauth_app_id,
+        organization_id: oao.organization_id,
+        seats: oao.seats,
+        created_at: oao.created_at,
+        updated_at: oao.updated_at
       }
     end
   end

@@ -1,9 +1,8 @@
 <template>
-  <section class="welcome-first">
+  <section class="welcome-compact">
     <div class="container">
-      <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
-      <div class="welcome-first__text text is-caption">{{ text }}</div>
-      <div class="welcome-first__actions">
+      <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
+      <div class="welcome-compact__actions">
         <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
       </div>
@@ -15,7 +14,7 @@
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 
 export default {
-  name: 'WelcomeFirst',
+  name: 'WelcomeCompact',
   components: {
     CreateButton
   },
@@ -25,9 +24,6 @@ export default {
   computed: {
     greeting () {
       return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
-    },
-    text () {
-      return 'You have an [account plan] and you are a of [organization name]. Want to know more about your new dashboard?';
     }
   }
 };
@@ -36,33 +32,26 @@ export default {
 <style scoped lang="scss">
 @import "stylesheets/new-dashboard/variables";
 
-.welcome-first {
+.welcome-compact {
   position: relative;
-  top: 64px;
-  padding: 124px 0;
-  background: $primary-color;
-  color: $white;
-  text-align: center;
+  padding: 24px;
+  border-bottom: 1px solid #E6E8EB;
 
-  &__text {
-    max-width: 724px;
-    margin: 16px auto 48px;
+  &__greeting {
+    display: inline-block;
+    margin-right: 64px;
   }
 
   &__actions {
-    display: flex;
-    justify-content: center;
+    display: inline-flex;
   }
 
   .button {
-    border: 1px solid $white;
+    margin-right: 36px;
+    padding: 0;
     background: none;
-    color: $white;
+    color: #047AE6;
     text-transform: uppercase;
-
-    &:first-child {
-      margin-right: 36px;
-    }
   }
 }
 </style>

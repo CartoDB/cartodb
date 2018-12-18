@@ -25,6 +25,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -58,6 +59,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" isshared="true" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -88,6 +90,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -121,6 +124,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -157,6 +161,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -204,6 +209,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
   </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>

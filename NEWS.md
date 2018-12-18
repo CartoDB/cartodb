@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Password validation against common passwords & usernames (#14522)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)

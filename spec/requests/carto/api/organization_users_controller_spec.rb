@@ -168,7 +168,42 @@ describe Carto::Api::OrganizationUsersController do
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
-      last_response.body.include?('password is not present').should be true
+      last_response.body.include?("password can't be blank").should be true
+    end
+
+    it 'returns 410 if password is username' do
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: username }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?('must be different than the user name').should be true
+    end
+
+    it 'returns 410 if password is a common one' do
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: 'galina' }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?("can't be a common password").should be true
+    end
+
+    it 'returns 410 if password is not strong' do
+      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: 'galina' }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?('must be at least 8 characters long').should be true
+      Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'correctly creates a user' do
@@ -447,19 +482,60 @@ describe Carto::Api::OrganizationUsersController do
       login(@organization.owner)
 
       user_to_update = @organization.non_owner_users[0]
-      user_to_update.password = '12345678'
-      user_to_update.password_confirmation = '12345678'
+      user_to_update.password = '00012345678'
+      user_to_update.password_confirmation = '00012345678'
       user_to_update.save
       user_to_update.reload
       last_change = user_to_update.last_password_change_date
 
-      params = { password: '12345678' }
+      params = { password: '00012345678' }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
 
       last_response.status.should == 410
       user_to_update.reload
       expect(user_to_update.last_password_change_date.utc.to_s).to eq last_change.utc.to_s
+    end
+
+    it 'fails to update password if the same as username' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: user_to_update.username }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include 'must be different than the user name'
+    end
+
+    it 'fails to update password if it is a common one' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: 'galina' }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include "can't be a common password"
+    end
+
+    it 'fails to update password if strongs passwords enabled' do
+      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: 'galina' }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include 'password must be at least 8 characters long'
+      Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'should update email' do

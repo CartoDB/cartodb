@@ -54,6 +54,9 @@ class PasswordResetsController < ApplicationController
       return
     end
 
+    @user.valid_password?(:password, pw, pwc)
+    return render :edit unless @user.errors.empty?
+
     @user.password = pw
     @user.password_confirmation = pwc
     if @user.save

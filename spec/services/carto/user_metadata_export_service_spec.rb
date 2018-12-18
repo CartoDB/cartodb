@@ -398,12 +398,6 @@ describe Carto::UserMetadataExportService do
       expect(user.user_multifactor_auths).to be_empty
     end
 
-    if export[:oauth_apps]
-      expect_export_matches_oauth_apps(export[:oauth_apps].first, user.oauth_apps.first)
-    else
-      expect(user.oauth_apps).to be_empty
-    end
-
     if export[:oauth_app_users]
       expect_export_matches_oauth_app_users(export[:oauth_app_users].first, user.oauth_app_users.first)
     else
@@ -531,22 +525,6 @@ describe Carto::UserMetadataExportService do
     expect(fake_app.valid_to).to eq token.valid_to
     expect(fake_app.created_at).to eq token.created_at
     expect(fake_app.updated_at).to eq token.updated_at
-  end
-
-  def expect_export_matches_oauth_apps(exported_oauth_app, oauth_app)
-    expect(exported_oauth_app).to be_nil && return unless oauth_app
-
-    expect(exported_oauth_app[:id]).to eq oauth_app.id
-  end
-
-  def expect_export_matches_oauth_apps_dates(exported_oauth_app, oauth_app)
-    fake_oauth_app = Carto::OauthApp.new(
-      created_at: exported_oauth_app[:created_at],
-      updated_at: exported_oauth_app[:updated_at]
-    )
-
-    expect(fake_oauth_app.created_at).to eq oauth_app.created_at
-    expect(fake_oauth_app.updated_at).to eq oauth_app.updated_at
   end
 
   def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)
@@ -1081,16 +1059,6 @@ describe Carto::UserMetadataExportService do
           shared_secret: 'abcdefgh',
           type: 'totp'
         }],
-        # oauth_apps: [{
-        #   id: @oauth_app.id,
-        #   oauth_app_organizations: [{
-        #     oauth_app_id: @oauth_app.id,
-        #     organization_id: @organization.id,
-        #     seats: 5,
-        #     created_at: "2018-11-16T14:31:46+00:00",
-        #     updated_at: "2018-11-17T16:41:56+00:00"
-        #   }]
-        # }],
         oauth_app_users: [{
           id: "d881e0f1-cf35-4c35-b44a-6dc31608a435", # necessary for role creation
           oauth_app_id: @oauth_app.id,
@@ -1127,7 +1095,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_eight) do
-    user_hash = full_export[:user].except!(:oauth_apps, :oauth_app_users)
+    user_hash = full_export[:user].except!(:oauth_app_users)
 
     full_export[:user] = user_hash
     full_export

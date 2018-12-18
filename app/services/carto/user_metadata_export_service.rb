@@ -140,8 +140,6 @@ module Carto
 
       user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
-      user.oauth_apps = build_oauth_apps_from_hash(exported_user[:oauth_apps])
-
       user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
 
       # Must be the last one to avoid attribute assignments to try to run SQL
@@ -236,37 +234,7 @@ module Carto
       [client_application]
     end
 
-    def build_oauth_apps_from_hash(oauth_apps)
-      return [] unless oauth_apps
-      oauth_apps.map { |oauth_app| build_oauth_app_from_hash(oauth_app) }
-    end
 
-    def build_oauth_app_from_hash(oauth_app_hash)
-      # the OauthApp should be synchronized (exists in destination)
-      oauth_app = destination_oauth_app(oauth_app_hash)
-
-      if oauth_app_hash[:oauth_app_organizations]
-        oauth_app.oauth_app_organizations = oauth_app_hash[:oauth_app_organizations].map do |oao_hash|
-          build_oauth_app_organization_from_hash(oao_hash)
-        end
-      end
-
-      oauth_app
-    end
-
-    def destination_oauth_app(oauth_app_hash)
-      Carto::OauthApp.find(oauth_app_hash[:id])
-    end
-
-    def build_oauth_app_organization_from_hash(oao_hash)
-      Carto::OauthAppOrganization.new(
-        oauth_app_id: oao_hash[:oauth_app_id],
-        organization_id: oao_hash[:organization_id],
-        seats: oao_hash[:seats],
-        created_at: oao_hash[:created_at],
-        updated_at: oao_hash[:updated_at]
-      )
-    end
 
     def build_oauth_app_users_from_hash(oauth_app_users)
       return [] unless oauth_app_users
@@ -386,8 +354,6 @@ module Carto
       # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
       user_hash[:client_application] = export_client_application(::User[user.id].client_application)
 
-      user_hash[:oauth_apps] = user.oauth_apps.map { |oauth_app| export_oauth_app(oauth_app) }
-
       user_hash[:oauth_app_users] = user.oauth_app_users.map { |oau| export_oauth_app_user(oau) }
 
       user_hash
@@ -478,35 +444,6 @@ module Carto
         token: sync_oauth.token,
         created_at: sync_oauth.created_at,
         updated_at: sync_oauth.updated_at
-      }
-    end
-
-    def export_oauth_app(oauth_app)
-      oauth_app_organizations = oauth_app.oauth_app_organizations.map { |oao| export_oauth_app_organization(oao) }
-
-      {
-        id: oauth_app.id,
-        user_id: oauth_app.user_id,
-        name: oauth_app.name,
-        created_at: oauth_app.created_at,
-        updated_at: oauth_app.updated_at,
-        client_id: oauth_app.client_id,
-        client_secret: oauth_app.client_secret,
-        redirect_uris: oauth_app.redirect_uris,
-        icon_url: oauth_app.icon_url,
-        restricted: oauth_app.restricted,
-        oauth_app_organizations: oauth_app_organizations
-      }
-    end
-
-    def export_oauth_app_organization(oao)
-      {
-        id: oao.id,
-        oauth_app_id: oao.oauth_app_id,
-        organization_id: oao.organization_id,
-        seats: oao.seats,
-        created_at: oao.created_at,
-        updated_at: oao.updated_at
       }
     end
 

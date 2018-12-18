@@ -224,6 +224,7 @@ WORKING_SPECS_9 = \
 	spec/requests/superadmin/users_spec.rb \
 	spec/requests/superadmin/organizations_spec.rb \
 	spec/requests/superadmin/feature_flag_spec.rb \
+	spec/requests/superadmin/oauth_apps_spec.rb \
 	spec/requests/superadmin/platform_controller_spec.rb \
 	spec/requests/superadmin/account_types_spec.rb \
 	spec/requests/api/visualizations_spec.rb \
@@ -290,7 +291,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/services/carto/user_metadata_export_service_spec.rb \
 	spec/services/carto/organization_metadata_export_service_spec.rb \
 	spec/services/carto/redis_export_service_spec.rb \
-	spec/lib/carto/strong_password_validator_spec.rb \
+	spec/lib/carto/password_validator_spec.rb \
 	spec/lib/initializers/zz_patch_reconnect_spec.rb \
 	spec/lib/cartodb/redis_vizjson_cache_spec.rb \
 	spec/lib/carto/named_maps/template_spec.rb \

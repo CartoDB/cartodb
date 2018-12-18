@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :username="username"></WelcomeFirst>
     <WelcomeBasic v-if="!isFirst && !isCompact" :username="username" :notifications="notifications"></WelcomeBasic>
     <WelcomeCompact v-if="!isFirst && isCompact" :username="username"></WelcomeCompact>
-  </div>
+  </section>
 </template>
 
 <script>

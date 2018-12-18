@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatasetsList.vue should render properly 1`] = `
+<section>
+  <div class="grid-cell--noMargin grid-cell--col12">
+    <datasetlistheader-stub order="updated_at" orderdirection="desc"></datasetlistheader-stub>
+  </div>
+  <ul class="grid-cell--col12">
+    <li class="dataset-item">
+      <datasetcard-stub dataset="[object Object]"></datasetcard-stub>
+    </li>
+    <li class="dataset-item">
+      <datasetcard-stub dataset="[object Object]"></datasetcard-stub>
+    </li>
+  </ul>
+</section>
+`;

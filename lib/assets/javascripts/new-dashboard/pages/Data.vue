@@ -66,7 +66,7 @@
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
         <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
-          <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"></DatasetCard>
+          <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"  :selectMode="isSomeDatasetSelected"></DatasetCard>
         </li>
       </ul>
 
@@ -160,7 +160,10 @@ export default {
       return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingDatasets && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    isSomeDatasetSelected () {
+      return this.selectedDatasets.length > 0;
     }
   },
   methods: {
@@ -231,5 +234,9 @@ export default {
   &:not(:last-child) {
     border-bottom: 1px solid $light-grey;
   }
+}
+
+.empty-state {
+  margin: 20vh 0 8vh;
 }
 </style>

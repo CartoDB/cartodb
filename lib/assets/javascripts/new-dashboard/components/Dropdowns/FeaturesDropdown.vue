@@ -3,10 +3,18 @@
     <slot />
     <div class="dropdown-container">
       <ul class="list">
-        <li class="element" v-for="element in list" :key="element">
-          <router-link :to="{ name: linkRoute, params: routeParams(element) }" class="list-text text is-small">
+        <li class="element" v-for="element in list" :key="element.name || element">
+          <a :href="element.url" class="list-text text is-small" v-if="element.url">{{ element.name }}</a>
+
+          <router-link :to="{ name: linkRoute, params: routeParams(element) }" class="list-text text is-small" v-if="!element.url">
             {{ element }}
           </router-link>
+        </li>
+
+        <li class="element" v-if="$slots.footer" @click.stop.prevent="noop">
+          <span class="list-text text is-small footer">
+            <slot name="footer" />
+          </span>
         </li>
       </ul>
     </div>
@@ -14,7 +22,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'FeaturesDropdown',
   props: {
@@ -25,7 +32,8 @@ export default {
   methods: {
     routeParams (element) {
       return { [this.feature]: element };
-    }
+    },
+    noop () {}
   }
 };
 </script>
@@ -94,5 +102,10 @@ export default {
   &:last-of-type {
     padding-bottom: 8px;
   }
+}
+
+.footer {
+  color: $text-color;
+  cursor: default;
 }
 </style>

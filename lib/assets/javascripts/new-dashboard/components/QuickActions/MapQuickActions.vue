@@ -58,6 +58,7 @@ export default {
         },
         fetchList: () => {
           this.$store.dispatch('maps/fetchMaps');
+          this.$emit('dataChanged');
         }
       };
     },

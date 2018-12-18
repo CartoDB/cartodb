@@ -986,4 +986,51 @@ shared_examples_for "user models" do
       end
     end
   end
+
+  describe '#valid_password?' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns true if the password is valid' do
+      result = @user.valid_password?(:password, 'new_password', 'new_password')
+
+      result.should be_true
+    end
+
+    it 'returns false if the passwords do not match' do
+      result = @user.valid_password?(:password, 'new_password', 'other')
+
+      result.should be_false
+    end
+  end
+
+  describe '#valid_password_confirmation' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns true if the password is valid' do
+      @user.password = 'new_password'
+      @user.save
+
+      result = @user.valid_password_confirmation('new_password')
+
+      result.should be_true
+    end
+
+    it 'returns false if the passwords is not correct' do
+      result = @user.valid_password_confirmation('wrong_pass')
+
+      result.should be_false
+    end
+  end
 end

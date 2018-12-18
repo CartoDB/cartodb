@@ -6,7 +6,7 @@ describe UserTable do
   before(:all) do
     bypass_named_maps
 
-    @user = create_user(email: 'admin@cartotest.com', username: 'admin', password: '123456')
+    @user = create_user(email: 'admin@cartotest.com', username: 'admin', password: '000123456')
     @carto_user = Carto::User.find(@user.id)
 
     @user_table = ::UserTable.new

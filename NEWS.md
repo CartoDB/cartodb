@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
 
 ### Bug fixes / enhancements

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.11",
+  "version": "1.0.0-assets.19",
   "dependencies": {
     "@carto/carto.js": {
       "version": "4.1.8",

@@ -178,6 +178,13 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.8 (without oauth_apps and oauth_app_users)' do
+      user = test_import_user_from_export(full_export_one_zero_eight)
+
+      expect(user.oauth_apps).to be_empty
+      expect(user.oauth_app_users).to be_empty
+    end
+
     it 'imports 1.0.7 (without user_multifactor_auths)' do
       user = test_import_user_from_export(full_export_one_zero_seven)
 

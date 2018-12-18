@@ -24,7 +24,7 @@
         <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
           {{ dataset.name }}
         </h3>
-        <span class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>

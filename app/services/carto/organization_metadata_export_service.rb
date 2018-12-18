@@ -154,7 +154,7 @@ module Carto
       organization_hash[:connector_configurations] = organization.connector_configurations.map do |cc|
         export_connector_configuration(cc)
       end
-      organization_hash[:oauth_app_organizations] = organization.oauth_app_organizations.map do |n|
+      organization_hash[:oauth_app_organizations] = organization.oauth_app_organizations.map do |oao|
         export_oauth_app_organization(oao)
       end
 

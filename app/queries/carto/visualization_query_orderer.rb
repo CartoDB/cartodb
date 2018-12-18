@@ -34,7 +34,7 @@ class Carto::VisualizationQueryOrderer
 
     orders.each_with_index do |order, index|
       order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
-      @order_hash[order] = directions[index] || DEFAULT_ORDER_DIRECTION
+      @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
     end
     @order_hash
   end

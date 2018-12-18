@@ -93,7 +93,7 @@ export default {
       type: Boolean,
       default: true
     },
-    preventClick: {
+    selectMode: {
       type: Boolean,
       default: false
     }
@@ -161,7 +161,7 @@ export default {
       return totalViews;
     },
     showInteractiveElements () {
-      return !this.$props.preventClick;
+      return !this.$props.selectMode;
     }
   },
   methods: {
@@ -201,7 +201,7 @@ export default {
       deleteMapLike: 'maps/deleteLike'
     }),
     onClick (event) {
-      if (this.$props.preventClick) {
+      if (this.$props.selectMode) {
         event.preventDefault();
         this.toggleSelection();
       }

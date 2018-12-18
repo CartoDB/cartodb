@@ -110,7 +110,7 @@ export default {
       type: Boolean,
       default: true
     },
-    preventClick: {
+    selectMode: {
       type: Boolean,
       default: false
     }
@@ -164,7 +164,7 @@ export default {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
     },
     showInteractiveElements () {
-      return !this.$props.preventClick;
+      return !this.$props.selectMode;
     },
     dependentVisualizationsWithUrl () {
       return this.$props.dataset.dependent_visualizations.map(visualization => {
@@ -214,7 +214,7 @@ export default {
       deleteLikeDataset: 'datasets/deleteLike'
     }),
     onClick (event) {
-      if (this.$props.preventClick) {
+      if (this.$props.selectMode) {
         event.preventDefault();
         this.toggleSelection();
       }

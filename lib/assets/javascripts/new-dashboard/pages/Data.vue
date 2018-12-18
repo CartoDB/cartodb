@@ -66,7 +66,7 @@
 
       <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
         <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
-          <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"  :preventClick="isSomeDatasetSelected"></DatasetCard>
+          <DatasetCard :dataset="dataset" :isSelected="isDatasetSelected(dataset)" @toggleSelection="toggleSelected"  :selectMode="isSomeDatasetSelected"></DatasetCard>
         </li>
       </ul>
 

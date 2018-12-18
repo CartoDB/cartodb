@@ -75,6 +75,7 @@
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
     <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
       <DatasetQuickActions
         v-if="showInteractiveElements"
         :dataset="dataset"
@@ -475,5 +476,11 @@ export default {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+.quick-actions-placeholder {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 </style>

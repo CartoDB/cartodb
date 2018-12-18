@@ -7,13 +7,24 @@ Development
 ### Features
 - Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- OAuth public release (WIP):
-  - Sync `oauth_apps` with Central (#14493)
+- Add support for Node.js 10 and npm 6 (#14501).
+- Password validation against common passwords & usernames (#14522)
 
 ### Bug fixes / enhancements
-- Request login when reactivating mfa from account (#14509)
-- Added new security header X-Content-Type-Options (#14530)
-- Fix OAuth consent screen when not logged in (#14518)
+- Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+
+4.23.4 (2018-12-18)
+-------------------
+
+### Features
+* OAuth public release (WIP):
+  * Sync `oauth_apps` with Central (#14493)
+
+### Bug fixes / enhancements
+* Fix baseurl in datasets public dashboard page (#14524)
+* Request login when reactivating mfa from account (#14509)
+* Added new security header X-Content-Type-Options (#14530)
+* Fix OAuth consent screen when not logged in (#14518)
 
 4.23.3 (2018-12-03)
 -------------------

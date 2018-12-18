@@ -72,6 +72,27 @@ describe CartoGearsApi::Users::UsersService do
         }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /blank/)
       end
 
+      it 'raises a validation error if the new password is the same as the username' do
+        expect {
+          service.change_password(@user.id, @user.username)
+        }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /must be different than the user name/)
+      end
+
+      it 'raises a validation error if the new password is a common one' do
+        expect {
+          service.change_password(@user.id, 'galina')
+        }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /can't be a common password/)
+      end
+
+      it 'raises a validation error if the new password is not strong' do
+        expect {
+          organization = mock
+          organization.stubs(:strong_passwords_enabled).returns(true)
+          User.any_instance.stubs(:organization).returns(organization)
+          service.change_password(@user.id, 'galinaa')
+        }.to raise_error(CartoGearsApi::Errors::ValidationFailed, /must be at least 8 characters long/)
+      end
+
       it 'raises a validation error if the new password is too short' do
         expect {
           service.change_password(@user.id, 'a')

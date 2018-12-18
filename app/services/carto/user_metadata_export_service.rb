@@ -234,8 +234,6 @@ module Carto
       [client_application]
     end
 
-
-
     def build_oauth_app_users_from_hash(oauth_app_users)
       return [] unless oauth_app_users
       oauth_app_users.map { |oau| build_oauth_app_user_from_hash(oau) }

@@ -236,7 +236,7 @@ export default {
   background-color: $white;
 
   &.dataset-row--selected {
-    box-shadow: inset 0 0 0 1px $primary-color;
+    box-shadow: 0 0 0 1px $primary-color;
   }
 
   &.dataset-row--quick-actions-open,

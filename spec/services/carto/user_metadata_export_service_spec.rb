@@ -14,8 +14,8 @@ describe Carto::UserMetadataExportService do
     @feature_flag = FactoryGirl.create(:carto_feature_flag)
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     @connector_provider = FactoryGirl.create(:connector_provider)
-    @user = FactoryGirl.create(:carto_user)
-    @oauth_app = FactoryGirl.create(:oauth_app, user: @user)
+    user = FactoryGirl.create(:carto_user)
+    @oauth_app = FactoryGirl.create(:oauth_app, user: user)
   end
 
   after(:all) do

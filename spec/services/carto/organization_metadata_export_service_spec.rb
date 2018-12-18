@@ -8,7 +8,8 @@ describe Carto::OrganizationMetadataExportService do
 
   before(:all) do
     @connector_provider = FactoryGirl.create(:connector_provider)
-    @oauth_app = FactoryGirl.create(:oauth_app)
+    user = FactoryGirl.create(:carto_user)
+    @oauth_app = FactoryGirl.create(:oauth_app, user: user)
   end
 
   after(:all) do

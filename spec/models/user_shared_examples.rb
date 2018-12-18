@@ -1020,7 +1020,7 @@ shared_examples_for "user models" do
 
     it 'returns true if the password is valid' do
       @user.password = 'new_password'
-      @user.save!
+      @user.save
 
       result = @user.valid_password_confirmation('new_password')
 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
+  <defs>
+    <path class="navbar-iconFill" d="M19.7 9.3l-9-9a1 1 0 0 0-1.4 0l-9 9A1 1 0 0 0 1 11h2v8h5v-5h4v5h5v-8h2a1 1 0 0 0 .7-1.7z" id="a" style=""></path>
+    <clipPath id="b">
+      <use xlink:href="#a"></use>
+    </clipPath>
+  </defs>
+  <use xlink:href="#a" fill="transparent" clip-path="url(#b)" stroke-width="4" stroke="#fff" stroke-miterlimit="10"></use>
+</svg>

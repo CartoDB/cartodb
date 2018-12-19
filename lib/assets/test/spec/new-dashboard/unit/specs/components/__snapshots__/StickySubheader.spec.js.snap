@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StickySubheader.vue should have is-visible class when isVisible is true 1`] = `
+<section class="sticky-subheader is-visible">
+  <div class="container subheader-container"></div>
+</section>
+`;
+
+exports[`StickySubheader.vue should render correct contents 1`] = `
+<section class="sticky-subheader">
+  <div class="container subheader-container">
+    <div class="default-slot"></div>
+  </div>
+</section>
+`;

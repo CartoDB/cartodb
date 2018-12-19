@@ -1,0 +1,15 @@
+[{
+    "html_body": "<p>Im an unread notification, I have bold text and a green dot on top.</p>",
+    "icon": "alert",
+    "id": "288dfe6e-1a9d-4157-bd36-41cd8459af62",
+    "read_at": null,
+    "received_at": "2018-11-20T15:28:21.792Z"
+  },
+  {
+    "html_body": "<p>Im a notification that has ben read so I dont have a green dot.</p>",
+    "icon": "alert",
+    "id": "091a04a7-28d6-4fcf-bd8a-b1c34842bdb4",
+    "read_at": "2018-11-20T17:11:42.285Z",
+    "received_at": "2018-11-19T17:11:42.285Z"
+  }
+]

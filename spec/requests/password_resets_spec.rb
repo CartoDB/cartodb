@@ -64,8 +64,8 @@ feature "Forgot password" do
 
     visit edit_password_reset_path(@user.password_reset_token)
 
-    fill_in "carto_user_password", with: "newpass"
-    fill_in "carto_user_password_confirmation", with: "newpass"
+    fill_in "carto_user_password", with: "newpass2"
+    fill_in "carto_user_password_confirmation", with: "newpass2"
     click_button "Save"
 
     current_path.should == changed_password_reset_path

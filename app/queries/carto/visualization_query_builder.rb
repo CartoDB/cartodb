@@ -10,14 +10,12 @@ require_dependency 'carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = [ 'mapviews', 'likes', 'size' ]
-
   def self.user_public_tables(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
+    user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
 
   def self.user_public_visualizations(user)
-    self.user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
   end
 
   def self.user_all_visualizations(user)
@@ -28,22 +26,9 @@ class Carto::VisualizationQueryBuilder
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
 
-  PARTIAL_MATCH_QUERY = %Q{
-    to_tsvector(
-      'english', coalesce("visualizations"."name", '') || ' '
-      || coalesce("visualizations"."description", '')
-    ) @@ plainto_tsquery('english', ?)
-    OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
-  }
-
-  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
-
   def initialize
     @include_associations = []
     @eager_load_associations = []
-    @eager_load_nested_associations = {}
-    @order = {}
-    @off_database_order = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
     @excluded_kinds = []
@@ -128,11 +113,19 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_prefetch_table
-    with_eager_load_of_nested_associations(map: :user_table)
+    nested_association = { map: :user_table }
+    with_eager_load_of(nested_association)
+  end
+
+  def with_prefetch_dependent_visualizations
+    inner_visualization = { visualization: { map: { layers: :layers_user_tables } } }
+    nested_association = { map: { user_table: { layers: { maps: inner_visualization } } } }
+    with_eager_load_of(nested_association)
   end
 
   def with_prefetch_permission
-    with_eager_load_of_nested_associations(permission: :owner)
+    nested_association = { permission: :owner }
+    with_eager_load_of(nested_association)
   end
 
   def with_prefetch_external_source
@@ -165,23 +158,19 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_order(order, asc_desc = :asc)
-    offdb_order = offdatabase_order(order)
-    if offdb_order
-      @off_database_order[offdb_order] = asc_desc
-    else
-      @order[order] = asc_desc
-    end
+  def with_current_user_id(user_id)
+    @current_user_id = user_id
+  end
+
+  def with_order(order, direction = 'asc')
+    @order = order.to_s
+    @direction = direction.to_s
     self
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
+    @tainted_search_pattern = tainted_search_pattern
     self
-  end
-
-  def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)
@@ -227,7 +216,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(id: @id)
     end
 
-    if @excluded_ids and !@excluded_ids.empty?
+    if @excluded_ids && !@excluded_ids.empty?
       query = query.where('visualizations.id not in (?)', @excluded_ids)
     end
 
@@ -249,8 +238,8 @@ class Carto::VisualizationQueryBuilder
 
     if @liked_by_user_id
       query = query
-          .joins(:likes)
-          .where(likes: { actor: @liked_by_user_id })
+              .joins(:likes)
+              .where(likes: { actor: @liked_by_user_id })
     end
 
     if @shared_with_user_id
@@ -335,13 +324,11 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tainted_search_pattern
-      query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
+      query = Carto::VisualizationQuerySearcher.new(query).search(@tainted_search_pattern)
     end
 
     if @tags
-      @tags.each do |t|
-        t.downcase!
-      end
+      @tags.each(&:downcase!)
       query = query.where("array_to_string(visualizations.tags, ', ') ILIKE '%' || array_to_string(ARRAY[?]::text[], ', ') || '%'", @tags)
     end
 
@@ -364,7 +351,7 @@ class Carto::VisualizationQueryBuilder
       query = query.where(version: @version)
     end
 
-    if @only_published || @privacy == Carto::Visualization::PRIVACY_PUBLIC
+    if @only_published
       # "Published" is only required for builder maps
       # This SQL check should match Ruby `Carto::Visualization#published?` definition
       query = query.where(%{
@@ -379,26 +366,10 @@ class Carto::VisualizationQueryBuilder
       })
     end
 
-    @include_associations.each { |association|
-      query = query.includes(association)
-    }
+    query = query.includes(@include_associations)
+    query = query.eager_load(@eager_load_associations)
 
-    @eager_load_associations.each { |association|
-      query = query.eager_load(association)
-    }
-
-    query = query.eager_load(@eager_load_nested_associations) if @eager_load_nested_associations != {}
-
-    @order.each { |k, v|
-      query = query.order(k)
-      query = query.reverse_order if v == :desc
-    }
-
-    if @off_database_order.empty?
-      query
-    else
-      Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
-    end
+    order_query(query)
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -407,11 +378,11 @@ class Carto::VisualizationQueryBuilder
 
   private
 
-  def offdatabase_order(order)
-    return nil unless order.kind_of? String
-    fragments = order.split('.')
-    order_attribute = fragments[fragments.count - 1]
-    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
+  def order_query(query)
+    # Search has its own ordering criteria
+    return query if @tainted_search_pattern
+
+    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
 
   def with_include_of(association)
@@ -421,11 +392,6 @@ class Carto::VisualizationQueryBuilder
 
   def with_eager_load_of(association)
     @eager_load_associations << association
-    self
-  end
-
-  def with_eager_load_of_nested_associations(associations_hash)
-    @eager_load_nested_associations.merge!(associations_hash)
     self
   end
 

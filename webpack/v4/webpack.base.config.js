@@ -7,6 +7,9 @@ const { version } = require('../../package.json');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 const entryPoints = require('./entryPoints');
 
+const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
 const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
@@ -18,6 +21,7 @@ module.exports = {
     path: rootDir('public/assets')
   },
   resolve: {
+    extensions: ['.js', '.vue', '.json', '.scss'],
     symlinks: false,
     modules: require('../common/modules.js'),
     alias: require('../common/alias.js')
@@ -82,7 +86,9 @@ module.exports = {
         `${version}/javascripts/editor3.js`,
         `${version}/javascripts/editor3.js.map`
       ]
-    })
+    }),
+
+    new VueLoaderPlugin()
   ],
   optimization: {
     splitChunks: {
@@ -177,6 +183,7 @@ module.exports = {
           rootDir('lib/assets/javascripts/carto-node'),
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),
+          rootDir('lib/assets/javascripts/new-dashboard'),
           rootDir('node_modules/internal-carto.js')
         ],
         exclude: [
@@ -232,9 +239,24 @@ module.exports = {
           options: {
             name: `[name].[ext]`,
             outputPath: `${version}/images/`,
-            publicPath: `${http_path_prefix}/assets/${version}/fonts/`
+            publicPath: `${http_path_prefix}/assets/${version}/images/`
           }
         }
+      },
+
+      // New Dashboard Vue Configuration
+      {
+        test: /\.vue$/,
+        use: [
+
+          {
+            loader: 'vue-loader',
+            options: vueLoaderConfig
+          },
+          {
+            loader: 'vue-svg-inline-loader'
+          }
+        ]
       }
     ]
   },

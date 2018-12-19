@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Solutions.vue should render correct contents 1`] = `
+<section class="page is-bgSoftBlue">
+  <div class="container grid">
+    <h3 class="title is-body solutions-title">SolutionsPage.solutionsTitle</h3>
+    <p class="text is-caption solutions-description">SolutionsPage.solutionsDescription</p>
+    <ul class="grid-cell--col12 grid">
+      <li class="grid-cell--col12 solution-element">
+        <solutioncard-stub title="SolutionsPage.sitePlanning.title" description="SolutionsPage.sitePlanning.description" demourl="https://carto.com/demo/siteplanning-demo/" infourl="https://carto.com/solutions/site-planning/"><template></template> <template></template> <template></template></solutioncard-stub>
+      </li>
+      <li class="grid-cell--col12 solution-element">
+        <solutioncard-stub title="SolutionsPage.territoryManagement.title" description="SolutionsPage.territoryManagement.description" demourl="https://carto.com/demo/salesquest-demo/" infourl="https://carto.com/solutions/territory-management/"><template></template> <template></template> <template></template></solutioncard-stub>
+      </li>
+      <li class="grid-cell--col12 solution-element">
+        <solutioncard-stub title="SolutionsPage.logisticsOptimization.title" description="SolutionsPage.logisticsOptimization.description" demourl="https://carto.com/demo/logistic-demo/" infourl="https://carto.com/solutions/logistics-optimization/"><template></template> <template></template> <template></template></solutioncard-stub>
+      </li>
+    </ul>
+    <div class="talk-us-card">
+      <h3 class="title is-medium">SolutionsPage.talkUsTitle</h3>
+      <p class="text is-caption card-description">SolutionsPage.talkUsDescription</p>
+      <div class="talk-us-button"><a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration"><span>SolutionsPage.talkUsButton</span></a></div>
+    </div>
+  </div>
+</section>
+`;

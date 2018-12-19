@@ -1,11 +1,11 @@
 <template>
   <div class="grid container footer">
-    <div class="grid-cell grid-cell--col4">
+    <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo">
       <a href="https://carto.com">
         <img class="carto-logo" src="../assets/icons/common/cartoLogo.svg">
       </a>
     </div>
-    <div class="grid-cell grid-cell--col8">
+    <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
       <div class="footer-block">
         <a href="https://carto.com/help" class="footer-link">
           <h4 class="title-link title is-caption is-txtGrey">
@@ -95,17 +95,29 @@ export default {
 .footer {
   padding-top: 64px;
   padding-bottom: 100px;
+
+  @media (max-width: $layout-mobile) {
+    flex-direction: column-reverse;
+  }
 }
 
 .footer-block {
   display: flex;
   justify-content: space-between;
+
+  @media (max-width: $layout-mobile) {
+    flex-direction: column-reverse;
+  }
 }
 
 .footer-link {
   display: block;
   max-width: 285px;
   margin-bottom: 48px;
+
+  @media (max-width: $layout-mobile) {
+    max-width: unset;
+  }
 
   &:hover {
     text-decoration: none;
@@ -127,6 +139,13 @@ export default {
 
 .title-link {
   margin-bottom: 4px;
+}
+
+.footer-logo {
+  @media (max-width: $layout-mobile) {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .carto-logo {

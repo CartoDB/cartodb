@@ -2,8 +2,8 @@
 
 exports[`Footer.vue should render items for free users 1`] = `
 <div class="grid container footer">
-  <div class="grid-cell grid-cell--col4"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
-  <div class="grid-cell grid-cell--col8">
+  <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
@@ -32,8 +32,8 @@ exports[`Footer.vue should render items for free users 1`] = `
 
 exports[`Footer.vue should render items for organization users (no owner) 1`] = `
 <div class="grid container footer">
-  <div class="grid-cell grid-cell--col4"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
-  <div class="grid-cell grid-cell--col8">
+  <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
@@ -61,8 +61,8 @@ exports[`Footer.vue should render items for organization users (no owner) 1`] = 
 
 exports[`Footer.vue should render items for organization users (owner) 1`] = `
 <div class="grid container footer">
-  <div class="grid-cell grid-cell--col4"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
-  <div class="grid-cell grid-cell--col8">
+  <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
@@ -88,8 +88,8 @@ exports[`Footer.vue should render items for organization users (owner) 1`] = `
 
 exports[`Footer.vue should render items for pro users 1`] = `
 <div class="grid container footer">
-  <div class="grid-cell grid-cell--col4"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
-  <div class="grid-cell grid-cell--col8">
+  <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>

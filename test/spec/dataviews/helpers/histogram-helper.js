@@ -67,9 +67,9 @@ describe('dataview/helpers/histogram-helper', function () {
   describe('fillNumericBuckets', function () {
     it('should set as last bucket end the max value', function () {
       var buckets = [
-        {min: 0, freq: 1},
+        { min: 0, freq: 1 },
         {},
-        {max: 10, freq: 1}
+        { max: 10, freq: 1 }
       ];
       var start = 0;
       var width = 3.3333333333333;
@@ -77,6 +77,34 @@ describe('dataview/helpers/histogram-helper', function () {
 
       helper.fillNumericBuckets(buckets, start, width, numberOfBins);
       expect(buckets[2].end).toBe(10);
+    });
+
+    it('should work fine for just one bucket', function () {
+      var buckets = [
+        { min: 0, freq: 1 }
+      ];
+      var start = 0;
+      var width = 1;
+      var numberOfBins = 3;
+
+      helper.fillNumericBuckets(buckets, start, width, numberOfBins);
+      expect(buckets[2].end).toBe(3);
+    });
+
+    it('should work fine for buckets with negative values', function () {
+      var buckets = [
+        { min: -20, freq: 1 },
+        {},
+        { min: -10, freq: 1 },
+        { min: 0, freq: 1 },
+        { min: 10, freq: 2 }
+      ];
+      var start = -30;
+      var width = 15;
+      var numberOfBins = 4;
+
+      helper.fillNumericBuckets(buckets, start, width, numberOfBins);
+      expect(buckets[2].end).toBe(15);
     });
   });
 });

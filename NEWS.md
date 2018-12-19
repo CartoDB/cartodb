@@ -7,6 +7,7 @@ Development
 ### Features
 - OAuth public release (WIP):
   - Sync `oauth_apps` with Central (#14493)
+- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
 - Fix baseurl in datasets public dashboard page (#14524)

@@ -18,7 +18,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
     <!--story map plugin-->
     <script src="https://cdn.rawgit.com/jakobzhao/storymap/master/dist/storymap.2.3.js"></script>
-    
+
     <link href="../style.css" rel="stylesheet">
     <!--add required stylesheets-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
@@ -92,7 +92,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Description -->
     <aside class="toolbox">
       <div class="box">
@@ -100,9 +100,9 @@
           <h1>Storytelling map</h1>
           <button class="github-logo js-source-link"></button>
         </header>
-        <section>
+        <div>
           <p class="description open-sans">Storytelling map using Storymap.js and CARTO.js.</p>
-        </section>
+        </div>
         <footer class="js-footer"></footer>
       </div>
     </aside>
@@ -132,7 +132,7 @@
         });
 
         const source = new carto.source.SQL(`
-            SELECT * FROM ne_10m_populated_places_simple 
+            SELECT * FROM ne_10m_populated_places_simple
             WHERE adm0name IN ('Spain', 'Portugal', 'France')
         `);
         // define CartoCSS code to style data on map
@@ -149,14 +149,14 @@
                 marker-fill: #b3cde3;
                 marker-allow-overlap: true;
             }
-            
+
         `);
         // create CARTO layer from source and style variables
         const Cartolayer = new carto.layer.Layer(source, style);
 
         // add CARTO layer to the client
         client.addLayer(Cartolayer);
-        
+
         // define layers that will be used on the map
         var layers = {
             cartoLayer: {
@@ -166,7 +166,7 @@
                 layer: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png')
             }
         };
-        
+
         // initializaze storymap
         $('#storymap').storymap({
             scenes: scenes,
@@ -188,7 +188,7 @@
                 return map;
             }
         });
-        
+
     </script>
   </body>
 </html>

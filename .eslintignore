@@ -8,6 +8,7 @@
 /lib/assets/javascripts/vendor/jquery-ui.js
 /lib/assets/test/lib
 /lib/assets/test/spec/cartodb
+/lib/assets/test/spec/new-dashboard/coverage
 /lib/assets/test/spec/node_modules
 /lib/assets/test/spec/SpecHelper.js
 /lib/assets/test/spec/SpecHelper3.js

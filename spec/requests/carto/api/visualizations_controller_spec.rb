@@ -328,7 +328,15 @@ describe Carto::Api::VisualizationsController do
     end
 
     it 'returns success, empty response for empty user' do
-      response_body.should == { 'visualizations' => [], 'total_entries' => 0, 'total_user_entries' => 0, 'total_likes' => 0, 'total_shared' => 0}
+      expected_response = {
+        'visualizations' => [],
+        'total_entries' => 0,
+        'total_user_entries' => 0,
+        'total_likes' => 0,
+        'total_shared' => 0,
+        'total_locked' => 0
+      }
+      response_body.should == expected_response
     end
 
     it 'returns valid information for a user with one table' do
@@ -359,6 +367,7 @@ describe Carto::Api::VisualizationsController do
       response['total_user_entries'].should eq 1
       response['total_likes'].should eq 0
       response['total_shared'].should eq 0
+      response['total_locked'].should eq 0
     end
 
     it 'returns liked count' do
@@ -366,6 +375,15 @@ describe Carto::Api::VisualizationsController do
       vis.add_like_from(@user_1.id)
 
       response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_likes'].should == 1
+    end
+
+    it 'returns locked count' do
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: false).store
+      FactoryGirl.build(:derived_visualization, user_id: @user_1.id, locked: true).store
+      user2 = FactoryGirl.create(:valid_user)
+      FactoryGirl.build(:derived_visualization, user_id: user2.id, locked: true).store
+
+      response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_locked'].should == 1
     end
 
     it 'does a partial match search' do
@@ -469,7 +487,6 @@ describe Carto::Api::VisualizationsController do
     after(:all) do
       @user_1.destroy
       @user_2.destroy
-      @feature_flag.destroy
     end
 
     it 'tests exclude_shared and only_shared filters' do
@@ -950,6 +967,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 1
         body['total_likes'].should eq 0
         body['total_shared'].should eq 0
+        body['total_locked'].should eq 0
         vis = body['visualizations'].first
         vis['id'].should eq u1_t_1_id
 
@@ -959,6 +977,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 1
         body['total_likes'].should eq 0
         body['total_shared'].should eq 0
+        body['total_locked'].should eq 0
         vis = body['visualizations'].first
         vis['id'].should eq u1_vis_1_id
 
@@ -979,6 +998,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 2
         body['total_likes'].should eq 0
         body['total_shared'].should eq 1
+        body['total_locked'].should eq 0
 
         # Share u2 vis2 with u1
         put api_v1_permissions_update_url(user_domain: @org_user_2.username, api_key: @org_user_2.api_key, id: u2_vis_2_perm_id),
@@ -997,6 +1017,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
 
@@ -1006,6 +1027,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         # Multiple likes to same vis shouldn't increment total as is per vis
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_vis_1_id, api_key: @org_user_1.api_key)
@@ -1016,6 +1038,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
 
         # Share u2 table1 with org
@@ -1034,6 +1057,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 2
         body['total_likes'].should eq 0
         body['total_shared'].should eq 1
+        body['total_locked'].should eq 0
 
         # Share u2 table2 with org
         put api_v1_permissions_update_url(user_domain:@org_user_2.username, api_key: @org_user_2.api_key, id: u2_t_2_perm_id),
@@ -1051,6 +1075,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 0
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
         body['visualizations'][0]['table']['name'].should == "\"#{@org_user_2.database_schema}\".#{u2_t_2.name}"
 
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_1.api_key)
@@ -1061,6 +1086,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
 
         # Multiple likes to same table shouldn't increment total as is per vis
         post api_v1_visualizations_add_like_url(user_domain: @org_user_1.username, id: u1_t_1_id, api_key: @org_user_2.api_key)
@@ -1071,6 +1097,7 @@ describe Carto::Api::VisualizationsController do
         body['total_entries'].should eq 3
         body['total_likes'].should eq 1
         body['total_shared'].should eq 2
+        body['total_locked'].should eq 0
       end
 
     end
@@ -2042,7 +2069,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    describe 'tests visualization listing filters' do
+    describe 'filters' do
       before(:each) do
         bypass_named_maps
         delete_user_data(@user_1)
@@ -2088,6 +2115,38 @@ describe Carto::Api::VisualizationsController do
         collection  = response.fetch('visualizations')
         collection.length.should eq 1
         collection.first['id'].should == vis_1_id
+      end
+
+      context 'only_published' do
+        before(:each) do
+          carto_user = Carto::User.find(@user_1.id)
+          unpublished_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC, version: 3 }
+          _, _, _, @unpublished_viz = create_full_visualization(carto_user, visualization_attributes: unpublished_attrs)
+          published_attrs = { privacy: Carto::Visualization::PRIVACY_PUBLIC }
+          _, _, _, @published_viz = create_full_visualization(carto_user, visualization_attributes: published_attrs)
+        end
+
+        after(:each) do
+          @unpublished_viz.destroy
+          @published_viz.destroy
+        end
+
+        it 'filters with only_published = true' do
+          get api_v1_visualizations_index_url(api_key: @api_key, only_published: true), {}, @headers
+          last_response.status.should == 200
+          response    = JSON.parse(last_response.body)
+          collection  = response.fetch('visualizations')
+          collection.length.should eq 1
+          collection.first['id'].should == @published_viz.id
+        end
+
+        it 'does not filter without it' do
+          get api_v1_visualizations_index_url(api_key: @api_key), {}, @headers
+          last_response.status.should == 200
+          response    = JSON.parse(last_response.body)
+          collection  = response.fetch('visualizations')
+          collection.length.should eq 2
+        end
       end
 
     end
@@ -2709,43 +2768,6 @@ describe Carto::Api::VisualizationsController do
       @user.destroy
     end
 
-    it 'orders remotes by size with external sources size' do
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu1').to_json, @headers
-      vis_1_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_1_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1,
-        size: 100).save
-
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu2').to_json, @headers
-      vis_2_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_2_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1,
-        size: 200).save
-
-      post api_v1_visualizations_create_url(api_key: @user.api_key),
-           factory(@user, locked: true, type: 'remote', display_name: 'visu3').to_json, @headers
-      vis_3_id = JSON.parse(last_response.body).fetch('id')
-      Carto::ExternalSource.new(
-        visualization_id: vis_3_id,
-        import_url: 'http://www.fake.com',
-        rows_counted: 1, size: 10).save
-
-      get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote', order: 'size'), {}, @headers
-      last_response.status.should == 200
-      response    = JSON.parse(last_response.body)
-      collection  = response.fetch('visualizations')
-      collection.length.should eq 3
-      collection[0]['id'].should == vis_2_id
-      collection[1]['id'].should == vis_1_id
-      collection[2]['id'].should == vis_3_id
-    end
-
     it 'mixed types search should filter only remote without display name' do
       post api_v1_visualizations_create_url(api_key: @user.api_key),
            factory(@user, locked: true, type: 'table').to_json, @headers
@@ -2778,6 +2800,59 @@ describe Carto::Api::VisualizationsController do
       [vis_1_id, vis_2_id].include?(collection[1]['id']).should eq true
     end
 
+    context 'with_dependent_visualizations' do
+      before(:each) do
+        table_a = create_random_table(@user)
+        @visualization_a = table_a.table_visualization
+        Delorean.time_travel_to "2018/01/01 00:00:00" do
+          @dependencies = Array.new(3) do
+            Delorean.jump(1.day)
+            FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          end
+        end
+        Carto::Visualization.any_instance.stubs(:dependent_visualizations).returns(@dependencies)
+      end
+
+      it 'does not return the dependent visualizations by default' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table',
+                                            order: 'dependent_visualizations'), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations_count'].should be_nil
+        collection[0]['dependent_visualizations'].should be_nil
+      end
+
+      it 'does not return the dependent visualizations if with_dependent_visualizations = 0' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                            with_dependent_visualizations: 0), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations_count'].should be_nil
+        collection[0]['dependent_visualizations'].should be_nil
+      end
+
+      it 'returns the 2 most recent dependent visualizations when with_dependent_visualizations = 2' do
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                            with_dependent_visualizations: 2), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 1
+        collection[0]['dependent_visualizations_count'].should eql 3
+        collection[0]['dependent_visualizations'].length.should eq 2
+        collection[0]['dependent_visualizations'].first['id'].should eql @dependencies[2].id
+        collection[0]['dependent_visualizations'].first['name'].should_not be_nil
+        collection[0]['dependent_visualizations'].second['id'].should eql @dependencies[1].id
+        collection[0]['dependent_visualizations'].second['name'].should_not be_nil
+      end
+    end
 
     context 'ordering' do
       it 'returns the expected status' do
@@ -2853,6 +2928,183 @@ describe Carto::Api::VisualizationsController do
         collection.length.should eq 2
         collection[0]['id'].should eq visualization_a.id
         collection[1]['id'].should eq visualization_b.id
+      end
+
+      context 'by estimated row count' do
+        before(:each) do
+          @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          table = FactoryGirl.create(:table, user_id: @user.id)
+          table.insert_row!(name: 'name1')
+          table.update_table_pg_stats
+          @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
+        end
+
+        it 'orders descending by default' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              order: 'estimated_row_count'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders descending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
+                                              order_direction: 'desc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders ascending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
+                                              order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+      end
+
+      context 'by privacy' do
+        before(:each) do
+          link_privacy = Carto::Visualization::PRIVACY_LINK
+          public_privacy = Carto::Visualization::PRIVACY_PUBLIC
+          @visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: link_privacy).store
+          @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, privacy: public_privacy).store
+        end
+
+        it 'orders descending by default' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              order: 'privacy'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders descending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'privacy',
+                                              order_direction: 'desc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+
+        it 'orders ascending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'privacy',
+                                              order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+      end
+
+      context 'by dependent visualizations' do
+        before(:each) do
+          table_a = create_random_table(@user)
+          @visualization_a = table_a.table_visualization
+          dependent_visualization = FactoryGirl.create(:carto_visualization, user_id: @user.id)
+          dependent_visualization.map = FactoryGirl.create(:carto_map, user_id: @user.id)
+          dependent_visualization.save!
+          layer = FactoryGirl.build(:carto_layer)
+          layer.options[:table_name] = table_a.name
+          layer.save!
+          dependent_visualization.layers << layer
+          table_b = create_random_table(@user)
+          @visualization_b = table_b.table_visualization
+        end
+
+        it 'orders descending by default' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+
+        it 'orders descending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true,
+                                              order_direction: 'desc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+
+        it 'orders ascending' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'table', order: 'dependent_visualizations',
+                                              with_dependent_visualizations: true,
+                                              order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_b.id
+          collection[1]['id'].should eq @visualization_a.id
+        end
+      end
+
+      context 'by search rank' do
+        before(:each) do
+          @visualization_a = FactoryGirl.create(:carto_visualization, name: 'Best rank', user_id: @user.id).store
+          @visualization_b = FactoryGirl.create(:carto_visualization, name: 'Another rank, but not the best',
+                                                                      user_id: @user.id).store
+        end
+
+        it 'orders results by search rank when searching' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
+                                              q: 'Best rank'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
+
+        it 'ignores other ordering parameters' do
+          get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', q: 'Best rank',
+                                              order: 'name', order_direction: 'asc'), {}, @headers
+
+          last_response.status.should == 200
+          response = JSON.parse(last_response.body)
+          collection = response.fetch('visualizations')
+          collection.length.should eq 2
+          collection[0]['id'].should eq @visualization_a.id
+          collection[1]['id'].should eq @visualization_b.id
+        end
       end
 
       context 'error handling' do

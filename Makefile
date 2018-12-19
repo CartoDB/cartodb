@@ -345,6 +345,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/mailers/user_mailer_spec.rb \
 	spec/services/carto/user_multifactor_auth_update_service_spec.rb \
 	spec/gears/carto_gears_api/users_service_spec.rb \
+	spec/queries/carto/visualization_query_searcher_spec.rb \
 	spec/queries/carto/visualization_query_orderer_spec.rb \
 	$(NULL)
 
@@ -397,7 +398,7 @@ check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helpe
 
 check: prepare-test-db check-prepared check-gears
 check-frontend:
-	./node_modules/.bin/grunt test
+	npm run test
 
 
 # update cartodb.js submodule files

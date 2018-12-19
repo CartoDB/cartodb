@@ -385,12 +385,6 @@ class Carto::VisualizationQueryBuilder
     Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
 
-  def build_paged(page = 1, per_page = 20)
-    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
-  end
-
-  private
-
   def with_include_of(association)
     @include_associations << association
     self

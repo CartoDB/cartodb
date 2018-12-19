@@ -174,12 +174,6 @@ module.exports = DataviewModelBase.extend({
       helper.fillNumericBuckets(parsedData.data, start, width, numberOfBins);
     }
 
-    // FIXME - Update the end of last bin due https://github.com/CartoDB/cartodb.js/issues/926
-    var lastBucket = parsedData.data[numberOfBins - 1];
-    if (lastBucket && lastBucket.end < lastBucket.max) {
-      lastBucket.end = lastBucket.max;
-    }
-
     // if parse option is passed in the constructor, this._data is not created yet at this point
     this._data && this._data.reset(parsedData.data);
 

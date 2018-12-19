@@ -76,13 +76,8 @@ class Admin::PagesController < Admin::AdminController
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = Carto::VisualizationQueryBuilder.new
-                                                       .with_user_id(@viewed_user.id)
-                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
-                                                       .with_order(:updated_at, :desc)
-                                                       .without_raster
-                                                       .with_prefetch_user(true)
-                                                       .build
+      visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
+
     end
 
     @urls = visualizations.map { |vis|

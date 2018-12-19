@@ -51,7 +51,6 @@ module Carto
 
         param
       end
-
     end
   end
 end

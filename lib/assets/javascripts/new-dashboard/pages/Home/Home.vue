@@ -2,7 +2,7 @@
 <section class="page page--welcome">
   <Welcome />
   <MapsSection class="section" />
-  <DatasetsSection class="section" />
+  <DatasetsSection class="section section--noBorder" />
 </section>
 </template>
 

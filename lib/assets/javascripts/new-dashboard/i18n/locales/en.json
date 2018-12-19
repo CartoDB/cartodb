@@ -117,7 +117,7 @@
       "passwordPrivacy": "Password"
     },
     "order": {
-      "favourites": "Favourites first",
+      "favourites": "Favorites first",
       "views": "Most viewed first",
       "alphabetical": {
         "title": "Name",

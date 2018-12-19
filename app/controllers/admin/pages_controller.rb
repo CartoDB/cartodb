@@ -77,6 +77,7 @@ class Admin::PagesController < Admin::AdminController
       end
 
       visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
+
     end
 
     @urls = visualizations.map { |vis|

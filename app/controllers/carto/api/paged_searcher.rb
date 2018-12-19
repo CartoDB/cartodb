@@ -8,6 +8,7 @@ module Carto
                                      default_order_direction: 'desc', valid_order_combinations: [])
         page = (params[:page].presence || 1).to_i
         per_page = (params[:per_page].presence || default_per_page).to_i
+
         order = extract_param(name: :order, default_value: default_order, valid_values: valid_order_values,
                               valid_combinations: valid_order_combinations)
         order_direction = extract_param(name: :order_direction, default_value: default_order_direction,

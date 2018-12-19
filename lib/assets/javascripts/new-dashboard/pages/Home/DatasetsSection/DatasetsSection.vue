@@ -48,8 +48,8 @@
           @applyOrder="applyOrder">
         </DatasetsList>
 
-        <ul v-if="isFetchingDatasets" class="grid-cell--col12">
-          <li v-for="n in 6" :key="n" class="dataset-item">
+        <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
+          <li v-for="n in 8" :key="n" class="dataset-item">
             <DatasetCardFake></DatasetCardfake>
           </li>
         </ul>

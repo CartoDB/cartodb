@@ -237,9 +237,7 @@
         {
           "title": "Storymap using CARTO.js and Storymap.js",
           "desc": "Create a storytelling map using Storymap.js",
-          "file": {
-            "leaflet": "public/misc/storymap-leaflet.html"
-          }
+          "file": "public/misc/storymap-leaflet.html"
         }
       ]
     }

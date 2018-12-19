@@ -16,7 +16,7 @@
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
-        <img svg-inline src="../assets/icons/common/checkbox.svg">
+        <img svg-inline src="../../assets/icons/common/checkbox.svg">
       </span>
     </span>
 
@@ -29,7 +29,7 @@
         <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ map.name }}&nbsp;
           <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img svg-inline src="../assets/icons/common/favorite.svg">
+            <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </h2>
         <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
@@ -48,12 +48,12 @@
         </li>
 
         <li class="card-metadataItem text is-caption">
-          <span class="icon"><img inline-svg src="../assets/icons/maps/calendar.svg"></span>
+          <span class="icon"><img inline-svg src="../../assets/icons/maps/calendar.svg"></span>
           <p>{{ lastUpdated }}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">
-          <span class="icon"><img inline-svg src="../assets/icons/maps/tag.svg"></span>
+          <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in map.tags" :key="tag">
@@ -74,15 +74,15 @@
 </template>
 
 <script>
-import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import * as Visualization from 'new-dashboard/core/visualization';
-import FeaturesDropdown from './Dropdowns/FeaturesDropdown';
 import { mapActions } from 'vuex';
-import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import * as Visualization from 'new-dashboard/core/visualization';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
+import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
+import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 
 export default {
-  name: 'MapCard',
+  name: 'SimpleMapCard',
   props: {
     map: Object,
     isSelected: {
@@ -358,19 +358,19 @@ export default {
     }
 
     &.icon--private {
-      background-image: url("../assets/icons/maps/privacy/lock.svg");
+      background-image: url("../../assets/icons/maps/privacy/lock.svg");
     }
 
     &.icon--public {
-      background-image: url("../assets/icons/maps/privacy/public.svg");
+      background-image: url("../../assets/icons/maps/privacy/public.svg");
     }
 
     &.icon--link {
-      background-image: url("../assets/icons/maps/privacy/link.svg");
+      background-image: url("../../assets/icons/maps/privacy/link.svg");
     }
 
     &.icon--password {
-      background-image: url("../assets/icons/maps/privacy/password.svg");
+      background-image: url("../../assets/icons/maps/privacy/password.svg");
     }
 
     &.icon--sharedBy {

@@ -15,7 +15,7 @@
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
-          <img src="../assets/icons/section-title/map.svg">
+          <img src="../../assets/icons/section-title/map.svg">
         </template>
 
         <template slot="dropdownButton">
@@ -36,7 +36,7 @@
             @filterChanged="applyFilter"
             @orderChanged="applyOrder">
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
-            <img svg-inline v-else src="../assets/icons/common/filter.svg">
+            <img svg-inline v-else src="../../assets/icons/common/filter.svg">
           </SettingsDropdown>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
@@ -54,16 +54,16 @@
         </li>
       </ul>
 
-      <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
-        <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" :key="map.id">
-          <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
+      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
+        <li v-for="map in maps" :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" :key="map.id">
+          <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
         </li>
       </ul>
 
       <EmptyState
         :text="$t('MapsPage.emptyState')"
         v-if="emptyState">
-        <img svg-inline src="../assets/icons/common/compass.svg">
+        <img svg-inline src="../../assets/icons/common/compass.svg">
       </EmptyState>
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
@@ -73,19 +73,19 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import SettingsDropdown from '../components/Settings/Settings';
-import MapCard from '../components/MapCard';
-import MapCardFake from '../components/MapCardFake';
-import SectionTitle from '../components/SectionTitle';
-import StickySubheader from '../components/StickySubheader';
-import Pagination from 'new-dashboard/components/Pagination';
-import InitialState from 'new-dashboard/components/States/InitialState';
-import EmptyState from 'new-dashboard/components/States/EmptyState';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import { mapState } from 'vuex';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
+import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
+import MapCardFake from 'new-dashboard/components/MapCardFake';
+import Pagination from 'new-dashboard/components/Pagination';
+import SectionTitle from 'new-dashboard/components/SectionTitle';
+import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
+import StickySubheader from 'new-dashboard/components/StickySubheader';
 
 export default {
   name: 'MapsPage',
@@ -105,7 +105,10 @@ export default {
   data () {
     return {
       isScrollPastHeader: false,
-      selectedMaps: []
+      selectedMaps: [],
+      cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
+      inlineCSSClasses: 'card-condensed',
+      isCondensed: true
     };
   },
   mounted () {
@@ -230,5 +233,13 @@ export default {
 
 .empty-state {
   margin: 20vh 0 8vh;
+}
+
+.grid-column {
+  flex-direction: column;
+}
+
+.card-condensed {
+  border-bottom: 1px solid #EBEEF5;
 }
 </style>

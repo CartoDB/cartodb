@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import MapCard from 'new-dashboard/components/MapCard.vue';
+import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import MapCardFake from 'new-dashboard/components/MapCardFake.vue';
 
 export default {

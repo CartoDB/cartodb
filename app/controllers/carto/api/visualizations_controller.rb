@@ -53,15 +53,14 @@ module Carto
       before_filter :link_ghost_tables, only: [:index]
       before_filter :load_common_data, only: [:index]
 
-      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
-      rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited).freeze
-      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited).freeze
+      VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited estimated_row_count privacy
+                              dependent_visualizations).freeze
+      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited privacy).freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -86,7 +85,8 @@ module Carto
       def index
         opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
         page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
-        types, total_types = get_types_parameters
+        _, total_types = get_types_parameters
+
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new

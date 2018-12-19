@@ -29,7 +29,6 @@ class Carto::VisualizationQueryBuilder
   def initialize
     @include_associations = []
     @eager_load_associations = []
-    @eager_load_nested_associations = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
     @excluded_kinds = []
@@ -376,6 +375,8 @@ class Carto::VisualizationQueryBuilder
   def build_paged(page = 1, per_page = 20)
     build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
   end
+  
+  private
 
   def order_query(query)
     # Search has its own ordering criteria
@@ -383,8 +384,6 @@ class Carto::VisualizationQueryBuilder
 
     Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
-
-  private
 
   def with_include_of(association)
     @include_associations << association

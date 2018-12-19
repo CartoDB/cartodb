@@ -2855,46 +2855,6 @@ describe Carto::Api::VisualizationsController do
     end
 
     context 'ordering' do
-      it 'orders remotes by size with external sources size' do
-        vis1 = factory(@user, locked: true, type: 'remote', display_name: 'visu1')
-        post api_v1_visualizations_create_url(api_key: @user.api_key), vis1.to_json, @headers
-        vis1_id = JSON.parse(last_response.body).fetch('id')
-        Carto::ExternalSource.new(
-          visualization_id: vis1_id,
-          import_url: 'http://www.fake.com',
-          rows_counted: 1,
-          size: 100
-        ).save
-
-        vis2 = factory(@user, locked: true, type: 'remote', display_name: 'visu2')
-        post api_v1_visualizations_create_url(api_key: @user.api_key), vis2.to_json, @headers
-        vis2_id = JSON.parse(last_response.body).fetch('id')
-        Carto::ExternalSource.new(
-          visualization_id: vis2_id,
-          import_url: 'http://www.fake.com',
-          rows_counted: 1,
-          size: 200
-        ).save
-
-        vis3 = factory(@user, locked: true, type: 'remote', display_name: 'visu3')
-        post api_v1_visualizations_create_url(api_key: @user.api_key), vis3.to_json, @headers
-        vis3_id = JSON.parse(last_response.body).fetch('id')
-        Carto::ExternalSource.new(
-          visualization_id: vis3_id,
-          import_url: 'http://www.fake.com',
-          rows_counted: 1, size: 10
-        ).save
-
-        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'remote', order: 'size'), {}, @headers
-        last_response.status.should == 200
-        response    = JSON.parse(last_response.body)
-        collection  = response.fetch('visualizations')
-        collection.length.should eq 3
-        collection[0]['id'].should == vis2_id
-        collection[1]['id'].should == vis1_id
-        collection[2]['id'].should == vis3_id
-      end
-
       it 'returns the expected status' do
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: ''), {}, @headers
         last_response.status.should == 200

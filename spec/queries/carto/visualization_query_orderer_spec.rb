@@ -119,12 +119,20 @@ describe Carto::VisualizationQueryOrderer do
       expect(result.second.name).to eql @visualization_c.name
     end
 
-    it 'orders by favorited desc + name with default direction (asc)' do
+    it 'orders by favorited + name without direction (default direction = asc)' do
+      result = @orderer.order('favorited,name')
+
+      expect(result.size).to eql 3
+      expect(result.first.name).to eql @visualization_a.name
+      expect(result.second.name).to eql @visualization_b.name
+    end
+
+    it 'orders by favorited desc + name without direction (it takes the first direction)' do
       result = @orderer.order('favorited,name', 'desc')
 
       expect(result.size).to eql 3
-      expect(result.first.name).to eql @visualization_b.name
-      expect(result.second.name).to eql @visualization_c.name
+      expect(result.first.name).to eql @visualization_c.name
+      expect(result.second.name).to eql @visualization_b.name
     end
   end
 end

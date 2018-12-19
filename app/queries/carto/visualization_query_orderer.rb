@@ -4,8 +4,9 @@ require 'active_record'
 
 class Carto::VisualizationQueryOrderer
 
-  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes).freeze
-  VISUALIZATION_TABLE_ORDERS = %w(name updated_at).freeze
+  DEFAULT_ORDER_DIRECTION = 'asc'.freeze
+  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes estimated_row_count dependent_visualizations).freeze
+  VISUALIZATION_TABLE_ORDERS = %w(name updated_at privacy).freeze
 
   def initialize(query:, user_id: nil)
     @query = query
@@ -33,7 +34,7 @@ class Carto::VisualizationQueryOrderer
 
     orders.each_with_index do |order, index|
       order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
-      @order_hash[order] = directions[index] || "asc"
+      @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
     end
     @order_hash
   end

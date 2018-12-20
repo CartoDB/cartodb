@@ -103,7 +103,7 @@ describe Carto::UserMetadataExportService do
     oauth_app_user.oauth_access_tokens = [oauth_access_token]
     oauth_app_user.oauth_refresh_tokens = [oauth_refresh_token]
 
-    @user.oauth_app_users = [ oauth_app_user ]
+    @user.oauth_app_users = [oauth_app_user]
 
     @user.reload
   end

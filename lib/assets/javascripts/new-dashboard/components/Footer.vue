@@ -108,6 +108,10 @@ export default {
   @media (max-width: $layout-mobile) {
     flex-direction: column-reverse;
   }
+
+  .footer-link:first-child {
+    margin-right: 42px;
+  }
 }
 
 .footer-link {
@@ -115,8 +119,13 @@ export default {
   max-width: 285px;
   margin-bottom: 48px;
 
+  @media (max-width: $layout-tablet) {
+    max-width: calc(50% - 42px);
+  }
+
   @media (max-width: $layout-mobile) {
     max-width: unset;
+    margin-bottom: 36px;
   }
 
   &:hover {
@@ -150,5 +159,10 @@ export default {
 
 .carto-logo {
   width: 92px;
+
+  @media (max-width: $layout-mobile) {
+    width: 64px;
+    margin: 28px 0 16px;
+  }
 }
 </style>

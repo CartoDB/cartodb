@@ -93,6 +93,18 @@ describe Carto::UserMetadataExportService do
 
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
 
+    oauth_app_user = FactoryGirl.create(:oauth_app_users, oauth_app: @oauth_app, user: @user)
+    oauth_authorization_code = FactoryGirl.create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
+    api_key = FactoryGirl.create(:oauth_api_key, user: @user)
+    oauth_access_token = FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
+    oauth_refresh_token = FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
+
+    oauth_app_user.oauth_authorization_codes = [oauth_authorization_code]
+    oauth_app_user.oauth_access_tokens = [oauth_access_token]
+    oauth_app_user.oauth_refresh_tokens = [oauth_refresh_token]
+
+    @user.oauth_app_users = [ oauth_app_user ]
+
     @user.reload
   end
 
@@ -101,6 +113,11 @@ describe Carto::UserMetadataExportService do
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
+
+    user.oauth_app_users.each do |oau|
+      oau.skip_role_setup = true
+      oau.oauth_access_tokens.each { |oat| oat.api_key.skip_role_setup = true }
+    end
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     destroy_full_visualization(@map2, @table2, @table_visualization2, @visualization2)

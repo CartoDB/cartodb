@@ -410,6 +410,7 @@ module Carto
 
     def export_api_key(api_key)
       {
+        id: api_key.id,
         created_at: api_key.created_at,
         db_password: api_key.db_password,
         db_role: api_key.db_role,

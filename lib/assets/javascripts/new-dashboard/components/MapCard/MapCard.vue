@@ -52,10 +52,6 @@ export default {
         map: this.$props.map,
         isSelected: !this.$props.isSelected
       });
-    },
-    toggleFavorite () {
-      console.log('fav');
-      this.$props.map.liked ? this.deleteMapLike(this.$props.map) : this.likeMap(this.$props.map);
     }
   }
 };

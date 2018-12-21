@@ -73,19 +73,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import SettingsDropdown from '../components/Settings/Settings';
-import MapCard from '../components/MapCard';
-import MapCardFake from '../components/MapCardFake';
-import SectionTitle from '../components/SectionTitle';
-import StickySubheader from '../components/StickySubheader';
-import Pagination from 'new-dashboard/components/Pagination';
-import InitialState from 'new-dashboard/components/States/InitialState';
-import EmptyState from 'new-dashboard/components/States/EmptyState';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import { mapState } from 'vuex';
+import {shiftClick} from './click.service.js';
+import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
+import EmptyState from 'new-dashboard/components/States/EmptyState';
+import InitialState from 'new-dashboard/components/States/InitialState';
+import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
+import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
+import MapCardFake from 'new-dashboard/components/MapCardFake';
+import Pagination from 'new-dashboard/components/Pagination';
+import SectionTitle from 'new-dashboard/components/SectionTitle';
+import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
+import StickySubheader from 'new-dashboard/components/StickySubheader';
 
 export default {
   name: 'MapsPage',
@@ -183,6 +184,12 @@ export default {
       });
     },
     toggleSelected ({ map, isSelected }) {
+      if(event.shiftKey) {
+        const mapsArray = [...Object.values(this.maps)];
+        this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+        return;
+      } 
+
       if (isSelected) {
         this.selectedMaps.push(map);
         return;

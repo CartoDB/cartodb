@@ -1,6 +1,6 @@
 <template>
   <div class="grid container footer">
-    <div class="grid-cell grid-cell--col4 grid-cell--col3--tablet grid-cell--col12--mobile footer-logo">
+    <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo">
       <a href="https://carto.com">
         <img class="carto-logo" src="../assets/icons/common/cartoLogo.svg">
       </a>
@@ -120,7 +120,7 @@ export default {
   margin-bottom: 48px;
 
   @media (max-width: $layout-tablet) {
-    max-width: calc(50% - 42px);
+    max-width: 50%;
   }
 
   @media (max-width: $layout-mobile) {

@@ -345,8 +345,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/mailers/user_mailer_spec.rb \
 	spec/services/carto/user_multifactor_auth_update_service_spec.rb \
 	spec/gears/carto_gears_api/users_service_spec.rb \
-	spec/queries/carto/visualization_query_orderer_spec.rb \
 	spec/queries/carto/visualization_query_searcher_spec.rb \
+	spec/queries/carto/visualization_query_orderer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

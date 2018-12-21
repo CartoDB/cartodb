@@ -10,9 +10,10 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.0: export organization metadata
 # 1.0.1: export password expiration
 # 1.0.2: export connector configurations
+# 1.0.3: export oauth_app_organizations
 module Carto
   module OrganizationMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.2'.freeze
+    CURRENT_VERSION = '1.0.3'.freeze
     EXPORTED_ORGANIZATION_ATTRIBUTES = [
       :id, :seats, :quota_in_bytes, :created_at, :updated_at, :name, :avatar_url, :owner_id, :website, :description,
       :display_name, :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota, :auth_token,

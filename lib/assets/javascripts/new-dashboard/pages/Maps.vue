@@ -81,7 +81,7 @@ import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
+import MapCard from 'new-dashboard/components/MapCard.vue';
 import MapCardFake from 'new-dashboard/components/MapCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';

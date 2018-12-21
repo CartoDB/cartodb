@@ -99,12 +99,6 @@ describe Carto::UserMetadataExportService do
     oauth_access_token = FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
     oauth_refresh_token = FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
 
-    oauth_app_user.oauth_authorization_codes = [oauth_authorization_code]
-    oauth_app_user.oauth_access_tokens = [oauth_access_token]
-    oauth_app_user.oauth_refresh_tokens = [oauth_refresh_token]
-
-    @user.oauth_app_users = [oauth_app_user]
-
     @user.reload
   end
 

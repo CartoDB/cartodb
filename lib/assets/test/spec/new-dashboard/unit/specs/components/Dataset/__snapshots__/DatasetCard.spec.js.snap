@@ -18,9 +18,14 @@ exports[`DatasetCard.vue should add class selected to the card when the property
   <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
+    <!---->
+  </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -47,9 +52,14 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
   <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
+    <!---->
+  </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" isshared="true" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -73,9 +83,48 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
+    <!---->
+  </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
+    <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
+  </div>
+</a>
+`;
+
+exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
+<a href="http://example.com/tables/untitled_table_13" class="dataset-row dataset-row--can-hover">
+  <div class="dataset-cell cell--start">
+    <div class="row-dataType">
+      <div class="icon--dataType icon--point"></div>
+    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="dataset-cell cell--main">
+    <div class="title-container">
+      <h3 title="untitled_table_13" class="text is-caption is-txtGrey u-ellipsis row-title">
+        untitled_table_13
+      </h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
+    </div>
+    <!---->
+  </div>
+  <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+  <div class="dataset-cell cell--small">
+    <!---->
+    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey">
+          DatasetCard.maps
+        </span>
+      <!---->
+    </featuresdropdown-stub>
+  </div>
+  <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
+  <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -105,9 +154,14 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
   <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
+    <!---->
+  </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>
@@ -148,9 +202,14 @@ exports[`DatasetCard.vue should render tags 1`] = `
   <div class="dataset-cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">1 map</span></div>
+  <div class="dataset-cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
+    <!---->
+  </div>
   <div class="dataset-cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="dataset-cell">
+    <!---->
     <datasetquickactions-stub dataset="[object Object]" class="dataset--quick-actions"></datasetquickactions-stub>
   </div>
 </a>

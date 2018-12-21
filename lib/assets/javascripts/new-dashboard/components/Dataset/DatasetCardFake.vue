@@ -39,7 +39,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 80px;
+  height: 81px;
   padding: 22px 2px;
   background-color: $white;
 }

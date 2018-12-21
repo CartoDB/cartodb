@@ -15,8 +15,6 @@ module Carto
 
       before_filter :load_organization
 
-      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
-
       VALID_ORDER_PARAMS = [:id, :name, :type, :avatar_url, :organization_id, :updated_at].freeze
 
       def index
@@ -33,7 +31,7 @@ module Carto
         }, 200)
       rescue Carto::ParamInvalidError => e
         render json: { errors: e.message }, status: e.status
-      rescue => e
+      rescue StandardError => e
         CartoDB.notify_exception(e, { params: params })
         render json: { errors: e.message }, status: 500
       end

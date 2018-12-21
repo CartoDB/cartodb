@@ -34,7 +34,6 @@ export default {
 
 .welcome-compact {
   position: relative;
-  top: 64px;
   padding: 24px;
   border-bottom: 1px solid #E6E8EB;
 

@@ -1,7 +1,10 @@
 # encoding: utf-8
 
+require_dependency 'carto/base_password_strategy'
+
 module Carto
-  class StrongPasswordValidator
+  class StrongPasswordStrategy < BasePasswordStrategy
+
     DEFAULT_MIN_LENGTH = 8
     DEFAULT_MAX_LENGTH = 64
     DEFAULT_MIN_NUMBERS = 1
@@ -23,10 +26,9 @@ module Carto
       @min_numbers = min_numbers
     end
 
-    def validate(password)
-      password = '' if password.nil?
-
-      errors = []
+    def validate(password, password_confirmation, user = nil)
+      errors = super(password, password_confirmation, user)
+      return errors if password.nil?
 
       if password.length < @min_length
         errors << "must be at least #{@min_length} #{'character'.pluralize(@min_length)} long"
@@ -46,16 +48,6 @@ module Carto
       end
 
       errors
-    end
-
-    def formatted_error_message(errors)
-      return nil if errors.empty?
-      return errors.first if errors.size == 1
-
-      message = errors.select { |error| error != errors.last }.join(', ')
-      message << " and #{errors.last}"
-
-      message
     end
 
     private

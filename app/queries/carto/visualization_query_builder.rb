@@ -29,7 +29,6 @@ class Carto::VisualizationQueryBuilder
   def initialize
     @include_associations = []
     @eager_load_associations = []
-    @joins = []
     @filtering_params = {}
   end
 
@@ -220,11 +219,6 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_join(join)
-    @joins << join
-    self
-  end
-
   def with_preload(preload)
     @preload = preload
     self
@@ -233,7 +227,6 @@ class Carto::VisualizationQueryBuilder
   def with_associations(query)
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
-    query = query.joins(@join)
     query = query.preload(@preload)
     query = with_favorited(query)
     query = with_dependent_visualization_count(query)

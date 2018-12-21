@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  name: 'DatasetListHeader.',
+  name: 'DatasetListHeader',
   props: {
     order: String,
     orderDirection: String

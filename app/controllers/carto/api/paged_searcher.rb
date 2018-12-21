@@ -8,10 +8,12 @@ module Carto
                                      default_order_direction: 'desc', valid_order_combinations: [])
         page = (params[:page].presence || 1).to_i
         per_page = (params[:per_page].presence || default_per_page).to_i
-        order = order_from_params(valid_order_values, default_order: default_order,
-                                                      valid_order_combinations: valid_order_combinations)
-        order_direction = order_direction_from_params(default_order_direction: default_order_direction,
-                                                      valid_order_combinations: valid_order_combinations)
+
+        order = extract_param(name: :order, default_value: default_order, valid_values: valid_order_values,
+                              valid_combinations: valid_order_combinations)
+        order_direction = extract_param(name: :order_direction, default_value: default_order_direction,
+                                        valid_values: VALID_ORDER_DIRECTIONS,
+                                        valid_combinations: VALID_ORDER_DIRECTIONS)
 
         [page, per_page, order, order_direction]
       end
@@ -34,38 +36,20 @@ module Carto
         metadata
       end
 
-      def order_from_params(valid_order_values, default_order:, valid_order_combinations:)
-        order = (params[:order].presence || default_order).to_sym
-        order_array = order.to_s.split(',').map(&:to_sym)
-        single_parameter = valid_order_combinations.empty? || order_array.size == 1
-        multiple_parameter = valid_order_combinations.present? && order_array.size > 1
+      def extract_param(name:, default_value:, valid_values:, valid_combinations:)
+        param = (params[name].presence || default_value).to_sym
+        param_values = param.to_s.split(',').map(&:to_sym)
+        single_parameter = valid_combinations.empty? || param_values.size == 1
 
-        if single_parameter && valid_order_values.exclude?(order)
-          raise Carto::ParamInvalidError.new('order', valid_order_values)
+        if single_parameter && valid_values.exclude?(param)
+          raise Carto::ParamInvalidError.new(name, valid_values)
         end
 
-        if multiple_parameter && (order_array - valid_order_combinations).present?
-          raise Carto::ParamCombinationInvalidError.new('order', valid_order_combinations)
+        if !single_parameter && (param_values - valid_combinations).present?
+          raise Carto::ParamCombinationInvalidError.new(name, valid_combinations)
         end
 
-        order
-      end
-
-      def order_direction_from_params(default_order_direction:, valid_order_combinations:)
-        order_direction = (params[:order_direction].presence || default_order_direction).to_sym
-        order_direction_array = order_direction.to_s.split(',').map(&:to_sym)
-        single_parameter = valid_order_combinations.empty? || order_direction_array.size == 1
-        multiple_parameter = valid_order_combinations.present? && order_direction_array.size > 1
-
-        if single_parameter && VALID_ORDER_DIRECTIONS.exclude?(order_direction)
-          raise Carto::ParamInvalidError.new('order_direction', VALID_ORDER_DIRECTIONS)
-        end
-
-        if multiple_parameter && (order_direction_array - VALID_ORDER_DIRECTIONS).present?
-          raise Carto::ParamCombinationInvalidError.new('order_direction', VALID_ORDER_DIRECTIONS)
-        end
-
-        order_direction
+        param
       end
     end
   end

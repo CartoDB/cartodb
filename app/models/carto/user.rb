@@ -19,8 +19,6 @@ class Carto::User < ActiveRecord::Base
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
 
-  MIN_PASSWORD_LENGTH = 6
-  MAX_PASSWORD_LENGTH = 64
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
@@ -129,9 +127,16 @@ class Carto::User < ActiveRecord::Base
     name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end
 
+  def password_validator
+    if organization.try(:strong_passwords_enabled)
+      Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
+    else
+      Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
+    end
+  end
+
   def password=(value)
-    return if !value.nil? && value.length < MIN_PASSWORD_LENGTH
-    return if !value.nil? && value.length >= MAX_PASSWORD_LENGTH
+    return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
     self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
@@ -516,7 +521,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
+    (old_password.present? && service.class.password_digest(old_password, salt) == crypted_password) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -524,6 +529,28 @@ class Carto::User < ActiveRecord::Base
     valid = validate_old_password(password)
     errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
     valid
+  end
+
+  def valid_password?(key, value, confirmation_value)
+    password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
+    validate_different_passwords(nil, service.class.password_digest(value, salt), key)
+
+    errors[key].empty?
+  end
+
+  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
+    unless different_passwords?(old_password, new_password)
+      errors.add(key, 'New password cannot be the same as old password')
+    end
+    errors[key].empty?
+  end
+
+  def different_passwords?(old_password = nil, new_password = nil)
+    return true if new_record? || (@changing_passwords && !old_password)
+    old_password = crypted_password_was unless old_password.present?
+    new_password = crypted_password unless old_password.present? && new_password.present?
+
+    old_password.present? && old_password != new_password
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?

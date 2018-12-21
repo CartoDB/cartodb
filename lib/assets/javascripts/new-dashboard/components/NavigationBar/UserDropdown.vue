@@ -45,7 +45,7 @@
       </li>
     </ul>
     <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom" @click="linkClicked">
-      <div class="arrow"><img svg-inline src="../../assets/icons/navbar/dropdown/arrow-right.svg" /></div>
+      <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg" /></div>
       <div class="title is-small is-txtAlert">{{ $t('UserDropdown.logout') }}</div>
     </a>
   </div>
@@ -168,7 +168,7 @@ export default {
   & .arrow {
     margin-right: 8px;
 
-    svg {
+    img {
       vertical-align: middle;
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <a
-    :href="visualizationURL"
+    :href="item.url || visualizationURL"
     class="suggestions__item text is-caption"
     :class="`suggestions__item--${item.type}`"
     @click="onItemClicked">

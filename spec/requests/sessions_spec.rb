@@ -337,8 +337,8 @@ feature "Sessions" do
   end
 
   def send_login_form(user)
-    fill_in 'email', :with => user.email
-    fill_in 'password', :with => user.username
+    fill_in 'email', with: user.email
+    fill_in 'password', with: user.password
     click_link_or_button 'Log in'
   end
 

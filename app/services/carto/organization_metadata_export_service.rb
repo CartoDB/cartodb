@@ -201,7 +201,6 @@ module Carto
 
     def export_oauth_app_organization(oao)
       {
-        id: oao.id,
         oauth_app_id: oao.oauth_app_id,
         organization_id: oao.organization_id,
         seats: oao.seats,

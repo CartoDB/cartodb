@@ -546,28 +546,31 @@ describe Carto::UserMetadataExportService do
     expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
 
     expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
-    expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user)
+    expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user, oauth_app_user.id)
   end
 
-  def expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user)
+  def expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user, oauth_app_user_id)
     if exported_oauth_app_user[:oauth_authorization_codes]
       expect_export_matches_oauth_authorization_codes(
         exported_oauth_app_user[:oauth_authorization_codes].first,
-        oauth_app_user.oauth_authorization_codes.first
+        oauth_app_user.oauth_authorization_codes.first,
+        oauth_app_user_id
       )
     end
 
     if exported_oauth_app_user[:oauth_access_tokens]
       expect_export_matches_oauth_access_tokens(
         exported_oauth_app_user[:oauth_access_tokens].first,
-        oauth_app_user.oauth_access_tokens.first
+        oauth_app_user.oauth_access_tokens.first,
+        oauth_app_user_id
       )
     end
 
     if exported_oauth_app_user[:oauth_refresh_tokens]
       expect_export_matches_oauth_refresh_tokens(
         exported_oauth_app_user[:oauth_refresh_tokens].first,
-        oauth_app_user.oauth_refresh_tokens.first
+        oauth_app_user.oauth_refresh_tokens.first,
+        oauth_app_user_id
       )
     end
   end
@@ -582,9 +585,10 @@ describe Carto::UserMetadataExportService do
     expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
   end
 
-  def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code)
+  def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code, oauth_app_user_id)
     expect(exported_oauth_authorization_code).to be_nil && return unless oauth_authorization_code
 
+    expect(oauth_app_user_id).to eq oauth_authorization_code.oauth_app_user_id
     expect(exported_oauth_authorization_code[:scopes]).to eq oauth_authorization_code.scopes
     expect(exported_oauth_authorization_code[:code]).to eq oauth_authorization_code.code
     expect(exported_oauth_authorization_code[:redirect_uri]).to eq oauth_authorization_code.redirect_uri
@@ -600,10 +604,10 @@ describe Carto::UserMetadataExportService do
     expect(fake_oauth_authorization_code.created_at).to eq oauth_authorization_code.created_at
   end
 
-  def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token)
+  def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token, oauth_app_user_id)
     expect(exported_oauth_access_token).to be_nil && return unless oauth_access_token
 
-    expect(exported_oauth_access_token[:oauth_app_user_id]).to eq oauth_access_token.oauth_app_user_id
+    expect(oauth_app_user_id).to eq oauth_access_token.oauth_app_user_id
     expect(exported_oauth_access_token[:api_key_id]).to eq oauth_access_token.api_key_id
     expect(exported_oauth_access_token[:scopes]).to eq oauth_access_token.scopes
 
@@ -614,9 +618,10 @@ describe Carto::UserMetadataExportService do
     expect(fake_oauth_access_token.created_at).to eq oauth_access_token.created_at
   end
 
-  def expect_export_matches_oauth_refresh_tokens(exported_oauth_refresh_token, oauth_refresh_token)
+  def expect_export_matches_oauth_refresh_tokens(exported_oauth_refresh_token, oauth_refresh_token, oauth_app_user_id)
     expect(exported_oauth_refresh_token).to be_nil && return unless oauth_refresh_token
 
+    expect(oauth_app_user_id).to eq oauth_refresh_token.oauth_app_user_id
     expect(exported_oauth_refresh_token[:token]).to eq oauth_refresh_token.token
     expect(exported_oauth_refresh_token[:scopes]).to eq oauth_refresh_token.scopes
 
@@ -1079,10 +1084,10 @@ describe Carto::UserMetadataExportService do
           oauth_authorization_codes: [{
             scopes: ["datasets:r:test1"],
             code: "zzzz",
+            redirect_uri: "https://carto.com",
             created_at: "2018-11-16T14:31:46+00:00"
           }],
           oauth_access_tokens: [{
-            oauth_app_user_id: "d881e0f1-cf35-4c35-b44a-6dc31608a435",
             api_key_id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
             scopes: [
               "user:profile",

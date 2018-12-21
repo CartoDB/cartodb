@@ -243,7 +243,6 @@ module Carto
       oau = Carto::OauthAppUser.new(
         id: oau_hash[:id],
         oauth_app_id: oau_hash[:oauth_app_id],
-        user_id: oau_hash[:user_id],
         scopes: oau_hash[:scopes],
         created_at: oau_hash[:created_at],
         updated_at: oau_hash[:updated_at],
@@ -273,8 +272,6 @@ module Carto
 
     def build_oauth_authorization_code_from_hash(oac_hash)
       Carto::OauthAuthorizationCode.new(
-        id: oac_hash[:id],
-        oauth_app_user_id: oac_hash[:oauth_app_user_id],
         scopes: oac_hash[:scopes],
         code: oac_hash[:code],
         redirect_uri: oac_hash[:redirect_uri],
@@ -284,8 +281,6 @@ module Carto
 
     def build_oauth_access_token_from_hash(oat_hash)
       Carto::OauthAccessToken.new(
-        id: oat_hash[:id],
-        oauth_app_user_id: oat_hash[:oauth_app_user_id],
         api_key_id: oat_hash[:api_key_id],
         scopes: oat_hash[:scopes],
         created_at: oat_hash[:created_at],
@@ -295,7 +290,6 @@ module Carto
 
     def build_oauth_refresh_token_from_hash(ort_hash)
       Carto::OauthRefreshToken.new(
-        oauth_app_user_id: ort_hash[:oauth_app_user_id],
         token: ort_hash[:token],
         scopes: ort_hash[:scopes],
         created_at: ort_hash[:created_at],
@@ -454,7 +448,6 @@ module Carto
       {
         id: oau.id,
         oauth_app_id: oau.oauth_app_id,
-        user_id: oau.user_id,
         scopes: oau.scopes,
         created_at: oau.created_at,
         updated_at: oau.updated_at,
@@ -466,8 +459,6 @@ module Carto
 
     def export_oauth_authorization_code(oac)
       {
-        id: oac.id,
-        oauth_app_user_id: oac.oauth_app_user_id,
         scopes: oac.scopes,
         code: oac.code,
         redirect_uri: oac.redirect_uri,
@@ -477,8 +468,6 @@ module Carto
 
     def export_oauth_access_token(oat)
       {
-        id: oat.id,
-        oauth_app_user_id: oat.oauth_app_user_id,
         api_key_id: oat.api_key_id,
         scopes: oat.scopes,
         created_at: oat.created_at
@@ -487,7 +476,6 @@ module Carto
 
     def export_oauth_refresh_token(ort)
       {
-        oauth_app_user_id: ort.oauth_app_user_id,
         token: ort.token,
         scopes: ort.scopes,
         created_at: ort.created_at,

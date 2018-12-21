@@ -63,13 +63,16 @@ export default {
     user: Object
   },
   computed: {
+    userAccountType () {
+      return this.user.account_type.toLowerCase();
+    },
     isFreeUser () {
-      return this.user.account_type === 'free';
+      return this.userAccountType === 'free';
     },
 
     isProUser () {
       const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noProUsers.includes(this.user.account_type) || this.user.organization);
+      return !(noProUsers.includes(this.userAccountType) || this.user.organization);
     },
 
     isOrganizationUser () {
@@ -116,12 +119,8 @@ export default {
 
 .footer-link {
   display: block;
-  max-width: 285px;
+  max-width: 50%;
   margin-bottom: 48px;
-
-  @media (max-width: $layout-tablet) {
-    max-width: 50%;
-  }
 
   @media (max-width: $layout-mobile) {
     max-width: unset;

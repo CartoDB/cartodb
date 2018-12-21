@@ -94,10 +94,10 @@ describe Carto::UserMetadataExportService do
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
 
     oauth_app_user = FactoryGirl.create(:oauth_app_users, oauth_app: @oauth_app, user: @user)
-    oauth_authorization_code = FactoryGirl.create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
+    FactoryGirl.create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
     api_key = FactoryGirl.create(:oauth_api_key, user: @user)
-    oauth_access_token = FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
-    oauth_refresh_token = FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
+    FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
+    FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
 
     @user.reload
   end
@@ -585,23 +585,23 @@ describe Carto::UserMetadataExportService do
     expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
   end
 
-  def expect_export_matches_oauth_authorization_codes(exported_oauth_authorization_code, oauth_authorization_code, oauth_app_user_id)
-    expect(exported_oauth_authorization_code).to be_nil && return unless oauth_authorization_code
+  def expect_export_matches_oauth_authorization_codes(exported_oac, oac, oau_id)
+    expect(exported_oac).to be_nil && return unless oac
 
-    expect(oauth_app_user_id).to eq oauth_authorization_code.oauth_app_user_id
-    expect(exported_oauth_authorization_code[:scopes]).to eq oauth_authorization_code.scopes
-    expect(exported_oauth_authorization_code[:code]).to eq oauth_authorization_code.code
-    expect(exported_oauth_authorization_code[:redirect_uri]).to eq oauth_authorization_code.redirect_uri
+    expect(oauth_app_user_id).to eq oac.oauth_app_user_id
+    expect(exported_oac[:scopes]).to eq oac.scopes
+    expect(exported_oac[:code]).to eq oac.code
+    expect(exported_oac[:redirect_uri]).to eq oac.redirect_uri
 
-    expect_export_matches_oauth_authorization_codes_dates(exported_oauth_authorization_code, oauth_authorization_code)
+    expect_export_matches_oauth_authorization_codes_dates(exported_oac, oac)
   end
 
-  def expect_export_matches_oauth_authorization_codes_dates(exported_oauth_authorization_code, oauth_authorization_code)
+  def expect_export_matches_oauth_authorization_codes_dates(exported_oac, oac)
     fake_oauth_authorization_code = Carto::OauthAuthorizationCode.new(
-      created_at: exported_oauth_authorization_code[:created_at]
+      created_at: exported_oac[:created_at]
     )
 
-    expect(fake_oauth_authorization_code.created_at).to eq oauth_authorization_code.created_at
+    expect(fake_oauth_authorization_code.created_at).to eq oac.created_at
   end
 
   def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token, oauth_app_user_id)

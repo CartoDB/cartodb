@@ -86,6 +86,7 @@ import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
+import {shiftClick} from './click.service.js';
 
 export default {
   name: 'MapsPage',
@@ -186,6 +187,12 @@ export default {
       });
     },
     toggleSelected ({ map, isSelected }) {
+      if(event.shiftKey) {
+        const mapsArray = [...Object.values(this.maps)];
+        this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+        return;
+      } 
+
       if (isSelected) {
         this.selectedMaps.push(map);
         return;

@@ -103,6 +103,7 @@ import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import { shiftClick } from './Maps/click.service';
 
 export default {
   name: 'DataPage',
@@ -196,11 +197,15 @@ export default {
       });
     },
     toggleSelected ({ dataset, isSelected }) {
+      if(event.shiftKey) {
+        const datasetsArray = [...Object.values(this.datasets)];
+        this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset);
+        return;
+      } 
       if (isSelected) {
         this.selectedDatasets.push(dataset);
         return;
       }
-
       this.selectedDatasets = this.selectedDatasets.filter(selectedDataset => selectedDataset.id !== dataset.id);
     },
     selectAll () {

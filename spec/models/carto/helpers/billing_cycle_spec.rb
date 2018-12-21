@@ -107,7 +107,7 @@ describe Carto::BillingCycle do
       today = example[:today]
       period_end_date = example[:period_end_date]
       expected = example[:expected]
-      it "returns the next month if period_end_date.day >= today.day" \
+       it "returns the next month if period_end_date.day <= today.day" \
       " (today = #{today}, period_end_date = #{period_end_date}, expected = #{expected})" do
         @user.period_end_date = Date.parse(period_end_date)
         Delorean.time_travel_to(today) do

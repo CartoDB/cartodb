@@ -20,11 +20,20 @@
     </div>
 
     <div class="cell cell--map-name">
-      <span class="text is-caption is-txtGrey u-ellipsis cell--map-name__text"> {{ map.name }} </span>
-
-      <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img svg-inline src="../../assets/icons/common/favorite.svg">
-      </span>
+      <div class="cell--map-name__top">
+        <span class="text is-caption is-txtGrey u-ellipsis cell--map-name__text"> {{ map.name }} </span>
+        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img svg-inline src="../../assets/icons/common/favorite.svg">
+        </span>
+      </div>
+      <ul v-if="map.tags.length > 0" class="cell--map-name__bottom">
+        <li class="map-tag">
+          <span class="icon icon--tag"><img src="../../assets/icons/maps/tag.svg"></span>
+        </li>
+         <li class="map-tag text is-small" v-for="(tag, index) in map.tags" :key="tag">
+            <router-link class="is-txtSoftGrey" :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
+          </li>
+      </ul>
     </div>
 
     <div class="cell">
@@ -140,6 +149,18 @@ export default {
           }
         }
       }
+    }
+
+    .map-tag {
+      display: inline;
+    }
+
+    .icon--tag {
+      vertical-align: sub;
+    }
+
+    .cell--map-name__bottom {
+      margin-top: 5px;
     }
   }
 

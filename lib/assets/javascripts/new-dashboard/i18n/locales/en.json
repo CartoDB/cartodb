@@ -210,8 +210,26 @@
   "HomePage": {
     "WelcomeSection": {
       "greeting" : "Hello, {username}",
+      "firstTime": {
+        "message": "Your branch new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
+        "planMessage": {
+          "free": "Remember that you're currently on the FREE plan.",
+          "30day": "Remember that you're currently on the 30-day personal trial.",
+          "pro": "Remember that you're currently on the Professional plan.",
+          "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
+          "organizationUser": "Remember that you're currently a member of the {organizationName} organization."
+        },
+        "contactOrganizationAdmin": "Contact the admin",
+        "manageOrganization": "Manage my organization"
+      },
+      "trialMessage": "{date} left in your Trial.",
       "notificationsButton": "Go to Notifications",
-      "learnMoreButton": "Learn More"
+      "learnMoreButton": "Learn More",
+      "actions": {
+        "createMap": "New map",
+        "createDataset": "New dataset"
+      },
+      "addPaymentMethod": "Add payment"
     },
     "MapsSection": {
       "title": "Your Maps",

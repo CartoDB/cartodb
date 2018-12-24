@@ -4,6 +4,7 @@ require 'active_record'
 
 class Carto::VisualizationQueryOrderer
 
+  DEFAULT_ORDER_DIRECTION = 'asc'.freeze
   SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes estimated_row_count).freeze
   VISUALIZATION_TABLE_ORDERS = %w(name updated_at privacy).freeze
 

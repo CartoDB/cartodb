@@ -225,6 +225,9 @@
       "header": "Create your first map to predict key insights",
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
       "button": "Create your first Map"
+    },
+    "MetricsSection": {
+      "title": "Your Usage Metrics"
     }
   }
 }

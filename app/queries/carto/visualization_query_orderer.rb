@@ -33,6 +33,8 @@ class Carto::VisualizationQueryOrderer
 
     orders.each_with_index do |order, index|
       order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
+      order = "coalesce(dependent_visualization_count, 0)" if order == "dependent_visualizations"
+      order = "(likes.actor IS NOT NULL)" if order == "favorited"
       @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
     end
     @order_hash

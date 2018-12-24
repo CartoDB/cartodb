@@ -230,13 +230,13 @@ class Carto::VisualizationQueryBuilder
     return query unless @order && @order.include?("favorited")
     raise 'Cannot order by favorited if no user is provided' unless @current_user_id
 
-    Carto::VisualizationQueryIncluder.new(query).select_favorited(@current_user_id)
+    Carto::VisualizationQueryIncluder.new(query).include_favorited(@current_user_id)
   end
 
   def with_dependent_visualization_count(query)
     return query unless @order && @order.include?("dependent_visualizations")
 
-    Carto::VisualizationQueryIncluder.new(query).select_dependent_visualizations(@filtering_params)
+    Carto::VisualizationQueryIncluder.new(query).include_dependent_visualization_count(@filtering_params)
   end
 
 end

@@ -13,10 +13,13 @@ Development
 - Send org_admin parameter to central (#14483)
 - Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
+- New Welcome module for New Dashboard (#14527)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
+- Revert favorited ordering for Datasets in New Dashboard (#14552)
+- Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
 
 4.23.4 (2018-12-18)
 -------------------

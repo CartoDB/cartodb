@@ -227,7 +227,8 @@
       "button": "Create your first Map"
     },
     "MetricsSection": {
-      "title": "Your Usage Metrics"
+      "title": "Your Usage Metrics",
+      "reset": "Your credits reset the 5th of each month."
     }
   }
 }

@@ -12,6 +12,9 @@
           </template>
         </SectionTitle>
         <img svg-inline src="../../assets/placeholders/quotas.svg">
+        <div class="metrics-reset">
+          <span class="text is-small is-txtSoftGrey metrics-resetText">{{ $t(`HomePage.MetricsSection.reset`) }}</span>
+        </div>
       </div>
     </div>
   </section>
@@ -50,5 +53,18 @@ export default {
 
 .page--welcome {
   padding: 0;
+}
+
+.metrics-reset {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.metrics-resetText {
+  margin-top: 16px;
+
+  &::before {
+    content: '*';
+  }
 }
 </style>

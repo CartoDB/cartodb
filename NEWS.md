@@ -14,6 +14,7 @@ Development
 - Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
+- New Welcome module for New Dashboard (#14527)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)

@@ -18,7 +18,7 @@ module Carto
     validates :scopes, scopes: true
     validate  :check_offline_scope
 
-    before_create :remove_oldest_ones
+    before_create :remove_oldest_ones, unless: :skip_token_regeneration
     before_create :regenerate_token, unless: :skip_token_regeneration
 
     scope :expired, -> { where('updated_at < ?', Time.now - REFRESH_TOKEN_EXPIRATION_TIME) }

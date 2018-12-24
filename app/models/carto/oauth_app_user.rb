@@ -51,6 +51,50 @@ module Carto
       end
     end
 
+    def create_dataset_role
+      user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def grant_dataset_role_privileges
+      validate_scopes
+
+      invalid_scopes = []
+      DatasetsScope.valid_scopes(scopes).each do |scope|
+        dataset_scope = DatasetsScope.new(scope)
+
+        schema = dataset_scope.schema || user.database_schema
+        schema_table = Carto::TableAndFriends.qualified_table_name(schema, dataset_scope.table)
+
+        table_query = %{
+          GRANT #{dataset_scope.permission.join(',')}
+          ON TABLE #{schema_table}
+          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
+        }
+
+        schema_query = %{
+          GRANT USAGE ON SCHEMA \"#{schema}\"
+          TO \"#{dataset_role_name}\";
+        }
+
+        begin
+          user.in_database(as: :superuser).execute(table_query)
+          user.in_database(as: :superuser).execute(schema_query)
+          sequences_for_table(schema_table).each do |seq|
+            seq_query = "GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\""
+            user.in_database(as: :superuser).execute(seq_query)
+          end
+        rescue ActiveRecord::StatementInvalid => e
+          invalid_scopes << scope
+          CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
+        end
+      end
+
+      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
+    end
+
     private
 
     def validate_user_authorizable
@@ -90,13 +134,6 @@ module Carto
       scopes
     end
 
-    def create_dataset_role
-      user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
-      raise OauthProvider::Errors::ServerError.new
-    end
-
     def drop_dataset_role
       queries = %{
         DROP OWNED BY \"#{dataset_role_name}\";
@@ -111,43 +148,6 @@ module Carto
     def validate_scopes
       invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
-    end
-
-    def grant_dataset_role_privileges
-      validate_scopes
-
-      invalid_scopes = []
-      DatasetsScope.valid_scopes(scopes).each do |scope|
-        dataset_scope = DatasetsScope.new(scope)
-
-        schema = dataset_scope.schema || user.database_schema
-        schema_table = Carto::TableAndFriends.qualified_table_name(schema, dataset_scope.table)
-
-        table_query = %{
-          GRANT #{dataset_scope.permission.join(',')}
-          ON TABLE #{schema_table}
-          TO \"#{dataset_role_name}\" WITH GRANT OPTION;
-        }
-
-        schema_query = %{
-          GRANT USAGE ON SCHEMA \"#{schema}\"
-          TO \"#{dataset_role_name}\";
-        }
-
-        begin
-          user.in_database(as: :superuser).execute(table_query)
-          user.in_database(as: :superuser).execute(schema_query)
-          sequences_for_table(schema_table).each do |seq|
-            seq_query = "GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{dataset_role_name}\""
-            user.in_database(as: :superuser).execute(seq_query)
-          end
-        rescue ActiveRecord::StatementInvalid => e
-          invalid_scopes << scope
-          CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
-        end
-      end
-
-      raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
     end
 
     def sequences_for_table(schema_table)

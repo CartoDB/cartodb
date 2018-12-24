@@ -219,18 +219,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_preload(preload)
-    @preload = preload
-    self
-  end
-
   def with_associations(query)
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
-    query = query.preload(@preload)
     query = with_favorited(query)
-    query = with_dependent_visualization_count(query)
-    query
+    with_dependent_visualization_count(query)
   end
 
   def with_favorited(query)

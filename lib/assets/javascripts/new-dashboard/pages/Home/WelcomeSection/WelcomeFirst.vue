@@ -4,8 +4,18 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption">{{ text }}</div>
       <div class="welcome-first__actions">
-        <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
-        <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+        <a class="button button--small is-primary"
+          :href="`mailto:${organizationMail}`"
+          v-if="isOrganizationUser && !isOrganizationAdmin">
+          {{ $t('HomePage.WelcomeSection.firstTime.contactOrganizationAdmin') }}
+        </a>
+        <a class="button button--small is-primary"
+          :href="`${ baseUrl }/organization`"
+          v-if="isOrganizationAdmin">
+          {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
+        </a>
       </div>
     </div>
   </section>
@@ -20,14 +30,35 @@ export default {
     CreateButton
   },
   props: {
-    username: String
+    username: String,
+    userType: String
   },
   computed: {
     greeting () {
       return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
     },
     text () {
-      return 'You have an [account plan] and you are a of [organization name]. Want to know more about your new dashboard?';
+      const organizationName = this.$store.state.user.organization && this.$store.state.user.organization.name;
+
+      const firstTimeMessage = this.$t('HomePage.WelcomeSection.firstTime.message');
+      const planMessage = this.$t(`HomePage.WelcomeSection.firstTime.planMessage.${this.userType}`, {
+        organizationName
+      });
+
+      return `${firstTimeMessage} ${planMessage}`;
+    },
+    baseUrl () {
+      return this.$store.state.user.base_url;
+    },
+    isOrganizationAdmin () {
+      return this.userType === 'organizationAdmin';
+    },
+    isOrganizationUser () {
+      return this.userType === 'organizationUser';
+    },
+    organizationMail () {
+      const organization = this.$store.state.user.organization;
+      return organization.admin_email;
     }
   }
 };
@@ -59,7 +90,7 @@ export default {
     color: $white;
     text-transform: uppercase;
 
-    &:first-child {
+    &:not(:last-child) {
       margin-right: 36px;
     }
   }

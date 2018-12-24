@@ -88,6 +88,8 @@ module Carto
             vqb.with_privacy(privacy)
           end
 
+          vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
+
         else
           # TODO: ok, this looks like business logic, refactor
           subdomain = CartoDB.extract_subdomain(request)

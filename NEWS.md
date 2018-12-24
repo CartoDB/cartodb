@@ -17,6 +17,7 @@ Development
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Revert favorited ordering for Datasets in New Dashboard (#14552)
 
 4.23.4 (2018-12-18)
 -------------------

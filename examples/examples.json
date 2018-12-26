@@ -171,6 +171,14 @@
           }
         },
         {
+          "title": "Pop-Ups with embed videos",
+          "desc": "Create pop-up information windows with embed videos.",
+          "file": {
+            "leaflet": "public/misc/popups-video-leaflet.html",
+            "gmaps": "public/misc/popups-video-gmaps.html"
+          }
+        },
+        {
           "title": "Legends",
           "desc": "Create dynamic legends",
           "file": {
@@ -209,6 +217,27 @@
             "leaflet": "public/misc/hexagon-aggregation-leaflet.html",
             "gmaps": "public/misc/hexagon-aggregation-gmaps.html"
           }
+        },
+        {
+          "title": "Filter data using drawing tools",
+          "desc": "Filter data based on a drawn circle",
+          "file": {
+            "leaflet": "public/misc/filter-data-map-leaflet.html",
+            "gmaps": "public/misc/filter-data-map-gmaps.html"
+          }
+        },
+        {
+          "title": "Dropdown menu with data from CARTO dataset",
+          "desc": "Look for data within your dataset using dropdown menu.",
+          "file": {
+            "leaflet": "public/misc/custom-search-dataset-leaflet.html",
+            "gmaps": "public/misc/custom-search-dataset-gmaps.html"
+          }
+        },
+        {
+          "title": "Storymap using CARTO.js and Storymap.js",
+          "desc": "Create a storytelling map using Storymap.js",
+          "file": "public/misc/storymap-leaflet.html"
         }
       ]
     }

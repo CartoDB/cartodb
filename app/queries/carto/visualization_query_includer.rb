@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 require 'active_record'
-require 'postgres_ext'
 
 class Carto::VisualizationQueryIncluder
 

@@ -5,10 +5,11 @@ require 'active_record'
 class Carto::VisualizationQueryOrderer
 
   DEFAULT_ORDER_DIRECTION = 'asc'.freeze
-  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes estimated_row_count).freeze
+  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews estimated_row_count).freeze
   VISUALIZATION_TABLE_ORDERS = %w(name updated_at privacy).freeze
 
   DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE = "coalesce(dependent_visualization_count, 0)".freeze
+  LIKES_ORDER_CLAUSE = "coalesce(likes_count, 0)".freeze
   FAVORITED_ORDER_CLAUSE = "(likes.actor IS NOT NULL)".freeze
 
   def initialize(query)
@@ -38,6 +39,7 @@ class Carto::VisualizationQueryOrderer
       order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
       order = DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE if order == "dependent_visualizations"
       order = FAVORITED_ORDER_CLAUSE if order == "favorited"
+      order = LIKES_ORDER_CLAUSE if order == "likes"
       @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
     end
     @order_hash

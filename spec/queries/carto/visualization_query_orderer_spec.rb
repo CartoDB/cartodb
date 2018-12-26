@@ -22,6 +22,12 @@ describe Carto::VisualizationQueryOrderer do
     @user.destroy
   end
 
+  it 'does not apply ORDER BY if no value is provided' do
+    result = @orderer.order(nil)
+
+    expect(result.to_sql).to_not include('ORDER BY')
+  end
+
   it 'orders ascending by default' do
     result = @orderer.order('name')
 
@@ -61,22 +67,6 @@ describe Carto::VisualizationQueryOrderer do
     end
   end
 
-  context 'by likes' do
-    it 'orders ascending' do
-      result = @orderer.order('likes', 'asc')
-
-      expect(result.size).to eql 2
-      expect(result.first.name).to eql @visualization_a.name
-    end
-
-    it 'orders descending' do
-      result = @orderer.order('likes', 'desc')
-
-      expect(result.size).to eql 2
-      expect(result.first.name).to eql @visualization_b.name
-    end
-  end
-
   context 'by privacy' do
     it 'orders ascending' do
       result = @orderer.order('privacy', 'asc')
@@ -90,6 +80,30 @@ describe Carto::VisualizationQueryOrderer do
 
       expect(result.size).to eql 2
       expect(result.first.name).to eql @visualization_a.name
+    end
+  end
+
+  context 'by likes' do
+    it 'applies the expected ORDER BY clause' do
+      result = @orderer.order('likes', 'asc')
+
+      expect(result.to_sql).to include('ORDER BY coalesce(likes_count, 0) asc')
+    end
+  end
+
+  context 'by dependent visualizations' do
+    it 'applies the expected ORDER BY clause' do
+      result = @orderer.order('dependent_visualizations', 'asc')
+
+      expect(result.to_sql).to include('coalesce(dependent_visualization_count, 0) asc')
+    end
+  end
+
+  context 'by favorited' do
+    it 'applies the expected ORDER BY clause' do
+      result = @orderer.order('favorited', 'asc')
+
+      expect(result.to_sql).to include('(likes.actor IS NOT NULL) asc')
     end
   end
 

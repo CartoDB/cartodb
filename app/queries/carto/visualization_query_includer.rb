@@ -23,6 +23,11 @@ class Carto::VisualizationQueryIncluder
     )
   end
 
+  def include_likes_count(params = {})
+    join_sql = "LEFT OUTER JOIN (#{likes_query(params)}) AS likes ON likes.subject = visualizations.id"
+    @query.joins(join_sql)
+  end
+
   private
 
   def dependencies_query(params)
@@ -49,6 +54,15 @@ class Carto::VisualizationQueryIncluder
       INNER JOIN "visualizations" "dependency_visualizations"
         ON "dependency_visualizations"."map_id" = "dependency_maps_2"."id"
     }.squish
+  end
+
+  def likes_query(params)
+    select_count = 'count(likes.*) as likes_count'
+    query = Carto::Visualization.select('likes.subject', select_count)
+                                .joins("INNER JOIN likes ON likes.subject = visualizations.id")
+                                .group('likes.subject')
+    filtered_query = Carto::VisualizationQueryFilterer.new(query).filter(params)
+    filtered_query.to_sql
   end
 
 end

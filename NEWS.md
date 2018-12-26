@@ -20,6 +20,7 @@ Development
 - Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
+- Improved performance in /viz endpoint when ordering by likes ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
 
 4.23.4 (2018-12-18)
 -------------------

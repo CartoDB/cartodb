@@ -2969,6 +2969,7 @@ describe Carto::Api::VisualizationsController do
         collection[0]['id'].should == vis2_id
         collection[1]['id'].should == vis1_id
         collection[2]['id'].should == vis3_id
+      end
 
       xit 'orders by estimated row count' do
         visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id)

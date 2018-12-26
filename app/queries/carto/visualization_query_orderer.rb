@@ -5,12 +5,14 @@ require 'active_record'
 class Carto::VisualizationQueryOrderer
 
   DEFAULT_ORDER_DIRECTION = 'asc'.freeze
-  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes estimated_row_count dependent_visualizations).freeze
+  SUPPORTED_OFFDATABASE_ORDERS = %w(size mapviews likes estimated_row_count).freeze
   VISUALIZATION_TABLE_ORDERS = %w(name updated_at privacy).freeze
 
-  def initialize(query:, user_id: nil)
+  DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE = "coalesce(dependent_visualization_count, 0)".freeze
+  FAVORITED_ORDER_CLAUSE = "(likes.actor IS NOT NULL)".freeze
+
+  def initialize(query)
     @query = query
-    @user_id = user_id
   end
 
   def order(order, direction = "")
@@ -19,7 +21,7 @@ class Carto::VisualizationQueryOrderer
     prepare_order_params(order, direction)
 
     if offdatabase_orders.empty?
-      query_with_favorited_if_needed.order(database_orders)
+      @query.order(database_orders)
     else
       Carto::OffdatabaseQueryAdapter.new(@query, offdatabase_orders)
     end
@@ -34,6 +36,8 @@ class Carto::VisualizationQueryOrderer
 
     orders.each_with_index do |order, index|
       order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
+      order = DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE if order == "dependent_visualizations"
+      order = FAVORITED_ORDER_CLAUSE if order == "favorited"
       @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
     end
     @order_hash
@@ -46,20 +50,6 @@ class Carto::VisualizationQueryOrderer
 
   def offdatabase_orders
     @order_hash.slice(*SUPPORTED_OFFDATABASE_ORDERS)
-  end
-
-  def query_with_favorited_if_needed
-    return @query unless @order_hash.include?("favorited")
-    raise 'Cannot order by favorited if no user is provided' unless @user_id
-
-    @query.select('(likes.actor IS NOT NULL) AS favorited')
-          .joins(
-            %{
-              LEFT JOIN likes
-                ON "likes"."subject" = "visualizations"."id"
-                AND "likes"."actor" = #{ActiveRecord::Base::sanitize(@user_id)}
-            }.squish
-          )
   end
 
 end

@@ -1412,7 +1412,7 @@ namespace :cartodb do
         puts "User #{current += 1} / #{total_users}"
         next if user.organization && user.organization.owner != user # Filter out admin not owner users
         begin
-          user.in_database do |db|
+          user.in_database(as: :superuser) do |db|
             db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns " \
                      "WHERE f_table_name LIKE 'analysis_1ea6dec9f3_%' AND type = 'MULTIPOLYGON'").each do |entry|
               db.execute("ALTER TABLE \"#{entry[:f_table_schema]}\".\"#{entry[:f_table_name]}\" " \

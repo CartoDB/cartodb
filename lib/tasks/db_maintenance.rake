@@ -1413,11 +1413,13 @@ namespace :cartodb do
         next if user.organization && user.organization.owner != user # Filter out admin not owner users
         begin
           user.in_database do |db|
-            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns WHERE f_table_name LIKE 'analysis_1ea6dec9f3_%' AND type = 'MULTIPOLYGON'").map { |r| { schema: r[:f_table_schema], table: r[:f_table_name] } }.each do |entry|
-              db.execute("ALTER TABLE \"#{entry[:schema]}\".\"#{entry[:table]}\" ALTER COLUMN the_geom TYPE geometry(Point, 4326)")
+            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns " \
+                     "WHERE f_table_name LIKE 'analysis_1ea6dec9f3_%' AND type = 'MULTIPOLYGON'").each do |entry|
+              db.execute("ALTER TABLE \"#{entry[:f_table_schema]}\".\"#{entry[:f_table_name]}\" " \
+                         "ALTER COLUMN the_geom TYPE geometry(Point, 4326)")
             end
           end
-        rescue => e
+        rescue StandardError => e
           puts "Error processing user #{user.username}: #{e.inspect}"
         end
       end

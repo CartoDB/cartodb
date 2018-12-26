@@ -99,7 +99,7 @@ module CartoDB
       end
 
       def geometry_validity_error?
-        command_output =~ /Invalid number of points in LinearRing/i
+        exit_code != 0 && command_output =~ /Invalid number of points in LinearRing/i
       end
 
       def encoding_error?

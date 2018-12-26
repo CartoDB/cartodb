@@ -60,7 +60,7 @@ module Carto
 
       VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited estimated_row_count privacy
                               dependent_visualizations).freeze
-      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited privacy).freeze
+      VALID_ORDER_COMBINATIONS = VALID_ORDER_PARAMS - Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS
 
       def show
         presenter = VisualizationPresenter.new(

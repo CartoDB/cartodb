@@ -43,7 +43,7 @@ class Carto::VisualizationQueryIncluder
         ON "dependency_layers_user_tables"."user_table_id" = "dependency_user_tables"."id"
       INNER JOIN "layers" "dependency_layers"
         ON "dependency_layers"."id" = "dependency_layers_user_tables"."layer_id"
-      INNER JOIN "layers_maps" "dependency_layers_maps" 
+      INNER JOIN "layers_maps" "dependency_layers_maps"
         ON "dependency_layers_maps"."layer_id" = "dependency_layers"."id"
       INNER JOIN "maps" "dependency_maps_2" ON "dependency_maps_2"."id" = "dependency_layers_maps"."map_id"
       INNER JOIN "visualizations" "dependency_visualizations"

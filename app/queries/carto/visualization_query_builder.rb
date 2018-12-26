@@ -229,6 +229,7 @@ class Carto::VisualizationQueryBuilder
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
     query = with_favorited(query)
+    query = with_likes(query)
     with_dependent_visualization_count(query)
   end
 
@@ -237,6 +238,12 @@ class Carto::VisualizationQueryBuilder
     raise 'Cannot order by favorited if no user is provided' unless @current_user_id
 
     Carto::VisualizationQueryIncluder.new(query).include_favorited(@current_user_id)
+  end
+
+  def with_likes(query)
+    return query unless @order && @order.include?("likes")
+
+    Carto::VisualizationQueryIncluder.new(query).include_likes_count(@filtering_params)
   end
 
   def with_dependent_visualization_count(query)

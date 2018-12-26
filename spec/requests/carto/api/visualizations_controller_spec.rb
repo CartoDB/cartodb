@@ -2931,6 +2931,25 @@ describe Carto::Api::VisualizationsController do
         collection[1]['id'].should eq visualization_b.id
       end
 
+      it 'orders by likes' do
+        other_user = FactoryGirl.create(:valid_user)
+        visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
+        visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
+        visualization_a.add_like_from(other_user.id)
+
+        get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', with_dependent_visualizations: 10,
+                                            order: 'likes', order_direction: 'desc'), {}, @headers
+
+        last_response.status.should == 200
+        response = JSON.parse(last_response.body)
+        collection = response.fetch('visualizations')
+        collection.length.should eq 2
+        collection[0]['id'].should eq visualization_a.id
+        collection[1]['id'].should eq visualization_b.id
+
+        other_user.destroy
+      end
+
       it 'orders by size' do
         vis1 = factory(@user, locked: true, type: 'remote', display_name: 'visu1')
         post api_v1_visualizations_create_url(api_key: @user.api_key), vis1.to_json, @headers

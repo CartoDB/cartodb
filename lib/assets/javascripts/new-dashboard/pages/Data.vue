@@ -72,8 +72,13 @@
 
       <div class="grid-cell grid-cell--col12">
         <EmptyState
+          :text="$t('DataPage.onlyShared')"
+          v-if="hasOnlySharedDatasets">
+          <img svg-inline src="../assets/icons/common/compass.svg">
+        </EmptyState>
+        <EmptyState
           :text="$t('DataPage.emptyState')"
-          v-if="emptyState">
+          v-if="emptyState && !hasOnlySharedDatasets">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
@@ -148,7 +153,8 @@ export default {
       isFetchingDatasets: state => state.datasets.isFetching,
       numResults: state => state.datasets.metadata.total_entries,
       filterType: state => state.datasets.filterType,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries
+      totalUserEntries: state => state.datasets.metadata.total_user_entries,
+      totalShared: state => state.datasets.metadata.total_shared
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
@@ -161,6 +167,9 @@ export default {
     },
     emptyState () {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    hasOnlySharedDatasets () {
+      return this.emptyState && this.totalShared;
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+- Histogram: fix wrong selection in last bucket.
+
+### Changed
+- Improve examples. [#2211](https://github.com/CartoDB/carto.js/pull/2211)
+
 ## 4.1.8 - 2018-10-29
 ### Fixed
 - Moved 'browserify-shim' to devDependencies, fixing a potential problem with npm shrinkwrap.

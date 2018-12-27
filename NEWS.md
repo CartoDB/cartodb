@@ -10,9 +10,9 @@ Development
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
 - /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
-- Send org_admin parameter to central (#14483)
 - Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
+- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
 
 ### Bug fixes / enhancements
@@ -20,6 +20,7 @@ Development
 - Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
+- Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
 
 4.23.4 (2018-12-18)
 -------------------

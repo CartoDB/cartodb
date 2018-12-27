@@ -10,7 +10,9 @@
      @click="onClick">
 
     <div class="cell cell--thumbnail">
-      <img width="48" height="48" class="cell--thumbnail__img" :src="mapThumbnailUrl" />
+      <div class="card-media">
+        <img width="48" height="48" class="cell--thumbnail__img" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+      </div>
       <span class="checkbox cell--thumbnail__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
@@ -20,19 +22,21 @@
     </div>
 
     <div class="cell cell--map-name">
-      <span class="text is-caption is-txtGrey u-ellipsis cell--map-name__text"> {{ map.name }} </span>
+      <div class="title-container">
+        <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">{{ map.name }}</h3>
 
-      <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img svg-inline src="../../assets/icons/common/favorite.svg">
-      </span>
+        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img svg-inline src="../../assets/icons/common/favorite.svg">
+        </span>
+      </div>
     </div>
 
     <div class="cell">
-      <span class="text is-small is-txtSoftGrey"> {{ lastUpdated }} </span>
+      <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
     <div class="cell">
-      <span class="text is-small is-txtSoftGrey"> {{ $t(`MapCard.views`, { views: numberViews })}} </span>
+      <span class="text is-small is-txtSoftGrey">{{ $t(`MapCard.views`, { views: numberViews })}}</span>
     </div>
 
     <div class="cell cell--privacy">
@@ -58,7 +62,6 @@ import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdow
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import methods from './shared/methods';
 import props from './shared/props';
-
 
 export default {
   name: 'CondensedMapCard',
@@ -123,6 +126,7 @@ export default {
 
     .card-favorite {
       display: inline-block;
+      margin-left: 8px;
       opacity: 0;
       vertical-align: middle;
 
@@ -195,13 +199,13 @@ export default {
   }
 
   &.row--selected {
-    box-shadow: 0 0 0 1px $primary-color;;
+    box-shadow: 0 0 0 1px $primary-color;
   }
 
   &:hover,
   &.row--selected {
     &.row--can-hover {
-      .cell--thumbnail__img {
+      .card-media {
         transform: translateY(-100%);
         opacity: 0;
       }
@@ -240,6 +244,22 @@ export default {
     .cell--actions {
       visibility: initial;
     }
+  }
+
+  .title-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .card-media {
+    display: flex;
+    position: relative;
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
+    background-size: cover;
   }
 }
 </style>

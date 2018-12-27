@@ -1,5 +1,5 @@
 <template>
-  <SimpleMapCard 
+  <SimpleMapCard
     v-if="!condensed"
     :map="map"
     :isSelected="isSelected"
@@ -7,7 +7,7 @@
     :selectMode="selectMode"
     @toggleSelection="toggleSelection"
     @toggleFavorite="toggleFavorite"/>
-  <CondensedMapCard 
+  <CondensedMapCard
     v-else
     :map="map"
     :isSelected="isSelected"

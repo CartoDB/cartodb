@@ -1,7 +1,7 @@
 <template>
-  <div class="quota-widget">
+  <div class="quota-widget" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
     <div class="quota-main">
-      <div class="cell--title">
+      <div class="quota-cell cell--title">
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
@@ -12,19 +12,18 @@
       </div>
     </div>
 
-    <div class="quota-info">
+    <div class="quota-data">
       <div class="quota-cell cell--medium">
         <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(remainingQuota)}} {{unit}}</span>
       </div>
-      <div class="quota-cell cell--medium">
+      <div class="quota-cell cell--medium cell--mobile">
         <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(usedQuota)}} {{unit}}</span>
       </div>
       <div class="quota-cell cell--medium">
         <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(availableQuota)}} {{unit}}</span>
-        <!-- <p class="text is-subheader is-txtGrey" :class="{'is-subheader': !isCompact, 'is-caption': isCompact}">{{roundOneDecimal(usedQuota)}} / {{roundOneDecimal(availableQuota)}} {{unit}}</p> -->
       </div>
-      <div class="quota-cell cell--small quota-help">
-        <img svg-inline src="../../assets/icons/common/question-mark.svg"/>
+      <div class="quota-help cell--small">
+        <a href=""><img class="quota-image" :class="{'is-active': active}" svg-inline src="../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>
@@ -38,7 +37,12 @@ export default {
     availableQuota: Number,
     usedQuota: Number,
     unit: String,
-    mode: String
+    billingPeriod: String
+  },
+  data: function () {
+    return {
+      active: false
+    };
   },
   computed: {
     remainingQuota () {
@@ -60,14 +64,17 @@ export default {
       } else {
         return 'good';
       }
-    },
-    isCompact () {
-      return this.mode === 'compact';
     }
   },
   methods: {
     roundOneDecimal (number) {
       return Math.round(number * 10) / 10;
+    },
+    onMouseOver () {
+      this.active = true;
+    },
+    onMouseLeave () {
+      this.active = false;
     }
   }
 };
@@ -76,12 +83,25 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
+.quota-widget {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 80px;
+  cursor: pointer;
+
+  &:not(:last-of-type) {
+    border-bottom: 1px solid $softblue;
+  }
+}
+
 .quota-main {
   display: flex;
   width: 100%;
 }
 
-.quota-info {
+.quota-data {
   display: flex;
 }
 
@@ -95,13 +115,37 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  // &:first-of-type {
-  //   padding-left: 0;
-  // }
+  &:first-of-type {
+    padding-left: 0;
+  }
 
-  // &:last-of-type {
-  //   padding-right: 0;
-  // }
+  &:last-of-type {
+    padding-right: 0;
+  }
+
+  @media (max-width: $layout-tablet) {
+    padding: 0 5px;
+  }
+}
+
+.cell--mobile {
+  @media (max-width: $layout-mobile) {
+    display: none;
+  }
+}
+
+.quota-help {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 16px;
+}
+
+.quota-image {
+  display: none;
+
+  &.is-active {
+    display: flex;
+  }
 }
 
 .cell--title {
@@ -112,15 +156,28 @@ export default {
 .cell--large {
   flex-grow: 1;
   flex-shrink: 1;
-  min-width: 200px;
+  min-width: 120px;
+  margin-right: 40px;
+
+  @media (max-width: $layout-mobile) {
+    display: none;
+  }
 }
 
 .cell--medium {
   width: 120px;
+
+  @media (max-width: $layout-tablet) {
+    width: 100px;
+  }
 }
 
 .cell--small {
   width: 58px;
+
+  @media (max-width: $layout-tablet) {
+    display: none;
+  }
 }
 
 .progressbar {
@@ -142,37 +199,5 @@ export default {
     background-color: $error-state;
   }
 }
-
-.quota-widget {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.quota-help {
-  justify-content: flex-end;
-  padding-right: 16px;
-}
-
-// .quota-widget:not(:only-child) {
-//   height: auto;
-//   margin-bottom: 28px;
-//   padding: 0;
-//   border: none;
-//   box-shadow: none;
-
-//   &:last-of-type {
-//     margin-bottom: 0;
-//   }
-//   // .info-container {
-//   //   display: flex;
-//   //   justify-content: space-between;
-//   // }
-
-
-//   .progressbar {
-//     margin-top: 16px;
-//   }
-// }
 
 </style>

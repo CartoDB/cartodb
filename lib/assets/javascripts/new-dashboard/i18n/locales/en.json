@@ -218,14 +218,17 @@
     "header": {
       "remaining": "Remaining",
       "used": "Used",
-      "total": "Total"
+      "total": {
+        "total": "Total",
+        "month": "Total per month"
+      }
     },
     "disk": "Disk",
+    "dataServices": "Data Services",
     "storage": "Storage",
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
-    "quota": "quota",
-    "credits": "credits"
+    "credits": "Your credits reset the {day} of each month. "
   }
 }

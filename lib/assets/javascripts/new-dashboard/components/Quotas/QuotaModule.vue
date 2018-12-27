@@ -7,24 +7,23 @@
             <img src="../../assets/icons/section-title/quota.svg">
           </template>
         </SectionTitle>
-        <ul class="grid">
-          <li class="vertical-space grid-cell grid-cell--col12">
-            <QuotaContainer :title="$t(`QuotaSection.disk`)">
+        <ul class="grid quota-list">
+          <li class="grid-cell grid-cell--col12 quota-listitem">
+            <QuotaContainer :title="$t(`QuotaSection.disk`)" :total="'total'">
               <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
             </QuotaContainer>
           </li>
-          <!-- <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <QuotaContainer>
-              <QuotaWidget :name="$t(`Limits.geocoding`)" :quotaType="$t(`Limits.credits`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
+          <li class="grid-cell grid-cell--col12 quota-listitem">
+            <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :total="'month'">
+              <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable"></QuotaWidget>
             </QuotaContainer>
           </li>
-          <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-            <QuotaContainer>
-              <QuotaWidget :name="$t(`Limits.isolines`)" :quotaType="$t(`Limits.credits`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" mode="compact"></QuotaWidget>
-              <QuotaWidget :name="$t(`Limits.routing`)" :quotaType="$t(`Limits.credits`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" mode="compact"></QuotaWidget>
-            </QuotaContainer>
-          </li> -->
         </ul>
+        <div class="quota-billing">
+          <span class="quota-billingday text is-small is-txtSoftGrey">{{ $t(`QuotaSection.credits`, { day: billingDay })}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -35,6 +34,7 @@ import { mapState } from 'vuex';
 import QuotaWidget from 'new-dashboard/components/Quotas/QuotaWidget';
 import QuotaContainer from 'new-dashboard/components/Quotas/QuotaContainer';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import format from 'date-fns/format';
 
 export default {
   name: 'QuotasModule',
@@ -52,13 +52,17 @@ export default {
       routingUsed: state => state.user.mapzen_routing.monthly_use,
       routingAvailable: state => state.user.mapzen_routing.quota ? state.user.mapzen_routing.quota : 0,
       isolinesUsed: state => state.user.here_isolines.monthly_use,
-      isolinesAvailable: state => state.user.here_isolines.quota
+      isolinesAvailable: state => state.user.here_isolines.quota,
+      billingPeriod: state => state.user.billing_period
     }),
     usedStorage () {
       return this.availableStorage - this.remainingStorage;
     },
     getBaseTwo () {
       return this.baseTwoRepresentation(this.availableStorage);
+    },
+    billingDay () {
+      return format(new Date(this.billingPeriod), 'Do');
     }
   },
   methods: {
@@ -100,8 +104,23 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.vertical-space {
-  margin-bottom: 10px;
+.quota-listitem {
+  &:not(:first-of-type) {
+    margin-top: 64px;
+  }
 }
 
+.quota-billing {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 10px;
+}
+
+.quota-billingday {
+  margin-top: 16px;
+
+  &::before {
+    content: '*';
+  }
+}
 </style>

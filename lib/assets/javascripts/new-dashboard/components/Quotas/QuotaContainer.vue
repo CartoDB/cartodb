@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="quota-container">
     <div class="quota-headers">
       <div class="quota-cell cell--main">
         <h3 class="title is-caption quota-title">{{title}}</h3>
@@ -9,17 +9,16 @@
         <div class="quota-cell cell--medium">
           <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.remaining') }}</span>
         </div>
-        <div class="quota-cell cell--medium">
+        <div class="quota-cell cell--medium cell--mobile">
           <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</span>
         </div>
         <div class="quota-cell cell--medium">
-          <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.total') }}</span>
-          <!-- <p class="text is-subheader is-txtGrey" :class="{'is-subheader': !isCompact, 'is-caption': isCompact}">{{roundOneDecimal(usedQuota)}} / {{roundOneDecimal(availableQuota)}} {{unit}}</p> -->
+          <span class="text is-small is-txtSoftGrey" :class="total">{{totalHeader}}</span>
         </div>
         <div class="quota-cell cell--small"></div>
       </div>
     </div>
-    <div class="quota-container">
+    <div class="quota-info">
       <slot></slot>
     </div>
   </div>
@@ -29,7 +28,13 @@
 export default {
   name: 'QuotaContainer',
   props: {
-    title: String
+    title: String,
+    total: String
+  },
+  computed: {
+    totalHeader () {
+      return this.$t(`QuotaSection.header.total['${this.total}']`);
+    }
   }
 };
 </script>
@@ -37,17 +42,11 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.quota-container {
-  // height: 100%;
-  // padding: 28px 16px 28px 36px;
-  // border: 1px solid $light-grey;
-  // border-radius: 2px;
-  // background-color: $white;
+.quota-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
   width: 100%;
-  height: 80px;
-  padding: 36px 0;
   background-color: $white;
 }
 
@@ -74,26 +73,54 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  // &:first-of-type {
-  //   padding-left: 0;
-  // }
+  &:first-of-type {
+    padding-left: 0;
+  }
 
-  // &:last-of-type {
-  //   padding-right: 0;
-  // }
+  &:last-of-type {
+    padding-right: 0;
+  }
+
+  @media (max-width: $layout-tablet) {
+    padding: 0 5px;
+  }
+}
+
+.cell--mobile {
+  @media (max-width: $layout-mobile) {
+    display: none;
+  }
 }
 
 .cell--main {
   flex-grow: 1;
   flex-shrink: 1;
-  min-width: 320px;
+  min-width: 300px;
+
+  @media (max-width: $layout-mobile) {
+    min-width: unset;
+  }
 }
 
 .cell--medium {
   width: 120px;
+
+  @media (max-width: $layout-tablet) {
+    width: 100px;
+  }
 }
 
 .cell--small {
   width: 58px;
+
+  @media (max-width: $layout-tablet) {
+    display: none;
+  }
+}
+
+.month {
+  &::after {
+    content: '*';
+  }
 }
 </style>

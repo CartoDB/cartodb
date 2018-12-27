@@ -4,7 +4,7 @@
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="$t(`QuotaSection.title`)">
           <template slot="icon">
-            <img src="../../assets/icons/section-title/quota.svg">
+            <img svg-inline src="../../../assets/icons/section-title/quota.svg">
           </template>
         </SectionTitle>
         <ul class="grid quota-list">

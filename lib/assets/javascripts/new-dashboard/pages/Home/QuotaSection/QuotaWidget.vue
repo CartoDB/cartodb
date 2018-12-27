@@ -23,7 +23,7 @@
         <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(availableQuota)}} {{unit}}</span>
       </div>
       <div class="quota-help cell--small">
-        <a href=""><img class="quota-image" :class="{'is-active': active}" svg-inline src="../../assets/icons/common/question-mark.svg"/></a>
+        <a href=""><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>

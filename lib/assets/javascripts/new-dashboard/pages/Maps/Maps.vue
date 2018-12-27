@@ -54,6 +54,11 @@
         </li>
       </ul>
 
+      <CondensedMapHeader
+        :order="appliedOrder"
+        :orderDirection="appliedOrderDirection"
+        @orderChanged="applyOrder"
+        v-if="isCondensed"></CondensedMapHeader>
       <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
         <li v-for="map in maps" :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
@@ -81,6 +86,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
+import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCardFake from 'new-dashboard/components/MapCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
@@ -96,6 +102,7 @@ export default {
     SettingsDropdown,
     MapBulkActions,
     MapCard,
+    CondensedMapHeader,
     MapCardFake,
     SectionTitle,
     StickySubheader,

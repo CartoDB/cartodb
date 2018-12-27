@@ -31,19 +31,18 @@
       </div>
     </div>
 
-    <div class="cell">
+    <div class="cell cell--large">
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
-    <div class="cell">
+    <div class="cell cell--large">
       <span class="text is-small is-txtSoftGrey">{{ $t(`MapCard.views`, { views: numberViews })}}</span>
     </div>
 
-    <div class="cell cell--privacy">
+    <div class="cell cell--privacy cell--medium">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <p class="text is-small is-txtSoftGrey">
         {{ $t(`MapCard.shared.${map.privacy}`) }}
-        <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span>
       </p>
     </div>
 
@@ -104,6 +103,14 @@ export default {
     padding: 0 12px;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .cell--large {
+    width: 150px;
+  }
+
+  .cell--medium {
+    width: 120px;
   }
 
   .cell--thumbnail {

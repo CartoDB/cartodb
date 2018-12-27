@@ -13,6 +13,13 @@
     "lastUpdate": "Updated {date} ago",
     "tags": "tags"
   },
+  "MapListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "views": "Mapviews",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
   "QuickActions": {
     "title": "Quick actions",
     "editInfo": "Edit Name & description",

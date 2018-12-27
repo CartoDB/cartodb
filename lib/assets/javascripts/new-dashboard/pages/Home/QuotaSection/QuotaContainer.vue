@@ -13,8 +13,8 @@
           <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</span>
         </div>
         <div class="quota-cell cell--medium">
-          <span class="text is-small is-txtSoftGrey quota-total" :class="total">{{$t(`QuotaSection.header.total`)}}</span>
-          <span class="text is-small is-txtSoftGrey quota-month" :class="total">&nbsp;{{$t(`QuotaSection.header.perMonth`)}}</span>
+          <span class="text is-small is-txtSoftGrey quota-total" :class="{'is-active' : perMonth }">{{$t(`QuotaSection.header.total`)}}</span>
+          <span class="text is-small is-txtSoftGrey quota-month" :class="{'is-active' : perMonth }">&nbsp;{{$t(`QuotaSection.header.perMonth`)}}</span>
         </div>
         <div class="quota-cell cell--small"></div>
       </div>
@@ -30,7 +30,7 @@ export default {
   name: 'QuotaContainer',
   props: {
     title: String,
-    total: String
+    perMonth: Boolean
   }
 };
 </script>
@@ -118,7 +118,7 @@ export default {
   display: none;
 }
 
-.month {
+.is-active {
   &.quota-total {
     @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
       &::after {

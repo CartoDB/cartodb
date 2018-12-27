@@ -9,12 +9,12 @@
         </SectionTitle>
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <QuotaContainer :title="$t(`QuotaSection.disk`)" :total="'total'">
+            <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth=false>
               <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
             </QuotaContainer>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :total="'month'">
+            <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth=true>
               <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
               <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable"></QuotaWidget>
               <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable"></QuotaWidget>

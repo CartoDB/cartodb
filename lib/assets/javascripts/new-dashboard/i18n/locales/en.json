@@ -251,10 +251,8 @@
     "header": {
       "remaining": "Remaining",
       "used": "Used",
-      "total": {
-        "total": "Total",
-        "month": "Total per month"
-      }
+      "total": "Total",
+      "perMonth": "per month"
     },
     "disk": "Disk",
     "dataServices": "Data Services",

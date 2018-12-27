@@ -13,7 +13,8 @@
           <span class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</span>
         </div>
         <div class="quota-cell cell--medium">
-          <span class="text is-small is-txtSoftGrey" :class="total">{{totalHeader}}</span>
+          <span class="text is-small is-txtSoftGrey quota-total" :class="total">{{$t(`QuotaSection.header.total`)}}</span>
+          <span class="text is-small is-txtSoftGrey quota-month" :class="total">&nbsp;{{$t(`QuotaSection.header.perMonth`)}}</span>
         </div>
         <div class="quota-cell cell--small"></div>
       </div>
@@ -30,11 +31,6 @@ export default {
   props: {
     title: String,
     total: String
-  },
-  computed: {
-    totalHeader () {
-      return this.$t(`QuotaSection.header.total['${this.total}']`);
-    }
   }
 };
 </script>
@@ -118,9 +114,30 @@ export default {
   }
 }
 
+.quota-month {
+  display: none;
+}
+
 .month {
-  &::after {
-    content: '*';
+  &.quota-total {
+    @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
+      &::after {
+        content: '*';
+      }
+    }
+  }
+
+  &.quota-month {
+    display: flex;
+
+    @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
+      display: none;
+    }
+
+    &::after {
+      content: '*';
+    }
   }
 }
+
 </style>

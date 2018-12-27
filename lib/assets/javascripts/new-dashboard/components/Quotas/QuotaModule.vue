@@ -1,34 +1,47 @@
 <template>
-  <ul class="grid">
-    <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-      <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.storage`)" :quotaType="$t(`Limits.quota`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
-      </QuotaContainer>
-    </li>
-    <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-      <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.geocoding`)" :quotaType="$t(`Limits.credits`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
-      </QuotaContainer>
-    </li>
-    <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-      <QuotaContainer>
-        <QuotaWidget :name="$t(`Limits.isolines`)" :quotaType="$t(`Limits.credits`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" mode="compact"></QuotaWidget>
-        <QuotaWidget :name="$t(`Limits.routing`)" :quotaType="$t(`Limits.credits`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" mode="compact"></QuotaWidget>
-      </QuotaContainer>
-    </li>
-  </ul>
+  <div class="section is-bgSoftBlue">
+    <div class="container">
+      <div class="full-width">
+        <SectionTitle class="grid-cell" :title="$t(`QuotaSection.title`)">
+          <template slot="icon">
+            <img src="../../assets/icons/section-title/quota.svg">
+          </template>
+        </SectionTitle>
+        <ul class="grid">
+          <li class="vertical-space grid-cell grid-cell--col12">
+            <QuotaContainer :title="$t(`QuotaSection.disk`)">
+              <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
+            </QuotaContainer>
+          </li>
+          <!-- <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <QuotaContainer>
+              <QuotaWidget :name="$t(`Limits.geocoding`)" :quotaType="$t(`Limits.credits`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
+            </QuotaContainer>
+          </li>
+          <li class="vertical-space grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <QuotaContainer>
+              <QuotaWidget :name="$t(`Limits.isolines`)" :quotaType="$t(`Limits.credits`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" mode="compact"></QuotaWidget>
+              <QuotaWidget :name="$t(`Limits.routing`)" :quotaType="$t(`Limits.credits`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" mode="compact"></QuotaWidget>
+            </QuotaContainer>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import QuotaWidget from 'new-dashboard/components/Quotas/QuotaWidget';
 import QuotaContainer from 'new-dashboard/components/Quotas/QuotaContainer';
+import SectionTitle from 'new-dashboard/components/SectionTitle';
 
 export default {
   name: 'QuotasModule',
   components: {
     QuotaWidget,
-    QuotaContainer
+    QuotaContainer,
+    SectionTitle
   },
   computed: {
     ...mapState({

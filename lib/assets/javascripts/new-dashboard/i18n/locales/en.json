@@ -213,8 +213,14 @@
       "learnMoreButton": "Learn More"
     }
   },
-  "Limits": {
-    "usage-quotas": "Your Usage & Quotas",
+  "QuotaSection": {
+    "title": "Your Usage Metrics",
+    "header": {
+      "remaining": "Remaining",
+      "used": "Used",
+      "total": "Total"
+    },
+    "disk": "Disk",
     "storage": "Storage",
     "geocoding": "Geocoding",
     "isolines": "Isolines",

@@ -193,6 +193,7 @@ module Carto
             enabled: Carto::AccountType.new.mailchimp?(@user)
           },
           billing_period: @user.last_billing_cycle,
+          next_billing_period: @user.next_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro

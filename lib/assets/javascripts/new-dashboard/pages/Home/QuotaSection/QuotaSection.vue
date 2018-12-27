@@ -31,8 +31,8 @@
 
 <script>
 import { mapState } from 'vuex';
-import QuotaWidget from 'new-dashboard/components/Quotas/QuotaWidget';
-import QuotaContainer from 'new-dashboard/components/Quotas/QuotaContainer';
+import QuotaWidget from './QuotaWidget';
+import QuotaContainer from './QuotaContainer';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import format from 'date-fns/format';
 

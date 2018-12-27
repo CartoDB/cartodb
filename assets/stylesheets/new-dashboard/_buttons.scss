@@ -15,7 +15,19 @@
   }
 }
 
+a {
+  &.button:hover {
+    text-decoration: none;
+  }
+}
+
 .button--ghost {
+  background: $white;
+  color: $primary-color;
+}
+
+.button--outline {
+  border: 1px solid $primary-color;
   background: $white;
   color: $primary-color;
 }

@@ -22,7 +22,7 @@ module Carto
       before_filter :load_organization_users, only: [:add_users, :remove_users]
       before_filter :valid_password_confirmation, only: [:destroy, :add_users, :remove_users]
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::PasswordConfirmationError, with: :rescue_from_password_confirmation_error
 
       VALID_ORDER_PARAMS = [:id, :name, :display_name, :organization_id, :updated_at].freeze

@@ -53,7 +53,7 @@ export default {
       routingAvailable: state => state.user.mapzen_routing.quota ? state.user.mapzen_routing.quota : 0,
       isolinesUsed: state => state.user.here_isolines.monthly_use,
       isolinesAvailable: state => state.user.here_isolines.quota,
-      billingPeriod: state => state.user.billing_period
+      billingPeriod: state => state.user.next_billing_period
     }),
     usedStorage () {
       return this.availableStorage - this.remainingStorage;

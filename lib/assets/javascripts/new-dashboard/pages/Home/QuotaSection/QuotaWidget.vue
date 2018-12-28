@@ -107,12 +107,8 @@ export default {
 
 .quota-cell {
   display: flex;
-  position: relative;
-  flex-grow: 0;
-  flex-shrink: 0;
   align-items: center;
   padding: 0 10px;
-  text-overflow: ellipsis;
   white-space: nowrap;
 
   &:first-of-type {
@@ -121,10 +117,6 @@ export default {
 
   &:last-of-type {
     padding-right: 0;
-  }
-
-  @media (max-width: $layout-tablet) {
-    padding: 0 5px;
   }
 }
 
@@ -166,10 +158,6 @@ export default {
 
 .cell--medium {
   width: 120px;
-
-  @media (max-width: $layout-tablet) {
-    width: 100px;
-  }
 }
 
 .cell--small {

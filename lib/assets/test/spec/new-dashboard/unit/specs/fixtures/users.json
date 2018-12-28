@@ -22,7 +22,8 @@
     "all_visualization_count": 13,
     "org_user": false,
     "remove_logo": false,
-    "db_size_in_bytes": 212992
+    "db_size_in_bytes": 212992,
+    "next_billing_period": "2019-01-11"
   },
   {
     "id": "5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
@@ -47,7 +48,8 @@
     "all_visualization_count": 16,
     "org_user": false,
     "remove_logo": false,
-    "db_size_in_bytes": 229376
+    "db_size_in_bytes": 229376,
+    "next_billing_period": "2019-01-11"
   },
   {
     "id":"5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
@@ -82,6 +84,7 @@
     "remaining_byte_quota":1066631168,
     "api_calls_quota":10000,
     "api_calls_block_price":null,
+    "next_billing_period": "2019-01-11",
     "geocoding":{
       "quota":1200,
       "block_price":null,

@@ -260,6 +260,6 @@
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
-    "credits": "Your credits reset the {day} of each month. "
+    "credits": "Your credits will be renewed the {day} of next month. "
   }
 }

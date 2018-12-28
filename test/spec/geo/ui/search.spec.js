@@ -1,7 +1,10 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 var Search = require('../../../../src/geo/ui/search/search');
-var geocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
+
+var mapboxGeocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
+// var tomtomGeocoder = require('../../../../src/geo/geocoder/tomtom-geocoder');
+
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
 var fakeEvent = {
@@ -28,9 +31,24 @@ describe('geo/ui/search', function () {
     this.view = new Search({
       model: this.map,
       mapView: this.mapView,
+      geocoderService: 'mapbox', // <<<
       token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
     });
     this.view.render();
+  });
+
+  // it('should use tomtom geocoder by default', function () {
+  //   expect(this.view.geocoder).toBe(tomtomGeocoder);
+  // });
+
+  it('should allow changing geocoder easily', function () {
+    var search = new Search({
+      model: this.map,
+      mapView: this.mapView,
+      geocoderService: 'mapbox', // <<<
+      token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
+    });
+    expect(search.geocoder).toBe(mapboxGeocoder);
   });
 
   it('should render properly', function () {
@@ -53,13 +71,13 @@ describe('geo/ui/search', function () {
         },
         type: undefined
       };
-      spyOn(geocoder, 'geocode').and.callThrough();
+      spyOn(this.view.geocoder, 'geocode').and.callThrough();
       this.view.$('.js-textInput').val('Madrid, Spain');
     });
 
     it('should search with geocoder when form is submit', function () {
       this.view.$('.js-form').submit();
-      expect(geocoder.geocode).toHaveBeenCalled();
+      expect(this.view.geocoder.geocode).toHaveBeenCalled();
     });
 
     it('should change map center when geocoder returns any result', function (done) {
@@ -74,7 +92,7 @@ describe('geo/ui/search', function () {
 
     describe('result zoom', function () {
       function testZoom (context, featureType, expectedZoom, done) {
-        geocoder.geocode.and.returnValue(Promise.resolve([{
+        context.view.geocoder.geocode.and.returnValue(Promise.resolve([{
           center: [43.0, -3],
           type: featureType
         }]));

@@ -1,16 +1,30 @@
 var _ = require('underscore');
 var View = require('../../../core/view');
-var geocoder = require('../../../geo/geocoder/mapbox-geocoder');
+var mapboxGeocoder = require('../../../geo/geocoder/mapbox-geocoder');
+var tomtomGeocoder = require('../../../geo/geocoder/tomtom-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
 var Point = require('../../../geo/geometry-models/point.js');
 var template = require('./search_template.tpl');
 var infowindowTemplate = require('./search_infowindow_template.tpl');
 
+var DEFAULT_GEOCODER = 'tomtom';
+
+var GEOCODERS = {
+  'tomtom': tomtomGeocoder,
+  'mapbox': mapboxGeocoder
+};
+
+var GEOCODERS_WINDOW_API_KEYS = {
+  'tomtom': 'tomtomApiKey',
+  'mapbox': 'mapboxApiKey'
+};
+
 /**
  *  UI component to place the map in the
  *  location found by the geocoder.
  */
+
 var Search = View.extend({
   className: 'CDB-Search CDB-Overlay',
 
@@ -48,7 +62,16 @@ var Search = View.extend({
     this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
-    this.token = this.options.token || window.mapboxApiKey;
+
+    this._initializeGeocoder();
+  },
+
+  _initializeGeocoder: function () {
+    this.geocoderService = this.options.geocoderService || DEFAULT_GEOCODER;
+    this.geocoder = GEOCODERS[this.geocoderService];
+
+    const windowApiKey = GEOCODERS_WINDOW_API_KEYS[this.geocoderService];
+    this.token = this.options.token || windowApiKey;
   },
 
   render: function () {
@@ -73,7 +96,7 @@ var Search = View.extend({
     // the animation)
     this._destroySearchPin(0);
     // TODO: we a Better way to pass api keys
-    return geocoder.geocode(address, this.token).then(this._onResult.bind(this));
+    return this.geocoder.geocode(address, this.token).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {

@@ -20,6 +20,7 @@ Development
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 4.23.4 (2018-12-18)
 -------------------

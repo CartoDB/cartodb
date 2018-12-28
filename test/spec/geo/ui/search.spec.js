@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 var Search = require('../../../../src/geo/ui/search/search');
 
 var mapboxGeocoder = require('../../../../src/geo/geocoder/mapbox-geocoder');
-// var tomtomGeocoder = require('../../../../src/geo/geocoder/tomtom-geocoder');
+var tomtomGeocoder = require('../../../../src/geo/geocoder/tomtom-geocoder');
 
 var Map = require('../../../../src/geo/map');
 var LeafletMapView = require('../../../../src/geo/leaflet/leaflet-map-view');
@@ -31,22 +31,21 @@ describe('geo/ui/search', function () {
     this.view = new Search({
       model: this.map,
       mapView: this.mapView,
-      geocoderService: 'mapbox', // <<<
-      token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
+      token: 'a_valid_api_key'
     });
     this.view.render();
   });
 
-  // it('should use tomtom geocoder by default', function () {
-  //   expect(this.view.geocoder).toBe(tomtomGeocoder);
-  // });
+  it('should use tomtom geocoder by default', function () {
+    expect(this.view.geocoder).toBe(tomtomGeocoder);
+  });
 
   it('should allow changing geocoder easily', function () {
     var search = new Search({
       model: this.map,
       mapView: this.mapView,
       geocoderService: 'mapbox', // <<<
-      token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
+      token: 'a_valid_mapbox_api_key'
     });
     expect(search.geocoder).toBe(mapboxGeocoder);
   });
@@ -71,7 +70,11 @@ describe('geo/ui/search', function () {
         },
         type: undefined
       };
-      spyOn(this.view.geocoder, 'geocode').and.callThrough();
+      // spyOn(this.view.geocoder, 'geocode').and.callThrough();
+      spyOn(this.view.geocoder, 'geocode').and.returnValue(Promise.resolve([{
+        center: [40.41889, -3.69194],
+        type: 'localadmin'
+      }]));
       this.view.$('.js-textInput').val('Madrid, Spain');
     });
 

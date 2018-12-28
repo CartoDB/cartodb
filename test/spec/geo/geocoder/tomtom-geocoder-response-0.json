@@ -1,0 +1,445 @@
+{
+  "summary": {
+    "query": "santander",
+    "queryType": "NON_NEAR",
+    "queryTime": 39,
+    "numResults": 10,
+    "offset": 0,
+    "totalResults": 24811,
+    "fuzzyLevel": 1
+  },
+  "results": [
+    {
+      "type": "Geography",
+      "id": "ES/GEO/p0/7661",
+      "score": 2.418,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Santander",
+        "countrySecondarySubdivision": "Cantabria",
+        "countrySubdivision": "Cantabria",
+        "countryCode": "ES",
+        "country": "Spain",
+        "countryCodeISO3": "ESP",
+        "freeformAddress": "Santander"
+      },
+      "position": {
+        "lat": 43.46141,
+        "lon": -3.8093
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 43.49482,
+          "lon": -3.88905
+        },
+        "btmRightPoint": {
+          "lat": 43.43446,
+          "lon": -3.76325
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 43.49482,
+          "lon": -3.88905
+        },
+        "btmRightPoint": {
+          "lat": 43.43446,
+          "lon": -3.76325
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-00007d2e35e3"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "PH/GEO/p0/1587",
+      "score": 2.382,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Santander",
+        "countrySecondarySubdivision": "Cebu",
+        "countrySubdivision": "Central Visayas",
+        "countryCode": "PH",
+        "country": "Philippines",
+        "countryCodeISO3": "PHL",
+        "freeformAddress": "Santander, Central Visayas"
+      },
+      "position": {
+        "lat": 9.42242,
+        "lon": 123.30378
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 9.47779,
+          "lon": 123.29687
+        },
+        "btmRightPoint": {
+          "lat": 9.41298,
+          "lon": 123.3632
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 9.47779,
+          "lon": 123.29687
+        },
+        "btmRightPoint": {
+          "lat": 9.41298,
+          "lon": 123.3632
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-000077378fa7"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "MX/GEO/p0/340",
+      "score": 2.362,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Jiménez",
+        "countrySubdivision": "Tamaulipas",
+        "countryCode": "MX",
+        "country": "Mexico",
+        "countryCodeISO3": "MEX",
+        "freeformAddress": "Jiménez"
+      },
+      "position": {
+        "lat": 24.21378,
+        "lon": -98.48187
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 24.47171,
+          "lon": -98.72639
+        },
+        "btmRightPoint": {
+          "lat": 23.93939,
+          "lon": -98.27799
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 24.47171,
+          "lon": -98.72639
+        },
+        "btmRightPoint": {
+          "lat": 23.93939,
+          "lon": -98.27799
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-00007737d289"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/252",
+      "score": 2.36,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Puerto Santander",
+        "countrySubdivision": "Norte de Santander",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Puerto Santander, Norte de Santander"
+      },
+      "position": {
+        "lat": 8.36227,
+        "lon": -72.40896
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 8.38354,
+          "lon": -72.4475
+        },
+        "btmRightPoint": {
+          "lat": 8.26839,
+          "lon": -72.38042
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 8.38354,
+          "lon": -72.4475
+        },
+        "btmRightPoint": {
+          "lat": 8.26839,
+          "lon": -72.38042
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-00007d30e01c"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/888",
+      "score": 2.358,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Santander",
+        "countrySubdivision": "Amazonas",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Santander, Amazonas"
+      },
+      "position": {
+        "lat": -0.62217,
+        "lon": -72.38281
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": -0.26464,
+          "lon": -72.99754
+        },
+        "btmRightPoint": {
+          "lat": -1.89121,
+          "lon": -70.72647
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": -0.26464,
+          "lon": -72.99754
+        },
+        "btmRightPoint": {
+          "lat": -1.89121,
+          "lon": -70.72647
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-00007d30ef7b"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/1010",
+      "score": 2.341,
+      "entityType": "Municipality",
+      "address": {
+        "municipality": "Santander de Quilichao",
+        "countrySubdivision": "Cauca",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Santander de Quilichao, Cauca"
+      },
+      "position": {
+        "lat": 3.00879,
+        "lon": -76.4859
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 3.1493,
+          "lon": -76.61535
+        },
+        "btmRightPoint": {
+          "lat": 2.8461,
+          "lon": -76.37358
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 3.1493,
+          "lon": -76.61535
+        },
+        "btmRightPoint": {
+          "lat": 2.8461,
+          "lon": -76.37358
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-00007d30eff7"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/6",
+      "score": 2.255,
+      "entityType": "CountrySubdivision",
+      "address": {
+        "countrySubdivision": "Santander",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Santander"
+      },
+      "position": {
+        "lat": 6.92507,
+        "lon": -73.50153
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 8.14342,
+          "lon": -74.52666
+        },
+        "btmRightPoint": {
+          "lat": 5.70671,
+          "lon": -72.4764
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 8.14342,
+          "lon": -74.52666
+        },
+        "btmRightPoint": {
+          "lat": 5.70671,
+          "lon": -72.4764
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-000077374466"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/5",
+      "score": 2.211,
+      "entityType": "CountrySubdivision",
+      "address": {
+        "countrySubdivision": "Norte de Santander",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Norte de Santander"
+      },
+      "position": {
+        "lat": 8.08458,
+        "lon": -72.84278
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 9.2961,
+          "lon": -73.63743
+        },
+        "btmRightPoint": {
+          "lat": 6.87306,
+          "lon": -72.04813
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 9.2961,
+          "lon": -73.63743
+        },
+        "btmRightPoint": {
+          "lat": 6.87306,
+          "lon": -72.04813
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "00005858-5800-1200-0000-000077374465"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/1668",
+      "score": 2.177,
+      "entityType": "MunicipalitySubdivision",
+      "address": {
+        "municipalitySubdivision": "Santander",
+        "municipality": "Cali",
+        "countrySubdivision": "Valle del Cauca",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Cali Santander, Valle del Cauca"
+      },
+      "position": {
+        "lat": 3.46266,
+        "lon": -76.51554
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 3.4665,
+          "lon": -76.52026
+        },
+        "btmRightPoint": {
+          "lat": 3.45905,
+          "lon": -76.51054
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 3.4665,
+          "lon": -76.52026
+        },
+        "btmRightPoint": {
+          "lat": 3.45905,
+          "lon": -76.51054
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "0000434f-3300-3c00-0000-000065ec89e3"
+        }
+      }
+    },
+    {
+      "type": "Geography",
+      "id": "CO/GEO/p0/2477",
+      "score": 2.177,
+      "entityType": "MunicipalitySubdivision",
+      "address": {
+        "municipalitySubdivision": "Santander",
+        "municipality": "Medellín",
+        "countrySubdivision": "Antioquia",
+        "countryCode": "CO",
+        "country": "Colombia",
+        "countryCodeISO3": "COL",
+        "freeformAddress": "Medellín Santander, Antioquia"
+      },
+      "position": {
+        "lat": 6.30768,
+        "lon": -75.57501
+      },
+      "viewport": {
+        "topLeftPoint": {
+          "lat": 6.31099,
+          "lon": -75.57874
+        },
+        "btmRightPoint": {
+          "lat": 6.30185,
+          "lon": -75.57128
+        }
+      },
+      "boundingBox": {
+        "topLeftPoint": {
+          "lat": 6.31099,
+          "lon": -75.57874
+        },
+        "btmRightPoint": {
+          "lat": 6.30185,
+          "lon": -75.57128
+        }
+      },
+      "dataSources": {
+        "geometry": {
+          "id": "0000434f-3200-3c00-0000-000065a03d92"
+        }
+      }
+    }
+  ]
+}

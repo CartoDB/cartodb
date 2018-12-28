@@ -15,16 +15,16 @@ var Search = View.extend({
   className: 'CDB-Search CDB-Overlay',
 
   _ZOOM_BY_CATEGORY: {
-    'building': 18,
-    'postal-area': 15,
-    'venue': 18,
-    'region': 8,
     'address': 18,
-    'country': 5,
-    'county': 8,
+    'building': 18,
+    'venue': 18,
+    'postal-area': 15,
+    'neighbourhood': 15,
     'locality': 12,
     'localadmin': 11,
-    'neighbourhood': 15,
+    'region': 8,
+    'county': 8,
+    'country': 5,
     'default': 12
   },
 

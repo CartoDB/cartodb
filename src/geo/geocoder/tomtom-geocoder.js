@@ -1,12 +1,20 @@
 var ENDPOINT = 'https://api.tomtom.com/search/2/search/{{address}}.json?key={{apiKey}}';
 
 var TYPES = {
-  'POI': 'venue',
-  'Street': 'neighbourhood',
   'Geography': 'region',
-  'Point Address': 'address',
+  'Geography:Country': 'country',
+  'Geography:CountrySubdivision': 'region',
+  'Geography:CountrySecondarySubdivision': 'region',
+  'Geography:CountryTertiarySubdivision': 'region',
+  'Geography:Municipality': 'localadmin',
+  'Geography:MunicipalitySubdivision': 'locality',
+  'Geography:Neighbourhood': 'neighbourhood',
+  'Geography:PostalCodeArea': 'postal-area',
+  'Street': 'neighbourhood',
   'Address Range': 'neighbourhood',
-  'Cross Street': 'address'
+  'Point Address': 'address',
+  'Cross Street': 'address',
+  'POI': 'venue'
 };
 
 function TomTomGeocoder () { }
@@ -55,9 +63,14 @@ function _getCenter (result) {
  * Transform the feature type into a well known enum.
  */
 function _getType (result) {
-  if (TYPES[result.type]) {
-    return TYPES[result.type];
+  let type = result.type;
+  if (TYPES[type]) {
+    if (type === 'Geography' && result.entityType) {
+      type = type + ':' + result.entityType;
+    }
+    return TYPES[type];
   }
+
   return 'default';
 }
 

@@ -7,13 +7,13 @@
     </div>
     <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
       <div class="footer-block">
-        <a href="https://carto.com/help" class="footer-link">
+        <a href="https://carto.com/help" class="footer-link" target="_blank">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.HelpCenter.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.HelpCenter.description`) }}</p>
         </a>
-        <a href="https://carto.com/developers" class="footer-link">
+        <a href="https://carto.com/developers" class="footer-link" target="_blank">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DeveloperCenter.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -21,7 +21,7 @@
         </a>
       </div>
       <div class="footer-block">
-        <a href="https://gis.stackexchange.com/questions/tagged/carto" class="footer-link" v-if="isFreeUser">
+        <a href="https://gis.stackexchange.com/questions/tagged/carto" class="footer-link" v-if="isFreeUser" target="_blank">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.GISStackExchange.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>

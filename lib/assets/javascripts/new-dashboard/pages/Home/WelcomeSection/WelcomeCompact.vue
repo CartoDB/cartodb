@@ -4,7 +4,7 @@
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
         <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
-        <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+        <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
       </div>
     </div>
   </section>

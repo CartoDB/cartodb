@@ -6,13 +6,14 @@
        'dataset-row--quick-actions-open': areQuickActionsOpen,
        'dataset-row--no-hover': !activeHover,
        'dataset-row--can-hover': canHover
-     }">
+     }"
+     @click="onClick">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
       <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
@@ -212,7 +213,13 @@ export default {
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
-    })
+    }),
+    onClick (event) {
+      if (this.$props.selectMode) {
+        event.preventDefault();
+        this.toggleSelection();
+      }
+    }
   }
 };
 </script>

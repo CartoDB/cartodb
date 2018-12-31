@@ -6,14 +6,15 @@
        'card--child-hover': !activeHover,
        'card--quick-actions-open': areQuickActionsOpen,
        'card--can-hover': canHover
-     }">
+     }"
+    @click="onClick">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../assets/icons/common/checkbox.svg">
       </span>
@@ -198,7 +199,13 @@ export default {
     ...mapActions({
       likeMap: 'maps/like',
       deleteMapLike: 'maps/deleteLike'
-    })
+    }),
+    onClick (event) {
+      if (this.$props.selectMode) {
+        event.preventDefault();
+        this.toggleSelection();
+      }
+    }
   }
 };
 </script>

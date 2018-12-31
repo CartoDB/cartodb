@@ -6,8 +6,7 @@
        'dataset-row--quick-actions-open': areQuickActionsOpen,
        'dataset-row--no-hover': !activeHover,
        'dataset-row--can-hover': canHover
-     }"
-     @click="onClick">
+     }">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -213,13 +212,7 @@ export default {
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
-    }),
-    onClick (event) {
-      if (this.$props.selectMode) {
-        event.preventDefault();
-        this.toggleSelection();
-      }
-    }
+    })
   }
 };
 </script>

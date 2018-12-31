@@ -6,8 +6,7 @@
        'card--child-hover': !activeHover,
        'card--quick-actions-open': areQuickActionsOpen,
        'card--can-hover': canHover
-     }"
-    @click="onClick">
+     }">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
       <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
@@ -199,13 +198,7 @@ export default {
     ...mapActions({
       likeMap: 'maps/like',
       deleteMapLike: 'maps/deleteLike'
-    }),
-    onClick (event) {
-      if (this.$props.selectMode) {
-        event.preventDefault();
-        this.toggleSelection();
-      }
-    }
+    })
   }
 };
 </script>

@@ -69,9 +69,13 @@ export default {
     isInTrial () {
       return Boolean(this.trialEndDate);
     },
+    isFreeUser () {
+      const freeUser = ['free'];
+      return freeUser.includes(this.$store.state.user.account_type);
+    },
     isProUser () {
       const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return noProUsers.includes(this.user.account_type);
+      return noProUsers.includes(this.$store.state.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

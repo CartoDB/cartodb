@@ -1404,6 +1404,27 @@ namespace :cartodb do
       end
     end
 
+    desc 'Fix analysis table the_geom type for batch geocoding bug (dataservices-api#538)'
+    task fix_batch_geocoding_the_geom_type: [:environment] do
+      total_users = User.count
+      current = 0
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        puts "User #{current += 1} / #{total_users}"
+        next if user.organization && user.organization.owner != user # Filter out admin not owner users
+        begin
+          user.in_database(as: :superuser) do |db|
+            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns " \
+                     "WHERE f_table_name LIKE 'analysis_1ea6dec9f3_%' AND type = 'MULTIPOLYGON'").each do |entry|
+              db.execute("ALTER TABLE \"#{entry[:f_table_schema]}\".\"#{entry[:f_table_name]}\" " \
+                         "ALTER COLUMN the_geom TYPE geometry(Point, 4326)")
+            end
+          end
+        rescue StandardError => e
+          puts "Error processing user #{user.username}: #{e.inspect}"
+        end
+      end
+    end
+
     def update_user_metadata(user)
       begin
         user.save_metadata

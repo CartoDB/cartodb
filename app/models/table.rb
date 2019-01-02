@@ -979,11 +979,15 @@ class Table
   end
 
   def update_table_pg_stats
-    owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
+    # TODO: Reenable this with timeout/error handling.
+    # This was broken for years, and we reenabled it, imports timed out.
+    # owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
   end
 
   def update_table_geom_pg_stats
-    owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
+    # TODO: Reenable this with timeout/error handling.
+    # This was broken for years, and we reenabled it, imports timed out.
+    # owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
   end
 
   def owner

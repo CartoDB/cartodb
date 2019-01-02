@@ -34,6 +34,8 @@ describe Carto::Api::UserPresenter do
   end
 
   it "Compares old and new ways of 'presenting' user data" do
+    Delorean.time_travel_to('2018-01-15')
+
     bypass_named_maps
 
     # Non-org user
@@ -54,7 +56,8 @@ describe Carto::Api::UserPresenter do
         job_role: "Developer",
         company: "test",
         phone: "123",
-        industry: "Academic and Education"
+        industry: "Academic and Education",
+        period_end_date: Time.parse('2018-01-01')
       })
 
     # Some sample data
@@ -110,7 +113,8 @@ describe Carto::Api::UserPresenter do
         job_role: "Developer",
         company: "test",
         phone: "123",
-        industry: "Academic and Education"
+        industry: "Academic and Education",
+        period_end_date: Time.parse('2018-01-01')
       })
 
     organization = ::Organization.new(quota_in_bytes: 200.megabytes, name: 'testorg', seats: 5).save
@@ -137,6 +141,7 @@ describe Carto::Api::UserPresenter do
     SequelRails.connection.run( %Q{ DELETE FROM data_imports } )
     user.destroy
     organization.destroy
+    Delorean.back_to_the_present
   end
 
   protected
@@ -182,6 +187,7 @@ describe Carto::Api::UserPresenter do
     new_data[:obs_general].should == old_data[:obs_general]
     new_data[:twitter].should == old_data[:twitter]
     new_data[:billing_period].should == old_data[:billing_period]
+    new_data[:next_billing_period].should == old_data[:next_billing_period]
     new_data[:max_layers].should == old_data[:max_layers]
     new_data[:api_key].should == old_data[:api_key]
     new_data[:layers].should == old_data[:layers]
@@ -265,6 +271,7 @@ describe Carto::Api::UserPresenter do
     new_poro = user_poro.dup.deep_merge(viewer: false)
     new_poro[:organization] = user_poro[:organization].deep_merge(viewer_seats: 0) if user_poro[:organization].present?
     new_poro[:mfa_configured] = false
+    new_poro[:next_billing_period] = Time.parse('2018-02-01')
     new_poro
   end
 

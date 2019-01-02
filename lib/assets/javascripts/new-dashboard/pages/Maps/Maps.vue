@@ -39,6 +39,12 @@
             <img svg-inline v-else src="../../assets/icons/common/filter.svg">
           </SettingsDropdown>
         </template>
+        <template slot="extraOptionButton" v-if="!initialState && !selectedMaps.length">
+          <div class="mapcard-view-mode" @click="toggleViewMode">
+            <img svg-inline src="../../assets/icons/common/compactMap.svg" v-if="!isCondensed">
+            <img svg-inline src="../../assets/icons/common/standardMap.svg" v-if="isCondensed">
+          </div>
+        </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
@@ -122,6 +128,14 @@ export default {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+
+    if (localStorage.hasOwnProperty('mapViewMode')) {
+      if (localStorage.mapViewMode === 'compact') {
+        this.isCondensed = true;
+      } else if (localStorage.mapViewMode === 'standard') {
+        this.isCondensed = false;
+      }
+    }
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
@@ -218,6 +232,18 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
+    },
+    toggleViewMode () {
+      this.isCondensed = !this.isCondensed;
+    }
+  },
+  watch: {
+    isCondensed (isCompactMapView) {
+      if (isCompactMapView) {
+        localStorage.mapViewMode = 'compact';
+      } else {
+        localStorage.mapViewMode = 'standard';
+      }
     }
   }
 };
@@ -248,5 +274,14 @@ export default {
 
 .card-condensed {
   border-bottom: 1px solid #EBEEF5;
+}
+
+.mapcard-view-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 }
 </style>

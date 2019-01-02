@@ -36,7 +36,7 @@
     </div>
 
     <div class="cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ $t(`MapCard.views`, { views: numberViews })}}</span>
+      <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
     </div>
 
     <div class="cell cell--privacy cell--medium">

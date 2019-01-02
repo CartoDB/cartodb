@@ -156,7 +156,7 @@ export default {
 
   .cell--privacy {
     display: flex;
-    flex-direction: row;
+    align-items: center;
 
     .icon {
       display: flex;
@@ -173,19 +173,19 @@ export default {
       }
 
       &.icon--private {
-        background-image: url("../../assets/icons/maps/privacy/lock.svg");
+        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-lock.svg");
       }
 
       &.icon--public {
-        background-image: url("../../assets/icons/maps/privacy/public.svg");
+        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-public.svg");
       }
 
       &.icon--link {
-        background-image: url("../../assets/icons/maps/privacy/link.svg");
+        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-link.svg");
       }
 
       &.icon--password {
-        background-image: url("../../assets/icons/maps/privacy/password.svg");
+        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-password.svg");
       }
 
       &.icon--sharedBy {

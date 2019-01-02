@@ -61,14 +61,8 @@
       </ul>
 
       <EmptyState
-        :text="$t('MapsPage.onlyShared')"
-        v-if="initialState && hasSharedMaps">
-        <img svg-inline src="../assets/icons/common/compass.svg">
-      </EmptyState>
-
-      <EmptyState
-        :text="$t('MapsPage.emptyState')"
-        v-if="emptyState">
+        :text="emptyStateText"
+        v-if="emptyState || (initialState && hasSharedMaps)">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -153,6 +147,9 @@ export default {
     },
     emptyState () {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    emptyStateText () {
+      return (this.initialState && this.hasSharedMaps) ? this.$t('MapsPage.emptyCase.onlyShared', { path: this.$router.options.base }) : this.$t('MapsPage.emptyCase.default', { path: this.$router.options.base });
     },
     hasSharedMaps () {
       return this.totalShared > 0;

@@ -72,13 +72,8 @@
 
       <div class="grid-cell grid-cell--col12">
         <EmptyState
-          :text="$t('DataPage.onlyShared')"
-          v-if="initialState && hasSharedDatasets">
-          <img svg-inline src="../assets/icons/common/compass.svg">
-        </EmptyState>
-        <EmptyState
-          :text="$t('DataPage.emptyState')"
-          v-if="emptyState">
+          :text="emptyStateText"
+          v-if="emptyState || (initialState && hasSharedDatasets)">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
@@ -167,6 +162,9 @@ export default {
     },
     emptyState () {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    emptyStateText () {
+      return (this.initialState && this.hasSharedDatasets) ? this.$t('DataPage.emptyCase.onlyShared', { path: this.$router.options.base }) : this.$t('DataPage.emptyCase.default', { path: this.$router.options.base });
     },
     hasSharedDatasets () {
       return this.totalShared > 0;

@@ -5,16 +5,14 @@
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"
-    @toggleSelection="toggleSelection"
-    @toggleFavorite="toggleFavorite"/>
+    @toggleSelection="toggleSelection"/>
   <CondensedMapCard
     v-else
     :map="map"
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"
-    @toggleSelection="toggleSelection"
-    @toggleFavorite="toggleFavorite"/>
+    @toggleSelection="toggleSelection"/>
 </template>
 
 <script>

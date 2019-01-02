@@ -10,7 +10,7 @@
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth="false">
-              <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="getAmountInUnit(usedStorage, amountExponent)" :availableQuota="getAmountInUnit(availableStorage, amountExponent)" :unit="getUnit(amountExponent)"></QuotaWidget>
             </QuotaContainer>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
@@ -58,42 +58,48 @@ export default {
     usedStorage () {
       return this.availableStorage - this.remainingStorage;
     },
-    getBaseTwo () {
-      return this.baseTwoRepresentation(this.availableStorage);
+    amountExponent () {
+      return this.getExpBaseTwo(this.availableStorage) - 10;
     },
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');
     }
   },
   methods: {
-    baseTwoRepresentation (sizeInBytes) {
-      if (Math.log2) {
-        return Math.log2(sizeInBytes);
+    getExpBaseTwo (sizeInBytes) {
+      if (sizeInBytes === 0) {
+        return 0;
       }
 
-      return Math.log(sizeInBytes) * Math.LOG2E;
+      let exponent = 0;
+      if (Math.log2) {
+        exponent = Math.log2(sizeInBytes);
+      } else {
+        exponent = Math.log(sizeInBytes) * Math.LOG2E;
+      }
+      return Math.floor(exponent);
     },
-    getUnitFromBaseTwo (baseTwo) {
-      if (baseTwo < 10) {
+    getUnit (exponent) {
+      if (exponent < 10) {
         return 'B';
-      } else if (baseTwo < 20) {
-        return 'Kb';
-      } else if (baseTwo < 30) {
+      } else if (exponent < 20) {
+        return 'KB';
+      } else if (exponent < 30) {
         return 'MB';
-      } else if (baseTwo < 40) {
+      } else if (exponent < 40) {
         return 'GB';
-      } else if (baseTwo < 50) {
+      } else if (exponent < 50) {
         return 'TB';
-      } else if (baseTwo < 60) {
+      } else if (exponent < 60) {
         return 'PB';
-      } else if (baseTwo < 70) {
+      } else if (exponent < 70) {
         return 'EB';
       } else {
         return '?';
       }
     },
-    divideBaseTwo (number, baseTwo) {
-      return number / Math.pow(2, baseTwo);
+    getAmountInUnit (number, exponent) {
+      return number / Math.pow(2, exponent);
     }
   }
 };

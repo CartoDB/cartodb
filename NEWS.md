@@ -5,17 +5,23 @@ Development
 - None yet
 
 ### Features
-- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
-- Send org_admin parameter to central (#14483)
-- Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
+- /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
 - Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
+- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+- New Welcome module for New Dashboard (#14527)
 - Added condensed map view in the New Dashboard [#14546](https://github.com/CartoDB/cartodb/issues/14546)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Revert favorited ordering for Datasets in New Dashboard (#14552)
+- Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 
 4.23.4 (2018-12-18)
 -------------------
@@ -35,7 +41,6 @@ Development
 
 ### Features
 * Send org_admin parameter to central (#14483)
->>>>>>> origin/master
 
 ### Bug fixes / enhancements
 * No request made to enable MFA #14505

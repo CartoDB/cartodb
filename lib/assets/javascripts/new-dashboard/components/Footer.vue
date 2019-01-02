@@ -5,7 +5,7 @@
         <img class="carto-logo" src="../assets/icons/common/cartoLogo.svg">
       </a>
     </div>
-    <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet  grid-cell--col12--mobile">
+    <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
       <div class="footer-block">
         <a href="https://carto.com/help" class="footer-link" target="_blank">
           <h4 class="title-link title is-caption is-txtGrey">
@@ -113,17 +113,17 @@ export default {
   }
 
   .footer-link:first-child {
-    margin-right: 42px;
+    padding-right: 42px;
   }
 }
 
 .footer-link {
   display: block;
-  max-width: 50%;
+  width: 50%;
   margin-bottom: 48px;
 
   @media (max-width: $layout-mobile) {
-    max-width: unset;
+    width: unset;
     margin-bottom: 36px;
   }
 
@@ -147,6 +147,7 @@ export default {
 
 .title-link {
   margin-bottom: 4px;
+  white-space: nowrap;
 }
 
 .footer-logo {

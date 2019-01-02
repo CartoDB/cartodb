@@ -20,7 +20,7 @@ Development
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
-- Fixed bug that counted incorrectly the number of datasets/maps selected [#14571](https://github.com/CartoDB/cartodb/pull/14571)
+- Fixed bug that counted incorrectly the number of datasets/maps selected [#14571](https://github.com/CartoDB/cartodb/pull/14571) in New Dashboard
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 
 4.23.4 (2018-12-18)

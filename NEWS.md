@@ -21,6 +21,7 @@ Development
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 
 4.23.4 (2018-12-18)
 -------------------

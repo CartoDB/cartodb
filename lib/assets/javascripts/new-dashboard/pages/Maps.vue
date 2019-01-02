@@ -44,7 +44,7 @@
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="initialState">
+      <div class="grid-cell" v-if="initialState && !hasSharedMaps">
         <CreateMapCard></CreateMapCard>
       </div>
 
@@ -62,13 +62,13 @@
 
       <EmptyState
         :text="$t('MapsPage.onlyShared')"
-        v-if="hasOnlySharedMaps">
+        v-if="initialState && hasSharedMaps">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
       <EmptyState
         :text="$t('MapsPage.emptyState')"
-        v-if="emptyState && !hasOnlySharedMaps">
+        v-if="emptyState">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -154,8 +154,8 @@ export default {
     emptyState () {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
-    hasOnlySharedMaps () {
-      return this.emptyState && this.totalShared;
+    hasSharedMaps () {
+      return this.totalShared > 0;
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;

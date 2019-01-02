@@ -46,7 +46,7 @@
         </SectionTitle>
       </div>
 
-      <div class="grid-cell grid-cell--col12" v-if="initialState">
+      <div class="grid-cell grid-cell--col12" v-if="initialState && !hasSharedDatasets">
         <InitialState :title="$t(`DataPage.zeroCase.title`)">
           <template slot="icon">
             <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -73,12 +73,12 @@
       <div class="grid-cell grid-cell--col12">
         <EmptyState
           :text="$t('DataPage.onlyShared')"
-          v-if="hasOnlySharedDatasets">
+          v-if="initialState && hasSharedDatasets">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
         <EmptyState
           :text="$t('DataPage.emptyState')"
-          v-if="emptyState && !hasOnlySharedDatasets">
+          v-if="emptyState">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
@@ -168,8 +168,8 @@ export default {
     emptyState () {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
-    hasOnlySharedDatasets () {
-      return this.emptyState && this.totalShared;
+    hasSharedDatasets () {
+      return this.totalShared > 0;
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;

@@ -15,12 +15,13 @@ Development
 - Password validation against common passwords & usernames (#14522)
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
-- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 
 4.23.4 (2018-12-18)
 -------------------

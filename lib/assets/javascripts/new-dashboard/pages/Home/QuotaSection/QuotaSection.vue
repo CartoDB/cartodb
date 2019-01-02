@@ -9,12 +9,12 @@
         </SectionTitle>
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth=false>
+            <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth="false">
               <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="divideBaseTwo(usedStorage, getBaseTwo)" :availableQuota="divideBaseTwo(availableStorage, getBaseTwo)" :unit="getUnitFromBaseTwo(getBaseTwo)"></QuotaWidget>
             </QuotaContainer>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth=true>
+            <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth="true">
               <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
               <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable"></QuotaWidget>
               <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable"></QuotaWidget>
@@ -66,14 +66,12 @@ export default {
     }
   },
   methods: {
-    baseTwoRepresentation (initialByte) {
-      let i = 0;
-      let value = initialByte;
-      while (value > 1024) {
-        value = value / 1024;
-        i = i + 1;
+    baseTwoRepresentation (sizeInBytes) {
+      if (Math.log2) {
+        return Math.log2(sizeInBytes);
       }
-      return (i * 10);
+
+      return Math.log(sizeInBytes) * Math.LOG2E;
     },
     getUnitFromBaseTwo (baseTwo) {
       if (baseTwo < 10) {

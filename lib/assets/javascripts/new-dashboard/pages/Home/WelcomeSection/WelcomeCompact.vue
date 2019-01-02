@@ -4,7 +4,7 @@
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
         <CreateButton class="button--ghost" visualizationType="map">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
-        <CreateButton class="button--ghost" visualizationType="map">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
+        <CreateButton class="button--ghost" visualizationType="dataset">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
       </div>
 
       <div class="welcome-compact__extra">

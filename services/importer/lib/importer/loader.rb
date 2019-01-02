@@ -108,7 +108,7 @@ module CartoDB
           # At this point the_geom column is renamed
           begin
             GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
-          rescue => e
+          rescue StandardError => e
             CartoDB::Logger.warning(exception: e, message: 'Could not fix geometries during import')
             job.log "Error fixing geometries during import, skipped (#{e.message})"
           end

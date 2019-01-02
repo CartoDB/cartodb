@@ -48,7 +48,7 @@
 
     <div class="cell cell--actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
-      <MapQuickActions v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
+      <MapQuickActions class="map--quick-actions" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
     </div>
   </a>
 </template>
@@ -195,14 +195,10 @@ export default {
     }
   }
 
-  .cell--actions {
-    visibility: hidden;
-
-    .quick-actions-placeholder {
-      display: block;
-      width: 24px;
-      height: 24px;
-    }
+  .quick-actions-placeholder {
+    display: block;
+    width: 24px;
+    height: 24px;
   }
 
   &.row--selected {
@@ -247,9 +243,14 @@ export default {
         }
       }
     }
+  }
 
-    .cell--actions {
-      visibility: initial;
+  &.row--quick-actions-open,
+  &:hover {
+    .map--quick-actions {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -267,6 +268,12 @@ export default {
     border-radius: 2px;
     background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
     background-size: cover;
+  }
+
+  .map--quick-actions {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 </style>

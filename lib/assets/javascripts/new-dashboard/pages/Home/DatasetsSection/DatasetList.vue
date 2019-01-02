@@ -1,10 +1,10 @@
 <template>
   <section>
-    <div class="grid-cell--noMargin grid-cell--col12">
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12">
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
-    <ul class="grid-cell--col12" v-if="!isFetchingDatasets">
+    <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
       <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
         <DatasetCard :dataset="dataset" :canHover="false"></DatasetCard>
       </li>

@@ -2,7 +2,7 @@
 <section class="page page--welcome">
   <Welcome />
   <MapsSection class="section" />
-  <DatasetsSection class="section" />
+  <DatasetsSection class="section section--noBorder" />
 </section>
 </template>
 
@@ -30,6 +30,6 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .page--welcome {
-  padding: 0;
+  padding: 64px 0;
 }
 </style>

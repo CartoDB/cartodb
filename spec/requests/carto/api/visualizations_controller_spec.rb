@@ -2939,7 +2939,7 @@ describe Carto::Api::VisualizationsController do
           @visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id, map_id: table.map_id)
         end
 
-        it 'orders descending by default' do
+        xit 'orders descending by default' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived',
                                               order: 'estimated_row_count'), {}, @headers
 
@@ -2951,7 +2951,7 @@ describe Carto::Api::VisualizationsController do
           collection[1]['id'].should eq @visualization_a.id
         end
 
-        it 'orders descending' do
+        xit 'orders descending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
                                               order_direction: 'desc'), {}, @headers
 
@@ -2963,7 +2963,7 @@ describe Carto::Api::VisualizationsController do
           collection[1]['id'].should eq @visualization_a.id
         end
 
-        it 'orders ascending' do
+        xit 'orders ascending' do
           get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', order: 'estimated_row_count',
                                               order_direction: 'asc'), {}, @headers
 

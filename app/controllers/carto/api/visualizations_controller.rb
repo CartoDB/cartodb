@@ -86,6 +86,7 @@ module Carto
         opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
         page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
         _, total_types = get_types_parameters
+
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new

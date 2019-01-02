@@ -14,7 +14,7 @@
         <img width="48" height="48" class="cell--thumbnail__img" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       </div>
       <span class="checkbox cell--thumbnail__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>

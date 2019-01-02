@@ -106,7 +106,12 @@ module CartoDB
         if post_import_handler.has_fix_geometries_task?
           job.log 'Fixing geometry...'
           # At this point the_geom column is renamed
-          GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
+          begin
+            GeometryFixer.new(job.db, job.table_name, SCHEMA, 'the_geom', job).run
+          rescue => e
+            CartoDB::Logger.warning(exception: e, message: 'Could not fix geometries during import')
+            job.log "Error fixing geometries during import, skipped (#{e.message})"
+          end
         end
       rescue => e
         raise CartoDB::Datasources::InvalidInputDataError.new(e.to_s, ERRORS_MAP[CartoDB::Datasources::InvalidInputDataError]) unless statement_timeout?(e.to_s)

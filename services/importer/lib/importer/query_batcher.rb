@@ -44,7 +44,7 @@ module CartoDB
         if @create_seq_field
           remove_id_column(column_name, qualified_table_name, table_schema)
         end
-        
+
         @logger.log("Finished batched query by '#{column_name}' in #{qualified_table_name}: query")
       rescue => e
         CartoDB::Logger.error(exception: e)
@@ -56,7 +56,7 @@ module CartoDB
 
       def batched_query(query, min, max, column_name)
         contains_where = !query.match(/\swhere\s/i).nil?
-        batched_query = query 
+        batched_query = query
         batched_query += (contains_where ? ' AND ' : ' WHERE ')
         batched_query += " #{column_name} >= #{min} AND #{column_name} < #{max}"
         batched_query

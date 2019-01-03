@@ -97,7 +97,7 @@ module.exports = {
 
   new_lockout: [
     '@babel/polyfill',
-    rootDir('lib/assets/javascripts/new-dashboard/bundles/trial-expired/trial-expired.js')
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
   ],
 
   organization: [

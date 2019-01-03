@@ -6,7 +6,7 @@
 import Footer from 'new-dashboard/components/Footer';
 
 export default {
-  name: 'TrialExpiredApp',
+  name: 'LockoutApp',
   components: {
     Footer
   }

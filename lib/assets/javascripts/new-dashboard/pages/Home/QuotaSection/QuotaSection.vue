@@ -1,5 +1,5 @@
 <template>
-  <div class="section is-bgSoftBlue">
+  <div class="section is-bgSoftBlue section--noBorder">
     <div class="container">
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="$t(`QuotaSection.title`)">

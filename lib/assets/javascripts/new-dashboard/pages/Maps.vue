@@ -149,7 +149,8 @@ export default {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     emptyStateText () {
-      return (this.initialState && this.hasSharedMaps) ? this.$t('MapsPage.emptyCase.onlyShared', { path: this.$router.options.base }) : this.$t('MapsPage.emptyCase.default', { path: this.$router.options.base });
+      const path = this.$router.resolve(location).href;
+      return (this.initialState && this.hasSharedMaps) ? this.$t('MapsPage.emptyCase.onlyShared', { path }) : this.$t('MapsPage.emptyCase.default', { path });
     },
     hasSharedMaps () {
       return this.totalShared > 0;

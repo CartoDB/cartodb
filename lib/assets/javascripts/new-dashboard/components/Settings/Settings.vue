@@ -5,7 +5,6 @@
   </template>
 
   <Filters :section="section" :filter="filter" :metadata="metadata" @filterChanged="setFilter"/>
-  <Ordering :order="order" :orderDirection="orderDirection" @orderChanged="setOrder"/>
 </Dropdown>
 </template>
 
@@ -24,8 +23,6 @@ export default {
   props: {
     section: String,
     filter: String,
-    order: String,
-    orderDirection: String,
     metadata: {
       type: Object,
       default () {
@@ -43,10 +40,6 @@ export default {
     setFilter (filter) {
       this.$refs.dropdown.closeDropdown();
       this.$emit('filterChanged', filter);
-    },
-    setOrder (orderSettings) {
-      this.$refs.dropdown.closeDropdown();
-      this.$emit('orderChanged', orderSettings);
     }
   }
 };

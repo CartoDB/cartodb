@@ -84,4 +84,8 @@ export default {
     margin-bottom: 36px;
   }
 }
+
+.empty-state {
+  margin: 20vh 0 8vh;
+}
 </style>

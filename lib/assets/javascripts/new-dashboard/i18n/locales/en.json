@@ -70,7 +70,7 @@
     "zeroCase": {
       "title": "Upload, create or connect your first dataset",
       "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
-      "createDataset": "New Dataset"
+      "createDataset": "Create your first dataset"
     },
     "emptyState": "There are no datasets here."
   },
@@ -106,18 +106,18 @@
     "showMe": "Show me",
     "orderMaps": "Order",
     "types": {
-      "maps": "Your maps ({count})",
-      "datasets": "Your datasets ({count})",
+      "maps": "Your maps",
+      "datasets": "Your datasets",
       "shared": "Shared with you ({count})",
       "favorited": "Favorited ({count})",
-      "locked": "Locked",
+      "locked": "Locked ({count})",
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
     },
     "order": {
-      "favourites": "Favourites first",
+      "favourites": "Favorites first",
       "views": "Most viewed first",
       "alphabetical": {
         "title": "Name",
@@ -142,7 +142,8 @@
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
     "numberRows": "0 rows | {n} row | {n} rows",
-    "tags": "tags"
+    "tags": "tags",
+    "maps": "0 maps | 1 map | {n} maps"
   },
   "DatasetListHeader": {
     "name": "Name",
@@ -209,8 +210,40 @@
   "HomePage": {
     "WelcomeSection": {
       "greeting" : "Hello, {username}",
+      "firstTime": {
+        "message": "Your brand new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
+        "planMessage": {
+          "free": "Remember that you're currently on the FREE plan.",
+          "30day": "Remember that you're currently on the 30-day personal trial.",
+          "pro": "Remember that you're currently on the Professional plan.",
+          "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
+          "organizationUser": "Remember that you're currently a member of the {organizationName} organization.",
+          "unknown": ""
+        },
+        "contactOrganizationAdmin": "Contact the admin",
+        "manageOrganization": "Manage my organization"
+      },
+      "trialMessage": "{date} left in your Trial.",
       "notificationsButton": "Go to Notifications",
-      "learnMoreButton": "Learn More"
+      "learnMoreButton": "Learn More",
+      "actions": {
+        "createMap": "New map",
+        "createDataset": "New dataset"
+      },
+      "addPaymentMethod": "Add payment"
+    },
+    "MapsSection": {
+      "title": "Your Maps",
+      "allMapsLink" : "VIEW ALL MAPS"
+    },
+    "DatasetsSection": {
+      "title": "Your Datasets",
+      "viewAll": "VIEW ALL DATASETS"
+    },
+    "CreateMapCard": {
+      "header": "Create your first map to predict key insights",
+      "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
+      "button": "Create your first Map"
     }
   }
 }

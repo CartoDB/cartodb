@@ -6,7 +6,8 @@
        'dataset-row--quick-actions-open': areQuickActionsOpen,
        'dataset-row--no-hover': !activeHover,
        'dataset-row--can-hover': canHover
-     }">
+     }"
+     @click="onClick">
     <div class="dataset-cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
@@ -23,7 +24,7 @@
         <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
           {{ dataset.name }}
         </h3>
-        <span class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
@@ -55,14 +56,28 @@
       <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
     </div>
     <div class="dataset-cell cell--small">
-      <span class="text is-small is-txtSoftGrey">1 map</span>
+      <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
+        {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
+      </span>
+
+      <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
+          <span class="text is-small is-txtSoftGrey">
+            {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
+          </span>
+
+          <template slot="footer" v-if="dataset.dependent_visualizations_count > 10">
+            + {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count - 10, { n: dataset.dependent_visualizations_count - 10 }) }}
+          </template>
+      </FeaturesDropdown>
     </div>
     <div class="dataset-cell cell--small cell--privacy">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
     <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
       <DatasetQuickActions
+        v-if="showInteractiveElements"
         :dataset="dataset"
         :isShared="isShared"
         class="dataset--quick-actions"
@@ -95,6 +110,10 @@ export default {
     canHover: {
       type: Boolean,
       default: true
+    },
+    selectMode: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -144,6 +163,15 @@ export default {
     },
     isShared () {
       return Visualization.isShared(this.$props.dataset, this.$cartoModels);
+    },
+    showInteractiveElements () {
+      return !this.$props.selectMode;
+    },
+    dependentVisualizationsWithUrl () {
+      return this.$props.dataset.dependent_visualizations.map(visualization => {
+        visualization.url = Visualization.getURL(visualization, this.$cartoModels);
+        return visualization;
+      });
     }
   },
   methods: {
@@ -185,7 +213,13 @@ export default {
     ...mapActions({
       likeDataset: 'datasets/like',
       deleteLikeDataset: 'datasets/deleteLike'
-    })
+    }),
+    onClick (event) {
+      if (this.$props.selectMode) {
+        event.preventDefault();
+        this.toggleSelection();
+      }
+    }
   }
 };
 </script>
@@ -202,7 +236,7 @@ export default {
   background-color: $white;
 
   &.dataset-row--selected {
-    box-shadow: inset 0 0 0 1px $primary-color;
+    box-shadow: 0 0 0 1px $primary-color;
   }
 
   &.dataset-row--quick-actions-open,
@@ -442,5 +476,11 @@ export default {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+.quick-actions-placeholder {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 </style>

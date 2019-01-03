@@ -1,7 +1,7 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" active-class="is-active">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
@@ -13,12 +13,12 @@
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Maps</span>
       </router-link>
-      <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
+      <!-- <router-link :to="{ name: 'solutions' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/solutions.svg" />
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span>
-      </router-link>
+      </router-link> -->
       <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />

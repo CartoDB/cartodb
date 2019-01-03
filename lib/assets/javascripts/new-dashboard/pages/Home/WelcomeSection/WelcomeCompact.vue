@@ -1,10 +1,14 @@
 <template>
   <section class="welcome-compact">
-    <div class="container">
+    <div class="container welcome-compact__content">
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
-        <CreateButton visualizationType="map">{{ $t(`MapsPage.createMap`) }}</CreateButton>
-        <CreateButton visualizationType="map">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+        <CreateButton class="button--ghost" visualizationType="map">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
+        <CreateButton class="button--ghost" visualizationType="dataset">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
+      </div>
+
+      <div class="welcome-compact__extra">
+        <slot />
       </div>
     </div>
   </section>
@@ -32,10 +36,16 @@ export default {
 <style scoped lang="scss">
 @import "stylesheets/new-dashboard/variables";
 
+.welcome-compact__content {
+  display: flex;
+  align-items: center;
+  max-width: 940px;
+  padding: 0;
+}
+
 .welcome-compact {
   position: relative;
-  top: 64px;
-  padding: 24px;
+  padding: 20px;
   border-bottom: 1px solid #E6E8EB;
 
   &__greeting {
@@ -47,12 +57,23 @@ export default {
     display: inline-flex;
   }
 
-  .button {
+  &__extra {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .button--ghost {
     margin-right: 36px;
     padding: 0;
     background: none;
     color: #047AE6;
-    text-transform: uppercase;
+    text-transform: none;
+  }
+
+  .button--outline {
+    margin-left: 24px;
+    padding: 9px 16px;
   }
 }
 </style>

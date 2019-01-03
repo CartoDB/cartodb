@@ -28,7 +28,7 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
       <!---->
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
-    <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+    <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
     <div class="title is-small is-txtAlert">UserDropdown.logout</div>
   </a>
 </div>
@@ -61,7 +61,7 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
       </router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
-    <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+    <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
     <div class="title is-small is-txtAlert">UserDropdown.logout</div>
   </a>
 </div>
@@ -97,7 +97,7 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
       <!---->
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
-    <div class="arrow"><img svg-inline="" src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
+    <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
     <div class="title is-small is-txtAlert">UserDropdown.logout</div>
   </a>
 </div>

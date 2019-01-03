@@ -29,7 +29,7 @@ export default {
       return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
     },
     text () {
-      return  this.hasNotifications
+      return this.hasNotifications
         ? 'You have unread notifications, do you want to read them now?'
         : 'We just released CARTO VL, our new vector rendering Javascript library to create amazing LI applications.';
     },
@@ -45,7 +45,6 @@ export default {
 
 .welcome-basic {
   position: relative;
-  top: 64px;
   padding: 124px 0;
   text-align: center;
 

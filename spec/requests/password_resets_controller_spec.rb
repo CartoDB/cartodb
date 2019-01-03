@@ -76,6 +76,40 @@ describe PasswordResetsController do
       response.body.should include "Please ensure your passwords match"
     end
 
+    it 'shows an error if the password is the username' do
+      payload = { carto_user: { password: @user.username, password_confirmation: @user.username } }
+
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
+
+      response.status.should == 200
+      response.body.should include "must be different than the user name"
+    end
+
+    it 'shows an error if the password is a common one' do
+      payload = { carto_user: { password: 'galina', password_confirmation: 'galina' } }
+
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
+
+      response.status.should == 200
+      response.body.should include "be a common password"
+    end
+
+    it 'shows an error if the password is not strong' do
+      organization = mock
+      organization.stubs(:strong_passwords_enabled).returns(true)
+      organization.stubs(:color)
+      organization.stubs(:avatar_url)
+      Carto::User.any_instance.stubs(:organization).returns(organization)
+
+      payload = { carto_user: { password: 'galinaa', password_confirmation: 'galinaa' } }
+
+      put update_password_reset_path(id: @user.password_reset_token), payload, @headers
+
+      response.status.should == 200
+      response.body.should include "must be at least 8 characters long"
+      Carto::User.any_instance.unstub(:organization)
+    end
+
     it 'redirects to the initial password reset view if the token has expired' do
       payload = { carto_user: { password: 'newpass', password_confirmation: 'other' } }
 
@@ -101,7 +135,7 @@ describe PasswordResetsController do
     it 'resets the password_reset_token' do
       @user.password_reset_token.should_not be_nil
 
-      payload = { carto_user: { password: 'newpass', password_confirmation: 'newpass' } }
+      payload = { carto_user: { password: 'newpass2', password_confirmation: 'newpass2' } }
 
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 
@@ -110,7 +144,7 @@ describe PasswordResetsController do
     end
 
     it 'redirects to the right page' do
-      payload = { carto_user: { password: 'newpass', password_confirmation: 'newpass' } }
+      payload = { carto_user: { password: 'newpass3', password_confirmation: 'newpass3' } }
 
       put update_password_reset_path(id: @user.password_reset_token), payload, @headers
 

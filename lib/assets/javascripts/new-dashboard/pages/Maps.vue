@@ -45,17 +45,7 @@
       </SectionTitle>
 
       <div class="grid-cell" v-if="initialState">
-        <InitialState :title="$t(`MapsPage.zeroCase.title`)">
-          <template slot="icon">
-            <img svg-inline src="../assets/icons/maps/initialState.svg">
-          </template>
-          <template slot="description">
-            <p class="text is-caption is-txtGrey" v-html="$t(`MapsPage.zeroCase.description`)"></p>
-          </template>
-          <template slot="actionButton">
-            <CreateButton visualizationType="maps">{{ $t(`MapsPage.zeroCase.createMap`) }}</CreateButton>
-          </template>
-        </InitialState>
+        <CreateMapCard></CreateMapCard>
       </div>
 
       <ul class="grid" v-if="isFetchingMaps">
@@ -66,7 +56,7 @@
 
       <ul class="grid" v-if="!isFetchingMaps && numResults > 0">
         <li v-for="map in maps" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" :key="map.id">
-          <MapCard :map=map :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected"></MapCard>
+          <MapCard :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
         </li>
       </ul>
 
@@ -95,11 +85,13 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 
 export default {
   name: 'MapsPage',
   components: {
     CreateButton,
+    CreateMapCard,
     EmptyState,
     SettingsDropdown,
     MapBulkActions,
@@ -153,10 +145,13 @@ export default {
       return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingMaps && !this.numResults && !this.hasFilterApplied('mine');
+      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
+    },
+    isSomeMapSelected () {
+      return this.selectedMaps.length > 0;
     }
   },
   methods: {
@@ -231,5 +226,9 @@ export default {
 
 .pagination-element {
   margin-top: 28px;
+}
+
+.empty-state {
+  margin: 20vh 0 8vh;
 }
 </style>

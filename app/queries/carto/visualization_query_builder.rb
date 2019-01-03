@@ -10,8 +10,6 @@ require_dependency 'carto/uuidhelper'
 class Carto::VisualizationQueryBuilder
   include Carto::UUIDHelper
 
-  SUPPORTED_OFFDATABASE_ORDERS = %w(mapviews likes size estimated_row_count dependent_visualizations).freeze
-
   def self.user_public_tables(user)
     user_public(user).with_type(Carto::Visualization::TYPE_CANONICAL)
   end
@@ -28,21 +26,9 @@ class Carto::VisualizationQueryBuilder
     new.with_user_id(user ? user.id : nil).with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
   end
 
-  PARTIAL_MATCH_QUERY = %Q{
-    to_tsvector(
-      'english', coalesce("visualizations"."name", '') || ' '
-      || coalesce("visualizations"."description", '')
-    ) @@ plainto_tsquery('english', ?)
-    OR CONCAT("visualizations"."name", ' ', "visualizations"."description") ILIKE ?
-  }
-
-  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
-
   def initialize
     @include_associations = []
     @eager_load_associations = []
-    @order = {}
-    @off_database_order = {}
     @exclude_synced_external_sources = false
     @exclude_imported_remote_visualizations = false
     @excluded_kinds = []
@@ -172,23 +158,19 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_order(order, asc_desc = :asc)
-    offdb_order = offdatabase_order(order)
-    if offdb_order
-      @off_database_order[offdb_order] = asc_desc
-    else
-      @order[order] = asc_desc
-    end
+  def with_current_user_id(user_id)
+    @current_user_id = user_id
+  end
+
+  def with_order(order, direction = 'asc')
+    @order = order.to_s
+    @direction = direction.to_s
     self
   end
 
   def with_partial_match(tainted_search_pattern)
-    @tainted_search_pattern = escape_characters_from_pattern(tainted_search_pattern)
+    @tainted_search_pattern = tainted_search_pattern
     self
-  end
-
-  def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| (PATTERN_ESCAPE_CHARS.include? c) ? "\\" + c : c }.join
   end
 
   def with_tags(tags)
@@ -342,7 +324,7 @@ class Carto::VisualizationQueryBuilder
     end
 
     if @tainted_search_pattern
-      query = query.where(PARTIAL_MATCH_QUERY, @tainted_search_pattern, "%#{@tainted_search_pattern}%")
+      query = Carto::VisualizationQuerySearcher.new(query).search(@tainted_search_pattern)
     end
 
     if @tags
@@ -387,16 +369,7 @@ class Carto::VisualizationQueryBuilder
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
 
-    @order.each do |k, v|
-      query = query.order(k)
-      query = query.reverse_order if v == :desc
-    end
-
-    if @off_database_order.empty?
-      query
-    else
-      Carto::OffdatabaseQueryAdapter.new(query, @off_database_order)
-    end
+    order_query(query)
   end
 
   def build_paged(page = 1, per_page = 20)
@@ -405,11 +378,11 @@ class Carto::VisualizationQueryBuilder
 
   private
 
-  def offdatabase_order(order)
-    return nil unless order.kind_of? String
-    fragments = order.split('.')
-    order_attribute = fragments[fragments.count - 1]
-    SUPPORTED_OFFDATABASE_ORDERS.include?(order_attribute) ? order_attribute : nil
+  def order_query(query)
+    # Search has its own ordering criteria
+    return query if @tainted_search_pattern
+
+    Carto::VisualizationQueryOrderer.new(query: query, user_id: @current_user_id).order(@order, @direction)
   end
 
   def with_include_of(association)

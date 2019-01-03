@@ -170,7 +170,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
     ActiveRecord::Base.transaction do
-      if attributes[:mfa].present? && @user.has_feature_flag?('mfa')
+      if attributes[:mfa].present?
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
         service.update(enabled: attributes[:mfa] == '1')
       end

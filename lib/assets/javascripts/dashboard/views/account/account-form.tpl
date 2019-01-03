@@ -39,30 +39,28 @@
     </div>
   <% } %>
 
-  <% if (mfaFeatureFlagEnabled) { %>
-    <div class="FormAccount-row">
-      <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
-          <%= _t('account.views.form.multifactor_authentication') %>
-        </label>
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+        <%= _t('account.views.form.multifactor_authentication') %>
+      </label>
+    </div>
+    <div class="FormAccount-rowData u-tspace-s u-vspace-s">
+      <div class="Toggler">
+        <input name="user[mfa]" type="hidden" value="0">
+        <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="1" <% if (mfaEnabled) { %>checked="checked"<% } %>>
+        <label for="mfa"></label>
       </div>
-      <div class="FormAccount-rowData u-tspace-s u-vspace-s">
-        <div class="Toggler">
-          <input name="user[mfa]" type="hidden" value="0">
-          <input class="js-toggle-mfa" id="mfa" name="user[mfa]" type="checkbox" value="1" <% if (mfaEnabled) { %>checked="checked"<% } %>>
-          <label for="mfa"></label>
-        </div>
-        <div class="FormAccount-rowInfo u-lSpace--xl">
-          <p class="CDB-Text CDB-Size-medium js-mfa-label">
-            <%= mfaEnabled ? _t('account.views.form.mfa_enabled') : _t('account.views.form.mfa_disabled') %>
-          </p>
-        </div>
-      </div>
-      <div class="FormAccount-rowData u-tspace-xs">
-        <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
+      <div class="FormAccount-rowInfo u-lSpace--xl">
+        <p class="CDB-Text CDB-Size-medium js-mfa-label">
+          <%= mfaEnabled ? _t('account.views.form.mfa_enabled') : _t('account.views.form.mfa_disabled') %>
+        </p>
       </div>
     </div>
-  <% } %>
+    <div class="FormAccount-rowData u-tspace-xs">
+      <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
+    </div>
+  </div>
   
   <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
     <div class="FormAccount-title">

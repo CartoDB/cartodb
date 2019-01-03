@@ -164,8 +164,8 @@ export default {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     emptyStateText () {
-      const path = this.$router.resolve(location).href;
-      return (this.initialState && this.hasSharedDatasets) ? this.$t('DataPage.emptyCase.onlyShared', { path }) : this.$t('DataPage.emptyCase.default', { path });
+      const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
+      return (this.initialState && this.hasSharedDatasets) ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
     },
     hasSharedDatasets () {
       return this.totalShared > 0;

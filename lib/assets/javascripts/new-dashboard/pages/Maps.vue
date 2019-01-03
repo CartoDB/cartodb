@@ -149,8 +149,8 @@ export default {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     emptyStateText () {
-      const path = this.$router.resolve(location).href;
-      return (this.initialState && this.hasSharedMaps) ? this.$t('MapsPage.emptyCase.onlyShared', { path }) : this.$t('MapsPage.emptyCase.default', { path });
+      const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
+      return (this.initialState && this.hasSharedMaps) ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href }) : this.$t('MapsPage.emptyCase.default', { path: route.href });
     },
     hasSharedMaps () {
       return this.totalShared > 0;

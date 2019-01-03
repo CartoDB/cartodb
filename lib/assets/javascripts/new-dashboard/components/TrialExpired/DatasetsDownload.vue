@@ -8,11 +8,8 @@
         </template>
       </SectionTitle>
       <ul class="grid">
-        <li class="grid-cell grid-cell--col12 download-element">
-          <DownloadCard name="Prueba" dataType="polygon"></DownloadCard>
-        </li>
-        <li class="grid-cell grid-cell--col12 download-element">
-          <DownloadCard name="Otra prueba" dataType="point"></DownloadCard>
+        <li class="grid-cell grid-cell--col12 download-element" v-for="dataset in datasets" :key="dataset.id">
+          <DownloadCard :name="dataset.name" :dataType="dataType(dataset)"></DownloadCard>
         </li>
       </ul>
     </div>
@@ -23,12 +20,37 @@
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import DownloadCard from 'new-dashboard/components/TrialExpired/DownloadCard';
+import { mapState } from 'vuex';
 
 export default {
-  name: 'MapsDownload',
+  name: 'DatasetsDownload',
   components: {
     SectionTitle,
     DownloadCard
+  },
+  computed: {
+    ...mapState({
+      datasets: state => state.datasets.list
+    })
+  },
+  methods: {
+    dataType (dataset) {
+      const geometryTypes = {
+        'st_multipolygon': 'polygon',
+        'st_polygon': 'polygon',
+        'st_multilinestring': 'line',
+        'st_linestring': 'line',
+        'st_multipoint': 'point',
+        'st_point': 'point',
+        '': 'empty'
+      };
+      let geometry = '';
+      if (dataset.table && dataset.table.geometry_types && dataset.table.geometry_types.length) {
+        geometry = dataset.table.geometry_types[0];
+      }
+      const currentGeometryType = geometry.toLowerCase();
+      return geometryTypes[currentGeometryType] ? geometryTypes[currentGeometryType] : 'unknown';
+    }
   }
 };
 </script>

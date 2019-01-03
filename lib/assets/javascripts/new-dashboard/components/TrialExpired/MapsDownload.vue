@@ -9,7 +9,7 @@
       </SectionTitle>
       <ul class="grid">
         <li class="grid-cell grid-cell--col12 download-element" v-for="map in maps" :key="map.id">
-          <DownloadCard :name="map.name" :image="mapThumbnailUrl"></DownloadCard>
+          <DownloadCard :name="map.name" :image="mapThumbnailUrl(map)"></DownloadCard>
         </li>
       </ul>
     </div>
@@ -32,9 +32,11 @@ export default {
   computed: {
     ...mapState({
       maps: state => state.maps.list
-    }),
-    mapThumbnailUrl () {
-      return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
+    })
+  },
+  methods: {
+    mapThumbnailUrl (map) {
+      return Visualization.getThumbnailUrl(map, this.$cartoModels, { width: 600, height: 280 });
     }
   }
 };

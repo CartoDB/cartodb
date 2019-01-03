@@ -29,6 +29,11 @@ export default {
     dataType: String,
     image: String
   },
+  data: function () {
+    return {
+      isThumbnailErrored: false
+    };
+  },
   methods: {
     onThumbnailError () {
       this.isThumbnailErrored = true;

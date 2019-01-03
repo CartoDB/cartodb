@@ -246,6 +246,22 @@
       "button": "Create your first Map"
     }
   },
+  "QuotaSection": {
+    "title": "Your Usage Metrics",
+    "header": {
+      "remaining": "Remaining",
+      "used": "Used",
+      "total": "Total",
+      "perMonth": "per month"
+    },
+    "disk": "Disk",
+    "dataServices": "Data Services",
+    "storage": "Storage",
+    "geocoding": "Geocoding",
+    "isolines": "Isolines",
+    "routing": "Routing",
+    "credits": "Your credits will be renewed the {day} of next month. "
+  },
   "Footer": {
     "HelpCenter": {
       "title": "Help Center",

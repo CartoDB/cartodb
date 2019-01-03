@@ -4,7 +4,6 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
   ssl_required
 
   before_action :load_user
-  before_action :check_ff
 
   before_action :load_multifactor_auth, only: [:show, :verify_code, :destroy]
 
@@ -58,7 +57,4 @@ class Carto::Api::MultifactorAuthsController < ::Api::ApplicationController
     { type: params.require(:type) }
   end
 
-  def check_ff
-    raise Carto::UnauthorizedError.new unless @carto_viewer.has_feature_flag?('mfa')
-  end
 end

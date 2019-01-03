@@ -95,6 +95,11 @@ module.exports = {
 
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
 
+  new_lockout: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/trial-expired/trial-expired.js')
+  ],
+
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),
     rootDir('assets/stylesheets/plugins/tagit.scss'),

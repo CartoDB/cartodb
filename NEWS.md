@@ -6,6 +6,7 @@ Development
 
 ### Features
 
+* You can configure your API key for the search bar, powered by TomTom, with `geocoder.tomtom.search_bar_api_key` (#14578).
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 - /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))

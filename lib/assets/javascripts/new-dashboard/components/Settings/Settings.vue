@@ -11,14 +11,12 @@
 <script>
 import Dropdown from '../Dropdowns/Dropdown';
 import Filters from '../Settings/Filters';
-import Ordering from '../Settings/Ordering';
 
 export default {
   name: 'SettingsDropdown',
   components: {
     Dropdown,
-    Filters,
-    Ordering
+    Filters
   },
   props: {
     section: String,

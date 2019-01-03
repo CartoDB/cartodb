@@ -14,6 +14,9 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
             SettingsDropdown.types.maps
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            SettingsDropdown.types.favorited
+          </a></li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.shared
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
@@ -30,37 +33,6 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
           </a> |
           <a href="javascript:void(0)" class="element">
             SettingsDropdown.types.passwordPrivacy
-          </a></li>
-      </ul>
-    </div>
-    <div class="section">
-      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.orderMaps</h6>
-      <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a class="element">
-            SettingsDropdown.order.favourites
-          </a></li>
-        <li class="type text is-caption is-txtGrey type--selected">
-          SettingsDropdown.order.date.title (
-          <a class="element element--selected">
-            SettingsDropdown.order.date.newest
-          </a> |
-          <a class="element">
-            SettingsDropdown.order.date.oldest
-          </a>
-          )
-        </li>
-        <li class="type text is-caption is-txtGrey">
-          SettingsDropdown.order.alphabetical.title (
-          <a class="element">
-            SettingsDropdown.order.alphabetical.A-Z
-          </a> |
-          <a class="element">
-            SettingsDropdown.order.alphabetical.Z-A
-          </a>
-          )
-        </li>
-        <li class="type text is-caption is-txtGrey"><a class="element">
-            SettingsDropdown.order.views
           </a></li>
       </ul>
     </div>
@@ -82,6 +54,9 @@ exports[`Settings.vue should render correct contents based on filter and order 1
             SettingsDropdown.types.maps
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
+            SettingsDropdown.types.favorited
+          </a></li>
+        <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.shared
           </a></li>
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
@@ -98,37 +73,6 @@ exports[`Settings.vue should render correct contents based on filter and order 1
           </a> |
           <a href="javascript:void(0)" class="element">
             SettingsDropdown.types.passwordPrivacy
-          </a></li>
-      </ul>
-    </div>
-    <div class="section">
-      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.orderMaps</h6>
-      <ul class="list">
-        <li class="type text is-caption is-txtGrey"><a class="element">
-            SettingsDropdown.order.favourites
-          </a></li>
-        <li class="type text is-caption is-txtGrey type--selected">
-          SettingsDropdown.order.date.title (
-          <a class="element element--selected">
-            SettingsDropdown.order.date.newest
-          </a> |
-          <a class="element">
-            SettingsDropdown.order.date.oldest
-          </a>
-          )
-        </li>
-        <li class="type text is-caption is-txtGrey">
-          SettingsDropdown.order.alphabetical.title (
-          <a class="element">
-            SettingsDropdown.order.alphabetical.A-Z
-          </a> |
-          <a class="element">
-            SettingsDropdown.order.alphabetical.Z-A
-          </a>
-          )
-        </li>
-        <li class="type text is-caption is-txtGrey"><a class="element">
-            SettingsDropdown.order.views
           </a></li>
       </ul>
     </div>

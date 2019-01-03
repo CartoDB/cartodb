@@ -1,5 +1,5 @@
 <template>
-<div class="section">
+<div class="section section--noBorder">
   <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.filter') }}</h6>
   <ul class="list">
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
@@ -75,7 +75,6 @@ export default {
 
 .section {
   padding: 24px 12px 24px 36px;
-  border-bottom: 1px solid $light-grey;
   background-color: #FFF;
 }
 

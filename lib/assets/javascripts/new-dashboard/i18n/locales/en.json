@@ -103,7 +103,7 @@
     "loadingState": "Loading your notifications."
   },
   "SettingsDropdown": {
-    "showMe": "Show me",
+    "filter": "Filter",
     "orderMaps": "Order",
     "types": {
       "maps": "Your maps",

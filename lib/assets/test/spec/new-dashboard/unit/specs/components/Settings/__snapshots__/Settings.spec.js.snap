@@ -8,7 +8,7 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
     </svg></button>
   <div class="dropdown is-open">
     <div class="section">
-      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.showMe</h6>
+      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.filter</h6>
       <ul class="list">
         <li class="type text is-caption is-txtGrey type--selected"><a href="javascript:void(0)" class="element element--selected">
             SettingsDropdown.types.maps
@@ -48,7 +48,7 @@ exports[`Settings.vue should render correct contents based on filter and order 1
     </svg></button>
   <div class="dropdown">
     <div class="section">
-      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.showMe</h6>
+      <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">SettingsDropdown.filter</h6>
       <ul class="list">
         <li class="type text is-caption is-txtGrey"><a href="javascript:void(0)" class="element">
             SettingsDropdown.types.maps

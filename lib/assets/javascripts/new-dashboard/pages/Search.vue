@@ -74,7 +74,7 @@
 <script>
 import StickySubheader from 'new-dashboard/components/StickySubheader';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
-import MapCardFake from 'new-dashboard/components/MapCardFake';
+import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import Pagination from 'new-dashboard/components/Pagination';

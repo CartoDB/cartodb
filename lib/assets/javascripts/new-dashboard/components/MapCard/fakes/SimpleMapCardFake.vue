@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'MapCardFake'
+  name: 'SimpleMapCardFake'
 };
 </script>
 

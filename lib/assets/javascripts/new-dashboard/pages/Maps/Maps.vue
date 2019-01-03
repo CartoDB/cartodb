@@ -54,17 +54,18 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <ul class="grid" v-if="isFetchingMaps">
-        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="n in 12" :key="n">
-          <MapCardFake></MapCardFake>
-        </li>
-      </ul>
-
       <CondensedMapHeader
         :order="appliedOrder"
         :orderDirection="appliedOrderDirection"
         @orderChanged="applyOrder"
         v-if="isCondensed"></CondensedMapHeader>
+
+      <ul class="grid" v-if="isFetchingMaps">
+        <li :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
+          <MapCardFake :condensed="isCondensed"></MapCardFake>
+        </li>
+      </ul>
+
       <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
         <li v-for="map in maps" :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
@@ -93,7 +94,7 @@ import InitialState from 'new-dashboard/components/States/InitialState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
-import MapCardFake from 'new-dashboard/components/MapCardFake';
+import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
@@ -273,7 +274,12 @@ export default {
 }
 
 .card-condensed {
+  width: 100%;
   border-bottom: 1px solid #EBEEF5;
+
+  &:last-child {
+    border-bottom: 0;
+  }
 }
 
 .mapcard-view-mode {

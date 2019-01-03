@@ -30,17 +30,27 @@ class Carto::VisualizationQueryOrderer
   private
 
   def prepare_order_params(order_string, direction_string)
-    @order_hash = {}
     directions = direction_string.split(',')
     orders = order_string.split(',')
 
-    orders.each_with_index do |order, index|
-      order = "visualizations.#{order}" if VISUALIZATION_TABLE_ORDERS.include?(order)
-      order = DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE if order == "dependent_visualizations"
-      order = FAVORITED_ORDER_CLAUSE if order == "favorited"
-      @order_hash[order] = directions[index] || directions[0] || DEFAULT_ORDER_DIRECTION
+    @order_hash = orders.zip(directions).map { |order, direction|
+      order = custom_order_clause(order)
+      direction ||= directions[0] || DEFAULT_ORDER_DIRECTION
+      [order, direction]
+    }.to_h
+  end
+
+  def custom_order_clause(order)
+    case order
+    when 'favorited'
+      FAVORITED_ORDER_CLAUSE
+    when 'dependent_visualizations'
+      DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE
+    when *VISUALIZATION_TABLE_ORDERS
+      "visualizations.#{order}"
+    else
+      order
     end
-    @order_hash
   end
 
   def database_orders

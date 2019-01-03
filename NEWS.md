@@ -18,9 +18,11 @@ Development
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
 - Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
+- Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 
 4.23.4 (2018-12-18)
 -------------------

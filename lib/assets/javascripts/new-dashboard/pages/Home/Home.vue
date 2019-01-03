@@ -33,6 +33,6 @@ export default {
 @import 'stylesheets/new-dashboard/variables';
 
 .page--welcome {
-  padding: 64px 0;
+  padding: 64px 0 0;
 }
 </style>

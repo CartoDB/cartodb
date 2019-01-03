@@ -7,6 +7,11 @@
         {{ $t(`SettingsDropdown.types.${section}`) }}
       </a>
     </li>
+    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
+      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
+        {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}
+      </a>
+    </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }" v-if="metadata.total_shared">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('shared') }" @click="setFilter('shared')">
         {{ $t('SettingsDropdown.types.shared', { count: metadata.total_shared }) }}

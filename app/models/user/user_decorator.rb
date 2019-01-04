@@ -19,6 +19,7 @@ module CartoDB
         last_name: last_name,
         created_at: created_at,
         username: username,
+        state: state,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,

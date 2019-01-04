@@ -22,6 +22,10 @@ describe Carto::UserMetadataExportService do
     @connector_provider.destroy
   end
 
+  before(:each) do
+    Cartodb::Central.any_instance.stubs(:update_user).returns(true)
+  end
+
   def create_user_with_basemaps_assets_visualizations
     create_account_type_fg('FREE')
     @user = FactoryGirl.create(:carto_user)
@@ -51,11 +55,15 @@ describe Carto::UserMetadataExportService do
     @remote_visualization.update_attributes!(user: @user)
 
     # Create SearchTweets: one associated to an existing table, and one with invalid table
-    @map2, @table2, @table_visualization2, @visualization2 = create_full_visualization(@user, visualization_attributes: { name: 'waduswadus22' })
+    @map2, @table2, @table_visualization2, @visualization2 = create_full_visualization(
+      @user, visualization_attributes: { name: 'waduswadus22' }
+    )
     @table2.data_import = FactoryGirl.create(:data_import, user: @user, table_id: @table2.id)
     @table2.save!
     @st1 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: @table2.data_import.id)
-    @st2 = FactoryGirl.create(:carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id)
+    @st2 = FactoryGirl.create(
+      :carto_search_tweet, user_id: @user.id, data_import_id: FactoryGirl.create(:data_import).id
+    )
 
     # Rate limits
     sequel_user = ::User[@user.id]
@@ -81,6 +89,8 @@ describe Carto::UserMetadataExportService do
       client_application_id: sequel_user.client_application.id
     ).save
 
+    Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
+
     @user.reload
   end
 
@@ -88,7 +98,7 @@ describe Carto::UserMetadataExportService do
     user.update_attributes!(viewer: false) unless user.destroyed?
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
-    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, DateTime.now))
+    $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     destroy_full_visualization(@map2, @table2, @table_visualization2, @visualization2)
@@ -108,6 +118,7 @@ describe Carto::UserMetadataExportService do
 
   describe '#export' do
     before(:all) do
+      Cartodb::Central.any_instance.stubs(:update_user).returns(true)
       create_user_with_basemaps_assets_visualizations
     end
 
@@ -144,9 +155,9 @@ describe Carto::UserMetadataExportService do
     def test_import_user_from_export(export)
       @user = service.build_user_from_hash_export(export)
       create_account_type_fg('FREE')
+      service.save_imported_user(@user)
       @search_tweets = service.build_search_tweets_from_hash_export(export)
       @search_tweets.each { |st| service.save_imported_search_tweet(st, @user) }
-      service.save_imported_user(@user)
 
       expect_export_matches_user(export[:user], @user)
       @user
@@ -154,6 +165,19 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.7 (without user_multifactor_auths)' do
+      user = test_import_user_from_export(full_export_one_zero_seven)
+
+      expect(user.user_multifactor_auths).to be_empty
+    end
+
+    it 'imports 1.0.6 (without password_reset_token and password_reset_sent_at)' do
+      user = test_import_user_from_export(full_export_one_zero_six)
+
+      expect(user.password_reset_token).to be_nil
+      expect(user.password_reset_sent_at).to be_nil
     end
 
     it 'imports 1.0.5 (without client_application)' do
@@ -183,13 +207,13 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports 1.0.1 (without static notifications)' do
-      user =  test_import_user_from_export(full_export_one_zero_one)
+      user = test_import_user_from_export(full_export_one_zero_one)
 
       expect(user.static_notifications.notifications).to be_empty
     end
 
     it 'imports 1.0.0 (without search tweets)' do
-      user =  test_import_user_from_export(full_export_one_zero_zero)
+      user = test_import_user_from_export(full_export_one_zero_zero)
 
       expect(user.search_tweets).to be_empty
     end
@@ -305,7 +329,8 @@ describe Carto::UserMetadataExportService do
 
   def expect_export_matches_user(export, user)
     Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
-      expect(export[att]).to eq(user.attributes[att.to_s]), "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
+      error = "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
+      expect(export[att]).to eq(user.attributes[att.to_s]), error
     end
 
     expect(export[:layers].count).to eq user.layers.size
@@ -345,6 +370,15 @@ describe Carto::UserMetadataExportService do
 
     expect_export_matches_rate_limit(export[:rate_limit], user.rate_limit)
     expect_export_matches_client_application(export[:client_application], ::User.find(id: user.id).client_application)
+
+    if export[:user_multifactor_auths]
+      expect(export[:user_multifactor_auths].count).to eq user.user_multifactor_auths.size
+      export[:user_multifactor_auths].zip(user.user_multifactor_auths).each do |exported_uma, uma|
+        expect_export_matches_user_multifactor_auth(exported_uma, uma)
+      end
+    else
+      expect(user.user_multifactor_auths).to be_empty
+    end
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -371,22 +405,22 @@ describe Carto::UserMetadataExportService do
     expect(exported_search_tweet[:service_item_id]).to eq search_tweet.service_item_id
     expect(exported_search_tweet[:retrieved_items]).to eq search_tweet.retrieved_items
     expect(exported_search_tweet[:state]).to eq search_tweet.state
-    expect(exported_search_tweet[:created_at]).to eq search_tweet.created_at
-    expect(exported_search_tweet[:updated_at]).to eq search_tweet.updated_at
+    expect(exported_search_tweet[:created_at].to_s).to eq search_tweet.created_at.to_s
+    expect(exported_search_tweet[:updated_at].to_s).to eq search_tweet.updated_at.to_s
   end
 
   def expect_export_matches_synchronization_oauth(exported_so, so)
     expect(exported_so[:service]).to eq so.service
     expect(exported_so[:token]).to eq so.token
-    expect(exported_so[:created_at]).to eq so.created_at
-    expect(exported_so[:updated_at]).to eq so.updated_at
+    expect(exported_so[:created_at].to_s).to eq so.created_at.to_s
+    expect(exported_so[:updated_at].to_s).to eq so.updated_at.to_s
   end
 
   def expect_export_matches_connector_configuration(exported_cc, cc)
     expect(exported_cc[:enabled]).to eq cc.enabled
     expect(exported_cc[:max_rows]).to eq cc.max_rows
-    expect(exported_cc[:created_at]).to eq cc.created_at
-    expect(exported_cc[:updated_at]).to eq cc.updated_at
+    expect(exported_cc[:created_at].to_s).to eq cc.created_at.to_s
+    expect(exported_cc[:updated_at].to_s).to eq cc.updated_at.to_s
     expect(exported_cc[:provider_name]).to eq cc.connector_provider.name
   end
 
@@ -426,6 +460,24 @@ describe Carto::UserMetadataExportService do
     exported_app[:access_tokens].each do |ex_t|
       expect_exported_token_matches_token(ex_t, app.access_tokens.find { |t| t.token == ex_t[:token] })
     end
+  end
+
+  def expect_export_matches_user_multifactor_auth(exported_uma, uma)
+    expect(exported_uma).to be_nil && return unless uma
+    expect(exported_uma[:user_id]).to eq uma.user_id
+    expect(exported_uma[:type]).to eq uma.type
+    expect(exported_uma[:shared_secret]).to eq uma.shared_secret
+    expect(exported_uma[:enabled]).to eq uma.enabled
+
+    fake_uma = Carto::UserMultifactorAuth.new(
+      last_login: exported_uma[:last_login],
+      created_at: exported_uma[:created_at],
+      updated_at: exported_uma[:updated_at]
+    )
+
+    expect(fake_uma.last_login).to eq uma.last_login
+    expect(fake_uma.created_at).to eq uma.created_at
+    expect(fake_uma.updated_at).to eq uma.updated_at
   end
 
   def expect_exported_token_matches_token(exported_t, token)
@@ -546,9 +598,15 @@ describe Carto::UserMetadataExportService do
     end
   end
 
+  let(:service_item_id) do
+    '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":'\
+      '\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":'\
+      '[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}'
+  end
+
   let(:full_export) do
     {
-      version: "1.0.6",
+      version: "1.0.8",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -582,8 +640,8 @@ describe Carto::UserMetadataExportService do
         api_key: "21ee521b8a107ea55d61fd7b485dd93d54c0b9d2",
         notification: nil,
         organization_id: nil,
-        created_at: DateTime.now,
-        updated_at: DateTime.now,
+        created_at: Time.zone.now,
+        updated_at: Time.zone.now,
         disqus_shortname: nil,
         id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
         twitter_username: nil,
@@ -742,8 +800,8 @@ describe Carto::UserMetadataExportService do
                 type: 'import',
                 entries: ''
               },
-              updated_at: DateTime.now,
-              created_at: DateTime.now,
+              updated_at: Time.zone.now,
+              created_at: Time.zone.now,
               error_code: nil,
               queue_id: nil,
               tables_created_count: nil,
@@ -754,7 +812,7 @@ describe Carto::UserMetadataExportService do
               from_query: nil,
               id: '118813f4-c943-4583-822e-111ed0b51ca4',
               service_name: 'twitter_search',
-              service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+              service_item_id: service_item_id,
               stats: '{}',
               type_guessing: true,
               quoted_fields_guessing: true,
@@ -776,40 +834,40 @@ describe Carto::UserMetadataExportService do
               collision_strategy: nil,
               external_data_imports: []
             },
-            service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+            service_item_id: service_item_id,
             retrieved_items: 123,
             state: 'complete',
-            created_at: DateTime.now,
-            updated_at: DateTime.now
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now
           },
           {
             data_import: nil,
-            service_item_id: '{\"dates\":{\"fromDate\":\"2014-07-29\",\"fromHour\":0,\"fromMin\":0,\"toDate\":\"2014-08-27\",\"toHour\":23,\"toMin\":59,\"user_timezone\":0,\"max_days\":30},\"categories\":[{\"terms\":[\"cartodb\"],\"category\":\"1\",\"counter\":1007}]}',
+            service_item_id: service_item_id,
             retrieved_items: 123,
             state: 'complete',
-            created_at: DateTime.now,
-            updated_at: DateTime.now
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now
           }
         ],
         notifications: {
           builder: {
             onboarding: true,
-            :"layer-style-onboarding" => true,
-            :"layer-analyses-onboarding" => true
+            "layer-style-onboarding": true,
+            "layer-analyses-onboarding": true
           }
         },
         synchronization_oauths: [
           {
             service: 'gdrive',
             token: '1234567890',
-            created_at: DateTime.now,
-            updated_at: DateTime.now
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now
           }
         ],
         connector_configurations: [
           {
-            created_at: DateTime.now,
-            updated_at: DateTime.now,
+            created_at: Time.zone.now,
+            updated_at: Time.zone.now,
             enabled: true,
             max_rows: 100000,
             provider_name: @connector_provider.name
@@ -848,13 +906,36 @@ describe Carto::UserMetadataExportService do
             created_at: "2018-06-11T14:31:46+00:00",
             updated_at: "2018-06-11T14:31:46+00:00"
           }]
-        }
+        },
+        user_multifactor_auths: [{
+          user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0",
+          created_at: "2018-11-16T14:31:46+00:00",
+          updated_at: "2018-11-17T16:41:56+00:00",
+          last_login: "2018-11-17T16:41:56+00:00",
+          enabled: true,
+          shared_secret: 'abcdefgh',
+          type: 'totp'
+        }]
       }
     }
   end
 
+  let(:full_export_one_zero_seven) do
+    user_hash = full_export[:user].except!(:user_multifactor_auths)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_six) do
+    user_hash = full_export_one_zero_seven[:user].except!(:password_reset_token, :password_reset_sent_at)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_five) do
-    user_hash = full_export[:user].except!(:client_application)
+    user_hash = full_export_one_zero_six[:user].except!(:client_application)
     limits_hash = full_export[:user][:rate_limit][:limits]
     full_export[:user] = user_hash
     full_export[:user][:rate_limit][:limits] = limits_hash.except!(:sql_copy_from).except!(:sql_copy_to)

@@ -6,6 +6,7 @@ require_relative '../../../../app/controllers/carto/api/users_controller'
 
 describe Carto::Api::UsersController do
   include_context 'organization with users helper'
+  include Rack::Test::Methods
   include Warden::Test::Helpers
   include HelperMethods
 
@@ -62,7 +63,6 @@ describe Carto::Api::UsersController do
         )
         expect(response.body[:can_change_email]).to eq(user.can_change_email?)
         expect(response.body[:auth_username_password_enabled]).to eq(true)
-        expect(response.body[:should_display_old_password]).to eq(user.should_display_old_password?)
         expect(response.body[:can_change_password]).to eq(true)
         expect(response.body[:plan_name]).to eq('ORGANIZATION USER')
         expect(response.body[:services]).to eq(user.get_oauth_services.map(&:symbolize_keys))
@@ -97,12 +97,12 @@ describe Carto::Api::UsersController do
         }
       end
 
-      it 'gives an error if password is the same as old_password' do
+      it 'gives an error if password is the same as password_confirmation' do
         last_change = @user.last_password_change_date
         payload = {
           user: {
             email: 'foo@bar.baz',
-            old_password: 'foobarbaz',
+            password_confirmation: 'foobarbaz',
             new_password: 'foobarbaz',
             confirm_password: 'foobarbaz'
           }
@@ -124,7 +124,7 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'gives an error if no password_confirmation' do
+      it 'gives an error if there is no old password' do
         payload = { user: { email: 'foo1@bar.baz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
@@ -134,7 +134,7 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'updates account if password_confirmation' do
+      it 'updates account if old password is correct' do
         payload = { user: { email: 'foo1@bar.baz',
                             password_confirmation: 'foobarbaz' } }
 
@@ -158,17 +158,17 @@ describe Carto::Api::UsersController do
       end
 
       it 'gives an error if old password is invalid' do
-        payload = { user: { old_password: 'idontknow', new_password: 'barbaz', confirm_password: 'barbaz' } }
+        payload = { user: { password_confirmation: 'idontknow', new_password: 'barbaz', confirm_password: 'barbaz' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
-          expect(response.status).to eq(400)
+          expect(response.status).to eq(403)
           expect(response.body[:message]).to eq("Error updating your account details")
-          expect(response.body[:errors]).to have_key(:old_password)
+          expect(response.body[:errors]).to have_key(:password)
         end
       end
 
       it 'gives an error if new password and confirmation are not the same' do
-        payload = { user: { old_password: 'foobarbaz', new_password: 'foofoo', confirm_password: 'barbar' } }
+        payload = { user: { password_confirmation: 'foobarbaz', new_password: 'foofoo', confirm_password: 'barbar' } }
 
         put_json api_v3_users_update_me_url(url_options), payload, @headers do |response|
           expect(response.status).to eq(400)
@@ -188,7 +188,7 @@ describe Carto::Api::UsersController do
         payload = {
           user: {
             email: 'foo@bar.baz',
-            old_password: 'foobarbaz',
+            password_confirmation: 'foobarbaz',
             new_password: 'bazbarfoo',
             confirm_password: 'bazbarfoo'
           }
@@ -200,6 +200,50 @@ describe Carto::Api::UsersController do
           @user.refresh
           expect(@user.email).to eq('foo@bar.baz')
           expect(@user.last_password_change_date).to_not eq(last_change)
+        end
+      end
+
+      context 'multifactor authentication' do
+        it 'creates a multifactor authentication' do
+          payload = { user: { password_confirmation: 'foobarbaz', mfa: true } }
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          @user.reload.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          FactoryGirl.create(:totp, user_id: @user.id)
+          payload = { user: { password_confirmation: 'foobarbaz', mfa: false } }
+
+          @user.reload.user_multifactor_auths.should_not be_empty
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 200
+          @user.reload.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+          payload = { user: { password_confirmation: 'foobarbaz', mfa: false } }
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 400
+          @user.reload.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+          payload = { user: { password_confirmation: 'foobarbaz', mfa: true } }
+
+          @user.expects(:save).never
+
+          put_json api_v3_users_update_me_url(url_options), payload, @headers
+
+          last_response.status.should eq 400
         end
       end
     end
@@ -250,7 +294,7 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'does not update profile data if password_confirmation is wrong' do
+      it 'does not update profile data if old password is wrong' do
         payload = {
           user: {
             name: 'Foo2',

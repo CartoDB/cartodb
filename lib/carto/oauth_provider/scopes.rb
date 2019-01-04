@@ -10,7 +10,13 @@ module Carto
           @description = description
         end
 
-        def add_to_api_key_grants(grants); end
+        def add_to_api_key_grants(grants, user); end
+
+        def ensure_includes_apis(grants, apis)
+          return if apis.blank?
+          apis_section = grants.find { |i| i[:type] == 'apis' }
+          apis_section[:apis] = (apis_section[:apis] + apis).uniq
+        end
       end
 
       class Category
@@ -28,6 +34,7 @@ module Carto
       CATEGORY_OFFLINE = Category.new('Offline access').freeze
       CATEGORY_USER = Category.new('User and personal data').freeze
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
+      CATEGORY_DATASETS = Category.new('Access to your datasets')
 
       class DefaultScope < Scope
         def initialize(type, service, category, description)
@@ -36,14 +43,17 @@ module Carto
           @service = service
         end
 
-        def add_to_api_key_grants(grants)
-          grant_section = grants.find { |i| i[:type] == @type }
-          unless grant_section
-            grant_section = { type: @type, @grant_key => [] }
-            grants << grant_section
+        def grant_section(grants)
+          section = grants.find { |i| i[:type] == @type }
+          unless section
+            section = { type: @type, @grant_key => [] }
+            grants << section
           end
+          section
+        end
 
-          grant_section[@grant_key] << @service
+        def add_to_api_key_grants(grants, _user = nil)
+          grant_section(grants)[@grant_key] << @service
         end
       end
 
@@ -53,10 +63,9 @@ module Carto
           @grant_key = :services
         end
 
-        def add_to_api_key_grants(grants)
+        def add_to_api_key_grants(grants, _user = nil)
           super(grants)
-          apis_section = grants.find { |i| i[:type] == 'apis' }
-          apis_section[:apis] << 'sql' unless apis_section[:apis].include?('sql')
+          ensure_includes_apis(grants, ['sql'])
         end
       end
 
@@ -64,6 +73,103 @@ module Carto
         def initialize(service, description)
           super('user', service, CATEGORY_USER, description)
           @grant_key = :data
+        end
+      end
+
+      class DatasetsScope < DefaultScope
+
+        READ_PERMISSIONS = ['select'].freeze
+        WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
+
+        PERMISSIONS = {
+          r: READ_PERMISSIONS,
+          rw: READ_PERMISSIONS + WRITE_PERMISSIONS
+        }.freeze
+
+        DESCRIPTIONS = {
+          r: "%<table_name>s (read access)",
+          rw: "%<table_name>s (read/write access)"
+        }.freeze
+
+        attr_reader :table
+        attr_reader :schema
+
+        def initialize(scope)
+          @table, @schema, permission = self.class.table_schema_permission(scope)
+          super('database', permission, CATEGORY_DATASETS, description(permission.to_sym, @table))
+          @grant_key = :tables
+          @permission = permission.to_sym
+        end
+
+        def name
+          schema_table = @schema.nil? ? @table : "#{@schema}.#{@table}"
+          "datasets:#{@permission}:#{schema_table}"
+        end
+
+        def description(permission = @permission, table = @table, schema = @schema)
+          schema_table = schema.present? && schema != 'public' ? "#{schema}.#{table}" : table
+          DESCRIPTIONS[permission] % { table_name: schema_table }
+        end
+
+        def permission
+          PERMISSIONS[@permission]
+        end
+
+        def add_to_api_key_grants(grants, user)
+          ensure_includes_apis(grants, ['maps', 'sql'])
+          database_section = grant_section(grants)
+
+          table_section = {
+            name: table,
+            permissions: permission,
+            schema: schema || user.database_schema
+          }
+
+          database_section[@grant_key] << table_section
+        end
+
+        def self.is_a?(scope)
+          scope =~ /^datasets:(?:rw|r):(?:[a-z0-9_]+$|[a-z0-9-]+\.[a-z0-9_]+$)/
+        end
+
+        def self.valid_scopes(scopes)
+          scopes.select { |scope| DatasetsScope.is_a?(scope) }
+        end
+
+        def self.non_dataset_scopes(scopes)
+          scopes.reject { |scope| DatasetsScope.is_a?(scope) }
+        end
+
+        def self.valid_scopes_with_table(scopes, user)
+          dataset_scopes = valid_scopes(scopes)
+
+          return [] unless dataset_scopes.any?
+
+          allowed = user.db_service.all_tables_granted_hashed
+
+          valid_scopes = []
+          dataset_scopes.each do |scope|
+            table, schema, permissions = table_schema_permission(scope)
+            schema = user.database_schema if schema.nil?
+
+            if !allowed[schema].nil? && !allowed[schema][table].nil? &&
+               (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
+              valid_scopes << scope
+            end
+          end
+          valid_scopes
+        end
+
+        def self.permission_from_db_to_scope(permission)
+          permission = permission.split(',').sort
+          return nil if permission.empty? || (permission - (READ_PERMISSIONS + WRITE_PERMISSIONS)).any?
+          PERMISSIONS.find { |_, values| permission == values.sort }.first
+        end
+
+        def self.table_schema_permission(scope)
+          _, permission, table_and_schema = scope.split(':')
+          table, schema = Table.table_and_schema(table_and_schema)
+          [table, schema, permission]
         end
       end
 
@@ -87,24 +193,30 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes)
-        scopes - SUPPORTED_SCOPES
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes)
       end
 
-      class ScopesValidator < ActiveModel::EachValidator
-        def validate_each(record, attribute, value)
-          return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
+      def self.invalid_scopes_and_tables(scopes, user)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, user)
+      end
 
-          invalid_scopes = Scopes.invalid_scopes(value)
-          record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
+      def self.build(scope)
+        result = SCOPES_BY_NAME[scope]
+        if !result && DatasetsScope.is_a?(scope)
+          result = DatasetsScope.new(scope)
         end
+        result
       end
 
       def self.scopes_by_category(new_scopes, previous_scopes)
         # If we had previous scopes, DEFAULT was already granted.
-        previous_scopes = previous_scopes.nil? ? [] : previous_scopes + [SCOPE_DEFAULT]
+        previous_scopes = previous_scopes.blank? ? [] : previous_scopes + [SCOPE_DEFAULT]
 
-        all_scopes = ([SCOPE_DEFAULT] + new_scopes + previous_scopes).uniq
-        scopes_by_category = all_scopes.map { |s| SCOPES_BY_NAME[s] }.group_by(&:category)
+        new_scopes_filtered = subtract_scopes(new_scopes, previous_scopes)
+        previous_scopes_filtered = subtract_scopes(previous_scopes, new_scopes_filtered)
+
+        all_scopes = ([SCOPE_DEFAULT] + new_scopes_filtered + previous_scopes_filtered).uniq
+        scopes_by_category = all_scopes.map { |s| build(s) }.group_by(&:category)
         scopes_by_category.map do |category, scopes|
           {
             description: category.description,
@@ -116,6 +228,56 @@ module Carto
               }
             end
           }
+        end
+      end
+
+      def self.subtract_scopes(scopes1, scopes2, user_schema = 'public')
+        return [] if scopes1.blank?
+        return scopes1 if scopes2.blank?
+
+        datasets1, non_datasets1 = split_dataset_scopes_for_subtract(scopes1, user_schema)
+        datasets2, non_datasets2 = split_dataset_scopes_for_subtract(scopes2, user_schema)
+
+        subtract_dataset_scopes!(datasets1, datasets2)
+        datasets_results = datasets1.map { |schema_table, permissions| "datasets:#{permissions}:#{schema_table}" }
+
+        datasets_results + (non_datasets1 - non_datasets2)
+      end
+
+      private_class_method def self.split_dataset_scopes_for_subtract(scopes, user_schema)
+        datasets = {}
+        non_datasets = []
+
+        scopes.each do |scope|
+          if DatasetsScope.is_a?(scope)
+            table, schema, permissions = DatasetsScope.table_schema_permission(scope)
+            schema ||= user_schema
+            schema_table = "#{schema}.#{table}"
+
+            datasets[schema_table] = permissions unless datasets[schema_table] == 'rw'
+          else
+            non_datasets << scope
+          end
+        end
+
+        [datasets, non_datasets]
+      end
+
+      private_class_method def self.subtract_dataset_scopes!(datasets1, datasets2)
+        return [] if datasets1.nil?
+        return datasets1 if datasets2.nil?
+
+        datasets2.each do |schema_table, permissions|
+          datasets1.delete(schema_table) unless datasets1[schema_table] == 'rw' && permissions == 'r'
+        end
+      end
+
+      class ScopesValidator < ActiveModel::EachValidator
+        def validate_each(record, attribute, value)
+          return record.errors[attribute] = ['has to be an array'] unless value && value.is_a?(Array)
+
+          invalid_scopes = Scopes.invalid_scopes(value)
+          record.errors[attribute] << "contains unsupported scopes: #{invalid_scopes.join(', ')}" if invalid_scopes.any?
         end
       end
     end

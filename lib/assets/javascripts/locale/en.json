@@ -71,6 +71,10 @@
         "account_type": "Account type",
         "billing_plan": "Your billing plan",
         "view_details": "View details",
+        "multifactor_authentication": "Multi-factor authentication",
+        "mfa_enabled": "Enabled",
+        "mfa_disabled": "Disabled",
+        "mfa_description": "Add an additional layer of security to your account to protect all data you store in CARTO. If you change the actual status you will be logged out and redirected to the login page",
         "connect_external_datasources": "Connect to external data sources",
         "save_changes": "Save changes",
         "delete_account": "Delete account",
@@ -1434,6 +1438,12 @@
         "actions": {
           "confirm": "Confirm",
           "cancel": "Cancel"
+        }
+      },
+      "change-lock": {
+        "description": {
+          "locked": "Unlocking %{thisOrTheseStr} %{contentTypePluralized} will show %{itOrThemStr} on the dashboard again.",
+          "unlocked": "Locking %{thisOrTheseStr} %{contentTypePluralized} will hide %{itOrThemStr} from the dashboard. Reveal %{itOrThemStr} using the header menu or the bottom link."
         }
       }
     },

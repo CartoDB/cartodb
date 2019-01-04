@@ -7,7 +7,7 @@ module Carto
     # @param query ActiveRecord::Relation
     # @param order_by_asc_or_desc_by_attribute Hash { key: value, key: value } where
     #   key = { String  => { submodel: String|nil, attribute: String }, ... }
-    #   value = :asc | :desc
+    #   value = "asc" | "desc"
     def initialize(query, order_by_asc_or_desc_by_attribute)
       @query = query
       @order_by_asc_or_desc_by_attribute = order_by_asc_or_desc_by_attribute
@@ -39,6 +39,10 @@ module Carto
       results.count
     end
 
+    def size
+      results.size
+    end
+
     def first
       results.first
     end
@@ -55,20 +59,16 @@ module Carto
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each do |attribute, asc_or_desc|
         # Cache attribute type
-        is_array = all.present? && all.first.send(attribute).respond_to?(:count)
+        is_array = all.present? && all.first.send(attribute).respond_to?(:each)
         all = all.sort do |x, y|
           x_attribute = is_array ? x.send(attribute).count : x.send(attribute)
           y_attribute = is_array ? y.send(attribute).count : y.send(attribute)
           x_attribute = 0 if x_attribute.nil?
           y_attribute = 0 if y_attribute.nil?
-          asc_or_desc == :asc ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
+          asc_or_desc == "asc" ? x_attribute <=> y_attribute : y_attribute <=> x_attribute
         end
       end
-      all[@offset, last_index(all)]
-    end
-
-    def last_index(array)
-      @limit.nil? ? array.count : (@offset + @limit)
+      all[@offset, @limit.nil? ? all.count : @limit]
     end
 
   end

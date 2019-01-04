@@ -30,6 +30,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
+    before_action :allow_silent_flow_iframe, only: :consent, if: :silent_flow?
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
@@ -40,8 +41,6 @@ module Carto
     before_action :validate_response_type, :validate_scopes, :set_state, only: [:consent, :authorize]
     before_action :load_oauth_app_user, only: [:consent, :authorize]
     before_action :validate_grant_type, :verify_client_secret, only: [:token]
-
-    after_action :allow_silent_flow_iframe, only: :consent
 
     rescue_from StandardError, with: :rescue_generic_errors
     rescue_from Carto::MissingParamsError, with: :rescue_missing_params_error
@@ -56,7 +55,7 @@ module Carto
         validate_oauth_app_user(oauth_app_user)
       end
 
-      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:scopes))
+      @scopes_by_category = OauthProvider::Scopes.scopes_by_category(@scopes, @oauth_app_user.try(:all_scopes))
     end
 
     def authorize
@@ -119,6 +118,9 @@ module Carto
 
     def rescue_generic_errors(exception)
       CartoDB::Logger.error(exception: exception)
+      if exception.is_a?(Carto::RelationDoesNotExistError)
+        return rescue_oauth_errors(OauthProvider::Errors::InvalidScope.new(nil, message: exception.user_message))
+      end
       rescue_oauth_errors(OauthProvider::Errors::ServerError.new)
     end
 
@@ -154,7 +156,7 @@ module Carto
     def validate_scopes
       @scopes = (params[:scope] || '').split(' ')
 
-      invalid_scopes = OauthProvider::Scopes.invalid_scopes(@scopes)
+      invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(@scopes, current_viewer)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
     end
 
@@ -209,7 +211,7 @@ module Carto
     end
 
     def allow_silent_flow_iframe
-      response.headers.except! 'X-Frame-Options' if silent_flow?
+      response.headers.except! 'X-Frame-Options'
     end
   end
 end

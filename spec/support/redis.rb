@@ -1,4 +1,22 @@
 module CartoDB
+  module OS
+    def self.windows?
+      (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def self.mac?
+      (/darwin/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def self.unix?
+      !windows?
+    end
+
+    def self.linux?
+      unix? && !mac?
+    end
+  end
+
   class RedisTest
     REDIS_PID        = "/tmp/redis-test.pid"
     REDIS_CACHE_PATH = "/tmp"
@@ -36,6 +54,15 @@ module CartoDB
         port = Cartodb.config[:redis]["port"]
       end
       print "[redis] Starting test server on port #{port}... "
+
+      raise "Your OS is not supported" unless OS.unix?
+
+      redis_cell_base_path = '/etc/redis/redis-cell'
+      redis_cell_path = "#{redis_cell_base_path}/libredis_cell.so"
+      redis_cell_path = "#{redis_cell_base_path}/libredis_cell.dylib" if OS.mac?
+
+      raise "Please drop redis-cell binaries in #{redis_cell_base_path}" unless FileTest.exist?(redis_cell_path)
+
       redis_options = {
         "port"          => port,
         "daemonize"     => 'yes',
@@ -44,8 +71,10 @@ module CartoDB
         "dbfilename"    => REDIS_DB_NAME,
         "dir"           => new_cache_path || REDIS_CACHE_PATH,
         "loglevel"      => "notice",
-        "logfile"       => new_logfile || "stdout"
+        "logfile"       => new_logfile || "stdout",
+        "loadmodule"    => redis_cell_path
       }.map { |k, v| "#{k} #{v}" }.join("\n")
+
       output = `printf '#{redis_options}' | redis-server - 2>&1`
       if $?.success?
         puts('done')

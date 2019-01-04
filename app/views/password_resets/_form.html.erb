@@ -1,0 +1,29 @@
+<% content_for :title do %>Reset password<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
+
+  <script>
+    $(function() {
+      window.Sessions = new App.Views.Sessions();
+    });
+  </script>
+<% end %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="u-inner">
+        <div class="Sessions-left">
+          <div class="Sessions-logoContainer">
+            <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
+          </div>
+
+          <div class="Sessions-form">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

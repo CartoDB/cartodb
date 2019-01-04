@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pagination.vue should render all items in pagination for <= than 7 pages 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <!---->
+  <!---->
+  <!---->
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">2</button></li>
+  <!---->
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">3</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">4</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">5</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">6</button></li>
+</ul>
+`;
+
+exports[`Pagination.vue should render pagination for 10 pages where current page is 3 with 1 right ellipsis 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <!---->
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">2</button></li>
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">3</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">4</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">10</button></li>
+</ul>
+`;
+
+exports[`Pagination.vue should render pagination for 10 pages where current page is 8 with 1 left ellipsis 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">7</button></li>
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">8</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">9</button></li>
+  <!---->
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">10</button></li>
+</ul>
+`;
+
+exports[`Pagination.vue should render pagination for 12 pages where current page is 1 with 1 right ellipsis 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <!---->
+  <!---->
+  <!---->
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">2</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">12</button></li>
+</ul>
+`;
+
+exports[`Pagination.vue should render pagination for 12 pages where current page is 5 with 2 ellipsis 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">4</button></li>
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">5</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">6</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">12</button></li>
+</ul>
+`;
+
+exports[`Pagination.vue should render pagination for 12 pages where current page is 12 with 1 left ellipsis 1`] = `
+<ul class="Pagination-list CDB-Text CDB-Size-medium">
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">1</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--more">…</button></li>
+  <li class="Pagination-listItem"><button class="Pagination-listItemInner Pagination-listItemInner--link">11</button></li>
+  <li class="Pagination-listItem is-current"><button class="Pagination-listItemInner Pagination-listItemInner--link">12</button></li>
+  <!---->
+  <!---->
+  <!---->
+</ul>
+`;

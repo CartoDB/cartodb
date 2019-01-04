@@ -1,0 +1,188 @@
+[
+  {
+    "id": "0503201d-b414-4ac9-a4c6-6444a62448c0",
+    "name": null,
+    "last_name": null,
+    "username": "hello",
+    "email": "hello@example.com",
+    "avatar_url": "/assets/unversioned/images/avatars/avatar_mountain_green.png",
+    "website": null,
+    "description": null,
+    "location": null,
+    "twitter_username": null,
+    "disqus_shortname": null,
+    "available_for_hire": false,
+    "base_url": "http://example.com",
+    "google_maps_query_string": null,
+    "quota_in_bytes": 1073741824,
+    "table_count": 13,
+    "viewer": false,
+    "org_admin": false,
+    "public_visualization_count": 0,
+    "all_visualization_count": 13,
+    "org_user": false,
+    "remove_logo": false,
+    "db_size_in_bytes": 212992,
+    "next_billing_period": "2019-01-11"
+  },
+  {
+    "id": "5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
+    "name": null,
+    "last_name": null,
+    "username": "cdb",
+    "email": "wadus@localhost.lan",
+    "avatar_url": "/assets/unversioned/images/avatars/avatar_ghost_green.png",
+    "website": null,
+    "description": null,
+    "location": null,
+    "twitter_username": null,
+    "disqus_shortname": null,
+    "available_for_hire": false,
+    "base_url": "http://cdb.localhost.lan:3000",
+    "google_maps_query_string": null,
+    "quota_in_bytes": 1073741824,
+    "table_count": 14,
+    "viewer": false,
+    "org_admin": false,
+    "public_visualization_count": 3,
+    "all_visualization_count": 16,
+    "org_user": false,
+    "remove_logo": false,
+    "db_size_in_bytes": 229376,
+    "next_billing_period": "2019-01-11"
+  },
+  {
+    "id":"5e7bd9aa-51a7-4ceb-a9d0-fc67cc68a944",
+    "email":"wadus@localhost.lan",
+    "name":null,
+    "last_name":null,
+    "created_at":"2018-10-18T08:52:43.078Z",
+    "username":"cdb",
+    "state":"active",
+    "account_type":"[DEDICATED]",
+    "account_type_display_name":"[DEDICATED]",
+    "table_quota":null,
+    "table_count":15,
+    "viewer":false,
+    "industry":null,
+    "company":null,
+    "phone":null,
+    "job_role":null,
+    "org_admin":false,
+    "public_visualization_count":5,
+    "owned_visualization_count":19,
+    "all_visualization_count":19,
+    "visualization_count":34,
+    "failed_import_count":0,
+    "success_import_count":1,
+    "import_count":1,
+    "last_visualization_created_at":"2018-12-13T17:21:49.086Z",
+    "quota_in_bytes":1073741824,
+    "db_size_in_bytes":7110656,
+    "db_size_in_megabytes":6.78,
+    "remaining_table_quota":null,
+    "remaining_byte_quota":1066631168,
+    "api_calls_quota":10000,
+    "api_calls_block_price":null,
+    "next_billing_period": "2019-01-11",
+    "geocoding":{
+      "quota":1200,
+      "block_price":null,
+      "monthly_use":103,
+      "hard_limit":true
+    },
+    "here_isolines":{
+      "quota":1332,
+      "block_price":null,
+      "monthly_use":134,
+      "hard_limit":true
+    },
+    "mapzen_routing":{
+      "quota":102,
+      "block_price":null,
+      "monthly_use":54,
+      "hard_limit":true
+    },
+    "geocoder_provider":null,
+    "isolines_provider":null,
+    "routing_provider":null,
+    "obs_snapshot":{
+      "quota":0,
+      "block_price":null,
+      "monthly_use":0,
+      "hard_limit":true
+    },
+    "obs_general":{
+      "quota":0,
+      "block_price":null,
+      "monthly_use":0,
+      "hard_limit":true
+    },
+    "twitter":{
+      "enabled":null,
+      "quota":0,
+      "block_price":null,
+      "block_size":null,
+      "monthly_use":0,
+      "hard_limit":true,
+      "customized_config":false
+    },
+    "salesforce":{
+      "enabled":false
+    },
+    "mailchimp":{
+      "enabled":false
+    },
+    "billing_period":"2018-11-18",
+    "api_key":"0c1b365ec8b1ceca28c7c6b9e990b4a577404a19",
+    "layers":[
+  
+    ],
+    "trial_ends_at":null,
+    "upgraded_at":null,
+    "show_trial_reminder":false,
+    "show_upgraded_message":false,
+    "show_builder_activated_message":false,
+    "actions":{
+      "private_tables":true,
+      "private_maps":false,
+      "remove_logo":false,
+      "sync_tables":true,
+      "google_maps_geocoder_enabled":false,
+      "google_maps_enabled":false,
+      "engine_enabled":true,
+      "builder_enabled":true,
+      "mobile_sdk_enabled":false
+    },
+    "limits":{
+      "concurrent_syncs":3,
+      "concurrent_imports":3,
+      "import_file_size":1572864000,
+      "import_table_rows":5000000,
+      "max_layers":8
+    },
+    "notification":null,
+    "avatar_url":"/assets/unversioned/images/avatars/avatar_ghost_green.png",
+    "feature_flags":[
+      "new-dashboard-feature",
+      "new_dashboard",
+      "new_public_dashboard",
+      "new_public_dashboard_global"
+    ],
+    "base_url":"http://cdb.localhost.lan:3000",
+    "needs_password_confirmation":true,
+    "description":null,
+    "website":null,
+    "twitter_username":null,
+    "disqus_shortname":null,
+    "available_for_hire":false,
+    "location":null,
+    "mfa_configured":false,
+    "groups":[
+  
+    ],
+    "organizationNotifications":[
+  
+    ]
+  }
+]

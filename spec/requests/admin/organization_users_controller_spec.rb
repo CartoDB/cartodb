@@ -94,6 +94,41 @@ describe Admin::OrganizationUsersController do
         Carto::User.find_by_username(user_params[:username]).try(:destroy)
       end
 
+      it 'fails if password is the username' do
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: username, password_confirmation: username),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include 'must be different than the user name'
+      end
+
+      it 'fails if password is a common one' do
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: 'galina', password_confirmation: 'galina'),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include "can't be a common password"
+      end
+
+      it 'fails if password is not strong' do
+        @owner.organization.stubs(:strong_passwords_enabled).returns(true)
+        login_as(@owner, scope: @owner.username)
+
+        post create_organization_user_url(user_domain: @owner.username),
+             user: user_params.merge(password: 'galinaa', password_confirmation: 'galinaa'),
+             password_confirmation: @owner.password
+
+        last_response.status.should == 200
+        last_response.body.should include 'must be at least 8 characters long'
+        @owner.organization.unstub(:strong_passwords_enabled)
+      end
+
       it 'returns 404 for non admin users' do
         login_as(@user, scope: @user.username)
 
@@ -239,6 +274,41 @@ describe Admin::OrganizationUsersController do
             user: { quota_in_bytes: 7 },
             password_confirmation: @owner.password
         last_response.status.should == 302
+      end
+
+      it 'fails if password is the username' do
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: @admin.username, password_confirmation: @admin.username },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include 'must be different than the user name'
+      end
+
+      it 'fails if password is a common one' do
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: 'galina', password_confirmation: 'galina' },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include "can't be a common password"
+      end
+
+      it 'fails if password is not strong' do
+        Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+        login_as(@owner, scope: @owner.username)
+
+        put update_organization_user_url(user_domain: @owner.username, id: @admin.username),
+            user: { password: 'galinaa', password_confirmation: 'galinaa' },
+            password_confirmation: @owner.password
+
+        last_response.status.should == 422
+        last_response.body.should include 'must be at least 8 characters long'
+        Organization.any_instance.unstub(:strong_passwords_enabled)
       end
     end
 
@@ -407,6 +477,53 @@ describe Admin::OrganizationUsersController do
               user: params
           @existing_user.reload
           @existing_user.last_password_change_date.should eq last_change
+        end
+
+        it 'creates a multifactor authentication' do
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should_not be_empty
+        end
+
+        it 'removes the multifactor authentications' do
+          FactoryGirl.create(:totp, user: @existing_user)
+          @existing_user.reload.user_multifactor_auths.should_not be_empty
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '0' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 302
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not update the user multifactor authentications if the user saving operation fails' do
+          User.any_instance.stubs(:save).raises(Sequel::ValidationFailed.new('error!'))
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
+
+          @existing_user.reload
+          @existing_user.user_multifactor_auths.should be_empty
+        end
+
+        it 'does not save the user if the multifactor authentication updating operation fails' do
+          mfa = Carto::UserMultifactorAuth.new
+          Carto::UserMultifactorAuth.stubs(:create!).raises(ActiveRecord::RecordInvalid.new(mfa))
+
+          @existing_user.expects(:save).never
+
+          put update_organization_user_url(user_domain: @org_user_owner.username, id: @existing_user.username),
+              user: { mfa: '1' },
+              password_confirmation: @org_user_owner.password
+          last_response.status.should eq 422
         end
       end
 

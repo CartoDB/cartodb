@@ -4,7 +4,7 @@ gem 'rails',                   '4.2.10'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
-gem 'sequel',                  '3.42.0'
+gem 'sequel',                  '3.44.0'
 gem 'sequel_pg',               '1.6.3', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
@@ -82,6 +82,10 @@ gem 'net-telnet'
 
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
+
+# Multifactor Authentication
+gem 'rotp', '~> 3.3', '>= 3.3.1'
+gem 'rqrcode', '~> 0.10.1'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

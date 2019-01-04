@@ -27,12 +27,22 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)/login' => 'sessions#new',     as: :login
   match '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout, via: [:get, :post]
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session, via: [:get, :post]
+  get '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication',  as: :multifactor_authentication_session
+  post '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication_verify_code',  as: :multifactor_authentication_verify_code
 
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
 
   # Password change
   resources :password_change, only: [:edit, :update]
+
+  # Password resets
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/new'         => 'password_resets#new',      as: :new_password_reset
+  post '(/user/:user_domain)(/u/:user_domain)/password_resets'            => 'password_resets#create',   as: :create_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'    => 'password_resets#edit',     as: :edit_password_reset
+  match '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'  => 'password_resets#update',   as: :update_password_reset, via: [:put, :patch]
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
@@ -294,6 +304,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data'       => 'pages#common_data',    as: :dashboard_common_data
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications/'    => 'visualizations#index', as: :notifications
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications'     => 'visualizations#index', as: :notifications_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions/'        => 'visualizations#index', as: :solutions
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -540,6 +554,7 @@ CartoDB::Application.routes.draw do
     resources :synchronizations
     resources :feature_flags
     resources :account_types, only: [:create, :update, :destroy]
+    resources :oauth_apps, only: [:create, :update, :destroy]
   end
 
   scope module: 'carto' do
@@ -636,6 +651,11 @@ CartoDB::Application.routes.draw do
                                   controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
       end
+
+      # Multi-factor authentication
+      resources :multifactor_auths, only: [:create, :destroy, :show, :index], constraints: { id: /[^\/]+/ } do
+        post 'verify_code', on: :member
+      end
     end
 
     scope 'v2/' do
@@ -648,6 +668,9 @@ CartoDB::Application.routes.draw do
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
+
+        post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
+        delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end
     end
 

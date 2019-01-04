@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
+<section class="suggestions suggestions--open">
+  <router-link to="[object Object]" class="suggestions__header is-caption text">
+    Query text <span>- 1 results</span></router-link>
+  <ul class="suggestions__content">
+    <li>
+      <searchsuggestionsitem-stub item="[object Object]"></searchsuggestionsitem-stub>
+    </li>
+    <li>
+      <searchsuggestionsitem-stub item="[object Object]"></searchsuggestionsitem-stub>
+    </li>
+  </ul>
+</section>
+`;
+
+exports[`SearchSuggestions.vue Rendering should render isFetching state 1`] = `
+<section class="suggestions suggestions--open">
+  <router-link to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
+    Query text
+    <!---->
+  </router-link>
+  <ul class="suggestions__content"></ul>
+</section>
+`;

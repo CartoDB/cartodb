@@ -13,7 +13,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   before_filter :check_engine_enabled
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
-  rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
@@ -41,7 +41,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   def index
-    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+    page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
 
     api_keys = Carto::User.find(current_user.id).api_keys.user_visible.order_weighted_by_type
     api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)

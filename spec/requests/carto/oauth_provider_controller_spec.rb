@@ -94,6 +94,25 @@ describe Carto::OauthProviderController do
         expect(qs['error']).to(eq('invalid_scope'))
       end
 
+      it 'redirects with an error if requesting non-existent datasets' do
+        request_endpoint(valid_payload.merge(scope: 'datasets:r:blabla'))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
+      it 'redirects with an error if requesting invalid dataset scopes' do
+        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+        request_endpoint(valid_payload.merge(scope: "datasets:wtf:#{user_table.name}"))
+
+        expect(response.status).to(eq(302))
+        expect(response.location).to(start_with(@oauth_app.redirect_uris.first))
+        qs = parse_uri_parameters(response.location)
+        expect(qs['error']).to(eq('invalid_scope'))
+      end
+
       it 'redirects with an error if requesting with an invalid redirect_uri' do
         request_endpoint(valid_payload.merge(redirect_uri: 'invalid'))
 
@@ -240,6 +259,15 @@ describe Carto::OauthProviderController do
       expect(response.body).to(include(valid_payload[:state]))
     end
 
+    it 'with valid payload and datasets scopes shows the consent form' do
+      user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @developer.id)
+      get oauth_provider_authorize_url(valid_payload.merge(scopes: "datasets:r:#{user_table.name}"))
+
+      expect(response.status).to(eq(200))
+      expect(response.body).to(include(valid_payload[:client_id]))
+      expect(response.body).to(include(valid_payload[:state]))
+    end
+
     it 'with valid payload, pre-authorized and requesting more scopes, shows the consent screen' do
       @oauth_app.oauth_app_users.create!(user_id: @user.id)
       get oauth_provider_authorize_url(valid_payload.merge(scope: 'offline'))
@@ -268,12 +296,20 @@ describe Carto::OauthProviderController do
         expect(response.body).to(include('invalid_request'))
       end
 
-      it 'redirects with login_required if not logged in' do
+      it 'redirects with login_required if not logged in and client_id exists' do
         logout
         get oauth_provider_authorize_url(valid_payload)
 
         expect(response.status).to(eq(302))
         expect(response.body).to(include('login_required'))
+      end
+
+      it 'shows consent screen if not logged in and wrong client_id' do
+        logout
+        get oauth_provider_authorize_url(valid_payload.merge(client_id: 'wrong'))
+
+        expect(response.status).to(eq(400))
+        expect(response.body).to(include('Invalid client ID or secret'))
       end
 
       it 'redirects with access_denied if not authorized' do

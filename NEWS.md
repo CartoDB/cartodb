@@ -2,13 +2,142 @@ Development
 -----------
 
 ### NOTICES
-- Ensuring right `search_path` for non organization `publicuser`
+- This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 
 ### Features
-- None yet
+
+- /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
+- /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
+- /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
+- Add support for Node.js 10 and npm 6 (#14501).
+- Password validation against common passwords & usernames (#14522)
+- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+- New Welcome module for New Dashboard (#14527)
+- Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
-- Allowing views in API Keys (#14309)
+- Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
+- Revert favorited ordering for Datasets in New Dashboard (#14552)
+- Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
+- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
+
+4.23.4 (2018-12-18)
+-------------------
+
+### Features
+* OAuth public release (WIP):
+  * Sync `oauth_apps` with Central (#14493)
+
+### Bug fixes / enhancements
+* Fix baseurl in datasets public dashboard page (#14524)
+* Request login when reactivating mfa from account (#14509)
+* Added new security header X-Content-Type-Options (#14530)
+* Fix OAuth consent screen when not logged in (#14518)
+
+4.23.3 (2018-12-03)
+-------------------
+
+### Features
+* Send org_admin parameter to central (#14483)
+
+### Bug fixes / enhancements
+* No request made to enable MFA #14505
+
+4.23.2 (2018-11-27)
+-------------------
+
+### Bug fixes / enhancements
+* Redirect to MFA setup to logged users from dashboard AJAX calls (#14435)
+* MFA flash login errors (#14456)
+* Do not intercept marker request (#14491)
+
+4.23.1 (2018-11-26)
+-------------------
+
+### Features
+* OAuth provider (WIP):
+  * Revoke permissions when owner stops sharing you a dataset (#14472)
+
+### Bug fixes / enhancements
+* Fix visualization URLs avoiding quotes in the database schema ([#14475](https://github.com/CartoDB/cartodb/pull/14475))
+* Disable user multifactor auths on skip ([#14447](https://github.com/CartoDB/cartodb/issues/14447))
+* Fix pagination in visualization API when ordering by size ([#14476](https://github.com/CartoDB/cartodb/issues/14476))
+
+4.23.0 (2018-11-19)
+-------------------
+
+### Features
+* Lock login if too many failed attempts (#14334)
+* OAuth provider (WIP):
+  * UI improvements (#14389)
+* MFA (WIP)
+  * Login (#14336)
+  * Admin management (#14347)
+  * Support user migration (#14337)
+  * User management (#14403)
+  * Sync MFA status to central ([Central#2379](https://github.com/CartoDB/cartodb-central#2379))
+  * Add support in EUMAPI (#14425)
+* Change password functionality for Carto Gears (#14351)
+* /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+
+### Bug fixes / enhancements
+* Protected maps now asks for password even if it goes through `public_map` endpoint (#14420)
+* Sync new password resets fields with central (#14333)
+* Can't add legend due to wrong CartoCSS (#14418)
+* Fix parallel execution of some acceptance specs (#14391)
+* Use shared partials for logo and button animation in session views
+* Do not concatenate the schema if it's already defined while fetching overview tables #14414
+
+4.22.2 (2018-11-05)
+-------------------
+
+### Features
+* MFA (WIP)
+  * Migration, models and controllers (#14335)
+* Forgot password (#14333)
+* OAuth provider (WIP):
+  * Add scopes for accessing datasets (#14292)
+* Improve dropping db role of an API key (#14307)
+
+### Bug fixes / enhancements
+* Scrollbar resized after notifications (#12953)
+* Fix encoding corner case with ICU for some CSV files (https://github.com/CartoDB/support/issues/1808)
+* Add timeout for AR and Sequel connections (#13266)
+* Fix Feedback modal on Enter (https://github.com/CartoDB/support/issues/1804)
+* Apply code style for "Layer hidden" notification in advanced mode (#13355)
+* Fixed varnish validation for http function due a regexp problem (https://github.com/CartoDB/support/issues/1727)
+* Fix input widths (#13453)
+* Update tags style (#13756)
+* Add more formats to the base datasource class to be used by for example Box connector (#10183)
+* Fix sharing datasets with groups (https://github.com/CartoDB/onpremises/issues/637)
+* Update some old vulnerable dependencies (#14368)
+* Fix shrinkwrap generation through a carto.js release (https://github.com/CartoDB/cartodb/pull/14369)
+* Revert tag style, add color to privacy modal (#13756)
+
+4.22.1 (2018-10-18)
+-------------------
+
+### NOTICES
+* Ensuring right `search_path` for non organization `publicuser`
+
+### Features
+* Improve dropping db role of an API key (#14307)
+
+### Bug fixes / enhancements
+* Add `remove_overview_tables` rake
+* Allowing views in API Keys (#14309)
+* Redirect locked users to /lockout page (#14310)
 
 4.22.0 (2018-10-04)
 -------------------
@@ -33,10 +162,10 @@ sudo make install
 ```
 
 ### Features
-* Add dataservices permissions in Auth API (#14263)
-* OAuth provider (WIP):
-  * Add scopes for accessing dataservices
-  * Add scopes for accessing user public profile
+- Add dataservices permissions in Auth API (#14263)
+- OAuth provider (WIP):
+  - Add scopes for accessing dataservices (#14276)
+  - Add scopes for accessing user public profile (#14279)
 
 ### Bug fixes / enhancements
 * Fix legacy functions in the data mover that doesn't process multiword type functions

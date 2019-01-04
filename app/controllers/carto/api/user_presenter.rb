@@ -117,6 +117,7 @@ module Carto
           last_name: @user.last_name,
           created_at: @user.created_at,
           username: @user.username,
+          state: @user.state,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
@@ -192,6 +193,7 @@ module Carto
             enabled: Carto::AccountType.new.mailchimp?(@user)
           },
           billing_period: @user.last_billing_cycle,
+          next_billing_period: @user.next_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
@@ -229,7 +231,8 @@ module Carto
           twitter_username: @user.twitter_username,
           disqus_shortname: @user.disqus_shortname,
           available_for_hire: @user.available_for_hire,
-          location: @user.location
+          location: @user.location,
+          mfa_configured: @user.multifactor_authentication_configured?
         }
 
         if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)

@@ -5,7 +5,6 @@ require_relative '../spec_helper_min'
 feature "Forgot password" do
 
   before(:all) do
-    @mfa_feature_flag = FactoryGirl.create(:carto_feature_flag, name: 'mfa', restricted: false)
     @user = FactoryGirl.create(:user)
   end
 
@@ -17,7 +16,6 @@ feature "Forgot password" do
 
   after(:all) do
     @user.destroy
-    @mfa_feature_flag.destroy
   end
 
   scenario "Reset password view shows an error if the email is blank" do

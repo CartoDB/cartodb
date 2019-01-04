@@ -2,7 +2,12 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 
 ### Features
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
@@ -14,6 +19,8 @@ Development
 - Password validation against common passwords & usernames (#14522)
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
@@ -23,6 +30,7 @@ Development
 - Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 
 4.23.4 (2018-12-18)
 -------------------

@@ -108,7 +108,7 @@ describe 'Warden' do
     end
 
     it 'redirects to the original url after changing the expired password' do
-      # we use this to avoid generating the static assets in CI      
+      # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
 
       login

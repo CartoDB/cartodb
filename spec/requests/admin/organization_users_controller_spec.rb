@@ -420,14 +420,6 @@ describe Admin::OrganizationUsersController do
     end
 
     describe 'existing user operations' do
-      before(:all) do
-        @feature_flag = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
-      end
-
-      after(:all) do
-        @feature_flag.destroy
-      end
-
       before(:each) do
         @existing_user = FactoryGirl.create(:carto_user, organization: @carto_organization, password: 'abcdefgh')
       end

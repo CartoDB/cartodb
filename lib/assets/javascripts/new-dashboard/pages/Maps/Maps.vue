@@ -38,9 +38,8 @@
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
             <img svg-inline v-else src="../../assets/icons/common/filter.svg">
           </SettingsDropdown>
-        </template>
-        <template slot="extraOptionButton" v-if="!initialState && !selectedMaps.length">
-          <div class="mapcard-view-mode" @click="toggleViewMode">
+
+          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="!initialState && !selectedMaps.length">
             <img svg-inline src="../../assets/icons/common/compactMap.svg" v-if="!isCondensed">
             <img svg-inline src="../../assets/icons/common/standardMap.svg" v-if="isCondensed">
           </div>
@@ -61,13 +60,13 @@
         v-if="isCondensed"></CondensedMapHeader>
 
       <ul class="grid" v-if="isFetchingMaps">
-        <li :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
+        <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
       </ul>
 
       <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
-        <li v-for="map in maps" :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" :key="map.id">
+        <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
         </li>
       </ul>
@@ -121,8 +120,8 @@ export default {
       isScrollPastHeader: false,
       selectedMaps: [],
       cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
-      inlineCSSClasses: 'card-condensed',
-      isCondensed: true
+      condensedCSSClasses: 'card-condensed',
+      isCondensed: false
     };
   },
   mounted () {
@@ -130,13 +129,7 @@ export default {
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
 
-    if (localStorage.hasOwnProperty('mapViewMode')) {
-      if (localStorage.mapViewMode === 'compact') {
-        this.isCondensed = true;
-      } else if (localStorage.mapViewMode === 'standard') {
-        this.isCondensed = false;
-      }
-    }
+    this.loadUserConfiguration();
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
@@ -236,6 +229,15 @@ export default {
     },
     toggleViewMode () {
       this.isCondensed = !this.isCondensed;
+    },
+    loadUserConfiguration () {
+      if (localStorage.hasOwnProperty('mapViewMode')) {
+        if (localStorage.mapViewMode === 'compact') {
+          this.isCondensed = true;
+        } else if (localStorage.mapViewMode === 'standard') {
+          this.isCondensed = false;
+        }
+      }
     }
   },
   watch: {
@@ -288,6 +290,7 @@ export default {
   justify-content: center;
   width: 24px;
   height: 24px;
+  margin-left: 32px;
   cursor: pointer;
 }
 </style>

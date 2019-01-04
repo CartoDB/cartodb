@@ -11,10 +11,6 @@
           <slot name="dropdownButton"></slot>
         </li>
 
-        <li class="head-sectionActionsItem" v-if="!!$slots.extraOptionButton">
-          <slot name="extraOptionButton"></slot>
-        </li>
-
         <li class="head-sectionActionsItem" v-if="!!$slots.actionButton">
           <slot name="actionButton"></slot>
         </li>
@@ -100,6 +96,9 @@ export default {
 }
 
 .head-sectionActionsItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 32px;
 
   &:last-child {

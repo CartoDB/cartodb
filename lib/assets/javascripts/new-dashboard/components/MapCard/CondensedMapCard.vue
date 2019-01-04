@@ -21,7 +21,7 @@
       </span>
     </div>
 
-    <div class="cell cell--map-name">
+    <div class="cell cell--map-name cell--main">
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">{{ map.name }}</h3>
 
@@ -31,15 +31,15 @@
       </div>
     </div>
 
-    <div class="cell cell--large">
+    <div class="cell map-cell--large">
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
-    <div class="cell cell--large">
+    <div class="cell map-cell--large">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
     </div>
 
-    <div class="cell cell--privacy cell--medium">
+    <div class="cell cell--privacy map-cell--medium">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <p class="text is-small is-txtSoftGrey">
         {{ $t(`MapCard.shared.${map.privacy}`) }}
@@ -96,23 +96,6 @@ export default {
     pointer-events: none;
   }
 
-  .cell {
-    position: relative;
-    flex-grow: 0;
-    flex-shrink: 0;
-    padding: 0 12px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .cell--large {
-    width: 150px;
-  }
-
-  .cell--medium {
-    width: 120px;
-  }
-
   .cell--thumbnail {
     display: flex;
     align-items: center;
@@ -127,9 +110,6 @@ export default {
   }
 
   .cell--map-name {
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-width: 200px;
 
     .card-favorite {
       display: inline-block;

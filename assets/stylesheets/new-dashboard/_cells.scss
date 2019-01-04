@@ -1,0 +1,39 @@
+.map-cell--large {
+  width: 150px;
+}
+
+.map-cell--medium {
+  width: 120px;
+}
+
+.dataset-cell--large {
+  width: 165px;
+}
+
+.dataset-cell--medium {
+  width: 120px;
+}
+
+.dataset-cell--small {
+  width: 80px;
+}
+
+.cell {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell--main {
+  flex-grow: 1;
+  flex-shrink: 1;
+  min-width: 200px;
+}
+
+.cell--privacy {
+  display: flex;
+  align-items: center;
+}

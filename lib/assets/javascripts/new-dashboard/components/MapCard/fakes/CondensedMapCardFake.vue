@@ -6,13 +6,13 @@
     <div class="cell-placeholder cell--main">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--large">
+    <div class="cell-placeholder map-cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--large">
+    <div class="cell-placeholder map-cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--medium">
+    <div class="cell-placeholder map-cell--medium">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--quick-actions">
@@ -52,20 +52,6 @@ export default {
 
 .cell-placeholder {
   padding: 0 12px;
-}
-
-.cell--main {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 200px;
-}
-
-.cell--large {
-  width: 150px;
-}
-
-.cell--medium {
-  width: 120px;
 }
 
 .cell--quick-actions {

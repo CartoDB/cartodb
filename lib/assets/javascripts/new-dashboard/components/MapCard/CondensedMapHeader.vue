@@ -1,38 +1,32 @@
 <template>
   <div class="map-list-row">
-    <div class="map-list-cell cell--start">
+    <div class="map-list-cell cell cell--start">
     </div>
-    <div class="map-list-cell cell--main" @click="changeOrder('name')">
+    <div class="map-list-cell cell cell--main" @click="changeOrder('name')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
         {{ $t(`MapListHeader.name`) }}
       </span>
     </div>
-    <div class="map-list-cell cell--large" @click="changeOrder('updated_at')">
+    <div class="map-list-cell cell map-cell--large" @click="changeOrder('updated_at')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
         {{ $t(`MapListHeader.lastModified`) }}
       </span>
     </div>
-    <div class="map-list-cell cell--large" @click="changeOrder('mapviews')">
+    <div class="map-list-cell cell map-cell--large" @click="changeOrder('mapviews')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
         {{ $t(`MapListHeader.views`) }}
       </span>
     </div>
-    <!-- <div class="map-list-cell cell--small" @click="changeOrder('dependent_visualizations')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
-        {{ $t(`MapListHeader.usage`) }}
-      </span>
-    </div> -->
-    <div class="map-list-cell cell--medium cell--privacy" @click="changeOrder('privacy')">
+    <div class="map-list-cell cell map-cell--medium cell--privacy" @click="changeOrder('privacy')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
         {{ $t(`MapListHeader.privacy`) }}
       </span>
     </div>
-    <div class="map-list-cell cell--end"></div>
+    <div class="map-list-cell cell cell--end"></div>
   </div>
 </template>
 
@@ -94,13 +88,6 @@ export default {
 }
 
 .map-list-cell {
-  position: relative;
-  flex-grow: 0;
-  flex-shrink: 0;
-  padding: 0 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
   &:first-of-type {
     padding-left: 0;
   }
@@ -114,26 +101,12 @@ export default {
   display: flex;
   align-items: center;
   align-self: flex-start;
-  width: 72px;
+  width: 68px;
   height: 100%;
 }
 
 .cell--end {
-  width: 48px;
-}
-
-.cell--main {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 200px;
-}
-
-.cell--large {
-  width: 150px;
-}
-
-.cell--medium {
-  width: 120px;
+  width: 44px;
 }
 
 .cell--privacy {

@@ -6,19 +6,19 @@
     <div class="cell-placeholder cell--main">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--large">
+    <div class="cell-placeholder dataset-cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder dataset-cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder dataset-cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder dataset-cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder dataset-cell--small">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--quick-actions">
@@ -64,18 +64,6 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 200px;
-}
-
-.cell--large {
-  width: 165px;
-}
-
-.cell--medium {
-  width: 120px;
-}
-
-.cell--small {
-  width: 80px;
 }
 
 .cell--quick-actions {

@@ -8,7 +8,7 @@
        'dataset-row--can-hover': canHover
      }"
      @click="onClick">
-    <div class="dataset-cell cell--start">
+    <div class="dataset-cell cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
@@ -19,7 +19,7 @@
         </span>
       </span>
     </div>
-    <div class="dataset-cell cell--main">
+    <div class="dataset-cell cell cell--main">
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
           {{ dataset.name }}
@@ -46,16 +46,16 @@
         </div>
       </div>
     </div>
-    <div class="dataset-cell cell--large">
+    <div class="dataset-cell cell dataset-cell--large">
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
-    <div class="dataset-cell cell--small">
+    <div class="dataset-cell cell dataset-cell--small">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
     </div>
-    <div class="dataset-cell cell--small">
+    <div class="dataset-cell cell dataset-cell--small">
       <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
     </div>
-    <div class="dataset-cell cell--small">
+    <div class="dataset-cell cell dataset-cell--small">
       <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
         {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
       </span>
@@ -70,11 +70,11 @@
           </template>
       </FeaturesDropdown>
     </div>
-    <div class="dataset-cell cell--small cell--privacy">
+    <div class="dataset-cell cell dataset-cell--small cell--privacy">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
     </div>
-    <div class="dataset-cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+    <div class="dataset-cell cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
       <DatasetQuickActions
         v-if="showInteractiveElements"
@@ -331,13 +331,6 @@ export default {
 }
 
 .dataset-cell {
-  position: relative;
-  flex-grow: 0;
-  flex-shrink: 0;
-  padding: 0 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
   &:first-of-type {
     padding-left: 0;
   }
@@ -353,24 +346,6 @@ export default {
   align-self: flex-start;
   height: 100%;
   overflow: hidden;
-}
-
-.cell--main {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 200px;
-}
-
-.cell--large {
-  width: 165px;
-}
-
-.cell--medium {
-  width: 120px;
-}
-
-.cell--small {
-  width: 80px;
 }
 
 .cell--privacy {

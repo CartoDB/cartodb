@@ -2,23 +2,34 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- * This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 
 ### Features
-- Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- /viz endpoint supports ordering by :name and specifying an `order_direction` (#14316)
+
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
-- Send org_admin parameter to central (#14483)
-- Multiple ordering for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- Ordering by favorited for /viz endpoint ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+- /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
+- /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
 - Add support for Node.js 10 and npm 6 (#14501).
 - Password validation against common passwords & usernames (#14522)
+- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
+- Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
 
 4.23.4 (2018-12-18)

@@ -110,7 +110,6 @@ export default {
   }
 
   .cell--map-name {
-
     .card-favorite {
       display: inline-block;
       margin-left: 8px;

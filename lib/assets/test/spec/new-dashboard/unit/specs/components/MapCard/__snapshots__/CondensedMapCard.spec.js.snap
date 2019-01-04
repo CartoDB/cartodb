@@ -5,14 +5,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -29,14 +29,14 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -53,14 +53,14 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -77,14 +77,14 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -103,14 +103,14 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
       <!---->
     </div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -127,14 +127,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -151,14 +151,14 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -175,14 +175,14 @@ exports[`MapCard.vue should render correct contents 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -199,14 +199,14 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -223,14 +223,14 @@ exports[`MapCard.vue should render description and tags 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>
@@ -247,14 +247,14 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   <div class="cell cell--thumbnail">
     <div class="card-media"><img width="48" height="48" src="http://cdb.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png" class="cell--thumbnail__img"></div> <span class="checkbox cell--thumbnail__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
-  <div class="cell cell--map-name">
+  <div class="cell cell--map-name cell--main">
     <div class="title-container">
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">First Map</h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
   </div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell map-cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy map-cell--medium"><span class="icon icon--privacy icon--public"></span>
     <p class="text is-small is-txtSoftGrey">
       MapCard.shared.PUBLIC
     </p>

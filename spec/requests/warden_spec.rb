@@ -129,6 +129,9 @@ describe 'Warden' do
 
         Delorean.back_to_the_present
       end
+
+      @user.password = @user.password_confirmation = '000qwaszx'
+      @user.save
     end
 
     it 'API returns 403 with an error if password is expired' do

@@ -28,6 +28,7 @@ sudo make install
 - Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 

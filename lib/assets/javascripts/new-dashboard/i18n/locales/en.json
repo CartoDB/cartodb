@@ -109,7 +109,7 @@
     "loadingState": "Loading your notifications."
   },
   "SettingsDropdown": {
-    "showMe": "Show me",
+    "filter": "Filter",
     "orderMaps": "Order",
     "types": {
       "maps": "Your maps",
@@ -121,20 +121,6 @@
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
-    },
-    "order": {
-      "favourites": "Favorites first",
-      "views": "Most viewed first",
-      "alphabetical": {
-        "title": "Name",
-        "A-Z": "A-Z",
-        "Z-A": "Z-A"
-      },
-      "date": {
-        "title": "Updated",
-        "newest": "Newest",
-        "oldest": "Oldest"
-      }
     },
     "initialState": "Change Filters"
   },

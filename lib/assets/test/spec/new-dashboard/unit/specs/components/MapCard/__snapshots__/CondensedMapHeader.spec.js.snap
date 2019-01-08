@@ -9,7 +9,7 @@ exports[`CondensedMapHeader.vue should render correct contents 1`] = `
   <div class="map-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey is-active">
       MapListHeader.lastModified
     </span></div>
-  <div class="map-list-cell cell cell--medium"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="map-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
       MapListHeader.views
     </span></div>
   <div class="map-list-cell cell cell--medium cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">

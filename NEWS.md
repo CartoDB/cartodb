@@ -10,7 +10,6 @@ sudo make install
 
 
 ### Features
-
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 - /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
@@ -27,8 +26,10 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
 - Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
+- Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
 - Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))

@@ -246,6 +246,8 @@ module Carto
       organization.groups.clear
       notifications = organization.notifications.map(&:clone)
       organization.notifications.clear
+      oauth_app_organizations = organization.oauth_app_organizations.map(&:clone)
+      organization.oauth_app_organizations.clear
 
       save_imported_organization(organization)
 
@@ -258,6 +260,7 @@ module Carto
 
       organization.groups = groups
       organization.notifications = notifications
+      organization.oauth_app_organizations = oauth_app_organizations
       organization.save
 
       organization
@@ -277,6 +280,7 @@ module Carto
       organization = Carto::Organization.find(organization.id)
       organization.groups.delete
       organization.notifications.delete
+      organization.oauth_app_organizations.delete
       organization.assets.map(&:delete)
       organization.users.delete
       organization.delete

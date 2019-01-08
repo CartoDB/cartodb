@@ -197,11 +197,11 @@ export default {
       });
     },
     toggleSelected ({ dataset, isSelected }) {
-      if(event.shiftKey) {
+      if (event.shiftKey) {
         const datasetsArray = [...Object.values(this.datasets)];
         this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset);
         return;
-      } 
+      }
       if (isSelected) {
         this.selectedDatasets.push(dataset);
         return;

@@ -192,6 +192,7 @@ export default {
       this.$router.push({ name: 'maps', params: { filter } });
     },
     applyOrder (orderParams) {
+      this.deselectAll();
       this.$router.push({
         name: 'maps',
         params: this.$route.params,

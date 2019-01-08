@@ -10,10 +10,11 @@
      @click="onClick">
 
     <div class="cell cell--thumbnail">
-      <div class="card-media">
-        <img width="48" height="48" class="cell--thumbnail__img" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+      <div class="cell__media">
+        <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
       </div>
-      <span class="checkbox cell--thumbnail__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+
+      <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
@@ -22,11 +23,13 @@
     </div>
 
     <div class="cell cell--map-name cell--main">
-      <div class="title-container">
-        <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">{{ map.name }}</h3>
+      <div class="cell__title">
+        <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
+          {{ map.name }}
+        </h3>
 
-        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img svg-inline src="../../assets/icons/common/favorite.svg">
+        <span v-if="showInteractiveElements" class="cell__favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
     </div>
@@ -35,7 +38,7 @@
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
-    <div class="cell map-cell--large">
+    <div class="cell map-cell--medium">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
     </div>
 
@@ -46,9 +49,9 @@
       </p>
     </div>
 
-    <div class="cell cell--actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
-      <MapQuickActions class="map--quick-actions" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
+    <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <span class="quick-actions__placeholder" v-if="!showInteractiveElements"></span>
+      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
     </div>
   </a>
 </template>
@@ -84,10 +87,34 @@ export default {
   width: 100%;
   height: 80px;
   padding: 0 14px;
-  transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   background-color: #FFF;
 
-  .cell--thumbnail__checkbox {
+  .cell--thumbnail {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .cell__map-thumbnail {
+    width: 48px;
+    height: 48px;
+  }
+
+  .cell__media {
+    display: flex;
+    position: relative;
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+    border-radius: 2px;
+    background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
+    background-size: cover;
+  }
+
+  .cell__checkbox {
     position: absolute;
     left: 22px;
     transform: translateY(250%);
@@ -96,38 +123,47 @@ export default {
     pointer-events: none;
   }
 
-  .cell--thumbnail {
-    display: flex;
-    align-items: center;
-    align-self: flex-start;
-    height: 100%;
-    overflow: hidden;
+  &:hover {
+    text-decoration: none;
 
-    &__img {
-      width: 48px;
-      height: 48px;
+    &:not(.row--no-hover) {
+      .cell--map-name .cell--map-name__text {
+        color: $primary-color;
+      }
+    }
+
+    .cell__favorite {
+      opacity: 1;
+
+      .favorite-icon {
+        stroke: $text-secondary-color;
+      }
+
+      &:hover {
+        .favorite-icon {
+          stroke: $primary-color;
+        }
+      }
     }
   }
 
-  .cell--map-name {
-    .card-favorite {
-      display: inline-block;
-      margin-left: 8px;
-      opacity: 0;
-      vertical-align: middle;
+  .cell__favorite {
+    display: inline-block;
+    margin-left: 8px;
+    opacity: 0;
+    vertical-align: middle;
 
-      &.is-favorite {
-        opacity: 1;
+    &.is-favorite {
+      opacity: 1;
 
+      .favorite-icon {
+        stroke: #FFC300;
+        fill: #FFC300;
+      }
+
+      &:hover {
         .favorite-icon {
-          stroke: #FFC300;
-          fill: #FFC300;
-        }
-
-        &:hover {
-          .favorite-icon {
-            stroke: $primary-color;
-          }
+          stroke: $primary-color;
         }
       }
     }
@@ -187,12 +223,12 @@ export default {
   &:hover,
   &.row--selected {
     &.row--can-hover {
-      .card-media {
+      .cell__media {
         transform: translateY(-100%);
         opacity: 0;
       }
 
-      .cell--thumbnail__checkbox {
+      .cell__checkbox {
         transform: translateY(0);
         opacity: 1;
         pointer-events: all;
@@ -200,59 +236,32 @@ export default {
     }
   }
 
-  &:hover {
-    text-decoration: none;
-
-    .cell--map-name {
-      .cell--map-name__text {
-        color: $primary-color;
-      }
-
-      .card-favorite {
-        opacity: 1;
-
-        .favorite-icon {
-          stroke: $text-secondary-color;
-        }
-
-        &:hover {
-          .favorite-icon {
-            stroke: $primary-color;
-          }
-        }
-      }
-    }
-  }
-
   &.row--quick-actions-open,
   &:hover {
-    .map--quick-actions {
-      visibility: visible;
-      opacity: 1;
-      pointer-events: auto;
+    .quick-actions {
+      .quick-actions__element {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
     }
   }
 
-  .title-container {
+  .cell__title {
     display: flex;
     align-items: center;
   }
 
-  .card-media {
-    display: flex;
-    position: relative;
-    width: 48px;
-    height: 48px;
-    overflow: hidden;
-    border-radius: 2px;
-    background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
-    background-size: cover;
-  }
+  .quick-actions {
+    .quick-actions__placeholder {
+      width: 44px;
+    }
 
-  .map--quick-actions {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
+    .quick-actions__element {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 }
 </style>

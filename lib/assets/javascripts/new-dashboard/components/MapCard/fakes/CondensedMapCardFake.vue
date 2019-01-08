@@ -1,6 +1,6 @@
 <template>
   <div class="condensed-fake-row">
-    <div class="cell-placeholder">
+    <div class="cell-placeholder cell--icon">
       <div class="icon-placeholder"/>
     </div>
     <div class="cell-placeholder cell--main">
@@ -9,7 +9,7 @@
     <div class="cell-placeholder map-cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder map-cell--large">
+    <div class="cell-placeholder map-cell--medium">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder map-cell--medium">
@@ -34,7 +34,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 80px;
-  padding: 22px 14px;
+  padding: 0 24px;
   background-color: $white;
 }
 
@@ -51,10 +51,14 @@ export default {
 }
 
 .cell-placeholder {
-  padding: 0 12px;
+  padding: 0 10px;
+}
+
+.cell--icon {
+  padding: 0 10px 0 0;
 }
 
 .cell--quick-actions {
-  padding: 0 24px;
+  padding: 0 18px;
 }
 </style>

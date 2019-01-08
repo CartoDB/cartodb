@@ -53,23 +53,25 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <CondensedMapHeader
-        :order="appliedOrder"
-        :orderDirection="appliedOrderDirection"
-        @orderChanged="applyOrder"
-        v-if="isCondensed"></CondensedMapHeader>
+      <div :class="{ 'grid-cell': isCondensed }">
+        <CondensedMapHeader
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @orderChanged="applyOrder"
+          v-if="isCondensed"></CondensedMapHeader>
 
-      <ul class="grid" v-if="isFetchingMaps">
-        <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
-          <MapCardFake :condensed="isCondensed"></MapCardFake>
-        </li>
-      </ul>
+        <ul class="grid" v-if="isFetchingMaps">
+          <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
+            <MapCardFake :condensed="isCondensed"></MapCardFake>
+          </li>
+        </ul>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
-        <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
-          <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
-        </li>
-      </ul>
+        <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
+          <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
+            <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
+          </li>
+        </ul>
+      </div>
 
       <EmptyState
         :text="$t('MapsPage.emptyState')"

@@ -1,5 +1,5 @@
 <template>
-<Dropdown ref="dropdown">
+<Dropdown ref="dropdown" class="settings">
   <template slot="button">
     <slot />
   </template>
@@ -51,3 +51,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.settings {
+  position: relative;
+}
+</style>

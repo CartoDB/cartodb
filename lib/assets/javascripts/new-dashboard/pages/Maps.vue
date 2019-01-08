@@ -44,7 +44,7 @@
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="initialState">
+      <div class="grid-cell" v-if="initialState && !hasSharedMaps">
         <CreateMapCard></CreateMapCard>
       </div>
 
@@ -61,8 +61,8 @@
       </ul>
 
       <EmptyState
-        :text="$t('MapsPage.emptyState')"
-        v-if="emptyState">
+        :text="emptyStateText"
+        v-if="emptyState || (initialState && hasSharedMaps)">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -133,7 +133,8 @@ export default {
       isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
       numResults: state => state.maps.metadata.total_entries,
       filterType: state => state.maps.filterType,
-      totalUserEntries: state => state.maps.metadata.total_user_entries
+      totalUserEntries: state => state.maps.metadata.total_user_entries,
+      totalShared: state => state.maps.metadata.total_shared
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
@@ -146,6 +147,16 @@ export default {
     },
     emptyState () {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    emptyStateText () {
+      const route = this.$router.resolve({name: 'maps', params: { filter: 'shared' }});
+
+      return (this.initialState && this.hasSharedMaps)
+        ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })
+        : this.$t('MapsPage.emptyCase.default', { path: route.href });
+    },
+    hasSharedMaps () {
+      return this.totalShared > 0;
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;

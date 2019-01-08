@@ -1,5 +1,6 @@
 <template>
   <a :href="dataset.url"
+     target="_blank"
      class="dataset-row"
      :class="{
        'dataset-row--selected': isSelected,

@@ -34,15 +34,15 @@
       </div>
     </div>
 
-    <div class="cell map-cell--large">
+    <div class="cell cell--large">
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
-    <div class="cell map-cell--medium">
+    <div class="cell cell--medium">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
     </div>
 
-    <div class="cell cell--privacy map-cell--medium">
+    <div class="cell cell--privacy cell--medium">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <p class="text is-small is-txtSoftGrey">
         {{ $t(`MapCard.shared.${map.privacy}`) }}

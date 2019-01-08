@@ -6,13 +6,13 @@
     <div class="cell-placeholder cell--main">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder map-cell--large">
+    <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder map-cell--medium">
+    <div class="cell-placeholder cell--medium">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder map-cell--medium">
+    <div class="cell-placeholder cell--medium">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--quick-actions">

@@ -8,19 +8,19 @@
         {{ $t(`MapListHeader.name`) }}
       </span>
     </div>
-    <div class="map-list-cell cell map-cell--large" @click="changeOrder('updated_at')">
+    <div class="map-list-cell cell cell--large" @click="changeOrder('updated_at')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
         {{ $t(`MapListHeader.lastModified`) }}
       </span>
     </div>
-    <div class="map-list-cell cell map-cell--medium" @click="changeOrder('mapviews')">
+    <div class="map-list-cell cell cell--medium" @click="changeOrder('mapviews')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
         {{ $t(`MapListHeader.views`) }}
       </span>
     </div>
-    <div class="map-list-cell cell map-cell--medium cell--privacy" @click="changeOrder('privacy')">
+    <div class="map-list-cell cell cell--medium cell--privacy" @click="changeOrder('privacy')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
         {{ $t(`MapListHeader.privacy`) }}

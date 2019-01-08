@@ -6,19 +6,19 @@
     <div class="cell-placeholder cell--main">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder dataset-cell--large">
+    <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder dataset-cell--small">
+    <div class="cell-placeholder cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder dataset-cell--small">
+    <div class="cell-placeholder cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder dataset-cell--small">
+    <div class="cell-placeholder cell--small">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder dataset-cell--small">
+    <div class="cell-placeholder cell--small">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--quick-actions">

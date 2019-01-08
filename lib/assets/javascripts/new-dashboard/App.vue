@@ -2,7 +2,7 @@
   <div id="app">
     <NavigationBar :user="user" :baseUrl="baseUrl" :notificationsCount="notificationsCount"/>
     <router-view/>
-    <Footer/>
+    <Footer :user="user"/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
     <MamufasImportView ref="mamufasImportView"/>
   </div>

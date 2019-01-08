@@ -21,172 +21,103 @@ describe Carto::Api::MultifactorAuthenticationController do
       @org_user_1.user_multifactor_auths.each(&:destroy!)
     end
 
-    shared_examples_for 'with mfa FF' do
-      before(:all) do
-        FactoryGirl.create(:feature_flag, restricted: false, name: 'mfa') unless FeatureFlag.where(name: 'mfa').any?
-      end
+    it 'returns 401 for non authorized calls' do
+      post api_v2_organization_users_mfa_create_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
+    end
 
-      after(:all) do
-        Carto::FeatureFlag.where(name: 'mfa').first.destroy! if FeatureFlag.where(name: 'mfa').any?
-      end
+    it 'returns 401 for non authorized users' do
+      login(@org_user_1)
 
-      it 'returns 401 for non authorized calls' do
+      post api_v2_organization_users_mfa_create_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
+    end
+
+    it 'correctly creates an MFA' do
+      login(@organization.owner)
+      @organization.owner.reload
+
+      expect {
         post api_v2_organization_users_mfa_create_url(
           id_or_name: @organization.name,
           u_username: @org_user_1.username,
           type: 'totp'
         )
-        last_response.status.should == 401
-      end
-
-      it 'returns 401 for non authorized users' do
-        login(@org_user_1)
-
-        post api_v2_organization_users_mfa_create_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-        last_response.status.should == 401
-      end
-
-      it 'correctly creates an MFA' do
-        login(@organization.owner)
-        @organization.owner.reload
-
-        expect {
-          post api_v2_organization_users_mfa_create_url(
-            id_or_name: @organization.name,
-            u_username: @org_user_1.username,
-            type: 'totp'
-          )
-        }.to change(@org_user_1.user_multifactor_auths, :count).by(1)
-      end
-
-      it 'raises an error if MFA already exists' do
-        login(@organization.owner)
-        @organization.owner.reload
-
-        FactoryGirl.create(:totp, user_id: @org_user_1.id)
-        post api_v2_organization_users_mfa_create_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        ) do |response|
-          response.status.should eq 422
-        end
-
-        @org_user_1.reload
-        @org_user_1.user_multifactor_auths.count.should eq 1
-      end
+      }.to change(@org_user_1.user_multifactor_auths, :count).by(1)
     end
 
-    shared_examples_for 'without mfa FF' do
-      before(:all) do
-        Carto::FeatureFlag.where(name: 'mfa').first.destroy! if FeatureFlag.where(name: 'mfa').any?
+    it 'raises an error if MFA already exists' do
+      login(@organization.owner)
+      @organization.owner.reload
+
+      FactoryGirl.create(:totp, user_id: @org_user_1.id)
+      post api_v2_organization_users_mfa_create_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      ) do |response|
+        response.status.should eq 422
       end
 
-      it 'returns 403 for non ff users' do
-        login(@organization.owner)
-        @organization.owner.reload
-
-        post api_v2_organization_users_mfa_create_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-        last_response.status.should == 403
-      end
-    end
-
-    describe 'MFA creation with FF' do
-      it_behaves_like 'with mfa FF'
-    end
-
-    describe 'MFA creation without FF' do
-      it_behaves_like 'without mfa FF'
+      @org_user_1.reload
+      @org_user_1.user_multifactor_auths.count.should eq 1
     end
   end
 
   describe 'MFA deletion' do
-    shared_examples_for 'with mfa FF' do
-      before(:all) do
-        FactoryGirl.create(:feature_flag, restricted: false, name: 'mfa') unless FeatureFlag.where(name: 'mfa').any?
-      end
-
-      it 'returns 401 for non authorized calls' do
-        delete api_v2_organization_users_mfa_delete_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-        last_response.status.should == 401
-      end
-
-      it 'returns 401 for non authorized users' do
-        login(@org_user_1)
-
-        delete api_v2_organization_users_mfa_delete_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-        last_response.status.should == 401
-      end
-
-      it 'deletes MFA' do
-        login(@organization.owner)
-        @organization.owner.reload
-        FactoryGirl.create(:totp, user_id: @org_user_1.id)
-
-        expect {
-          delete api_v2_organization_users_mfa_delete_url(
-            id_or_name: @organization.name,
-            u_username: @org_user_1.username,
-            type: 'totp'
-          )
-        }.to change(@org_user_1.reload.user_multifactor_auths, :count).by(-1)
-      end
-
-      it 'raises an error if MFA does not exist' do
-        login(@organization.owner)
-        @organization.owner.reload
-
-        delete api_v2_organization_users_mfa_delete_url(
-          id_or_name: @organization.name,
-          u_username: @org_user_1.username,
-          type: 'totp'
-        )
-
-        last_response.status.should eq 422
-      end
+    it 'returns 401 for non authorized calls' do
+      delete api_v2_organization_users_mfa_delete_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
     end
 
-    shared_examples_for 'without mfa FF' do
-      before(:all) do
-        Carto::FeatureFlag.where(name: 'mfa').first.destroy! if FeatureFlag.where(name: 'mfa').any?
-      end
+    it 'returns 401 for non authorized users' do
+      login(@org_user_1)
 
-      it 'returns 403 for non ff users' do
-        login(@organization.owner)
+      delete api_v2_organization_users_mfa_delete_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
+    end
 
-        @organization.owner.reload
+    it 'deletes MFA' do
+      login(@organization.owner)
+      @organization.owner.reload
+      FactoryGirl.create(:totp, user_id: @org_user_1.id)
 
+      expect {
         delete api_v2_organization_users_mfa_delete_url(
           id_or_name: @organization.name,
           u_username: @org_user_1.username,
           type: 'totp'
         )
-        last_response.status.should == 403
-      end
+      }.to change(@org_user_1.reload.user_multifactor_auths, :count).by(-1)
     end
 
-    describe 'MFA deletion with FF' do
-      it_behaves_like 'with mfa FF'
-    end
+    it 'raises an error if MFA does not exist' do
+      login(@organization.owner)
+      @organization.owner.reload
 
-    describe 'MFA deletion without FF' do
-      it_behaves_like 'without mfa FF'
+      delete api_v2_organization_users_mfa_delete_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+
+      last_response.status.should eq 422
     end
   end
 end

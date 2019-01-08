@@ -2,7 +2,7 @@
 
 exports[`DatasetCard.vue should add class selected to the card when the property isSelected is true 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--selected dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
@@ -33,7 +33,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
 
 exports[`DatasetCard.vue should add the name of the owner if the dataset is shared 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
@@ -67,7 +67,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
 
 exports[`DatasetCard.vue should render correct contents 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
@@ -98,7 +98,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
 
 exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
@@ -132,7 +132,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
 
 exports[`DatasetCard.vue should render multiple tags 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
@@ -169,7 +169,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
 
 exports[`DatasetCard.vue should render tags 1`] = `
 <a href="http://example.com/tables/untitled_table_13" target="_blank" class="dataset-row dataset-row--can-hover">
-  <div class="cell--start">
+  <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
     </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>

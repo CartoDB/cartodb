@@ -9,7 +9,7 @@
        'dataset-row--can-hover': canHover
      }"
      @click="onClick">
-    <div class="cell--start">
+    <div class="cell cell--start">
       <div class="row-dataType">
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>

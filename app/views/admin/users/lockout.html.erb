@@ -10,6 +10,7 @@
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email? %>;
+    var expiration_days = <%= @expiration_days %>;
 
     // Necessary for Google + actions
     var access_token = '';

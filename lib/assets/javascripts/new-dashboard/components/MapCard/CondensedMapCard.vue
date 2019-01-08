@@ -50,7 +50,7 @@
     </div>
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="quick-actions__placeholder" v-if="!showInteractiveElements"></span>
+      <div class="quick-actions__placeholder" v-if="!showInteractiveElements"></div>
       <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
     </div>
   </a>
@@ -254,7 +254,7 @@ export default {
 
   .quick-actions {
     .quick-actions__placeholder {
-      width: 44px;
+      width: 24px;
     }
 
     .quick-actions__element {

@@ -2,36 +2,21 @@
 <div class="section">
   <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.orderMaps') }}</h6>
   <ul class="list">
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('favorited,updated_at', 'desc,desc') }">
-      <a class="element" :class="{ 'element--selected': isOrderApplied('favorited,updated_at', 'desc,desc') }"
-         @click="setOrder('favorited,updated_at', 'desc,desc')">
-        {{ $t('SettingsDropdown.order.favourites') }}
+    <li class="type text is-caption is-txtGrey" v-for="ordering in orderings" :key="ordering.name" :class="{ 'type--selected': isOrderApplied(ordering.order, ordering.direction) }">
+      <a class="element" v-if="!ordering.options" :class="{ 'element--selected': isOrderApplied(ordering.order, ordering.direction) }" @click="setOrder(ordering.order, ordering.direction)">
+        {{ $t(`SettingsDropdown.order.${ordering.name}`) }}
       </a>
-    </li>
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('updated_at') }">
-      {{ $t('SettingsDropdown.order.date.title') }}  (
-        <a class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'desc') }" @click="setOrder('updated_at', 'desc')">
-          {{ $t('SettingsDropdown.order.date.newest') }}
-        </a> |
-        <a class="element" :class="{ 'element--selected': isOrderApplied('updated_at', 'asc') }" @click="setOrder('updated_at', 'asc')">
-          {{ $t('SettingsDropdown.order.date.oldest') }}
-        </a>
-      )
-    </li>
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('name') }">
-      {{ $t('SettingsDropdown.order.alphabetical.title') }} (
-        <a class="element" :class="{ 'element--selected': isOrderApplied('name', 'asc') }" @click="setOrder('name', 'asc')">
-          {{ $t('SettingsDropdown.order.alphabetical.A-Z') }}
-        </a> |
-        <a class="element" :class="{ 'element--selected': isOrderApplied('name', 'desc') }" @click="setOrder('name', 'desc')">
-          {{ $t('SettingsDropdown.order.alphabetical.Z-A') }}
-        </a>
-      )
-    </li>
-    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isOrderApplied('mapviews', 'desc') }">
-      <a class="element" :class="{ 'element--selected': isOrderApplied('mapviews', 'desc') }" @click="setOrder('mapviews', 'desc')">
-        {{ $t('SettingsDropdown.order.views') }}
-      </a>
+
+      <template v-else>
+        {{ $t(`SettingsDropdown.order.${ordering.name}.title`) }} (
+          <span v-for="(option, index) in ordering.options" :key="option">
+            <a :key="option" class="element" :class="{ 'element--selected': isOrderApplied(ordering.order, option) }" @click="setOrder(ordering.order, option)">
+              {{ $t(`SettingsDropdown.order.${ordering.name}.${option}`) }}
+            </a>
+            <span v-if="index < ordering.options.length - 1">|</span>
+          </span>
+        )
+      </template>
     </li>
   </ul>
 </div>
@@ -41,6 +26,7 @@
 export default {
   name: 'Ordering',
   props: {
+    orderings: Array,
     order: String,
     orderDirection: String
   },

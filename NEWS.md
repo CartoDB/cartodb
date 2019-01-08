@@ -2,7 +2,12 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 
 ### Features
 
@@ -16,12 +21,17 @@ Development
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
 - Open maps and datasets in new tab in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+- Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
+- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+- Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
 - Revert favorited ordering for Datasets in New Dashboard (#14552)
 - Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+- Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 
 4.23.4 (2018-12-18)
 -------------------

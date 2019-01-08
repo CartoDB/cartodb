@@ -252,7 +252,7 @@ module Carto
       end
 
       def update_user_multifactor_authentication(user, mfa_enabled)
-        return if mfa_enabled.nil? || !user.has_feature_flag?('mfa')
+        return if mfa_enabled.nil?
 
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
         service.update(enabled: mfa_enabled)

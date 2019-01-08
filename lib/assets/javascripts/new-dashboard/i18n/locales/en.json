@@ -245,5 +245,47 @@
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
       "button": "Create your first Map"
     }
+  },
+  "QuotaSection": {
+    "title": "Your Usage Metrics",
+    "header": {
+      "remaining": "Remaining",
+      "used": "Used",
+      "total": "Total",
+      "perMonth": "per month"
+    },
+    "disk": "Disk",
+    "dataServices": "Data Services",
+    "storage": "Storage",
+    "geocoding": "Geocoding",
+    "isolines": "Isolines",
+    "routing": "Routing",
+    "credits": "Your credits will be renewed the {day} of next month. "
+  },
+  "Footer": {
+    "HelpCenter": {
+      "title": "Help Center",
+      "description": "Find answers to frequently asked questions, guides and tutorials about working with data, making Builder maps, managing your account, etc."
+    },
+    "DeveloperCenter": {
+      "title": "Developer Center",
+      "description": "Learn everything you need to know to build the next generation of Location Intelligence applications with the CARTO platform."
+    },
+    "GISStackExchange": {
+      "title": "GIS StackExchange",
+      "description": "Explore and share your CARTO-related questions with the GIS StackExchange Community."
+    },
+    "TechSupport": {
+      "title": "Tech Support",
+      "description": "Found a bug or technical issue? Contact our support team and let us know about it."
+    },
+    "DedicatedSupport": {
+      "title": "Dedicated Support",
+      "description": "Contact our dedicated support team and let us know how we can help you."
+    },
+    "OrganizationAdmin": {
+      "title": "Your organization's administrator",
+      "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
+    }
   }
 }

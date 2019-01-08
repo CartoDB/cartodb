@@ -204,14 +204,6 @@ describe Carto::Api::UsersController do
       end
 
       context 'multifactor authentication' do
-        before(:all) do
-          @feature_flag = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
-        end
-
-        after(:all) do
-          @feature_flag.destroy
-        end
-
         it 'creates a multifactor authentication' do
           payload = { user: { password_confirmation: 'foobarbaz', mfa: true } }
 

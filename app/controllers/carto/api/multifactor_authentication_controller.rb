@@ -9,7 +9,6 @@ module Carto
 
       ssl_required
 
-      before_action :check_ff
       before_action :load_organization
       before_action :admins_only
       before_action :load_user
@@ -37,10 +36,6 @@ module Carto
       end
 
       private
-
-      def check_ff
-        raise Carto::UnauthorizedError.new unless current_viewer.has_feature_flag?('mfa')
-      end
 
       def base_params
         @base_params ||= params.permit([:type])

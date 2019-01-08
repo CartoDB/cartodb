@@ -38,7 +38,7 @@
       <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
     </div>
 
-    <div class="cell cell--medium">
+    <div class="cell cell--large">
       <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
     </div>
 

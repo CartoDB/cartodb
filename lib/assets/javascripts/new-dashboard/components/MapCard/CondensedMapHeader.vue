@@ -14,7 +14,7 @@
         {{ $t(`MapListHeader.lastModified`) }}
       </span>
     </div>
-    <div class="map-list-cell cell cell--medium" @click="changeOrder('mapviews')">
+    <div class="map-list-cell cell cell--large" @click="changeOrder('mapviews')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
         {{ $t(`MapListHeader.views`) }}

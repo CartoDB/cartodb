@@ -9,7 +9,7 @@
     <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--medium">
+    <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--medium">

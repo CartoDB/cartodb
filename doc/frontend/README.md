@@ -260,7 +260,7 @@ npm run build:static
 Follow these steps to update to get latest changes:
 
 - go to `lib/assets/javascripts/cdb/`
-- `git checkout develop && git pull`
+- `git checkout v3 && git pull`
 - go back to root and run `grunt cdb`
 - commit both the new revision of the submodule and the generated file `vendor/assets/javascripts/cartodb.uncompressed.js`
 

@@ -198,7 +198,7 @@ module Carto
     end
 
     describe 'datasets scope' do
-      before(:all) do
+      before(:each) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
@@ -206,7 +206,7 @@ module Carto
         @table2 = create_table(user_id: @carto_user.id)
       end
 
-      after(:all) do
+      after(:each) do
         @table1.destroy
         @table2.destroy
         @app.destroy

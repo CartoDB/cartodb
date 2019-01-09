@@ -1,6 +1,6 @@
 <template>
-  <div class="dataset-fake-row">
-    <div class="cell-placeholder">
+  <div class="condensed-fake-row">
+    <div class="cell-placeholder cell--icon">
       <div class="icon-placeholder"/>
     </div>
     <div class="cell-placeholder cell--main">
@@ -9,16 +9,10 @@
     <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder cell--large">
       <div class="text-placeholder"/>
     </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
+    <div class="cell-placeholder cell--medium">
       <div class="text-placeholder"/>
     </div>
     <div class="cell-placeholder cell--quick-actions">
@@ -28,25 +22,25 @@
 
 <script>
 export default {
-  name: 'FakeDatasetCard'
+  name: 'CondensedMapCardFake'
 };
 </script>
 
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.dataset-fake-row {
+.condensed-fake-row {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 81px;
-  padding: 22px 2px;
+  height: 80px;
+  padding: 0 24px;
   background-color: $white;
 }
 
 .icon-placeholder {
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 2px;
   background-color: $softblue;
 }
@@ -60,13 +54,11 @@ export default {
   padding: 0 10px;
 }
 
-.cell--main {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 200px;
+.cell--icon {
+  padding: 0 10px 0 0;
 }
 
 .cell--quick-actions {
-  padding: 0 24px;
+  padding: 0 18px;
 }
 </style>

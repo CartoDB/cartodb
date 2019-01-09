@@ -1,50 +1,38 @@
 <template>
-  <div class="dataset-list-row">
-    <div class="dataset-list-cell cell cell--start">
+  <div class="map-list-row">
+    <div class="map-list-cell cell cell--start">
     </div>
-    <div class="dataset-list-cell cell cell--main" @click="changeOrder('name')">
+    <div class="map-list-cell cell cell--main" @click="changeOrder('name')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
-        {{ $t(`DatasetListHeader.name`) }}
+        {{ $t(`MapListHeader.name`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell cell--large" @click="changeOrder('updated_at')">
+    <div class="map-list-cell cell cell--large" @click="changeOrder('updated_at')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
-        {{ $t(`DatasetListHeader.lastModified`) }}
+        {{ $t(`MapListHeader.lastModified`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('estimated_row_count')">
+    <div class="map-list-cell cell cell--large" @click="changeOrder('mapviews')">
       <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('estimated_row_count'), 'is-reversed': isReverseOrderApplied('estimated_row_count') }">
-        {{ $t(`DatasetListHeader.rows`) }}
+            :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
+        {{ $t(`MapListHeader.views`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('size')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReverseOrderApplied('size') }">
-        {{ $t(`DatasetListHeader.size`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('dependent_visualizations')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
-        {{ $t(`DatasetListHeader.usage`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small cell--privacy" @click="changeOrder('privacy')">
+    <div class="map-list-cell cell cell--medium cell--privacy" @click="changeOrder('privacy')">
       <span class="text element-sort is-small is-txtSoftGrey"
             :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
-        {{ $t(`DatasetListHeader.privacy`) }}
+        {{ $t(`MapListHeader.privacy`) }}
       </span>
     </div>
-    <div class="dataset-list-cell cell cell--end"></div>
+    <div class="map-list-cell cell cell--end"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'DatasetListHeader',
+  name: 'CondensedMapHeader',
   props: {
     order: String,
     orderDirection: String
@@ -80,7 +68,7 @@ export default {
     },
 
     setOrder (order, direction = 'desc') {
-      this.$emit('changeOrder', { order, direction });
+      this.$emit('orderChanged', { order, direction });
     }
   }
 };
@@ -89,7 +77,7 @@ export default {
 <style scoped lang="scss">
 @import 'stylesheets/new-dashboard/variables';
 
-.dataset-list-row {
+.map-list-row {
   display: flex;
   align-items: center;
   width: 100%;
@@ -99,7 +87,7 @@ export default {
   background-color: $white;
 }
 
-.dataset-list-cell {
+.map-list-cell {
   &:first-of-type {
     padding-left: 0;
   }
@@ -113,12 +101,12 @@ export default {
   display: flex;
   align-items: center;
   align-self: flex-start;
-  width: 46px;
+  width: 68px;
   height: 100%;
 }
 
 .cell--end {
-  width: 34px;
+  width: 44px;
 }
 
 .cell--privacy {

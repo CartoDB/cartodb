@@ -192,6 +192,7 @@ export default {
       return this.filterType === filter;
     },
     applyOrder (orderParams) {
+      this.deselectAll();
       this.$router.push({
         name: 'datasets',
         params: this.$route.params,

@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer.vue should render items for free users 1`] = `
+<div class="grid container footer">
+  <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
+    <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
+      </a> <a href="https://carto.com/developers" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
+      </a></div>
+    <div class="footer-block"><a href="https://gis.stackexchange.com/questions/tagged/carto" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.GISStackExchange.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.GISStackExchange.description</p>
+      </a> <a href="mailto:support@carto.com" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.TechSupport.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.TechSupport.description</p>
+      </a>
+      <!---->
+      <!---->
+      <!---->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Footer.vue should render items for organization users (no owner) 1`] = `
+<div class="grid container footer">
+  <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
+    <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
+      </a> <a href="https://carto.com/developers" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
+      </a></div>
+    <div class="footer-block">
+      <!---->
+      <!---->
+      <!----> <a href="mailto:enterprise-support@carto.com" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DedicatedSupport.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DedicatedSupport.description</p>
+      </a> <a href="mailto:test@organization.com" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.OrganizationAdmin.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.OrganizationAdmin.description</p>
+      </a></div>
+  </div>
+</div>
+`;
+
+exports[`Footer.vue should render items for organization users (owner) 1`] = `
+<div class="grid container footer">
+  <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
+    <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
+      </a> <a href="https://carto.com/developers" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
+      </a></div>
+    <div class="footer-block">
+      <!---->
+      <!---->
+      <!----> <a href="mailto:enterprise-support@carto.com" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DedicatedSupport.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DedicatedSupport.description</p>
+      </a>
+      <!---->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Footer.vue should render items for pro users 1`] = `
+<div class="grid container footer">
+  <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
+  <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
+    <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
+      </a> <a href="https://carto.com/developers" target="_blank" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
+      </a></div>
+    <div class="footer-block">
+      <!---->
+      <!----> <a href="mailto:support@carto.com" class="footer-link">
+        <h4 class="title-link title is-caption is-txtGrey">
+          Footer.DedicatedSupport.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
+        <p class="description-link text is-small is-txtSoftGrey">Footer.DedicatedSupport.description</p>
+      </a>
+      <!---->
+      <!---->
+    </div>
+  </div>
+</div>
+`;

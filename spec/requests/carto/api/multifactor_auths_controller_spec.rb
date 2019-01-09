@@ -6,12 +6,10 @@ describe Carto::Api::MultifactorAuthsController do
 
   before :all do
     @user = FactoryGirl.create(:carto_user)
-    @ff = FactoryGirl.create(:feature_flag, name: 'mfa', restricted: false)
   end
 
   after :all do
     @user.destroy
-    @ff.destroy
   end
 
   before :each do
@@ -39,24 +37,6 @@ describe Carto::Api::MultifactorAuthsController do
       type: 'totp',
       user_id: @user.id
     }
-  end
-
-  describe 'check feature flag' do
-    before :each do
-      @ff.restricted = true
-      @ff.save
-    end
-
-    after :each do
-      @ff.restricted = false
-      @ff.save
-    end
-
-    it 'does not work without ff' do
-      post_json multifactor_auths_url, auth_params.merge(create_payload), auth_headers do |response|
-        response.status.should eq 403
-      end
-    end
   end
 
   describe '#create' do

@@ -96,6 +96,9 @@ export default {
 }
 
 .head-sectionActionsItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 32px;
 
   &:last-child {

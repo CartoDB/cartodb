@@ -1,31 +1,26 @@
 <template>
-<Dropdown ref="dropdown">
+<Dropdown ref="dropdown" class="settings">
   <template slot="button">
     <slot />
   </template>
 
   <Filters :section="section" :filter="filter" :metadata="metadata" @filterChanged="setFilter"/>
-  <Ordering :order="order" :orderDirection="orderDirection" @orderChanged="setOrder"/>
 </Dropdown>
 </template>
 
 <script>
 import Dropdown from '../Dropdowns/Dropdown';
 import Filters from '../Settings/Filters';
-import Ordering from '../Settings/Ordering';
 
 export default {
   name: 'SettingsDropdown',
   components: {
     Dropdown,
-    Filters,
-    Ordering
+    Filters
   },
   props: {
     section: String,
     filter: String,
-    order: String,
-    orderDirection: String,
     metadata: {
       type: Object,
       default () {
@@ -43,11 +38,13 @@ export default {
     setFilter (filter) {
       this.$refs.dropdown.closeDropdown();
       this.$emit('filterChanged', filter);
-    },
-    setOrder (orderSettings) {
-      this.$refs.dropdown.closeDropdown();
-      this.$emit('orderChanged', orderSettings);
     }
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.settings {
+  position: relative;
+}
+</style>

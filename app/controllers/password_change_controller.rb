@@ -48,10 +48,7 @@ class PasswordChangeController < ApplicationController
     end
 
     if @user.update_in_central && @user.save
-      params[:email] = @user.username
-      params[:password] = pw
-
-      authenticate!(:password, scope: @user.username)
+      warden.set_user(@user, scope: @user.username)
       CartoDB::Stats::Authentication.instance.increment_login_counter(@user.email)
 
       redirect_to session.delete('return_to') ||

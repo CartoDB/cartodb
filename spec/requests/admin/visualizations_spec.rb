@@ -700,7 +700,7 @@ describe Admin::VisualizationsController do
     end
 
     it 'finds visualization by user and public.name' do
-      url = CartoDB.url(@mock_context, 'public_table', 
+      url = CartoDB.url(@mock_context, 'public_table',
                         params: { id: "public.#{@table.table_visualization.name}" }, user: @org_user)
 
       get url

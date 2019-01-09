@@ -213,6 +213,7 @@ class SessionsController < ApplicationController
   def password_expired
     warden.custom_failure!
     cdb_logout
+    session[:return_to] = request.original_url
 
     respond_to do |format|
       format.html do
@@ -220,7 +221,7 @@ class SessionsController < ApplicationController
         redirect_to(url + "?error=#{SESSION_EXPIRED}")
       end
       format.json do
-        render(json: { error: 'session_expired' }, status: 403)
+        render(json: { error: SESSION_EXPIRED }, status: 403)
       end
     end
   end

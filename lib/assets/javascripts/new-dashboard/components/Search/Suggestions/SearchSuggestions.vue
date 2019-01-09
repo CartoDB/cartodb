@@ -1,17 +1,18 @@
 <template>
-  <section class="suggestions" :class="{ 'suggestions--open': isOpen }">
-    <router-link
-      :to="{ name: searchRoute, params: searchRouteParameters }"
-      class="suggestions__header is-caption text"
-      :class="{ 'suggestions__header--loading': isFetching }"
-      v-if="query"
-      @click.native="onPageChange">
-      {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
-    </router-link>
-
+  <section class="suggestions" :class="{ 'suggestions--open': isOpen }" @mouseleave="resetCurrentItem">
     <ul v-if="searchResults" class="suggestions__content">
-      <li v-for="visualization in searchResults.visualizations" :key="visualization.id">
-        <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange" />
+      <li :class="{'suggestions--active': currentItem === 0 }" @mouseover="udpateCurrentItem(0)">
+        <router-link
+          :to="{ name: searchRoute, params: searchRouteParameters }"
+          class="suggestions__header is-caption text"
+          :class="{ 'suggestions__header--loading': isFetching }"
+          v-if="query"
+          @click.native="onPageChange">
+          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
+        </router-link>
+      </li>
+      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': currentItem === index + 1}"  @mouseover="udpateCurrentItem(index + 1)">
+        <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
       </li>
     </ul>
   </section>
@@ -39,7 +40,8 @@ export default {
   data () {
     return {
       isFetching: true,
-      searchResults: []
+      searchResults: [],
+      currentItem: -1
     };
   },
   watch: {
@@ -52,7 +54,9 @@ export default {
 
       this.isFetching = true;
       this.fetchSuggestionsDebounced();
+      this.resetCurrentItem();
     }
+
   },
   computed: {
     isSearchingTags () {
@@ -107,6 +111,22 @@ export default {
     },
     onPageChange () {
       this.$emit('pageChange');
+    },
+    arrowDown () {
+      if (this.currentItem < this.searchResults.visualizations.length) {
+        this.currentItem++;
+      }
+    },
+    arrowUp () {
+      if (this.currentItem > 0) {
+        this.currentItem--;
+      }
+    },
+    resetCurrentItem () {
+      this.currentItem = -1;
+    },
+    udpateCurrentItem (index) {
+      this.currentItem = index;
     }
   }
 };
@@ -145,14 +165,9 @@ export default {
   overflow: hidden;
   border-bottom: 1px solid $grey;
   color: $text-color;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
-
-  &:hover {
-    background-color: rgba($primary-color, 0.05);
-    color: #1785FB;
-    text-decoration: none;
-  }
 
   &::before {
     content: '';
@@ -184,4 +199,13 @@ export default {
     }
   }
 }
+
+.suggestions--active {
+  .suggestions__header {
+    background-color: rgba($primary-color, 0.05);
+    color: #1785FB;
+    text-decoration: none;
+  }
+}
+
 </style>

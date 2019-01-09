@@ -1,5 +1,5 @@
 <template>
-  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit">
+  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit" @keydown.down.prevent="onKeyDownDown" @keydown.up.prevent="onKeyDownUp" @keydown.enter.prevent="onKeyDownEnter">
     <input type="text"
            v-model.trim="searchTerm"
            ref="searchInput"
@@ -8,7 +8,7 @@
            :placeholder="placeholder"
            @focus="onInputFocus"
            @blur="onInputBlur">
-    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput" ref="searchSuggestions"/>
   </form>
 </template>
 
@@ -72,6 +72,22 @@ export default {
     resetInput () {
       this.searchTerm = '';
       this.blurInput();
+    },
+
+    onKeyDownDown () {
+      this.$refs.searchSuggestions.arrowDown();
+    },
+
+    onKeyDownUp () {
+      this.$refs.searchSuggestions.arrowUp();
+    },
+    onKeyDownEnter () {
+      const selectedItem = this.$el.querySelector('.active-item a');
+      if (selectedItem) {
+        selectedItem.click();
+      } else {
+        this.onFormSubmit();
+      }
     }
   }
 };

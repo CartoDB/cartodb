@@ -39,15 +39,10 @@ export default {
   padding: 16px 16px 16px 36px;
   overflow: hidden;
   color: $text-color;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
-
-  &:hover {
-    background-color: rgba($primary-color, 0.05);
-    color: #1785FB;
-    text-decoration: none;
-  }
 
   &::after {
     content: '';
@@ -60,6 +55,14 @@ export default {
     background-repeat: no-repeat;
     background-position: center left;
     background-size: contain;
+  }
+}
+
+.suggestions--active {
+  .suggestions__item {
+    background-color: rgba($primary-color, 0.05);
+    color: #1785FB;
+    text-decoration: none;
   }
 }
 

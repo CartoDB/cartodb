@@ -71,7 +71,12 @@ var Search = View.extend({
     this.geocoder = GEOCODERS[this.geocoderService];
 
     const windowApiKey = GEOCODERS_WINDOW_API_KEYS[this.geocoderService];
-    this.token = this.options.token || windowApiKey;
+
+    if (!this.options.token && !window[windowApiKey]) {
+      throw new Error('There is no valid api key for ' + this.geocoder + ' geocoder.');
+    }
+
+    this.token = this.options.token || window[windowApiKey];
   },
 
   render: function () {

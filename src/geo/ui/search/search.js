@@ -1,30 +1,44 @@
 var _ = require('underscore');
 var View = require('../../../core/view');
-var geocoder = require('../../../geo/geocoder/mapbox-geocoder');
+var mapboxGeocoder = require('../../../geo/geocoder/mapbox-geocoder');
+var tomtomGeocoder = require('../../../geo/geocoder/tomtom-geocoder');
 var InfowindowModel = require('../../../geo/ui/infowindow-model');
 var Infowindow = require('../../../geo/ui/infowindow-view');
 var Point = require('../../../geo/geometry-models/point.js');
 var template = require('./search_template.tpl');
 var infowindowTemplate = require('./search_infowindow_template.tpl');
 
+var DEFAULT_GEOCODER = 'tomtom';
+
+var GEOCODERS = {
+  'tomtom': tomtomGeocoder,
+  'mapbox': mapboxGeocoder
+};
+
+var GEOCODERS_WINDOW_API_KEYS = {
+  'tomtom': 'tomtomApiKey',
+  'mapbox': 'mapboxApiKey'
+};
+
 /**
  *  UI component to place the map in the
  *  location found by the geocoder.
  */
+
 var Search = View.extend({
   className: 'CDB-Search CDB-Overlay',
 
   _ZOOM_BY_CATEGORY: {
-    'building': 18,
-    'postal-area': 15,
-    'venue': 18,
-    'region': 8,
     'address': 18,
-    'country': 5,
-    'county': 8,
+    'building': 18,
+    'venue': 18,
+    'postal-area': 15,
+    'neighbourhood': 15,
     'locality': 12,
     'localadmin': 11,
-    'neighbourhood': 15,
+    'region': 8,
+    'county': 8,
+    'country': 5,
     'default': 12
   },
 
@@ -48,7 +62,16 @@ var Search = View.extend({
     this.map = this.model;
     this.mapView = this.options.mapView;
     this.template = this.options.template || template;
-    this.token = this.options.token || window.mapboxApiKey;
+
+    this._initializeGeocoder();
+  },
+
+  _initializeGeocoder: function () {
+    this.geocoderService = this.options.geocoderService || DEFAULT_GEOCODER;
+    this.geocoder = GEOCODERS[this.geocoderService];
+
+    const windowApiKey = GEOCODERS_WINDOW_API_KEYS[this.geocoderService];
+    this.token = this.options.token || window[windowApiKey];
   },
 
   render: function () {
@@ -73,7 +96,7 @@ var Search = View.extend({
     // the animation)
     this._destroySearchPin(0);
     // TODO: we a Better way to pass api keys
-    return geocoder.geocode(address, this.token).then(this._onResult.bind(this));
+    return this.geocoder.geocode(address, this.token).then(this._onResult.bind(this));
   },
 
   _onResult: function (places) {

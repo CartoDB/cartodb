@@ -7,6 +7,7 @@ $colors: (
   'Premium': $premium-color,
   'Alert': $alert,
   'SoftBlue': $softblue,
+  'DarkBlue': $text-color-dark
 );
 
 @each $name, $color in $colors {

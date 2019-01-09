@@ -231,5 +231,15 @@
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
       "button": "Create your first Map"
     }
+  },
+  "TrialExpired": {
+    "ExpirationMessage": {
+      "title": "Your trial has expired",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. Please, take a look to our <a class='is-underline is-txtDarkBlue' href='https://carto.com/pricing/'>pricing plans</a>.",
+      "actions": {
+        "upgrade": "Upgrade your account",
+        "contactSales": "Contact Sales"
+      }
+    }
   }
 }

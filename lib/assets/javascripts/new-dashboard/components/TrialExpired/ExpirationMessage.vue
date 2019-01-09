@@ -1,23 +1,21 @@
 <template>
-  <section class="section section--noBorder">
+  <section>
     <div class="container warning-container">
       <div class="warning-icon">
         <img src="../../assets/icons/expired-trial/warning-icon.svg" />
       </div>
-      <h2 class="warning-title title is-title is-txtDarkBlue">
-        Your trial has expired
+      <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
+        {{ $t('TrialExpired.ExpirationMessage.title') }}
       </h2>
-      <p class="warning-description text is-body is-txtDarkBlue">
-        We couldn’t log you in because your trial expired on {{ humanReadableExpirationDate }}.<br/>
-        All of your data will be safe for the next {{ expirationDays }} days, but no one will be able to log in until your account is upgraded.
-        Please, take a look to our <a href="#">pricing plans</a>.
+      <p class="warning-description text is-body is-txtDarkBlue"
+          v-html="$t('TrialExpired.ExpirationMessage.description', { expirationDate: humanReadableExpirationDate })">
       </p>
       <div class="buttons-container">
-        <a href="#" class="button is-bgDarkBlue button--large upgrade-button">
-          <span>Upgrade your account</span>
+        <a :href="upgradeURL" class="button upgrade-button is-caption">
+          {{ $t('TrialExpired.ExpirationMessage.actions.upgrade') }}
         </a>
-        <a href="#" class="buttonLink no-transform button--large is-txtDarkBlue">
-          <span>Contact Sales</span>
+        <a href="mailto:sales@carto.com" class="button button--ghost is-txtDarkBlue is-caption">
+          {{ $t('TrialExpired.ExpirationMessage.actions.contactSales') }}
         </a>
       </div>
     </div>
@@ -37,6 +35,9 @@ export default {
   computed: {
     humanReadableExpirationDate () {
       return format(this.$store.state.user.trial_ends_at, 'MMMM DD, YYYY');
+    },
+    upgradeURL () {
+      return window.upgrade_url;
     }
   }
 };
@@ -47,6 +48,11 @@ export default {
 
 .upgrade-button {
   margin-right: 64px;
+  background-color: $text-color-dark;
+}
+
+.link {
+  text-decoration: underline;
 }
 
 .warning-container {
@@ -64,7 +70,6 @@ export default {
 
 .warning-description {
   margin-bottom: 16px;
-  color: $text-color-dark;
 }
 
 .buttons-container {

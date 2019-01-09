@@ -27,8 +27,9 @@ module CartoDB
   # Helper method to encapsulate Rails full URL generation compatible with our subdomainless mode
   # @param context ActionController::Base or a View or something that holds a request
   # @param path String Rails route name
-  # @param params Hash Parameters to send to the url (Optional)
+  # @param params Hash (Optional) Parameters to send to the url
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
+  # @param keep_base_url Boolean (Optional) Keeps the base url from the request in case of subdomainful
   def self.url(context, path, params: {}, user: nil, keep_base_url: false)
     base_url = if keep_base_url && !subdomainless_urls?
                  context.request.base_url

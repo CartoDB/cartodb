@@ -9,16 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-### Fixed
-- Moved 'browserify-shim' to devDependencies, fixing a potential problem with npm shrinkwrap.
-
 ## 4.1.9 - 2019-01-09
 ### Added
 - TomTom geocoder service
+- Histogram: fix wrong selection in last bucket.
 
 ## 4.1.8 - 2018-10-29
 ### Fixed
 - Moved 'browserify-shim' to devDependencies, fixing a potential problem with npm shrinkwrap.
+
+### Changed
+- Improve examples. [#2211](https://github.com/CartoDB/carto.js/pull/2211)
 
 ## 4.1.7 - 2018-10-18
 ### Fixed

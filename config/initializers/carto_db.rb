@@ -29,7 +29,7 @@ module CartoDB
   # @param path String Rails route name
   # @param params Hash Parameters to send to the url (Optional)
   # @param user ::User (Optional) If not sent will use subdomain or /user/xxx from controller request
-  def self.url(context, path, params = {}, user = nil, keep_base_url = false)
+  def self.url(context, path, params: {}, user: nil, keep_base_url: false)
     base_url = if keep_base_url && !subdomainless_urls?
                  context.request.base_url
                else

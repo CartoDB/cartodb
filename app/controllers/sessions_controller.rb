@@ -48,7 +48,7 @@ class SessionsController < ApplicationController
 
   def new
     if current_viewer
-      redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
+      redirect_to(CartoDB.url(self, 'dashboard', params: { trailing_slash: true }, user: current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)

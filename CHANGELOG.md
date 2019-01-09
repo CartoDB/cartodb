@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 4.1.9 - 2019-01-09
+
 ### Added
 - TomTom geocoder service [#2213](https://github.com/CartoDB/carto.js/issues/2213) 
 

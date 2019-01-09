@@ -198,7 +198,7 @@ module Carto
     end
 
     describe 'datasets scope' do
-      before(:each) do
+      before(:all) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
@@ -206,7 +206,7 @@ module Carto
         @table2 = create_table(user_id: @carto_user.id)
       end
 
-      after(:each) do
+      after(:all) do
         @table1.destroy
         @table2.destroy
         @app.destroy
@@ -227,6 +227,8 @@ module Carto
 
         oau.upgrade!([dataset_scope1])
         expect(oau.scopes).to(eq(scopes))
+
+        oau.destroy
       end
 
       it 'rename table' do
@@ -241,6 +243,8 @@ module Carto
 
         scopes_after = ['user:profile', "datasets:rw:#{@table1.name}"]
         expect(oau.all_scopes).to(eq(scopes_after))
+
+        oau.destroy
       end
     end
 

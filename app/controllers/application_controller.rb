@@ -310,7 +310,8 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
-        redirect_to CartoDB.path(self, 'login') and return
+        redirect_to CartoDB.url(self, 'login', {}, nil, true)
+        return
       end
       format.json do
         head :unauthorized

@@ -1,7 +1,7 @@
 <template>
-  <section class="suggestions" :class="{ 'suggestions--open': isOpen }" @mouseleave="resetCurrentItem">
+  <section class="suggestions" :class="{ 'suggestions--open': isOpen }" @mouseleave="resetActiveSuggestion">
     <ul v-if="searchResults" class="suggestions__content">
-      <li :class="{'suggestions--active': currentItem === 0 }" @mouseover="udpateCurrentItem(0)">
+      <li :class="{'suggestions--active': activeSuggestion === 0 }" @mouseover="udpateActiveSuggestion(0)">
         <router-link
           :to="{ name: searchRoute, params: searchRouteParameters }"
           class="suggestions__header is-caption text"
@@ -11,7 +11,7 @@
           {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': currentItem === index + 1}"  @mouseover="udpateCurrentItem(index + 1)">
+      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestion === index + 1}"  @mouseover="udpateActiveSuggestion(index + 1)">
         <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
       </li>
     </ul>
@@ -41,7 +41,7 @@ export default {
     return {
       isFetching: true,
       searchResults: [],
-      currentItem: -1
+      activeSuggestion: -1
     };
   },
   watch: {
@@ -54,7 +54,7 @@ export default {
 
       this.isFetching = true;
       this.fetchSuggestionsDebounced();
-      this.resetCurrentItem();
+      this.resetActiveSuggestion();
     }
 
   },
@@ -112,21 +112,24 @@ export default {
     onPageChange () {
       this.$emit('pageChange');
     },
-    arrowDown () {
-      if (this.currentItem < this.searchResults.visualizations.length) {
-        this.currentItem++;
+    getActiveSuggestion () {
+      return this.$el.querySelector('.suggestions--active a');
+    },
+    keydownDown () {
+      if (this.activeSuggestion < this.searchResults.visualizations.length) {
+        this.activeSuggestion++;
       }
     },
-    arrowUp () {
-      if (this.currentItem > 0) {
-        this.currentItem--;
+    keydownUp () {
+      if (this.activeSuggestion > 0) {
+        this.activeSuggestion--;
       }
     },
-    resetCurrentItem () {
-      this.currentItem = -1;
+    resetActiveSuggestion () {
+      this.activeSuggestion = -1;
     },
-    udpateCurrentItem (index) {
-      this.currentItem = index;
+    udpateActiveSuggestion (index) {
+      this.activeSuggestion = index;
     }
   }
 };
@@ -146,7 +149,7 @@ export default {
   border: 1px solid $light-grey;
   border-radius: 2px;
   opacity: 0;
-  background-color: #FFF;
+  background-color: $white;
   pointer-events: none;
 
   &.suggestions--open,
@@ -203,7 +206,6 @@ export default {
 .suggestions--active {
   .suggestions__header {
     background-color: rgba($primary-color, 0.05);
-    color: #1785FB;
     text-decoration: none;
   }
 }

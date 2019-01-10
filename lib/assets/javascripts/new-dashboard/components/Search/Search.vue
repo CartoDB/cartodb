@@ -1,5 +1,5 @@
 <template>
-  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit" @keydown.down.prevent="onKeyDownDown" @keydown.up.prevent="onKeyDownUp" @keydown.enter.prevent="onKeyDownEnter">
+  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit" @keydown.down.prevent="onKeydownDown" @keydown.up.prevent="onKeydownUp" @keydown.enter.prevent="onKeydownEnter">
     <input type="text"
            v-model.trim="searchTerm"
            ref="searchInput"
@@ -48,11 +48,9 @@ export default {
     onInputFocus () {
       this.isInputFocused = true;
     },
-
     onInputBlur () {
       this.isInputFocused = false;
     },
-
     onFormSubmit () {
       this.blurInput();
 
@@ -64,27 +62,23 @@ export default {
 
       this.searchTerm = '';
     },
-
     blurInput () {
       this.$refs.searchInput.blur();
     },
-
     resetInput () {
       this.searchTerm = '';
       this.blurInput();
     },
-
-    onKeyDownDown () {
-      this.$refs.searchSuggestions.arrowDown();
+    onKeydownDown () {
+      this.$refs.searchSuggestions.keydownDown();
     },
-
-    onKeyDownUp () {
-      this.$refs.searchSuggestions.arrowUp();
+    onKeydownUp () {
+      this.$refs.searchSuggestions.keydownUp();
     },
-    onKeyDownEnter () {
-      const selectedItem = this.$el.querySelector('.active-item a');
-      if (selectedItem) {
-        selectedItem.click();
+    onKeydownEnter () {
+      const activeItem = this.$refs.searchSuggestions.getActiveSuggestion();
+      if (activeItem) {
+        activeItem.click();
       } else {
         this.onFormSubmit();
       }
@@ -147,7 +141,7 @@ export default {
   transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border: 0;
   border-radius: 18px;
-  background-color: #FFF;
+  background-color: $white;
 
   &::placeholder {
     color: $text-secondary-color;

@@ -61,6 +61,7 @@ export default {
 .suggestions--active {
   .suggestions__item {
     background-color: rgba($primary-color, 0.05);
+    color: $primary-color;
     text-decoration: none;
   }
 }

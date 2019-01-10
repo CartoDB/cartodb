@@ -1,7 +1,7 @@
 <template>
   <section class="suggestions" :class="{ 'suggestions--open': isOpen }" @mouseleave="resetActiveSuggestion">
     <ul v-if="searchResults" class="suggestions__content">
-      <li :class="{'suggestions--active': activeSuggestion === 0 }" @mouseover="udpateActiveSuggestion(0)">
+      <li :class="{'suggestions--active': activeSuggestionIndex === 0 }" @mouseover="udpateActiveSuggestion(0)">
         <router-link
           :to="{ name: searchRoute, params: searchRouteParameters }"
           class="suggestions__header is-caption text"
@@ -11,7 +11,7 @@
           {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestion === index + 1}"  @mouseover="udpateActiveSuggestion(index + 1)">
+      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="udpateActiveSuggestion(index + 1)">
         <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
       </li>
     </ul>
@@ -41,7 +41,7 @@ export default {
     return {
       isFetching: true,
       searchResults: [],
-      activeSuggestion: -1
+      activeSuggestionIndex: -1
     };
   },
   watch: {
@@ -112,24 +112,24 @@ export default {
     onPageChange () {
       this.$emit('pageChange');
     },
-    getActiveSuggestion () {
+    getActiveSuggestionElement () {
       return this.$el.querySelector('.suggestions--active a');
     },
     keydownDown () {
-      if (this.activeSuggestion < this.searchResults.visualizations.length) {
-        this.activeSuggestion++;
+      if (this.activeSuggestionIndex < this.searchResults.visualizations.length) {
+        this.activeSuggestionIndex++;
       }
     },
     keydownUp () {
-      if (this.activeSuggestion > 0) {
-        this.activeSuggestion--;
+      if (this.activeSuggestionIndex > 0) {
+        this.activeSuggestionIndex--;
       }
     },
     resetActiveSuggestion () {
-      this.activeSuggestion = -1;
+      this.activeSuggestionIndex = -1;
     },
     udpateActiveSuggestion (index) {
-      this.activeSuggestion = index;
+      this.activeSuggestionIndex = index;
     }
   }
 };
@@ -206,6 +206,7 @@ export default {
 .suggestions--active {
   .suggestions__header {
     background-color: rgba($primary-color, 0.05);
+    color: $primary-color;
     text-decoration: none;
   }
 }

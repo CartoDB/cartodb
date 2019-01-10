@@ -17,12 +17,17 @@
         <a href="mailto:sales@carto.com" class="button button--ghost is-txtDarkBlue is-caption">
           {{ $t('TrialExpired.ExpirationMessage.actions.contactSales') }}
         </a>
+        <a href="#" @click="deleteAccount">
+          Delete Account
+        </a>
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import Dialog from 'new-dashboard/components/Backbone/Dialog';
+import DeleteAccount from 'new-dashboard/components/Backbone/Dialogs/DeleteAccount.vue';
 import format from 'date-fns/format';
 
 export default {
@@ -38,6 +43,17 @@ export default {
     },
     upgradeURL () {
       return window.upgrade_url;
+    }
+  },
+  methods: {
+    deleteAccount () {
+      this.$modal.show({
+        template: `
+        <Dialog @close="$emit('close')">
+          <DeleteAccount @close="$emit('close')"/>
+        </Dialog>`,
+        components: { Dialog, DeleteAccount }
+      }, {}, { width: '100%', height: '100%' });
     }
   }
 };

@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.19
 // uncompressed version: cartodb.uncompressed.js
-// sha: 887fbbc3a227fb349e314a95290ba9af92afaa8d
+// sha: b739960957423f6919188391fb859a85adf4fc23
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -27075,11 +27075,11 @@ function _getCenter(result) {
 function _getType(result) {
   var type = result.type;
 
-  if (TYPES[type]) {
+  if (this.TYPES[type]) {
     if (type === 'Geography' && result.entityType) {
       type = type + ':' + result.entityType;
     }
-    return TYPES[type];
+    return this.TYPES[type];
   }
 
   return 'default';

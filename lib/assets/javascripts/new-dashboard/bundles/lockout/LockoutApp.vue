@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <TrialExpiredPage />
-    <Footer />
+    <Footer :user="user"/>
   </div>
 </template>
 
@@ -14,6 +14,11 @@ export default {
   components: {
     TrialExpiredPage,
     Footer
+  },
+  computed: {
+    user () {
+      return this.$store.state.user;
+    }
   }
 };
 </script>

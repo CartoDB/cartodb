@@ -1,6 +1,6 @@
 <template>
   <section class="page">
-    <ExpirationMessage></ExpirationMessage>
+    <ExpirationMessage :expirationDays="expirationDays" :upgradeURL="upgradeURL"></ExpirationMessage>
   </section>
 </template>
 
@@ -11,6 +11,12 @@ export default {
   name: 'TrialExpired',
   components: {
     ExpirationMessage
+  },
+  data () {
+    return {
+      expirationDays: window.expiration_days,
+      upgradeURL: window.upgrade_url
+    };
   }
 };
 </script>

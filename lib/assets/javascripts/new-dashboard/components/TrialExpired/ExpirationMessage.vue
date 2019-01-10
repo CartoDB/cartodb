@@ -32,17 +32,13 @@ import format from 'date-fns/format';
 
 export default {
   name: 'ExpirationMessage',
-  data () {
-    return {
-      expirationDays: window.expiration_days
-    };
+  props: {
+    expirationDays: Number,
+    upgradeURL: String
   },
   computed: {
     humanReadableExpirationDate () {
       return format(this.$store.state.user.trial_ends_at, 'MMMM DD, YYYY');
-    },
-    upgradeURL () {
-      return window.upgrade_url;
     }
   },
   methods: {
@@ -64,7 +60,7 @@ export default {
 
 .upgrade-button {
   margin-right: 64px;
-  background-color: $text-color-dark;
+  background-color: $dark-blue;
 }
 
 .link {
@@ -81,7 +77,7 @@ export default {
 
 .warning-title {
   margin-bottom: 16px;
-  color: $text-color-dark;
+  color: $dark-blue;
 }
 
 .warning-description {

@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExpirationMessage.vue should render correctly 1`] = `
+<section>
+  <div class="container warning-container">
+    <div class="warning-icon"><img src="../../assets/icons/expired-trial/warning-icon.svg"></div>
+    <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
+      TrialExpired.ExpirationMessage.title
+    </h2>
+    <p class="warning-description text is-body is-txtDarkBlue">TrialExpired.ExpirationMessage.description</p>
+    <div class="buttons-container"><a href="https://user.carto.com/plan" class="button upgrade-button is-caption">
+        TrialExpired.ExpirationMessage.actions.upgrade
+      </a> <a href="mailto:sales@carto.com" class="button button--ghost is-txtDarkBlue is-caption">
+        TrialExpired.ExpirationMessage.actions.contactSales
+      </a> <a href="#">
+        Delete Account
+      </a></div>
+  </div>
+</section>
+`;

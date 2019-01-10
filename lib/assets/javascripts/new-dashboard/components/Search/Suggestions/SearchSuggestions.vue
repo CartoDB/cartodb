@@ -1,7 +1,7 @@
 <template>
   <section class="suggestions" :class="{ 'suggestions--open': isOpen }" @mouseleave="resetActiveSuggestion">
     <ul v-if="searchResults" class="suggestions__content">
-      <li :class="{'suggestions--active': activeSuggestionIndex === 0 }" @mouseover="udpateActiveSuggestion(0)">
+      <li :class="{'suggestions--active': activeSuggestionIndex === 0 }" @mouseover="updateActiveSuggestion(0)">
         <router-link
           :to="{ name: searchRoute, params: searchRouteParameters }"
           class="suggestions__header is-caption text"
@@ -128,7 +128,7 @@ export default {
     resetActiveSuggestion () {
       this.activeSuggestionIndex = -1;
     },
-    udpateActiveSuggestion (index) {
+    updateActiveSuggestion (index) {
       this.activeSuggestionIndex = index;
     }
   }

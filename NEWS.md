@@ -20,6 +20,9 @@ sudo make install
 - Password validation against common passwords & usernames (#14522)
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
+  - Include `oauth_app` and friends in user migrator (#14492)
 - Added condensed map view in the New Dashboard [#14546](https://github.com/CartoDB/cartodb/issues/14546)
 - Maps and Datasets page placeholders revisited for New Dashboard([#14534](https://github.com/CartoDB/cartodb/issues/14534))
 - Open maps and datasets in new tab in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))

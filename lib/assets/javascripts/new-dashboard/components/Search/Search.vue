@@ -76,9 +76,9 @@ export default {
       this.$refs.searchSuggestions.keydownUp();
     },
     onKeydownEnter () {
-      const activeItem = this.$refs.searchSuggestions.getActiveSuggestion();
-      if (activeItem) {
-        activeItem.click();
+      const activeSuggestion = this.$refs.searchSuggestions.getActiveSuggestion();
+      if (activeSuggestion) {
+        activeSuggestion.click();
       } else {
         this.onFormSubmit();
       }

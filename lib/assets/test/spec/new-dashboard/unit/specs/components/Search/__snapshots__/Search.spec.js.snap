@@ -2,12 +2,27 @@
 
 exports[`Search.vue Rendering should render correctly 1`] = `
 <form autocomplete="off" class="navbar-search is-search-open"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
-  <searchsuggestions-stub query=""></searchsuggestions-stub>
+  <section class="suggestions">
+    <ul class="suggestions__content">
+      <li class="">
+        <!---->
+      </li>
+    </ul>
+  </section>
 </form>
 `;
 
 exports[`Search.vue Rendering should render when search is open and filled correctly 1`] = `
 <form autocomplete="off" class="navbar-search is-search-open"><input type="text" placeholder="SearchComponent.placeholder.active" class="title is-small is-regular navbar-searchInput navbar-searchInput--filled">
-  <searchsuggestions-stub query="Query text" isopen="true"></searchsuggestions-stub>
+  <section class="suggestions suggestions--open">
+    <ul class="suggestions__content">
+      <li class="">
+        <router-link to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
+          Query text
+          <!---->
+        </router-link>
+      </li>
+    </ul>
+  </section>
 </form>
 `;

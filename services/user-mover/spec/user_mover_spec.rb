@@ -12,6 +12,8 @@ describe CartoDB::DataMover::ExportJob do
     CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_api_key_roles)
     CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_org_api_key_roles)
     CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_oauth_app_user_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_oauth_app_user_roles)
   end
 
   before :each do

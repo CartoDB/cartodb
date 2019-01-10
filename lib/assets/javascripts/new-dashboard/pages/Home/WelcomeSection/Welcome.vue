@@ -34,6 +34,7 @@ export default {
       isFirst: state => state.config.isFirstTimeViewingDashboard,
       accountUpdateURL: state => state.config.accountUpdateURL,
       trialEndDate: state => state.user.trial_ends_at,
+      user: state => state.user,
       username: state => state.user.username,
       organization: state => state.user.organization,
       notifications: state => state.user.organizationNotifications
@@ -69,6 +70,10 @@ export default {
     isInTrial () {
       return Boolean(this.trialEndDate);
     },
+    isFreeUser () {
+      const freeUser = ['free'];
+      return freeUser.includes(this.user.account_type);
+    },
     isProUser () {
       const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
       return noProUsers.includes(this.user.account_type);
@@ -78,7 +83,7 @@ export default {
         return false;
       }
 
-      return isOrganizationAdmin(this.$store.state.user.organization, this.$store.state.user);
+      return isOrganizationAdmin(this.user.organization, this.user);
     },
     isOrganizationUser () {
       return Boolean(this.organization);

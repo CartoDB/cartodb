@@ -107,6 +107,36 @@ describe 'Warden' do
       end
     end
 
+    it 'redirects to the original url after changing the expired password' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+      login
+
+      Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
+        Delorean.jump(2.days)
+
+        get notifications_url
+        follow_redirect!
+
+        login
+        follow_redirect!
+
+        change_password_payload = {
+          username: @user.username, old_password: @user.password, password: 'pass123', password_confirmation: 'pass123'
+        }
+        put password_change_url(@user.username), change_password_payload
+        follow_redirect!
+
+        request.path.should eq notifications_path
+
+        Delorean.back_to_the_present
+      end
+
+      @user.password = @user.password_confirmation = '000qwaszx'
+      @user.save
+    end
+
     it 'API returns 403 with an error if password is expired' do
       login
 

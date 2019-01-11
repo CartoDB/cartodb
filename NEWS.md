@@ -30,6 +30,7 @@ sudo make install
 - Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - Remove ordering from Settings dropdown in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 - Fix quota count in New Dashboard
+- Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)

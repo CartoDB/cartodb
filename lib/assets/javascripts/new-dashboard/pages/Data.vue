@@ -46,7 +46,7 @@
         </SectionTitle>
       </div>
 
-      <div class="grid-cell grid-cell--col12" v-if="initialState">
+      <div class="grid-cell grid-cell--col12" v-if="initialState && !hasSharedDatasets">
         <InitialState :title="$t(`DataPage.zeroCase.title`)">
           <template slot="icon">
             <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -72,8 +72,8 @@
 
       <div class="grid-cell grid-cell--col12">
         <EmptyState
-          :text="$t('DataPage.emptyState')"
-          v-if="emptyState">
+          :text="emptyStateText"
+          v-if="emptyState || (initialState && hasSharedDatasets)">
           <img svg-inline src="../assets/icons/common/compass.svg">
         </EmptyState>
       </div>
@@ -149,7 +149,8 @@ export default {
       isFetchingDatasets: state => state.datasets.isFetching,
       numResults: state => state.datasets.metadata.total_entries,
       filterType: state => state.datasets.filterType,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries
+      totalUserEntries: state => state.datasets.metadata.total_user_entries,
+      totalShared: state => state.datasets.metadata.total_shared
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
@@ -162,6 +163,13 @@ export default {
     },
     emptyState () {
       return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    emptyStateText () {
+      const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
+      return (this.initialState && this.hasSharedDatasets) ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
+    },
+    hasSharedDatasets () {
+      return this.totalShared > 0;
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
@@ -185,6 +193,7 @@ export default {
       return this.filterType === filter;
     },
     applyOrder (orderParams) {
+      this.deselectAll();
       this.$router.push({
         name: 'datasets',
         params: this.$route.params,

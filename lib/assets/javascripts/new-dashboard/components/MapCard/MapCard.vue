@@ -18,24 +18,13 @@
 <script>
 import CondensedMapCard from './CondensedMapCard';
 import SimpleMapCard from './SimpleMapCard';
+import props from './shared/props';
 
 export default {
   name: 'MapCard',
   props: {
+    ...props,
     condensed: {
-      type: Boolean,
-      default: false
-    },
-    map: Object,
-    isSelected: {
-      type: Boolean,
-      default: false
-    },
-    canHover: {
-      type: Boolean,
-      default: true
-    },
-    selectMode: {
       type: Boolean,
       default: false
     }

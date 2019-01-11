@@ -2,25 +2,25 @@
 
 exports[`DatasetListHeader.vue should render correct contents 1`] = `
 <div class="dataset-list-row">
-  <div class="dataset-list-cell cell--start"></div>
-  <div class="dataset-list-cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="dataset-list-cell cell cell--start"></div>
+  <div class="dataset-list-cell cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">
       DatasetListHeader.name
     </span></div>
-  <div class="dataset-list-cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="dataset-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
       DatasetListHeader.lastModified
     </span></div>
-  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
       DatasetListHeader.rows
     </span></div>
-  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey is-active">
+  <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey is-active">
       DatasetListHeader.size
     </span></div>
-  <div class="dataset-list-cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
       DatasetListHeader.usage
     </span></div>
-  <div class="dataset-list-cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
+  <div class="dataset-list-cell cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
       DatasetListHeader.privacy
     </span></div>
-  <div class="dataset-list-cell cell--end"></div>
+  <div class="dataset-list-cell cell cell--end"></div>
 </div>
 `;

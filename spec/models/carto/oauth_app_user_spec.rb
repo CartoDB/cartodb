@@ -227,6 +227,24 @@ module Carto
 
         oau.upgrade!([dataset_scope1])
         expect(oau.scopes).to(eq(scopes))
+
+        oau.destroy
+      end
+
+      it 'rename table' do
+        scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+
+        @table1.name = 'table_renamed_' + @table1.name
+        @table1.save
+
+        expect(oau.all_scopes).to_not(eq(scopes_before))
+
+        scopes_after = ['user:profile', "datasets:rw:#{@table1.name}"]
+        expect(oau.all_scopes).to(eq(scopes_after))
+
+        oau.destroy
       end
     end
 

@@ -92,18 +92,29 @@ describe PasswordChangeController do
       response.body.should include 'must be at least'
     end
 
-    it 'changes password and authenticate session' do
+    it 'changes password' do
       login_as(@user, scope: @user.username)
 
       put password_change_url(@user.username), payload_ok, @headers
 
-      @user.reload
-      @user.validate_old_password('password123')
-      @user.last_password_change_date.should be
+      @user.reload.last_password_change_date.should be
+    end
+
+    it 'does not require to authenticate again' do
+      login_as(@user, scope: @user.username)
+
+      PasswordChangeController.any_instance.expects(:authenticate!).never
+
+      put password_change_url(@user.username), payload_ok, @headers
+    end
+
+    it 'redirects to dashboard by default' do
+      login_as(@user, scope: @user.username)
+
+      put password_change_url(@user.username), payload_ok, @headers
 
       follow_redirect!
       request.path.should eq dashboard_path
-
     end
   end
 end

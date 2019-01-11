@@ -892,6 +892,34 @@ describe SessionsController do
       end
     end
 
+    shared_examples_for 'organizational user' do
+      shared_examples_for 'organization custom view' do
+        it 'shows organization custom view' do
+          get multifactor_authentication_session_url
+
+          expect(response.body).to include(@organization.name)
+        end
+      end
+
+      context 'subdomainless' do
+        before(:each) do
+          stub_subdomainless
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+
+      context 'domainful' do
+        before(:each) do
+          stub_domainful(@organization.name)
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+    end
+
     describe 'as individual user' do
       before(:all) do
         @user = FactoryGirl.create(:carto_user_mfa)
@@ -921,6 +949,7 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org user' do
@@ -940,6 +969,7 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org without user pass enabled' do

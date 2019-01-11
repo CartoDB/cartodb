@@ -4,7 +4,7 @@
       <slot />
     </div>
 
-    <h6 class="empty-state-text text is-caption is-txtSoftGrey">{{text}}</h6>
+    <h6 v-html="text" class="empty-state-text text is-caption is-txtSoftGrey">{{text}}</h6>
   </div>
 </template>
 

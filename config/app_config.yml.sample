@@ -217,6 +217,8 @@ defaults: &defaults
       search_bar_api_key: ''
     mapbox:
       search_bar_api_key: ''
+    tomtom:
+      search_bar_api_key: ''
     api:
       host: 'localhost'
       port: '5432'

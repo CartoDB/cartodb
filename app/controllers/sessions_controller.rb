@@ -213,6 +213,7 @@ class SessionsController < ApplicationController
   def password_expired
     warden.custom_failure!
     cdb_logout
+    session[:return_to] = request.original_url
 
     respond_to do |format|
       format.html do
@@ -220,7 +221,7 @@ class SessionsController < ApplicationController
         redirect_to(url + "?error=#{SESSION_EXPIRED}")
       end
       format.json do
-        render(json: { error: 'session_expired' }, status: 403)
+        render(json: { error: SESSION_EXPIRED }, status: 403)
       end
     end
   end
@@ -391,11 +392,13 @@ class SessionsController < ApplicationController
 
   def load_organization
     return @organization if @organization
-    # Useful for logout
-    return current_user.organization if current_user
 
-    subdomain = CartoDB.extract_subdomain(request)
-    @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    if current_viewer
+      @organization = current_viewer.organization
+    else
+      subdomain = CartoDB.extract_subdomain(request)
+      @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    end
   end
 
   def do_logout

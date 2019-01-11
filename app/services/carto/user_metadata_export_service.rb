@@ -19,10 +19,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.6: client_applications & friends and sql_copy rate_limits
 # 1.0.7: export password_reset_token and password_reset_sent_at user fields
 # 1.0.8: user_multifactor_auths
+# 1.0.9: oauth_apps, oauth_app_users and friends
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.8'.freeze
+    CURRENT_VERSION = '1.0.9'.freeze
     EXPORTED_USER_ATTRIBUTES = [
       :email, :crypted_password, :salt, :database_name, :username, :admin, :enabled, :invite_token, :invite_token_date,
       :map_enabled, :quota_in_bytes, :table_quota, :account_type, :private_tables_enabled, :period_end_date,
@@ -139,6 +140,8 @@ module Carto
 
       user.client_applications = build_client_applications_from_hash(exported_user[:client_application])
 
+      user.oauth_app_users = build_oauth_app_users_from_hash(exported_user[:oauth_app_users])
+
       # Must be the last one to avoid attribute assignments to try to run SQL
       user.id = exported_user[:id]
       user
@@ -230,6 +233,70 @@ module Carto
 
       [client_application]
     end
+
+    def build_oauth_app_users_from_hash(oauth_app_users)
+      return [] unless oauth_app_users
+      oauth_app_users.map { |oau| build_oauth_app_user_from_hash(oau) }
+    end
+
+    def build_oauth_app_user_from_hash(oau_hash)
+      oau = Carto::OauthAppUser.new(
+        id: oau_hash[:id],
+        oauth_app_id: oau_hash[:oauth_app_id],
+        scopes: oau_hash[:scopes],
+        created_at: oau_hash[:created_at],
+        updated_at: oau_hash[:updated_at],
+        skip_role_setup: true
+      )
+
+      if oau_hash[:oauth_authorization_codes]
+        oau.oauth_authorization_codes = oau_hash[:oauth_authorization_codes].map do |oac_hash|
+          build_oauth_authorization_code_from_hash(oac_hash)
+        end
+      end
+
+      if oau_hash[:oauth_access_tokens]
+        oau.oauth_access_tokens = oau_hash[:oauth_access_tokens].map do |oat_hash|
+          build_oauth_access_token_from_hash(oat_hash)
+        end
+      end
+
+      if oau_hash[:oauth_refresh_tokens]
+        oau.oauth_refresh_tokens = oau_hash[:oauth_refresh_tokens].map do |ort_hash|
+          build_oauth_refresh_token_from_hash(ort_hash)
+        end
+      end
+
+      oau
+    end
+
+    def build_oauth_authorization_code_from_hash(oac_hash)
+      Carto::OauthAuthorizationCode.new(
+        scopes: oac_hash[:scopes],
+        code: oac_hash[:code],
+        redirect_uri: oac_hash[:redirect_uri],
+        created_at: oac_hash[:created_at]
+      )
+    end
+
+    def build_oauth_access_token_from_hash(oat_hash)
+      Carto::OauthAccessToken.new(
+        api_key_id: oat_hash[:api_key_id],
+        scopes: oat_hash[:scopes],
+        created_at: oat_hash[:created_at],
+        skip_api_key_creation: true
+      )
+    end
+
+    def build_oauth_refresh_token_from_hash(ort_hash)
+      Carto::OauthRefreshToken.new(
+        token: ort_hash[:token],
+        scopes: ort_hash[:scopes],
+        created_at: ort_hash[:created_at],
+        updated_at: ort_hash[:updated_at],
+        skip_token_regeneration: true
+      )
+    end
   end
 
   module UserMetadataExportServiceExporter
@@ -278,6 +345,8 @@ module Carto
 
       # Use Sequel models to export. Single table inheritance causes AR to try and create Sequel models -> fail.
       user_hash[:client_application] = export_client_application(::User[user.id].client_application)
+
+      user_hash[:oauth_app_users] = user.oauth_app_users.map { |oau| export_oauth_app_user(oau) }
 
       user_hash
     end
@@ -335,6 +404,7 @@ module Carto
 
     def export_api_key(api_key)
       {
+        id: api_key.id,
         created_at: api_key.created_at,
         db_password: api_key.db_password,
         db_role: api_key.db_role,
@@ -367,6 +437,49 @@ module Carto
         token: sync_oauth.token,
         created_at: sync_oauth.created_at,
         updated_at: sync_oauth.updated_at
+      }
+    end
+
+    def export_oauth_app_user(oau)
+      oauth_authorization_codes = oau.oauth_authorization_codes.map { |oac| export_oauth_authorization_code(oac) }
+      oauth_access_tokens = oau.oauth_access_tokens.map { |oat| export_oauth_access_token(oat) }
+      oauth_refresh_tokens = oau.oauth_refresh_tokens.map { |ort| export_oauth_refresh_token(ort) }
+
+      {
+        id: oau.id,
+        oauth_app_id: oau.oauth_app_id,
+        scopes: oau.scopes,
+        created_at: oau.created_at,
+        updated_at: oau.updated_at,
+        oauth_authorization_codes: oauth_authorization_codes,
+        oauth_access_tokens: oauth_access_tokens,
+        oauth_refresh_tokens: oauth_refresh_tokens
+      }
+    end
+
+    def export_oauth_authorization_code(oac)
+      {
+        scopes: oac.scopes,
+        code: oac.code,
+        redirect_uri: oac.redirect_uri,
+        created_at: oac.created_at
+      }
+    end
+
+    def export_oauth_access_token(oat)
+      {
+        api_key_id: oat.api_key_id,
+        scopes: oat.scopes,
+        created_at: oat.created_at
+      }
+    end
+
+    def export_oauth_refresh_token(ort)
+      {
+        token: ort.token,
+        scopes: ort.scopes,
+        created_at: ort.created_at,
+        updated_at: ort.updated_at
       }
     end
   end

@@ -1,5 +1,6 @@
 <template>
   <a :href="vizUrl"
+     target="_blank"
      class="card map-card"
      :class="{
        'card--selected': isSelected,
@@ -74,45 +75,23 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import * as Visualization from 'new-dashboard/core/visualization';
-import countCharsArray from 'new-dashboard/utils/count-chars-array';
-import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import props from './shared/props';
+import methods from './shared/methods';
+import data from './shared/data';
+import computed from './shared/computed';
 
 export default {
   name: 'SimpleMapCard',
-  props: {
-    map: Object,
-    isSelected: {
-      type: Boolean,
-      default: false
-    },
-    canHover: {
-      type: Boolean,
-      default: true
-    },
-    selectMode: {
-      type: Boolean,
-      default: false
-    }
-  },
   components: {
     MapQuickActions,
     FeaturesDropdown
   },
-  data: function () {
-    return {
-      isThumbnailErrored: false,
-      activeHover: true,
-      titleOverflow: false,
-      multilineTitle: false,
-      areQuickActionsOpen: false,
-      isStarInNewLine: false,
-      maxTagsChars: 30
-    };
-  },
+  props,
+  data,
+  computed,
+  methods,
   mounted: function () {
     function isStarUnderText (textNode, starNode) {
       const range = document.createRange();
@@ -128,84 +107,6 @@ export default {
       this.titleOverflow = title.scrollHeight > title.clientHeight;
       this.isStarInNewLine = isStarUnderText(this.$el.querySelector('.card-title'), this.$el.querySelector('.card-favorite'));
     });
-  },
-  computed: {
-    privacyIcon () {
-      return `icon--${this.$props.map.privacy}`.toLowerCase();
-    },
-    lastUpdated () {
-      return this.$t(`MapCard.lastUpdate`, { date: distanceInWordsStrict(this.$props.map.updated_at, new Date()) });
-    },
-    mapThumbnailUrl () {
-      return Visualization.getThumbnailUrl(this.$props.map, this.$cartoModels, { width: 600, height: 280 });
-    },
-    tagsLength () {
-      return this.$props.map.tags ? this.$props.map.tags.length : 0;
-    },
-    vizUrl () {
-      return Visualization.getURL(this.$props.map, this.$cartoModels);
-    },
-    tagsChars () {
-      return countCharsArray(this.$props.map.tags, ', ');
-    },
-    isShared () {
-      return Visualization.isShared(this.$props.map, this.$cartoModels);
-    },
-    showViews () {
-      const privacy = this.$props.map.privacy;
-      return ['public', 'password', 'link'].includes(privacy.toLowerCase());
-    },
-    numberViews () {
-      const stats = this.$props.map.stats;
-      const totalViews = Object.keys(stats).reduce((total, date) => total + stats[date], 0);
-      return totalViews;
-    },
-    showInteractiveElements () {
-      return !this.$props.selectMode;
-    }
-  },
-  methods: {
-    toggleSelection () {
-      this.$emit('toggleSelection', {
-        map: this.$props.map,
-        isSelected: !this.$props.isSelected
-      });
-    },
-    toggleFavorite () {
-      if (this.$props.map.liked) {
-        this.deleteMapLike(this.$props.map);
-      } else {
-        this.likeMap(this.$props.map);
-      }
-    },
-    openQuickActions () {
-      this.areQuickActionsOpen = true;
-    },
-    closeQuickActions () {
-      this.areQuickActionsOpen = false;
-    },
-    mouseOverChildElement () {
-      this.activeHover = false;
-    },
-    mouseOutChildElement () {
-      this.activeHover = true;
-    },
-    onThumbnailError () {
-      this.isThumbnailErrored = true;
-    },
-    onDataChanged () {
-      this.$emit('dataChanged');
-    },
-    ...mapActions({
-      likeMap: 'maps/like',
-      deleteMapLike: 'maps/deleteLike'
-    }),
-    onClick (event) {
-      if (this.$props.selectMode) {
-        event.preventDefault();
-        this.toggleSelection();
-      }
-    }
   }
 };
 </script>

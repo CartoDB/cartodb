@@ -38,31 +38,44 @@
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
+
+          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="!initialState && !selectedMaps.length">
+            <img svg-inline src="../assets/icons/common/compactMap.svg" v-if="!isCondensed">
+            <img svg-inline src="../assets/icons/common/standardMap.svg" v-if="isCondensed">
+          </div>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="initialState">
+      <div class="grid-cell" v-if="initialState && !hasSharedMaps">
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <ul class="grid" v-if="isFetchingMaps">
-        <li class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="n in 12" :key="n">
-          <MapCardFake></MapCardFake>
-        </li>
-      </ul>
+      <div :class="{ 'grid-cell': isCondensed }">
+        <CondensedMapHeader
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @orderChanged="applyOrder"
+          v-if="isCondensed"></CondensedMapHeader>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
-        <li v-for="map in maps" :class="[isCondensed ? inlineCSSClasses : cardCSSClasses]" :key="map.id">
-          <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
-        </li>
-      </ul>
+        <ul class="grid" v-if="isFetchingMaps">
+          <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
+            <MapCardFake :condensed="isCondensed"></MapCardFake>
+          </li>
+        </ul>
+
+        <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
+          <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
+            <MapCard :condensed="isCondensed" :map="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
+          </li>
+        </ul>
+      </div>
 
       <EmptyState
-        :text="$t('MapsPage.emptyState')"
-        v-if="emptyState">
+        :text="emptyStateText"
+        v-if="emptyState || (initialState && hasSharedMaps)">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -81,7 +94,8 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
-import MapCardFake from 'new-dashboard/components/MapCardFake';
+import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
+import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
@@ -97,6 +111,7 @@ export default {
     SettingsDropdown,
     MapBulkActions,
     MapCard,
+    CondensedMapHeader,
     MapCardFake,
     SectionTitle,
     StickySubheader,
@@ -108,14 +123,16 @@ export default {
       isScrollPastHeader: false,
       selectedMaps: [],
       cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
-      inlineCSSClasses: 'card-condensed',
-      isCondensed: true
+      condensedCSSClasses: 'card-condensed',
+      isCondensed: false
     };
   },
   mounted () {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+
+    this.loadUserConfiguration();
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
@@ -137,7 +154,8 @@ export default {
       isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
       numResults: state => state.maps.metadata.total_entries,
       filterType: state => state.maps.filterType,
-      totalUserEntries: state => state.maps.metadata.total_user_entries
+      totalUserEntries: state => state.maps.metadata.total_user_entries,
+      totalShared: state => state.maps.metadata.total_shared
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
@@ -150,6 +168,16 @@ export default {
     },
     emptyState () {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    emptyStateText () {
+      const route = this.$router.resolve({name: 'maps', params: { filter: 'shared' }});
+
+      return (this.initialState && this.hasSharedMaps)
+        ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })
+        : this.$t('MapsPage.emptyCase.default', { path: route.href });
+    },
+    hasSharedMaps () {
+      return this.totalShared > 0;
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
@@ -176,6 +204,7 @@ export default {
       this.$router.push({ name: 'maps', params: { filter } });
     },
     applyOrder (orderParams) {
+      this.deselectAll();
       this.$router.push({
         name: 'maps',
         params: this.$route.params,
@@ -224,6 +253,27 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.filterType === filter;
+    },
+    toggleViewMode () {
+      this.isCondensed = !this.isCondensed;
+    },
+    loadUserConfiguration () {
+      if (localStorage.hasOwnProperty('mapViewMode')) {
+        if (localStorage.mapViewMode === 'compact') {
+          this.isCondensed = true;
+        } else if (localStorage.mapViewMode === 'standard') {
+          this.isCondensed = false;
+        }
+      }
+    }
+  },
+  watch: {
+    isCondensed (isCompactMapView) {
+      if (isCompactMapView) {
+        localStorage.mapViewMode = 'compact';
+      } else {
+        localStorage.mapViewMode = 'standard';
+      }
     }
   }
 };
@@ -253,6 +303,21 @@ export default {
 }
 
 .card-condensed {
+  width: 100%;
   border-bottom: 1px solid #EBEEF5;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.mapcard-view-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 32px;
+  cursor: pointer;
 }
 </style>

@@ -60,7 +60,6 @@ module Carto
 
       VALID_ORDER_PARAMS = %i(name updated_at size mapviews likes favorited estimated_row_count privacy
                               dependent_visualizations).freeze
-      VALID_ORDER_COMBINATIONS = %i(name updated_at favorited privacy).freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -83,9 +82,12 @@ module Carto
       end
 
       def index
-        opts = { valid_order_combinations: VALID_ORDER_COMBINATIONS }
+        offdatabase_orders = Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS.map(&:to_sym)
+        valid_order_combinations = VALID_ORDER_PARAMS - offdatabase_orders
+        opts = { valid_order_combinations: valid_order_combinations }
         page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
         _, total_types = get_types_parameters
+
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new

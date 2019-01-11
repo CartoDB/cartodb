@@ -522,7 +522,7 @@ describe DataImport do
       CartoDB::Importer2::QueryBatcher.any_instance.unstub(:execute_update)
     end
 
-    it 'should raise statement timeout error when the query batcher raise that exception' do
+    it 'should complete with a warning when the query batcher raises a timeout exception' do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_valid.json'))
       CartoDB::Importer2::QueryBatcher.any_instance
                                       .stubs(:execute_update)
@@ -534,8 +534,8 @@ describe DataImport do
         service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
       )
       data_import.run_import!
-      data_import.state.should eq 'failure'
-      data_import.error_code.should eq 6667
+      data_import.state.should eq 'complete'
+      data_import.log.entries.should include 'Error fixing geometries during import, skipped'
     end
 
     it 'should raise invalid data error when the query batcher raise any other exception' do

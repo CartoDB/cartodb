@@ -197,15 +197,16 @@ class ApplicationController < ActionController::Base
 
   def check_user_state
     return unless (request.path =~ %r{^\/(lockout|login|logout|unauthenticated|multifactor_authentication)}).nil?
+
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
       render_locked_owner if user.try(:locked?)
     elsif current_user.locked?
       render_locked_user
-    elsif multifactor_authentication_required?
-      render_multifactor_authentication
     end
+
+    render_multifactor_authentication if multifactor_authentication_required?
   end
 
   def render_403

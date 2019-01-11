@@ -42,6 +42,7 @@ sudo make install
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
+- Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
 - Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
 
 4.23.4 (2018-12-18)

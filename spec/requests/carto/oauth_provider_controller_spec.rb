@@ -346,12 +346,62 @@ describe Carto::OauthProviderController do
       end
     end
 
-    it 'logged out, redirects to login' do
-      logout
-      post oauth_provider_authorize_url(valid_payload)
+    context 'without session' do
+      before(:each) do
+        logout
+      end
 
-      expect(response.status).to(eq(302))
-      expect(response.location).to(include('/login'))
+      context 'with subdomainless' do
+        before(:each) do
+          stub_subdomainless
+        end
+
+        it 'redirects to login with username' do
+          endpoint = "http://localhost.lan:53716/user/#{@user.username}/oauth2/authorize"
+          expected_url = "http://localhost.lan:53716/user/#{@user.username}/login"
+
+          post endpoint, valid_payload
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to eql expected_url
+        end
+
+        it 'redirects to login without username' do
+          endpoint = "http://localhost.lan:53716/oauth2/authorize"
+          expected_url = "http://localhost.lan:53716/login"
+
+          post endpoint, valid_payload
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to eql expected_url
+        end
+      end
+
+      context 'with subdomainful' do
+        before(:each) do
+          stub_domainful('wadus')
+        end
+
+        it 'redirects to login with username' do
+          endpoint = "http://wadus.localhost.lan:53716/user/#{@user.username}/oauth2/authorize"
+          expected_url = "http://wadus.localhost.lan:53716/login"
+
+          post endpoint, valid_payload
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to eql expected_url
+        end
+
+        it 'redirects to login without username' do
+          endpoint = "http://wadus.localhost.lan:53716/oauth2/authorize"
+          expected_url = "http://wadus.localhost.lan:53716/login"
+
+          post endpoint, valid_payload
+
+          expect(response.status).to(eq(302))
+          expect(response.location).to eql expected_url
+        end
+      end
     end
 
     shared_examples_for 'successfully authorizes' do

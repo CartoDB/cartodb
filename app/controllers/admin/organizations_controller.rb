@@ -73,7 +73,7 @@ class Admin::OrganizationsController < Admin::AdminController
     }
     @notification = carto_organization.notifications.build(attributes)
     if @notification.save
-      redirect_to CartoDB.url(self, 'organization_notifications_admin', {}, current_user),
+      redirect_to CartoDB.url(self, 'organization_notifications_admin', user: current_user),
                   flash: { success: 'Notification sent!' }
     else
       flash.now[:error] = @notification.errors.full_messages.join(', ')
@@ -87,7 +87,7 @@ class Admin::OrganizationsController < Admin::AdminController
   def destroy_notification
     @notification.destroy
 
-    redirect_to CartoDB.url(self, 'organization_notifications_admin', {}, current_user),
+    redirect_to CartoDB.url(self, 'organization_notifications_admin', user: current_user),
                 flash: { success: 'Notification was successfully deleted!' }
   end
 
@@ -116,7 +116,8 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
-    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"
@@ -133,7 +134,8 @@ class Admin::OrganizationsController < Admin::AdminController
     valid_password_confirmation
     @organization.users.each(&:regenerate_all_api_keys)
 
-    redirect_to CartoDB.url(self, 'organization_settings', {}, current_user), flash: { success: "Users API keys regenerated successfully" }
+    redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
+                flash: { success: "Users API keys regenerated successfully" }
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'settings', status: e.status
@@ -161,7 +163,8 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.update_in_central
     @organization.save(raise_on_failure: true)
 
-    redirect_to CartoDB.url(self, 'organization_auth', {}, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'organization_auth', user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue CartoDB::CentralCommunicationFailure => e
     @organization.reload
     flash.now[:error] = "There was a problem while updating your organization. Please, try again and contact us if the problem persists. #{e.user_message}"

@@ -104,9 +104,8 @@ var Search = View.extend({
 
     if (places && places.length > 0) {
       var location = places[0];
-
-      this.model.setCenter(location.center);
-      this.model.setZoom(this._getZoomByCategory(location.type));
+      var zoom = this._getZoomByCategory(location.type);
+      this.model.setView(location.center, zoom, { silent: false });
 
       if (this.options.searchPin) {
         this._createSearchPin(location.center, address);

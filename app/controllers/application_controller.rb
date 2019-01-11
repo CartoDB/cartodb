@@ -289,6 +289,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render_multifactor_authentication
+    session[:return_to] = request.original_url
     redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
   end
 

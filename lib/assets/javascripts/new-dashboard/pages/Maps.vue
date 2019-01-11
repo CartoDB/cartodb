@@ -15,7 +15,7 @@
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
-          <img src="../../assets/icons/section-title/map.svg">
+          <img src="../assets/icons/section-title/map.svg">
         </template>
 
         <template slot="dropdownButton">
@@ -36,7 +36,7 @@
             @filterChanged="applyFilter"
             @orderChanged="applyOrder">
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
-            <img svg-inline v-else src="../../assets/icons/common/filter.svg">
+            <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
         </template>
         <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
@@ -63,7 +63,7 @@
       <EmptyState
         :text="$t('MapsPage.emptyState')"
         v-if="emptyState">
-        <img svg-inline src="../../assets/icons/common/compass.svg">
+        <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
@@ -86,7 +86,7 @@ import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
-import { shiftClick } from './click.service.js';
+import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
   name: 'MapsPage',
@@ -188,8 +188,10 @@ export default {
     },
     toggleSelected ({ map, isSelected }) {
       if (event.shiftKey) {
-        const mapsArray = [...Object.values(this.maps)];
-        this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+        // const mapsArray = [...Object.values(this.maps)];
+        // this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+        // return;
+        this.doShiftClick(map);
         return;
       }
 
@@ -199,6 +201,10 @@ export default {
       }
 
       this.selectedMaps = this.selectedMaps.filter(selectedMap => selectedMap.id !== map.id);
+    },
+    doShiftClick (map) {
+      const mapsArray = [...Object.values(this.maps)];
+      this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
     },
     selectAll () {
       this.selectedMaps = [...Object.values(this.$store.state.maps.list)];

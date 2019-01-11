@@ -145,16 +145,26 @@ class SQLBase extends Base {
         .join(',');
     }
 
-    if (_.isObject(filterValue) || _.isNumber(filterValue)) {
+    if (_.isNumber(filterValue)) {
       return filterValue;
+    }
+
+    if (_.isObject(filterValue) && !_.isEmpty(filterValue)) {
+      const values = {};
+
+      Object.keys(filterValue).forEach(function (value) {
+        values[value] = this._convertValueToSQLString(filterValue[value]);
+      }.bind(this));
+
+      return values;
     }
 
     return `'${normalizeString(filterValue.toString())}'`;
   }
 
-  _interpolateFilter (filterType, filterValue) {
+  _interpolateFilter (filterType, filterValues) {
     const sqlString = _.template(this.SQL_TEMPLATES[filterType]);
-    return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValue) });
+    return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValues) });  
   }
 
   _includeNullInQuery (sql) {

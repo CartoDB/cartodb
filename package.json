@@ -218,6 +218,7 @@
     "carto-node": "NODE_ENV=production webpack --progress --config webpack/carto-node/webpack.config.js",
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
+    "dev:editor:cdb": "grunt editor-cdb",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
     "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json",
     "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"

@@ -342,6 +342,11 @@ module.exports = function (grunt) {
     'manifest'
   ]);
 
+  grunt.registerTask('editor-cdb', [
+    'editor',
+    'watch:cdb'
+  ]);
+
   registerCmdTask('npm-start', {cmd: 'npm', args: ['run', 'start']});
   registerCmdTask('npm-build', {cmd: 'npm', args: ['run', 'build']});
   registerCmdTask('npm-build-static', {cmd: 'npm', args: ['run', 'build:static']});

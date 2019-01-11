@@ -1,7 +1,7 @@
 const glob = require('glob');
 const { resolve } = require('path');
 
-const rootDir = file => resolve(__dirname, '../../', file);
+const rootDir = file => resolve(__dirname, '../../../', file);
 const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {
@@ -23,13 +23,6 @@ module.exports = {
     rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
     ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
     rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
-    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
-  ],
-
-  new_dashboard: [
-    '@babel/polyfill',
-    rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('assets/stylesheets/new-dashboard/main.scss')),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
@@ -154,7 +147,7 @@ module.exports = {
 
   builder_embed: [
     'whatwg-fetch',
-    resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
+    rootDir('lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
@@ -164,9 +157,9 @@ module.exports = {
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 
-  dataset: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/dataset.js'),
+  dataset: rootDir('lib/assets/javascripts/builder/dataset.js'),
 
-  builder: resolve(__dirname, '../../', 'lib/assets/javascripts/builder/editor.js'),
+  builder: rootDir('lib/assets/javascripts/builder/editor.js'),
 
   oauth: [
     rootDir('assets/stylesheets/oauth/oauth.scss')

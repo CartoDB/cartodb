@@ -5,9 +5,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackDeleteAfterEmit = require('webpack-delete-after-emit');
 const { version } = require('../../package.json');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
-const entryPoints = require('./entryPoints');
+const entryPoints = require('./config/entryPoints');
 
-const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
+const vueLoaderConfig = require('./new-dashboard/utils/vue-loader.conf');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const rootDir = file => resolve(__dirname, '../../', file);

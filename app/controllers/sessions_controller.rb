@@ -392,11 +392,13 @@ class SessionsController < ApplicationController
 
   def load_organization
     return @organization if @organization
-    # Useful for logout
-    return current_user.organization if current_user
 
-    subdomain = CartoDB.extract_subdomain(request)
-    @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    if current_viewer
+      @organization = current_viewer.organization
+    else
+      subdomain = CartoDB.extract_subdomain(request)
+      @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    end
   end
 
   def do_logout

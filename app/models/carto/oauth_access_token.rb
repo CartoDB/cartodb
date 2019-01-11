@@ -16,10 +16,12 @@ module Carto
 
     validates :scopes, scopes: true
 
-    before_create :create_api_key
-    after_create :rename_api_key
+    before_create :create_api_key, unless: :skip_api_key_creation
+    after_create :rename_api_key, unless: :skip_api_key_creation
 
     scope :expired, -> { where('created_at < ?', Time.now - ACCESS_TOKEN_EXPIRATION_TIME) }
+
+    attr_accessor :skip_api_key_creation
 
     def expires_in
       created_at + ACCESS_TOKEN_EXPIRATION_TIME - Time.now

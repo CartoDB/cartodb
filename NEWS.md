@@ -10,7 +10,7 @@ sudo make install
 
 =======
 ### Features
-* You can configure your API key for the search bar, powered by TomTom, with `geocoder.tomtom.search_bar_api_key` (#14578).
+* You can configure your API key for the search bar, powered by TomTom, both in Editor and Builder, with `geocoder.tomtom.search_bar_api_key` (#14578).
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 - /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
@@ -20,6 +20,9 @@ sudo make install
 - Password validation against common passwords & usernames (#14522)
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
+  - Include `oauth_app` and friends in user migrator (#14492)
 - Added condensed map view in the New Dashboard [#14546](https://github.com/CartoDB/cartodb/issues/14546)
 - Maps and Datasets page placeholders revisited for New Dashboard([#14534](https://github.com/CartoDB/cartodb/issues/14534))
 - Open maps and datasets in new tab in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
@@ -40,6 +43,7 @@ sudo make install
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
 - Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
+- Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
 
 4.23.4 (2018-12-18)
 -------------------

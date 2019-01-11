@@ -77,7 +77,8 @@ export default {
       } else {
         exponent = Math.log(sizeInBytes) * Math.LOG2E;
       }
-      return Math.floor(exponent);
+
+      return Math.round(exponent / 10) * 10;
     },
     getUnit (exponent) {
       if (exponent < 10) {

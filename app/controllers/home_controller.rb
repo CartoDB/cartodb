@@ -78,8 +78,8 @@ class HomeController < ApplicationController
     ['', [
       "Environment: #{environment}",
       "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}",
-      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', {}, user)}",
-      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', {}, user)}"
+      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', user: user)}",
+      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', user: user)}"
     ]]
   end
 

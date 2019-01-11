@@ -5,7 +5,8 @@
     :actions="actions[actionMode]"
     v-on="getEventListeners()"
     @open="openQuickactions"
-    @close="closeQuickactions"></QuickActions>
+    @close="closeQuickactions"
+    :hasShadow="hasShadow"></QuickActions>
 </template>
 
 <script>
@@ -19,7 +20,11 @@ export default {
     QuickActions
   },
   props: {
-    map: Object
+    map: Object,
+    hasShadow: {
+      type: Boolean,
+      default: true
+    }
   },
   computed: {
     actions () {

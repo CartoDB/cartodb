@@ -58,9 +58,9 @@ class Admin::VisualizationsController < Admin::AdminController
     table_action = request.original_fullpath =~ %r{/tables/}
     unless current_user.present?
       if table_action
-        return(redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_table_map', params: { id: request.params[:id] }))
       else
-        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', id: request.params[:id]))
+        return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', params: { id: request.params[:id] }))
       end
     end
 
@@ -69,17 +69,18 @@ class Admin::VisualizationsController < Admin::AdminController
 
     if table_action
       if current_user.builder_enabled? && @visualization.has_read_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'builder_dataset', { id: request.params[:id] }, current_user)
+        return redirect_to CartoDB.url(self, 'builder_dataset', params: { id: request.params[:id] }, user: current_user)
       elsif !@visualization.has_write_permission?(current_user)
-        return redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id], redirected: true)
+        return redirect_to CartoDB.url(self, 'public_table_map', params: { id: request.params[:id], redirected: true })
       end
     elsif current_user.builder_enabled? && !@visualization.open_in_editor?
-      return redirect_to CartoDB.url(self, 'builder_visualization', { id: request.params[:id] }, current_user)
+      return redirect_to CartoDB.url(self, 'builder_visualization', params: { id: request.params[:id] },
+                                                                    user: current_user)
     elsif current_user.has_feature_flag?('static_editor') && !current_user.builder_enabled?
       return render(file: 'public/static/show/index.html', layout: false)
     elsif !@visualization.has_write_permission?(current_user)
       return redirect_to CartoDB.url(self, 'public_visualizations_public_map',
-                                     id: request.params[:id], redirected: true)
+                                     params: { id: request.params[:id], redirected: true })
     end
 
     if @visualization.is_privacy_private? && @visualization.has_read_permission?(current_user)
@@ -102,7 +103,8 @@ class Admin::VisualizationsController < Admin::AdminController
       else
         destination_user = nil
       end
-      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', {id: request.params[:id]}, destination_user))
+      return(redirect_to CartoDB.url(self, 'public_visualizations_public_map', params: { id: request.params[:id] },
+                                                                               user: destination_user))
     end
 
     if current_user.nil? && !request.params[:redirected].present?
@@ -125,9 +127,9 @@ class Admin::VisualizationsController < Admin::AdminController
     if eligible_for_redirect?(@visualization.user)
       redirect_to CartoDB.url(self,
                               'public_table',
-                              { id: "#{params[:id]}", redirected:true },
-                              @visualization.user
-                              ) and return
+                              params: { id: params[:id].to_s, redirected: true },
+                              user: @visualization.user)
+      return
     end
 
     @vizjson = @visualization.to_vizjson({https_request: request.protocol == 'https://'})
@@ -157,7 +159,7 @@ class Admin::VisualizationsController < Admin::AdminController
     end
 
     @name = @visualization.user.name_or_username
-    @user_url = CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user)
+    @user_url = CartoDB.url(self, 'public_user_feed_home', user: @visualization.user)
 
     @is_data_library = data_library_user?
 
@@ -515,10 +517,12 @@ class Admin::VisualizationsController < Admin::AdminController
             if user.organization.id == organization.id
               if for_table
                 url = CartoDB.url(self, 'public_tables_show',
-                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
+                                  params: { id: "#{params[:user_domain]}.#{params[:id]}", redirected: true },
+                                  user: user)
               else
                 url = CartoDB.url(self, 'public_visualizations_show',
-                                  {id: "#{params[:user_domain]}.#{params[:id]}", redirected:true}, user)
+                                  params: { id: "#{params[:user_domain]}.#{params[:id]}", redirected: true },
+                                  user: user)
               end
             end
           end
@@ -681,7 +685,8 @@ class Admin::VisualizationsController < Admin::AdminController
     # @visualization is not loaded if the embed is cached
     # Changing version invalidates the embed cache
     if @visualization && @visualization.version == 3
-      redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: @visualization.id)
+      redirect_to CartoDB.url(self, 'builder_visualization_public_embed',
+                              params: { visualization_id: @visualization.id })
     end
   end
 end

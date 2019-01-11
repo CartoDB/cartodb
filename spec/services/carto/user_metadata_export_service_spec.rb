@@ -14,6 +14,8 @@ describe Carto::UserMetadataExportService do
     @feature_flag = FactoryGirl.create(:carto_feature_flag)
     @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     @connector_provider = FactoryGirl.create(:connector_provider)
+    user = FactoryGirl.create(:carto_user)
+    @oauth_app = FactoryGirl.create(:oauth_app, user: user)
   end
 
   after(:all) do
@@ -91,6 +93,12 @@ describe Carto::UserMetadataExportService do
 
     Carto::UserMultifactorAuth.create!(user_id: @user.id, type: 'totp', last_login: Time.zone.now)
 
+    oauth_app_user = FactoryGirl.create(:oauth_app_users, oauth_app: @oauth_app, user: @user)
+    FactoryGirl.create(:oauth_authorization_codes, oauth_app_user: oauth_app_user)
+    api_key = FactoryGirl.create(:oauth_api_key, user: @user)
+    FactoryGirl.create(:oauth_access_tokens, oauth_app_user: oauth_app_user, api_key: api_key)
+    FactoryGirl.create(:oauth_refresh_tokens, oauth_app_user: oauth_app_user, scopes: ['offline'])
+
     @user.reload
   end
 
@@ -99,6 +107,11 @@ describe Carto::UserMetadataExportService do
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
+
+    user.oauth_app_users.each do |oau|
+      oau.skip_role_setup = true
+      oau.oauth_access_tokens.each { |oat| oat.api_key.skip_role_setup = true }
+    end
 
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
     destroy_full_visualization(@map2, @table2, @table_visualization2, @visualization2)
@@ -149,6 +162,15 @@ describe Carto::UserMetadataExportService do
       end
       ClientApplication.where(user_id: @user.id).each(&:destroy)
 
+      @user.oauth_app_users.each do |oau|
+        unless oau.oauth_access_tokens.blank?
+          oau.oauth_access_tokens.each do |oat|
+            oat.api_key.skip_role_setup = true
+            oat.api_key.skip_cdb_conf_info = true
+          end
+        end
+      end
+
       @user.destroy if @user
     end
 
@@ -165,6 +187,13 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.8 (without oauth_apps and oauth_app_users)' do
+      user = test_import_user_from_export(full_export_one_zero_eight)
+
+      expect(user.oauth_apps).to be_empty
+      expect(user.oauth_app_users).to be_empty
     end
 
     it 'imports 1.0.7 (without user_multifactor_auths)' do
@@ -379,6 +408,12 @@ describe Carto::UserMetadataExportService do
     else
       expect(user.user_multifactor_auths).to be_empty
     end
+
+    if export[:oauth_app_users]
+      expect_export_matches_oauth_app_users(export[:oauth_app_users].first, user.oauth_app_users.first)
+    else
+      expect(user.oauth_app_users).to be_empty
+    end
   end
 
   def expect_export_matches_layer(exported_layer, layer)
@@ -503,6 +538,102 @@ describe Carto::UserMetadataExportService do
     expect(fake_app.updated_at).to eq token.updated_at
   end
 
+  def expect_export_matches_oauth_app_users(exported_oauth_app_user, oauth_app_user)
+    expect(exported_oauth_app_user).to be_nil && return unless oauth_app_user
+
+    expect(exported_oauth_app_user[:id]).to eq oauth_app_user.id
+    expect(exported_oauth_app_user[:oauth_app_id]).to eq oauth_app_user.oauth_app_id
+    expect(exported_oauth_app_user[:scopes]).to eq oauth_app_user.scopes
+
+    expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
+    expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user, oauth_app_user.id)
+  end
+
+  def expect_export_matches_oauth_app_users_friends(exported_oauth_app_user, oauth_app_user, oauth_app_user_id)
+    if exported_oauth_app_user[:oauth_authorization_codes]
+      expect_export_matches_oauth_authorization_codes(
+        exported_oauth_app_user[:oauth_authorization_codes].first,
+        oauth_app_user.oauth_authorization_codes.first,
+        oauth_app_user_id
+      )
+    end
+
+    if exported_oauth_app_user[:oauth_access_tokens]
+      expect_export_matches_oauth_access_tokens(
+        exported_oauth_app_user[:oauth_access_tokens].first,
+        oauth_app_user.oauth_access_tokens.first,
+        oauth_app_user_id
+      )
+    end
+
+    if exported_oauth_app_user[:oauth_refresh_tokens]
+      expect_export_matches_oauth_refresh_tokens(
+        exported_oauth_app_user[:oauth_refresh_tokens].first,
+        oauth_app_user.oauth_refresh_tokens.first,
+        oauth_app_user_id
+      )
+    end
+  end
+
+  def expect_export_matches_oauth_app_users_dates(exported_oauth_app_user, oauth_app_user)
+    fake_oauth_app_user = Carto::OauthAppUser.new(
+      created_at: exported_oauth_app_user[:created_at],
+      updated_at: exported_oauth_app_user[:updated_at]
+    )
+
+    expect(fake_oauth_app_user.created_at).to eq oauth_app_user.created_at
+    expect(fake_oauth_app_user.updated_at).to eq oauth_app_user.updated_at
+  end
+
+  def expect_export_matches_oauth_authorization_codes(exported_oac, oac, oauth_app_user_id)
+    expect(exported_oac).to be_nil && return unless oac
+
+    expect(oauth_app_user_id).to eq oac.oauth_app_user_id
+    expect(exported_oac[:scopes]).to eq oac.scopes
+    expect(exported_oac[:code]).to eq oac.code
+    expect(exported_oac[:redirect_uri]).to eq oac.redirect_uri
+
+    expect_export_matches_oauth_authorization_codes_dates(exported_oac, oac)
+  end
+
+  def expect_export_matches_oauth_authorization_codes_dates(exported_oac, oac)
+    fake_oauth_authorization_code = Carto::OauthAuthorizationCode.new(
+      created_at: exported_oac[:created_at]
+    )
+
+    expect(fake_oauth_authorization_code.created_at).to eq oac.created_at
+  end
+
+  def expect_export_matches_oauth_access_tokens(exported_oauth_access_token, oauth_access_token, oauth_app_user_id)
+    expect(exported_oauth_access_token).to be_nil && return unless oauth_access_token
+
+    expect(oauth_app_user_id).to eq oauth_access_token.oauth_app_user_id
+    expect(exported_oauth_access_token[:api_key_id]).to eq oauth_access_token.api_key_id
+    expect(exported_oauth_access_token[:scopes]).to eq oauth_access_token.scopes
+
+    fake_oauth_access_token = Carto::OauthAccessToken.new(
+      created_at: oauth_access_token[:created_at]
+    )
+
+    expect(fake_oauth_access_token.created_at).to eq oauth_access_token.created_at
+  end
+
+  def expect_export_matches_oauth_refresh_tokens(exported_oauth_refresh_token, oauth_refresh_token, oauth_app_user_id)
+    expect(exported_oauth_refresh_token).to be_nil && return unless oauth_refresh_token
+
+    expect(oauth_app_user_id).to eq oauth_refresh_token.oauth_app_user_id
+    expect(exported_oauth_refresh_token[:token]).to eq oauth_refresh_token.token
+    expect(exported_oauth_refresh_token[:scopes]).to eq oauth_refresh_token.scopes
+
+    fake_oauth_refresh_token = Carto::OauthRefreshToken.new(
+      created_at: oauth_refresh_token[:created_at],
+      updated_at: oauth_refresh_token[:updated_at]
+    )
+
+    expect(fake_oauth_refresh_token.created_at).to eq oauth_refresh_token.created_at
+    expect(fake_oauth_refresh_token.updated_at).to eq oauth_refresh_token.updated_at
+  end
+
   def export_import(user)
     export = service.export_user_json_hash(user)
     expect_export_matches_user(export[:user], user)
@@ -606,7 +737,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.8",
+      version: "1.0.9",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -733,6 +864,34 @@ describe Carto::UserMetadataExportService do
             grants: [{
               type: "apis",
               apis: []
+            }],
+            user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
+          },
+          {
+            id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            created_at: "2018-02-12T16:11:26+00:00",
+            db_password: "be63855d1179de48dc8c82b9fce338636d961e76",
+            db_role: "user00000001_role_31cf62cd112354340bf76b048e3af398",
+            name: "oauth_authorization 2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            token: "OHP1p6jPwG5Lbabr4jq202",
+            type: "oauth",
+            updated_at: "2018-02-12T16:11:26+00:00",
+            grants: [{
+              type: "apis",
+              apis: ["sql", "maps"]
+            }, {
+              type: "user",
+              data: ["profile"]
+            }, {
+              type: "dataservices",
+              services: ["routing", "isolines", "observatory", "geocoding"]
+            }, {
+              type: "database",
+              tables: [{
+                name: "st",
+                permissions: ["select"],
+                schema: "test1"
+              }]
             }],
             user_id: "5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0"
           }
@@ -915,13 +1074,51 @@ describe Carto::UserMetadataExportService do
           enabled: true,
           shared_secret: 'abcdefgh',
           type: 'totp'
+        }],
+        oauth_app_users: [{
+          id: "d881e0f1-cf35-4c35-b44a-6dc31608a435", # necessary for role creation
+          oauth_app_id: @oauth_app.id,
+          scopes: ["datasets:r:test1", "datasets:rw:test2"],
+          created_at: "2018-11-16T14:31:46+00:00",
+          updated_at: "2018-11-17T16:41:56+00:00",
+          oauth_authorization_codes: [{
+            scopes: ["datasets:r:test1"],
+            code: "zzzz",
+            redirect_uri: "https://carto.com",
+            created_at: "2018-11-16T14:31:46+00:00"
+          }],
+          oauth_access_tokens: [{
+            api_key_id: "2135c786-1ecf-4aff-bcde-e759bb1843e0",
+            scopes: [
+              "user:profile",
+              "dataservices:routing",
+              "dataservices:isolines",
+              "dataservices:observatory",
+              "dataservices:geocoding",
+              "datasets:r:test1"
+            ],
+            created_at: "2018-11-16T14:31:46+00:00"
+          }],
+          oauth_refresh_tokens: [{
+            token: "zzzzz",
+            scopes: ["datasets:r:test1", "offline"],
+            created_at: "2018-11-16T14:31:46+00:00",
+            updated_at: "2018-06-11T14:31:46+00:00"
+          }]
         }]
       }
     }
   end
 
+  let(:full_export_one_zero_eight) do
+    user_hash = full_export[:user].except!(:oauth_app_users)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_seven) do
-    user_hash = full_export[:user].except!(:user_multifactor_auths)
+    user_hash = full_export_one_zero_eight[:user].except!(:user_multifactor_auths)
 
     full_export[:user] = user_hash
     full_export

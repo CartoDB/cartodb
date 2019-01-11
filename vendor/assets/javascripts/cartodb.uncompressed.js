@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.13
+// cartodb.js version: 3.15.19
 // uncompressed version: cartodb.uncompressed.js
-// sha: 8d3010fdc8fdfe6e4248343baebb152079a43fef
+// sha: 0843288cca8571f0b00a37ebfe442360c312b011
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -15040,11 +15040,11 @@ wax.g.connector = function(options) {
 wax.g.connector.prototype.getTile = function(coord, zoom, ownerDocument) {
     var key = zoom + '/' + coord.x + '/' + coord.y;
     if (!this.cache[key]) {
-        var img = this.cache[key] = new Image(256, 256);
-        this.cache[key].src = this.getTileUrl(coord, zoom);
-        this.cache[key].setAttribute('gTileKey', key);
-        this.cache[key].setAttribute("style","opacity: "+this.opacity+"; filter: alpha(opacity="+(this.opacity*100)+");");
-        this.cache[key].onerror = function() { img.style.display = 'none'; };
+      var img = this.cache[key] = new Image(256, 256);
+      this.cache[key].src = this.getTileUrl(coord, zoom);
+      this.cache[key].setAttribute('gTileKey', key);
+      this.cache[key].setAttribute("style","opacity: "+this.opacity+"; filter: alpha(opacity="+(this.opacity*100)+");");
+      this.cache[key].onerror = function() { img.style.display = 'none'; };
     }
     return this.cache[key];
 };
@@ -15053,9 +15053,9 @@ wax.g.connector.prototype.getTile = function(coord, zoom, ownerDocument) {
 //
 // TODO: expire cache data in the gridmanager.
 wax.g.connector.prototype.releaseTile = function(tile) {
-    var key = tile.getAttribute('gTileKey');
-    if (this.cache[key]) delete this.cache[key];
-    if (tile.parentNode) tile.parentNode.removeChild(tile);
+  // var key = tile.getAttribute('gTileKey');
+  // if (this.cache[key]) delete this.cache[key];
+  // if (tile.parentNode) tile.parentNode.removeChild(tile);
 };
 
 // Get a tile url, based on x, y coordinates and a z value.
@@ -25659,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.13";
+    cdb.VERSION = "3.15.19";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -25714,7 +25714,12 @@ if (typeof window !== 'undefined') {
         'core/loader.js',
         'core/util.js',
 
-        'geo/geocoder.js',
+        'geo/geocoders/mapbox_geocoder.js',
+        'geo/geocoders/mapzen_geocoder.js',
+        'geo/geocoders/nokia_geocoder.js',
+        'geo/geocoders/tomtom_geocoder.js',
+        'geo/geocoders/yahoo_geocoder.js',
+
         'geo/geometry.js',
         'geo/map.js',
         'geo/ui/text.js',
@@ -26840,20 +26845,22 @@ cdb.core.util._inferBrowser = function(ua){
 }
 
 cdb.core.util.browser = cdb.core.util._inferBrowser();
-
-
-/**
- * geocoders for different services
- *
- * should implement a function called geocode the gets
- * the address and call callback with a list of placemarks with lat, lon
- * (at least)
- */
-
-cdb.geo.geocoder.YAHOO = {
-
+cdb.geo.geocoder.MAPBOX = {
   keys: {
-    app_id: "nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--"
+    access_token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg'
+  },
+
+  TYPES: {
+    country: 'country',
+    region: 'region',
+    postcode: 'postal-area',
+    district: 'localadmin',
+    place: 'venue',
+    locality: 'locality',
+    neighborhood: 'neighbourhood',
+    address: 'address',
+    poi: 'venue',
+    'poi.landmark': 'venue'
   },
 
   geocode: function (address, callback) {
@@ -26862,53 +26869,36 @@ cdb.geo.geocoder.YAHOO = {
       .replace(/á/g, 'a')
       .replace(/í/g, 'i')
       .replace(/ó/g, 'o')
-      .replace(/ú/g, 'u')
-      .replace(/ /g, '+');
+      .replace(/ú/g, 'u');
 
     var protocol = '';
     if (location.protocol.indexOf('http') === -1) {
       protocol = 'http:';
     }
 
-    $.getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function (data) {
+    $.getJSON(protocol + '//api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token, function (response) {
+      callback(this._formatResponse(response));
+    }.bind(this));
+  },
 
-      var coordinates = [];
-      if (data && data.query && data.query.results && data.query.results.json && data.query.results.json.ResultSet && data.query.results.json.ResultSet.Found != "0") {
+  // Transform a raw response into a array with the cartodb format
+  _formatResponse: function (rawResponse) {
+    if (!rawResponse.features.length) {
+      return [];
+    }
 
-        // Could be an array or an object |arg!
-        var res;
-
-        if (_.isArray(data.query.results.json.ResultSet.Results)) {
-          res = data.query.results.json.ResultSet.Results;
-        } else {
-          res = [data.query.results.json.ResultSet.Results];
-        }
-
-        for (var i in res) {
-          var r = res[i],
-            position;
-
-          position = {
-            lat: r.latitude,
-            lon: r.longitude
-          };
-
-          if (r.boundingbox) {
-            position.boundingbox = r.boundingbox;
-          }
-
-          coordinates.push(position);
-        }
-      }
-
-      callback(coordinates);
-    });
+    return [{
+      lat: rawResponse.features[0].center[1],
+      lon: rawResponse.features[0].center[0],
+      type: this.TYPES[rawResponse.features[0].type] || 'default',
+      title: rawResponse.features[0].text,
+    }];
   }
-};
+};/***** DEPRECATED *****/
 
 cdb.geo.geocoder.MAPZEN = {
   keys: {
-    app_id: "mapzen-YfBeDWS"
+    app_id: 'mapzen-YfBeDWS'
   },
 
   geocode: function (address, callback) {
@@ -26929,9 +26919,8 @@ cdb.geo.geocoder.MAPZEN = {
       if (data && data.features && data.features.length > 0) {
         var res = data.features;
         for (var i in res) {
-          var r = res[i],
-            position;
-          position = {
+          var r = res[i];
+          var position = {
             lat: r.geometry.coordinates[1],
             lon: r.geometry.coordinates[0]
           };
@@ -26951,14 +26940,11 @@ cdb.geo.geocoder.MAPZEN = {
       }
     });
   }
-};
-
-
-cdb.geo.geocoder.NOKIA = {
+};cdb.geo.geocoder.NOKIA = {
 
   keys: {
-    app_id: "KuYppsdXZznpffJsKT24",
-    app_code: "A7tBPacePg9Mj_zghvKt9Q"
+    app_id: 'KuYppsdXZznpffJsKT24',
+    app_code: 'A7tBPacePg9Mj_zghvKt9Q'
   },
 
   geocode: function (address, callback) {
@@ -27014,24 +27000,26 @@ cdb.geo.geocoder.NOKIA = {
     });
   }
 };
-
-
-cdb.geo.geocoder.MAPBOX = {
+cdb.geo.geocoder.TOMTOM = {
   keys: {
-    access_token: 'pk.eyJ1IjoiY2FydG8tdGVhbSIsImEiOiJjamNseTl3ZzQwZnFkMndudnIydnJoMXZxIn0.HycQBkaaV7ZwLkHm5hEmfg',
+    api_key: 'vrZphqNRlSCiU0J0ky0tFQGd0Pfbjxhr'
   },
 
-  TYPES : {
-    country: 'country',
-    region: 'region',
-    postcode: 'postal-area',
-    district: 'localadmin',
-    place: 'venue',
-    locality: 'locality',
-    neighborhood: 'neighbourhood',
-    address: 'address',
-    poi: 'venue',
-    'poi.landmark': 'venue'
+  TYPES: {
+    'Geography': 'region',
+    'Geography:Country': 'country',
+    'Geography:CountrySubdivision': 'region',
+    'Geography:CountrySecondarySubdivision': 'region',
+    'Geography:CountryTertiarySubdivision': 'region',
+    'Geography:Municipality': 'localadmin',
+    'Geography:MunicipalitySubdivision': 'locality',
+    'Geography:Neighbourhood': 'neighbourhood',
+    'Geography:PostalCodeArea': 'postal-area',
+    'Street': 'neighbourhood',
+    'Address Range': 'neighbourhood',
+    'Point Address': 'address',
+    'Cross Street': 'address',
+    'POI': 'venue'
   },
 
   geocode: function (address, callback) {
@@ -27047,25 +27035,124 @@ cdb.geo.geocoder.MAPBOX = {
       protocol = 'http:';
     }
 
-    $.getJSON(protocol + '//api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token, function (response) {
+    var tomtomVersion = '2';
+    var url = protocol + '//api.tomtom.com/search/' + tomtomVersion + '/search/' + encodeURIComponent(address) + '.json?key=' + this.keys.api_key;
+
+    $.getJSON(url, function (response) {
       callback(this._formatResponse(response));
     }.bind(this));
   },
 
-  // Transform a raw response into a array with the cartodb format
+  /**
+   * Transform a tomtom geocoder response into an object more friendly for our search widget.
+   * @param {object} rawTomTomResponse - The raw tomtom geocoding response, {@see https://developer.tomtom.com/search-api/search-api-documentation-geocoding/geocode}
+   */
   _formatResponse: function (rawResponse) {
-    if (!rawResponse.features.length) {
+    if (!rawResponse.results.length) {
       return [];
     }
 
-    return [
-      {
-        lat: rawResponse.features[0].center[1],
-        lon: rawResponse.features[0].center[0],
-        type: this.TYPES[rawResponse.features[0].type] || 'default',
-        title: rawResponse.features[0].text,
+    var bestCandidate = rawResponse.results[0];
+
+    return [{
+      boundingbox: this._getBoundingBox(bestCandidate),
+      center: this._getCenter(bestCandidate),
+      type: this._getType(bestCandidate)
+    }];
+  },
+
+  /**
+   * TomTom returns { lon, lat } while we use [lat, lon]
+   */
+  _getCenter: function (result) {
+    return [result.position.lat, result.position.lon];
+  },
+
+  /**
+   * Transform the feature type into a well known enum.
+   */
+  _getType: function (result) {
+    var type = result.type;
+
+    if (this.TYPES[type]) {
+      if (type === 'Geography' && result.entityType) {
+        type = type + ':' + result.entityType;
       }
-    ];
+      return this.TYPES[type];
+    }
+
+    return 'default';
+  },
+
+  /**
+   * Transform the feature bbox into a carto.js well known format.
+   */
+  _getBoundingBox: function (result) {
+    if (!result.viewport) {
+      return;
+    }
+    var upperLeft = result.viewport.topLeftPoint;
+    var bottomRight = result.viewport.btmRightPoint;
+
+    return {
+      south: bottomRight.lat,
+      west: upperLeft.lon,
+      north: upperLeft.lat,
+      east: bottomRight.lon
+    };
+  }
+};cdb.geo.geocoder.YAHOO = {
+  keys: {
+    app_id: 'nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--'
+  },
+
+  geocode: function (address, callback) {
+    address = address.toLowerCase()
+      .replace(/é/g, 'e')
+      .replace(/á/g, 'a')
+      .replace(/í/g, 'i')
+      .replace(/ó/g, 'o')
+      .replace(/ú/g, 'u')
+      .replace(/ /g, '+');
+
+    var protocol = '';
+    if (location.protocol.indexOf('http') === -1) {
+      protocol = 'http:';
+    }
+
+    $.getJSON(protocol + '//query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent('SELECT * FROM json WHERE url="http://where.yahooapis.com/geocode?q=' + address + '&appid=' + this.keys.app_id + '&flags=JX"') + '&format=json&callback=?', function (data) {
+
+      var coordinates = [];
+      if (data && data.query && data.query.results && data.query.results.json && data.query.results.json.ResultSet && data.query.results.json.ResultSet.Found != "0") {
+
+        // Could be an array or an object |arg!
+        var res;
+
+        if (_.isArray(data.query.results.json.ResultSet.Results)) {
+          res = data.query.results.json.ResultSet.Results;
+        } else {
+          res = [data.query.results.json.ResultSet.Results];
+        }
+
+        for (var i in res) {
+          var r = res[i],
+            position;
+
+          position = {
+            lat: r.latitude,
+            lon: r.longitude
+          };
+
+          if (r.boundingbox) {
+            position.boundingbox = r.boundingbox;
+          }
+
+          coordinates.push(position);
+        }
+      }
+
+      callback(coordinates);
+    });
   }
 };
 
@@ -31084,6 +31171,8 @@ cdb.geo.ui.Search = cdb.core.View.extend({
 
   className: 'cartodb-searchbox',
 
+  GEOCODER_SERVICE: 'TOMTOM',
+
   _ZOOM_BY_CATEGORY: {
     'building': 18,
     'postal-area': 15,
@@ -31166,7 +31255,7 @@ cdb.geo.ui.Search = cdb.core.View.extend({
     this._showLoader();
     // Remove previous pin
     this._destroySearchPin();
-    cdb.geo.geocoder.MAPBOX.geocode(address, function(places) {
+    cdb.geo.geocoder[this.GEOCODER_SERVICE].geocode(address, function(places) {
       self._onResult(places);
       // Hide loader
       self._hideLoader();
@@ -32904,7 +32993,7 @@ cdb.ui.common.FullScreen = cdb.core.View.extend({
     var options = _.extend(
       this.options,
       {
-        mapUrl: location.href || ''
+        mapUrl: location.href || ''
       }
     );
     this.$el.html(this.options.template(options));
@@ -36376,9 +36465,17 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
       ielt9 = ie && !document.addEventListener;
 
   this.options.added = true;
+  var key = zoom + '/' + coord.x + '/' + coord.y;
 
-  if(this.tilejson === null) {
-    var key = zoom + '/' + coord.x + '/' + coord.y;
+  if (!this.cache[key]) {
+    if (this.tiles === 0) {
+      this.loading && this.loading();
+    }
+
+    this.tiles++;
+  }
+
+  if (this.tilejson === null) {
     var i = this.cache[key] = new Image(256, 256);
     i.src = EMPTY_GIF;
     i.setAttribute('gTileKey', key);
@@ -36393,11 +36490,6 @@ CartoDBLayerGroupBase.prototype.getTile = function(coord, zoom, ownerDocument) {
     setImageOpacityIE8(im, this.options.opacity);
   }
   im.style.opacity = this.options.opacity;
-  if (this.tiles === 0) {
-    this.loading && this.loading();
-  }
-
-  this.tiles++;
 
   var loadTime = cartodb.core.Profiler.metric('cartodb-js.tile.png.load.time').start();
 
@@ -38845,7 +38937,7 @@ var Vis = cdb.core.View.extend({
       return overlay.type == "zoom"
     }));
 
-    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
+    var allowDragging = isMobileDevice || hasZoomOverlay || scrollwheel;
 
     // map
     data.maxZoom || (data.maxZoom = 20);

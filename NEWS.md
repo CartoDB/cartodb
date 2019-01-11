@@ -8,8 +8,9 @@ cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
-
+=======
 ### Features
+* You can configure your API key for the search bar, powered by TomTom, both in Editor and Builder, with `geocoder.tomtom.search_bar_api_key` (#14578).
 - /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
 - /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
 - /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
@@ -19,11 +20,16 @@ sudo make install
 - Password validation against common passwords & usernames (#14522)
 - Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - New Welcome module for New Dashboard (#14527)
+- OAuth public release (WIP):
+  - Sync `oauth_apps` with Central (#14493)
+  - Include `oauth_app` and friends in user migrator (#14492)
+- Added condensed map view in the New Dashboard [#14546](https://github.com/CartoDB/cartodb/issues/14546)
 - Maps and Datasets page placeholders revisited for New Dashboard([#14534](https://github.com/CartoDB/cartodb/issues/14534))
 - Open maps and datasets in new tab in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 - Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
 - Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
-- Remove ordering from Settings dropdown in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565)
+- Remove ordering from Settings dropdown in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+- Fix quota count in New Dashboard
 - Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
 
 ### Bug fixes / enhancements
@@ -36,6 +42,9 @@ sudo make install
 - Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
+- Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
+- Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
+- Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
 
 4.23.4 (2018-12-18)
 -------------------

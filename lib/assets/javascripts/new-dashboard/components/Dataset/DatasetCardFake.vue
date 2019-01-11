@@ -66,18 +66,6 @@ export default {
   min-width: 200px;
 }
 
-.cell--large {
-  width: 165px;
-}
-
-.cell--medium {
-  width: 120px;
-}
-
-.cell--small {
-  width: 80px;
-}
-
 .cell--quick-actions {
   padding: 0 24px;
 }

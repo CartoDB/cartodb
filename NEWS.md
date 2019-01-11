@@ -44,6 +44,8 @@ sudo make install
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
 - Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
 - Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
+- Show MFA screen after login when there is no session ([#14564](https://github.com/CartoDB/cartodb/issues/14564))
+- Redirect to original URL after MFA verification ([#14566](https://github.com/CartoDB/cartodb/issues/14566))
 
 4.23.4 (2018-12-18)
 -------------------

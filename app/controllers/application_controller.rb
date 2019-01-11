@@ -201,9 +201,13 @@ class ApplicationController < ActionController::Base
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
-      render_locked_owner if user.try(:locked?)
+      if user.try(:locked?)
+        render_locked_owner
+        return
+      end
     elsif current_user.locked?
       render_locked_user
+      return
     end
 
     render_multifactor_authentication if multifactor_authentication_required?

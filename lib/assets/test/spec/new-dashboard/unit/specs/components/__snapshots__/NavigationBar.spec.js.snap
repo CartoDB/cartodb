@@ -11,8 +11,11 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
   <div class="navbar-elementsContainer navbar-searchContainer">
     <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
       <section class="suggestions">
-        <!---->
-        <ul class="suggestions__content"></ul>
+        <ul class="suggestions__content">
+          <li class="">
+            <!---->
+          </li>
+        </ul>
       </section>
     </form>
     <div class="navbar-user">
@@ -64,8 +67,11 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   <div class="navbar-elementsContainer navbar-searchContainer">
     <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
       <section class="suggestions">
-        <!---->
-        <ul class="suggestions__content"></ul>
+        <ul class="suggestions__content">
+          <li class="">
+            <!---->
+          </li>
+        </ul>
       </section>
     </form>
     <div class="navbar-user">
@@ -117,8 +123,11 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   <div class="navbar-elementsContainer navbar-searchContainer">
     <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
       <section class="suggestions">
-        <!---->
-        <ul class="suggestions__content"></ul>
+        <ul class="suggestions__content">
+          <li class="">
+            <!---->
+          </li>
+        </ul>
       </section>
     </form>
     <div class="navbar-user">
@@ -170,8 +179,11 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
   <div class="navbar-elementsContainer navbar-searchContainer">
     <form autocomplete="off" class="navbar-search"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
       <section class="suggestions">
-        <!---->
-        <ul class="suggestions__content"></ul>
+        <ul class="suggestions__content">
+          <li class="">
+            <!---->
+          </li>
+        </ul>
       </section>
     </form>
     <div class="navbar-user">

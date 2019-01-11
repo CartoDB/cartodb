@@ -30,6 +30,7 @@ sudo make install
 - Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
 - Remove ordering from Settings dropdown in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 - Fix quota count in New Dashboard
+- Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
 - Selecting maps and datasets using SHIFT+Click in New Dashboard  ([#14545](https://github.com/CartoDB/cartodb/issues/14545))
 
 ### Bug fixes / enhancements
@@ -43,6 +44,7 @@ sudo make install
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
+- Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
 - Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
 
 4.23.4 (2018-12-18)

@@ -167,18 +167,6 @@ export default {
         }
       }
     }
-
-    .map-tag {
-      display: inline;
-    }
-
-    .icon--tag {
-      vertical-align: sub;
-    }
-
-    .cell--map-name__bottom {
-      margin-top: 5px;
-    }
   }
 
   .cell--privacy {

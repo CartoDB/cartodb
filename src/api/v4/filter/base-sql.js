@@ -135,28 +135,40 @@ class SQLBase extends Base {
   }
 
   _convertValueToSQLString (filterValue) {
-    if (_.isDate(filterValue)) {
-      return `'${filterValue.toISOString()}'`;
+    if (_.isObject(filterValue) && _.isArray(filterValue)) {
+      return filterValue
+        .map(value => this._convertToString(value))
+        .join(',');
     }
 
-    if (_.isArray(filterValue)) {
-      return filterValue
-        .map(value => `'${normalizeString(value.toString())}'`)
-        .join(',');
+    if (_.isObject(filterValue)) {
+      if (_.isEmpty(filterValue)) {
+        return filterValue;
+      }
+
+      const values = {};
+
+      Object.keys(filterValue).forEach(value => {
+        values[value] = this._convertToString(filterValue[value]);
+      });
+
+      return values;
+    }
+
+    return this._convertToString(filterValue);
+  }
+
+  _convertToString (filterValue) {
+    if (_.isDate(filterValue)) {
+      return `${filterValue.toISOString()}`;
     }
 
     if (_.isNumber(filterValue)) {
       return filterValue;
     }
 
-    if (_.isObject(filterValue) && !_.isEmpty(filterValue)) {
-      const values = {};
-
-      Object.keys(filterValue).forEach(function (value) {
-        values[value] = this._convertValueToSQLString(filterValue[value]);
-      }.bind(this));
-
-      return values;
+    if (_.isString()) {
+      return `'${normalizeString(filterValue)}'`;
     }
 
     return `'${normalizeString(filterValue.toString())}'`;
@@ -164,7 +176,9 @@ class SQLBase extends Base {
 
   _interpolateFilter (filterType, filterValues) {
     const sqlString = _.template(this.SQL_TEMPLATES[filterType]);
-    return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValues) });  
+    const value = this._convertValueToSQLString(filterValues);
+
+    return sqlString({ column: this._column, value });
   }
 
   _includeNullInQuery (sql) {

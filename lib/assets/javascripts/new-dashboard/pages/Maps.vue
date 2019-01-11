@@ -217,9 +217,6 @@ export default {
     },
     toggleSelected ({ map, isSelected }) {
       if (event.shiftKey) {
-        // const mapsArray = [...Object.values(this.maps)];
-        // this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
-        // return;
         this.doShiftClick(map);
         return;
       }

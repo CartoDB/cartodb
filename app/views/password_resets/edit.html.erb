@@ -1,5 +1,5 @@
 <%= render :layout => 'form' do %>
-  <% url = CartoDB.url(self, 'edit_password_reset', id: params[:id]) %>
+  <% url = CartoDB.url(self, 'edit_password_reset', params: { id: params[:id] }) %>
   <%= form_for @user, url: url, class: "js-Loading-form" do |f| %>
     <div class="Sessions-fieldsGorup">
       <div class="Sessions-field">

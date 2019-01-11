@@ -211,12 +211,20 @@ describe('api/v4/filter/base-sql', function () {
       expect(sqlFilter._convertValueToSQLString(1)).toBe(1);
     });
 
-    it('should return object without modifying', function () {
+    it('should return object with string values without modifying', function () {
       const sqlFilter = new SQLBase(column);
 
       const fakeObject = { fakeProperty: 'fakeValue' };
 
       expect(sqlFilter._convertValueToSQLString(fakeObject)).toBe(fakeObject);
+    });
+
+    it('should return object with date values parsed properly', function () {
+      const sqlFilter = new SQLBase(column);
+
+      const fakeObject = { fakeDate: new Date('2014-01-01T00:00:00.00Z') };
+
+      expect(sqlFilter._convertValueToSQLString(fakeObject)).toBe({ fakeDate: '2014-01-01T00:00:00.000Z' });
     });
 
     it('should wrap strings in single-quotes', function () {

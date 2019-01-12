@@ -3464,8 +3464,6 @@
           "save": "Save changes"
         },
         "api_key_form_view": {
-          "maps": "maps",
-          "sql": "sql",
           "name": "Name",
           "name_place": "Your API key name",
           "token": "API Key",

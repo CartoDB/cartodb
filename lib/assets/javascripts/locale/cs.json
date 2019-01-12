@@ -3454,8 +3454,6 @@
           "save": "Uložit změny"
         },
         "api_key_form_view": {
-          "maps": "mapy",
-          "sql": "sql",
           "name": "Jméno",
           "name_place": "Jméno vašeho API klíče",
           "token": "API klíč",

@@ -8,7 +8,7 @@ require_relative './exceptions'
 module CartoDB
   module Importer2
     class VfkSplitter
-      MAX_LAYERS = 50
+      MAX_LAYERS = 100
       ITEM_COUNT_REGEX = 'Feature Count:\s'.freeze
       OGRINFO_BINARY = 'ogrinfo'.freeze
       DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze

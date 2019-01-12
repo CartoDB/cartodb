@@ -21,20 +21,12 @@
             </li>
             <li class="Navmenu-item">
               <a href="<%= CartoDB.url(self, 'public_maps_home') %>" class="Navmenu-link <%= "#{@content_type == 'maps' ? 'is-selected' : '' }" %>">
-                <% if @maps_count > 0 %>
-                  <%= pluralize(@maps_count, "Map") %>
-                <% else %>
-                  Maps
-                <% end %>
+                <%= t('map', count: @maps_count) %>
               </a>
             </li>
             <li class="Navmenu-item last-child">
               <a href="<%= CartoDB.url(self, 'public_datasets_home') %>" class="Navmenu-link <%= "#{@content_type == 'datasets' ? 'is-selected' : '' }" %>">
-                <% if @tables_num > 0 %>
-                  <%= pluralize(@tables_num, "Dataset") %>
-                <% else %>
-                  Datasets
-                <% end %>
+                <%= t('dataset', count: @tables_num) %>
               </a>
             </li>
           </ul>

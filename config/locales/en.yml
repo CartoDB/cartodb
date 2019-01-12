@@ -31,6 +31,12 @@ en:
   day:
     one: 'day'
     other: 'days'
+  map:
+    one: 'Map'
+    other: 'Maps'
+  dataset:
+    one: 'Dataset'
+    other: 'Datasets'
   sessions:
     new:
       login: 'Log in'
@@ -40,6 +46,7 @@ en:
       org: " organization? Try the "
       general: " general login</a> instead."
       use_email: "Please, remember to use an email address belonging to this organization to login to your account."
+      forgot: 'Forgot?'
     account_error:
       user: 'User '
       auth_error: ' authentication error'
@@ -174,6 +181,21 @@ en:
         no_seats: "You can't create new users because you've run out of seats. "
         del_usr: 'Delete user'
         save: 'Save changes'
+        username: 'Username'
+        nameinvalid: 'Username not valid'
+        email: 'Email'
+        admin: 'Administrator'
+        multi_auth: 'Multi-factor authentication'
+        change_multi_warn: 'If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.'
+        ext_here_iso: 'Extra Here Isolines'
+        ext_route_api: 'Extra Routing API calls'
+        ext_tweets: 'Extra tweets'
+        ext_geocoding: 'Extra geocoding'
+        new_pwd_conf: 'Confirm new password'
+        user_quotas: 'User quotas'
+        create_user: 'Create user'
+      new:
+        user: 'New user'
     pages:
       shared:
         tags:
@@ -184,6 +206,7 @@ en:
         maps_by: 'CARTO · Maps by '
       usr_feed:
         pub_feed: ' public feed'
+        member_since: 'Member since '
     shared:
       api_keys:
         new_app: 'New application'
@@ -200,12 +223,11 @@ en:
         onpremise: '<a href="mailto:onpremise-support@carto.com">Support</a>'
         contact: '<a href="mailto:contact@carto.com">Contact</a>'
       nores:
-        no_items: " doesn't have any items on this page"
-        try_the: 'Try the '
-        instead: ' instead'
-        no_public: " doesn't have any public "
-        yet: ' yet'
-        maybe: 'But maybe they have some very interesting '
+        no_items: "%{name} doesn't have any items on this page"
+        try_instead: 'Try the %{link} instead'
+        first_page: 'first page'
+        no_public: "%{name} doesn't have any public %{item_type} yet"
+        maybe: 'But maybe they have some very interesting %{item_type}'
       org_subhead:
         profile: 'Organization profile'
         settings: 'Auth settings'
@@ -273,6 +295,8 @@ en:
         legal: 'Legal'
       pub_head:
         solutions: 'Solutions '
+        login: 'Login'
+        signup: 'Sign up'
       sess_head:
         not_part: 'Not part of '
         goto: ' Go to '
@@ -490,6 +514,7 @@ en:
       org: 'Please, use an email address belonging to this organization.'
       clicking: 'By clicking in "sign up" you accept the '
       service: ' of the service and the '
+      username: 'Username'
   sync:
     max:
       automatic: 'The automatic synchronization of your dataset '
@@ -545,3 +570,8 @@ en:
       colleague: 'Your colleague '
       stopped: ' has stopped sharing the map '
       with: ' with you so it may dissapear from your dashboard.'
+  controllers:
+    admin:
+      org_users:
+        create_success: 'New user created successfully'
+        save_success: 'Your changes have been saved correctly.'

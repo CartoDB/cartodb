@@ -308,7 +308,7 @@
       "title": "Protínání a Agregace",
       "description": "Tato operace vykoná prostorové protnutí a agregaci geometrických hodnot z cílové vrstvty, které se protnou s hodnotami základní vrstvy.",
       "count-vals-density": "Tento sloupec je přidán, jestli COUNT je vybrána jako agregační operace.",
-      "extra-column": "Tento sloupec je přidán, jestliže {operation_type} je vybrán sloupcem {column_name}."
+      "extra-column": "Tento sloupec je přidán, jestliže %{operation_type} je vybrán sloupcem %{column_name}."
     },
     "filter": {
       "title": "Filtrování Sloupcovou hodnotou",

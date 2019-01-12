@@ -38,7 +38,7 @@
               <div class="Sessions-fieldsGroup">
                 <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
-                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
+                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: t('signup.signup.username') %>
                     <% if !@user.errors[:username].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
                     <% end %>

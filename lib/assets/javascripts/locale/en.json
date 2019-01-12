@@ -312,7 +312,7 @@
       "title": "Intersect and Aggregate",
       "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the base layer.",
       "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation.",
-      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}."
+      "extra-column": "This column is added if %{operation_type} is chosen with column %{column_name}."
     },
     "filter": {
       "title": "Filter by Column Value",

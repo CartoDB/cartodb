@@ -30,7 +30,18 @@ cs:
   here: 'zde'
   day:
     one: 'den'
-    other: 'dny'
+    few: 'dny'
+    other: 'dnů'
+  map:
+    zero: 'mapy'
+    one: 'mapa'
+    few: 'mapy'
+    other: 'map'
+  dataset:
+    zero: 'datové sady'
+    one: 'datová sada'
+    few: 'datové sady'
+    other: 'datových sad'
   sessions:
     new:
       login: 'Přihlásit se'
@@ -40,6 +51,7 @@ cs:
       org: " ? Zkuste se místo toho přihlásit "
       general: " obecným účtem</a>."
       use_email: "Pamatujte prosím, že k přihlášení do vašeho účtu se musíte přihlásit e-mailem patřícím k dané organizaci."
+      forgot: 'Nepamatujete si heslo?'
     account_error:
       user: 'Uživatel '
       auth_error: ' chyba přihlášení'
@@ -174,6 +186,21 @@ cs:
         no_seats: "Nemůžete vytvářet nové uživatele, protože Vám došla divácká místa. "
         del_usr: 'Smazat uživatele'
         save: 'Uložit změny'
+        username: 'Uživatelské jméno'
+        nameinvalid: 'Uživatelské jméno je neplatné'
+        email: 'e-mail'
+        admin: 'Administrátor'
+        multi_auth: 'Více-faktorové ověřování'
+        change_multi_warn: 'Pokud změníte více-faktorové ověřování, tak bude dostupné jen pro tohoto uživatele. V tom případě bude uživatel odhlášen a přesměrován na přihlašovací stránku.'
+        ext_here_iso: 'Navíc vrstevince Here'
+        ext_route_api: 'Navíc volání Routing API'
+        ext_tweets: 'Navíc tweety'
+        ext_geocoding: 'Geokódování navíc'
+        new_pwd_conf: 'Potvrďte nové heslo'
+        user_quotas: 'Uživatelské kvóty'
+        create_user: 'Vytvořit uživatele'
+      new:
+        user: 'Nový uživatel'
     pages:
       shared:
         tags:
@@ -183,7 +210,8 @@ cs:
       pub_maps:
         maps_by: 'CARTO · Mapy podle '
       usr_feed:
-        pub_feed: ' veřejný přívod'  ## nutno vidět
+        pub_feed: ' veřejný profil'
+        member_since: 'Členem od '
     shared:
       api_keys:
         new_app: 'Nová aplikace'
@@ -200,12 +228,11 @@ cs:
         onpremise: '<a href="mailto:onpremise-support@carto.com">Podpora</a>'
         contact: '<a href="mailto:contact@carto.com">Kontakt</a>'
       nores:
-        no_items: " nemáte žádné položky na této stránce"
-        try_the: 'Zkuste '
-        instead: ' místo'
-        no_public: " nemáte žádné veřejné "
-        yet: ' zatím'
-        maybe: 'Ale možná nějaké velmi zajímavé mají '
+        no_items: "%{name} nemá na této stránce žádné položky"
+        try_instead: 'Zkuste místo toho %{link}'
+        first_page: 'první stránku'
+        no_public: "%{name} ještě nemá žádné veřejné %{item_type}"
+        maybe: 'Ale možná má nějaké zajímavé %{item_type}'
       org_subhead:
         profile: 'Organizační profil'
         settings: 'Nastavení oprávnění'
@@ -273,6 +300,8 @@ cs:
         legal: 'Legal'
       pub_head:
         solutions: 'Řešení '
+        login: 'Přihlásit se'
+        signup: 'Registrace'
       sess_head:
         not_part: 'Není částí '
         goto: ' Jdi na '
@@ -490,6 +519,7 @@ cs:
       org: 'Prosíme, použijte email náležející této organizaci.' ###tohle a násl. Řádky překontrolovat
       clicking: 'Zaškrtnutím "sign up" příjmáte '
       service: ' služeb a '
+      username: 'Uživatelské jméno'
   sync:
     max:
       automatic: 'Automatická synchronizace Vašich datasetů '
@@ -545,3 +575,8 @@ cs:
       colleague: 'Váš kolega '
       stopped: ' přestal sdílet mapu '
       with: ' s Vámi, tak zmizní z nástěnky.'
+  controllers:
+    admin:
+      org_users:
+        create_success: 'Nový uživatel úspěšně vytvořen'
+        save_success: 'Změny byly v pořádku uloženy.'

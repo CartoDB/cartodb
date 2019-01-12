@@ -38,7 +38,7 @@ module CartoDB
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     I18n.available_locales = [:en,:cs]
-    I18n.default_locale = :en
+    I18n.default_locale = :cs
 
     # JavaScript files you want as :defaults (application.js is always included).
     # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)

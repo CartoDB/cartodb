@@ -1,4 +1,4 @@
-<%= content_for(:title) do %><% t('carto_name') %> &middot; <%= @name %><% t('admin.pages.usr_feed.pub_feed') %><% end %>
+<%= content_for(:title) do %><%= t('carto_name') %> &middot; <%= @name %><%= t('admin.pages.usr_feed.pub_feed') %><% end %>
 <%= content_for(:description) do %><%= @page_description %><% end %>
 
 <div class="CDB-Text PublicBody-content PublicBody--grey">
@@ -50,7 +50,7 @@
 
         <li class="PublicUserProfile-detail">
           <i class="CDB-IconFont CDB-IconFont-calendar CDB-IconFont--withLabel"></i>
-          Member since <%= @viewed_user.created_at.strftime("%B %Y") %>
+          <%= t('admin.pages.usr_feed.member_since') %><%= l(@viewed_user.created_at, format: '%B %Y') %>
         </li>
       </ul>
     </div>

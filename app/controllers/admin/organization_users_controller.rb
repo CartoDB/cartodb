@@ -99,7 +99,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
       )
     )
-    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
+    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: t('controllers.admin.org_users.create_success') }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -136,7 +136,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     attributes = params[:user]
     @user.set_fields(attributes, [:email]) if attributes[:email].present? && !@user.google_sign_in
     @user.set_fields(attributes, [:quota_in_bytes]) if attributes[:quota_in_bytes].present?
-
     @user.set_fields(attributes, [:disqus_shortname]) if attributes[:disqus_shortname].present?
     @user.set_fields(attributes, [:available_for_hire]) if attributes[:available_for_hire].present?
     @user.set_fields(attributes, [:name]) if attributes[:name].present?
@@ -185,7 +184,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
       @user.update_in_central
     end
 
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: t('controllers.admin.org_users.save_success') }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags

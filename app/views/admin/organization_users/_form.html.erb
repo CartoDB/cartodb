@@ -9,15 +9,15 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Username</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.username') %></label>
     </div>
     <div class="FormAccount-rowData">
       <%= f.text_field :username, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.new? } #{ 'has-error' if @user.errors[:username].present? }", :readonly => !@user.new? %>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <% if (@user.errors[:username].present?) %>
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace">Username not valid</p>
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error u-tSpace"><%= t('admin.org_users.form.nameinvalid') %></p>
         <% elsif @user.new? %>
-          <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.user_once') %></p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.user_once') %></p>
         <% end %>
       </div>
     </div>
@@ -25,15 +25,15 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Email</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.email') %></label>
     </div>
     <div class="FormAccount-rowData">
       <%= f.text_field :email, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_email? } #{ 'has-error' if @user.errors[:email].present? }", readonly: !@user.can_change_email? %>
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <% if (@user.errors[:email].present?) %>
-          <p class="CDB-Text CDB-Size-small u-altTextColor FormAccount-rowInfoText--error"><% t('admin.org_users.form.invalid_eml') %></p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor FormAccount-rowInfoText--error"><%= t('admin.org_users.form.invalid_eml') %></p>
         <% elsif @user.new? %>
-          <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.choose_eml') %></p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.choose_eml') %></p>
         <% end %>
       </div>
     </div>
@@ -44,10 +44,10 @@
     <div class="VerticalAligned--FormRow">
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('admin.org_users.form.new_pwd') %></label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.new_pwd') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+          <%= password_field_tag 'user[password]', nil, :placeholder => t('admin.org_users.form.new_pwd'), :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
         </div>
         <div class="FormAccount-rowInfo">
           <% if (@user.errors[:password].present?) %>
@@ -58,10 +58,10 @@
 
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('admin.org_users.form.pwd_conf') %></label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.pwd_conf') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
+          <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => t('admin.org_users.form.new_pwd_conf'), :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
         </div>
       </div>
     </div>
@@ -70,18 +70,18 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('admin.org_users.form.user_type') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.user_type') %></label>
     </div>
 
     <div class="FormAccount-rowData">
       <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
         <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="false" <%= @user.builder? ? 'checked' : '' %> <%= @organization.remaining_seats > 0 || @user.builder? ? '' : 'disabled' %> required>
         <span class="u-iBlock CDB-Radio-face"></span>
-        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><% t('admin.org_users.form.builder') %>(<%= @organization.assigned_seats %>/<%= @organization.seats %>)</label>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= t('admin.org_users.form.builder') %>(<%= @organization.assigned_seats %>/<%= @organization.seats %>)</label>
       </div>
     </div>
     <div class="FormAccount-rowInfo u-lspace-23 u-bSpace--xl">
-      <p class="FormAccount-rowInfoText"><% t('admin.org_users.form.build') %></p>
+      <p class="FormAccount-rowInfoText"><%= t('admin.org_users.form.build') %></p>
     </div>
 
     <% admin_editing_admin = @user.organization_admin? && !current_user.organization_owner? %>
@@ -89,19 +89,19 @@
       <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
         <input class="CDB-Radio js-userViewerOption" type="radio" name="user[viewer]" value="true" <%= @user.viewer? ? 'checked' : '' %> <%= (@organization.remaining_viewer_seats == 0 && !@user.viewer?) || @user.organization_owner? || admin_editing_admin ? 'disabled' : '' %> required>
         <span class="u-iBlock CDB-Radio-face"></span>
-        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><% t('admin.org_users.form.viewer') %>(<%= @organization.assigned_viewer_seats %>/<%= @organization.viewer_seats %>)</label>
+        <label class="u-iBlock u-lSpace CDB-Text CDB-Size-medium u-secondaryTextColor is-semibold"><%= t('admin.org_users.form.viewer') %>(<%= @organization.assigned_viewer_seats %>/<%= @organization.viewer_seats %>)</label>
       </div>
     </div>
     <div class="FormAccount-rowInfo u-lspace-23">
       <p class="FormAccount-rowInfoText">
         <% if @user.organization_owner? %>
-          <% t('admin.org_users.form.org_owner_const') %>
+          <%= t('admin.org_users.form.org_owner_const') %>
         <% elsif admin_editing_admin %>
-          <% t('admin.org_users.form.org_admin_const') %>
+          <%= t('admin.org_users.form.org_admin_const') %>
         <% elsif @organization.viewer_seats == 0 %>
-          <% t('admin.org_users.form.no_viewers') %><% t('admin.org_users.form.contact_support') %>
+          <%= t('admin.org_users.form.no_viewers') %><%= t('admin.org_users.form.contact_support') %>
         <% else %>
-          <% t('admin.org_users.form.only_read') %>
+          <%= t('admin.org_users.form.only_read') %>
         <% end %>
       </p>
     </div>
@@ -110,7 +110,7 @@
   <% if !@user.organization_owner? %>
     <div class="FormAccount-row js-org-admin-row" <%= @user.builder? ? 'style="display: none;"' : '' %>>
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Administrator</label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.admin') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
@@ -120,9 +120,9 @@
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <p class="CDB-Text CDB-Size-small u-altTextColor">
             <% if current_user.organization_owner? %>
-              <% t('admin.org_users.form.can_manage_usrs') %>
+              <%= t('admin.org_users.form.can_manage_usrs') %>
             <% else %>
-              <% t('admin.org_users.form.assign_admin') %>
+              <%= t('admin.org_users.form.assign_admin') %>
             <% end %>
           </p>
         </div>
@@ -134,7 +134,7 @@
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
-        Multi-factor authentication
+        <%= t('admin.org_users.form.multi_auth') %>
       </label>
     </div>
     <div class="FormAccount-rowData">
@@ -144,7 +144,7 @@
       </div>
       <div class="FormAccount-rowInfo u-lspace-23">
         <p class="CDB-Text CDB-Size-small u-altTextColor">
-          If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.
+          <%= t('admin.org_users.form.change_multi_warn') %>
         </p>
       </div>
     </div>
@@ -152,7 +152,7 @@
 
   <div class="user-quotas" style="display: none">
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText">User quotas</p>
+      <p class="FormAccount-titleText"><%= t('admin.org_users.form.user_quotas') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
@@ -172,21 +172,21 @@
             <% if !@user.new? %>
               <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
                 <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--used"></i>
-                <% t('admin.org_users.form.used') %>
+                <%= t('admin.org_users.form.used') %>
               </li>
             <% end %>
             <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
               <i class="OrganizationUser-quotaLegendIcon OrganizationUser-quotaLegendIcon--assigned"></i>
-              <% t('admin.org_users.form.assigned') %>
+              <%= t('admin.org_users.form.assigned') %>
             </li>
             <li class="OrganizationUser-quotaLegendItem CDB-Size-small">
               <i class="OrganizationUser-quotaLegendIcon"></i>
-              <% t('admin.org_users.form.total') %>
+              <%= t('admin.org_users.form.total') %>
             </li>
           </ul>
         </div>
         <div class="FormAccount-rowInfo u-lSpace--xl OrganizationUser-quotaInfo js-userQuotaSliderInput CDB-Text CDB-Size-medium u-altTextColor">
-          <span><%= text_field_tag nil, nil, :class => "CDB-InputText CDB-Text FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>"><% t('admin.org_users.form.upgrade') %><% end %></span>
+          <span><%= text_field_tag nil, nil, :class => "CDB-InputText CDB-Text FormAccount-input OrganizationUser-quotaInfoInput js-assignedSize" %> MB<% unless cartodb_com_hosted? %>, <a href="<%= current_user.upgrade_url(request.protocol) %>"><%= t('admin.org_users.form.upgrade') %><% end %></span>
         </div>
         <%= f.hidden_field :quota_in_bytes, :id => "user_quota" %>
       </div>
@@ -194,7 +194,7 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra geocoding</label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.ext_geocoding') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
@@ -203,9 +203,9 @@
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <% if @organization.soft_geocoding_limit? %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.ex_geocoding') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.ex_geocoding') %></p>
           <% else %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.no_extra_quota') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.no_extra_quota') %></p>
           <% end %>
         </div>
       </div>
@@ -213,7 +213,7 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra Here Isolines</label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.ext_here_iso') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
@@ -222,9 +222,9 @@
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <% if @organization.soft_here_isolines_limit? %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.ex_isolines') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.ex_isolines') %></p>
           <% else %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.no_extra_quota') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.no_extra_quota') %></p>
           <% end %>
         </div>
       </div>
@@ -232,7 +232,7 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra Routing API calls</label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.ext_route_api') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="Toggler">
@@ -241,9 +241,9 @@
         </div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
           <% if @organization.soft_mapzen_routing_limit? %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.ex_routing') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.ex_routing') %></p>
           <% else %>
-            <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.no_extra_quota') %></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.no_extra_quota') %></p>
           <% end %>
         </div>
       </div>
@@ -252,7 +252,7 @@
     <% if @organization.twitter_datasource_enabled %>
       <div class="FormAccount-row">
         <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Extra tweets</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.ext_tweets') %></label>
         </div>
         <div class="FormAccount-rowData">
           <div class="Toggler">
@@ -261,9 +261,9 @@
           </div>
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
             <% if @organization.soft_twitter_datasource_limit? %>
-              <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.ex_twitter') %></p>
+              <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.ex_twitter') %></p>
             <% else %>
-              <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.org_users.form.no_extra_quota') %></p>
+              <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.org_users.form.no_extra_quota') %></p>
             <% end %>
           </div>
         </div>
@@ -274,12 +274,12 @@
   <% if !@user.new? && current_user.organization_owner? && @user.engine_enabled? -%>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('admin.org_users.form.master_key') %></label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.org_users.form.master_key') %></label>
       </div>
       <div class="FormAccount-rowData">
         <%= f.text_field :api_key, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled", :readonly => true %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <button class="CDB-Text CDB-Size-medium Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button"><% t('admin.org_users.form.regen_keys') %></button>
+          <button class="CDB-Text CDB-Size-medium Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button"><%= t('admin.org_users.form.regen_keys') %></button>
         </div>
       </div>
     </div>
@@ -289,14 +289,14 @@
     <% if @organization.remaining_seats > 0 || @organization.remaining_viewer_seats > 0 %>
       <div class="FormAccount-footer u-justifyEnd">
         <button type="submit" class="CDB-Button CDB-Button--primary js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.org_users.form.create_user') %></span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer">
-        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth"><% t('admin.org_users.form.no_seats') %><% t('admin.org_users.form.contact_support') %></p>
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth"><%= t('admin.org_users.form.no_seats') %><%= t('admin.org_users.form.contact_support') %></p>
         <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.org_users.form.create_user') %></span>
         </button>
       </div>
     <% end %>
@@ -304,17 +304,17 @@
     <% if @user != current_user %>
       <div class="FormAccount-footer">
         <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.org_users.form.del_usr') %></span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.org_users.form.del_usr') %></span>
         </button>
 
         <button type="submit" class="CDB-Button CDB-Button--primary js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.org_users.form.save') %></span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.org_users.form.save') %></span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer u-justifyEnd">
         <button class="CDB-Button CDB-Button--primary js-save">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.org_users.form.save') %></span>
+          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.org_users.form.save') %></span>
         </button>
       </div>
     <% end %>

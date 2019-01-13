@@ -2966,6 +2966,16 @@
   },
   "cartodb": {
     "common": {
+      "back_poll": {
+        "views": {
+          "header_title": {
+            "connecting": "Připojuji datovou sadu...",
+            "geocoding": "Geokóduji datovou sadu...",
+            "analyzing": "Analyzuji datovou sadu...",
+            "working": "Pracuji..."
+          }
+        }
+      },
       "views": {
         "avatar_selector_view": {
           "avatar": "Avatar",
@@ -2981,6 +2991,13 @@
             "your_data": "Vaše datové sady",
             "shared": "Vámi sdíleno",
             "data_lib": "Datová knihovna"
+          },
+          "loading": {
+            "create_new": "Vytvářím novou %{model_type}",
+            "dataset": "datovou sadu",
+            "map": "mapu",
+            "creating_map": "Vytvářím mapu",
+            "connecting": "Připojuji ${import_name} (${total_length}/${sel_length})"
           }
         },
         "dashboard_header": {

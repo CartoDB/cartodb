@@ -2976,6 +2976,16 @@
   },
   "cartodb": {
     "common": {
+      "back_poll": {
+        "views": {
+          "header_title": {
+            "connecting": "Connecting dataset...",
+            "geocoding": "Geocoding dataset...",
+            "analyzing": "Analyzing dataset...",
+            "working": "Working..."
+          }
+        }
+      },
       "views": {
         "avatar_selector_view": {
           "avatar": "Avatar",
@@ -2991,6 +3001,13 @@
             "your_data": "Your datasets",
             "shared": "Shared with you",
             "data_lib": "Data library"
+          },
+          "loading": {
+            "create_new": "Creating new %{model_type}",
+            "dataset": "dataset",
+            "map": "map",
+            "creating_map": "Creating map",
+            "connecting": "Connecting ${import_name} (${total_length}/${sel_length})"
           }
         },
         "dashboard_header": {

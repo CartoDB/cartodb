@@ -249,10 +249,10 @@
   "TrialExpired": {
     "ExpirationMessage": {
       "title": "Your trial has expired",
-      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. Please, take a look to our <a class='is-underline is-txtDarkBlue' href='https://carto.com/pricing/'>pricing plans</a>.",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. If you have any question after your trial, please <a class='is-underline is-txtDarkBlue' href='mailto:sales@carto.com'>contact sales</a>.",
       "actions": {
-        "upgrade": "Upgrade your account",
-        "contactSales": "Contact Sales"
+        "addPayments": "Add payment method",
+        "deleteAccount": "Delete account"
       }
     }
   },

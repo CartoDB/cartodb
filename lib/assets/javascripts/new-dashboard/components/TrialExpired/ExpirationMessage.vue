@@ -11,14 +11,11 @@
           v-html="$t('TrialExpired.ExpirationMessage.description', { expirationDate: humanReadableExpirationDate })">
       </p>
       <div class="buttons-container">
-        <a :href="upgradeURL" class="button upgrade-button is-caption">
-          {{ $t('TrialExpired.ExpirationMessage.actions.upgrade') }}
+        <a :href="addPaymentsURL" class="button upgrade-button is-caption">
+          {{ $t('TrialExpired.ExpirationMessage.actions.addPayments') }}
         </a>
-        <a href="mailto:sales@carto.com" class="button button--ghost is-txtDarkBlue is-caption">
-          {{ $t('TrialExpired.ExpirationMessage.actions.contactSales') }}
-        </a>
-        <a href="#" @click="deleteAccount">
-          Delete Account
+        <a @click="deleteAccount" class="button button--ghost is-txtDarkBlue is-caption">
+          {{ $t('TrialExpired.ExpirationMessage.actions.deleteAccount') }}
         </a>
       </div>
     </div>
@@ -34,7 +31,7 @@ export default {
   name: 'ExpirationMessage',
   props: {
     expirationDays: Number,
-    upgradeURL: String
+    addPaymentsURL: String
   },
   computed: {
     humanReadableExpirationDate () {

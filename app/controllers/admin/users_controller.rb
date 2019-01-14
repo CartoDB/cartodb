@@ -23,7 +23,6 @@ class Admin::UsersController < Admin::AdminController
     if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
       @payments_url = @user.plan_url(request.protocol)
-      @upgrade_url = @user.upgrade_url(request.protocol)
       @has_new_dashboard = check_new_dashboard
       render locals: { breadcrumb: false }
     else

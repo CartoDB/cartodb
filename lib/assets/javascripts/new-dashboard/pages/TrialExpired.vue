@@ -1,6 +1,6 @@
 <template>
   <section class="page">
-    <ExpirationMessage :expirationDays="expirationDays" :upgradeURL="upgradeURL"></ExpirationMessage>
+    <ExpirationMessage :expirationDays="expirationDays" :addPaymentsURL="addPaymentsURL"></ExpirationMessage>
   </section>
 </template>
 
@@ -15,7 +15,7 @@ export default {
   data () {
     return {
       expirationDays: window.expiration_days,
-      upgradeURL: window.upgrade_url
+      addPaymentsURL: window.payments_url
     };
   }
 };

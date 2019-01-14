@@ -2,6 +2,6 @@
 
 exports[`TrialExpired.vue should render correct contents 1`] = `
 <section class="page">
-  <expirationmessage-stub expirationdays="30" upgradeurl="https://user.carto.com/plan"></expirationmessage-stub>
+  <expirationmessage-stub expirationdays="30" addpaymentsurl="https://carto.com/account/user/plan"></expirationmessage-stub>
 </section>
 `;

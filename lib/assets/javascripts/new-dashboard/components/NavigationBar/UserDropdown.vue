@@ -38,7 +38,7 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/notifications.svg"/>
         </div>
-        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked">
+        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked" :staticRoute="'/dashboard/notifications'">
           {{ $t('UserDropdown.notifications') }}
         </router-link>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>

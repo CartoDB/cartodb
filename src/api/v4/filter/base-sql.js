@@ -135,7 +135,15 @@ class SQLBase extends Base {
   }
 
   _convertValueToSQLString (filterValue) {
-    if (_.isObject(filterValue) && _.isArray(filterValue)) {
+    if (_.isDate(filterValue)) {
+      return `'${filterValue.toISOString()}'`;
+    }
+
+    if (_.isArray(filterValue)) {
+      if (_.isEmpty(filterValue)) {
+        return filterValue;
+      }
+
       return filterValue
         .map(value => this._convertToString(value))
         .join(',');
@@ -149,7 +157,8 @@ class SQLBase extends Base {
       const values = {};
 
       Object.keys(filterValue).forEach(value => {
-        values[value] = this._convertToString(filterValue[value]);
+        const stringValue = this._convertToStringFromObject(filterValue[value]);
+        values[value] = stringValue;
       });
 
       return values;
@@ -160,7 +169,7 @@ class SQLBase extends Base {
 
   _convertToString (filterValue) {
     if (_.isDate(filterValue)) {
-      return `${filterValue.toISOString()}`;
+      return `'${filterValue.toISOString()}'`;
     }
 
     if (_.isNumber(filterValue)) {
@@ -172,6 +181,22 @@ class SQLBase extends Base {
     }
 
     return `'${normalizeString(filterValue.toString())}'`;
+  }
+
+  _convertToStringFromObject (filterValue) {
+    if (_.isDate(filterValue)) {
+      return `'${filterValue.toISOString()}'`;
+    }
+
+    if (_.isNumber(filterValue)) {
+      return filterValue;
+    }
+
+    if (_.isString()) {
+      return `${normalizeString(filterValue)}`;
+    }
+
+    return `${normalizeString(filterValue.toString())}`;
   }
 
   _interpolateFilter (filterType, filterValues) {

@@ -195,7 +195,7 @@ describe('api/v4/filter/base-sql', function () {
       const sqlFilter = new SQLBase(column);
 
       const fakeDate = new Date('Thu Jun 28 2018 15:04:31 GMT+0200 (Central European Summer Time)');
-      expect(sqlFilter._convertValueToSQLString(fakeDate)).toBe("'2018-06-28T13:04:31.000Z'");
+      expect(sqlFilter._convertValueToSQLString(fakeDate)).toBe('\'2018-06-28T13:04:31.000Z\'');
     });
 
     it('should convert array to a comma-separated string wrapped by single comma', function () {
@@ -211,12 +211,20 @@ describe('api/v4/filter/base-sql', function () {
       expect(sqlFilter._convertValueToSQLString(1)).toBe(1);
     });
 
-    it('should return object without modifying', function () {
+    it('should return object with string values without modifying', function () {
       const sqlFilter = new SQLBase(column);
 
       const fakeObject = { fakeProperty: 'fakeValue' };
 
-      expect(sqlFilter._convertValueToSQLString(fakeObject)).toBe(fakeObject);
+      expect(sqlFilter._convertValueToSQLString(fakeObject)).toEqual(fakeObject);
+    });
+
+    it('should return object with date values parsed properly', function () {
+      const sqlFilter = new SQLBase(column);
+
+      const fakeObject = { fakeDate: new Date('2014-01-01T00:00:00.00Z') };
+
+      expect(sqlFilter._convertValueToSQLString(fakeObject)).toEqual({ fakeDate: '\'2014-01-01T00:00:00.000Z\'' });
     });
 
     it('should wrap strings in single-quotes', function () {

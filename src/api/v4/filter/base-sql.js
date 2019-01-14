@@ -140,63 +140,30 @@ class SQLBase extends Base {
     }
 
     if (_.isArray(filterValue)) {
-      if (_.isEmpty(filterValue)) {
-        return filterValue;
-      }
-
       return filterValue
-        .map(value => this._convertToString(value))
+        .map(value => this._convertValueToSQLString(value))
         .join(',');
     }
 
     if (_.isObject(filterValue)) {
-      if (_.isEmpty(filterValue)) {
-        return filterValue;
-      }
+      Object
+        .keys(filterValue)
+        .forEach(key => {
+          if (key === 'query') {
+            return;
+          }
 
-      const values = {};
+          filterValue[key] = this._convertValueToSQLString(filterValue[key]);
+        });
 
-      Object.keys(filterValue).forEach(value => {
-        const stringValue = this._convertToStringFromObject(filterValue[value]);
-        values[value] = stringValue;
-      });
-
-      return values;
-    }
-
-    return this._convertToString(filterValue);
-  }
-
-  _convertToString (filterValue) {
-    if (_.isDate(filterValue)) {
-      return `'${filterValue.toISOString()}'`;
+      return filterValue;
     }
 
     if (_.isNumber(filterValue)) {
       return filterValue;
-    }
-
-    if (_.isString()) {
-      return `'${normalizeString(filterValue)}'`;
     }
 
     return `'${normalizeString(filterValue.toString())}'`;
-  }
-
-  _convertToStringFromObject (filterValue) {
-    if (_.isDate(filterValue)) {
-      return `'${filterValue.toISOString()}'`;
-    }
-
-    if (_.isNumber(filterValue)) {
-      return filterValue;
-    }
-
-    if (_.isString()) {
-      return `${normalizeString(filterValue)}`;
-    }
-
-    return `${normalizeString(filterValue.toString())}`;
   }
 
   _interpolateFilter (filterType, filterValues) {

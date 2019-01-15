@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.27",
+  "version": "1.0.0-assets.27.1",
   "dependencies": {
     "@babel/polyfill": {
       "version": "7.0.0",
@@ -222,9 +222,9 @@
       "resolved": "https://registry.npmjs.org/acorn-walk/-/acorn-walk-6.1.1.tgz"
     },
     "ajv": {
-      "version": "6.6.2",
+      "version": "6.7.0",
       "from": "ajv@>=6.1.0 <7.0.0",
-      "resolved": "https://registry.npmjs.org/ajv/-/ajv-6.6.2.tgz"
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-6.7.0.tgz"
     },
     "ajv-errors": {
       "version": "1.0.1",
@@ -808,9 +808,9 @@
       "resolved": "https://registry.npmjs.org/copy-descriptor/-/copy-descriptor-0.1.1.tgz"
     },
     "core-js": {
-      "version": "2.6.1",
+      "version": "2.6.2",
       "from": "core-js@>=2.5.7 <3.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.6.1.tgz"
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.6.2.tgz"
     },
     "core-util-is": {
       "version": "1.0.2",
@@ -1660,9 +1660,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.9",
-      "from": "cartodb/carto.js#v4.1.9",
-      "resolved": "git://github.com/cartodb/carto.js.git#f5f3f08b27ef89b9133643d4ef682f60980a0583"
+      "version": "4.1.9-trigger-view-after-search",
+      "from": "cartodb/carto.js#trigger-view-after-search",
+      "resolved": "git://github.com/cartodb/carto.js.git#78c7949c58369baed15b06fb00dc2855c6f173a8"
     },
     "interpret": {
       "version": "1.2.0",
@@ -1902,9 +1902,9 @@
       "resolved": "https://registry.npmjs.org/lightercollective/-/lightercollective-0.1.0.tgz"
     },
     "loader-runner": {
-      "version": "2.3.1",
+      "version": "2.4.0",
       "from": "loader-runner@>=2.3.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/loader-runner/-/loader-runner-2.3.1.tgz"
+      "resolved": "https://registry.npmjs.org/loader-runner/-/loader-runner-2.4.0.tgz"
     },
     "loader-utils": {
       "version": "0.2.17",
@@ -2141,9 +2141,9 @@
           "resolved": "https://registry.npmjs.org/os-browserify/-/os-browserify-0.3.0.tgz"
         },
         "pako": {
-          "version": "1.0.7",
+          "version": "1.0.8",
           "from": "pako@>=1.0.5 <1.1.0",
-          "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.7.tgz"
+          "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.8.tgz"
         },
         "path-browserify": {
           "version": "0.0.0",
@@ -3279,9 +3279,9 @@
       "resolved": "https://registry.npmjs.org/vm-browserify/-/vm-browserify-0.0.4.tgz"
     },
     "vue": {
-      "version": "2.5.21",
+      "version": "2.5.22",
       "from": "vue@>=2.5.20 <3.0.0",
-      "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.21.tgz"
+      "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.22.tgz"
     },
     "vue-i18n": {
       "version": "8.7.0",
@@ -3336,9 +3336,9 @@
       }
     },
     "vue-template-compiler": {
-      "version": "2.5.21",
+      "version": "2.5.22",
       "from": "vue-template-compiler@>=2.5.20 <3.0.0",
-      "resolved": "https://registry.npmjs.org/vue-template-compiler/-/vue-template-compiler-2.5.21.tgz"
+      "resolved": "https://registry.npmjs.org/vue-template-compiler/-/vue-template-compiler-2.5.22.tgz"
     },
     "vuex": {
       "version": "3.0.1",

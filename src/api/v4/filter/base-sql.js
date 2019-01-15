@@ -141,20 +141,36 @@ class SQLBase extends Base {
 
     if (_.isArray(filterValue)) {
       return filterValue
-        .map(value => `'${normalizeString(value.toString())}'`)
+        .map(value => this._convertValueToSQLString(value))
         .join(',');
     }
 
-    if (_.isObject(filterValue) || _.isNumber(filterValue)) {
+    if (_.isObject(filterValue)) {
+      Object
+        .keys(filterValue)
+        .forEach(key => {
+          if (key === 'query') {
+            return;
+          }
+
+          filterValue[key] = this._convertValueToSQLString(filterValue[key]);
+        });
+
+      return filterValue;
+    }
+
+    if (_.isNumber(filterValue)) {
       return filterValue;
     }
 
     return `'${normalizeString(filterValue.toString())}'`;
   }
 
-  _interpolateFilter (filterType, filterValue) {
+  _interpolateFilter (filterType, filterValues) {
     const sqlString = _.template(this.SQL_TEMPLATES[filterType]);
-    return sqlString({ column: this._column, value: this._convertValueToSQLString(filterValue) });
+    const value = this._convertValueToSQLString(filterValues);
+
+    return sqlString({ column: this._column, value });
   }
 
   _includeNullInQuery (sql) {

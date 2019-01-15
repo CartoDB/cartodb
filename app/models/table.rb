@@ -980,7 +980,7 @@ class Table
 
   def update_table_pg_stats
     owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
-  rescue => exception
+  rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
       CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
     else
@@ -990,7 +990,7 @@ class Table
 
   def update_table_geom_pg_stats
     owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
-  rescue => exception
+  rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
       CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
     else

@@ -23,7 +23,8 @@ export default {
   data () {
     return {
       searchTerm: '',
-      isInputFocused: false
+      isInputFocused: false,
+      baseUrl: window.CartoConfig.data.user_data.base_url
     };
   },
   props: {
@@ -57,12 +58,28 @@ export default {
       this.blurInput();
 
       if (this.searchTerm.includes(':')) {
-        this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
+        this.goToSearchTermPage();
       } else if (this.searchTerm) {
-        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
+        this.goToSearchTagPage();
       }
 
       this.searchTerm = '';
+    },
+
+    goToSearchTermPage () {
+      if (this.$router) {
+        this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
+      } else {
+        window.location.href = this.baseUrl + '/dashboard/search/tag/' + this.searchTerm.substring(1);
+      }
+    },
+
+    goToSearchTagPage () {
+      if (this.$router) {
+        this.$router.push({ name: 'search', params: { query: this.searchTerm } });
+      } else {
+        window.location = this.baseUrl + '/dashboard/search/' + this.searchTerm;
+      }
     },
 
     blurInput () {

@@ -28,6 +28,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?
@@ -196,8 +197,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    ignore_paths = %w(lockout login logout unauthenticated multifactor_authentication)
-    return if ignore_paths.any? { |path| request.path.include?(path) }
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.include?(path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username

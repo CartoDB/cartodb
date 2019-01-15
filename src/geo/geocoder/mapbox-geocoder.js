@@ -1,4 +1,4 @@
-var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places/{{address}}.json?access_token={{access_token}}';
+var ENDPOINT = 'https://api.mapbox.com/geocoding/v5/mapbox.places-permanent/{{address}}.json?access_token={{access_token}}';
 
 var TYPES = {
   country: 'country',

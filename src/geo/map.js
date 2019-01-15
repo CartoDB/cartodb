@@ -39,6 +39,7 @@ var Map = Model.extend({
     if (typeof center === 'string') {
       center = JSON.parse(center);
     }
+
     this.set({
       center: center,
       original_center: center
@@ -215,13 +216,14 @@ var Map = Model.extend({
 
   // INTERNAL CartoDB.js METHODS
 
-  setView: function (latlng, zoom) {
+  setView: function (latlng, zoom, options) {
+    var setViewOptions = options || { silent: true };
+
     this.set({
       center: latlng,
       zoom: zoom
-    }, {
-      silent: true
-    });
+    }, setViewOptions);
+
     this.trigger('set_view');
   },
 

@@ -48,6 +48,7 @@ sudo make install
 - Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
 - Show MFA screen after login when there is no session ([#14564](https://github.com/CartoDB/cartodb/issues/14564))
 - Redirect to original URL after MFA verification ([#14566](https://github.com/CartoDB/cartodb/issues/14566))
+- Fix lockout redirection for locked users ([#14607](https://github.com/CartoDB/cartodb/issues/14607))
 
 4.23.4 (2018-12-18)
 -------------------

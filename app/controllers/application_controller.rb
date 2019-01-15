@@ -196,7 +196,8 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return unless (request.path =~ %r{^\/(lockout|login|logout|unauthenticated|multifactor_authentication)}).nil?
+    ignore_paths = %w(lockout login logout unauthenticated multifactor_authentication)
+    return if ignore_paths.any? { |path| request.path.include?(path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
@@ -284,7 +285,7 @@ class ApplicationController < ActionController::Base
   def redirect_or_forbidden(path, error)
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, path)
+        redirect_to CartoDB.url(self, path)
       end
       format.json do
         render(json: { error: error }, status: 403)

@@ -32,6 +32,8 @@ sudo make install
 - Fix quota count in New Dashboard
 - Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
 - Selecting maps and datasets using SHIFT+Click in New Dashboard  ([#14545](https://github.com/CartoDB/cartodb/issues/14545))
+- Changed Mapbox geocoder URL to permanent one for Editor. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
+- Changed Mapbox geocoder URL to permanent one for Builder. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
 
 ### Bug fixes / enhancements
 - Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
@@ -43,6 +45,7 @@ sudo make install
 - Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
 - Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
 - Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
+- Added analyze to the calculation of pg_stats while importing the dataset ([#14603](https://github.com/CartoDB/cartodb/pull/14603))
 - Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
 - Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
 - Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))

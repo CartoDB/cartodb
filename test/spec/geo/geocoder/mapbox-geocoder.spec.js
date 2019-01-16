@@ -5,7 +5,7 @@ describe('mapbox-geocoder', function () {
     it('should build the right fetch url (add address and access_token)', function (done) {
       spyOn(window, 'fetch').and.returnValue(Promise.resolve({ json: function () { return require('./mapbox-geocoder-response-0'); } }));
       mapboxGeocoder.geocode('fake_address', TOKEN).then(function (result) {
-        var expectedFetchUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/fake_address.json?access_token=fake_token';
+        var expectedFetchUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places-permanent/fake_address.json?access_token=fake_token';
         expect(window.fetch).toHaveBeenCalledWith(expectedFetchUrl);
         done();
       });

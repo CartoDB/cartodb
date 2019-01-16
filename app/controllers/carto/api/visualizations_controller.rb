@@ -114,6 +114,10 @@ module Carto
 
       def add_like
         current_viewer_id = current_viewer.id
+        if !@visualization.has_read_permission?(current_viewer)
+          render(text: "You don't have enough permissions to favorite this visualization", status: 403)
+          return
+        end
 
         @visualization.add_like_from(current_viewer_id)
 
@@ -122,11 +126,15 @@ module Carto
           liked: @visualization.liked_by?(current_viewer_id)
         )
       rescue Carto::Visualization::AlreadyLikedError
-        render(text: "You've already liked this visualization", status: 400)
+        render(text: "You've already favorited this visualization", status: 400)
       end
 
       def remove_like
         current_viewer_id = current_viewer.id
+        if !@visualization.has_read_permission?(current_viewer)
+          render(text: "You don't have enough permissions to unfavorite this visualization", status: 403)
+          return
+        end
 
         @visualization.remove_like_from(current_viewer_id)
 

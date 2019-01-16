@@ -8,7 +8,7 @@ module Carto
 
       def initialize(visualization, current_viewer, context,
                      related: true, related_canonical_visualizations: false, show_user: false,
-                     show_stats: true, show_likes: true, show_liked: true, show_table: true,
+                     show_stats: true, show_table: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
                      password: nil, with_dependent_visualizations: 0)
@@ -20,8 +20,6 @@ module Carto
         @load_related_canonical_visualizations = related_canonical_visualizations
         @show_user = show_user
         @show_stats = show_stats
-        @show_likes = show_likes
-        @show_liked = show_liked
         @show_table = show_table
         @show_permission = show_permission
         @show_synchronization = show_synchronization
@@ -62,7 +60,6 @@ module Carto
           end
         end
 
-        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
 
@@ -111,7 +108,6 @@ module Carto
         }
 
         poro[:related_tables] = related_tables if related
-        poro[:likes] = @visualization.likes_count if show_likes
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 
@@ -134,7 +130,6 @@ module Carto
           title:            @visualization.title,
           kind:             @visualization.kind,
           privacy:          @visualization.privacy.upcase,
-          likes:            @visualization.likes_count
         }
       end
 
@@ -179,7 +174,7 @@ module Carto
       private
 
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
-                  :show_stats, :show_likes, :show_liked, :show_table,
+                  :show_stats, :show_table,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
                   :show_table_size_and_row_count, :show_auth_tokens,
                   :show_user_basemaps, :with_dependent_visualizations

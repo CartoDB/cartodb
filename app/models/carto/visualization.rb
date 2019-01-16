@@ -407,10 +407,6 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private?
   end
 
-  def likes_count
-    likes.size
-  end
-
   def widgets
     # Preload widgets for all layers
     ActiveRecord::Associations::Preloader.new.preload(layers, :widgets)

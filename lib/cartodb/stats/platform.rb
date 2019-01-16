@@ -62,12 +62,6 @@ module CartoDB
         conn.disconnect
         return au_count
       end
-
-      # Total likes
-      def likes
-        return Carto::Like.count
-      end
-
     end
   end
 end

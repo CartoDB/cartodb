@@ -107,8 +107,6 @@ module Carto
       def presenter_options_from_hash(params)
         options = {}
         options[:show_stats] = false if params[:show_stats].to_s == 'false'
-        options[:show_likes] = false if params[:show_likes].to_s == 'false'
-        options[:show_liked] = false if params[:show_liked].to_s == 'false'
         options[:show_table] = false if params[:show_table].to_s == 'false'
         options[:show_permission] = false if params[:show_permission].to_s == 'false'
         options[:show_uses_builder_features] = false if params[:show_uses_builder_features].to_s == 'false'

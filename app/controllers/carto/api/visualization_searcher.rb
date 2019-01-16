@@ -55,10 +55,6 @@ module Carto
         if current_user
           vqb.with_current_user_id(current_user.id)
 
-          if only_liked
-            vqb.with_liked_by_user_id(current_user.id)
-          end
-
           case shared
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)

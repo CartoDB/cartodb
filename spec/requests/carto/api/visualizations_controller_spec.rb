@@ -801,50 +801,6 @@ describe Carto::Api::VisualizationsController do
           expect(last_response.status).to eq(400)
           expect(last_response.body).to eq("You've already liked this visualization")
         end
-
-        it 'sends an email to the owner when a map is liked' do
-          vis = @map_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
-                .returns(true)
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'does not send an email when a map is liked by the owner' do
-          vis = @map_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
-                .never
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'sends an email to the owner when a dataset is liked' do
-          vis = @table_visualization
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'does not send an email when when a dataset is liked by the owner' do
-          vis = @table_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @carto_user1.id, kind_of(String))
-                .never
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
       end
 
       describe 'POST remove_like' do

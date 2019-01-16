@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
 
 4.24.0 (2019-01-16)
 -------------------

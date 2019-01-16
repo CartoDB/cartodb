@@ -1660,9 +1660,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.9-1",
-      "from": "cartodb/carto.js#2217-mapbox-geocoder-url-v4",
-      "resolved": "git://github.com/cartodb/carto.js.git#5920998c3f8bec8518be6e212e9049fa7311c3eb"
+      "version": "4.1.10-0",
+      "from": "cartodb/carto.js#v4.1.10-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#f70fbf0219369bfab75193ac967454ae361ed6a9"
     },
     "interpret": {
       "version": "1.2.0",
@@ -3299,9 +3299,9 @@
       "resolved": "https://registry.npmjs.org/vue-router/-/vue-router-3.0.2.tgz"
     },
     "vue-svg-inline-loader": {
-      "version": "1.2.8",
+      "version": "1.2.9",
       "from": "vue-svg-inline-loader@>=1.2.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/vue-svg-inline-loader/-/vue-svg-inline-loader-1.2.8.tgz",
+      "resolved": "https://registry.npmjs.org/vue-svg-inline-loader/-/vue-svg-inline-loader-1.2.9.tgz",
       "dependencies": {
         "@babel/polyfill": {
           "version": "7.2.5",

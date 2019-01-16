@@ -197,7 +197,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?(path) }
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username

@@ -36,7 +36,7 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
-      ALLOWED_ORDERING_FIELDS = [:mapviews, :row_count, :size]
+      ALLOWED_ORDERING_FIELDS = [:mapviews, :row_count, :size].freeze
 
       # Same as services/data-repository/backend/sequel.rb
       PAGE          = 1

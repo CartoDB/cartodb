@@ -1,3 +1,0 @@
-[submodule "test/lib/phantom-jasmine"]
-	path = test/lib/phantom-jasmine
-	url = git://github.com/jcarver989/phantom-jasmine.git

@@ -14,6 +14,9 @@
 
 <script>
 import SearchSuggestions from './Suggestions/SearchSuggestions';
+import getCARTOData from 'new-dashboard/store/utils/getCARTOData';
+
+const CARTOData = getCARTOData();
 
 export default {
   name: 'Search',
@@ -24,7 +27,7 @@ export default {
     return {
       searchTerm: '',
       isInputFocused: false,
-      baseUrl: window.CartoConfig.data.user_data.base_url
+      baseUrl: CARTOData.user_data.base_url
     };
   },
   props: {

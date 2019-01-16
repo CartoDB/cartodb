@@ -167,8 +167,11 @@ export default {
 }
 
 .navbar-imagotype {
+  position: absolute;
+  left: 50%;
   width: 24px;
   height: 24px;
+  transform: translate3d(-50%, 0, 0);
 }
 
 .navbar-user {

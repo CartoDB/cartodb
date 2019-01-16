@@ -5,7 +5,7 @@ This file contains all the changes in the **internal bundle** (used by Builder).
 All the changes that affects the public bundle should be released as *patch* or *minor* and be included in the main Changelog.
 
 ## Unreleased
-
+- Change Mapbox geocoder URL to permanent one [#2221](https://github.com/CartoDB/carto.js/pull/2221)
 
 ## 4.1.1-0 - 2018-07-13
 - Use setView instead of flyTo to improve zoom transitions. [#2178](https://github.com/CartoDB/carto.js/pull/2178)

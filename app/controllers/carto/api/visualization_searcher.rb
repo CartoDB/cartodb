@@ -54,7 +54,7 @@ module Carto
 
         if current_user
           vqb.with_current_user_id(current_user.id)
-
+          vqb.with_liked_by_user_id(current_user.id) if only_liked
           case shared
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)
@@ -65,9 +65,7 @@ module Carto
                 .with_user_id_not(current_user.id)
           end
 
-          if exclude_raster
-            vqb.without_raster
-          end
+          vqb.without_raster if exclude_raster
 
           if locked == 'true'
             vqb.with_locked(true)
@@ -80,9 +78,7 @@ module Carto
             vqb.without_imported_remote_visualizations
           end
 
-          if !privacy.nil?
-            vqb.with_privacy(privacy)
-          end
+          vqb.with_privacy(privacy) unless privacy.nil?
 
           vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
 

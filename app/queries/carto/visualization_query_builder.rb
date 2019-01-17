@@ -88,6 +88,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
+  def with_liked_by_user_id(user_id)
+    @filtering_params[:liked_by_user_id] = user_id
+    self
+  end
+
   def with_shared_with_user_id(user_id)
     @filtering_params[:shared_with_user_id] = user_id
     self

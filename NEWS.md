@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
+- Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
 
 4.24.0 (2019-01-16)
 -------------------

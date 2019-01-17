@@ -197,7 +197,7 @@ class Carto::VisualizationQueryBuilder
   def build
     query = Carto::Visualization.all
     query = Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
-    query = with_associations(query)
+    query = with_associations(query, @filtering_params)
     order_query(query)
   end
 
@@ -225,10 +225,11 @@ class Carto::VisualizationQueryBuilder
     self
   end
 
-  def with_associations(query)
+  def with_associations(query, filtering_params)
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
-    query = with_favorited(query)
+    # We dont have to include favorites if we're going to filter by them
+    query = with_favorited(query) unless filtering_params[:liked_by_user_id]
     with_dependent_visualization_count(query)
   end
 

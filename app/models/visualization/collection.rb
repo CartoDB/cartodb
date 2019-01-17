@@ -277,6 +277,27 @@ module CartoDB
         dataset
       end
 
+      def compute_liked_filter_dataset(dataset, filters)
+        only_liked = filters.delete(:only_liked)
+        if only_liked == true || only_liked == "true"
+          if @user_id.nil?
+            nil
+          else
+            # If no order supplied, order by likes
+            filters[:order] = :likes if filters.fetch(:order, nil).nil?
+
+            liked_vis = user_liked_vis(@user_id)
+            if liked_vis.nil? || liked_vis.empty?
+              nil
+            else
+              dataset.where(id: liked_vis)
+            end
+          end
+        else
+          dataset
+        end
+      end
+
       def apply_filters(dataset, filters)
         @type = filters.fetch(:type, nil)
         @type = nil if @type == ''

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Makes dashboard listing go faster (user db size cache issue, #14165)
 
 4.24.0 (2019-01-16)
 -------------------

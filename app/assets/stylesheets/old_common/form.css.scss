@@ -1,0 +1,208 @@
+
+  /**
+   *  Form styles within content
+   */
+
+  @import "compass/css3/inline-block";
+  @import "compass/css3/border-radius";
+  @import "compass/css3/box-shadow";
+  @import "./vars";
+  @import "./mixins";
+  @import "./form-elements";
+  @import "./common-sprite";
+
+
+  form {
+
+    // Content structure
+    .left-column, .right-column { @include inline-block(); }
+    .left-column {
+      width:425px;
+      padding-right:34px;
+      vertical-align: top;
+      border-right:1px solid #E5E5E5;
+      &.no-border { border:none }
+    }
+    .right-column {
+      width:175px;
+      padding-left:34px;
+      vertical-align: top;
+    }
+
+
+    //////////
+    // Form //
+    //////////
+
+    &.edit_user .left-column .row p {
+      color: #333;
+      font-style: normal;
+      font-size: 14px;
+    }
+
+    label.simple-label,
+    &.edit_user .left-column .row label.simple-label {
+      color: #333;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      text-transform: none;
+      cursor: pointer;
+    }
+
+    .row {
+      @include display-flex();
+      margin-top:20px;
+
+      p {
+        font-size:13px;
+        font-style:italic;
+        color:#CCCCCC;
+      }
+
+      label {
+        display:block;
+        padding:0 0 10px 0;
+        color:#CCCCCC;
+        font-weight:bold;
+        font-size:11px;
+        text-transform:uppercase;
+        strong { color:#666 }
+        a { text-decoration:underline }
+
+        // Label with a bottom border
+        &.bottom-border { border-bottom:1px solid #E5E5E5 }
+      }
+
+      @include default-input();
+      @include default-textarea();
+
+      textarea {
+        height: 140px;
+      }
+
+      &:first-child { margin-top:0; }
+    }
+
+
+    // Field types (1, 2, 3, ...)
+
+    .field {
+      position:relative;
+      @include inline-block();
+      margin-right:20px;
+      vertical-align:top;
+
+      &.field_with_errors {
+        input[type="text"],
+        input[type="password"] {
+          color: #E95850;
+          border-color: #F08A84;
+          padding-right:51px;
+        }
+      }
+
+      &:last-child { margin-right:0; }
+    }
+
+    .field-1 {
+      width:100%;
+      input[type="text"],
+      input[type="password"],
+      textarea { width:400px; }
+
+      textarea { max-width:400px }
+
+      &.field_with_errors {
+        input[type="text"],
+        input[type="password"] {
+          width:359px;  
+        }
+      }
+    }
+
+    .field-2 {
+      width:202px;
+
+      input[type="text"],
+      input[type="password"] {width:178px;}
+
+      &.field_with_errors {
+        input[type="text"],
+        input[type="password"] {
+          width:137px;
+        }
+      }
+    }
+
+    .field-3 {
+      width:128px;
+
+      input[type="text"],
+      input[type="password"] {width:103px;}
+
+      &.field_with_errors {
+        input[type="text"],
+        input[type="password"] {
+          width:62px;
+        }
+      }
+    }
+
+    .disconnect {
+      font-size: 12px;
+      text-decoration: underline;
+    }
+
+    // Input types //
+    input[disabled], input[readonly] {
+      background:#F5F5F5;
+      color:#CCCCCC;
+    }
+
+    .input-link {
+      display:block;
+      padding:12px;
+      height:17px;
+      background:#F2F2F2;
+      @include border-radius(3px);
+      text-decoration:underline;
+    }
+
+
+    // Fields error //
+    div.field_error {
+      position:absolute;
+      right:7px;
+      top:28px;
+      width:26px;
+      height:27px;
+      @include text-indent();
+      @include common-sprite(field_error);
+      z-index:5;
+      &:hover {cursor:pointer}
+    }
+  }
+
+  /////////////////////////////
+  // Styles by form position //
+  /////////////////////////////
+
+  // - <p> in right column has to have padding-top
+  // - <a> in right column has to appear underlined
+  // - <div class="row"> should height 62px at least
+
+  .right-column {
+    div.row { min-height:62px }
+    div.row.low-padding p { padding-top: 17px; }
+    div.row p a { color: #ccc; }
+
+    p { padding-top:24px }
+    p a { text-decoration:underline }
+  }
+
+
+  // Tipsy for field error
+  .error_tooltip {
+    font-size:13px!important;
+  }

@@ -1,0 +1,220 @@
+
+/*
+ * Header of CartoDB
+ */
+
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "compass/css3/opacity";
+@import "compass/css3/images";
+@import "compass/css3/transform";
+@import "compass/css3/text-shadow";
+@import "./mixins";
+@import "./common-sprite";
+@import "./vars";
+
+$text-shadow-color: rgba(black,0.25);
+
+body > .privacy_selector { z-index: 30; }
+
+header { // general header
+  position:relative;
+  display: block;
+  width: 100%;
+  height: 36px;
+  padding: 30px 0;
+
+  $bkgColor: #428AC6;
+  @include background(image-url("layout/new_header_bkg.jpg") repeat center 0); // For IE
+  @include background(image-url("layout/new_header_bkg.jpg") repeat center 0, linear-gradient(top, #519FD9,#3383C7));
+  @include box-shadow(rgba(black, 0.3) 0 0 12px, rgba(0,0,0, 0.09) 0 -5px 3px 0 inset);
+  border-bottom: 1px solid #2F567E;
+  z-index:3;
+
+  &:before {
+    position:absolute;
+    content:' ';
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    @include background(linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0.1)));
+    z-index:0;
+  }
+
+  h1,
+  .logo {
+    position:relative;
+    margin:7px 0 0 0;
+    a {
+      @include inline-block();
+      width:93px;
+      height:18px;
+      @include common-sprite(cartodb);
+      @include text-indent();
+      &:focus,&:hover {outline:none; @include common-sprite(cartodb,$offset-y:-19px)}
+    }
+
+    em.posts {
+      position:absolute;
+      right:-40px;
+      top:-2px;
+      display:none;
+      margin-left:10px;
+      padding:2px 5px 1px;
+      line-height:10px;
+      @include border-radius(2px);
+      font:700 9px $text-fonts2;
+      color:#2483B2;
+      background:white;
+      text-transform:uppercase;
+
+      &.news { background:#E5FF99 }
+      &:hover { cursor:pointer }
+    }
+  }
+
+  ul {
+    position:relative;
+    @include display-flex();
+    @include justify-content(center, center);
+    @include align-items(center, center);
+    margin-top:7px;
+    width:auto;
+
+    li {
+      width:auto;
+      margin-left:25px;
+
+      a {
+        font-size:15px;
+        font-weight:300;
+        color:white;
+
+        &.dropdown {
+          position:relative;
+          padding:0 12px 0 0;
+          display:block;
+
+          &:before {
+            position:absolute;
+            content:' ';
+            top:50%;
+            right:0px;
+            margin:0 0 0 5px;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid white;
+            z-index:1;
+          }
+
+          &:after {
+            position:absolute;
+            content:' ';
+            top:50%;
+            right:0px;
+            margin:0 0 0 5px;
+            border-left:3px solid transparent;
+            border-right:3px solid transparent;
+            border-top:3px solid $text-shadow-color;
+            z-index:0;
+          }
+        }
+
+        &.account {
+          @include display-flex();
+          @include justify-content(center, center);
+          @include align-items(center, center);
+
+          img {
+            width:18px;
+            height:18px;
+            margin-right:6px;
+            @include border-radius(18px);
+          }
+
+          &.separator {
+            padding:0 20px 0 0;
+          }
+
+          span {
+            position:absolute;
+            top:50%;
+            right:11px;
+            margin-top:-7px;
+            @include opacity(0.6);
+          }
+
+          // Move user account tick a bit
+          &.organization {
+            &:before, &:after { margin-top:1px }
+          }
+
+          &:hover {
+            cursor:pointer;
+          }
+        }
+
+        &:hover {color:white}
+        &.selected {color:#264565; text-shadow:0 1px rgba(white,0.25); &:hover {text-decoration:none; cursor:default;} &:after {color:rgba(#264565,0.5);} &:before {border-top-color:#264565;}}
+        &:focus {outline:none; text-decoration:underline;}
+
+        &.rounded.white {text-shadow:none; &:hover {color:#333333;}}
+      }
+
+      form {
+        position:relative;
+        width:140px;
+        height:auto;
+        margin:0;
+
+        input[type="text"] {
+          width:100px;
+          margin:0;
+          padding:10px 30px 10px 10px;
+          background:rgba(0,0,0,0.20);
+          font:normal 13px $text-fonts2;
+          border:none;
+          color:#9AB2CB;
+          @include border-radius(4px);
+          @include transform-style("linear");
+          @include transition-property("background,color");
+          @include transition-duration(500ms);
+
+          &::-webkit-input-placeholder {
+            color:#9AB2CB;
+          }
+
+          &:-moz-placeholder {
+            color:#9AB2CB;
+          }
+
+          &:focus {
+            outline:none;
+            background:rgba(0,0,0,0.35);
+            color:white;
+            @include transform-style("linear");
+            @include transition-property("background,color");
+            @include transition-duration(500ms);
+          }
+        }
+
+        input[type="submit"] {
+          position:absolute;
+          top:10px;
+          right:10px;
+          width:15px;
+          height:15px;
+          border:none;
+          @include common-sprite(lens);
+          @include text-indent();
+          &:focus {outline:none; @include common-sprite(lens, $offset-y:-15px);}
+          &:hover {cursor:pointer; @include common-sprite(lens, $offset-y:-15px);}
+        }
+      }
+    }
+
+    // Admin header
+    &.admin { margin-top:0 }
+  }
+}

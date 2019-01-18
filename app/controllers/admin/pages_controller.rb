@@ -46,13 +46,13 @@ class Admin::PagesController < Admin::AdminController
   def index
     if current_user
       # I am logged in, visiting my subdomain -> my dashboard
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
+      redirect_to CartoDB.url(self, 'dashboard', user: current_user)
     elsif CartoDB.extract_subdomain(request).present?
       # I am visiting another user subdomain -> other user public pages
       redirect_to CartoDB.url(self, 'public_user_feed_home')
     elsif current_viewer
       # I am logged in but did not specify a subdomain -> my dashboard
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+      redirect_to CartoDB.url(self, 'dashboard', user: current_viewer)
     else
       # I am not logged in and did not specify a subdomain -> login
       # Avoid using CartoDB.url helper, since we cannot get any user information from domain, path or session
@@ -77,19 +77,18 @@ class Admin::PagesController < Admin::AdminController
       end
 
       visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
-
     end
 
     @urls = visualizations.map { |vis|
       case vis.type
       when Carto::Visualization::TYPE_DERIVED
         {
-          loc: CartoDB.url(self, 'public_visualizations_public_map', { id: vis.id }, vis.user),
+          loc: CartoDB.url(self, 'public_visualizations_public_map', params: { id: vis.id }, user: vis.user),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
       when Carto::Visualization::TYPE_CANONICAL
         {
-          loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
+          loc: CartoDB.url(self, 'public_table', params: { id: vis.name }, user: vis.user),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
       end
@@ -210,10 +209,10 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def render_datasets(vis_query_builder, user = nil)
-    home = CartoDB.url(self, 'public_datasets_home', { page: PAGE_NUMBER_PLACEHOLDER }, user)
+    home = CartoDB.url(self, 'public_datasets_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
     set_pagination_vars(total_count: vis_query_builder.build.count,
                         per_page: DATASETS_PER_PAGE,
-                        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
+                        first_page_url: CartoDB.url(self, 'public_datasets_home', user: user),
                         numbered_page_url: home)
 
     @datasets = []
@@ -247,12 +246,12 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def render_maps(vis_query_builder, user=nil)
-    set_pagination_vars({
-        total_count: vis_query_builder.build.count,
-        per_page:    MAPS_PER_PAGE,
-        first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
-        numbered_page_url: CartoDB.url(self, 'public_maps_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
-      })
+    set_pagination_vars(
+      total_count: vis_query_builder.build.count,
+      per_page:    MAPS_PER_PAGE,
+      first_page_url: CartoDB.url(self, 'public_maps_home', user: user),
+      numbered_page_url: CartoDB.url(self, 'public_maps_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
+    )
 
     vis_list = vis_query_builder.build_paged(current_page, MAPS_PER_PAGE).map do |v|
       Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
@@ -343,8 +342,8 @@ class Admin::PagesController < Admin::AdminController
   def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = CartoDB.url(view_context, 'public_maps_home', {}, required.fetch(:user, nil))
-    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
+    @maps_url            = CartoDB.url(view_context, 'public_maps_home', user: required.fetch(:user, nil))
+    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', user: required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
     @base_url            = required.fetch(:base_url, {})
   end

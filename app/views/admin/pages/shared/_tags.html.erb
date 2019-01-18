@@ -16,9 +16,9 @@
         <% else %>
 
           <% if action_name == 'datasets' %>
-            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_datasets_tag', {tag: tag}), :rel => "tag"  %></h3>
+            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_datasets_tag', params: { tag: tag }), :rel => "tag"  %></h3>
           <% else %>
-            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_tag', {tag: tag}), :rel => "tag"  %></h3>
+            <h3><%= link_to tag.capitalize.truncate(40), CartoDB.url(self, 'public_tag', params: { tag: tag }), :rel => "tag"  %></h3>
           <% end %>
 
         <% end %>

@@ -1,10 +1,15 @@
 <template>
-<div class="section">
-  <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.showMe') }}</h6>
+<div class="section section--noBorder">
+  <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.filter') }}</h6>
   <ul class="list">
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('mine') }" @click="setFilter('mine')">
         {{ $t(`SettingsDropdown.types.${section}`) }}
+      </a>
+    </li>
+    <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('favorited') }">
+      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('favorited') }" @click="setFilter('favorited')">
+        {{ $t('SettingsDropdown.types.favorited', { count: metadata.total_likes }) }}
       </a>
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('shared') }" v-if="metadata.total_shared">
@@ -70,7 +75,6 @@ export default {
 
 .section {
   padding: 24px 12px 24px 36px;
-  border-bottom: 1px solid $light-grey;
   background-color: #FFF;
 }
 

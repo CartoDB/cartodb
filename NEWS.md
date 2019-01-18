@@ -2,35 +2,67 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
+
+4.24.0 (2019-01-16)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.24.1`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
-
+=======
 ### Features
-
-- /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
-- /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
-- /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
-- /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
-- Add support for Node.js 10 and npm 6 (#14501).
-- Password validation against common passwords & usernames (#14522)
-- Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
-- New Welcome module for New Dashboard (#14527)
-- Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
-- Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+* You can configure your API key for the search bar, powered by TomTom, both in Editor and Builder, with `geocoder.tomtom.search_bar_api_key` (#14578).
+* /viz endpoint supports ordering by :estimated_row_count and :privacy ([#14320](https://github.com/CartoDB/cartodb/issues/14320))
+* /viz endpoint supports multiple ordering ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+* /viz endpoint supports ordering by :favorited ([#14372](https://github.com/CartoDB/cartodb/issues/14372))
+* /viz endpoint includes dependent visualizations and supports ordering by it ([#14424](https://github.com/CartoDB/cartodb/issues/14424))
+* /viz endpoint orders search results by relevance ([#14325](https://github.com/CartoDB/cartodb/issues/14325))
+* Add support for Node.js 10 and npm 6 (#14501).
+* Password validation against common passwords & usernames (#14522)
+* Added next billing cycle to /me endpoint ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+* New Welcome module for New Dashboard (#14527)
+* OAuth public release (WIP):
+  * Sync `oauth_apps` with Central (#14493)
+  * Include `oauth_app` and friends in user migrator (#14492)
+* Added condensed map view in the New Dashboard [#14546](https://github.com/CartoDB/cartodb/issues/14546)
+* Maps and Datasets page placeholders revisited for New Dashboard([#14534](https://github.com/CartoDB/cartodb/issues/14534))
+* Open maps and datasets in new tab in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+* Remove mfa feature flag ([Central#2392](https://github.com/CartoDB/cartodb-central#2392))
+* Add quota section in New Dashboard Homepage ([#14463](https://github.com/CartoDB/cartodb/issues/14463))
+* Remove ordering from Settings dropdown in New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+* Fix quota count in New Dashboard
+* Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
+* Selecting maps and datasets using SHIFT+Click in New Dashboard  ([#14545](https://github.com/CartoDB/cartodb/issues/14545))
+* Changed Mapbox geocoder URL to permanent one for Editor. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
+* Changed Mapbox geocoder URL to permanent one for Builder. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
 
 ### Bug fixes / enhancements
-- Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
-- Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
-- Revert favorited ordering for Datasets in New Dashboard (#14552)
-- Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
-- Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
-- Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
-- Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
+* Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)
+* Improved performance in /viz endpoint when ordering by dependent visualizations ([#14508](https://github.com/CartoDB/cartodb/issues/14508))
+* Avoid breaking the import if a timeout occurs during geometry fixing (ArcGIS import) (#14560)
+* Revert favorited ordering for Datasets in New Dashboard (#14552)
+* Fix visualization ordering by favorited with dependent visualizations (#14555)[https://github.com/CartoDB/cartodb/issues/14555]
+* Rake to fix batch geocoder multypolygon type mismatch (dataservices-api#538)
+* Fixes bug that didn't showed properly the New Dashboard's welcome module [#14570](https://github.com/CartoDB/cartodb/pull/14570)
+* Fix dataset button in homepage new dashboard ([#14558](https://github.com/CartoDB/cartodb/issues/14558))
+* Revisit footer in new dashboard ([#14470](https://github.com/CartoDB/cartodb/issues/14470))
+* Added analyze to the calculation of pg_stats while importing the dataset ([#14603](https://github.com/CartoDB/cartodb/pull/14603))
+* Improve password expiration flow ([#14502](https://github.com/CartoDB/cartodb/issues/14502))
+* Fix Oauth redirection for subdomainless ([#14587](https://github.com/CartoDB/cartodb/issues/14587))
+* Fix MFA screen customization for organizations ([#14563](https://github.com/CartoDB/cartodb/issues/14563))
+* Show MFA screen after login when there is no session ([#14564](https://github.com/CartoDB/cartodb/issues/14564))
+* Redirect to original URL after MFA verification ([#14566](https://github.com/CartoDB/cartodb/issues/14566))
 
 4.23.4 (2018-12-18)
 -------------------

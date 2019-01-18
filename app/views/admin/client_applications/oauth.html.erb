@@ -58,7 +58,7 @@
         <label class="FormAccount-label"><% t('admin.client_apps.oauth.request_token') %></label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', {}, current_user) %>" readonly />
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', user: current_user) %>" readonly />
         <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>
@@ -68,7 +68,7 @@
         <label class="FormAccount-label"><% t('admin.client_apps.oauth.access_token') %></label>
       </div>
       <div class="FormAccount-rowData">
-        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', {}, current_user) %>" readonly />
+        <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', user: current_user) %>" readonly />
         <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
     </div>

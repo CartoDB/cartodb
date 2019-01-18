@@ -1,1 +1,0 @@
-<button class='CDB-Text u-actionTextColor js-fix-sql'><%- label %></button>

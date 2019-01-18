@@ -1,6 +1,6 @@
 <% content_for :settings_body do %>
   <div class="FormAccount-container">
-    <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
+    <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', user: current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
       <div class="FormAccount-row js-avatarSelector">

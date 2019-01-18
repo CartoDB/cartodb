@@ -128,7 +128,7 @@
         el: $(".js-like"),
         auto_fetch: false,
         model: cdb.open.Like.newByVisData({
-          url: "<%= CartoDB.url(self, 'api_v1_visualizations_add_like', { id: @visualization.id }, @visualization.user) %>",
+          url: "<%= CartoDB.url(self, 'api_v1_visualizations_add_like', params: { id: @visualization.id }, user: @visualization.user) %>",
           vis_id: "<%= @visualization.id %>",
           likes: <%= @visualization.to_vizjson[:likes] %>
         })

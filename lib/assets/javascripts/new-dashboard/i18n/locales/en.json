@@ -7,11 +7,19 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
+    "condensedViews": "No mapviews | 1 mapview | {n} mapviews",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
     "tags": "tags"
+  },
+  "MapListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "views": "Mapviews (30d)",
+    "usage": "Usage",
+    "privacy": "Privacy"
   },
   "QuickActions": {
     "title": "Quick actions",
@@ -68,11 +76,14 @@
     },
     "createDataset": "New Dataset",
     "zeroCase": {
-      "title": "Upload, create or connect your first dataset",
-      "description": "Incorporate your data and create insightful visualizations that leverage big data and Location Intelligence.",
+      "title": "Upload, connect, or create your first dataset",
+      "description": "Bring your location data to CARTO so that you can visualise it and start predicting key insights. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
       "createDataset": "Create your first dataset"
     },
-    "emptyState": "There are no datasets here."
+    "emptyCase": {
+      "default": "There are no datasets here.",
+      "onlyShared": "There are no datasets here. Check out the <a href='{path}'>datasets shared with you</a>."
+    }
   },
   "MapsPage": {
     "header": {
@@ -90,10 +101,13 @@
     "createMap": "New Map",
     "zeroCase": {
       "title": "Create your first map to predict key insights",
-      "description": "Build your first Location Intelligence analysis or take a look to our <a href='https://carto.com/help'>guides and help</a>.",
+      "description": "Build your first Location Intelligence app and start predicting key insights from your location data with our drag and drop tool for analysts and business users. Learn about Builder <a href='https://carto.com/help/tutorials/builder/'>here</a>.",
       "createMap": "Create your first map"
     },
-    "emptyState": "There are no maps here."
+    "emptyCase": {
+      "default": "There are no maps here.",
+      "onlyShared": "There are no maps here. Check out the <a href='{path}'>maps shared with you</a>."
+    }
   },
   "NotificationsPage": {
     "header": {
@@ -103,7 +117,7 @@
     "loadingState": "Loading your notifications."
   },
   "SettingsDropdown": {
-    "showMe": "Show me",
+    "filter": "Filter",
     "orderMaps": "Order",
     "types": {
       "maps": "Your maps",
@@ -115,20 +129,6 @@
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
-    },
-    "order": {
-      "favourites": "Favorites first",
-      "views": "Most viewed first",
-      "alphabetical": {
-        "title": "Name",
-        "A-Z": "A-Z",
-        "Z-A": "Z-A"
-      },
-      "date": {
-        "title": "Updated",
-        "newest": "Newest",
-        "oldest": "Oldest"
-      }
     },
     "initialState": "Change Filters"
   },

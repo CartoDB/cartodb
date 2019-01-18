@@ -99,7 +99,12 @@ class Admin::OrganizationUsersController < Admin::AdminController
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
       )
     )
+<<<<<<< HEAD
     redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: t('controllers.admin.org_users.create_success') }
+=======
+    redirect_to CartoDB.url(self, 'organization', user: current_user),
+                flash: { success: "New user created successfully" }
+>>>>>>> 07e57640919769297dab67478ad569119029c80e
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -184,7 +189,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
       @user.update_in_central
     end
 
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: t('controllers.admin.org_users.save_success') }
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: t('controllers.admin.org_users.save_success') }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -209,11 +215,11 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @user.destroy
     @user.delete_in_central
     flash[:success] = "User was successfully deleted."
-    redirect_to CartoDB.url(self, 'organization', {}, current_user)
+    redirect_to CartoDB.url(self, 'organization', user: current_user)
   rescue CartoDB::CentralCommunicationFailure => e
     if e.user_message =~ /No organization user found with username/
       flash[:success] = "User was successfully deleted."
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      redirect_to CartoDB.url(self, 'organization', user: current_user)
     else
       CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user from central', target_user: @user.username)
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
@@ -232,7 +238,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
     valid_password_confirmation
     @user.regenerate_all_api_keys
     flash[:success] = "User API key regenerated successfully"
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
     render action: 'edit', status: e.status

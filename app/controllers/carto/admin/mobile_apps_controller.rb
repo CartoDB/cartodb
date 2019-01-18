@@ -89,7 +89,7 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
 
     @cartodb_central_client.update_mobile_app(current_user.username, @app_id, updated_attributes)
 
-    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
+    redirect_to(CartoDB.url(self, 'mobile_app', params: { id: @app_id }),
                 flash: { success: 'Your app has been updated succesfully!' })
 
   rescue CartoDB::CentralCommunicationFailure => e
@@ -108,11 +108,11 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
     redirect_to CartoDB.url(self, 'mobile_apps'), flash: { success: 'Your app has been deleted succesfully!' }
   rescue Carto::PasswordConfirmationError => e
     flash[:error] = e.message
-    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id))
+    redirect_to(CartoDB.url(self, 'mobile_app', params: { id: @app_id }))
   rescue CartoDB::CentralCommunicationFailure => e
     raise Carto::LoadError.new('Mobile app not found') if e.response_code == 404
     CartoDB::Logger.error(message: 'Error deleting mobile app from Central', exception: e, app_id: @app_id)
-    redirect_to(CartoDB.url(self, 'mobile_app', id: @app_id),
+    redirect_to(CartoDB.url(self, 'mobile_app', params: { id: @app_id }),
                 flash: { error: 'Unable to connect to license server. Try again in a moment.' })
   end
 

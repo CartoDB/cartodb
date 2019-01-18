@@ -11,14 +11,14 @@
             "imagemagick": ">=6.9.0"
         },
         "works_with": {
-            "dataservices-api-client-extension": "0.26.0",
-            "carto_postgresql_ext": "0.24.0",
+            "dataservices-api-client-extension": "0.26.1",
+            "carto_postgresql_ext": "0.24.1",
             "odbc_fdw": "0.2.0",
             "carto_windshaft": ">=6.2.0",
             "carto_sql_api": ">=2.1.0",
             "postgresql": ">=9.5.0",
             "postgis": ">=2.2.0",
-            "redis": ">=3.0.0"
+            "redis": ">=4.0.0"
         }
     }
 }

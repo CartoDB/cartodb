@@ -201,7 +201,6 @@ defaults: &defaults
   geocoder:
     #force_batch: true
     #disable_cache: true
-    provider: ''
     app_id: ''
     token:  ''
     mailto: ''
@@ -214,6 +213,7 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
+    search_bar_provider: ''
     mapzen:
       search_bar_api_key: ''
     mapbox:

@@ -201,6 +201,7 @@ defaults: &defaults
   geocoder:
     #force_batch: true
     #disable_cache: true
+    provider: ''
     app_id: ''
     token:  ''
     mailto: ''

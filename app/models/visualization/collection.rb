@@ -27,7 +27,7 @@ module CartoDB
       # 'exclude_shared' and
       # 'only_shared' are other filtes applied
       # 'only_liked'
-      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id parent_id}
+      AVAILABLE_FIELD_FILTERS   = %w{name type description map_id privacy id parent_id}
 
       # Keys in this list are the only filters that should be kept for calculating totals (if present)
       FILTERS_ALLOWED_AT_TOTALS = [ :type, :user_id, :unauthenticated ]
@@ -283,8 +283,7 @@ module CartoDB
           if @user_id.nil?
             nil
           else
-            # If no order supplied, order by likes
-            filters[:order] = :likes if filters.fetch(:order, nil).nil?
+            filters[:order] = :updated_at if filters.fetch(:order, nil).nil?
 
             liked_vis = user_liked_vis(@user_id)
             if liked_vis.nil? || liked_vis.empty?
@@ -296,6 +295,18 @@ module CartoDB
         else
           dataset
         end
+      end
+
+      def add_liked_by_conditions_to_dataset(dataset, user_id)
+        user_shared_vis = user_shared_vis(user_id)
+        dataset = dataset.where {
+         ({ privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] }) |
+         ({ user_id: user_id }) |
+         ({ visualizations__id: user_shared_vis })
+        }
+        # TODO: this probably introduces duplicates. See #2899.
+        # Should be removed when like count and list matches for organizations
+        #include_shared_entities(dataset, { user_id: user_id } )
       end
 
       def apply_filters(dataset, filters)

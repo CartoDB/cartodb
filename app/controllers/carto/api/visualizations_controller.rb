@@ -66,6 +66,7 @@ module Carto
           related_canonical_visualizations: params[:fetch_related_canonical_visualizations] == 'true',
           show_user: params[:fetch_user] == 'true',
           show_user_basemaps: params[:show_user_basemaps] == 'true',
+          show_liked: params[:show_liked] == 'true',
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',

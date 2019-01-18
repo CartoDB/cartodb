@@ -99,12 +99,8 @@ class Admin::OrganizationUsersController < Admin::AdminController
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
       )
     )
-<<<<<<< HEAD
-    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: t('controllers.admin.org_users.create_success') }
-=======
     redirect_to CartoDB.url(self, 'organization', user: current_user),
-                flash: { success: "New user created successfully" }
->>>>>>> 07e57640919769297dab67478ad569119029c80e
+                flash: { success: t('controllers.admin.org_users.create_success') }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags

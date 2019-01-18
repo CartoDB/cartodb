@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpenLayers example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.12.1/css/ol.css" type="text/css">
+
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.core.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.core.js"></script>
+    <script src="http://openlayers.org/en/v3.12.1/build/ol.js"></script>
+    <script type="text/javascript">
+       var map, layer;
+       function init() {
+
+        // request cartodb layer
+        // most populated places rendered with red markers
+        cartodb.Tiles.getTiles({
+          type: 'cartodb',
+          user_name: 'examples',
+          sublayers: [{
+           sql: 'select * from ne_10m_populated_p_2',
+           cartocss: '#ne_10m_populated_p_2{ marker-fill: #F11810; marker-opacity: 0.9; marker-allow-overlap: true; marker-placement: point; marker-type: ellipse; marker-width: 7.5; marker-line-width: 2; marker-line-color: #000; marker-line-opacity: 0.2; }'
+          }]
+        }, function(tileTemplate) {
+          // generate urls for openlayers
+          var tilesUrl = []
+          for(var i = 0; i < 4; ++i) {
+            tilesUrl.push(
+              tileTemplate.tiles[0]
+                .replace('{s}', 'abcd'[i])
+            );
+          }
+
+          var map = new ol.Map({
+            target: 'map',
+            layers: [
+              new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                  attributions: [new ol.Attribution({
+                     html: '© <a href="http://cartodb.com/attributions">CartoDB</a> ' +
+                      '© <a href="http://www.openstreetmap.org/copyright">' +
+                      'OpenStreetMap contributors</a>'
+                   })],
+                  url:'http://{1-4}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+                })
+              }),
+              new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                  attributions: [new ol.Attribution({ html: "CartoDB, populated places"})],
+                  urls: tilesUrl
+                })
+              })
+            ],
+            view: new ol.View({
+              center: ol.proj.fromLonLat([0, 0]),
+              zoom: 4
+            })
+          });
+
+        });
+      }
+
+      init();
+
+    </script>
+  </body>
+</html>

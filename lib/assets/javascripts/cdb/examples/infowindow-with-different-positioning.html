@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Infowindow working with different positionings | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+
+      #map1 {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 500px;
+        height: 300px;
+      }
+
+      #map2 {
+        height: 400px;
+        padding: 0;
+        margin: 800px 50px 0 550px;
+      }
+
+      .scrollSign {
+        margin-left: 550px;
+        background: yellow;
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        padding: 10px 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map1"></div>
+    <div class="scrollSign">&#11015; &#11015; &#11015; Scroll down &#11015; &#11015; &#11015;</div>
+    <div id="map2"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+    <script>
+      function main() {
+        cartodb.createVis('map1', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
+        })
+        cartodb.createVis('map2', 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json', {
+        })
+      }
+
+      window.onload = main;
+    </script>
+  </body>
+</html>

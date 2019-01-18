@@ -1,0 +1,20 @@
+{
+  "name": "cartodb.js",
+  "main": [
+    "cartodb.js",
+    "themes/css/cartodb.css"
+  ],
+  "version": "3.15.12",
+  "homepage": "https://github.com/CartoDB/cartodb.js",
+  "authors": [
+    "CartoDB <support@cartodb.com>"
+  ],
+  "description": "CartoDB javascript library",
+  "license": "BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ]
+}

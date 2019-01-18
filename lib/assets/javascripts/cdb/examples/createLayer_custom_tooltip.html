@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tooltip on hover with createLayer() | Cartodb.js</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+  <style>
+    html, body,#map {
+      width:100%; 
+      height:100%; 
+      padding: 0; 
+      margin: 0;      
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <script type="tooltip/html" id="tooltip_template">
+  <div class="cartodb-tooltip-content-wrapper">
+    <div class="cartodb-tooltip-content">
+      <h3>Name</h3>
+      <p>{{name}}</p>
+      <h3>Population</h3>
+      <p>{{pop2005}}</p>
+    </div>
+  </div>
+  </script>
+  
+  <div id='map'></div>
+  
+  <script type="text/javascript">
+    function main() {
+
+      var map = new L.Map('map', {center: [20, 20], zoom: 2});
+            
+      L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+      }).addTo(map);
+        
+      cartodb.createLayer(map, 'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json')
+        .addTo(map)
+        .on('done', function(layer) {
+          //do stuff
+          //layer.setZIndex(100); 
+          var sublayer = layer.getSubLayer(0);
+
+          sublayer.setInteractivity('cartodb_id, name, pop2005');
+                   
+          // tooltip definition for createLayer()
+          var testTooltip = layer.leafletMap.viz.addOverlay({
+            type: 'tooltip',
+            layer: sublayer,
+            template: $('#tooltip_template').html(), 
+            width: 200,
+            position: 'bottom|right',
+            fields: [{ name: 'name', population: 'pop2005' }]
+          });
+          $('body').append(testTooltip.render().el);
+          
+        });        
+    }
+    window.onload = main;
+  </script>
+</body>
+</html>

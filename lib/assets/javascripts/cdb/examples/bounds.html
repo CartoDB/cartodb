@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Set Bounds example | CartoDB.js</title>
+    <!--  
+      This example shows you how to get a bounding box for a feature from CartoDB 
+      and move your map according to that bbox.
+    -->
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        background-color: #E5F5F7;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+    <script>
+    
+      var layer;
+      function main() {
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [53, 20],
+          zoom: 3
+        });
+
+        cartodb.createLayer(map, {
+          type: 'cartodb',
+          user_name: 'examples',
+          sublayers: [{
+            sql: 'select * from country_boundaries',
+            cartocss: '#layer{ polygon-fill: #f7e5d1; polygon-opacity: 1; line-color: #d2c0b1; line-width: 0.8; }'
+          }]
+        })
+        .addTo(map)
+        .on('done', function(layer_) {
+          var sql = new cartodb.SQL({ user: 'examples' });
+          sql.getBounds("select * from country_boundaries where iso_a3='MEX'").done(function(bounds) {
+            map.fitBounds(bounds)
+          });
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
+      }
+      window.onload = main;
+
+    </script>
+  </body>
+</html>

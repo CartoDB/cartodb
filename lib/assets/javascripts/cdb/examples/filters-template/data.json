@@ -1,0 +1,44 @@
+{
+  "interactions": [
+    {
+      "layers": {
+        "layer-0": {
+          "cartocss": "#european_countries_e {polygon-fill: red}",
+          "sql": "SELECT * FROM european_countries_e WHERE cartodb_id > 23",
+          "interactivity": "cartodb_id"
+        }
+      },
+      "name": "a",
+      "className": "test-1",
+      "text": "Red polygons"
+    },
+
+    {
+      "layers": {
+        "layer-0": {
+          "cartocss": "#european_countries_e {polygon-fill: blue}",
+          "sql": "SELECT * FROM european_countries_e WHERE cartodb_id < 2",
+          "interactivity": "cartodb_id"
+        }
+      },
+      "name": "a",
+      "className": "test-2",
+      "text": "Blue polygons"
+    },
+
+    {
+      "layers": {
+        "layer-0": {
+          "cartocss": "#european_countries_e {polygon-fill: yellow}",
+          "sql": "SELECT * FROM european_countries_e WHERE cartodb_id > 30",
+          "interactivity": "cartodb_id"
+        }
+      },
+      "name": "a",
+      "className": "test-3",
+      "text": "Yellow polygons long name dude"
+    }
+  ],
+
+  "vizjson": "http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json"
+}

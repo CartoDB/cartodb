@@ -1,0 +1,18 @@
+<html>
+  <body>
+  </body>
+  <script src="../src/core/profiler.js"></script>
+  <script>
+
+    setInterval(function() {
+      Profiler.new_value('test', Math.random());
+    }, 500);
+
+    setInterval(function() {
+      Profiler.new_value('test2', Math.random());
+    }, 1500);
+
+    Profiler.ui();
+  </script>
+
+</html>

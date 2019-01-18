@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet multilayer example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <script>
+
+      function main() {
+
+        // create leaflet map
+        var map = L.map('map', { 
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        })
+
+        // add cartodb layer with one sublayer
+        cartodb.createLayer(map, {
+          user_name: 'documentation',
+          type: 'cartodb',
+          sublayers: [{
+             sql: 'select * from pop',
+             cartocss: '#pop { raster-opacity: 1.0; }',
+             raster: true
+          }]
+        })
+        .addTo(map)
+
+
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main; 
+
+    </script>
+
+  </body>
+</html>

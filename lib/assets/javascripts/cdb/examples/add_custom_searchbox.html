@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<style>
+  html, body,#map {
+      width:100%; 
+      height:100%; 
+      padding: 0; 
+      margin: 0;
+      
+    }
+  div#searchbox{
+    background-color: #d2eaef;
+    opacity: 0.8;
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    width: auto;
+    height: auto;
+    padding: 10px;
+    display: block;
+    z-index: 9000;
+
+    }
+    div#searchbox input{
+      width: 200px;
+    }
+ </style>
+   <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+  </head>
+<body>
+  <div id="map"></div>
+  <div id="searchbox">
+  <input type="text" name="ad" value="" id="ad" size="10" />
+  <button type="button" id="searchButton">Search</button>
+
+<script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+<script>
+  var input;
+  function main () {
+    
+    var layerUrl = 'https://documentation.carto.com/api/v2/viz/34dfd2e4-d62b-11e5-b5e7-0ea31932ec1d/viz.json';
+
+    // add CartoDB layer
+    cartodb.createVis(map, layerUrl)
+      .done(function (vis,layer) {
+        // set the map options
+        map = vis.getNativeMap().setView([41.390205, 2.154007],4);
+
+        // When the search button is clicked
+        $('#searchButton').click(function () {
+          // store in the input variable the value from the input box
+          input = $('#ad').val();
+
+          // execute the CARTO SQL API
+          var sql = new cartodb.SQL({ user: 'documentation' });
+          // get the bounds of the geometry which has the same string value (in the name column) than the string value written in the input box
+          sql.getBounds("SELECT * FROM world_borders_1 where name ILIKE '" + input + "'").done(function (bounds) {
+            // sets the map view that contains the bounds defined by the getBounds method with the maximum zoom possible
+            map.fitBounds(bounds);
+          });
+        });
+       })
+        
+  }
+
+  
+  window.onload = main;
+
+</script>
+</body>
+</html>

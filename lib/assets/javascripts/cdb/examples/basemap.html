@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Basemap | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+
+      #content {
+        padding: 20px;
+        text-align: center;
+      }
+
+      .map {
+        float:left;
+        margin: 10px;
+        width: 500px;
+        height: 500px;
+        border: 1px solid #ccc;
+        background-color: #f8f8f8;
+      }
+    </style>
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <script>
+      var basemap = {
+        type: "http",
+        options: {
+          urlTemplate: "http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+          subdomains: ["a", "b", "c"]
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div class="map">
+        <script>
+          cartodb.Image("https://documentation.cartodb.com/api/v2/viz/01f93132-d5e6-11e3-855b-0e10bcd91c2b/viz.json", { basemap: basemap }).size(500, 500).write();
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

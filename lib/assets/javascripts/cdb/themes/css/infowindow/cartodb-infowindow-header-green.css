@@ -1,0 +1,52 @@
+
+/**
+ *  CartoDB green header popup styles
+ */
+
+div.cartodb-popup.header.green div.cartodb-popup-header {
+  background:url('../img/headers.png') no-repeat -252px -40px;
+}
+
+div.cartodb-popup.header.green div.cartodb-popup-header h4 {
+  color:#00916D;
+}
+
+div.cartodb-popup.header.green div.cartodb-popup-header span.separator {
+  background:#008E6A;
+}
+
+div.cartodb-popup.header.green a.cartodb-popup-close-button {
+  background:url('../img/headers.png') no-repeat -478px -40px;
+}
+
+div.cartodb-popup.header.green a.cartodb-popup-close-button:hover {
+  background-position:-478px -66px;
+}
+
+
+/* NEW CartoDB 2.0 green header popups */
+
+div.cartodb-popup.v2.header.green div.cartodb-popup-header {
+  background: none;
+  background: -ms-linear-gradient(top, #00CC99, #00B185); 
+  background: -o-linear-gradient(right, #00CC99, #00B185);
+  background: -webkit-linear-gradient(top, #00CC99, #00B185); 
+  background: -moz-linear-gradient(right, #00CC99, #00B185);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#00CC99',endColorStr='#00B185',GradientType=0)";
+}
+
+div.cartodb-popup.v2.header.green a.cartodb-popup-close-button {
+  background:white;
+}
+
+div.cartodb-popup.v2.header.green a.cartodb-popup-close-button:before,
+div.cartodb-popup.v2.header.green a.cartodb-popup-close-button:after {
+  background:#00CC99;
+}
+
+/* Hello IE */
+@media \0screen\,screen\9 {
+  div.cartodb-popup.v2.header.green a.cartodb-popup-close-button {
+    color:#00CC99;
+  }
+}

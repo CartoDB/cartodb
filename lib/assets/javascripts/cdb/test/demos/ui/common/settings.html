@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Settings</title>
+  </head>
+  <style>
+    body {
+      width:100%;
+      height:100%;
+      background-color: #D7D7D7;
+    }
+    .settings ul {
+      position:relative;
+      display:inline-block;
+      width:auto;
+      margin:0;
+      padding:0;
+      background:white;
+      -webkit-border-radius:3px;
+      border:none;
+      box-shadow: 0 0 2px 1px rgba(0,0,0,0.2);
+      list-style:none;
+      overflow:visible;
+    }
+    .settings ul::before {
+      content:' ';
+      position:absolute;
+      display:block!important;
+      top:-5px;
+      right:10px;
+      width:0;
+      height:0;
+      border-bottom:8px solid white;
+      border-left:8px solid transparent;
+      border-right:8px solid transparent;
+      z-index:10;
+    }
+    .settings li {
+      padding:10px;
+    }
+  </style>
+
+  <script id="settings_template" type="text/tmpl">
+    <ul>
+      <li><a href="#api-keys">Your API keys</a></li>
+      <li><a href="#settings">Account settings</a></li>
+      <li><a href="#close">Close session</a></li>
+    </ul>
+  </script>
+
+  <body>
+  </body>
+
+  <script src="../../../cartodb.js"></script>
+  <script>
+    window.onload = function() {
+      cdb.load('../../../', function() {
+
+        var Settings = cdb.ui.common.Settings.extend();
+
+        var settings = new Settings({
+          template_base: $('#settings_template').html(),
+          speed: 300
+        });
+
+        $('body').append(settings.render().el);
+
+        setTimeout(function(){
+          settings.open();  
+        },3000)
+      });
+    };
+  </script>
+</html>

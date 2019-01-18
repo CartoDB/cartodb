@@ -1,0 +1,103 @@
+<style>
+div.cartodb-popup a.cartodb-popup-close-button {
+    top: 2px;
+    left: 3px;
+    width:22px; 
+    height: 15px;
+    padding: 4px 0 3px 0;
+    background: none;
+
+    text-align: right;
+    font: bold 15px "Helvetica",Arial;
+    color: #666666;
+    text-decoration: none;
+    line-height: 15px;
+    text-indent: 0;
+    overflow: visible;
+}
+
+div.cartodb-popup a.cartodb-popup-close-button:hover {
+  color: #333333;
+  cursor: pointer;
+}
+
+div.cartodb-popup div.cartodb-popup-content-wrapper {
+  width: 186px;
+  padding: 25px 18px 5px 10px;
+  margin: 0;
+  background: #FFF;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+}
+
+div.cartodb-popup div.cartodb-popup-content {
+  width: 186px;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+div.cartodb-popup div.cartodb-popup-content label {
+  display: block;
+  width: auto;
+  padding: 0 0 0 5px;
+  font: normal 11px Arial;
+  color: #B3B3B3;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-content p {
+  display: block;
+  width: 170px;
+  max-width: 170px;
+  padding: 2px 4px!important;
+  margin: 2px 0 7px!important;
+  font: bold 11px 'Helvetica',Arial;
+  color: #666666;
+  border: none;
+  background: none;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-content p.empty {
+  font-weight: normal;
+  font-style: italic;
+  color: #b7b7b7; 
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container {
+  width: $width;
+  height: 36px;
+  margin: 0;
+  background: #FFF;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container label {
+  float: left;
+  margin: 5px 0 0 3px;
+  font: normal 11px Arial;
+  color: #B3B3B3;
+  text-shadow: 0 1px white;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container label strong {
+  font: bold 11px 'Helvetica',Arial;
+  color: #666666;
+  text-shadow: 0 1px white;
+}
+</style>
+
+<div class="cartodb-popup">
+  <div class="cartodb-popup-content-wrapper">
+    <a class="cartodb-popup-close-button">x</a>
+    <div class="cartodb-popup-content">
+      <%= content %>
+    </div>
+  </div>
+  <div class="cartodb-popup-tip-container">
+  </div>
+</div>

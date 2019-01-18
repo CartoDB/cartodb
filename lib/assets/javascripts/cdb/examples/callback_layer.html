@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaflet example | CartoDB.js</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+    
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+
+    <script>
+      function main() {
+        var map = new L.Map('map', {
+          zoomControl: false,
+          center: [43, 0],
+          zoom: 3
+        });
+        L.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: 'Stamen'
+        }).addTo(map);
+        var layers = [
+          'http://documentation.cartodb.com/api/v2/viz/2b13c956-e7c1-11e2-806b-5404a6a683d5/viz.json',
+          'http://documentation.cartodb.com/api/v2/viz/236085de-ea08-11e2-958c-5404a6a683d5/viz.json'
+          // add here more layers
+        ]
+        var q = queue(3);
+        layers.forEach(function(vizjson) {
+          q.defer(function(vizjson, callback) {
+            cartodb.createLayer(map, vizjson, function(layer) { callback(null, layer); })
+          }, vizjson);
+        })
+        q.await(function() {
+          var leafletLayers = Array.prototype.slice.call(arguments, 1);
+          leafletLayers.forEach(function(lyr) {
+            lyr.addTo(map);
+          });
+        })
+      }
+      // you could use $(window).load(main);
+      window.onload = main;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CartoTemplate | CartoDB</title>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+  
+  <style>
+    html, body, #map {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    /*.cartodb-logo{
+      display:none!important;
+    }*/
+  </style>
+
+  <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  <!-- 
+  <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+  -->
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- include cartodb.js library -->
+  <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+  <!--
+  <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script> 
+  -->
+     
+  
+  <!-- Drop your code between the script tags below! -->
+  <script>
+
+  mapUrl='https://team.cartodb.com/u/ernestomb/api/v2/viz/066ff802-a580-11e5-a9bb-0e3ff518bd15/viz.json'
+  
+  map= new L.Map('map', {
+    zoom:9,
+    center:[40.5,-3.6]
+  });
+
+  L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', 
+    {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+  }).addTo(map);
+
+  cartodb.createLayer(map, mapUrl,{
+    	//options
+      refreshTime:3500
+  }).addTo(map)
+  .done(function(layer){
+      //do stuff
+    });
+  
+  </script>
+
+</body>
+</html>

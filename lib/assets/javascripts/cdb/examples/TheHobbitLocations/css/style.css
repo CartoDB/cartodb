@@ -1,0 +1,220 @@
+@font-face {
+    font-family: 'robotoregular';
+    src: url('../fonts/roboto-regular-webfont.eot');
+    src: url('../fonts/roboto-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/roboto-regular-webfont.woff') format('woff'),
+         url('../fonts/roboto-regular-webfont.ttf') format('truetype'),
+         url('../fonts/roboto-regular-webfont.svg#robotoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{
+	background-color: #99BDBC;
+}
+
+div#map{
+	position: absolute;
+	z-index: 0;
+	bottom: 0;
+	top: 0;
+	right: 0;
+	left: 350px;
+	background-color: #99BDBC;
+}
+
+div#overlay{
+	position: absolute;
+	z-index: 2;
+	bottom: 0;
+	top: 0;
+	right: 0;
+	left: 0;
+	background: url(../img/overlay.png) no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	filter: progrid:DXImageTransform.Microsoft.AlphaImage(src='.../img/overlay.png', sizingMethod='scale');
+	-ms-filter: "progrid:DXImageTransform.Microsoft.AlphaImage(src='../img/overlay.png', sizingMethod='scale')";
+	pointer-events: none;
+}
+
+div#leftBkg{
+	background: url(../img/leftBkg.png) repeat-y;
+	width: 619px;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	pointer-events: none;
+}
+
+div.left{
+	position: absolute;
+	left: 60px;
+	top: 60px;
+	z-index: 3;
+}
+
+div.left div#title{
+	width: 428px;
+	height: 195px;
+	background: url(../img/title.png) no-repeat;
+}
+
+div.left p{
+	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+	font-size: 17px;
+	width: 320px;
+	margin: 30px 0 0 10px;
+	opacity: .5;
+}
+
+div.left p a,
+div.left p a:visited{
+	color:#000;
+}
+
+div.left div#legendBox{
+	background: url(../img/legendBullets.png) 0 0 no-repeat;
+	margin: 30px 0 0 10px;
+}
+
+div.left div#legendBox ul li{
+	list-style: none;
+	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+	font-size: 15px;
+	margin: 7px 0 0 22px;
+	opacity: .5;
+}
+
+div.cartodb_tooltip {
+	position: absolute;
+	z-index: 5;
+	display: none;
+}
+
+div.cartodb_tooltip p {
+	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+	font-size: 15px;
+	color: #333;
+	text-shadow:
+   -1px -1px 0 #FFF,  
+    1px -1px 0 #FFF,
+    -1px 1px 0 #FFF,
+     1px 1px 0 #FFF;
+}
+
+/*SYLES FOR THE CUSTOM INFOWINDOW*/
+
+div.cartodb-popup {
+	background: none;
+	width: 240px;
+	padding: 0;
+	-moz-border-radius-topright: 4px;
+	border-top-right-radius: 4px;
+	-moz-border-radius-toplleft: 4px;
+	border-top-left-radius: 4px;
+	box-shadow: 0 0 9px rgba(0,0,0,0.4);
+}
+
+div.cartodb-popup a.cartodb-popup-close-button{
+	top: -12px;
+	right: -13px;
+}
+
+div.cartodb-popup div.cartodb-popup-content-wrapper{
+	padding: 0;
+	width: 240px;
+	max-width: none;
+	background: none;
+	background-color: #FFF;
+	-moz-border-radius-topright: 4px;
+	border-top-right-radius: 4px;
+	-moz-border-radius-toplleft: 4px;
+	border-top-left-radius: 4px;
+}
+
+div.cartodb-popup div.cartodb-popup-cont{
+	width: 248px;
+	max-width: none;
+	max-height: none;
+}
+
+div.cartodb-popup div.cartodb-popup-cont h4{
+	font-family: Times New Roman, Times, serif;
+	font-size: 25px;
+	color:#FFF;
+	position: absolute;
+	text-transform: none;
+	font-weight: normal;
+	z-index: 5px;
+	top:98px;
+	left: 14px;
+	text-shadow: 0 1px 0 #000;
+	letter-spacing: -1px;
+}
+
+div.cartodb-popup div.cartodb-popup-cont a.videoButton{
+	background: url(../img/videoButton.png) 0 0 no-repeat;
+	width: 20px;
+	height: 17px;
+	position: absolute;
+	z-index: 6px;
+	top:105px;
+	right: 14px;
+}
+
+div.cartodb-popup div.cartodb-popup-cont a.videoButton:hover{
+	background: url(../img/videoButton.png) 0 -17px no-repeat;
+}
+
+div.cartodb-popup div.cartodb-popup-cont p{
+	font-family: "robotoregular", Helvetica, Arial, Sans-serif;
+	font-size: 14px;
+	padding: 12px 15px 0 15px;
+	opacity: .5;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container{
+	background: none;
+	background-color: #FFF;
+	width: 240px;
+	height: 15px;
+	-moz-border-radius-bottomright: 4px;
+	border-bottom-right-radius: 4px;
+	-moz-border-radius-bottomlleft: 4px;
+	border-bottom-left-radius: 4px;
+	margin-bottom: 10px;
+}
+
+div.cartodb-popup div.cartodb-popup-tip-container::after {
+	position: absolute;
+	bottom: -10px;
+	left: 26px;
+	content: '';
+	border: 5px solid white;
+	border-color: white transparent transparent white;
+	width: 0;
+	height: 0;
+	z-index: 1;
+}
+
+div.cartodb-infobox {
+	bottom:35px!important;
+	font-family: "Helvetica",Arial;
+}
+
+div.cartodb-infobox h3 {
+	color:#333333;
+	font-size:15px;
+}
+
+div.cartodb-infobox p {
+	display:block;
+	margin:10px 0 0 0;
+	color:#788787;
+	font-size:13px;
+	line-height:16px;
+}

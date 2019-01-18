@@ -4,7 +4,7 @@
   </div>
   <% if @total_count > 0 %>
     <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl"><%= t('admin.shared.nores.no_items', name: @name) %></h3>
-    <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= t('admin.shared.nores.try_instead', link: link_to(t('first_page'), @first_page_url)).html_safe %></p>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= t('admin.shared.nores.try_instead', link: link_to(t('admin.shared.nores.first_page'), @first_page_url)).html_safe %></p>
   <% else  %>
     <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl"><%= t('admin.shared.nores.no_public', name: @name, item_type: @content_type === 'maps' ? t('maps') : t('datasets')) %></h3>
     <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= t('admin.shared.nores.maybe', item_type: link_to(@content_type === 'maps' ? t('datasets') : t('maps'), alt_url)).html_safe %></p>

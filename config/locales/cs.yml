@@ -2,11 +2,6 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 cs:
-  user_mailer:
-    ask_for_invitation:
-      subject: 'Thanks for signing up for cartodb beta' #???
-    invitation_sent:
-      subject: 'Thanks for signing up for cartodb beta' #???
   email:
     title: 'E-mail nebo uživatelské jméno'
     placeholder: 'E-mail nebo uživatelské jméno'
@@ -59,12 +54,19 @@ cs:
       check_email: 'Prosím zkontrolujte Vaší e-mailovou schárnku a klikněte na tlačítko "Aktivovat Váš účet" v úvítacím mailu.'
       resent_valid_part1: "Pokud jste neobdrželi Váš registrační mail, klikněte <a href="
       resent_valid_part2: '>zde</a> a nový email bude automaticky odeslán.'
-    password:
-      submit: 'Potvrdit'
+    multifact:
+      use_google: 'K naskenování QR kódu použijte aplikaci Google Authenticator.'
+      qr_problem: 'Pokud máte problém s QR kódem,'
+      try_manual: 'zkuste zadat kód ručně'
+      scan_qr: 'Pokud máte nějaký problém, můžete naskenovat QR kód.'
+      try_qr: 'Zkuste s QR kódem'
+      verify: 'Ověřte'
+      conf_issues: 'Pokud máte s konfigurací nějaké problémy, můžete '
+      skip: 'tento krok přeskočit'
   admin:
     client_apps:
       api_key:
-        your_api_keys: 'Vaše API keys |'
+        your_api_keys: 'Vaše API klíče |'
       api_keys_cta:
         unlock: 'Uvolněte potenciál Vaši aplikací'
         create: 'Vytvářejte řešení použitím různých doplňků a API.'
@@ -113,7 +115,7 @@ cs:
         encryption: 'Šifrování'
         certif: 'Soubor s certifikátem (pokud je)'
         ssl: 'SSL verze'
-        conn_user: 'Uživatelské připojení'## tohle chci ještě vidět
+        conn_user: 'Uživatelské připojení' ## tohle chci ještě vidět
         conn_pwd: 'Heslo připojení'
         id_fld: 'Pole uživatelské ID'
         name_fld: 'Pole Uživatelské jméno'
@@ -320,7 +322,7 @@ cs:
         preserve_2: ', so that upon upgrade you will regain access to the data and maps.'
         student: "If you're a student or an ambassador, remember you can also qualify for our "
         community: 'Community Program'
-        preserve_2: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
+        preserve_3: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
         contact: 'CONTACT SALES'
         payment: 'ADD PAYMENT METHOD'
         delete: 'DELETE ACCOUNT'
@@ -466,6 +468,7 @@ cs:
       contact: 'kontaktovat jednoho z našich obchodníků.'
       meantime: "V mezičase se můžete podívat na několik báječných věcí, na kterých pracujeme "
       thanks: 'Díky a šťastné mapování'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
     seat:
       title: 'Žádná další divácká místa!'
       hey: 'Vítej zde,'
@@ -475,6 +478,8 @@ cs:
       contact: 'kontaktovat jednoho z našich obchodníků.'
       meantime: "V mezičase se můžete podívat na několik báječných věcí, na kterých pracujeme "
       thanks: 'Díky a šťastné mapování'
+      getmore: 'Získat další místa'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
   password_change:
     edit:
       reset: 'Resetovat heslo'

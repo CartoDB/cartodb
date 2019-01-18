@@ -1,0 +1,48 @@
+{
+  "fill": {
+    "size": {
+      "fixed": 7
+    },
+    "color": {
+      "fixed": "#EE4D5A",
+      "opacity": 0.9
+    }
+  },
+  "stroke": {
+    "size": {
+      "fixed": 1
+    },
+    "color": {
+      "fixed": "#FFFFFF",
+      "opacity": 1
+    }
+  },
+  "blending": "none",
+  "aggregation": {},
+  "labels": {
+    "enabled": false,
+    "attribute": null,
+    "font": "DejaVu Sans Book",
+    "fill": {
+      "size": {
+        "fixed": 10
+      },
+      "color": {
+        "fixed": "#FFFFFF",
+        "opacity": 1
+      }
+    },
+    "halo": {
+      "size": {
+        "fixed": 1
+      },
+      "color": {
+        "fixed": "#6F808D",
+        "opacity": 1
+      }
+    },
+    "offset": -10,
+    "overlap": true,
+    "placement": "point"
+  }
+}

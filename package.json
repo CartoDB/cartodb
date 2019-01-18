@@ -125,6 +125,7 @@
     "grunt-postcss": "0.7.2",
     "grunt-sass": "2.0.0",
     "grunt-timer": "0.3.3",
+    "i18n-extract": "0.6.3",
     "jasmine": "2.5.2",
     "jasmine-ajax": "CartoDB/jasmine-ajax#master",
     "jest": "^23.6.0",

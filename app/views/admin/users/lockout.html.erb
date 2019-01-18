@@ -20,14 +20,19 @@
 <div class='Lockout OnBoarding-welcome'>
   <div class="OnBoarding-welcomeContent">
     <div class="CDB-Text OnBoarding-welcomeContentInner">
-      <p class="OnBoarding-welcomeContentTitle OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.welcome') %><br/><%= @user.username %>!</p>
+      <p class="OnBoarding-welcomeContentTitle OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.welcome') %><br/>
+        <%= @user.username %>!</p>
       <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.end_trial') %></p>
       <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.upgrade') %></p>
       <% if @expiration_days %>
-        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.preserve_1') %><%= t('day', :count => @expiration_days) %>
-<% t('admin.users.lockout.preserve_2') %><br/><% t('admin.users.lockout.student') %><a class="u-whiteTextColor" href="https://carto.com/community/"><% t('admin.users.lockout.community') %></a>.</p>
+        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.preserve_1') %>
+          <%= t('day', :count => @expiration_days) %><% t('admin.users.lockout.preserve_2') %><br/>
+          <% t('admin.users.lockout.student') %><a class="u-whiteTextColor" href="https://carto.com/community/">
+          <% t('admin.users.lockout.community') %></a>.</p>
       <% else %>
-        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.preserve_3') %><br/>><% t('admin.users.lockout.student') %><a class="u-whiteTextColor" href="https://carto.com/community/"><% t('admin.users.lockout.community') %></a>.</p>
+        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin"><% t('admin.users.lockout.preserve_3') %><br/>
+          <% t('admin.users.lockout.student') %><a class="u-whiteTextColor" href="https://carto.com/community/">
+          <% t('admin.users.lockout.community') %></a>.</p>
       <% end %>
       <a class="CDB-Button CDB-Button--secondary CDB-Button--white u-bSpace u-iBlock" href="mailto:sales@carto.com">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace"><% t('admin.users.lockout.contact') %></span>

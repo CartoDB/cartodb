@@ -2,11 +2,6 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  user_mailer:
-    ask_for_invitation:
-      subject: 'Thanks for signing up for cartodb beta'
-    invitation_sent:
-      subject: 'Thanks for signing up for cartodb beta'
   email:
     title: 'Email or username'
     placeholder: 'email or username'
@@ -54,8 +49,15 @@ en:
       check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
       resent_valid_part1: "If you didn't receive your validation email, click <a href="
       resent_valid_part2: '>here</a> and a new email will be sent directly to you.'
-    password:
-      submit: 'Submit'
+    multifact:
+      use_google: 'Use Google Authenticator app to scan the QR code.'
+      qr_problem: 'If you have any problem with the QR code, please'
+      try_manual: 'try with a manual code'
+      scan_qr: 'If you have any problem, you can scan the QR code.'
+      try_qr: 'Try with the QR code'
+      verify: 'Verify'
+      conf_issues: 'If you have some issues with the configuration you can '
+      skip: 'skip this step'
   admin:
     client_apps:
       api_key:
@@ -315,7 +317,7 @@ en:
         preserve_2: ', so that upon upgrade you will regain access to the data and maps.'
         student: "If you're a student or an ambassador, remember you can also qualify for our "
         community: 'Community Program'
-        preserve_2: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
+        preserve_3: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
         contact: 'CONTACT SALES'
         payment: 'ADD PAYMENT METHOD'
         delete: 'DELETE ACCOUNT'
@@ -461,6 +463,7 @@ en:
       contact: 'contact one of our account experts'
       meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
       thanks: 'Thanks and Happy Mapping'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
     seat:
       title: 'No more seats left!'
       hey: 'Hey there,'
@@ -470,6 +473,8 @@ en:
       contact: 'contact one of our account experts'
       meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
       thanks: 'Thanks and Happy Mapping'
+      getmore: 'Get more seats'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
   password_change:
     edit:
       reset: 'Reset your password'

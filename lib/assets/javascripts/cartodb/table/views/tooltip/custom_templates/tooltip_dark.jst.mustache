@@ -1,0 +1,20 @@
+<div class="cartodb-tooltip-content-wrapper dark">
+  <div class="cartodb-tooltip-content">
+  {{#content}}
+    {{#content.fields}}
+    {{#title}}
+    {{#alternative_name}}
+    <h4>{{alternative_name}}</h4>
+    {{/alternative_name}}
+    {{^alternative_name}}
+    <h4>{{name}}</h4>
+    {{/alternative_name}}
+    <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+    {{/title}}
+    {{^title}}
+    <p>{{=<% %>=}}{{<%={{ }}=%>{{{ name }}}{{=<% %>=}}}}<%={{ }}=%></p>
+    {{/title}}
+    {{/content.fields}}
+  {{/content}}
+  </div>
+</div>

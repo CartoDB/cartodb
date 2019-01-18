@@ -25,13 +25,13 @@
                   </p>
                 </div>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--qrCode Sessions-toggle is-active">
-                  Use Google Authenticator app to scan the QR code.
+                  <%= t('sessions.multifact.use_google') %>
                 </p>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle is-active">
-                  If you have any problem with the QR code, please<br> <%= link_to 'try with a manual code', '#', class: 'js-sharedSecret-link' %>
+                  <%= t('sessions.multifact.qr_problem') %><br> <%= link_to t('sessions.multifact.try_manual'), '#', class: 'js-sharedSecret-link' %>
                 </p>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle">
-                  If you have any problem, you can scan the QR code.<br> <%= link_to 'Try with the QR code', '#', class: 'js-sharedSecret-link' %>
+                  <%= t('sessions.multifact.scan_qr') %><br> <%= link_to t('sessions.multifact.try_qr'), '#', class: 'js-sharedSecret-link' %>
                 </p>
               </div>
             <% end %>
@@ -59,7 +59,7 @@
                 <div class="Sessions-field">
                   <p>
                     <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                      <span class="js-Loading-text">Verify</span>
+                      <span class="js-Loading-text"><%= t('sessions.multifact.verify') %></span>
                       <%= render :partial => 'shared/loading_animation' %>
                     </button>
                   </p>
@@ -86,7 +86,7 @@
       <footer class="Sessions-footer">
         <div class="u-inner">
           <div class="Sessions-notloggedin is-active">
-            <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">If you have some issues with the configuration you can <%= link_to 'skip this step', '#', class: 'js-skipMfa-link' %></p>
+            <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><%= t('sessions.multifact.conf_issues') %><%= link_to t('sessions.multifact.skip'), '#', class: 'js-skipMfa-link' %></p>
           </div>
         </div>
       </footer>

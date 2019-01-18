@@ -1,17 +1,17 @@
-<%- message = "<p style='margin-bottom: 0; font-size: 24px; color: #ffffff;'><strong><% t('org_mailer.quota.seat') %></strong></p>" %>
+<%- message = "<p style='margin-bottom: 0; font-size: 24px; color: #ffffff;'><strong><% t('org_mailer.seat.title') %></strong></p>" %>
 
 <%= render partial: 'mailer_modules/negative_message', locals: { message: message } %>
 
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p><% t('org_mailer.quota.hey') %></p>
-    <p><% t('org_mailer.quota.growing') %></p>
-    <p><% t('org_mailer.quota.reminder') %></p>
-    <p><% t('org_mailer.quota.obtain') %><a href="<%= @link %>" style="color: #1181FB;"><% t('org_mailer.quota.contact') %></a>.</p>
-    <p><% t('org_mailer.quota.meantime') %><a href="https://carto.com" style="color: #1181FB;">carto.com</a>.</p>
-    <p><% t('org_mailer.quota.thanks') %></p>
+    <p><% t('org_mailer.seat.hey') %></p>
+    <p><% t('org_mailer.seat.growing') %></p>
+    <p><% t('org_mailer.seat.reminder') %></p>
+    <p><% t('org_mailer.seat.obtain') %><a href="<%= @link %>" style="color: #1181FB;"><% t('org_mailer.seat.contact') %></a>.</p>
+    <p><% t('org_mailer.seat.meantime') %><%= t('org_mailer.seat.link') %></p>
+    <p><% t('org_mailer.seat.thanks') %></p>
     </p>
   </td>
 </tr>
 
-<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: "Get more seats" } %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: t('org_mailer.seat.getmore') } %>

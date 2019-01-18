@@ -11,6 +11,8 @@ gem 'activerecord-postgresql-adapter'
 
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'
+
+gem 'i18n-tasks', '~> 0.9.28'
 gem 'rails-i18n', '~> 4.0'
 
 gem 'sequel-rails', '0.9.15'

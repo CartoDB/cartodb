@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hexagon aggregation | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Create an hexagonal grid</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Aggregate your points in hexagons.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+      <!-- Set legend of the map -->
+      <div class="box legend">
+        <h2 class="h2">Number of points aggregated in hexagons</h2>
+        <ul class="category open-sans">
+          <li><div class="circle" style="background: #04817E  "></div><p>1-2</p></li>
+          <li><div class="circle" style="background: #39AB7E "></div><p>>2</p></li>
+          <li><div class="circle" style="background: #8BD16D"></div><p>>9</p></li>
+          <li><div class="circle" style="background: #EDEF5D"></div><p>>30</p></li>
+        </ul>
+      </div>
+    </aside>
+
+    <script>
+      // set map with initial zoom and coodinates view
+      // and disabling scroll wheel zoom
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 40, lng: -80 },
+        zoom: 7,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      // set CARTO client
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'public'
+      });
+
+      // set SQL query to create the grid of hexagons
+      /*
+        To create the grid of hexagons we must use a SQL query that generates that grid for a specific
+        zoom level. We will use the zoom level 9 to create a grid of hexagons that will have a side size
+        of 12 pixel units.
+
+        We use the CARTO function CDB_HexagonGrid(geometry, side measure) to create the hexagon grid
+        where "geometry" is defined by the PostGIS function ST_Expand: "ST_Expand(!bbox!, CDB_XYZ_Resolution(9) * 12)"
+        and "side measure" is defined by "CDB_XYZ_Resolution(9) * 12)", where the function
+        CDB_XYZ_Resolution(zoom level) returns the pixel resolution of tiles at a given zoom level.
+
+        The geometry defined in "ST_Expand(!bbox!, CDB_XYZ_Resolution(9) * 12)" returns the geometry of
+        the bounding box that is defined by mapnik's !bbox! token and that is expanded in all directions a
+        distance of CDB_XYZ_Resolution(9) * 12 units
+      */
+      const source = new carto.source.SQL(`
+        -- Create hexagon grid
+        WITH hgrid AS (
+            SELECT CDB_HexagonGrid(
+                ST_Expand(!bbox!, CDB_XYZ_Resolution(9) * 12),
+                CDB_XYZ_Resolution(9) * 12) as cell
+            )
+        -- select the data from the "virtual table" hgrid, which has been created
+        -- using the "WITH" statement of PostgreSQL,
+        -- that intesects with the dataset of points "stormevents_locations_2014"
+        SELECT  hgrid.cell as the_geom_webmercator,
+                count(1) as agg_value,
+                row_number() over () as cartodb_id
+        FROM hgrid, (SELECT * FROM stormevents_locations_2014) i
+        WHERE ST_Intersects(i.the_geom_webmercator, hgrid.cell)
+        GROUP BY hgrid.cell
+      `);
+
+      // define styles of layer. We will style the color of the geometry based on the value
+      // of the column "agg_value" of the SQL query.
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          [agg_value > 0] {
+            polygon-fill: #04817E;
+          }
+          [agg_value > 2] {
+            polygon-fill: #39AB7E;
+          }
+          [agg_value > 9] {
+            polygon-fill: #8BD16D;
+          }
+          [agg_value > 30] {
+            polygon-fill: #EDEF5D;
+          }
+        }
+
+        #layer::outline {
+          line-width: 1;
+          line-color: #FFFFFF;
+          line-opacity: 1;
+        }
+      `);
+
+      // set the CARTO layer using the source and style defines previously
+      const layer = new carto.layer.Layer(source, style);
+
+      // add CARTO layer to the client
+      client.addLayer(layer);
+
+      // retrieve tiles from CARTO to the map
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+    </script>
+  </body>
+</html>

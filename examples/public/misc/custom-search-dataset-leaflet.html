@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom search dataset | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+    <style>
+        #selectDrop {
+            background-color: #d2eaef;
+            opacity: 0.8;
+            position: absolute;
+            top: 10px;
+            left: 50px;
+            width: auto;
+            height: auto;
+            padding: 10px;
+            display: block;
+            z-index: 9000;
+
+        }
+
+        #selectDrop input {
+            width: 200px;
+        }
+
+        div#results {
+            background: #FFF;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="searchbox">
+        <select id="selectDrop">
+                <option selected value="">Please Select</option>
+        </select>
+    </div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Look for data within your dataset</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Look for data within your dataset using dropdown menu.</p>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+      <script>
+        // set map with initial zoom and coodinates view
+        const map = L.map('map').setView([40, 2], 4);
+        let input;
+        // disable scroll wheel zoom
+        map.scrollWheelZoom.disable();
+
+        // populate dropdown menu
+        populateDrowpDown()
+
+        // add basemaps to map
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+          maxZoom: 18
+        }).addTo(map);
+
+        // set CARTO client
+        const client = new carto.Client({
+          apiKey: 'default_public',
+          username: 'cartojs-test'
+        });
+
+        const source = new carto.source.SQL(`
+            SELECT * FROM ne_adm0_europe
+        `);
+        // define CartoCSS code to style data on map
+        const style = new carto.style.CartoCSS(`
+            #ne_adm0_europe {
+                polygon-fill: #3E7BB6;
+                polygon-opacity: 0.7;
+                line-color: #FFF;
+                line-width: 0.5;
+                line-opacity: 1;
+                }
+
+            #layer::labels {
+                text-name: [admin];
+                text-face-name: 'DejaVu Sans Book';
+                text-size: 10;
+                text-fill: #FFFFFF;
+                text-label-position-tolerance: 0;
+                text-halo-radius: 1;
+                text-halo-fill: #6F808D;
+                text-dy: -10;
+                text-allow-overlap: true;
+                text-placement: point;
+                text-placement-type: dummy;
+            }
+        `);
+        // create CARTO layer from source and style variables
+        const Cartolayer = new carto.layer.Layer(source, style);
+
+        // add CARTO layer to the client
+        client.addLayer(Cartolayer);
+
+        // get tile from client and add them to the map object
+        client.getLeafletLayer().addTo(map);
+        
+
+        // function to get list of country names to populate dropdown menu
+        function populateDrowpDown(){
+            return fetch(
+                `https://cartojs-test.carto.com/api/v2/sql?format=geojson&q=SELECT the_geom, admin FROM ne_adm0_europe ORDER BY admin ASC`
+                ).then((resp) => resp.json())
+                .then((response) => {
+                    return response['features'].map(function(feature){
+                        option = document.createElement("option")
+                        option.setAttribute("value", feature.properties.admin)
+                        option.textContent = feature.properties.admin
+                        document.getElementById("selectDrop").appendChild(option);
+                    });
+                }).catch((error) => {
+                    console.log(error)
+                })
+        }
+
+        // when select option from downdown menu, change bounding box of map
+        // to geometry of the selected country
+        document.getElementById('selectDrop').addEventListener("change", function (e) {
+            input = e.currentTarget.selectedOptions[0].attributes[0].value;
+            return  fetch(`https://cartojs-test.carto.com/api/v2/sql?format=geojson&q=SELECT * FROM ne_adm0_europe where admin Ilike '${input}'`)
+            .then((resp) => resp.json())
+            .then((response) => {
+                geojsonLayer = L.geoJson(response)
+                map.fitBounds(geojsonLayer.getBounds());
+            })
+        });
+        
+    </script>
+  </body>
+</html>

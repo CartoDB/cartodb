@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit SQL CARTOCSS | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Edit SQL & CartoCSS</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Edit manually the SQL query and the CartoCSS style.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">This example only uses one style and one layer whose content is changed.</p>
+            <p class="open-sans">Since the style and source objects are the same they won't trigger events. You need to use the promise to handle errors.</p>
+          </section>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">SQL</h2>
+        <textarea id="sql" rows="3">SELECT * FROM ne_10m_populated_places_simple</textarea>
+        <button class="button" onclick="updateSource()">UPDATE SQL</button>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">CartoCSS</h2>
+        <textarea id="cartocss" rows="3">
+#layer {
+  marker-fill: red;
+}
+        </textarea>
+        <button class="button-update button" onclick="updateStyle()">UPDATE STYLE</button>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL(getValue('#sql'));
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      client.getLeafletLayer().addTo(map);
+
+      function updateSource() {
+        reset('#sql');
+        populatedPlacesSource.setQuery(getValue('#sql'))
+          .catch(cartoError => {
+            error('#sql', cartoError);
+          });
+      }
+
+      function updateStyle() {
+        reset('#cartocss')
+        populatedPlacesStyle.setContent(getValue('#cartocss'))
+          .catch(cartoError => {
+            error('#cartocss', cartoError);
+          });
+      }
+
+      function getValue(id) {
+        return document.querySelector(id).value
+      }
+
+      function reset(id) {
+        document.querySelector(id).style.border = 'default';
+      }
+
+      function error(id, cartoError) {
+        document.querySelector(id).style.border = '1px solid #E57373';
+        alert(cartoError.message);
+      }
+    </script>
+  </body>
+</html>

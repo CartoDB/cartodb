@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Category Filter | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Category Filter</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+
+        <section>
+          <p class="description open-sans">Apply a category filter to the listings shown in the visualization.</p>
+
+          <div class="separator"></div>
+
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Change the selected room types to filter the listings.</p>
+          </section>
+
+          <div id="controls">
+            <div id="info">
+              <h3>Room Types</h3>
+            </div>
+            <ul>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="entire" value="Entire home/apt" checked>
+                <label for="entire">Entire home/apt</label>
+              </li>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="private" value="Private room" checked>
+                <label for="private">Private Room</label>
+              </li>
+              <li>
+                <input type="checkbox" name="roomTypes[]" id="shared" value="Shared room" checked>
+                <label for="shared">Shared Room</label>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      function getSelectedRoomTypes () {
+        const inputControls = document.querySelectorAll('#controls input');
+        const values = [];
+
+        inputControls.forEach(input => input.checked ? values.push(input.value): null);
+        return values;
+      }
+
+      function applyFilters () {
+        roomTypeFilter.setFilters({ in: getSelectedRoomTypes() });
+        // or
+        // roomTypeFilter.set('in', getSelectedRoomTypes());
+      }
+
+      function registerListeners () {
+        document.querySelectorAll('#controls input').forEach(
+          input => input.addEventListener('click', () => applyFilters())
+        );
+      }
+
+      const map = L.map('map').setView([40.42252398976147, -3.659729361534119], 12);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const roomTypeFilter = new carto.filter.Category('room_type', { in: getSelectedRoomTypes() });
+
+      const source = new carto.source.SQL('SELECT * FROM airbnb_listings');
+      source.addFilter(roomTypeFilter);
+
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+          marker-fill: ramp([room_type], (#88CCEE, #CC6677, #DDCC77), ("Entire home/apt", "Private room", "Shared room"), "=");
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style);
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      registerListeners();
+    </script>
+  </body>
+</html>

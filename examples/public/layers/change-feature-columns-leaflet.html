@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Change feature columns | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map">
+    </div>
+    <!-- Description -->
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Change the feature columns</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Change the columns returned in the feature event.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Click on the markers</p>
+          </section>
+          <div id="controls">
+            <ul class="actions">
+              <li>
+                <input id="red" type="radio" name="style" onclick="setMoreData()">
+                <label for="red">More data</label>
+              </li>
+              <li>
+                <input id="green" type="radio" name="style" onclick="setLessData()" checked>
+                <label for="green">Less data</label>
+              </li>
+            </ul>
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const layer = new carto.layer.Layer(source, style, {
+        featureClickColumns: ['name']
+      });
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      layer.on('featureClicked', featureEvent => {
+        let content = '';
+
+        if (featureEvent.data.name) {
+          content += `<h3>${featureEvent.data.name.toUpperCase()}</h3>`;
+        }
+
+        if (featureEvent.data.pop_max) {
+          content += `<p class="open-sans"><span>${featureEvent.data.pop_max}</span> max inhabitants</p>`;
+        }
+
+        if (featureEvent.data.pop_min) {
+          content += `<p class="open-sans"><span>${featureEvent.data.pop_min}</span> min inhabitants</p>`;
+        }
+
+        document.getElementById('info').innerHTML = content;
+      });
+
+      function setMoreData() {
+        layer.setFeatureClickColumns(['name', 'pop_max', 'pop_min']);
+      }
+
+      function setLessData() {
+        layer.setFeatureClickColumns(['name']);
+        document.getElementById('content').innerHTML = '';
+      }
+    </script>
+  </body>
+</html>

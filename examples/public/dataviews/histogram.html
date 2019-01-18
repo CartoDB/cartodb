@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Histogram widget | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray">
+    <div class="dataview">
+      <ul>
+        <li>
+          <h2 class="h2">Column</h2>
+          <input id="column" type="text" value="price" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">Bins</h2>
+          <input id="bins" type="number" value="5" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">Start</h2>
+          <input id="start" type="number" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">End</h2>
+          <input id="end" type="number" class="input_text open-sans"></input>
+        </li>
+      </ul>
+      <button onclick="applyDataviewChanges()" class="button open-sans">Apply</button>
+      <pre class="code" id="data"></pre>
+    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Histogram widget</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create a widget with the histogram dataview.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Change column or bins on the form.</p>
+            <p class="open-sans">Start and end values must be used together.</p>
+            <p class="open-sans">Example columns: price, minimum_nights, availability_365.</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.SQL('SELECT * FROM airbnb_listings WHERE price < 150');
+
+      const histogramDataview = new carto.dataview.Histogram(source, 'price', {
+        bins: 5
+      });
+
+      histogramDataview.on('dataChanged', data => {
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      histogramDataview.on('error', error => {
+        alert(error.message);
+      });
+
+      client.addDataview(histogramDataview);
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const bins = parseInt(document.getElementById('bins').value);
+        const startValue = parseFloat(document.getElementById('start').value);
+        const endValue = parseFloat(document.getElementById('end').value);
+
+        const start = Number.isFinite(startValue) ? startValue : null;
+        const end = Number.isFinite(endValue) ? endValue : null;
+
+        try {
+          histogramDataview.setColumn(column);
+          histogramDataview.setStartEnd(start, end);
+          histogramDataview.setBins(bins);
+        } catch(error) {
+          alert(error.message);
+        }
+      }
+    </script>
+  </body>
+</html>

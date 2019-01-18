@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pop-ups | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Pop-Ups</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create pop-up information windows and interact with your map.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select your preferred kind of pop-ups</p>
+          </section>
+
+          <div id="controls">
+            <ul class="actions">
+              <li onclick="setPopupsClick()">
+                <input type="radio" name="style" value="01" id="popup">
+                <label for="popup">Pop-ups on click</label>
+              </li>
+              <li onclick="setPopupsHover()">
+                <input type="radio" name="style" value="01" id="hover">
+                <label for="hover">Pop-ups on hover</label>
+              </li>
+            </ul>
+          </div>
+
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 30, lng: 0 },
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.Dataset('ne_10m_populated_places_simple');
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+          #layer {
+            marker-width: 7;
+            marker-fill: #EE4D5A;
+            marker-line-color: #FFFFFF;
+          }
+        `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
+        featureOverColumns: ['name', 'pop_max', 'pop_min']
+      });
+
+      client.addLayer(populatedPlacesLayer);
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      const infowindow = new google.maps.InfoWindow();
+
+      function openPopup(featureEvent) {
+        let content = '<div class="widget">';
+
+        if (featureEvent.data.name) {
+          content += `<h2 class="h2">${featureEvent.data.name}</h2>`;
+        }
+
+        if (featureEvent.data.pop_max || featureEvent.data.pop_min) {
+          content += `<ul>`;
+
+          if (featureEvent.data.pop_max) {
+            content += `<li><h3>Max:</h3><p class="open-sans">${featureEvent.data.pop_max}</p></li>`;
+          }
+
+          if (featureEvent.data.pop_min) {
+            content += `<li><h3>Min:</h3><p class="open-sans">${featureEvent.data.pop_min}</p></li>`;
+          }
+
+          content += `</ul>`;
+        }
+
+        content += `</div>`;
+
+        infowindow.setContent(content);
+        infowindow.setPosition(featureEvent.latLng);
+        if (!infowindow.map) {
+          infowindow.open(map);
+        }
+      }
+
+      function closePopup(featureEvent) {
+        infowindow.close();
+      }
+
+      function setPopupsClick() {
+        populatedPlacesLayer.off('featureOver');
+        populatedPlacesLayer.off('featureOut');
+        populatedPlacesLayer.on('featureClicked', openPopup);
+      }
+
+      function setPopupsHover() {
+        populatedPlacesLayer.off('featureClicked');
+        populatedPlacesLayer.on('featureOver', openPopup);
+        populatedPlacesLayer.on('featureOut', closePopup);
+      }
+    </script>
+  </body>
+</html>

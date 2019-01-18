@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="24px" height="17px" viewBox="0 0 24 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon Snapshot</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="--Elements-/-Modules" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="SideBar-/-Expand-/-Blue" sketch:type="MSLayerGroup" transform="translate(-36.000000, -742.000000)">
+            <g id="Icon-Snapshot" transform="translate(36.000000, 742.000000)" sketch:type="MSShapeGroup">
+                <path d="M15.75,9 C15.75,11.0715 14.07,12.75 12,12.75 C9.9285,12.75 8.25,11.0715 8.25,9 C8.25,6.9285 9.9285,5.25 12,5.25 C14.07,5.25 15.75,6.9285 15.75,9 L15.75,9 Z" id="Stroke-1712" stroke="#FFFFFF" stroke-linejoin="round"></path>
+                <path d="M17.25,3.75 L21,3.75 C22.2375,3.75 23.25,4.7625 23.25,6 L23.25,13.5 C23.25,14.7375 22.2375,15.75 21,15.75 L3,15.75 C1.7625,15.75 0.75,14.7375 0.75,13.5 L0.75,6 C0.75,4.7625 1.7625,3.75 3,3.75 L6.75,3.75" id="Stroke-1713" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M6.75,3.75 L9.75,0.75 L14.25,0.75 L17.25,3.75" id="Stroke-1714" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M20.25,5.25 C19.836,5.25 19.5,5.586 19.5,6 C19.5,6.414 19.836,6.75 20.25,6.75 C20.664,6.75 21,6.414 21,6 C21,5.586 20.664,5.25 20.25,5.25" id="Fill-1715"></path>
+            </g>
+        </g>
+    </g>
+</svg>

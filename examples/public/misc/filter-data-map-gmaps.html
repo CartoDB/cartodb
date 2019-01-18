@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Filter data on map | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&libraries=drawing&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <!-- Description -->
+    <aside class="toolbox">
+        <div class="box">
+            <header>
+                <h1>Filter data based on drawn circle</h1>
+                <button class="github-logo js-source-link"></button>
+            </header>
+            <section>
+                <p class="description open-sans">Filter data based on drawn circle.</p>
+            </section>
+            <footer class="js-footer"></footer>
+        </div>
+    </aside>
+
+    <script>
+      // set map with initial zoom and coodinates view
+      // and disabling scroll wheel zoom
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 40, lng: -80 },
+        zoom: 5,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      var drawingManager = new google.maps.drawing.DrawingManager({
+          drawingControl: true,
+          drawingControlOptions: {
+            position: google.maps.ControlPosition.TOP_CENTER,
+            drawingModes: ['circle']
+          },
+          circleOptions: {
+            fillColor: 'green',
+            fillOpacity: 0.5,
+            strokeWeight: 0.1,
+            clickable: false,
+            editable: false,
+            zIndex: 1
+          }
+        });
+        drawingManager.setMap(map);
+
+
+      // set CARTO client
+      const client = new carto.Client({
+            apiKey: 'default_public',
+            username: 'cartojs-test'
+        });
+
+      // set SQL query to create the grid of hexagons
+      const source = new carto.source.SQL(`
+            SELECT * FROM ne_10m_populated_places_simple
+        `);
+
+        // define styles of layer.
+      const style = new carto.style.CartoCSS(`
+            #layer {
+                    marker-fill: red;
+                }
+        `);
+
+      // set the CARTO layer using the source and style defines previously
+      const layer = new carto.layer.Layer(source, style);
+
+      // add CARTO layer to the client
+      client.addLayer(layer);
+
+      // retrieve tiles from CARTO to the map
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      // get radius and center of drawn circle and change source of the CARTO layer
+      google.maps.event.addListener(drawingManager, 'circlecomplete', function (circle) {
+          let radius = circle.getRadius();
+          let centerLat = circle.getCenter().lat();
+          let centerLng = circle.getCenter().lng();
+          circleCountPointsIntersect(radius, centerLat, centerLng)
+      });
+
+      // function to change the source of the CARTO layer based on radius and 
+      // center of the circle
+      function circleCountPointsIntersect(radius, lat,lng){
+          source.setQuery(`
+            SELECT cartodb_id, the_geom, the_geom_webmercator
+            FROM ne_10m_populated_places_simple
+            WHERE ST_intersects(
+                the_geom,
+                ST_Buffer(
+                  ST_SetSRID(ST_Point(${lng},${lat}),4326)::geography,
+                  ${radius})::geometry
+                )
+              `);
+        };
+    </script>
+  </body>
+</html>

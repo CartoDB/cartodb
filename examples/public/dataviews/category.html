@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Category widget | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray">
+    <div class="dataview">
+      <ul>
+        <li>
+          <h2 class="h2">Column</h2>
+          <input id="column" type="text" value="adm0name" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">Limit</h2>
+          <input id="limit" type="number" value="10" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">Operation</h2>
+          <select id="operation" class="select open-sans">
+            <option value="sum">SUM</option>
+            <option value="count">COUNT</option>
+            <option value="avg">AVG</option>
+            <option value="max">MAX</option>
+            <option value="min">MIN</option>
+          </select>
+        </li>
+        <li>
+          <h2 class="h2">Operation column</h2>
+          <input id="operationColumn" type="text" value="pop_max" class="input_text open-sans"></input>
+        </li>
+      </ul>
+      <button onclick="applyDataviewChanges()" class="button open-sans">Apply</button>
+      <pre class="code" id="data"></pre>
+    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Category widget</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create a widget with the category dataview.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Change form values.</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+
+      const categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        limit: 10,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      categoryDataview.on('dataChanged', data => {
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      categoryDataview.on('error', error => {
+        alert(error.message);
+      });
+
+      client.addDataview(categoryDataview);
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const limit = document.getElementById('limit').value;
+        const operation = document.getElementById('operation').value;
+        const operationColumn = document.getElementById('operationColumn').value;
+
+        categoryDataview.setColumn(column);
+        categoryDataview.setLimit(parseInt(limit));
+        categoryDataview.setOperation(operation);
+        categoryDataview.setOperationColumn(operationColumn);
+      }
+    </script>
+  </body>
+</html>

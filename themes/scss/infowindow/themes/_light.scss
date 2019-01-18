@@ -1,0 +1,55 @@
+// Light infowindow styles
+// ----------------------------------------------
+
+.CDB-infowindow--light {
+  background: #FFF;
+  .CDB-infowindow-subtitle {
+    color: #636D72;
+  }
+  .CDB-infowindow-title {
+    color: #2E3C43;
+  }
+  .CDB-hook-inner {
+    background: #FFF;
+  }
+  .CDB-hook:before {
+    border-top: 16px solid #FFF;
+  }
+  .CDB-infowindow-mediaTitle {
+    .CDB-infowindow-subtitle {
+      color: #FFF;
+    }
+    .CDB-infowindow-title {
+      color: #FFF;
+    }
+  }
+  .CDB-infowindow-tabs {
+    background: #F2F6F9;
+  }
+  .CDB-infowindow-tabsLinks {
+    color: #3AA9E3;
+    &.is-active {
+      border-bottom: 1px solid #2E3C43;
+      color: #2E3C43;
+    }
+  }
+  .CDB-loading-subtitle {
+    background: #F9F9F9;
+  }
+  .CDB-loading-title {
+    background: #F9F9F9;
+  }
+  .CDB-loading-bg {
+    opacity: 0.04;
+  }
+}
+.CDB-infowindow-header {
+  &.CDB-infowindow-headerBg--light {
+    .CDB-infowindow-subtitle {
+      color: rgba(255, 255, 255, 0.64);
+    }
+    .CDB-infowindow-title {
+      color: #FFF;
+    }
+  }
+}

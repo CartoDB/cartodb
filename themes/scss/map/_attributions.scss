@@ -1,0 +1,80 @@
+// Map attributions
+// ----------------------------------------------
+
+$size: 20px;
+
+.CDB-Attribution {
+  @include transition(background, 100ms);
+  position: relative;
+  order: 2;
+  width: 32px;
+  margin-right: 8px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  font-family: 'Open Sans';
+  line-height: $size;
+  z-index: 10;
+
+  &.is-active {
+    width: auto;
+  }
+}
+
+.CDB-Attribution.is-active .CDB-Attribution-text {
+  @include flex(1);
+  width: auto;
+  padding: 0 12px;
+  border-left: 1px solid #EEE;
+  pointer-events: initial;
+  opacity: 1;
+}
+
+.CDB-Attribution-button {
+  display: inline-block;
+  width: 32px;
+  min-width: 32px;
+  height: 100%;
+  color: #636D72;
+  font-size: 12px;
+  line-height: 32px;
+  vertical-align: middle;
+  z-index: 1;
+
+  &.is-disabled {
+    opacity: 0.24;
+  }
+
+  &:hover {
+    background: rgba($cBlue, 0.08);
+  }
+}
+
+.CDB-Attribution-text {
+  @include transition(opacity, 150ms);
+  width: 0;
+  height: 16px;
+  margin-left: -1px;
+  padding: 0;
+  border-left: 1px solid transparent;
+  color: #2E3C43;
+  font-size: 10px;
+  line-height: 16px;
+  overflow: hidden;
+}
+
+.CDB-Attribution .CDB-Attribution-text a {
+  color: #139BFC;
+  text-decoration: underline;
+}
+
+@include media-query-mobile() {
+  .CDB-Attribution.is-active {
+    @include flex(1);
+    width: 0;
+  }
+  /*
+  .CDB-Attribution-text {
+    height: auto;
+    min-height: $size;
+  }*/
+}

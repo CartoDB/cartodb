@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom Bounding Box filter | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.12/leaflet.draw-src.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.12/leaflet.draw-src.css" />
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Custom Bounding Box filter</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Apply a custom bounding box filter to dataviews.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Click on the <em>Draw a rectangle</em> button and draw a rectangle</p>
+          </section>
+          <div class="widget category"></div>
+          <div class="widget formula"></div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset('ne_10m_populated_places_simple');
+
+      const style = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 20;
+          marker-fill: #FF583E;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+
+      const layer = new carto.layer.Layer(source, style, {
+        featureOverColumns: ['name', 'pop_max']
+      });
+
+      client.addLayer(layer);
+      client.getLeafletLayer().addTo(map);
+
+      const categoryDataview = new carto.dataview.Category(source, 'adm0name', {
+        limit: 4,
+        operation: carto.operation.SUM,
+        operationColumn: 'pop_max'
+      });
+
+      categoryDataview.on('dataChanged', renderWidgetCategory);
+      client.addDataview(categoryDataview);
+
+      const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
+        operation: carto.operation.COUNT,
+      });
+
+      formulaDataview.on('dataChanged', renderWidgetFormula);
+      client.addDataview(formulaDataview);
+
+      const bboxFilter = new carto.filter.BoundingBox(map);
+
+      categoryDataview.addFilter(bboxFilter);
+      formulaDataview.addFilter(bboxFilter);
+
+      // Setup drawing rectangles to configure custom bounding boxes
+      let rectangle = null;
+      const drawnItems = L.featureGroup().addTo(map);
+      map.addControl(new L.Control.Draw({
+        draw: {
+          polyline: false,
+          polygon: false,
+          marker: false,
+          circle: false,
+          circlemarker: false
+        }
+      }));
+
+      const el = document.getElementsByClassName('leaflet-draw-draw-rectangle');
+      el[0].addEventListener('click', () => {
+        drawnItems.removeLayer(rectangle);
+        bboxFilter.resetBounds();
+      });
+
+      map.on(L.Draw.Event.CREATED, event => {
+          rectangle = event.layer;
+          drawnItems.addLayer(rectangle);
+          const latLngs = rectangle.getLatLngs();
+          const bounds = {
+            west: latLngs[0][1].lng,
+            south: latLngs[0][3].lat,
+            east: latLngs[0][3].lng,
+            north: latLngs[0][1].lat
+          }
+          bboxFilter.setBounds(bounds);
+      });
+
+      function renderWidgetCategory(data) {
+        const categories = data.categories.map(category => `
+          <li>
+            <h3>${category.name}</h3>
+            <p class="open-sans">${parseInt(category.value)} <small>inhabitants</small></p>
+          </li>
+        `).join('');
+        const content = `<ul>${categories}</ul>`;
+
+        document.querySelector('.widget.category').innerHTML = content;
+      }
+
+      function renderWidgetFormula(data) {
+        const content = `<h2 class="h2">${data.result} <small>cities</small></h2>`;
+        document.querySelector('.widget.formula').innerHTML = content;
+      }
+    </script>
+  </body>
+</html>

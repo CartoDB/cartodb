@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Base example | CARTO</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="shortcut icon" href="http://cartodb.com/assets/favicon.ico" />
+    <!--Include carto styles  -->
+    <link rel="stylesheet" href="../../dist/internal/themes/css/cartodb.css" />
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
+    <!-- Include cartodb.js Library -->
+    <script src="../../dist/internal/cartodb.uncompressed.js"></script>
+    <!-- Custom Map styles  -->
+    <style>
+        html,
+        body,
+        #map {
+            font-family: "Open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            background: #162945;
+            position: relative;
+        }
+    </style>
+    <style>
+        #map {
+            height: calc(100% - 55px);
+        }
+
+        nav {
+            padding: 15px;
+            display: flex;
+            flex-direction: row;
+            background: white;
+            color: #162945;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        input {
+            background: none;
+            border: none;
+        }
+
+        button {
+            color: #FFF;
+            padding: 5px 10px;
+            background-color: #1785FB;
+            border-radius: 3px;
+        }
+        .CDB-OverlayContainer{
+            z-index: 999;
+        }
+    </style>
+    <script>
+        function loadVizJson(name) {
+            let url = 'viz/' + name;
+            fetch(url)
+                .then(data => data.json())
+                .then(vizjson => {
+                    cartodb.createVis('map', vizjson)
+                        .done(console.log)
+                        .error(console.error);
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <nav>
+        <input list="examples" type="text" name="url" onchange="loadVizJson(document.querySelector('input').value)">
+        <datalist id="examples">
+            <option value="000.json" />
+            <option value="001.json" />
+            <option value="002.json" />
+            <option value="003.json" />
+        </datalist>
+        <button onclick="loadVizJson(document.querySelector('input').value)" type="button">LOAD VIZ</button>
+    </nav>
+    <div id="map"></div>
+</body>
+
+</html>

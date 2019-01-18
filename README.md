@@ -61,3 +61,4 @@ CARTO works in any modern browser, but if you want more info:
 ![Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/39.3.0/archive/chrome_12-48/chrome_12-48_48x48.png) | ![Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/39.3.0/archive/firefox_1.5-3/firefox_1.5-3_48x48.png) | ![IE](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/39.3.0/edge-tile/edge-tile_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/39.3.0/opera/opera_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/39.3.0/safari/safari_48x48.png)
 --- | --- | --- | --- | --- |
 31+ ✔ | 38+ ✔ | 11+ ✔ | 31+ ✔ | 8+ ✔ |
+

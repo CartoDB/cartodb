@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Widgets error handling | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray">
+    <div class="dataview">
+      <ul>
+        <li>
+          <h2 class"h2">Column</h2>
+          <input id="column" type="text" value="pop_max" class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class"h2">Operation</h2>
+          <select id="operation" class="select">
+            <option value="count">COUNT</option>
+            <option value="sum">SUM</option>
+            <option value="avg">AVG</option>
+            <option value="max">MAX</option>
+            <option value="min">MIN</option>
+          </select>
+        </li>
+      </ul>
+      <button onclick="applyDataviewChanges()" class="button open-sans text-blue"><b>Apply</b></button>
+      <button onclick="provokeError()" class="button button-error open-sans text-red"><b>Provoke error</b></button>
+      <pre class="code" id="data"></pre>
+    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Status and error handling</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Manage the status and erros in dataviews.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Apply submits the form. Provoke error sends a wrong column.</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset(`
+        ne_10m_populated_places_simple
+      `);
+
+      const formulaDataview = new carto.dataview.Formula(source, 'pop_max', {
+        operation: carto.operation.COUNT
+      });
+
+      let data;
+
+      formulaDataview.on('dataChanged', newData => {
+        data = JSON.stringify(newData, null, 4);
+        setText(data);
+      });
+
+      formulaDataview.on('error', error => {
+        setText(error.message);
+      });
+
+      formulaDataview.on('statusChanged', status => {
+        if (status === carto.dataview.status.LOADING) {
+          setText('Loading...');
+        } else if (status === carto.dataview.status.LOADED && data) {
+          setText(data);
+        }
+      });
+
+      client.addDataview(formulaDataview);
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const operation = document.getElementById('operation').value;
+
+        formulaDataview.setColumn(column);
+        formulaDataview.setOperation(operation);
+      }
+
+      function provokeError () {
+        formulaDataview.setColumn('wrongcolumn');
+      }
+
+      function setText (text) {
+        document.getElementById('data').innerHTML = text;
+      }
+    </script>
+  </body>
+</html>

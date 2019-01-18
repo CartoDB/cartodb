@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Examples | CARTO</title>
+  <link type="text/css" rel="stylesheet" href="../../docs/v4/styles/jsdoc-default.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+  <h1 class="page-title">Examples</h1>
+  <div id="container" style="margin-left:48px;"></div>
+  <h4 style="margin-left:30px">CDN:<a href="../dist/public/carto.js"> ../dist/public/carto.js</a></h4>
+  <script>
+    $(function () {
+      $.getJSON('./examples.json').done(function(data) {
+        renderCategories(data.categories);
+      });
+
+      function renderCategories(categories) {
+        var $container = $('#container');
+
+        categories.forEach(function (category) {
+          const $category = $(`<h2>${category.title}</h2>`);
+          const $samples = $(`<ul></ul>`);
+          if (category.samples) {
+            category.samples.forEach(function (sample) {
+              let link = ''
+              if (typeof sample.file === 'string') {
+                link = `(<a href="${sample.file}">Link</a>)`;
+              } else {
+                link = `(<a href="${sample.file.leaflet}">Leaflet</a> | <a href="${sample.file.gmaps}">Google Maps</a>)`;
+              }
+              const $sample = $(`<li><h3>${sample.title} <span style="font-size:0.8em;">${link}</span></h3></li>`);
+              $samples.append($sample);
+            });
+          }
+          $container.append($category);
+          $container.append($samples);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

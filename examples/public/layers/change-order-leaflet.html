@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Change order | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Move the layers</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Update the order of your layers.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Click to move countries layer to&nbsp;front/back</p>
+          </section>
+          <div id="controls">
+            <ul>
+              <li onclick="bringToBack()">
+                <input type="radio" name="style" id="bringToBack">
+                <label for="bringToBack">Bring to back</label>
+              </li>
+              <li onclick="bringToFront()">
+                <input type="radio" name="style" checked id="bringToFront">
+                <label for="bringToFront">Bring to front</label>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const spainCitiesSource = new carto.source.Dataset('ne_10m_populated_places_simple');
+      const spainCitiesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const spainCitiesLayer = new carto.layer.Layer(spainCitiesSource, spainCitiesStyle);
+
+      const europeCountriesSource = new carto.source.Dataset('ne_adm0_europe');
+      const europeCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+          polygon-fill: #826DBA;
+          polygon-opacity: 0.8;
+          ::outline {
+            line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 0.8;
+          }
+        }
+      `);
+      const europeCountriesLayer = new carto.layer.Layer(europeCountriesSource, europeCountriesStyle);
+
+      client.addLayers([europeCountriesLayer, spainCitiesLayer]);
+      client.getLeafletLayer().addTo(map);
+
+      function bringToBack() {
+        spainCitiesLayer.bringToBack();
+        // or
+        // spainCitiesLayer.setOrder(0);
+        // or
+        // client.moveLayer(spainCitiesLayer, 0);
+      }
+
+      function bringToFront() {
+        spainCitiesLayer.bringToFront();
+        // or
+        // spainCitiesLayer.setOrder(1);
+        // or
+        // client.moveLayer(spainCitiesLayer, 1);
+      }
+    </script>
+  </body>
+</html>

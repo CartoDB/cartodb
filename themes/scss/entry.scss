@@ -1,0 +1,29 @@
+// Entry point
+// ----------------------------------------------
+
+// Variables and functions
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+@import 'cdb-utilities/mixins';
+
+// Infowindow
+@import 'infowindow/themes/custom';
+@import 'infowindow/themes/dark';
+@import 'infowindow/themes/light';
+@import 'infowindow/cartodb-infowindow-default';
+@import 'infowindow/cartodb-infowindow-legacy'; // TODO: remove when deprecate v3
+
+// Map
+@import 'map/map';
+@import 'map/attributions';
+@import 'map/overlays';
+@import 'map/limits';
+@import 'map/cartodb-map-light'; // TO BE REVIEWED
+
+// Tooltip
+@import 'tooltip/themes/dark';
+@import 'tooltip/themes/light';
+@import 'tooltip/cartodb-tooltip-default';
+
+// Vendor
+@import 'vendor/leaflet';

@@ -1,0 +1,245 @@
+{
+  "main": {
+    "file": {
+      "leaflet": "public/layers/change-order-leaflet.html",
+      "gmaps": "public/layers/change-order-gmaps.html"
+    }
+  },
+  "categories": [
+    {
+      "title": "Basics",
+      "samples": [
+        {
+          "title": "Add a layer",
+          "desc": "Add one CARTO layer to your map",
+          "file": {
+            "leaflet": "public/layers/single-layer-leaflet.html",
+            "gmaps": "public/layers/single-layer-gmaps.html"
+          }
+        },
+        {
+          "title": "Add more layers",
+          "desc": "Add multiple CARTO layers to your map",
+          "file": {
+            "leaflet": "public/layers/multilayer-leaflet.html",
+            "gmaps": "public/layers/multilayer-gmaps.html"
+          }
+        },
+        {
+          "title": "Change the source",
+          "desc": "Update the source of your layers",
+          "file": {
+            "leaflet": "public/layers/change-source-leaflet.html",
+            "gmaps": "public/layers/change-source-gmaps.html"
+          }
+        },
+        {
+          "title": "Change the style",
+          "desc": "Update the style of your layers",
+          "file": {
+            "leaflet": "public/layers/change-style-leaflet.html",
+            "gmaps": "public/layers/change-style-gmaps.html"
+          }
+        },
+        {
+          "title": "Move the layers",
+          "desc": "Update the order of your layers",
+          "file": {
+            "leaflet": "public/layers/change-order-leaflet.html",
+            "gmaps": "public/layers/change-order-gmaps.html"
+          }
+        },
+        {
+          "title": "Server tile aggregation",
+          "desc": "Apply smart backend aggregation",
+          "file": {
+            "leaflet": "public/layers/layer-with-aggregation-leaflet.html",
+            "gmaps": "public/layers/layer-with-aggregation-gmaps.html"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Interactivity",
+      "samples": [
+        {
+          "title": "Detect feature click",
+          "desc": "Interact with the features on the click event",
+          "file": {
+            "leaflet": "public/layers/feature-click-leaflet.html",
+            "gmaps": "public/layers/feature-click-gmaps.html"
+          }
+        },
+        {
+          "title": "Detect feature over/out",
+          "desc": "Interact with the features on the over/out events",
+          "file": {
+            "leaflet": "public/layers/feature-over-out-leaflet.html",
+            "gmaps": "public/layers/feature-over-out-gmaps.html"
+          }
+        },
+        {
+          "title": "Change the feature columns",
+          "desc": "Change the columns returned in the feature event",
+          "file": {
+            "leaflet": "public/layers/change-feature-columns-leaflet.html",
+            "gmaps": "public/layers/change-feature-columns-gmaps.html"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Widgets",
+      "samples": [
+        {
+          "title": "Formula widget",
+          "desc": "Create a widget with the formula dataview",
+          "file": "public/dataviews/formula.html"
+        },
+        {
+          "title": "Category widget",
+          "desc": "Create a widget with the category dataview",
+          "file": "public/dataviews/category.html"
+        },
+        {
+          "title": "Histogram widget",
+          "desc": "Create a widget with the histogram dataview",
+          "file": "public/dataviews/histogram.html"
+        },
+        {
+          "title": "Time Series widget",
+          "desc": "Create a widget with the time series dataview",
+          "file": "public/dataviews/time-series.html"
+        },
+        {
+          "title": "Bounding Box filter",
+          "desc": "Apply a map bounding box filter to the widgets",
+          "file": {
+            "leaflet": "public/filters/bounding-box-leaflet.html",
+            "gmaps": "public/filters/bounding-box-gmaps.html"
+          }
+        },
+        {
+          "title": "Status and error handling",
+          "desc": "Manage the status and erros in dataviews",
+          "file": "public/dataviews/error-handling.html"
+        }
+      ]
+    },
+    {
+      "title": "Filters",
+      "samples": [
+        {
+          "title": "Category Filter",
+          "desc": "Create a Category filter with checkbox selectors",
+          "file": "public/filters/category-filter.html"
+        },
+        {
+          "title": "Range Filter",
+          "desc": "Create a Range filter with a range slider",
+          "file": "public/filters/range-filter.html"
+        },
+        {
+          "title": "AND Filter",
+          "desc": "Apply an AND filter to combine multiple filters",
+          "file": "public/filters/and-filter.html"
+        },
+        {
+          "title": "Complex Filter",
+          "desc": "Apply several combined filters to a dataset",
+          "file": "public/filters/complex-filter.html"
+        }
+      ]
+    },
+    {
+      "title": "Misc",
+      "samples": [
+        {
+          "title": "Guide",
+          "desc": "Full reference guide example",
+          "file": {
+            "leaflet": "public/misc/guide-leaflet.html",
+            "gmaps": "public/misc/guide-gmaps.html"
+          }
+        },
+        {
+          "title": "Pop-Ups",
+          "desc": "Create pop-up information windows and interact with your map",
+          "file": {
+            "leaflet": "public/misc/popups-leaflet.html",
+            "gmaps": "public/misc/popups-gmaps.html"
+          }
+        },
+        {
+          "title": "Pop-Ups with embed videos",
+          "desc": "Create pop-up information windows with embed videos.",
+          "file": {
+            "leaflet": "public/misc/popups-video-leaflet.html",
+            "gmaps": "public/misc/popups-video-gmaps.html"
+          }
+        },
+        {
+          "title": "Legends",
+          "desc": "Create dynamic legends",
+          "file": {
+            "leaflet": "public/misc/legends-leaflet.html",
+            "gmaps": "public/misc/legends-gmaps.html"
+          }
+        },
+        {
+          "title": "Most/less populated places",
+          "desc": "Filter the 20 most/less populated places in the world",
+          "file": {
+            "leaflet": "public/misc/populated-places-leaflet.html",
+            "gmaps": "public/misc/populated-places-gmaps.html"
+          }
+        },
+        {
+          "title": "Edit SQL & CartoCSS",
+          "desc": "Edit manually the SQL query and the CartoCSS style",
+          "file": {
+            "leaflet": "public/misc/edit-sql-cartocss-leaflet.html",
+            "gmaps": "public/misc/edit-sql-cartocss-gmaps.html"
+          }
+        },
+        {
+          "title": "Error handling",
+          "desc": "Handle common errors in maps",
+          "file": {
+            "leaflet": "public/misc/error-handling-leaflet.html",
+            "gmaps": "public/misc/error-handling-gmaps.html"
+          }
+        },
+        {
+          "title": "Hexagon aggregation",
+          "desc": "Aggregate point data into hexagon grid",
+          "file": {
+            "leaflet": "public/misc/hexagon-aggregation-leaflet.html",
+            "gmaps": "public/misc/hexagon-aggregation-gmaps.html"
+          }
+        },
+        {
+          "title": "Filter data using drawing tools",
+          "desc": "Filter data based on a drawn circle",
+          "file": {
+            "leaflet": "public/misc/filter-data-map-leaflet.html",
+            "gmaps": "public/misc/filter-data-map-gmaps.html"
+          }
+        },
+        {
+          "title": "Dropdown menu with data from CARTO dataset",
+          "desc": "Look for data within your dataset using dropdown menu.",
+          "file": {
+            "leaflet": "public/misc/custom-search-dataset-leaflet.html",
+            "gmaps": "public/misc/custom-search-dataset-gmaps.html"
+          }
+        },
+        {
+          "title": "Storymap using CARTO.js and Storymap.js",
+          "desc": "Create a storytelling map using Storymap.js",
+          "file": "public/misc/storymap-leaflet.html"
+        }
+      ]
+    }
+  ]
+}

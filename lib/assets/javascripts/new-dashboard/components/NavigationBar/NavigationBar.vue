@@ -1,13 +1,13 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active" :staticRoute="'/dashboard'">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active" staticRoute="/dashboard">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Home</span>
       </router-link>
-      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active" :staticRoute="'/dashboard/maps'">
+      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active" staticRoute="/dashboard/maps">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/maps.svg" />
         </span>
@@ -19,7 +19,7 @@
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span>
       </router-link> -->
-      <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active" :staticRoute="'/dashboard/datasets'">
+      <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active" staticRoute="/dashboard/datasets">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>

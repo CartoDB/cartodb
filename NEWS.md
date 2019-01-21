@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
+- Update CARTO.js to v4.1.10
 
 4.24.0 (2019-01-16)
 -------------------

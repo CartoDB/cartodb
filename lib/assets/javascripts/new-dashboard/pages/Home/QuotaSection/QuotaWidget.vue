@@ -46,7 +46,8 @@ export default {
   },
   computed: {
     remainingQuota () {
-      return this.availableQuota - this.usedQuota;
+      const remainingQuota = this.availableQuota - this.usedQuota;
+      return Math.max(0, remainingQuota);
     },
     getUsedPercent () {
       if (this.availableQuota === 0) {

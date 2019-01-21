@@ -73,7 +73,7 @@ export default {
       if (this.$router) {
         this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
       } else {
-        window.location.href = this.baseUrl + '/dashboard/search/tag/' + this.searchTerm.substring(1);
+        window.location.href = `${this.baseUrl}/dashboard/search/tag/${this.searchTerm.substring(1)}`;
       }
     },
 
@@ -81,7 +81,7 @@ export default {
       if (this.$router) {
         this.$router.push({ name: 'search', params: { query: this.searchTerm } });
       } else {
-        window.location = this.baseUrl + '/dashboard/search/' + this.searchTerm;
+        window.location = `${this.baseUrl}/dashboard/search/${this.searchTerm}`;
       }
     },
 

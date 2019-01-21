@@ -35,7 +35,7 @@ module.exports = {
 
   header: [
     rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
-    rootDir('assets/stylesheets/new-dashboard/bundles/_header.scss')
+    rootDir('assets/stylesheets/new-dashboard/bundles/header.scss')
   ],
 
   public_table_new: [

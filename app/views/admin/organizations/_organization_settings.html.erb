@@ -36,7 +36,9 @@
     <%= stylesheet_link_tag 'organization.css', :media => 'all' %>
 <% end %>
 
-<%= render :partial => 'shared/flash_message' %>
+<div class="FlashMessage-container">
+    <%= render :partial => 'shared/flash_message' %>
+</div>
 
 <div class="CDB-Text FormAccount-Section u-inner">
   <%= render partial: 'admin/shared/pages_subheader' %>

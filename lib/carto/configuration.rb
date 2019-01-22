@@ -70,16 +70,11 @@ module Carto
     end
 
     def geocoder_config
-      provider = Cartodb.get_config(:geocoder, 'search_bar_provider')
-      provider_configuration = Cartodb.get_config(:geocoder, provider)
-
-      geocoder_config = { provider: provider }
-
-      if provider_configuration.present?
-        geocoder_config[provider] = Cartodb.config[:geocoder][provider]
-      end
-
-      geocoder_config
+      {
+        provider: Cartodb.get_config(:geocoder, 'provider'),
+        mapbox: Cartodb.get_config(:geocoder, 'mapbox'),
+        tomtom: Cartodb.get_config(:geocoder, 'tomtom')
+      }
     end
 
     # Make some methods available. Remember that this sets methods as private.

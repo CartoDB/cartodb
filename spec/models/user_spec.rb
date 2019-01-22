@@ -2758,7 +2758,6 @@ describe User do
 
   describe '#rate limits' do
     before :all do
-      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = create_account_type_fg('FREE')
       @account_type_pro = create_account_type_fg('PRO')
       @account_type_org = create_account_type_fg('ORGANIZATION USER')
@@ -2797,23 +2796,12 @@ describe User do
       @rate_limits_pro.destroy unless @rate_limits_pro.nil?
     end
 
-    before :each do
-      unless FeatureFlag.where(name: 'limits_v2').first.present?
-        @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      end
-    end
-
-    after :each do
-      @limits_feature_flag.destroy if @limits_feature_flag.exists?
-    end
-
-    it 'does not create rate limits if feature flag is not enabled' do
-      @limits_feature_flag.destroy
+    it 'does create rate limits' do
       @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
-      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
-      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
     end
 
     it 'creates rate limits from user account type' do

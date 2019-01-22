@@ -8,9 +8,9 @@
       "resolved": "https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.0.0.tgz"
     },
     "@babel/runtime": {
-      "version": "7.2.0",
+      "version": "7.3.1",
       "from": "@babel/runtime@>=7.2.0 <8.0.0",
-      "resolved": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.2.0.tgz",
+      "resolved": "https://registry.npmjs.org/@babel/runtime/-/runtime-7.3.1.tgz",
       "dependencies": {
         "regenerator-runtime": {
           "version": "0.12.1",
@@ -21,7 +21,7 @@
     },
     "@carto/carto.js": {
       "version": "4.1.10",
-      "from": "@carto/carto.js@>=4.1.3 <5.0.0",
+      "from": "@carto/carto.js@>=4.1.10 <5.0.0",
       "resolved": "https://registry.npmjs.org/@carto/carto.js/-/carto.js-4.1.10.tgz"
     },
     "@carto/zera": {
@@ -1660,9 +1660,9 @@
       }
     },
     "internal-carto.js": {
-      "version": "4.1.10-0",
-      "from": "cartodb/carto.js#2223-searchbox-provider",
-      "resolved": "git://github.com/cartodb/carto.js.git#690629f535570b6e381970ab400919b114b6495d"
+      "version": "4.1.11-0",
+      "from": "cartodb/carto.js#v4.1.11-0",
+      "resolved": "git://github.com/cartodb/carto.js.git#f2ec31392b7806b170f58c042336ea8450734d4f"
     },
     "interpret": {
       "version": "1.2.0",
@@ -2623,9 +2623,9 @@
       "resolved": "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz"
     },
     "resolve": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "from": "resolve@>=1.1.4 <2.0.0",
-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.9.0.tgz"
+      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.10.0.tgz"
     },
     "resolve-cwd": {
       "version": "2.0.0",

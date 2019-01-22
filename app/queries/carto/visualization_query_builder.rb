@@ -228,7 +228,14 @@ class Carto::VisualizationQueryBuilder
   def with_associations(query, filtering_params)
     query = query.includes(@include_associations)
     query = query.eager_load(@eager_load_associations)
-    # We dont have to include favorites if we're going to filter by them
+    # We have to include favorites if we're not filtering by them
+    # Why? Both of them include a join with the likes table: favorited uses
+    # a left-join one and the filter will use an inner-join.
+    # So what is the problem? It'll fail because is not possible to include two
+    # joins for the same table
+    # And what is the difference?
+    #  - Filtering leaves only the favorited/liked visualizations by the user
+    #  - With favorited we add the like/favorite data to the visualization information
     query = with_favorited(query) unless filtering_params[:liked_by_user_id]
     with_dependent_visualization_count(query)
   end

@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Remove support for likes in favor of having favorites [#14618](https://github.com/CartoDB/cartodb/pull/14618))
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))

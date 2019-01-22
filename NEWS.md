@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Limits V2: removing feature flag
 
 ### Features
 - None yet

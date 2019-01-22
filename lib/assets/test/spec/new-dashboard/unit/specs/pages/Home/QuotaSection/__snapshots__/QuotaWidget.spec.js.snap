@@ -13,9 +13,9 @@ exports[`QuotaWidget.vue should render correct contents 1`] = `
     </div>
   </div>
   <div class="quota-data">
-    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1194 Gb</span></div>
-    <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">40 Gb</span></div>
-    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1234 Gb</span></div>
+    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1194 GB</span></div>
+    <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">40 GB</span></div>
+    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1234 GB</span></div>
     <div class="quota-help cell--small"><a href=""><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
   </div>
 </div>

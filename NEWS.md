@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Ability to customize emails for the organization (#14627)
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))

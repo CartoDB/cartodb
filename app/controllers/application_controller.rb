@@ -28,6 +28,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?
@@ -196,7 +197,7 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return unless (request.path =~ %r{^\/(lockout|login|logout|unauthenticated|multifactor_authentication)}).nil?
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
 
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
@@ -284,7 +285,7 @@ class ApplicationController < ActionController::Base
   def redirect_or_forbidden(path, error)
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, path)
+        redirect_to CartoDB.url(self, path)
       end
       format.json do
         render(json: { error: error }, status: 403)

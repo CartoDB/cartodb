@@ -460,76 +460,84 @@ describe Carto::Visualization do
     end
 
     describe '#add_like_from' do
-      it 'registers the like action from a user' do
-        user_id = UUIDTools::UUID.timestamp_create.to_s
+      it 'registers the like action from a user with permissions' do
         expect(@visualization.likes.count).to eq(0)
 
-        @visualization.add_like_from(user_id)
+        @visualization.add_like_from(@carto_user)
 
         expect(@visualization.likes.count).to eq(1)
-        expect(@visualization.liked_by?(user_id)).to be_true
+        expect(@visualization.liked_by?(@carto_user)).to be_true
+      end
+
+      it 'fail if a user try to favorite a visualization without permissions' do
+        user_id = UUIDTools::UUID.timestamp_create.to_s
+        user_mock = mock
+        user_mock.stubs(:id).returns(user_id)
+        expect(@visualization.likes.count).to eq(0)
+
+        expect {
+          @visualization.add_like_from(user_mock)
+        }.to raise_error Carto::Visualization::UnauthorizedLikeError
       end
 
       it 'raises an error if same user tries to like again the same content' do
         user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user_mock = mock
+        user_mock.stubs(:id).returns(user_id)
         user2_id = UUIDTools::UUID.timestamp_create.to_s
+        user_mock_2 = mock
+        user_mock_2.stubs(:id).returns(user2_id)
 
-        @visualization.add_like_from(user_id)
+        @visualization.add_like_from(@carto_user)
 
         expect(@visualization.likes.count).to eq(1)
-        expect(@visualization.liked_by?(user_id)).to be_true
+        expect(@visualization.liked_by?(@carto_user)).to be_true
 
         expect {
-          @visualization.add_like_from(user_id)
+          @visualization.add_like_from(@carto_user)
         }.to raise_error Carto::Visualization::AlreadyLikedError
         expect(@visualization.likes.count).to eq(1)
-
-        @visualization.add_like_from(user2_id)
-        expect(@visualization.likes.count).to eq(2)
       end
     end
 
     describe '#remove_like_from' do
       it 'removes an existent like from a user' do
-        user_id = UUIDTools::UUID.timestamp_create.to_s
-
-        @visualization.add_like_from(user_id)
+        @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
 
-        @visualization.remove_like_from(user_id)
+        @visualization.remove_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(0)
-        expect(@visualization.liked_by?(user_id)).to be_false
+        expect(@visualization.liked_by?(@carto_user)).to be_false
       end
 
-      it 'does not return an error if I try to remove a non-existent like' do
-        user_id = UUIDTools::UUID.timestamp_create.to_s
-        user2_id = UUIDTools::UUID.timestamp_create.to_s
+      it 'raises an error if you try to remove a favorite in a visualization you dont have permission' do
+        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user_mock = mock
+        user_mock.stubs(:id).returns(user_id)
 
-        @visualization.add_like_from(user_id)
+        @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
 
-        @visualization.remove_like_from(user2_id)
+        expect {
+          @visualization.remove_like_from(user_mock)
+        }.to raise_error Carto::Visualization::UnauthorizedLikeError
         expect(@visualization.likes.count).to eq(1)
       end
     end
 
     describe '#liked_by?' do
       it 'returns true when the user liked the visualization' do
-        user_id = UUIDTools::UUID.timestamp_create.to_s
-
-        @visualization.add_like_from(user_id)
-        expect(@visualization.liked_by?(user_id)).to be_true
+        @visualization.add_like_from(@carto_user)
+        expect(@visualization.liked_by?(@carto_user)).to be_true
       end
 
       it 'returns false when checking a user without likes on the visualization' do
-        user_id = UUIDTools::UUID.timestamp_create.to_s
-        user2_id = UUIDTools::UUID.timestamp_create.to_s
+        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user_mock = mock
+        user_mock.stubs(:id).returns(user_id)
 
-        @visualization.add_like_from(user_id)
-        expect(@visualization.liked_by?(user2_id)).to be_false
-
-        @visualization.remove_like_from(user_id)
-        expect(@visualization.liked_by?(user_id)).to be_false
+        @visualization.add_like_from(@carto_user)
+        expect(@visualization.liked_by?(user_mock)).to be_false
       end
     end
   end

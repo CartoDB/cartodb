@@ -50,7 +50,7 @@ module CartoDB
         poro.merge!(synchronization: synchronization)
         poro.merge!(related) if options.fetch(:related, true)
         poro.merge!(children: children)
-        poro.merge!(liked: visualization.liked_by?(@viewing_user.id)) unless @viewing_user.nil?
+        poro.merge!(liked: visualization.liked_by?(@viewing_user)) unless @viewing_user.nil?
         poro
       end
 

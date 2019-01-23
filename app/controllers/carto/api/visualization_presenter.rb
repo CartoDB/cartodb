@@ -61,7 +61,7 @@ module Carto
           end
         end
 
-        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
+        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
 

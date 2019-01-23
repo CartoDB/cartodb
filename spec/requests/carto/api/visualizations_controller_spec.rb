@@ -736,7 +736,7 @@ describe Carto::Api::VisualizationsController do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
 
           expect(last_response.status).to eq(400)
-          expect(last_response.body).to eq("You've already favorited this visualization")
+          expect(JSON.parse(last_response.body)['text']).to eq("You've already favorited this visualization")
         end
       end
 
@@ -752,8 +752,7 @@ describe Carto::Api::VisualizationsController do
         end
 
         it 'removes a like from a given visualization' do
-          @vis.add_like_from(@carto_user1.id)
-          @vis.add_like_from(@carto_user2.id)
+          @vis.add_like_from(@carto_user1)
 
           delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
 
@@ -1496,7 +1495,6 @@ describe Carto::Api::VisualizationsController do
               url = api_v1_visualizations_show_url(
                 id: @visualization.id,
                 show_liked: true,
-                show_likes: true,
                 show_permission: true,
                 show_auth_tokens: true,
                 show_stats: true,
@@ -1647,7 +1645,6 @@ describe Carto::Api::VisualizationsController do
                          fetch_related_canonical_visualizations: true,
                          fetch_user: true,
                          show_liked: true,
-                         show_likes: true,
                          show_permission: true,
                          show_stats: true do |response|
                   response.status.should == 200
@@ -2801,7 +2798,7 @@ describe Carto::Api::VisualizationsController do
       it 'orders by favorited' do
         visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
         visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
-        visualization_a.add_like_from(@user.id)
+        visualization_a.add_like_from(@user)
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', with_dependent_visualizations: 10,
                                             order: 'favorited', order_direction: 'desc'), {}, @headers

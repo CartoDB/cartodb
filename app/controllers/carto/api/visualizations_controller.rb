@@ -114,32 +114,22 @@ module Carto
       end
 
       def add_like
-        current_viewer_id = current_viewer.id
-        unless @visualization.has_read_permission?(current_viewer)
-          render(text: "You don't have enough permissions to favorite this visualization", status: 403)
-          return
-        end
-
-        @visualization.add_like_from(current_viewer_id)
-
+        @visualization.add_like_from(current_viewer)
         render_jsonp(
           id: @visualization.id,
-          liked: @visualization.liked_by?(current_viewer_id)
+          liked: @visualization.liked_by?(current_viewer)
         )
+      rescue Carto::Visualization::UnauthorizedLikeError
+        render_jsonp({text: "You don't have enough permissions to unfavorite this visualization"}, 403)
       rescue Carto::Visualization::AlreadyLikedError
-        render(text: "You've already favorited this visualization", status: 400)
+        render_jsonp({text: "You've already favorited this visualization"}, 400)
       end
 
       def remove_like
-        current_viewer_id = current_viewer.id
-        unless @visualization.has_read_permission?(current_viewer)
-          render(text: "You don't have enough permissions to unfavorite this visualization", status: 403)
-          return
-        end
-
-        @visualization.remove_like_from(current_viewer_id)
-
+        @visualization.remove_like_from(current_viewer)
         render_jsonp(id: @visualization.id, liked: false)
+      rescue Carto::Visualization::UnauthorizedLikeError
+        render_jsonp({text: "You don't have enough permissions to unfavorite this visualization"}, 403)
       end
 
       def notify_watching

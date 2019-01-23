@@ -199,24 +199,32 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def liked_by?(user_id)
-    likes_by_user_id(user_id).any?
+  def liked_by?(user)
+    likes_by_user(user).any?
   end
 
-  def likes_by_user_id(user_id)
-    likes.where(actor: user_id)
+  def likes_by_user(user)
+    likes.where(actor: user.id)
   end
 
-  def add_like_from(user_id)
-    likes.create!(actor: user_id)
+  def add_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    likes.create!(actor: user.id)
 
     self
   rescue ActiveRecord::RecordNotUnique
     raise AlreadyLikedError
   end
 
-  def remove_like_from(user_id)
-    item = likes.where(actor: user_id)
+  def remove_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    item = likes.where(actor: user.id)
     item.first.destroy unless item.first.nil?
 
     self
@@ -829,4 +837,5 @@ class Carto::Visualization < ActiveRecord::Base
 
   class WatcherError < CartoDB::BaseCartoDBError; end
   class AlreadyLikedError < StandardError; end
+  class UnauthorizedLikeError < StandardError; end
 end

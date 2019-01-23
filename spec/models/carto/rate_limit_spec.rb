@@ -7,7 +7,6 @@ describe Carto::RateLimit do
   include CartoDB::Factories
 
   before :each do
-    @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
     User.any_instance.stubs(:save_rate_limits).returns(true)
     @user = FactoryGirl.create(:valid_user)
     @rate_limit = Carto::RateLimit.create!(maps_anonymous: Carto::RateLimitValues.new([0, 1, 2]),
@@ -40,7 +39,6 @@ describe Carto::RateLimit do
     @user.destroy if @user
     @rate_limit.destroy if @rate_limit
     @rate_limit2.destroy if @rate_limit2
-    @limits_feature_flag.destroy
   end
 
   describe '#CRUD' do

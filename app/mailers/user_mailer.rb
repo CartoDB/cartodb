@@ -8,7 +8,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @organization = @user.organization
     @owner = @organization.owner
-    @subject = "You have been invited to CARTO organization '#{@organization.name}'"
+    @subject = "You have been invited to #{app_name} organization '#{@organization.name}'"
     base_url = CartoDB.base_url(@organization.name, @user.username)
 
     if @user.enable_account_token.nil?
@@ -30,7 +30,7 @@ class UserMailer < ActionMailer::Base
     visualization_username = @table_visualization.user.username
     path = CartoDB.path(self, 'public_tables_show_bis', id: "#{visualization_username}.#{@table_visualization.name}")
     @link = "#{CartoDB.base_url(organization.name, @user.username)}#{path}"
-    @subject = "#{visualization_username} has shared a CARTO dataset with you"
+    @subject = "#{visualization_username} has shared a #{app_name} dataset with you"
     mail to: @user.email, subject: @subject
   end
 
@@ -41,7 +41,7 @@ class UserMailer < ActionMailer::Base
     # This presenter has limited compatibility with old Visualization models
     visualization_presenter = Carto::Api::VisualizationPresenter.new(visualization, user, self)
     @link = visualization_presenter.privacy_aware_map_url
-    @subject = "#{@visualization.user.username} has shared a CARTO map with you"
+    @subject = "#{@visualization.user.username} has shared a #{app_name} map with you"
     mail to: @user.email, subject: @subject
   end
 
@@ -49,7 +49,7 @@ class UserMailer < ActionMailer::Base
     @table_visualization_name = table_visualization_name
     @table_visualization_owner_name = table_visualization_owner_name
     @user = user
-    @subject = "#{@table_visualization_owner_name} has stopped sharing a CARTO dataset with you"
+    @subject = "#{@table_visualization_owner_name} has stopped sharing a #{app_name} dataset with you"
     mail to: @user.email, subject: @subject
   end
 
@@ -57,7 +57,7 @@ class UserMailer < ActionMailer::Base
     @visualization_name = visualization_name
     @visualization_owner_name = visualization_owner_name
     @user = user
-    @subject = "#{@visualization_owner_name} has stopped sharing a CARTO map with you"
+    @subject = "#{@visualization_owner_name} has stopped sharing a #{app_name} map with you"
     mail to: @user.email, subject: @subject
   end
 
@@ -105,7 +105,7 @@ class UserMailer < ActionMailer::Base
   def password_reset(user)
     @user = user
     @organization = @user.organization
-    @subject = "Reset CARTO password"
+    @subject = "Reset #{app_name} password"
     base_url = CartoDB.base_url(@organization.try(:name))
     path = CartoDB.path(self, 'edit_password_reset', id: @user.password_reset_token)
     @password_reset_link = "#{base_url}#{path}"
@@ -123,6 +123,10 @@ class UserMailer < ActionMailer::Base
   def get_mail_tracker(tag)
     hubspot = Cartodb.get_config(:metrics, 'hubspot')
     hubspot["mailing_track"][tag] unless hubspot.nil? || !hubspot["mailing_track"].present?
+  end
+
+  def app_name
+    Cartodb.get_config(:mailer, 'template', 'app_name')
   end
 
 end

@@ -19,7 +19,7 @@
             <% if breadcrumb %>
               <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large">
                 <% if params[:controller] != "admin/visualizations" %>
-                  <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
+                  <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', user: current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
                 <% else %>
                   <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
                 <% end %>

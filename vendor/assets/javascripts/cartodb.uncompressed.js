@@ -1,6 +1,6 @@
-// cartodb.js version: 3.15.19
+// cartodb.js version: 3.15.20
 // uncompressed version: cartodb.uncompressed.js
-// sha: 887fbbc3a227fb349e314a95290ba9af92afaa8d
+// sha: 404bb1646014c3669373ca26093230641d5fef48
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;
@@ -25659,7 +25659,7 @@ if (typeof window !== 'undefined') {
 
     var cdb = root.cdb = {};
 
-    cdb.VERSION = "3.15.19";
+    cdb.VERSION = "3.15.20";
     cdb.DEBUG = false;
 
     cdb.CARTOCSS_VERSIONS = {
@@ -26876,7 +26876,9 @@ cdb.geo.geocoder.MAPBOX = {
       protocol = 'http:';
     }
 
-    $.getJSON(protocol + '//api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token, function (response) {
+    var requestUrl = protocol + '//api.mapbox.com/geocoding/v5/mapbox.places-permanent/' + encodeURIComponent(address) + '.json?access_token=' + this.keys.access_token;
+
+    $.getJSON(requestUrl, function (response) {
       callback(this._formatResponse(response));
     }.bind(this));
   },
@@ -26894,7 +26896,8 @@ cdb.geo.geocoder.MAPBOX = {
       title: rawResponse.features[0].text,
     }];
   }
-};/***** DEPRECATED *****/
+};
+/***** DEPRECATED *****/
 
 cdb.geo.geocoder.MAPZEN = {
   keys: {
@@ -27055,53 +27058,53 @@ cdb.geo.geocoder.TOMTOM = {
     var bestCandidate = rawResponse.results[0];
 
     return [{
-      boundingbox: _getBoundingBox(bestCandidate),
-      center: _getCenter(bestCandidate),
-      type: _getType(bestCandidate)
+      boundingbox: this._getBoundingBox(bestCandidate),
+      center: this._getCenter(bestCandidate),
+      type: this._getType(bestCandidate)
     }];
-  }
-};
+  },
 
-/**
- * TomTom returns { lon, lat } while we use [lat, lon]
- */
-function _getCenter(result) {
-  return [result.position.lat, result.position.lon];
-}
+  /**
+   * TomTom returns { lon, lat } while we use [lat, lon]
+   */
+  _getCenter: function (result) {
+    return [result.position.lat, result.position.lon];
+  },
 
-/**
- * Transform the feature type into a well known enum.
- */
-function _getType(result) {
-  var type = result.type;
+  /**
+   * Transform the feature type into a well known enum.
+   */
+  _getType: function (result) {
+    var type = result.type;
 
-  if (TYPES[type]) {
-    if (type === 'Geography' && result.entityType) {
-      type = type + ':' + result.entityType;
+    if (this.TYPES[type]) {
+      if (type === 'Geography' && result.entityType) {
+        type = type + ':' + result.entityType;
+      }
+      return this.TYPES[type];
     }
-    return TYPES[type];
+
+    return 'default';
+  },
+
+  /**
+   * Transform the feature bbox into a carto.js well known format.
+   */
+  _getBoundingBox: function (result) {
+    if (!result.viewport) {
+      return;
+    }
+    var upperLeft = result.viewport.topLeftPoint;
+    var bottomRight = result.viewport.btmRightPoint;
+
+    return {
+      south: bottomRight.lat,
+      west: upperLeft.lon,
+      north: upperLeft.lat,
+      east: bottomRight.lon
+    };
   }
-
-  return 'default';
-}
-
-/**
- * Transform the feature bbox into a carto.js well known format.
- */
-function _getBoundingBox(result) {
-  if (!result.viewport) {
-    return;
-  }
-  var upperLeft = result.viewport.topLeftPoint;
-  var bottomRight = result.viewport.btmRightPoint;
-
-  return {
-    south: bottomRight.lat,
-    west: upperLeft.lon,
-    north: upperLeft.lat,
-    east: bottomRight.lon
-  };
-}cdb.geo.geocoder.YAHOO = {
+};cdb.geo.geocoder.YAHOO = {
   keys: {
     app_id: 'nLQPTdTV34FB9L3yK2dCXydWXRv3ZKzyu_BdCSrmCBAM1HgGErsCyCbBbVP2Yg--'
   },

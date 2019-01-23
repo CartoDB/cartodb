@@ -755,6 +755,19 @@ describe SessionsController do
         expect_login
       end
 
+      it 'redirects to login and then to code verification when there is no session' do
+        get dashboard_url
+        follow_redirect!
+
+        login
+        post create_session_url(email: @user.username, password: @user.password)
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@user)
+        ApplicationController.any_instance.stubs(:multifactor_authentication_required?).returns(true)
+        follow_redirect!
+
+        request.path.should eq multifactor_authentication_verify_code_path
+      end
+
       it 'does not verify an invalid code' do
         login
 
@@ -892,6 +905,34 @@ describe SessionsController do
       end
     end
 
+    shared_examples_for 'organizational user' do
+      shared_examples_for 'organization custom view' do
+        it 'shows organization custom view' do
+          get multifactor_authentication_session_url
+
+          expect(response.body).to include(@organization.name)
+        end
+      end
+
+      context 'subdomainless' do
+        before(:each) do
+          stub_subdomainless
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+
+      context 'domainful' do
+        before(:each) do
+          stub_domainful(@organization.name)
+          login
+        end
+
+        include_examples 'organization custom view'
+      end
+    end
+
     describe 'as individual user' do
       before(:all) do
         @user = FactoryGirl.create(:carto_user_mfa)
@@ -921,6 +962,7 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org user' do
@@ -940,6 +982,7 @@ describe SessionsController do
       end
 
       it_behaves_like 'all users workflow'
+      it_behaves_like 'organizational user'
     end
 
     describe 'as org without user pass enabled' do

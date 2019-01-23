@@ -52,7 +52,7 @@ class Admin::ClientApplicationsController < Admin::AdminController
             else
               { success: "Your API key has been regenerated successfully" }
             end
-    redirect_to CartoDB.url(self, 'api_key_credentials', { type: 'api_key' }, current_user), flash: flash
+    redirect_to CartoDB.url(self, 'api_key_credentials', params: { type: 'api_key' }, user: current_user), flash: flash
   end
 
   def regenerate_oauth
@@ -60,8 +60,8 @@ class Admin::ClientApplicationsController < Admin::AdminController
     return if request.get?
     current_user.reset_client_application!
 
-    redirect_to CartoDB.url(self, 'oauth_credentials', {type: 'oauth'}, current_user),
-                :flash => {:success => "Your OAuth credentials have been updated successfully"}
+    redirect_to CartoDB.url(self, 'oauth_credentials', params: { type: 'oauth' }, user: current_user),
+                flash: { success: "Your OAuth credentials have been updated successfully" }
   end
 
   private

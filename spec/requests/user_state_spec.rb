@@ -1,12 +1,15 @@
 # encoding: utf-8
 
 require_relative '../spec_helper'
+require 'helpers/subdomainless_helper'
 include Warden::Test::Helpers
 include Carto::Factories::Visualizations
 
 def login(user)
   login_as(user, scope: user.username)
-  host! "#{user.username}.localhost.lan"
+  domain = user.organization ? user.organization.name : user.username
+  base_url = CartoDB.subdomainless_urls? ? "localhost.lan" : "#{domain}.localhost.lan"
+  host! base_url
 end
 
 def follow_redirects(limit = 10)
@@ -18,23 +21,27 @@ end
 describe "UserState" do
 
   before(:all) do
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'no_free_tier', restricted: false)
+    @organization = create_organization_with_owner
+    @org_account_type = create_account_type_fg('ORGANIZATION USER')
     @locked_user = FactoryGirl.create(:locked_user)
     @map, @table, @table_visualization, @visualization = create_full_builder_vis(@locked_user)
     @visualization.create_mapcap!
     @non_locked_user = FactoryGirl.create(:valid_user)
-    @dashboard_endpoints = ['/dashboard', '/dashboard/tables', '/dashboard/datasets', '/dashboard/visualizations',
-                            '/dashboard/maps'].freeze
     @public_user_endpoints = ['/me'].freeze
     @user_endpoints = ['/account', '/profile'].freeze
-    @tables_endpoints = ["/tables/#{@table.id}", "/tables/#{@table.id}/public",
-                         "/tables/#{@table.id}/embed_map"].freeze
+    @dashboard_endpoints = ['/dashboard', '/dashboard/tables', '/dashboard/datasets', '/dashboard/visualizations',
+                            '/dashboard/maps'].freeze
+    @tables_endpoints = ["/tables/#{@table.id}", "/tables/#{@table.id}/public", "/tables/#{@table.id}/embed_map"].freeze
     @viz_endpoints = ["/viz/#{@visualization.id}/public",
                       "/viz/#{@visualization.id}/embed_map", "/viz/#{@visualization.id}/public_map",
                       "/builder/#{@visualization.id}", "/builder/#{@visualization.id}/embed"].freeze
-    @public_api_endpoints = ["/api/v1/viz", "/api/v1/viz/#{@visualization.id}",
-                             "/api/v2/viz/#{@visualization.id}/viz",
-                             "/api/v3/me", "/api/v3/viz/#{@visualization.id}/viz"].freeze
+    @admin_endpoints = @public_user_endpoints + @user_endpoints + @dashboard_endpoints + @tables_endpoints +
+                       @viz_endpoints
+    @public_api_viz_endpoints = ["/api/v1/viz", "/api/v1/viz/#{@visualization.id}",
+                                 "/api/v2/viz/#{@visualization.id}/viz",
+                                 "/api/v3/viz/#{@visualization.id}/viz"].freeze
+    @public_api_me_endpoint = ["/api/v3/me"].freeze
+    @public_api_endpoints = @public_api_viz_endpoints + @public_api_me_endpoint
     @private_api_endpoints = ["/api/v1/tables/#{@table.id}", "/api/v1/tables/#{@table.id}/columns",
                               "/api/v1/imports", "/api/v1/users/#{@locked_user.id}/layers",
                               "/api/v1/synchronizations", "/api/v1/geocodings",
@@ -48,57 +55,164 @@ describe "UserState" do
     @non_locked_user.destroy
   end
 
-  describe '#locked user' do
-    it 'owner accessing their resources' do
-      login(@locked_user)
-      @dashboard_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 302
-        follow_redirect!
-        request.path.should == '/lockout'
-        response.status.should == 200
+  context 'locked state' do
+    shared_examples "locked user" do
+      it 'redirects to lockout for admin endpoints' do
+        @admin_endpoints.each do |endpoint|
+          login(@locked_user)
+          endpoint = "/user/#{@locked_user.username}/#{endpoint}" unless host.include?(@locked_user.username)
+
+          get endpoint, {}, @headers
+
+          response.status.should == 302
+          follow_redirects
+
+          request.path.should include '/lockout'
+          response.status.should == 200
+        end
       end
-      @user_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 302
-        follow_redirect!
-        request.path.should == '/lockout'
-        response.status.should == 200
+
+      it 'returns 403 for private api endpoints' do
+        @private_api_endpoints.each do |endpoint|
+          login(@locked_user)
+          endpoint = "/user/#{@locked_user.username}/#{endpoint}" unless host.include?(@locked_user.username)
+
+          get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
+
+          response.status.should == 403
+        end
       end
-      @public_user_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 302
-        follow_redirect!
-        request.path.should == '/lockout'
-        response.status.should == 200
+
+      it 'returns 403 for public api viz endpoints' do
+        @public_api_viz_endpoints.each do |endpoint|
+          login(@locked_user)
+          endpoint = "/user/#{@locked_user.username}/#{endpoint}" unless host.include?(@locked_user.username)
+
+          get endpoint, {}, @api_headers
+
+          response.status.should == 403
+        end
       end
-      @tables_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 302
-        follow_redirect!
-        request.path.should == '/lockout'
-        response.status.should == 200
+
+      it 'returns 200 for public api me endpoint' do
+        @public_api_me_endpoint.each do |endpoint|
+          login(@locked_user)
+
+          get endpoint, {}, @api_headers
+
+          request.path.should == endpoint
+          response.status.should == 200
+        end
       end
-      @viz_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 302
-        follow_redirect!
-        request.path.should == '/lockout'
-        response.status.should == 200
+    end
+
+    context 'with subdomainless' do
+      before(:each) do
+        stub_subdomainless
       end
-      @private_api_endpoints.each do |endpoint|
-        get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
-        request.path == endpoint
-        response.status.should == 403
+
+      context 'organizational user' do
+        before(:each) do
+          @locked_user.organization = @organization
+          @locked_user.account_type = @org_account_type
+          @locked_user.save
+        end
+
+        after(:each) do
+          @locked_user.organization = nil
+          @locked_user.account_type = 'FREE'
+          @locked_user.save
+        end
+
+        it_behaves_like 'locked user'
       end
-      @public_api_endpoints.each do |endpoint|
-        get endpoint, {}, @api_headers
-        request.path == endpoint
-        response.status.should == if endpoint == "/api/v3/me"
-                                    200
-                                  else
-                                    403
-                                  end
+
+      context 'regular user' do
+        it_behaves_like 'locked user'
+      end
+    end
+
+    context 'with domainful' do
+      context 'organizational user' do
+        before(:each) do
+          stub_domainful(@organization.name)
+        end
+
+        before(:each) do
+          @locked_user.organization = @organization
+          @locked_user.account_type = @org_account_type
+          @locked_user.save
+        end
+
+        after(:each) do
+          @locked_user.organization = nil
+          @locked_user.account_type = 'FREE'
+          @locked_user.save
+        end
+
+        it_behaves_like 'locked user'
+      end
+
+      context 'regular user' do
+        before(:each) do
+          stub_domainful(@locked_user.username)
+        end
+
+        it_behaves_like 'locked user'
+
+        it 'user accessing a locked user resources' do
+          login(@non_locked_user)
+          host! "#{@locked_user.username}.localhost.lan"
+          @user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @tables_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @viz_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_api_endpoints.each do |endpoint|
+            get endpoint, {}, @api_headers
+            request.path.should == endpoint
+            response.status.should == if endpoint == "/api/v3/me"
+                                        200
+                                      else
+                                        404
+                                      end
+          end
+        end
+        it 'non-logged user accessing a locked user resources' do
+          host! "#{@locked_user.username}.localhost.lan"
+          @public_user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @tables_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @viz_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_api_endpoints.each do |endpoint|
+            get endpoint, {}, @api_headers
+            request.path.should == endpoint
+            response.status.should == if endpoint == "/api/v3/me"
+                                        200
+                                      else
+                                        404
+                                      end
+          end
+        end
       end
     end
 
@@ -113,71 +227,20 @@ describe "UserState" do
 
       expect(User.find(id: to_be_deleted_user.id)).to be_nil
     end
-
-    it 'user accessing a locked user resources' do
-      login(@non_locked_user)
-      host! "#{@locked_user.username}.localhost.lan"
-      @user_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @public_user_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @tables_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @viz_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @public_api_endpoints.each do |endpoint|
-        get endpoint, {}, @api_headers
-        request.path == endpoint
-        response.status.should == if endpoint == "/api/v3/me"
-                                    200
-                                  else
-                                    404
-                                  end
-      end
-    end
-    it 'non-logged user accessing a locked user resources' do
-      host! "#{@locked_user.username}.localhost.lan"
-      @public_user_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @tables_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @viz_endpoints.each do |endpoint|
-        get endpoint, {}, @headers
-        response.status.should == 404
-      end
-      @public_api_endpoints.each do |endpoint|
-        get endpoint, {}, @api_headers
-        request.path == endpoint
-        response.status.should == if endpoint == "/api/v3/me"
-                                    200
-                                  else
-                                    404
-                                  end
-      end
-    end
   end
-  describe '#non locked user' do
-    before(:all) do
+
+  context 'active state' do
+    before(:each) do
       @locked_user.state = 'active'
       @locked_user.save
     end
-    after(:all) do
+
+    after(:each) do
       @locked_user.state = 'locked'
       @locked_user.save
     end
-    it 'owner accessing their resources' do
+
+    it 'lets the owner access their resources' do
       # we use this to avoid generating the static assets in CI
       Admin::UsersController.any_instance.stubs(:render)
       Admin::VisualizationsController.any_instance.stubs(:render)
@@ -216,16 +279,17 @@ describe "UserState" do
       end
       @private_api_endpoints.each do |endpoint|
         get "#{endpoint}?api_key=#{@locked_user.api_key}", {}, @api_headers
-        request.path == endpoint
+        request.path.should == endpoint
         response.status.should == 200
       end
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
-        request.path == endpoint
+        request.path.should == endpoint
         response.status.should == 200
       end
     end
-    it 'non locked user accessing a locked user resources' do
+
+    it 'lets a non locked user access resources from an active user' do
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render)
 
@@ -256,11 +320,12 @@ describe "UserState" do
       end
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
-        request.path == endpoint
+        request.path.should == endpoint
         response.status.should == 200
       end
     end
-    it 'non-logged user accessing a locked user resources' do
+
+    it 'lets unauthenticated users access resources from an active user' do
       host! "#{@locked_user.username}.localhost.lan"
       @public_user_endpoints.each do |endpoint|
         get endpoint, {}, @headers
@@ -279,7 +344,7 @@ describe "UserState" do
       end
       @public_api_endpoints.each do |endpoint|
         get endpoint, {}, @api_headers
-        request.path == endpoint
+        request.path.should == endpoint
         response.status.should == 200
       end
     end

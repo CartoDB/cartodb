@@ -8,7 +8,10 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Makes dashboard listing go faster (user db size cache issue, #14165)
+- Makes maps listing go faster with related tables (user db size cache issue, #14165)
+- Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
+- Update CARTO.js to v4.1.10
+- Show zero when remaining quota is negative in metrics section of New Dashboard([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 
 4.24.0 (2019-01-16)
 -------------------
@@ -45,6 +48,7 @@ sudo make install
 * Navigate search results with up & down keys in New Dashboard ([#14507](https://github.com/CartoDB/cartodb/issues/14507)
 * Selecting maps and datasets using SHIFT+Click in New Dashboard  ([#14545](https://github.com/CartoDB/cartodb/issues/14545))
 * Changed Mapbox geocoder URL to permanent one for Editor. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
+* Changed Mapbox geocoder URL to permanent one for Builder. ([CARTO.js#2217](https://github.com/CartoDB/carto.js/issues/2217))
 
 ### Bug fixes / enhancements
 * Changed the Interal Engine public name for Enterprise engine to avoid issues with the clients (#14538)

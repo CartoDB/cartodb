@@ -1,9 +1,9 @@
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
     <p>Hello and welcome!</p>
-    <p>Join the <%= @invitation.organization.name %> organization in <%= Cartodb.get_config(:mailer, 'template', 'app_name') %>. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
+    <p>Join the <%= @invitation.organization.name %> organization in <%= @app_name %>. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
 
-    <% if Cartodb.get_config(:mailer, 'template', 'include_carto_links') %>
+    <% unless Cartodb.get_config(:mailer, 'template', 'avoid_carto_links') %>
       <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
       <p>Here are some resources to get you up and running:</p>
       <ul>

@@ -1,11 +1,15 @@
 class OrganizationMailer < ActionMailer::Base
+  include MailerConfig
+
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
   def quota_limit_reached(organization)
     @organization = organization
     @subject = "Your organization #{@organization.name} has reached its quota"
-    @link = Cartodb.get_config(:mailer, 'template', 'support_link')
+    @link = support_link
+    @app_name = app_name
+    @app_link = app_link
 
     mail to: @organization.owner.email,
          subject: @subject
@@ -14,8 +18,7 @@ class OrganizationMailer < ActionMailer::Base
   def invitation(invitation, email)
     @invitation = invitation
     @organization = invitation.organization
-
-    app_name = Cartodb.get_config(:mailer, 'template', 'app_name')
+    @app_name = app_name
     @subject = "You are invited to join the #{@organization.name} organization at #{app_name} #{@invitation.viewer? ? 'as a viewer' : ''}"
 
     base_url = CartoDB.base_url(@organization.name)
@@ -28,10 +31,11 @@ class OrganizationMailer < ActionMailer::Base
   def seat_limit_reached(organization)
     @organization = organization
     @subject = "Your organization #{@organization.name} has reached its seat limit"
-    @link = Cartodb.get_config(:mailer, 'template', 'support_link')
+    @link = support_link
+    @app_name = app_name
+    @app_link = app_link
 
     mail to: @organization.owner.email,
          subject: @subject
   end
-
 end

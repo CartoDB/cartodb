@@ -1,4 +1,5 @@
 class UserMailer < ActionMailer::Base
+  include MailerConfig
   default from: Cartodb.get_config(:mailer, 'from')
   layout 'mail'
 
@@ -9,6 +10,8 @@ class UserMailer < ActionMailer::Base
     @organization = @user.organization
     @owner = @organization.owner
     @subject = "You have been invited to #{app_name} organization '#{@organization.name}'"
+    @app_name = app_name
+    @app_link = app_link
     base_url = CartoDB.base_url(@organization.name, @user.username)
 
     if @user.enable_account_token.nil?
@@ -109,6 +112,8 @@ class UserMailer < ActionMailer::Base
     base_url = CartoDB.base_url(@organization.try(:name))
     path = CartoDB.path(self, 'edit_password_reset', id: @user.password_reset_token)
     @password_reset_link = "#{base_url}#{path}"
+    @app_name = app_name
+    @app_link = app_link
     mail to: @user.email, subject: @subject
   end
 
@@ -124,9 +129,4 @@ class UserMailer < ActionMailer::Base
     hubspot = Cartodb.get_config(:metrics, 'hubspot')
     hubspot["mailing_track"][tag] unless hubspot.nil? || !hubspot["mailing_track"].present?
   end
-
-  def app_name
-    Cartodb.get_config(:mailer, 'template', 'app_name')
-  end
-
 end

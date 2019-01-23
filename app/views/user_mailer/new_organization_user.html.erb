@@ -1,7 +1,7 @@
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p>You have been invited to <%= Cartodb.get_config(:mailer, 'template', 'include_carto_links') %> as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
-    <% if Cartodb.get_config(:mailer, 'template', 'include_carto_links') %>
+    <p>You have been invited to <%= @app_name %> as part of the <strong><%= @organization.name_to_display %></strong> organization. Please login to your dashboard with your organization username (<%= @user.username %>) and the password <%= @user_needs_password ? 'provided by your administrator' : 'you entered' %><%= ' as soon as you activate your account' unless @enable_account_link.nil? %>.</p>
+    <% unless Cartodb.get_config(:mailer, 'template', 'avoid_carto_links') %>
       <p>Here are some resources to get you up and running:</p>
       <ul>
         <li><a href="https://carto.com/developers/">Developer Center</a>: Guides, FAQs and tutorials</li>

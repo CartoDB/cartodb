@@ -2,6 +2,7 @@
 require_relative '../../spec_helper'
 require_relative '../visualization_shared_examples'
 require_relative '../../../app/models/visualization/member'
+require_relative '../../support/factories/organizations'
 require 'helpers/unique_names_helper'
 require 'helpers/visualization_destruction_helper'
 
@@ -460,6 +461,7 @@ describe Carto::Visualization do
     end
 
     describe '#add_like_from' do
+      include_context 'organization with users helper'
       it 'registers the like action from a user with permissions' do
         expect(@visualization.likes.count).to eq(0)
 
@@ -495,9 +497,36 @@ describe Carto::Visualization do
         }.to raise_error Carto::Visualization::AlreadyLikedError
         expect(@visualization.likes.count).to eq(1)
       end
+
+      it 'can add like to a shared visualization' do
+        visualization = FactoryGirl.build(:carto_visualization,
+                                          user: @carto_org_user_1,
+                                          privacy: Carto::Visualization::PRIVACY_LINK.upcase)
+        shared_entity = CartoDB::SharedEntity.new(
+          recipient_id: @carto_org_user_2.id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id: visualization.id,
+          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        )
+        shared_entity.save
+        visualization.permission.acl = [
+          {
+            type: Permission::TYPE_USER,
+            entity: {
+              id: @carto_org_user_2.id,
+              username: @carto_org_user_2.username
+            },
+            access: Permission::ACCESS_READONLY
+          }
+        ]
+        visualization.permission.save
+        visualization.add_like_from(@carto_org_user_2)
+        expect(visualization.likes.count).to eq(1)
+      end
     end
 
     describe '#remove_like_from' do
+      include_context 'organization with users helper'
       it 'removes an existent like from a user' do
         @visualization.add_like_from(@carto_user)
         expect(@visualization.likes.count).to eq(1)
@@ -519,6 +548,34 @@ describe Carto::Visualization do
           @visualization.remove_like_from(user_mock)
         }.to raise_error Carto::Visualization::UnauthorizedLikeError
         expect(@visualization.likes.count).to eq(1)
+      end
+
+      it 'can remove like from a shared visualization' do
+        visualization = FactoryGirl.build(:carto_visualization,
+                                          user: @carto_org_user_1,
+                                          privacy: Carto::Visualization::PRIVACY_LINK.upcase)
+        shared_entity = CartoDB::SharedEntity.new(
+          recipient_id: @carto_org_user_2.id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id: visualization.id,
+          entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        )
+        shared_entity.save
+        visualization.permission.acl = [
+          {
+            type: Permission::TYPE_USER,
+            entity: {
+              id: @carto_org_user_2.id,
+              username: @carto_org_user_2.username
+            },
+            access: Permission::ACCESS_READONLY
+          }
+        ]
+        visualization.permission.save
+        visualization.add_like_from(@carto_org_user_2)
+        expect(visualization.likes.count).to eq(1)
+        visualization.remove_like_from(@carto_org_user_2)
+        expect(visualization.likes.count).to eq(0)
       end
     end
 

@@ -71,7 +71,7 @@ module Carto
 
     def geocoder_config
       {
-        provider: Cartodb.get_config(:geocoder, 'provider'),
+        provider: Cartodb.get_config(:geocoder, 'search_bar_provider'),
         mapbox: Cartodb.get_config(:geocoder, 'mapbox'),
         tomtom: Cartodb.get_config(:geocoder, 'tomtom')
       }

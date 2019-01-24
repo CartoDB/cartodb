@@ -219,7 +219,7 @@ module Carto
                   end
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro
         end
       end
 

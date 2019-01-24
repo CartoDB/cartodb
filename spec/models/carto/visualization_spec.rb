@@ -484,9 +484,6 @@ describe Carto::Visualization do
         user_id  = UUIDTools::UUID.timestamp_create.to_s
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
-        user2_id = UUIDTools::UUID.timestamp_create.to_s
-        user_mock_2 = mock
-        user_mock_2.stubs(:id).returns(user2_id)
 
         @visualization.add_like_from(@carto_user)
 
@@ -511,7 +508,7 @@ describe Carto::Visualization do
       end
 
       it 'raises an error if you try to remove a favorite in a visualization you dont have permission' do
-        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user_id = UUIDTools::UUID.timestamp_create.to_s
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 
@@ -532,7 +529,7 @@ describe Carto::Visualization do
       end
 
       it 'returns false when checking a user without likes on the visualization' do
-        user_id  = UUIDTools::UUID.timestamp_create.to_s
+        user_id = UUIDTools::UUID.timestamp_create.to_s
         user_mock = mock
         user_mock.stubs(:id).returns(user_id)
 

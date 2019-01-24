@@ -9,9 +9,9 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 include CartoDB
-include Carto::Factories::Visualizations
-
 describe Visualization::Collection do
+  include Carto::Factories::Visualizations
+
   before(:all) do
     @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
     @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -267,7 +267,7 @@ describe Visualization::Collection do
     it "checks filtering by 'liked' " do
       user3 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
 
-      vis1 = full_visualization_table(@user_1, nil).visualization
+      full_visualization_table(@user_1, nil).visualization
       vis2 = full_visualization_table(@user_1, nil).visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
       vis2.save

@@ -574,7 +574,7 @@ module CartoDB
       end
 
       def liked_by?(user)
-        !(likes.select { |like| like.actor == user.id }.first.nil?)
+        !likes.select { |like| like.actor == user.id }.first.nil?
       end
 
       # @param viewer_user ::User

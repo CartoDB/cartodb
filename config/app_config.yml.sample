@@ -213,8 +213,7 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
-    mapzen:
-      search_bar_api_key: ''
+    search_bar_provider: ''
     mapbox:
       search_bar_api_key: ''
     tomtom:

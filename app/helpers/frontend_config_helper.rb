@@ -41,7 +41,7 @@ module FrontendConfigHelper
       licenses:                   Carto::License.all,
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
       avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS,
-      app_name:                   Cartodb.get_config(:mailer, 'template', 'app_name') || 'CARTO',
+      app_name:                   Cartodb.get_config(:mailer, 'template', 'app_name') || 'CARTO'
     }
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?

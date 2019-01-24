@@ -158,6 +158,13 @@ defaults: &defaults
     password: ''
     authentication: ''
     enable_starttls_auto: ''
+    template:
+      app_name: 'CARTO'
+      app_link: 'https://carto.com'
+      header_logo_url: 'http://carto-email-assets.s3.amazonaws.com/carto-logo.png'
+      footer_text: 'CARTO · Made in Madrid & New York City since 2012'
+      support_link: 'mailto:support@carto.com'
+      include_carto_links: true
   varnish_management:
     critical: false
     host: '127.0.0.1'

@@ -132,6 +132,7 @@ module CartoDB
       confirmation.js
       organization.js
       lockout.js
+      new_lockout.js
 
       tipsy.js
       modernizr.js
@@ -155,6 +156,8 @@ module CartoDB
       cartodb.css
       front.css
       editor.css
+      new_lockout.css
+      new_dashboard.css
 
       common_editor3.css
       editor3.css

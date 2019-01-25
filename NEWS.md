@@ -15,6 +15,7 @@ Development
 - Show zero when remaining quota is negative in metrics section of New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 - Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
 - New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
+- Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 
 4.24.0 (2019-01-16)
 -------------------

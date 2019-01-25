@@ -6,6 +6,11 @@
 
 $width: 800px;
 
+.InviteUsers {
+  display: flex;
+  flex-direction: column;
+}
+
 .InviteUsers-form {
   width: $width;
 }

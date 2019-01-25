@@ -16,6 +16,7 @@ Development
 - Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
 - New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
 - Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
+- Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 
 4.24.0 (2019-01-16)
 -------------------

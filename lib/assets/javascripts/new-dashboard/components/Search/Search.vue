@@ -1,5 +1,5 @@
 <template>
-  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit">
+  <form class="navbar-search" :class="{'is-search-open': isSearchOpen}" autocomplete="off" @submit.stop.prevent="onFormSubmit" @keydown.down.prevent="onKeydownDown" @keydown.up.prevent="onKeydownUp" @keydown.enter.prevent="onKeydownEnter">
     <input type="text"
            v-model.trim="searchTerm"
            ref="searchInput"
@@ -8,7 +8,7 @@
            :placeholder="placeholder"
            @focus="onInputFocus"
            @blur="onInputBlur">
-    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput"/>
+    <SearchSuggestions :query="searchTerm" :isOpen="isInputFocused && isFilled" @pageChange="resetInput" ref="searchSuggestions"/>
   </form>
 </template>
 
@@ -52,11 +52,9 @@ export default {
     onInputFocus () {
       this.isInputFocused = true;
     },
-
     onInputBlur () {
       this.isInputFocused = false;
     },
-
     onFormSubmit () {
       this.blurInput();
 
@@ -68,7 +66,6 @@ export default {
 
       this.searchTerm = '';
     },
-
     goToSearchTermPage () {
       if (this.$router) {
         this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
@@ -76,7 +73,6 @@ export default {
         window.location.href = `${this.baseUrl}/dashboard/search/tag/${this.searchTerm.substring(1)}`;
       }
     },
-
     goToSearchTagPage () {
       if (this.$router) {
         this.$router.push({ name: 'search', params: { query: this.searchTerm } });
@@ -84,14 +80,26 @@ export default {
         window.location = `${this.baseUrl}/dashboard/search/${this.searchTerm}`;
       }
     },
-
     blurInput () {
       this.$refs.searchInput.blur();
     },
-
     resetInput () {
       this.searchTerm = '';
       this.blurInput();
+    },
+    onKeydownDown () {
+      this.$refs.searchSuggestions.keydownDown();
+    },
+    onKeydownUp () {
+      this.$refs.searchSuggestions.keydownUp();
+    },
+    onKeydownEnter () {
+      const activeSuggestion = this.$refs.searchSuggestions.getActiveSuggestionElement();
+      if (activeSuggestion) {
+        activeSuggestion.click();
+      } else {
+        this.onFormSubmit();
+      }
     }
   }
 };
@@ -151,7 +159,7 @@ export default {
   transition: width 0.3s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border: 0;
   border-radius: 18px;
-  background-color: #FFF;
+  background-color: $white;
 
   &::placeholder {
     color: $text-secondary-color;

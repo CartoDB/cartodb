@@ -35,7 +35,8 @@ module CartoDB
           # We set user_domain to nil to avoid duplication in the url for subdomainfull urls. Ie. user.carto.com/u/cartodb/...
           common_data_base_url + CartoDB.path(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public', user_domain: nil})
         elsif !common_data_user.nil?
-          CartoDB.url(controller, 'api_v1_visualizations_index', {type: 'table', privacy: 'public'}, common_data_user)
+          CartoDB.url(controller, 'api_v1_visualizations_index', params: { type: 'table', privacy: 'public' },
+                                                                 user: common_data_user)
         else
           CartoDB.notify_error(
             'cant create common-data url. User doesn\'t exist and base_url is nil',

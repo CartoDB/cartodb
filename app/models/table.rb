@@ -979,15 +979,23 @@ class Table
   end
 
   def update_table_pg_stats
-    # TODO: Reenable this with timeout/error handling.
-    # This was broken for years, and we reenabled it, imports timed out.
-    # owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
+    owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
+  rescue StandardError => exception
+    if exception.message =~ /canceling statement due to statement timeout/i
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    else
+      raise exception
+    end
   end
 
   def update_table_geom_pg_stats
-    # TODO: Reenable this with timeout/error handling.
-    # This was broken for years, and we reenabled it, imports timed out.
-    # owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
+    owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
+  rescue StandardError => exception
+    if exception.message =~ /canceling statement due to statement timeout/i
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    else
+      raise exception
+    end
   end
 
   def owner

@@ -1,6 +1,6 @@
 <% content_for :settings_body do %>
   <div class="FormAccount-container js-OrganizationNotification">
-    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
+    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', user: current_user) do |f| %>
       <%= csrf_meta_tags %>
 
       <div class="FormAccount-row FormAccount-row--smallMarginBottom">

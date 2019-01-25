@@ -7,7 +7,7 @@
     var type = "oauth";
     var config = <%= safe_js_object frontend_config %>;
     var organization_data = {
-      base_url: "<%= CartoDB.url(self, 'create_organization_user', {}, current_user) %>", // HACK!!!
+      base_url: "<%= CartoDB.url(self, 'create_organization_user', user: current_user) %>", // HACK!!!
       id: "<%= current_user.organization.id %>",
       quota_in_bytes: <%= current_user.organization.quota_in_bytes %>,
       seats: <%= current_user.organization.seats %>,

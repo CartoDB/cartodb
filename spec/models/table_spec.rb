@@ -1339,6 +1339,7 @@ describe Table do
       end
 
       it "should add a the_geom column after importing a CSV" do
+        delete_user_data @user
         data_import = DataImport.create( :user_id       => @user.id,
                                          :data_source   => fake_data_path('twitters.csv') )
         data_import.run_import!
@@ -1349,6 +1350,48 @@ describe Table do
         table.rows_counted.should == 7
 
         table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
+      end
+
+      it "should not fail when the analyze is executed in update_table_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+        table.update_table_pg_stats
+        table.rows_counted.should == 7
+        @user.user_timeout = old_user_timeout
+        @user.database_timeout = old_user_db_timeout
+        @user.save
+      end
+
+      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+        table.update_table_geom_pg_stats
+        table.rows_counted.should == 7
+        @user.user_timeout = old_user_timeout
+        @user.database_timeout = old_user_db_timeout
+        @user.save
       end
 
       it "should not drop a table that exists when upload fails" do

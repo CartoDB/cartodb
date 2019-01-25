@@ -11,7 +11,7 @@
           {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="udpateActiveSuggestion(index + 1)">
+      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
         <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
       </li>
     </ul>

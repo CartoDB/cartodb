@@ -21,6 +21,7 @@
 <script>
 import _ from 'underscore';
 import SearchSuggestionsItem from './SearchSuggestionsItem';
+import CartoNode from 'carto-node';
 
 export default {
   name: 'SearchSuggestions',
@@ -41,6 +42,7 @@ export default {
     return {
       isFetching: true,
       searchResults: [],
+      client: new CartoNode.AuthenticatedClient(),
       activeSuggestionIndex: -1
     };
   },
@@ -95,7 +97,7 @@ export default {
   },
   methods: {
     fetchSuggestions () {
-      this.$store.state.client.getVisualization('',
+      this.client.getVisualization('',
         this.queryParameters,
 
         (err, _, data) => {

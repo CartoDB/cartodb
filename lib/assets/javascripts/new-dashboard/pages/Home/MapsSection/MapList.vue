@@ -1,8 +1,8 @@
 <template>
-  <section>
+  <section class="grid">
     <div class="grid-cell grid-cell--noMargin grid-cell--col12">
       <CondensedMapHeader
-        :order="appliedOrder"
+        :order="order"
         :orderDirection="appliedOrderDirection"
         @orderChanged="applyOrder"></CondensedMapHeader>
     </div>
@@ -29,7 +29,7 @@ export default {
   name: 'MapList',
   props: {
     maps: Object,
-    appliedOrder: String,
+    order: String,
     appliedOrderDirection: String,
     isFetchingMaps: {
       type: Boolean,
@@ -47,9 +47,6 @@ export default {
     },
     hasMaps () {
       return Object.keys(this.$props.maps).length > 0;
-    },
-    isSomeMapSelected () {
-      return this.selectedMaps.length > 0;
     }
   },
   methods: {

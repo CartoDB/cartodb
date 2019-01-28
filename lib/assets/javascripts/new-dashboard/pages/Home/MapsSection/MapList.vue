@@ -1,7 +1,7 @@
 <template>
   <ul class="grid">
     <li v-if="isMapListVisible" class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element" v-for="map in maps" :key="map.id">
-      <MapCard :canHover="false" :map="map"></MapCard>
+      <MapCard :canHover="false" :visualization="map"></MapCard>
     </li>
 
     <ul class="grid" v-if="!isMapListVisible">

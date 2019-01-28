@@ -27,25 +27,25 @@
 
     <div class="card-text">
       <div class="card-header">
-        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
-          {{ map.name }}&nbsp;
-          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
+          {{ visualization.name }}&nbsp;
+          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
+        <p class="card-description text is-caption" :title="visualization.description" v-if="visualization.description" :class="{'single-line': multilineTitle}">{{ visualization.description }}</p>
         <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
       </div>
 
       <ul class="card-metadata">
         <li class="card-metadataItem text is-caption" v-if="!isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
-          <p>{{ $t(`MapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
+          <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
         <li class="card-metadataItem text is-caption" v-if="isShared">
-          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
-          <p>{{ $t(`MapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
+          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
+          <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
 
         <li class="card-metadataItem text is-caption">
@@ -57,15 +57,15 @@
           <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
-            <li v-for="(tag, index) in map.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
+            <li v-for="(tag, index) in visualization.tags" :key="tag">
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < visualization.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
               <span>{{ $t(`MapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`MapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>

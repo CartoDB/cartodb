@@ -25,10 +25,10 @@
     <div class="cell cell--map-name cell--main">
       <div class="cell__title">
         <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
-          {{ map.name }}
+          {{ visualization.name }}
         </h3>
 
-        <span v-if="showInteractiveElements" class="cell__favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
@@ -45,13 +45,13 @@
     <div class="cell cell--privacy cell--medium">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <p class="text is-small is-txtSoftGrey">
-        {{ $t(`MapCard.shared.${map.privacy}`) }}
+        {{ $t(`MapCard.shared.${visualization.privacy}`) }}
       </p>
     </div>
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <div class="quick-actions__placeholder" v-if="!showInteractiveElements"></div>
-      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
+      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
     </div>
   </a>
 </template>

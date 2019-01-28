@@ -1,14 +1,14 @@
 <template>
   <SimpleMapCard
     v-if="!condensed"
-    :map="map"
+    :visualization="visualization"
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"
     @toggleSelection="toggleSelection"/>
   <CondensedMapCard
     v-else
-    :map="map"
+    :visualization="visualization"
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"

@@ -1,5 +1,6 @@
 <template>
   <a :href="vizUrl"
+     target="_blank"
      class="row"
      :class="{
        'row--selected': isSelected,

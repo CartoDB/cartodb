@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RouterLink.js should a link element with the given static route as url 1`] = `<a href="example-baseurl.com/test-path">Test Router Link</a>`;

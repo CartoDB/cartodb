@@ -22,7 +22,7 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+      <router-link to="[object Object]" staticroute="/dashboard/notifications" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.notifications
       </router-link>
       <!---->
@@ -56,7 +56,7 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+      <router-link to="[object Object]" staticroute="/dashboard/notifications" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.notifications
       </router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
     </li>
@@ -91,7 +91,7 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
     </li>
     <li class="navbar-dropdown-iconLink">
       <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/notifications.svg"></div>
-      <router-link to="[object Object]" class="text is-semibold is-caption is-txtGrey">
+      <router-link to="[object Object]" staticroute="/dashboard/notifications" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.notifications
       </router-link>
       <!---->

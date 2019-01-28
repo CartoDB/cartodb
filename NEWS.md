@@ -8,7 +8,8 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
+
 
 4.25.0 (2019-01-28)
 -------------------

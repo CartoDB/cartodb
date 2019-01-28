@@ -22,7 +22,12 @@
     </span>
 
     <div class="card-actions" v-if="showInteractiveElements" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged"></MapQuickActions>
+      <component
+        :is="quickActionsComponent"
+        :map="visualization"
+        @open="openQuickActions"
+        @close="closeQuickActions"
+        @dataChanged="onDataChanged"></component>
     </div>
 
     <div class="card-text">
@@ -77,6 +82,7 @@
 <script>
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
 import props from './shared/props';
 import methods from './shared/methods';
 import data from './shared/data';
@@ -86,11 +92,25 @@ export default {
   name: 'SimpleMapCard',
   components: {
     MapQuickActions,
+    DatasetQuickActions,
     FeaturesDropdown
   },
   props,
   data,
-  computed,
+  computed: {
+    ...computed,
+    quickActionsComponent () {
+      const visualizationType = this.$props.visualization.type;
+
+      if (visualizationType === 'table') {
+        return 'DatasetQuickActions';
+      }
+
+      if (visualizationType === 'derived') {
+        return 'MapQuickActions';
+      }
+    }
+  },
   methods,
   mounted: function () {
     function isStarUnderText (textNode, starNode) {

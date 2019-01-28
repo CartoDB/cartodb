@@ -1,5 +1,5 @@
 <template>
-  <section class="grid">
+  <div class="grid">
     <div class="grid-cell grid-cell--noMargin grid-cell--col12">
       <CondensedMapHeader
         :order="order"
@@ -17,7 +17,7 @@
         <MapCard :condensed="true" :map="map" :canHover="false"></MapCard>
       </li>
     </ul>
-  </section>
+  </div>
 </template>
 
 <script>

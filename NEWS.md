@@ -6,6 +6,7 @@ Development
 
 ### Features
 - Ability to customize emails for the organization (#14627)
+- Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
@@ -13,7 +14,6 @@ Development
 - Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
 - Update CARTO.js to v4.1.10
 - Show zero when remaining quota is negative in metrics section of New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
-- Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
 - New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
 - Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
 - Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))

@@ -12,6 +12,7 @@ import Welcome from './WelcomeSection/Welcome.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
+import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
 
 export default {
   name: 'Home',
@@ -20,6 +21,10 @@ export default {
     MapsSection,
     DatasetsSection,
     QuotaSection
+  },
+  beforeRouteEnter (to, from, next) {
+    sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
+    next();
   },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('datasets/resetFilters');

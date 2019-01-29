@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>time-add</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Active-Development-Cycle" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="01-Home-/-Recent" transform="translate(-214.000000, -214.000000)">
+            <g id="Recent" transform="translate(0.000000, 128.000000)">
+                <g id="Group-5" transform="translate(212.000000, 80.000000)">
+                    <g id="time-add" transform="translate(0.000000, 4.000000)">
+                        <g id="Frame_-_24px">
+                            <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+                        </g>
+                        <g id="Line_Icons" transform="translate(2.000000, 2.000000)" fill="#2E3C43">
+                            <g id="Group">
+                                <path d="M10,0 C4.48666667,0 0,4.48666667 0,10 C0,15.5133333 4.48666667,20 10,20 C15.5133333,20 20,15.5133333 20,10 C20,4.48666667 15.5133333,0 10,0 Z M10,17.7777778 C5.71111111,17.7777778 2.22222222,14.2888889 2.22222222,10 C2.22222222,5.71111111 5.71111111,2.22222222 10,2.22222222 C14.2877778,2.22222222 17.7777778,5.71111111 17.7777778,10 C17.7777778,14.2888889 14.2877778,17.7777778 10,17.7777778 Z" id="Shape" fill-rule="nonzero"></path>
+                                <polygon id="Path" points="10.9864936 4.34782609 8.69565217 4.34782609 8.69565217 10.4931829 12.6416265 13.0434783 13.9130435 11.1959853 10.9864936 9.30519163"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -64,7 +64,7 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$store.dispatch('maps/fetch');
         },
         updateVisualization: (model) => {
           this.$store.dispatch('maps/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });

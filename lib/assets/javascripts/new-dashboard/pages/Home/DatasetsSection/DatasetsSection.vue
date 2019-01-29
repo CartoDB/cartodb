@@ -116,7 +116,7 @@ export default {
       this.$store.dispatch('datasets/filterDatasets', filterType);
     },
     fetchDatasets () {
-      this.$store.dispatch('datasets/fetchDatasets');
+      this.$store.dispatch('datasets/fetch');
     },
     hasFilterApplied (filter) {
       return this.appliedFilter === filter;

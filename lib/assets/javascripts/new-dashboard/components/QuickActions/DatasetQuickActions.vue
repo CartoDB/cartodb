@@ -72,7 +72,7 @@ export default {
       return {
         deselectAll: () => {},
         fetchList: () => {
-          this.$store.dispatch(`${this.storeActionType}/fetchDatasets`);
+          this.$store.dispatch(`${this.storeActionType}/fetch`);
         },
         updateVisualization: (model) => {
           this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });

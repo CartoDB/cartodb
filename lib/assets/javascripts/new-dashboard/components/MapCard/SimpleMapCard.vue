@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl"
+  <a :href="visualization.url || vizUrl"
      target="_blank"
      class="card map-card"
      :class="{
@@ -24,41 +24,53 @@
     <div class="card-actions" v-if="showInteractiveElements" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <component
         :is="quickActionsComponent"
+
         :map="visualization"
+        :dataset="visualization"
+        :storeActionType="storeActionType"
+
         @open="openQuickActions"
         @close="closeQuickActions"
         @dataChanged="onDataChanged"></component>
     </div>
 
     <div class="card-text">
-      <div class="card-header">
+      <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
         <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
           {{ visualization.name }}&nbsp;
-          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span
+            v-if="showInteractiveElements"
+            class="card-favorite"
+            :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}"
+            @click.prevent="toggleFavorite"
+            @mouseover="mouseOverChildElement"
+            @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" :title="visualization.description" v-if="visualization.description" :class="{'single-line': multilineTitle}">{{ visualization.description }}</p>
-        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        <template v-if="sectionsToShow.description">
+          <p class="card-description text is-caption" :title="visualization.description" v-if="visualization.description" :class="{'single-line': multilineTitle}">{{ visualization.description }}</p>
+          <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        </template>
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="!isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isShared">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
           <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.lastModification">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/calendar.svg"></span>
           <p>{{ lastUpdated }}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
@@ -95,7 +107,10 @@ export default {
     DatasetQuickActions,
     FeaturesDropdown
   },
-  props,
+  props: {
+    ...props,
+    visibleSections: Array
+  },
   data,
   computed: {
     ...computed,
@@ -109,6 +124,15 @@ export default {
       if (visualizationType === 'derived') {
         return 'MapQuickActions';
       }
+    },
+    sectionsToShow () {
+      const defaultSections = ['description', 'privacy', 'lastModification', 'tags'];
+      const visibleSections = this.$props.visibleSections || defaultSections;
+
+      return visibleSections.reduce((allSections, section) => {
+        allSections[section] = true;
+        return allSections;
+      }, {});
     }
   },
   methods,
@@ -215,6 +239,10 @@ export default {
   display: flex;
   flex-direction: column;
   height: 88px;
+
+  &.card-header__no-description {
+    height: auto;
+  }
 }
 
 .card-title {

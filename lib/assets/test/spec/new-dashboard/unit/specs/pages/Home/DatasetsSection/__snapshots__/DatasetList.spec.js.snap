@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DatasetsList.vue should render properly 1`] = `
-<section>
+<div class="grid">
   <div class="grid-cell grid-cell--noMargin grid-cell--col12">
     <datasetlistheader-stub order="updated_at" orderdirection="desc"></datasetlistheader-stub>
   </div>
@@ -13,5 +13,5 @@ exports[`DatasetsList.vue should render properly 1`] = `
       <datasetcard-stub dataset="[object Object]"></datasetcard-stub>
     </li>
   </ul>
-</section>
+</div>
 `;

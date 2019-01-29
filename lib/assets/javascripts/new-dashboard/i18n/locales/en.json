@@ -7,7 +7,7 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
-    "condensedViews": "No mapviews | 1 mapview | {n} mapviews",
+    "condensedViews": "No views | 1 view | {n} views",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -17,7 +17,7 @@
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
-    "views": "Mapviews (30d)",
+    "views": "Views (30d)",
     "usage": "Usage",
     "privacy": "Privacy"
   },

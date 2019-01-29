@@ -21,6 +21,10 @@ export default {
   },
   props: {
     map: Object,
+    storeActionType: {
+      type: String,
+      default: 'maps'
+    },
     hasShadow: {
       type: Boolean,
       default: true
@@ -59,10 +63,11 @@ export default {
       return {
         deselectAll: () => {},
         updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+          debugger;
+          this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$store.dispatch(`${this.storeActionType}/fetchMaps`);
           this.$emit('dataChanged');
         }
       };

@@ -67,7 +67,7 @@ export default {
           this.$store.dispatch('maps/fetchMaps');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+          this.$store.dispatch('maps/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

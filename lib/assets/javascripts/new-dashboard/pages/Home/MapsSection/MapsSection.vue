@@ -35,7 +35,9 @@
           v-if="!isEmptyState && !isInitialState"
           :maps="maps"
           :isFetchingMaps="isFetchingMaps"
-          @dataChanged="fetchMaps"
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @applyOrder="applyOrder"
         ></MapList>
 
         <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >

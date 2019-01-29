@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <div class="grid">
     <div class="grid-cell grid-cell--noMargin grid-cell--col12">
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
@@ -9,7 +9,7 @@
         <DatasetCard :dataset="dataset" :canHover="false"></DatasetCard>
       </li>
     </ul>
-  </section>
+  </div>
 </template>
 
 <script>

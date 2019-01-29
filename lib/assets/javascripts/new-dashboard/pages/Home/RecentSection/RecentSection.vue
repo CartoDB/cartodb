@@ -27,7 +27,7 @@ export default {
     SectionTitle,
     SimpleMapCard
   },
-  mounted () {
+  created () {
     this.$store.dispatch('recentContent/fetchContent');
   },
   computed: {

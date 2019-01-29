@@ -77,7 +77,7 @@ export default {
           this.$store.dispatch('datasets/fetchDatasets');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
+          this.$store.dispatch('datasets/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

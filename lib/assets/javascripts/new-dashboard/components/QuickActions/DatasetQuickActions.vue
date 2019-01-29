@@ -21,6 +21,10 @@ export default {
   },
   props: {
     dataset: Object,
+    storeActionType: {
+      type: String,
+      default: 'datasets'
+    },
     isShared: {
       type: Boolean,
       default: false
@@ -68,10 +72,10 @@ export default {
       return {
         deselectAll: () => {},
         fetchList: () => {
-          this.$store.dispatch('datasets/fetchDatasets');
+          this.$store.dispatch(`${this.storeActionType}/fetchDatasets`);
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
+          this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

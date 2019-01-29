@@ -2,10 +2,10 @@ Development
 -----------
 
 ### NOTICES
-- Limits V2: removing feature flag
+- None yet
 
 ### Features
-- Ability to customize emails for the organization (#14627)
+- None yet
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
@@ -19,7 +19,28 @@ Development
 - Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 - Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 - Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
+- Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
 
+4.25.0 (2019-01-28)
+-------------------
+
+### NOTICES
+* Limits V2: removing feature flag
+
+### Features
+* Ability to customize emails for the organization (#14627)
+* Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
+
+### Bug fixes / enhancements
+* Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
+* Makes maps listing go faster with related tables (user db size cache issue, #14165)
+* Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
+* Update CARTO.js to v4.1.10
+* Show zero when remaining quota is negative in metrics section of New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+* New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
+* Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
+* Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
+* Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 
 4.24.0 (2019-01-16)
 -------------------

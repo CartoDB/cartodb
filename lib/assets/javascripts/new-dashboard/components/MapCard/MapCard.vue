@@ -36,7 +36,7 @@ export default {
   methods: {
     toggleSelection () {
       this.$emit('toggleSelection', {
-        map: this.$props.map,
+        map: this.$props.visualization,
         isSelected: !this.$props.isSelected
       });
     }

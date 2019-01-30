@@ -9,7 +9,12 @@
 
       <ul class="grid">
         <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="visualization in recentContent" :key="visualization.id">
-          <SimpleMapCard :visualization="visualization" :canHover="false" :visibleSections="visibleSections" storeActionType="recentContent"/>
+          <SimpleMapCard
+            :visualization="visualization"
+            :visibleSections="visibleSections"
+            :canHover="false"
+            :singleLineTitle="true"
+            storeActionType="recentContent" />
         </li>
       </ul>
     </div>

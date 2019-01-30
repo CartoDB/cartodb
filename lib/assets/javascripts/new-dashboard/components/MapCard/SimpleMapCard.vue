@@ -10,7 +10,12 @@
      }"
     @click="onClick">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isMap && !isThumbnailErrored"/>
+
+      <div class="media-dataset" v-if="!isMap">
+        <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
+      </div>
+
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
@@ -36,8 +41,8 @@
 
     <div class="card-text">
       <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
-        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
-          {{ visualization.name }}&nbsp;
+        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine), 'single-line': singleLineTitle}">
+          <span class="title-element">{{ visualization.name }}</span>
           <span
             v-if="showInteractiveElements"
             class="card-favorite"
@@ -109,7 +114,11 @@ export default {
   },
   props: {
     ...props,
-    visibleSections: Array
+    visibleSections: Array,
+    singleLineTitle: {
+      type: Boolean,
+      default: false
+    }
   },
   data,
   computed: {
@@ -133,6 +142,9 @@ export default {
         allSections[section] = true;
         return allSections;
       }, {});
+    },
+    isMap () {
+      return this.$props.visualization.type === 'derived';
     }
   },
   methods,
@@ -176,6 +188,12 @@ export default {
     &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
+      }
+    }
+
+    &.card--child-hover {
+      .card-title {
+        color: $text-color;
       }
     }
 
@@ -233,6 +251,15 @@ export default {
       display: block;
     }
   }
+
+  .media-dataset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: $primary-color;
+  }
 }
 
 .card-header {
@@ -258,6 +285,17 @@ export default {
 
   &.title-overflow {
     padding-right: 24px;
+  }
+
+  .title-element {
+    max-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &.single-line {
+    display: flex;
   }
 }
 

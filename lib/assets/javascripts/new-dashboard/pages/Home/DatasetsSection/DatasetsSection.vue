@@ -4,7 +4,7 @@
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="title">
           <template slot="icon">
-            <img src="../../../assets/icons/section-title/data.svg">
+            <img src="../../../assets/icons/section-title/data.svg" width="18" height="20">
           </template>
           <template slot="dropdownButton">
             <SettingsDropdown

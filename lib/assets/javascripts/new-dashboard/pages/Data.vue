@@ -15,7 +15,7 @@
       <div class="grid-cell grid-cell--col12">
         <SectionTitle :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
           <template slot="icon">
-            <img src="../assets/icons/section-title/data.svg" />
+            <img src="../assets/icons/section-title/data.svg" width="18" height="20" />
           </template>
 
           <template slot="dropdownButton">

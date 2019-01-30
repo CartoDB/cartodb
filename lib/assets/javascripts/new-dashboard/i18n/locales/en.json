@@ -297,5 +297,9 @@
       "title": "Your organization's administrator",
       "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
     }
+  },
+  "TagCard": {
+    "maps": "0 maps | {maps} map | {maps} maps",
+    "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
   }
 }

@@ -5,6 +5,12 @@
         <template slot="icon">
           <img src="../../../assets/icons/section-title/recent.svg">
         </template>
+
+        <template slot="actionButton">
+          <button class="button button--small is-primary button--ghost" @click="goToTagsSection">
+            View your tags
+          </button>
+        </template>
       </SectionTitle>
 
       <ul class="grid">
@@ -38,6 +44,11 @@ export default {
     }),
     visibleSections () {
       return ['privacy', 'lastModification'];
+    }
+  },
+  methods: {
+    goToTagsSection () {
+      this.$emit('sectionChange', 'TagsSection');
     }
   }
 };

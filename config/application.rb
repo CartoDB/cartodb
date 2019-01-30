@@ -70,6 +70,7 @@ module CartoDB
       carto_node.js
       embed.js
       header.js
+      footer.js
       dashboard_templates.js
       dashboard_deps.js
       dashboard.js
@@ -165,6 +166,7 @@ module CartoDB
       builder_embed.css
 
       header.css
+      footer.css
       table.css
       leaflet.css
       map.css

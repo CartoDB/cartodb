@@ -22,14 +22,20 @@ export default {
     DatasetsSection,
     QuotaSection
   },
-  beforeRouteEnter (to, from, next) {
-    sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
-    next();
+  created () {
+    if (this.isFirstTimeViewingDashboard) {
+      sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
+    }
   },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('datasets/resetFilters');
     this.$store.dispatch('maps/resetFilters');
     next();
+  },
+  computed: {
+    isFirstTimeViewingDashboard () {
+      return this.$store.state.config.isFirstTimeViewingDashboard;
+    }
   }
 };
 </script>

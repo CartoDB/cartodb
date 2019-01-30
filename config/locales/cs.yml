@@ -6,7 +6,7 @@ cs:
     title: 'E-mail nebo uživatelské jméno'
     placeholder: 'E-mail nebo uživatelské jméno'
   password: 'heslo'
-  carto_name: 'Carto'
+  carto_name: 'CARTO'
   maps: 'mapy'
   datasets: 'datasety'
   builder: 'Builder'   		#???

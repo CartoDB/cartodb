@@ -151,6 +151,7 @@ export default {
   .cell__favorite {
     display: inline-block;
     margin-left: 8px;
+    transform: translate3d(0, 2px, 0);
     opacity: 0;
     vertical-align: middle;
 

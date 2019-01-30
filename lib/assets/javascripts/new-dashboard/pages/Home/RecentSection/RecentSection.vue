@@ -32,9 +32,6 @@ export default {
     SectionTitle,
     SimpleMapCard
   },
-  created () {
-    this.$store.dispatch('recentContent/fetchContent');
-  },
   computed: {
     ...mapState({
       recentContent: state => state.recentContent.list

@@ -1,7 +1,7 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
-  <RecentSection class="section" />
+  <RecentSection class="section" v-if="hasRecentContent"/>
   <MapsSection class="section" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>
@@ -24,10 +24,19 @@ export default {
     DatasetsSection,
     QuotaSection
   },
+  beforeMount () {
+    this.$store.dispatch('recentContent/fetchContent');
+  },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('datasets/resetFilters');
     this.$store.dispatch('maps/resetFilters');
     next();
+  },
+  computed: {
+    hasRecentContent () {
+      return this.$store.getters['recentContent/hasRecentContent'] ||
+        this.$store.state.recentContent.isFetching;
+    }
   }
 };
 </script>

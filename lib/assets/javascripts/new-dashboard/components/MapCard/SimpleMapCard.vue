@@ -41,8 +41,13 @@
 
     <div class="card-text">
       <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
-        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine), 'single-line': singleLineTitle}">
-          <span class="title-element">{{ visualization.name }}</span>
+        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
+          <template v-if="singleLineTitle">
+            <span class="title-element">{{ visualization.name }}</span>&nbsp;
+          </template>
+          <template v-else>
+            {{ visualization.name }}&nbsp;
+          </template>
           <span
             v-if="showInteractiveElements"
             class="card-favorite"

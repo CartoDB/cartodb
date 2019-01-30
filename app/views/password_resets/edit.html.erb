@@ -3,7 +3,7 @@
   <%= form_for @user, url: url, class: "js-Loading-form" do |f| %>
     <div class="Sessions-fieldsGorup">
       <div class="Sessions-field">
-        <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: 'Password' %>
+        <%= f.password_field :password, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", placeholder: t('password_reset.edit.password') %>
 
         <% if @user.errors['password'].present? %>
           <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password'].first %>.">!</div>
@@ -11,7 +11,7 @@
       </div>
 
       <div class="Sessions-field">
-        <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: 'Retype your password' %>
+        <%= f.password_field :password_confirmation, class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius", placeholder: t('password_reset.edit.retype') %>
         <% if @user.errors['password_confirmation'].present? %>
           <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors['password_confirmation'].first %>.">!</div>
         <% end %>
@@ -20,7 +20,7 @@
       <div class="Sessions-field">
         <p>
           <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
-            <span class="js-Loading-text"><%= 'Save' %></span>
+            <span class="js-Loading-text"><%= t('password_reset.edit.save') %></span>
             <%= render :partial => 'shared/loading_animation' %>
           </button>
         </p>

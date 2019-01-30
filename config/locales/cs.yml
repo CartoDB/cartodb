@@ -23,6 +23,7 @@ cs:
   description: 'Popis'
   platform: 'Platforma'
   here: 'zde'
+  signup_url: 'https://carto.com/signup'
   day:
     one: 'den'
     few: 'dny'
@@ -47,6 +48,7 @@ cs:
       general: " obecným účtem</a>."
       use_email: "Pamatujte prosím, že k přihlášení do vašeho účtu se musíte přihlásit e-mailem patřícím k dané organizaci."
       forgot: 'Nepamatujete si heslo?'
+      signup: 'Registrace'
     account_error:
       user: 'Uživatel '
       auth_error: ' chyba přihlášení'
@@ -385,6 +387,9 @@ cs:
             map: 'Mapa chráněná heslem — CARTO'
             passwd: 'Tato mapa je chráněna heslem'
             contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
+    oauth:
+      consent:
+        title: 'CARTO · OAuth ověření'
   datalib:
     index:
       datalib: 'CARTO · Datová knihovna'
@@ -420,15 +425,17 @@ cs:
       out: ' z ' #zase omrknout počty
       imported: ' bylo úspěšně importováno.'
   layouts:
+    keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
     app_passwd:
       title: ' | CARTO'
       contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
-    app_public:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, CARTO'
-    app_table:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
+    explore:
+      keywords: 'carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets'
+      map_moment: 'Náhodná mapa'
     frontend:
       desc: 'Vytvářejte dynamické mapy, analyzujte a vytvářejte místní geoaplikace z Vašech dat pomocí síly PostGISu.'
+    front_layout:
+      title: 'CARTO | Přihlášení'
   mailer:
     footer:
       msg: 'CARTO · Made in ???' # No, nevím jak s tím tvářením se, že to není carto.
@@ -437,11 +444,19 @@ cs:
       msg1: ' se chce připojit do Vaší CARTO databáze. To znamená, že '
       msg2: ' bude moci modifikovat, vytvářet a mazat pole z Vaší databáze.'
       authorize: 'Potvrdit přístup'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
     failure:
+      denied: 'Přístup odepřen'
       msg1: 'Zamítl jste oauth přístup pro '
       msg2: '. Toto nastavení můžete změnit později.'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
     success:
+      accept: 'Přístup povolen'
       msg: 'Povolil jste požadavek'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
   org_mailer:
     invite:
       hello: 'Ahoj a vítejte!'
@@ -487,6 +502,28 @@ cs:
       new: 'Vaše nové heslo'
       retype: 'kontrola hesla'
       noaccount: "Nemáte ještě účet? "
+      signup: 'Registrace'
+  password_reset:
+    form:
+      title: 'Resetovat heslo'
+    changed:
+      title: 'Heslo změněno'
+      success: 'Vaše heslo bylo úspěšně změněno'
+    edit:
+      password: 'Heslo'
+      retype: 'Přepište heslo'
+      save: 'Uložit'
+    message:
+      signin: 'Přihlásit se'
+      homepage: 'Zpět na domovskou stránku'
+    new:
+      title: 'Váš e-mail'
+      placeholder: 'Váš e-mail'
+      instructions: 'Poslat instrukce'
+    sent:
+      title: 'Heslo odesláno'
+      email_sent: 'Poslali jsme vám e-mail'
+      desc: 'V něm jsou instrukce, jak vstoupit na váš účet a heslo (případně) změnit.'
   shared:
     signup:
       sign: ' zaregistrovat se'

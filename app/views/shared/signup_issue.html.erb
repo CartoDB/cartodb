@@ -8,9 +8,9 @@
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
               <% if @organization.present? %>
-                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
               <% else %>
-                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo.svg", :alt => t('carto_name')) %>
               <% end %>
             </picture>
           </div>

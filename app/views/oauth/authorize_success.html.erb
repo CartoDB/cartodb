@@ -1,13 +1,13 @@
 <section class="sessions shadow">
   <div class="content">
-    <h2>Authorization accepted</h2>
-    <p class="margin15 light"><% t('oauth.success.msg') %></p>
+    <h2><%= t('oauth.success.accept') %></h2>
+    <p class="margin15 light"><%= t('oauth.success.msg') %></p>
   </div>
   <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "https://carto.com/signup" %></p>
+    <p class="center light"><%= link_to t('oauth.success.forgot'), forget_password_url %> · <%= link_to t('oauth.success.create'), t('signup_url') %></p>
   </div>
 </section>
 
 <footer class="short">
-  <h1><%= link_to 'CARTO', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
+  <h1><%= link_to t('carto_name'), CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
 </footer>

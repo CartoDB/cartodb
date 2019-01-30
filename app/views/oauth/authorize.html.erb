@@ -1,8 +1,8 @@
 
 <section class="sessions shadow">
   <div class="content">
-    <h2><%= @token.client_application.user.username t('carto_name')%></h2>
-    <p class="margin15 light"><%= @token.client_application.user.username %><% t('oauth.author.msg1') %><%= @token.client_application.user.username %><% t('oauth.author.msg2') %></p>
+    <h2><%= @token.client_application.user.username t('carto_name') %></h2>
+    <p class="margin15 light"><%= @token.client_application.user.username %><%= t('oauth.author.msg1') %><%= @token.client_application.user.username %><%= t('oauth.author.msg2') %></p>
 
     <%= form_tag authorize_url do %>
       <%= hidden_field_tag "oauth_token", @token.token %>
@@ -10,16 +10,16 @@
         <%= hidden_field_tag "oauth_callback", params[:oauth_callback] %>
       <%- end -%>
       <div class="field border margin20">
-        <p class="light center margin10"><%= check_box_tag 'authorize' %><% t('oauth.author.authorize') %></p>
+        <p class="light center margin10"><%= check_box_tag 'authorize' %><%= t('oauth.author.authorize') %></p>
       </div>
       <%= submit_tag 'Allow connection', :class => "button green border sessions margin20" %>
     <% end %>
   </div>
   <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "https://carto.com/signup" %></p>
+    <p class="center light"><%= link_to t('oauth.author.forgot'), forget_password_url %> · <%= link_to t('oauth.author.create'), t('signup_url') %></p>
   </div>
 </section>
 
 <footer class="short">
-  <h1><%= link_to 'CARTO', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
+  <h1><%= link_to t('carto_name'), CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
 </footer>

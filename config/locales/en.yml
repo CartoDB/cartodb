@@ -23,6 +23,7 @@ en:
   description: 'Description'
   platform: 'Platform'
   here: 'here'
+  signup_url: 'https://carto.com/signup'
   day:
     one: 'day'
     other: 'days'
@@ -42,6 +43,7 @@ en:
       general: " general login</a> instead."
       use_email: "Please, remember to use an email address belonging to this organization to login to your account."
       forgot: 'Forgot?'
+      signup: 'Sign up here'
     account_error:
       user: 'User '
       auth_error: ' authentication error'
@@ -380,6 +382,9 @@ en:
             map: 'Protected map — CARTO'
             passwd: 'This map is protected with password'
             contact: 'Contact with the owner in case you want access to it.'
+    oauth:
+      consent:
+        title: 'CARTO · OAuth Authentication'
   datalib:
     index:
       datalib: 'CARTO · Data Library'
@@ -415,15 +420,17 @@ en:
       out: ' out of '
       imported: ' were successfully imported'
   layouts:
+    keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
     app_passwd:
       title: ' | CARTO'
       contact: 'Contact with the owner in case you want access to it.'
-    app_public:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, CARTO'
-    app_table:
-      keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
+    explore:
+      keywords: 'carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets'
+      map_moment: 'Map of the moment'
     frontend:
       desc: 'Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud.'
+    front_layout:
+      title: 'CARTO | Login'
   mailer:
     footer:
       msg: 'CARTO · Made in Madrid & New York City since 2012'
@@ -432,11 +439,19 @@ en:
       msg1: ' wants to connect to your CARTO database. This means that '
       msg2: ' will be able to modify, create and delete fields from your database.'
       authorize: 'Authorize access'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
     failure:
+      denied: 'Authorization denied'
       msg1: 'You have denied the oauth access for '
       msg2: '. You can change this setting later if you reconsider.'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
     success:
+      accept: 'Authorization accepted'
       msg: 'You have allowed this request'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
   org_mailer:
     invite:
       hello: 'Hello and welcome!'
@@ -482,6 +497,28 @@ en:
       new: 'Type your new password'
       retype: 'Retype your new password'
       noaccount: "Don't have an account yet? "
+      signup: 'Sign up here'
+  password_reset:
+    form:
+      title: 'Reset password'
+    changed:
+      title: 'Password changed'
+      success: 'Your password has been updated successfully'
+    edit:
+      password: 'Password'
+      retype: 'Retype your password'
+      save: 'Save'
+    message:
+      signin: 'Sign in'
+      homepage: 'Go back to the homepage'
+    new:
+      title: 'Your email'
+      placeholder: 'Your email'
+      instructions: 'Send instructions'
+    sent:
+      title: 'Password sent'
+      email_sent: 'Ok, we have sent you an email'
+      desc: 'There you will find the instructions for entering your account and change — if desired — your password.'
   shared:
     signup:
       sign: ' sign up'

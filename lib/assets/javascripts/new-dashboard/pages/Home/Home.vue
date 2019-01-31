@@ -3,7 +3,15 @@
   <Welcome />
   <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
   <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-  <MapsSection class="section" />
+  <!-- <MapsSection class="section" /> -->
+  <MapComponent
+    class="section"
+    :hasBulkActions="false"
+    :isCondensed="true"
+    :canChangeViewMode="false"
+    :canHoverCard="false"
+    :maxVisibleMaps="6"
+    @applyFilter="applyFilter" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>
 </section>
@@ -13,7 +21,8 @@
 import Welcome from './WelcomeSection/Welcome.vue';
 import TagsSection from './TagsSection/TagsSection.vue';
 import RecentSection from './RecentSection/RecentSection.vue';
-import MapsSection from './MapsSection/MapsSection.vue';
+// import MapsSection from './MapsSection/MapsSection.vue';
+import MapComponent from 'new-dashboard/components/MapComponent.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
 import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
@@ -24,7 +33,8 @@ export default {
     Welcome,
     TagsSection,
     RecentSection,
-    MapsSection,
+    // MapsSection,
+    MapComponent,
     DatasetsSection,
     QuotaSection
   },
@@ -56,6 +66,9 @@ export default {
     }
   },
   methods: {
+    what (filter) {
+      console.log('prueba de emit')
+    },
     isSectionActive (activeSection) {
       return activeSection === this.activeSection;
     },

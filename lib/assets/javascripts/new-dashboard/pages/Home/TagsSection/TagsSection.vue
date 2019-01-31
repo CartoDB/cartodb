@@ -14,7 +14,7 @@
       </SectionTitle>
 
       <ul class="grid">
-        <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile" v-for="tag in tags" :key="tag.tag">
+        <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile tag-element" v-for="tag in tags" :key="tag.tag">
           <TagCard :tag="tag" />
         </li>
       </ul>
@@ -34,21 +34,47 @@ export default {
   },
   data () {
     return {
+      // TODO: Retrieve tags from API when endpoint is ready
       tags: [
         {
-          tag: 'Administrative Regions',
-          maps: 0,
-          datasets: 1
-        },
-        {
-          tag: '2014',
-          maps: 3,
+          tag: 'Blog',
+          maps: 2,
           datasets: 3
         },
         {
-          tag: 'EARTHQUAKE',
+          tag: 'Catalog',
+          maps: 1,
+          datasets: 4
+        },
+        {
+          tag: 'Customer',
+          maps: 3,
+          datasets: 4
+        },
+        {
+          tag: 'David',
+          maps: 3,
+          datasets: 4
+        },
+        {
+          tag: 'Website',
+          maps: 4,
+          datasets: 1
+        },
+        {
+          tag: 'Production',
           maps: 2,
-          datasets: 0
+          datasets: 3
+        },
+        {
+          tag: 'Census',
+          maps: 4,
+          datasets: 3
+        },
+        {
+          tag: 'Client',
+          maps: 2,
+          datasets: 4
         }
       ]
     };
@@ -60,3 +86,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.tag-element {
+  margin-bottom: 24px;
+}
+</style>

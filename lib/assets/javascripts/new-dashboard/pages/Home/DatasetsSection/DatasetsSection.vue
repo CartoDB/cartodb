@@ -35,7 +35,7 @@
           </template>
         </InitialState>
 
-        <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyState')" >
+        <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyState.default')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 

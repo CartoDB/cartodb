@@ -2,7 +2,7 @@
 <section class="page page--welcome">
   <Welcome />
   <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
-  <TagsSection class="section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
+  <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
   <MapsSection class="section" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>
@@ -62,5 +62,9 @@ export default {
 
 .page--welcome {
   padding: 64px 0 0;
+}
+
+.tags-section {
+  padding-bottom: 104px;
 }
 </style>

@@ -209,7 +209,7 @@
   },
   "HomePage": {
     "WelcomeSection": {
-      "greeting" : "Hello, {username}",
+      "greeting" : "Hello, {name}",
       "firstTime": {
         "message": "Your brand new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
         "planMessage": {

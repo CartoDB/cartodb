@@ -6,7 +6,7 @@ exports[`DatasetsSection.vue should render emptyState 1`] = `
     <div class="full-width">
       <sectiontitle-stub title="DataPage.header.title['locked']" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
       <!---->
-      <emptystate-stub text="DataPage.emptyState"><img svg-inline="" src="../../../assets/icons/common/compass.svg"></emptystate-stub>
+      <emptystate-stub text="DataPage.emptyCase.default"><img svg-inline="" src="../../../assets/icons/common/compass.svg"></emptystate-stub>
       <!---->
       <!---->
       <router-link to="[object Object]" class="title is-small go-to-datasets">

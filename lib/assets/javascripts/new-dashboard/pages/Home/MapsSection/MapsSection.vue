@@ -40,7 +40,7 @@
           @applyOrder="applyOrder"
         ></MapList>
 
-        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
+        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyCase.default')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 

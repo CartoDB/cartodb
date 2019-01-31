@@ -1,14 +1,14 @@
 <template>
   <section class="recent-section is-bgSoftBlue">
     <div class="container">
-      <SectionTitle class="grid-cell" title="Recent content">
+      <SectionTitle class="grid-cell" :title="$t('HomePage.RecentSection.title')">
         <template slot="icon">
           <img src="../../../assets/icons/section-title/recent.svg">
         </template>
 
         <template slot="actionButton">
           <button class="button button--small is-primary button--ghost" @click="goToTagsSection">
-            View your tags
+            {{ $t('HomePage.RecentSection.viewTagsAction') }}
           </button>
         </template>
       </SectionTitle>

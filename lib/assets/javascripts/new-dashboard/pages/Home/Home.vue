@@ -1,8 +1,8 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
-  <RecentSection class="section" v-if="this.isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
-  <TagsSection class="section" v-if="this.isSectionActive('TagsSection')" @sectionChange="changeSection"/>
+  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
+  <TagsSection class="section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
   <MapsSection class="section" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>

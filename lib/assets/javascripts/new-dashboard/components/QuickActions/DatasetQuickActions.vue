@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import * as Table from 'new-dashboard/core/table';
+import * as Table from 'new-dashboard/core/models/table';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 

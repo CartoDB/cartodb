@@ -19,7 +19,7 @@ import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
-import { isOrganizationAdmin } from 'new-dashboard/core/organization';
+import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
 
 export default {
   name: 'Welcome',

@@ -14,6 +14,7 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
+      include Carto::ControllerHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -30,6 +31,8 @@ module Carto
       before_action :recalculate_user_db_size, only: [:me]
       skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
+
+      rescue_from StandardError, with: :rescue_from_standard_error
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -136,6 +139,14 @@ module Carto
         # referer_match[6] is the username
         referer_organization_username = referer_match[6]
         render_auth_users_data(session_user, referer, subdomain, referer_organization_username)
+      end
+
+      def tags
+        query_builder = Carto::TagQueryBuilder.new.with_user(current_viewer)
+        result = query_builder.build
+        tags = result.map { |tag| TagPresenter.new(tag).to_poro }
+
+        render json: tags
       end
 
       private

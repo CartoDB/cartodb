@@ -433,4 +433,23 @@ describe Carto::Api::UsersController do
       end
     end
   end
+
+  describe 'tags' do
+    it 'returns 401 if there is no authenticated user' do
+      get_json api_v3_users_tags_url, @headers do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns a 200 response with the current user tags' do
+      user = @organization.owner
+      FactoryGirl.create(:derived_visualization, user_id: user.id, tags: ["ETIQUETA"])
+      expected_result = { tag: "ETIQUETA", maps: 1, datasets: 0 }.with_indifferent_access
+
+      get_json api_v3_users_tags_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body).to eq [expected_result]
+      end
+    end
+  end
 end

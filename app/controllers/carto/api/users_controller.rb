@@ -23,6 +23,8 @@ module Carto
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 
+      DEFAULT_TAGS_PER_PAGE = 6
+
       ssl_required
 
       before_action :initialize_google_plus_config, only: [:me]
@@ -142,8 +144,11 @@ module Carto
       end
 
       def tags
+        page = (params[:page].presence || 1).to_i
+        per_page = (params[:per_page].presence || DEFAULT_TAGS_PER_PAGE).to_i
+
         query_builder = Carto::TagQueryBuilder.new.with_user(current_viewer)
-        result = query_builder.build
+        result = query_builder.build_paged(page, per_page)
         tags = result.map { |tag| TagPresenter.new(tag).to_poro }
 
         render json: tags

@@ -19,6 +19,10 @@ class Carto::TagQueryBuilder
     query
   end
 
+  def build_paged(page, per_page)
+    build.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i)
+  end
+
   private
 
   def select_query

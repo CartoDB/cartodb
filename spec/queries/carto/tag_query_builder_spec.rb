@@ -118,4 +118,37 @@ describe Carto::TagQueryBuilder do
     end
   end
 
+  describe "#build_paged" do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user)
+      FactoryGirl.create(:table_visualization, user_id: @user.id, tags: ["TAG1"])
+      FactoryGirl.create(:table_visualization, user_id: @user.id, tags: ["TAG1", "TAG2"])
+      FactoryGirl.create(:derived_visualization, user_id: @user.id, tags: ["TAG1", "TAG2", "TAG3"])
+      @builder = Carto::TagQueryBuilder.new.with_user(@user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    after(:all) do
+      Carto::Visualization.all.each(&:destroy)
+    end
+
+    it 'returns the expected result for the first page' do
+      result = @builder.build_paged(1, 2)
+
+      result.length.should eql 2
+      result[0].tag.should eql "TAG1"
+      result[1].tag.should eql "TAG2"
+    end
+
+    it 'returns the expected result for the last page' do
+      result = @builder.build_paged(2, 2)
+
+      result.length.should eql 1
+      result[0].tag.should eql "TAG3"
+    end
+
+  end
 end

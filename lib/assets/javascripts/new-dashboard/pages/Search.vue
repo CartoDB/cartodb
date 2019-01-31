@@ -24,7 +24,7 @@
 
           <ul class="grid" v-if="!isFetchingMaps">
             <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
-              <MapCard :map=map :canHover=false></MapCard>
+              <MapCard :visualization=map :canHover=false></MapCard>
             </li>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">

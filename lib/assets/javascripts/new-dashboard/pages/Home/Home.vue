@@ -1,6 +1,7 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
+  <RecentSection class="section" v-if="hasRecentContent"/>
   <MapsSection class="section" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>
@@ -9,6 +10,7 @@
 
 <script>
 import Welcome from './WelcomeSection/Welcome.vue';
+import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
@@ -18,9 +20,13 @@ export default {
   name: 'Home',
   components: {
     Welcome,
+    RecentSection,
     MapsSection,
     DatasetsSection,
     QuotaSection
+  },
+  beforeMount () {
+    this.$store.dispatch('recentContent/fetchContent');
   },
   created () {
     if (this.isFirstTimeViewingDashboard) {
@@ -33,6 +39,10 @@ export default {
     next();
   },
   computed: {
+    hasRecentContent () {
+      return this.$store.getters['recentContent/hasRecentContent'] ||
+        this.$store.state.recentContent.isFetching;
+    },
     isFirstTimeViewingDashboard () {
       return this.$store.state.config.isFirstTimeViewingDashboard;
     }

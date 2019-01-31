@@ -82,14 +82,14 @@ export default {
   methods: {
     applyFilter (filter) {
       this.$store.dispatch('maps/filterMaps', filter);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     applyOrder (orderOptions) {
       this.$store.dispatch('maps/orderMaps', orderOptions);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     fetchMaps () {
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     }
   },
   computed: {

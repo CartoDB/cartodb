@@ -1,5 +1,5 @@
 <template>
-  <a :href="vizUrl"
+  <a :href="visualization.url || vizUrl"
      target="_blank"
      class="card map-card"
      :class="{
@@ -10,7 +10,12 @@
      }"
     @click="onClick">
     <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isMap && !isThumbnailErrored"/>
+
+      <div class="media-dataset" v-if="!isMap">
+        <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
+      </div>
+
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
@@ -22,50 +27,72 @@
     </span>
 
     <div class="card-actions" v-if="showInteractiveElements" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <MapQuickActions :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged"></MapQuickActions>
+      <component
+        :is="quickActionsComponent"
+
+        :map="visualization"
+        :dataset="visualization"
+        :storeActionType="storeActionType"
+
+        @open="openQuickActions"
+        @close="closeQuickActions"
+        @dataChanged="onDataChanged"></component>
     </div>
 
     <div class="card-text">
-      <div class="card-header">
-        <h2 :title="map.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine)}">
-          {{ map.name }}&nbsp;
-          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+      <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
+        <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
+          <template v-if="singleLineTitle">
+            <span class="title-element">{{ visualization.name }}</span>&nbsp;
+          </template>
+          <template v-else>
+            {{ visualization.name }}&nbsp;
+          </template>
+          <span
+            v-if="showInteractiveElements"
+            class="card-favorite"
+            :class="{'is-favorite': visualization.liked, 'favorite-overflow': titleOverflow}"
+            @click.prevent="toggleFavorite"
+            @mouseover="mouseOverChildElement"
+            @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </h2>
-        <p class="card-description text is-caption" :title="map.description" v-if="map.description" :class="{'single-line': multilineTitle}">{{ map.description }}</p>
-        <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        <template v-if="sectionsToShow.description">
+          <p class="card-description text is-caption" :title="visualization.description" v-if="visualization.description" :class="{'single-line': multilineTitle}">{{ visualization.description }}</p>
+          <p class="card-description text is-caption is-txtSoftGrey" v-else>{{ $t(`MapCard.noDescription`) }}</p>
+        </template>
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="!isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isShared">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
-          <p>{{ $t(`MapCard.shared.${map.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
+          <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="isShared">
-          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${map.permission.owner.avatar_url}')` }"></span>
-          <p>{{ $t(`MapCard.sharedBy`, { owner: map.permission.owner.username })}}</p>
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isShared">
+          <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
+          <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.lastModification">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/calendar.svg"></span>
           <p>{{ lastUpdated }}</p>
         </li>
 
-        <li class="card-metadataItem text is-caption">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
 
           <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
-            <li v-for="(tag, index) in map.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < map.tags.length - 1">,&#32;</span>
+            <li v-for="(tag, index) in visualization.tags" :key="tag">
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < visualization.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
               <span>{{ $t(`MapCard.noTags`) }}</span>
             </li>
           </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=map.tags linkRoute="tagSearch" feature="tag">
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
             <span class="feature-text text is-caption is-txtGrey">{{tagsLength}} {{$t(`MapCard.tags`)}}</span>
           </FeaturesDropdown>
         </li>
@@ -77,6 +104,7 @@
 <script>
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
 import props from './shared/props';
 import methods from './shared/methods';
 import data from './shared/data';
@@ -86,11 +114,44 @@ export default {
   name: 'SimpleMapCard',
   components: {
     MapQuickActions,
+    DatasetQuickActions,
     FeaturesDropdown
   },
-  props,
+  props: {
+    ...props,
+    visibleSections: Array,
+    singleLineTitle: {
+      type: Boolean,
+      default: false
+    }
+  },
   data,
-  computed,
+  computed: {
+    ...computed,
+    quickActionsComponent () {
+      const visualizationType = this.$props.visualization.type;
+
+      if (visualizationType === 'table') {
+        return 'DatasetQuickActions';
+      }
+
+      if (visualizationType === 'derived') {
+        return 'MapQuickActions';
+      }
+    },
+    sectionsToShow () {
+      const defaultSections = ['description', 'privacy', 'lastModification', 'tags'];
+      const visibleSections = this.$props.visibleSections || defaultSections;
+
+      return visibleSections.reduce((allSections, section) => {
+        allSections[section] = true;
+        return allSections;
+      }, {});
+    },
+    isMap () {
+      return this.$props.visualization.type === 'derived';
+    }
+  },
   methods,
   mounted: function () {
     function isStarUnderText (textNode, starNode) {
@@ -132,6 +193,12 @@ export default {
     &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
+      }
+    }
+
+    &.card--child-hover {
+      .card-title {
+        color: $text-color;
       }
     }
 
@@ -189,12 +256,25 @@ export default {
       display: block;
     }
   }
+
+  .media-dataset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: $primary-color;
+  }
 }
 
 .card-header {
   display: flex;
   flex-direction: column;
   height: 88px;
+
+  &.card-header__no-description {
+    height: auto;
+  }
 }
 
 .card-title {
@@ -210,6 +290,17 @@ export default {
 
   &.title-overflow {
     padding-right: 24px;
+  }
+
+  .title-element {
+    max-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &.single-line {
+    display: flex;
   }
 }
 

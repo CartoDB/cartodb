@@ -74,10 +74,10 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('datasets/fetchDatasets');
+          this.$store.dispatch('datasets/fetch');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
+          this.$store.dispatch('datasets/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

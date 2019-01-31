@@ -12,7 +12,7 @@
 <script>
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
-import * as Visualization from 'new-dashboard/core/visualization';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 
 export default {
   name: 'MapQuickActions',

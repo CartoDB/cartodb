@@ -91,7 +91,7 @@
 <script>
 import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import * as Visualization from 'new-dashboard/core/visualization';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 import { mapActions } from 'vuex';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';

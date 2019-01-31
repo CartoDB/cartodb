@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import * as Visualization from 'new-dashboard/core/visualization';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 
 export default {
   name: 'SearchSuggestionsItem',

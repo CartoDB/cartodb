@@ -38,13 +38,15 @@ export default {
     SectionTitle,
     SimpleMapCard
   },
+  data () {
+    return {
+      visibleSections: ['privacy', 'lastModification']
+    };
+  },
   computed: {
     ...mapState({
       recentContent: state => state.recentContent.list
-    }),
-    visibleSections () {
-      return ['privacy', 'lastModification'];
-    }
+    })
   },
   methods: {
     goToTagsSection () {
@@ -53,7 +55,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
-</style>

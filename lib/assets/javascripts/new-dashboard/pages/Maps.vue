@@ -1,5 +1,5 @@
 <template>
-<section class="page">
+<section>
   <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
     <h2 class="title is-caption">
       {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
@@ -10,8 +10,21 @@
       @selectAll="selectAll"
       @deselectAll="deselectAll"></MapBulkActions>
   </StickySubheader>
+  <MapComponent
+    :selectedMaps="selectedMaps"
+    :hasBulkActions="true"
+    :canChangeViewMode="true"
+    :canHoverCard="true"
+    :maxVisibleMaps="12"
+    @applyFilter="applyFilter"
+    @applyOrder="applyOrder"
+    ref="headerContainer"/>
 
-  <div class="container grid">
+  <div>
+    <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+  </div>
+
+  <!-- <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
@@ -81,50 +94,52 @@
 
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
-  </div>
+  </div> -->
 </section>
 </template>
 
 <script>
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import { mapState } from 'vuex';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import CreateMapCard from 'new-dashboard/components/CreateMapCard';
-import EmptyState from 'new-dashboard/components/States/EmptyState';
-import InitialState from 'new-dashboard/components/States/InitialState';
+// import CreateButton from 'new-dashboard/components/CreateButton.vue';
+// import CreateMapCard from 'new-dashboard/components/CreateMapCard';
+// import EmptyState from 'new-dashboard/components/States/EmptyState';
+// import InitialState from 'new-dashboard/components/States/InitialState';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
-import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
-import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
-import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
+// import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
+// import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
+// import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
-import SectionTitle from 'new-dashboard/components/SectionTitle';
-import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
+// import SectionTitle from 'new-dashboard/components/SectionTitle';
+// import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
+import MapComponent from 'new-dashboard/components/MapComponent.vue';
 
 export default {
   name: 'MapsPage',
   components: {
-    CreateButton,
-    CreateMapCard,
-    EmptyState,
-    SettingsDropdown,
+    // CreateButton,
+    // CreateMapCard,
+    // EmptyState,
+    // SettingsDropdown,
     MapBulkActions,
-    MapCard,
-    CondensedMapHeader,
-    MapCardFake,
-    SectionTitle,
+    // MapCard,
+    // CondensedMapHeader,
+    // MapCardFake,
+    // SectionTitle,
     StickySubheader,
     Pagination,
-    InitialState
+    // InitialState
+    MapComponent
   },
   data () {
     return {
       isScrollPastHeader: false,
       selectedMaps: [],
-      cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
-      condensedCSSClasses: 'card-condensed',
-      isCondensed: false
+      // cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
+      // condensedCSSClasses: 'card-condensed',
+      // isCondensed: false
     };
   },
   mounted () {
@@ -246,6 +261,7 @@ export default {
     },
     getHeaderBottomPageOffset () {
       const headerClientRect = this.$refs.headerContainer.$el.getBoundingClientRect();
+      // const headerClientRect = this.$children[0].$refs.headerContainer.$el.getBoundingClientRect();
       return headerClientRect.top;
     },
     hasFilterApplied (filter) {
@@ -271,6 +287,9 @@ export default {
       } else {
         localStorage.mapViewMode = 'standard';
       }
+    },
+    selectedMaps () {
+      console.log(this.selectedMaps)
     }
   }
 };

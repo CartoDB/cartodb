@@ -4,14 +4,25 @@
   <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
   <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
   <!-- <MapsSection class="section" /> -->
-  <MapComponent
+  <!-- <MapComponent
     class="section"
     :hasBulkActions="false"
     :isCondensed="true"
     :canChangeViewMode="false"
     :canHoverCard="false"
     :maxVisibleMaps="6"
-    @applyFilter="applyFilter" />
+    @applyFilter="applyFilter"
+    @applyOrder="applyOrder" /> -->
+
+  <MapComponent
+    class="section"
+    :hasBulkActions="false"
+    :isCondensedDefault="true"
+    :canChangeViewMode="false"
+    :canHoverCard="false"
+    :maxVisibleMaps="6"
+    @applyFilter="applyFilter"
+    @applyOrder="applyOrder" />
   <DatasetsSection class="section section--noBorder" />
   <QuotaSection></QuotaSection>
 </section>
@@ -66,8 +77,13 @@ export default {
     }
   },
   methods: {
-    what (filter) {
-      console.log('prueba de emit')
+    applyFilter (filter) {
+      this.$store.dispatch('maps/filterMaps', filter);
+      this.$store.dispatch('maps/fetch');
+    },
+    applyOrder (orderOptions) {
+      this.$store.dispatch('maps/orderMaps', orderOptions);
+      this.$store.dispatch('maps/fetch');
     },
     isSectionActive (activeSection) {
       return activeSection === this.activeSection;

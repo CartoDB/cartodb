@@ -1,16 +1,5 @@
 <template>
 <section class="page">
-  <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)" v-if="hasBulkActions">
-    <h2 class="title is-caption">
-      {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
-    </h2>
-    <MapBulkActions
-      :selectedMaps="selectedMaps"
-      :areAllMapsSelected="areAllMapsSelected"
-      @selectAll="selectAll"
-      @deselectAll="deselectAll"></MapBulkActions>
-  </StickySubheader>
-
   <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
@@ -39,7 +28,7 @@
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
 
-          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="canChangeViewMode && !initialState && !selectedMaps.length">
+          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="canChangeViewMode && !initialState && !emptyState && !selectedMaps.length">
             <img svg-inline src="../assets/icons/common/compactMap.svg" v-if="!isCondensed">
             <img svg-inline src="../assets/icons/common/standardMap.svg" v-if="isCondensed">
           </div>
@@ -58,17 +47,17 @@
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
           @orderChanged="applyOrder"
-          v-if="isCondensed"></CondensedMapHeader>
+          v-if="isCondensed && !emptyState && !initialState"></CondensedMapHeader>
 
         <ul class="grid" v-if="isFetchingMaps">
-          <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in 12" :key="n">
+          <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
             <MapCardFake :condensed="isCondensed"></MapCardFake>
           </li>
         </ul>
 
         <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
           <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
-            <MapCard :condensed="isCondensed" :visualization="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected"></MapCard>
+            <MapCard :condensed="isCondensed" :visualization="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected" :canHover="canHoverCard"></MapCard>
           </li>
         </ul>
       </div>
@@ -86,7 +75,7 @@
 </template>
 
 <script>
-import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+// import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import { mapState } from 'vuex';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
@@ -99,7 +88,7 @@ import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 // import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-import StickySubheader from 'new-dashboard/components/StickySubheader';
+// import StickySubheader from 'new-dashboard/components/StickySubheader';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
@@ -121,7 +110,7 @@ export default {
       type: Boolean,
       default: false
     },
-    isCondensed: {
+    isCondensedDefault: {
       type: Boolean,
       default: true
     }
@@ -136,40 +125,39 @@ export default {
     CondensedMapHeader,
     MapCardFake,
     SectionTitle,
-    StickySubheader,
+    // StickySubheader,
     // Pagination,
     InitialState
   },
   data () {
     return {
-      isScrollPastHeader: false,
       selectedMaps: [],
       cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
-      condensedCSSClasses: 'card-condensed'
-      // isCondensed: false
+      condensedCSSClasses: 'card-condensed',
+      isCondensed: this.isCondensedDefault
     };
   },
   created: function () {
     this.$store.dispatch('maps/setPerPage', this.maxVisibleMaps);
     this.fetchMaps();
   },
-  mounted () {
-    this.stickyScrollPosition = this.getHeaderBottomPageOffset();
-    this.$onScrollChange = this.onScrollChange.bind(this);
-    document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+  // mounted () {
+  //   // this.stickyScrollPosition = this.getHeaderBottomPageOffset();
+  //   this.$onScrollChange = this.onScrollChange.bind(this);
+  //   document.addEventListener('scroll', this.$onScrollChange, { passive: true });
 
-    this.loadUserConfiguration();
-  },
-  beforeDestroy () {
-    document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
-  },
-  beforeRouteUpdate (to, from, next) {
-    checkFilters('maps', 'maps', to, from, next);
-  },
+  //   this.loadUserConfiguration();
+  // },
+  // beforeDestroy () {
+  //   document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
+  // },
+  // beforeRouteUpdate (to, from, next) {
+  //   checkFilters('maps', 'maps', to, from, next);
+  // },
   computed: {
     ...mapState({
-      numPages: state => state.maps.numPages,
-      currentPage: state => state.maps.page,
+      // numPages: state => state.maps.numPages,
+      // currentPage: state => state.maps.page,
       appliedFilter: state => state.maps.filterType,
       appliedOrder: state => state.maps.order,
       appliedOrderDirection: state => state.maps.orderDirection,
@@ -205,25 +193,11 @@ export default {
     hasSharedMaps () {
       return this.totalShared > 0;
     },
-    shouldShowPagination () {
-      return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
-    },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
     }
   },
   methods: {
-    // goToPage (page) {
-    //   window.scroll({ top: 0, left: 0 });
-
-    //   this.deselectAll();
-    //   this.$router.push({
-    //     name: 'maps',
-    //     params: this.$route.params,
-    //     query: { ...this.$route.query, page }
-    //   });
-    // },
-  // },
     fetchMaps () {
       this.$store.dispatch('maps/fetch');
     },
@@ -232,19 +206,10 @@ export default {
     },
     applyFilter (filter) {
       // this.$router.push({ name: 'maps', params: { filter } });
-      this.$emit('what', filter);
+      this.$emit('applyFilter', filter);
     },
     applyOrder (orderParams) {
-      this.deselectAll();
-      this.$router.push({
-        name: 'maps',
-        params: this.$route.params,
-        query: {
-          ...this.$route.query,
-          order: orderParams.order,
-          order_direction: orderParams.direction
-        }
-      });
+      this.$emit('applyOrder', orderParams);
     },
     toggleSelected ({ map, isSelected }) {
       if (event.shiftKey) {
@@ -272,28 +237,21 @@ export default {
     isMapSelected (map) {
       return this.selectedMaps.some(selectedMap => selectedMap.id === map.id);
     },
-    onScrollChange () {
-      this.isScrollPastHeader = window.pageYOffset > this.stickyScrollPosition;
-    },
-    getHeaderBottomPageOffset () {
-      const headerClientRect = this.$refs.headerContainer.$el.getBoundingClientRect();
-      return headerClientRect.top;
-    },
     hasFilterApplied (filter) {
       return this.filterType === filter;
     },
     toggleViewMode () {
       this.isCondensed = !this.isCondensed;
     },
-    loadUserConfiguration () {
-      if (localStorage.hasOwnProperty('mapViewMode')) {
-        if (localStorage.mapViewMode === 'compact') {
-          this.isCondensed = true;
-        } else if (localStorage.mapViewMode === 'standard') {
-          this.isCondensed = false;
-        }
-      }
-    }
+    // loadUserConfiguration () {
+    //   if (localStorage.hasOwnProperty('mapViewMode')) {
+    //     if (localStorage.mapViewMode === 'compact') {
+    //       this.isCondensed = true;
+    //     } else if (localStorage.mapViewMode === 'standard') {
+    //       this.isCondensed = false;
+    //     }
+    //   }
+    // }
   },
   watch: {
     isCondensed (isCompactMapView) {

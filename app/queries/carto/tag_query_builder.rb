@@ -10,13 +10,12 @@ class Carto::TagQueryBuilder
   end
 
   def build
-    query = Carto::Visualization.all
-    query = query.select(select_query)
-                 .where('array_length(tags, 1) > 0')
-                 .group('tag')
-                 .order('total DESC')
-    query = query.where(user_id: @user_id) if @user_id
-    query
+    query = build_base_visualization_query
+
+    query.select(select_query)
+         .where('array_length(tags, 1) > 0')
+         .group('tag')
+         .order('total DESC')
   end
 
   def build_paged(page, per_page)
@@ -24,6 +23,12 @@ class Carto::TagQueryBuilder
   end
 
   private
+
+  def build_base_visualization_query
+    query = Carto::VisualizationQueryBuilder.new
+    query.with_user_id(@user_id) if @user_id
+    query.build
+  end
 
   def select_query
     "LOWER(unnest(tags)) AS tag, #{count_select('derived')}, #{count_select('table')}, COUNT(*) as total"

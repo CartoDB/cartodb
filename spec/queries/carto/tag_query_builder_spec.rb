@@ -3,29 +3,17 @@
 require_relative '../../spec_helper_min'
 
 describe Carto::TagQueryBuilder do
+  include_context 'organization with users helper'
 
   describe "#build" do
-    before(:all) do
-      @user1 = FactoryGirl.create(:carto_user)
-      @user2 = FactoryGirl.create(:carto_user)
-    end
-
-    after(:all) do
-      @user1.destroy
-      @user2.destroy
-    end
-
-    after(:each) do
-      Carto::Visualization.all.each(&:destroy)
-    end
 
     context 'with user' do
       before(:all) do
-        @builder = Carto::TagQueryBuilder.new.with_user(@user1)
+        @builder = Carto::TagQueryBuilder.new.with_user(@org_user_1)
       end
 
       it 'returns zero results when the user has no visualizations' do
-        FactoryGirl.create(:derived_visualization, user_id: @user2.id, tags: ["user2"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_2.id, tags: ["user2"])
 
         result = @builder.build.all
 
@@ -33,7 +21,7 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns zero results when the user has no tags' do
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id)
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id)
 
         result = @builder.build.all
 
@@ -41,8 +29,8 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns the tags in lowercase and merges tags with different letter case' do
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["USER1"])
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["uSeR1"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["USER1"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["uSeR1"])
 
         result = @builder.build.all
 
@@ -53,9 +41,9 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns the right count of single tags for maps and datasets' do
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["user1"])
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["user1"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["user1"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["dataset"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["user1"])
 
         result = @builder.build.all
 
@@ -69,8 +57,8 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns the right count of multiple tags for maps and datasets' do
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["user1", "dataset"])
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["user1", "dataset"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["dataset"])
 
         result = @builder.build.all
 
@@ -82,9 +70,9 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns the tags ordered by total occurrences' do
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset", "user1"])
-        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset", "user1"])
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["map", "user1"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["dataset", "user1"])
+        FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["dataset", "user1"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["map", "user1"])
 
         result = @builder.build.all
 
@@ -99,13 +87,9 @@ describe Carto::TagQueryBuilder do
         @builder = Carto::TagQueryBuilder.new
       end
 
-      after(:each) do
-        Carto::Visualization.all.each(&:destroy)
-      end
-
       it 'returns tags for all the users' do
-        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["user1"])
-        FactoryGirl.create(:derived_visualization, user_id: @user2.id, tags: ["user2"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["user1"])
+        FactoryGirl.create(:derived_visualization, user_id: @org_user_2.id, tags: ["user2"])
 
         result = @builder.build.all
 
@@ -120,19 +104,13 @@ describe Carto::TagQueryBuilder do
 
   describe "#build_paged" do
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-      FactoryGirl.create(:table_visualization, user_id: @user.id, tags: ["tag1"])
-      FactoryGirl.create(:table_visualization, user_id: @user.id, tags: ["tag1", "tag2"])
-      FactoryGirl.create(:derived_visualization, user_id: @user.id, tags: ["tag1", "tag2", "tag3"])
-      @builder = Carto::TagQueryBuilder.new.with_user(@user)
+      @builder = Carto::TagQueryBuilder.new.with_user(@org_user_1)
     end
 
-    after(:all) do
-      @user.destroy
-    end
-
-    after(:all) do
-      Carto::Visualization.all.each(&:destroy)
+    before(:each) do
+      FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["tag1"])
+      FactoryGirl.create(:table_visualization, user_id: @org_user_1.id, tags: ["tag1", "tag2"])
+      FactoryGirl.create(:derived_visualization, user_id: @org_user_1.id, tags: ["tag1", "tag2", "tag3"])
     end
 
     it 'returns the expected result for the first page' do

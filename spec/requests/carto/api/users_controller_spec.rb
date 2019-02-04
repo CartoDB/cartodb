@@ -443,8 +443,8 @@ describe Carto::Api::UsersController do
 
     it 'returns a 200 response with the current user tags' do
       user = FactoryGirl.create(:user)
-      FactoryGirl.create(:derived_visualization, user_id: user.id, tags: ["ETIQUETA"])
-      expected_result = { tag: "ETIQUETA", maps: 1, datasets: 0 }.with_indifferent_access
+      FactoryGirl.create(:derived_visualization, user_id: user.id, tags: ["etiqueta"])
+      expected_result = { tag: "etiqueta", maps: 1, datasets: 0 }.with_indifferent_access
 
       get_json api_v3_users_tags_url(user_domain: user.username, api_key: user.api_key), @headers do |response|
         expect(response.status).to eq(200)

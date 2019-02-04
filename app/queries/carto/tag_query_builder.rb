@@ -26,7 +26,7 @@ class Carto::TagQueryBuilder
   private
 
   def select_query
-    "UPPER(unnest(tags)) AS tag, #{count_select('derived')}, #{count_select('table')}, COUNT(*) as total"
+    "LOWER(unnest(tags)) AS tag, #{count_select('derived')}, #{count_select('table')}, COUNT(*) as total"
   end
 
   def count_select(type)

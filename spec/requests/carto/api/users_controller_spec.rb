@@ -442,7 +442,7 @@ describe Carto::Api::UsersController do
     end
 
     it 'returns a 200 response with the current user tags' do
-      user = @organization.owner
+      user = FactoryGirl.create(:user)
       FactoryGirl.create(:derived_visualization, user_id: user.id, tags: ["ETIQUETA"])
       expected_result = { tag: "ETIQUETA", maps: 1, datasets: 0 }.with_indifferent_access
 
@@ -450,6 +450,8 @@ describe Carto::Api::UsersController do
         expect(response.status).to eq(200)
         expect(response.body).to eq [expected_result]
       end
+
+      user.destroy
     end
   end
 end

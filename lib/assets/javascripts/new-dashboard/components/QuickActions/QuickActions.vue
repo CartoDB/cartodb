@@ -1,6 +1,6 @@
 <template>
   <div class="quick-actions">
-    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen, 'has-shadow': hasShadow}">
+    <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen }">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
     <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click="killEvent">
@@ -24,11 +24,7 @@ export default {
     };
   },
   props: {
-    actions: Array,
-    hasShadow: {
-      type: Boolean,
-      default: true
-    }
+    actions: Array
   },
   methods: {
     emitEvent (action) {
@@ -62,7 +58,8 @@ export default {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 4px;
+  border: 1px solid transparent;
+  border-radius: 2px;
   background: $white;
 
   &.is-active {
@@ -71,10 +68,6 @@ export default {
     .path {
       fill: $white;
     }
-  }
-
-  &.has-shadow {
-    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
   }
 
   &:hover {

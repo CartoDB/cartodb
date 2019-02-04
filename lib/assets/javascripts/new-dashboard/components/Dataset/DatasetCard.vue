@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url"
+  <a :href="vizUrl"
      target="_blank"
      class="dataset-row"
      :class="{
@@ -173,6 +173,9 @@ export default {
         visualization.url = Visualization.getURL(visualization, this.$cartoModels);
         return visualization;
       });
+    },
+    vizUrl () {
+      return Visualization.getURL(this.$props.dataset, this.$cartoModels);
     }
   },
   methods: {

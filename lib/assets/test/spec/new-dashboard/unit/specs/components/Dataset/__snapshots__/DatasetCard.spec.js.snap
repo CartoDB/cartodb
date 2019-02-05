@@ -116,7 +116,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small">
     <!---->
-    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey">
+    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
           DatasetCard.maps
         </span>
       <!---->

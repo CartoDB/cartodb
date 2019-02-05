@@ -62,7 +62,7 @@
       </span>
 
       <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
-          <span class="text is-small is-txtSoftGrey">
+          <span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
             {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
           </span>
 
@@ -255,6 +255,16 @@ export default {
     &:not(.dataset-row--no-hover) {
       .row-title {
         color: $primary-color;
+      }
+
+      .tag-list {
+        .tag-list__tag {
+          text-decoration: underline;
+        }
+      }
+
+      .dataset__dependent-visualizations {
+        text-decoration: underline;
       }
     }
 

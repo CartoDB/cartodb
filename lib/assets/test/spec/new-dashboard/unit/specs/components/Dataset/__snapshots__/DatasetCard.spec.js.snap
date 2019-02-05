@@ -116,7 +116,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
   <div class="cell cell--small">
     <!---->
-    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey">
+    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
           DatasetCard.maps
         </span>
       <!---->
@@ -184,13 +184,13 @@ exports[`DatasetCard.vue should render tags 1`] = `
       <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
         <ul class="tag-list">
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey tag-list__tag">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
           </li>
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">Hello</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey tag-list__tag">Hello</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
           </li>
           <li>
-            <router-link to="[object Object]" class="text is-small is-txtSoftGrey">CARTO Rules</router-link>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey tag-list__tag">CARTO Rules</router-link>
             <!---->
           </li>
         </ul>

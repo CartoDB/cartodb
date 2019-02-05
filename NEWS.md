@@ -21,6 +21,7 @@ Development
 - Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
 - Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
 - Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
+- Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 
 4.25.0 (2019-01-28)
 -------------------

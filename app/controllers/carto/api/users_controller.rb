@@ -147,11 +147,10 @@ module Carto
         page = (params[:page].presence || 1).to_i
         per_page = (params[:per_page].presence || DEFAULT_TAGS_PER_PAGE).to_i
 
-        query_builder = Carto::TagQueryBuilder.new.with_user(current_viewer)
+        query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
         result = query_builder.build_paged(page, per_page)
-        tags = result.map { |tag| TagPresenter.new(tag).to_poro }
 
-        render json: tags
+        render json: result
       end
 
       private

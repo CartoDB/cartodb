@@ -34,7 +34,7 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey tag-list__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
           <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
@@ -255,6 +255,12 @@ export default {
     &:not(.dataset-row--no-hover) {
       .row-title {
         color: $primary-color;
+      }
+
+      .tag-list {
+        .tag-list__tag {
+          text-decoration: underline;
+        }
       }
     }
 

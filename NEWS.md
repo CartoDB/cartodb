@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- /tags endpoint to retrieve the user's tags with usage count (https://github.com/CartoDB/product/issues/208)
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))

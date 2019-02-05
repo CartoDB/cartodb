@@ -226,8 +226,8 @@ class Carto::VisualizationQueryBuilder
   end
 
   def with_associations(query)
-    query = query.includes(@include_associations)
-    query = query.eager_load(@eager_load_associations)
+    query = query.includes(@include_associations) unless @include_associations.empty?
+    query = query.eager_load(@eager_load_associations) unless @eager_load_associations.empty?
     query = with_favorited(query)
     with_dependent_visualization_count(query)
   end

@@ -656,6 +656,8 @@ CartoDB::Application.routes.draw do
       resources :multifactor_auths, only: [:create, :destroy, :show, :index], constraints: { id: /[^\/]+/ } do
         post 'verify_code', on: :member
       end
+
+      get 'tags' => 'tags#index', as: :api_v3_users_tags
     end
 
     scope 'v2/' do

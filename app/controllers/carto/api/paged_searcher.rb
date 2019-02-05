@@ -4,10 +4,15 @@ module Carto
 
       VALID_ORDER_DIRECTIONS = [:asc, :desc].freeze
 
-      def page_per_page_order_params(valid_order_values, default_per_page: 20, default_order: 'updated_at',
-                                     default_order_direction: 'desc', valid_order_combinations: [])
+      def page_per_page_params(default_per_page: 20)
         page = (params[:page].presence || 1).to_i
         per_page = (params[:per_page].presence || default_per_page).to_i
+        [page, per_page]
+      end
+
+      def page_per_page_order_params(valid_order_values, default_per_page: 20, default_order: 'updated_at',
+                                     default_order_direction: 'desc', valid_order_combinations: [])
+        page, per_page = page_per_page_params(default_per_page: default_per_page)
 
         order = extract_param(name: :order, default_value: default_order, valid_values: valid_order_values,
                               valid_combinations: valid_order_combinations)

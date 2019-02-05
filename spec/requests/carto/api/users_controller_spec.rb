@@ -433,4 +433,5 @@ describe Carto::Api::UsersController do
       end
     end
   end
+
 end

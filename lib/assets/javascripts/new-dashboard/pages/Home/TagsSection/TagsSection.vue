@@ -7,14 +7,15 @@
         </template>
 
         <template slot="actionButton">
-          <button class="button button--small is-primary button--ghost" @click="goToRecentSection">
+          <button class="button button--small is-primary button--ghost button--last" @click="goToRecentSection">
+            <img svg-inline src="../../../assets/icons/sections/tags/recent_content.svg" class="tags__action"/>
             {{ $t('HomePage.TagsSection.viewRecentContentAction') }}
           </button>
         </template>
       </SectionTitle>
 
       <ul class="grid">
-        <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile tag-element" v-for="tag in tags" :key="tag.tag">
+        <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile tag" v-for="tag in tags" :key="tag.tag">
           <TagCard :tag="tag" />
         </li>
       </ul>
@@ -32,63 +33,39 @@ export default {
     SectionTitle,
     TagCard
   },
+  mounted () {
+    this.getTags();
+  },
   data () {
     return {
-      // TODO: Retrieve tags from API when endpoint is ready
-      tags: [
-        {
-          tag: 'Blog',
-          maps: 2,
-          datasets: 3
-        },
-        {
-          tag: 'Catalog',
-          maps: 1,
-          datasets: 4
-        },
-        {
-          tag: 'Customer',
-          maps: 3,
-          datasets: 4
-        },
-        {
-          tag: 'David',
-          maps: 3,
-          datasets: 4
-        },
-        {
-          tag: 'Website',
-          maps: 4,
-          datasets: 1
-        },
-        {
-          tag: 'Production',
-          maps: 2,
-          datasets: 3
-        },
-        {
-          tag: 'Census',
-          maps: 4,
-          datasets: 3
-        },
-        {
-          tag: 'Client',
-          maps: 2,
-          datasets: 4
-        }
-      ]
+      tags: []
     };
   },
   methods: {
     goToRecentSection () {
       this.$emit('sectionChange', 'RecentSection');
+    },
+    getTags (options = {}) {
+      this.$store.state.client.getTags(options,
+        (err, _, tags) => {
+          if (err) {
+            return;
+          }
+
+          this.tags = tags;
+        }
+      );
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.tag-element {
+.tag {
   margin-bottom: 24px;
+}
+
+.tags__action {
+  margin-right: 12px;
 }
 </style>

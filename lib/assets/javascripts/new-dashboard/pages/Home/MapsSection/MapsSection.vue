@@ -76,7 +76,7 @@ export default {
     SettingsDropdown
   },
   created: function () {
-    this.$store.dispatch('maps/setPerPage', MAX_VISIBLE_MAPS);
+    this.$store.dispatch('maps/setResultsPerPage', MAX_VISIBLE_MAPS);
     this.fetchMaps();
   },
   methods: {

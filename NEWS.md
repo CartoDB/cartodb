@@ -23,6 +23,7 @@ Development
 - Fix Links to datasets shared with me ([CartoDB/product#229](https://github.com/CartoDB/product/issues/229))
 - Order Datasets by "Favourited first" and "Last Modified" ([CartoDB/product#237](https://github.com/CartoDB/product/issues/237))
 - Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
+- Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
 - Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 
 4.25.0 (2019-01-28)

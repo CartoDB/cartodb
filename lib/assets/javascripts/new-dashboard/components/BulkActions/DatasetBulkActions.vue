@@ -5,8 +5,8 @@
 <script>
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
-import * as Table from 'new-dashboard/core/table';
-import * as Visualization from 'new-dashboard/core/visualization';
+import * as Table from 'new-dashboard/core/models/table';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 
 export default {
   name: 'DatasetBulkActions',
@@ -74,10 +74,10 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('datasets/fetchDatasets');
+          this.$store.dispatch('datasets/fetch');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
+          this.$store.dispatch('datasets/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

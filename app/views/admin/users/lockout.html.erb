@@ -1,11 +1,17 @@
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'dashboard' %>
+  <% if @has_new_dashboard %>
+    <%= stylesheet_link_tag 'new_dashboard', 'new_lockout' %>
+  <% else %>
+    <%= stylesheet_link_tag 'dashboard' %>
+  <% end %>
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email? %>;
+    var expiration_days = <%= @expiration_days %>;
+    var payments_url = "<%= @payments_url %>";
 
     // Necessary for Google + actions
     var access_token = '';
@@ -14,8 +20,17 @@
       var iframe_src = '<%= @google_plus_config.iframe_src %>';
     <% end %>
   </script>
-  <%= javascript_include_tag 'common', 'common_vendor', 'lockout' -%>
+
+  <% if @has_new_dashboard %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'new_lockout' -%>
+  <% else %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'lockout' -%>
+  <% end %>
 <% end %>
+
+<% if @has_new_dashboard %>
+<div id="root"></div>
+<% else %>
 <div class="DummyDashboard"></div>
 <div class='Lockout OnBoarding-welcome'>
   <div class="OnBoarding-welcomeContent">
@@ -46,4 +61,6 @@
     </div>
   </div>
 </div>
+
 <%= render 'admin/shared/footer', :footer_margin => false %>
+<% end %>

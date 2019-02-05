@@ -7,7 +7,7 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
-    "condensedViews": "No mapviews | 1 mapview | {n} mapviews",
+    "condensedViews": "No views | 1 view | {n} views",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -17,7 +17,7 @@
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
-    "views": "Mapviews (30d)",
+    "views": "Views (30d)",
     "usage": "Usage",
     "privacy": "Privacy"
   },
@@ -209,7 +209,7 @@
   },
   "HomePage": {
     "WelcomeSection": {
-      "greeting" : "Hello, {username}",
+      "greeting" : "Hello, {name}",
       "firstTime": {
         "message": "Your brand new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
         "planMessage": {
@@ -244,6 +244,24 @@
       "header": "Create your first map to predict key insights",
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
       "button": "Create your first Map"
+    },
+    "RecentSection": {
+      "title": "Recent content",
+      "viewTagsAction": "View your tags"
+    },
+    "TagsSection": {
+      "title": "Your tags",
+      "viewRecentContentAction": "View recent content"
+    }
+  },
+  "TrialExpired": {
+    "ExpirationMessage": {
+      "title": "Your trial has expired",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. If you have any question after your trial, please <a class='is-underline is-txtDarkBlue' href='mailto:sales@carto.com'>contact sales</a>.",
+      "actions": {
+        "addPayments": "Add payment method",
+        "deleteAccount": "Delete account"
+      }
     }
   },
   "QuotaSection": {
@@ -287,5 +305,9 @@
       "title": "Your organization's administrator",
       "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
     }
+  },
+  "TagCard": {
+    "maps": "0 maps | {maps} map | {maps} maps",
+    "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
   }
 }

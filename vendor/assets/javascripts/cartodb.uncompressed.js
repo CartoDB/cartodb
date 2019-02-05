@@ -1,6 +1,6 @@
 // cartodb.js version: 3.15.13
 // uncompressed version: cartodb.uncompressed.js
-// sha: 5ff0f25faccf946381124753350615139a823a55
+// sha: b656e66bfe30e3d135afd9335c664d6c61335af4
 (function() {
   var define;  // Undefine define (require.js), see https://github.com/CartoDB/cartodb.js/issues/543
   var root = this;

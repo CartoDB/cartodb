@@ -60,7 +60,6 @@ module Resque
         def self.perform(account_type)
           rate_limit = Carto::AccountType.find(account_type).rate_limit
           Carto::User.where(account_type: account_type, rate_limit_id: nil).find_each do |user|
-            next unless user.has_feature_flag?('limits_v2')
             rate_limit.save_to_redis(user)
           end
         rescue StandardError => e

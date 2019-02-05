@@ -35,10 +35,12 @@
           v-if="!isEmptyState && !isInitialState"
           :maps="maps"
           :isFetchingMaps="isFetchingMaps"
-          @dataChanged="fetchMaps"
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @applyOrder="applyOrder"
         ></MapList>
 
-        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
+        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyCase.default')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 
@@ -80,14 +82,14 @@ export default {
   methods: {
     applyFilter (filter) {
       this.$store.dispatch('maps/filterMaps', filter);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     applyOrder (orderOptions) {
       this.$store.dispatch('maps/orderMaps', orderOptions);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     fetchMaps () {
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     }
   },
   computed: {

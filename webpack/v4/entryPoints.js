@@ -33,6 +33,11 @@ module.exports = {
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
+  header: [
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
+    rootDir('assets/stylesheets/new-dashboard/bundles/header.scss')
+  ],
+
   public_table_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
     rootDir('assets/stylesheets/table/table.scss'),
@@ -94,6 +99,11 @@ module.exports = {
   confirmation: rootDir('lib/assets/javascripts/dashboard/confirmation.js'),
 
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
+
+  new_lockout: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
+  ],
 
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),

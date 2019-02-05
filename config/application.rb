@@ -71,6 +71,7 @@ module CartoDB
       cdb.js
       carto_node.js
       embed.js
+      header.js
       dashboard_templates.js
       dashboard_deps.js
       dashboard.js
@@ -134,6 +135,7 @@ module CartoDB
       confirmation.js
       organization.js
       lockout.js
+      new_lockout.js
 
       tipsy.js
       modernizr.js
@@ -157,11 +159,14 @@ module CartoDB
       cartodb.css
       front.css
       editor.css
+      new_lockout.css
+      new_dashboard.css
 
       common_editor3.css
       editor3.css
       builder_embed.css
 
+      header.css
       table.css
       leaflet.css
       map.css

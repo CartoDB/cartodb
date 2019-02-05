@@ -30,7 +30,7 @@ export default {
       );
 
       visDefinitionModel.on('change', model => {
-        this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+        this.$emit('updateVisualization', model);
       });
 
       const mapMetadataView = new MapMetadataDialog({

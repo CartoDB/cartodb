@@ -1,7 +1,6 @@
 <template>
   <QuickActions
     :actions="actions[actionMode]"
-    :hasShadow="false"
     v-on="getEventListeners()"
     ref="quickActions"
     @open="openQuickactions"

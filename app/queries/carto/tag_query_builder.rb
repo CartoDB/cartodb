@@ -24,8 +24,8 @@ class Carto::TagQueryBuilder
   def sql_query
     %{
       SELECT LOWER(unnest(tags)) AS tag,
-        SUM(CASE type WHEN 'derived' THEN 1 ELSE 0 END) AS derived_count,
-        SUM(CASE type WHEN 'table' THEN 1 ELSE 0 END) AS table_count
+        count(*) FILTER(WHERE type = 'derived') AS derived_count,
+        count(*) FILTER(WHERE type = 'table') AS table_count
       FROM visualizations
       WHERE user_id = ?
       GROUP BY tag

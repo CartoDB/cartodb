@@ -20,6 +20,9 @@ Development
 - Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 - Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
 - Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
+- Fix Links to datasets shared with me ([CartoDB/product#229](https://github.com/CartoDB/product/issues/229))
+- Order Datasets by "Favourited first" and "Last Modified" ([CartoDB/product#237](https://github.com/CartoDB/product/issues/237))
+- Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
 
 4.25.0 (2019-01-28)
 -------------------

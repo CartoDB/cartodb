@@ -7,7 +7,8 @@
         </template>
 
         <template slot="actionButton">
-          <button class="button button--small is-primary button--ghost" @click="goToTagsSection">
+          <button class="button button--small is-primary button--ghost button--last" @click="goToTagsSection">
+            <img svg-inline src="../../../assets/icons/sections/recent-content/tags.svg" class="recent__action"/>
             {{ $t('HomePage.RecentSection.viewTagsAction') }}
           </button>
         </template>
@@ -71,3 +72,9 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.recent__action {
+  margin-right: 12px;
+}
+</style>

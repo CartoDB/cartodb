@@ -15,6 +15,7 @@ module Carto
       include AccountTypeHelper
       include AvatarHelper
       include Carto::ControllerHelper
+      include PagedSearcher
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -144,8 +145,7 @@ module Carto
       end
 
       def tags
-        page = (params[:page].presence || 1).to_i
-        per_page = (params[:per_page].presence || DEFAULT_TAGS_PER_PAGE).to_i
+        page, per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
 
         query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
         result = query_builder.build_paged(page, per_page)

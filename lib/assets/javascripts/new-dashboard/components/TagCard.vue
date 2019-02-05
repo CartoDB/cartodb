@@ -3,10 +3,10 @@
     <article class="card tag">
       <h3 class="tag__title title is-medium is-semibold">{{ tag.tag }}</h3>
       <ul>
-        <li class="tag__count text is-caption">
+        <li class="tag__count tag__count--maps text is-caption">
           {{ $tc('TagCard.maps', tag.maps, { maps: tag.maps }) }}
         </li>
-        <li class="tag__count text is-caption">
+        <li class="tag__count tag__count--datasets text is-caption">
           {{ $tc('TagCard.datasets', tag.datasets, { datasets: tag.datasets }) }}
         </li>
       </ul>
@@ -37,11 +37,43 @@ export default {
 
 .tag__title,
 .tag__count {
+  position: relative;
   margin-bottom: 8px;
   color: $text-color;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 12px;
+    height: 100%;
+    transform: translate3d(0, -50%, 0);
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: contain;
+  }
+}
+
+.tag__count {
+  padding-left: 24px;
 }
 
 .link:hover {
   text-decoration: none;
+}
+
+.tag__count--maps {
+  &::before {
+    width: 15px;
+    background-image: url('../assets/icons/sections/tags/map.svg');
+  }
+}
+
+.tag__count--datasets {
+  &::before {
+    width: 14px;
+    background-image: url('../assets/icons/sections/tags/datasets.svg');
+  }
 }
 </style>

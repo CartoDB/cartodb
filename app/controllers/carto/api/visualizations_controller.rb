@@ -120,7 +120,7 @@ module Carto
           liked: @visualization.liked_by?(current_viewer)
         )
       rescue Carto::Visualization::UnauthorizedLikeError
-        render_jsonp({ text: "You don't have enough permissions to unfavorite this visualization" }, 403)
+        render_jsonp({ text: "You don't have enough permissions to favorite this visualization" }, 403)
       rescue Carto::Visualization::AlreadyLikedError
         render_jsonp({ text: "You've already favorited this visualization" }, 400)
       end

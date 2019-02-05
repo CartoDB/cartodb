@@ -93,7 +93,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
-    @user.organization.notify_if_seat_limit_reached
+    @user.organization.notify_if_seat_limit_reached unless @user.viewer?
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user

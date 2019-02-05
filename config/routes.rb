@@ -657,7 +657,7 @@ CartoDB::Application.routes.draw do
         post 'verify_code', on: :member
       end
 
-      get 'tags' => 'users#tags', as: :api_v3_users_tags
+      get 'tags' => 'tags#index', as: :api_v3_users_tags
     end
 
     scope 'v2/' do

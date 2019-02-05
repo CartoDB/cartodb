@@ -15,7 +15,6 @@ module Carto
       include AccountTypeHelper
       include AvatarHelper
       include Carto::ControllerHelper
-      include PagedSearcher
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -23,8 +22,6 @@ module Carto
       ].freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
-
-      DEFAULT_TAGS_PER_PAGE = 6
 
       ssl_required
 
@@ -142,15 +139,6 @@ module Carto
         # referer_match[6] is the username
         referer_organization_username = referer_match[6]
         render_auth_users_data(session_user, referer, subdomain, referer_organization_username)
-      end
-
-      def tags
-        page, per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
-
-        query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
-        result = query_builder.build_paged(page, per_page)
-
-        render json: result
       end
 
       private

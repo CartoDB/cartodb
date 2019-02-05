@@ -26,6 +26,26 @@ describe Carto::TagQueryBuilder do
       result.should eql []
     end
 
+    it 'ignores empty tags' do
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id)
+      visualization = Carto::Visualization.first
+      visualization.update_attribute(:tags, [])
+
+      result = @builder.build_paged(1, 10)
+
+      result.should eql []
+    end
+
+    it 'ignores nil tags' do
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id)
+      visualization = Carto::Visualization.first
+      visualization.update_attribute(:tags, nil)
+
+      result = @builder.build_paged(1, 10)
+
+      result.should eql []
+    end
+
     it 'returns the tags in lowercase and merges tags with different letter case' do
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["USER1"])
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["uSeR1"])

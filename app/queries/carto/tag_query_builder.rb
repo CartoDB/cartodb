@@ -28,7 +28,6 @@ class Carto::TagQueryBuilder
         SUM(CASE type WHEN 'table' THEN 1 ELSE 0 END) AS table_count
       FROM visualizations
       WHERE user_id = ?
-        AND array_length(tags, 1) > 0
       GROUP BY tag
       ORDER BY COUNT(*) DESC
       LIMIT ?

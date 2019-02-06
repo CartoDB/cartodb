@@ -4,7 +4,6 @@ require 'carto/export/data_import_exporter'
 require_dependency 'carto/export/connector_configuration_exporter'
 
 # Not migrated
-# likes -> difficult to do between clouds
 # snapshots -> difficult to do between clouds, not in use yet
 # tags -> regenerated from tables
 # visualization_export -> only purpose would be logging

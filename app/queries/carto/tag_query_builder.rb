@@ -11,7 +11,7 @@ class Carto::TagQueryBuilder
   def build_paged(page, per_page)
     limit = per_page.to_i
     offset = (page.to_i - 1) * per_page.to_i
-    query = ActiveRecord::Base.send(:sanitize_sql_array, [sql_query, @user_id, limit, offset])
+    query = ActiveRecord::Base.send(:sanitize_sql_array, [select_sql, @user_id, limit, offset])
 
     connection = ActiveRecord::Base.connection
     result = connection.exec_query(query)
@@ -19,9 +19,18 @@ class Carto::TagQueryBuilder
     format_response(result)
   end
 
+  def total_count
+    query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id])
+
+    connection = ActiveRecord::Base.connection
+    result = connection.exec_query(query)
+
+    result.cast_values.first
+  end
+
   private
 
-  def sql_query
+  def select_sql
     %{
       SELECT LOWER(unnest(tags)) AS tag,
         count(*) FILTER(WHERE type = 'derived') AS derived_count,
@@ -32,6 +41,17 @@ class Carto::TagQueryBuilder
       ORDER BY COUNT(*) DESC
       LIMIT ?
       OFFSET ?
+    }.squish
+  end
+
+  def count_sql
+    %{
+      SELECT COUNT(DISTINCT(tag))
+      FROM (
+        SELECT LOWER(unnest(tags)) AS tag
+        FROM visualizations
+        WHERE user_id = ?
+      ) AS tags
     }.squish
   end
 

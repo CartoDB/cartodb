@@ -5,11 +5,11 @@ require_relative '../../spec_helper_min'
 describe Carto::TagQueryBuilder do
   include_context 'users helper'
 
-  describe "#build_paged" do
-    before(:all) do
-      @builder = Carto::TagQueryBuilder.new(@user1.id)
-    end
+  before(:all) do
+    @builder = Carto::TagQueryBuilder.new(@user1.id)
+  end
 
+  describe "#build_paged" do
     it 'returns an empty array when the user has no visualizations' do
       FactoryGirl.create(:derived_visualization, user_id: @user2.id, tags: ["user2"])
 
@@ -99,10 +99,6 @@ describe Carto::TagQueryBuilder do
     end
 
     context "pagination" do
-      before(:all) do
-        @builder = Carto::TagQueryBuilder.new(@user1.id)
-      end
-
       before(:each) do
         FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1"])
         FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1", "tag2"])
@@ -130,4 +126,21 @@ describe Carto::TagQueryBuilder do
     end
   end
 
+  describe "#total_count" do
+    it 'returns 0 when there are no tags' do
+      result = @builder.total_count
+
+      result.should eql 0
+    end
+
+    it 'returns the number of different tags (not case-sensitive)' do
+      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["user1"])
+      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["uSeR1"])
+
+      result = @builder.total_count
+
+      result.should eql 2
+    end
+  end
 end

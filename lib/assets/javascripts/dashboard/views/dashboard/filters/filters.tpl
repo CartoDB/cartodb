@@ -30,14 +30,6 @@
           </a>
         </li>
       <% } %>
-      <li class="Filters-typeItem">
-        <a class="Filters-typeLink CDB-Text CDB-Size-medium is-semibold u-upperCase js-link <%- liked ? 'is-selected' : '' %>" href="<%- currentDashboardUrl.likedItems() %>">
-          <% if (totalLiked) { %>
-            <strong><%- totalLiked %></strong>
-          <% } %>
-          Liked
-        </a>
-      </li>
       <% if (hasCreateMapsFeature && !isMaps && isDataLibraryEnabled) { %>
         <li class="Filters-typeItem CDB-Text CDB-Size-medium is-semibold u-upperCase">
           <a class="Filters-typeLink js-link <%- library ? 'is-selected' : '' %>" href="<%- currentDashboardUrl.dataLibrary() %>">
@@ -71,11 +63,6 @@
       <li class="Filters-orderItem">
         <a data-title="visits" class="js-order-link Filters-orderLink Filters-orderLink--graph js-mapviews <%- order === 'mapviews' ? 'is-selected' : '' %>" href="#/views">
           <i class="CDB-IconFont CDB-IconFont-stats"></i>
-        </a>
-      </li>
-      <li class="Filters-orderItem">
-        <a data-title="likes" class="js-order-link Filters-orderLink Filters-orderLink--heart js-likes <%- order === 'likes' ? 'is-selected' : '' %>" href="#/likes">
-          <i class="CDB-IconFont CDB-IconFont-heartEmpty"></i>
         </a>
       </li>
       <% if (!isMaps) { %>

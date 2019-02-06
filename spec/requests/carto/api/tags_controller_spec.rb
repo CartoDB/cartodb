@@ -22,7 +22,10 @@ describe Carto::Api::TagsController do
 
     it 'returns a 200 response with the current user tags' do
       FactoryGirl.create(:derived_visualization, user_id: @user.id, tags: ["etiqueta"])
-      expected_result = [{ "tag" => "etiqueta", "maps" => 1, "datasets" => 0 }]
+      expected_result = {
+        tags: [{ tag: "etiqueta", maps: 1, datasets: 0 }],
+        total: 1
+      }
 
       get_json api_v3_users_tags_url(@params), @headers do |response|
         expect(response.status).to eq(200)

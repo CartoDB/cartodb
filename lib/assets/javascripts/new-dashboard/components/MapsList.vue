@@ -1,7 +1,7 @@
 <template>
   <div class="container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
+      <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
         </template>
@@ -41,7 +41,7 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <div :class="{ 'grid-cell': isCondensed }">
+      <div>
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
@@ -86,7 +86,7 @@ import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
-  name: 'MapComponent',
+  name: 'MapsList',
   props: {
     maxVisibleMaps: {
       type: Number,
@@ -133,12 +133,8 @@ export default {
     this.$store.dispatch('maps/setPerPage', this.maxVisibleMaps);
     this.fetchMaps();
   },
-  mounted () {
-    this.loadUserConfiguration();
-  },
   computed: {
     ...mapState({
-
       appliedFilter: state => state.maps.filterType,
       appliedOrder: state => state.maps.order,
       appliedOrderDirection: state => state.maps.orderDirection,
@@ -224,14 +220,8 @@ export default {
     toggleViewMode () {
       this.isCondensed = !this.isCondensed;
     },
-    loadUserConfiguration () {
-      if (localStorage.hasOwnProperty('mapViewMode')) {
-        if (localStorage.mapViewMode === 'compact') {
-          this.isCondensed = true;
-        } else if (localStorage.mapViewMode === 'standard') {
-          this.isCondensed = false;
-        }
-      }
+    getHeaderContainer () {
+      return this.$refs.headerContainer;
     }
   },
   watch: {
@@ -244,12 +234,6 @@ export default {
     },
     selectedMaps () {
       this.$emit('updateSelected', this.selectedMaps);
-    },
-    initialState () {
-      this.$emit('isInitialOrEmpty', true);
-    },
-    emptyState () {
-      this.$emit('isInitialOrEmpty', true);
     }
   }
 };

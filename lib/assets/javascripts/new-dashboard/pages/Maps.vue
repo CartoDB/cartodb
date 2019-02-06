@@ -10,15 +10,16 @@
         @selectAll="selectAll"
         @deselectAll="deselectAll"></MapBulkActions>
     </StickySubheader>
-    <MapComponent
+    <MapsList
       :hasBulkActions="true"
+      :isCondensedDefault="isCondensed"
       :canChangeViewMode="true"
       :canHoverCard="true"
       :maxVisibleMaps="maxVisibleMaps"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
       @updateSelected="updateSelected"
-      ref="mapComponent"/>
+      ref="mapsList"/>
     <div>
       <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
     </div>
@@ -31,7 +32,7 @@ import { mapState } from 'vuex';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import Pagination from 'new-dashboard/components/Pagination';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
-import MapComponent from 'new-dashboard/components/MapComponent.vue';
+import MapsList from 'new-dashboard/components/MapsList.vue';
 
 export default {
   name: 'MapsPage',
@@ -39,20 +40,24 @@ export default {
     MapBulkActions,
     StickySubheader,
     Pagination,
-
-    MapComponent
+    MapsList
   },
   data () {
     return {
       isScrollPastHeader: false,
       maxVisibleMaps: 12,
-      selectedMaps: []
+      selectedMaps: [],
+      isCondensed: false
     };
+  },
+  created: function () {
+    this.loadUserConfiguration();
   },
   mounted () {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
     document.addEventListener('scroll', this.$onScrollChange, { passive: true });
+
   },
   beforeDestroy () {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
@@ -66,7 +71,7 @@ export default {
       currentPage: state => state.maps.page,
       maps: state => state.maps.list,
       isFetchingMaps: state => state.maps.isFetching,
-      numResults: state => state.maps.metadata.total_entries,
+      numResults: state => state.maps.metadata.total_entries
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
@@ -108,17 +113,27 @@ export default {
       });
     },
     selectAll () {
-      this.$refs.mapComponent.selectAll();
+      this.$refs.mapsList.selectAll();
     },
     deselectAll () {
-      this.$refs.mapComponent.deselectAll();
+      this.$refs.mapsList.deselectAll();
     },
     onScrollChange () {
       this.isScrollPastHeader = window.pageYOffset > this.stickyScrollPosition;
     },
     getHeaderBottomPageOffset () {
-      const headerClientRect = this.$refs.mapComponent.$refs.headerContainer.$el.getBoundingClientRect();
-      return headerClientRect.top;
+      const headerContainer = this.$refs.mapsList.getHeaderContainer();
+      const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
+      return headerBoundingClientRect.top;
+    },
+    loadUserConfiguration () {
+      if (localStorage.hasOwnProperty('mapViewMode')) {
+        if (localStorage.mapViewMode === 'compact') {
+          this.isCondensed = true;
+        } else if (localStorage.mapViewMode === 'standard') {
+          this.isCondensed = false;
+        }
+      }
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <section class="maps-section">
-    <MapComponent
+    <MapsList
     :hasBulkActions="false"
     :isCondensedDefault="true"
     :canChangeViewMode="false"
@@ -9,7 +9,7 @@
     :showViewAll="true"
     @applyFilter="applyFilter"
     @applyOrder="applyOrder"
-    @isInitialOrEmpty="isInitialOrEmpty"/>
+    @isInitialOrEmpty="showViewAllLink"/>
 
     <router-link :to="{ name: 'maps' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
@@ -17,18 +17,40 @@
 
 <script>
 import { mapState } from 'vuex';
-import MapComponent from 'new-dashboard/components/MapComponent.vue';
+import MapsList from 'new-dashboard/components/MapsList.vue';
 
 export default {
   name: 'MapsSection',
   components: {
-    MapComponent
+    MapsList
   },
   data () {
     return {
-      showViewAllLink: true,
       maxVisibleMaps: 6
     };
+  },
+  computed: {
+    ...mapState({
+      appliedFilter: state => state.maps.filterType,
+      appliedOrder: state => state.maps.order,
+      isFetchingMaps: state => state.maps.isFetching,
+      numResults: state => state.maps.metadata.total_entries,
+      filterType: state => state.maps.filterType,
+      totalUserEntries: state => state.maps.metadata.total_user_entries,
+      totalShared: state => state.maps.metadata.total_shared
+    }),
+    mapsLinkText () {
+      return this.$t('HomePage.MapsSection.allMapsLink');
+    },
+    initialState () {
+      return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+    },
+    emptyState () {
+      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+    },
+    showViewAllLink () {
+      return !(this.initialState || this.emptyState);
+    }
   },
   methods: {
     applyFilter (filter) {
@@ -39,17 +61,8 @@ export default {
       this.$store.dispatch('maps/orderMaps', orderOptions);
       this.$store.dispatch('maps/fetch');
     },
-    isInitialOrEmpty (initialOrEmpty) {
-      this.showViewAllLink = !initialOrEmpty;
-    }
-  },
-  computed: {
-    ...mapState({
-      appliedFilter: state => state.maps.filterType,
-      appliedOrder: state => state.maps.order
-    }),
-    mapsLinkText () {
-      return this.$t('HomePage.MapsSection.allMapsLink');
+    hasFilterApplied (filter) {
+      return this.filterType === filter;
     }
   }
 };

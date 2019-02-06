@@ -254,7 +254,7 @@
       "viewRecentContentAction": "View recent content",
       "emptyState": {
         "title": "You have no tags.",
-        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"#\">dashboard</a>."
+        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"https://carto.com/help/getting-started/dashboard/\">dashboard</a>."
       },
       "loading": "Asking the server politely for your tags."
     }

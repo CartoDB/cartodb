@@ -197,7 +197,7 @@ class Carto::VisualizationQueryBuilder
   def build
     query = Carto::Visualization.all
     query = Carto::VisualizationQueryFilterer.new(query).filter(@filtering_params)
-    query = with_associations(query, @filtering_params)
+    query = with_associations(query)
     order_query(query)
   end
 
@@ -236,7 +236,7 @@ class Carto::VisualizationQueryBuilder
     # And what is the difference?
     #  - Filtering leaves only the favorited/liked visualizations by the user
     #  - With favorited we add the like/favorite data to the visualization information
-    query = with_favorited(query) unless filtering_params[:liked_by_user_id]
+    query = with_favorited(query) unless @filtering_params[:liked_by_user_id]
     with_dependent_visualization_count(query)
   end
 

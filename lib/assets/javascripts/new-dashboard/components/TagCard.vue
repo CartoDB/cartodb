@@ -53,6 +53,10 @@ export default {
     background-position: center left;
     background-size: contain;
   }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .tag__count {

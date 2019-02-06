@@ -40,7 +40,7 @@
           @applyOrder="applyOrder"
         ></MapList>
 
-        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyState')" >
+        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyCase.default')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 
@@ -76,20 +76,20 @@ export default {
     SettingsDropdown
   },
   created: function () {
-    this.$store.dispatch('maps/setPerPage', MAX_VISIBLE_MAPS);
+    this.$store.dispatch('maps/setResultsPerPage', MAX_VISIBLE_MAPS);
     this.fetchMaps();
   },
   methods: {
     applyFilter (filter) {
       this.$store.dispatch('maps/filterMaps', filter);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     applyOrder (orderOptions) {
       this.$store.dispatch('maps/orderMaps', orderOptions);
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     },
     fetchMaps () {
-      this.$store.dispatch('maps/fetchMaps');
+      this.$store.dispatch('maps/fetch');
     }
   },
   computed: {

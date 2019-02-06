@@ -6,6 +6,7 @@ Development
 
 ### Features
 - /tags endpoint to retrieve the user's tags with usage count (https://github.com/CartoDB/product/issues/208)
+- Remove support for likes in favor of having favorites [#14618](https://github.com/CartoDB/cartodb/pull/14618))
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
@@ -20,6 +21,11 @@ Development
 - Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 - Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
 - Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
+- Fix Links to datasets shared with me ([CartoDB/product#229](https://github.com/CartoDB/product/issues/229))
+- Order Datasets by "Favourited first" and "Last Modified" ([CartoDB/product#237](https://github.com/CartoDB/product/issues/237))
+- Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
+- Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
+- Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 
 4.25.0 (2019-01-28)
 -------------------
@@ -41,6 +47,7 @@ Development
 * Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
 * Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 * Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
+* Send visited page event when is first time visiting New Dashboard ([product#209](https://github.com/CartoDB/product/issues/209))
 
 4.24.0 (2019-01-16)
 -------------------

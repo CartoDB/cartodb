@@ -1,7 +1,6 @@
 <template>
   <QuickActions
     :actions="actions[actionMode]"
-    :hasShadow="false"
     v-on="getEventListeners()"
     ref="quickActions"
     @open="openQuickactions"
@@ -9,7 +8,7 @@
 </template>
 
 <script>
-import * as Table from 'new-dashboard/core/table';
+import * as Table from 'new-dashboard/core/models/table';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 
@@ -21,6 +20,10 @@ export default {
   },
   props: {
     dataset: Object,
+    storeActionType: {
+      type: String,
+      default: 'datasets'
+    },
     isShared: {
       type: Boolean,
       default: false
@@ -68,10 +71,10 @@ export default {
       return {
         deselectAll: () => {},
         fetchList: () => {
-          this.$store.dispatch('datasets/fetchDatasets');
+          this.$store.dispatch(`${this.storeActionType}/fetch`);
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('datasets/updateDataset', { datasetId: model.get('id'), datasetAttributes: model.attributes });
+          this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },

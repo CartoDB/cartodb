@@ -30,7 +30,7 @@ export default {
       );
 
       visDefinitionModel.on('change', model => {
-        this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+        this.$emit('updateVisualization', model);
       });
 
       const mapMetadataView = new MapMetadataDialog({
@@ -40,10 +40,6 @@ export default {
       });
 
       mapMetadataView.render();
-
-      // Listen to close button click in Footer
-      const closeButton = mapMetadataView.$el.find('.js-close');
-      closeButton.on('click', () => this.$emit('close'));
 
       return mapMetadataView;
     }

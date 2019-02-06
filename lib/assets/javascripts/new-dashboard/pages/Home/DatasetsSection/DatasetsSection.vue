@@ -4,7 +4,7 @@
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="title">
           <template slot="icon">
-            <img src="../../../assets/icons/section-title/data.svg">
+            <img src="../../../assets/icons/section-title/data.svg" width="18" height="20">
           </template>
           <template slot="dropdownButton">
             <SettingsDropdown
@@ -35,7 +35,7 @@
           </template>
         </InitialState>
 
-        <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyState')" >
+        <EmptyState v-if="isEmptyState" :text="$t('DataPage.emptyCase.default')" >
           <img svg-inline src="../../../assets/icons/common/compass.svg">
         </EmptyState>
 
@@ -110,13 +110,13 @@ export default {
   },
   methods: {
     applyOrder (orderOptions) {
-      this.$store.dispatch('datasets/orderDatasets', orderOptions);
+      this.$store.dispatch('datasets/order', orderOptions);
     },
     applyFilter (filterType) {
-      this.$store.dispatch('datasets/filterDatasets', filterType);
+      this.$store.dispatch('datasets/filter', filterType);
     },
     fetchDatasets () {
-      this.$store.dispatch('datasets/fetchDatasets');
+      this.$store.dispatch('datasets/fetch');
     },
     hasFilterApplied (filter) {
       return this.appliedFilter === filter;

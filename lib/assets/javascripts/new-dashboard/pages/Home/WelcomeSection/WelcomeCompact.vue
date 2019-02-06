@@ -23,11 +23,11 @@ export default {
     CreateButton
   },
   props: {
-    username: String
+    name: String
   },
   computed: {
     greeting () {
-      return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
+      return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     }
   }
 };

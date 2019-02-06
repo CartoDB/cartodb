@@ -14,7 +14,7 @@
 
     <ul class="grid-cell grid-cell--col12" v-if="isMapListVisible">
       <li v-for="map in maps" class="card-condensed" :key="map.id">
-        <MapCard :condensed="true" :map="map" :canHover="false"></MapCard>
+        <MapCard :condensed="true" :visualization="map" :canHover="false"></MapCard>
       </li>
     </ul>
   </div>

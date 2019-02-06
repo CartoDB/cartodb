@@ -1,7 +1,7 @@
 <template>
   <section class="welcome-section">
-    <WelcomeFirst v-if="isFirst" :username="username" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-if="!isFirst" :username="username" :userType="userType">
+    <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
+    <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
         <span class="text is-small">{{ trialTimeLeft }}</span>
         <a class="button button--small button--outline" :href="accountUpdateURL">
@@ -19,7 +19,7 @@ import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
-import { isOrganizationAdmin } from 'new-dashboard/core/organization';
+import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
 
 export default {
   name: 'Welcome',
@@ -35,7 +35,7 @@ export default {
       accountUpdateURL: state => state.config.accountUpdateURL,
       trialEndDate: state => state.user.trial_ends_at,
       user: state => state.user,
-      username: state => state.user.username,
+      name: state => state.user.name || state.user.username,
       organization: state => state.user.organization,
       notifications: state => state.user.organizationNotifications
     }),

@@ -41,7 +41,7 @@ export default {
       backgroundPollingView.model.on('change', model => {
         if (model.get('state') === 'complete' &&
             this.$props.routeType === 'datasets') {
-          this.$store.dispatch('datasets/fetchDatasets');
+          this.$store.dispatch('datasets/fetch');
         }
       });
 

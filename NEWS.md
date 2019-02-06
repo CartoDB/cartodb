@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
+- Improve the in_database operations fixing some rails behaviors that were problematic for us ([#14642]https://github.com/CartoDB/cartodb/pull/14642)
 - Makes maps listing go faster with related tables (user db size cache issue, #14165)
 - Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
 - Update CARTO.js to v4.1.10

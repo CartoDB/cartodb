@@ -67,7 +67,10 @@ export default {
   },
   methods: {
     goToTagsSection () {
-      this.$emit('sectionChange', 'TagsSection');
+      const section = 'TagsSection';
+
+      this.$emit('sectionChange', section);
+      this.$router.push({ query: { section, sectionPage: 1 } });
     }
   }
 };

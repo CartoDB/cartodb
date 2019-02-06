@@ -50,7 +50,8 @@ export default {
     LoadingState
   },
   mounted () {
-    this.getTags();
+    const page = parseInt(this.$route.query.sectionPage);
+    this.goToPage(page);
   },
   data () {
     return {
@@ -77,7 +78,10 @@ export default {
   },
   methods: {
     goToRecentSection () {
-      this.$emit('sectionChange', 'RecentSection');
+      const section = 'RecentSection';
+
+      this.setURLParams({ section, sectionPage: 1 });
+      this.$emit('sectionChange', section);
     },
     getTags (options = {}) {
       this.isFetching = true;
@@ -92,12 +96,16 @@ export default {
 
           this.tags = tags.result;
           this.totalTags = tags.total;
+          this.currentPage = options.page;
         }
       );
     },
     goToPage (page) {
-      this.currentPage = page;
+      this.setURLParams({ sectionPage: page });
       this.getTags({ page });
+    },
+    setURLParams ({ section = 'TagsSection', sectionPage = 1 }) {
+      this.$router.push({ query: { section, sectionPage } });
     }
   }
 };

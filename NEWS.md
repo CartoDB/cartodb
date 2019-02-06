@@ -25,6 +25,7 @@ Development
 - Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
 - Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
 - Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+- Avoid sending seat limit reached email if the new user is viewer ([#14650](https://github.com/CartoDB/cartodb/pull/14650))
 
 4.25.0 (2019-01-28)
 -------------------

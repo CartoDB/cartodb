@@ -54,7 +54,7 @@ module Carto
     end
 
     # NOTE: Sorting for model associations (which return arrays) or arrays will be done based on length
-    # e.g. visualization.likes
+    # e.g. visualization.analyses
     def get_results
       all = @query.all
       @order_by_asc_or_desc_by_attribute.each do |attribute, asc_or_desc|

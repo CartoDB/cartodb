@@ -1,5 +1,4 @@
 <template>
-<section class="page">
   <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title='pageTitle' :showActionButton="!selectedMaps.length" ref="headerContainer">
@@ -68,14 +67,11 @@
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
-      <!-- <Pagination class="pagination-element" v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination> -->
     </div>
   </div>
-</section>
 </template>
 
 <script>
-// import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import { mapState } from 'vuex';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
@@ -85,10 +81,8 @@ import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
-// import Pagination from 'new-dashboard/components/Pagination';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-// import StickySubheader from 'new-dashboard/components/StickySubheader';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
@@ -125,8 +119,6 @@ export default {
     CondensedMapHeader,
     MapCardFake,
     SectionTitle,
-    // StickySubheader,
-    // Pagination,
     InitialState
   },
   data () {
@@ -141,31 +133,18 @@ export default {
     this.$store.dispatch('maps/setPerPage', this.maxVisibleMaps);
     this.fetchMaps();
   },
-  // mounted () {
-  //   // this.stickyScrollPosition = this.getHeaderBottomPageOffset();
-  //   this.$onScrollChange = this.onScrollChange.bind(this);
-  //   document.addEventListener('scroll', this.$onScrollChange, { passive: true });
-
-  //   this.loadUserConfiguration();
-  // },
-  // beforeDestroy () {
-  //   document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
-  // },
-  // beforeRouteUpdate (to, from, next) {
-  //   checkFilters('maps', 'maps', to, from, next);
-  // },
+  mounted () {
+    this.loadUserConfiguration();
+  },
   computed: {
     ...mapState({
-      // numPages: state => state.maps.numPages,
-      // currentPage: state => state.maps.page,
+
       appliedFilter: state => state.maps.filterType,
       appliedOrder: state => state.maps.order,
       appliedOrderDirection: state => state.maps.orderDirection,
       maps: state => state.maps.list,
       mapsMetadata: state => state.maps.metadata,
       isFetchingMaps: state => state.maps.isFetching,
-      featuredFavoritedMaps: state => state.maps.featuredFavoritedMaps.list,
-      isFetchingFeaturedFavoritedMaps: state => state.maps.featuredFavoritedMaps.isFetching,
       numResults: state => state.maps.metadata.total_entries,
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
@@ -195,6 +174,9 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    mapsLinkText () {
+      return this.$t('HomePage.MapsSection.allMapsLink');
     }
   },
   methods: {
@@ -205,7 +187,6 @@ export default {
       this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
-      // this.$router.push({ name: 'maps', params: { filter } });
       this.$emit('applyFilter', filter);
     },
     applyOrder (orderParams) {
@@ -243,15 +224,15 @@ export default {
     toggleViewMode () {
       this.isCondensed = !this.isCondensed;
     },
-    // loadUserConfiguration () {
-    //   if (localStorage.hasOwnProperty('mapViewMode')) {
-    //     if (localStorage.mapViewMode === 'compact') {
-    //       this.isCondensed = true;
-    //     } else if (localStorage.mapViewMode === 'standard') {
-    //       this.isCondensed = false;
-    //     }
-    //   }
-    // }
+    loadUserConfiguration () {
+      if (localStorage.hasOwnProperty('mapViewMode')) {
+        if (localStorage.mapViewMode === 'compact') {
+          this.isCondensed = true;
+        } else if (localStorage.mapViewMode === 'standard') {
+          this.isCondensed = false;
+        }
+      }
+    }
   },
   watch: {
     isCondensed (isCompactMapView) {
@@ -260,6 +241,15 @@ export default {
       } else {
         localStorage.mapViewMode = 'standard';
       }
+    },
+    selectedMaps () {
+      this.$emit('updateSelected', this.selectedMaps);
+    },
+    initialState () {
+      this.$emit('isInitialOrEmpty', true);
+    },
+    emptyState () {
+      this.$emit('isInitialOrEmpty', true);
     }
   }
 };

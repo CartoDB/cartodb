@@ -1,83 +1,34 @@
 <template>
   <section class="maps-section">
-    <div class="container grid">
-      <div class="full-width">
-        <SectionTitle class="grid-cell" :title="title">
-          <template slot="icon">
-            <img src="../../../assets/icons/section-title/map.svg">
-          </template>
+    <MapComponent
+    :hasBulkActions="false"
+    :isCondensedDefault="true"
+    :canChangeViewMode="false"
+    :canHoverCard="false"
+    :maxVisibleMaps="maxVisibleMaps"
+    :showViewAll="true"
+    @applyFilter="applyFilter"
+    @applyOrder="applyOrder"
+    @isInitialOrEmpty="isInitialOrEmpty"/>
 
-          <template slot="dropdownButton">
-            <SettingsDropdown
-              section="maps"
-              :filter="appliedFilter"
-              :order="appliedOrder"
-              :orderDirection="appliedOrderDirection"
-              :metadata="metadata"
-              @filterChanged="applyFilter"
-              @orderChanged="applyOrder">
-              <img svg-inline src="../../../assets/icons/common/filter.svg">
-            </SettingsDropdown>
-          </template>
-
-          <template slot="actionButton" v-if="!isInitialState">
-            <CreateButton visualizationType="maps">
-              {{ $t(`MapsPage.createMap`) }}
-            </CreateButton>
-          </template>
-        </SectionTitle>
-
-        <div class="grid-cell">
-          <CreateMapCard v-if="isInitialState"/>
-        </div>
-
-        <MapList
-          v-if="!isEmptyState && !isInitialState"
-          :maps="maps"
-          :isFetchingMaps="isFetchingMaps"
-          :order="appliedOrder"
-          :orderDirection="appliedOrderDirection"
-          @applyOrder="applyOrder"
-        ></MapList>
-
-        <EmptyState v-if="isEmptyState" :text="$t('MapsPage.emptyCase.default')" >
-          <img svg-inline src="../../../assets/icons/common/compass.svg">
-        </EmptyState>
-
-        <MapsLink :text="mapsLinkText" :isEmptyState="isEmptyState" v-if="!isInitialState"></MapsLink>
-      </div>
-    </div>
+    <router-link :to="{ name: 'maps' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import CreateMapCard from 'new-dashboard/components/CreateMapCard.vue';
-import EmptyState from 'new-dashboard/components/States/EmptyState';
-import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions';
-import MapList from './MapList.vue';
-import MapsLink from './MapsLink.vue';
-import SectionTitle from 'new-dashboard/components/SectionTitle.vue';
-import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
-
-const MAX_VISIBLE_MAPS = 6;
+import MapComponent from 'new-dashboard/components/MapComponent.vue';
 
 export default {
   name: 'MapsSection',
   components: {
-    CreateButton,
-    CreateMapCard,
-    EmptyState,
-    MapBulkActions,
-    MapList,
-    MapsLink,
-    SectionTitle,
-    SettingsDropdown
+    MapComponent
   },
-  created: function () {
-    this.$store.dispatch('maps/setPerPage', MAX_VISIBLE_MAPS);
-    this.fetchMaps();
+  data () {
+    return {
+      showViewAllLink: true,
+      maxVisibleMaps: 6
+    };
   },
   methods: {
     applyFilter (filter) {
@@ -88,30 +39,15 @@ export default {
       this.$store.dispatch('maps/orderMaps', orderOptions);
       this.$store.dispatch('maps/fetch');
     },
-    fetchMaps () {
-      this.$store.dispatch('maps/fetch');
+    isInitialOrEmpty (initialOrEmpty) {
+      this.showViewAllLink = !initialOrEmpty;
     }
   },
   computed: {
     ...mapState({
       appliedFilter: state => state.maps.filterType,
-      appliedOrder: state => state.maps.order,
-      appliedOrderDirection: state => state.maps.orderDirection,
-      isFetchingMaps: state => state.maps.isFetching,
-      maps: state => state.maps.list,
-      metadata: state => state.maps.metadata,
-      numResults: state => state.maps.metadata.total_entries,
-      totalUserEntries: state => state.maps.metadata.total_user_entries
+      appliedOrder: state => state.maps.order
     }),
-    title () {
-      return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
-    },
-    isEmptyState () {
-      return !this.isFetchingMaps && !this.numResults && (this.appliedFilter !== 'mine' || this.totalUserEntries > 0);
-    },
-    isInitialState () {
-      return !this.isFetchingMaps && this.appliedFilter === 'mine' && this.totalUserEntries <= 0;
-    },
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.allMapsLink');
     }
@@ -126,5 +62,13 @@ export default {
   .full-width {
     width: 100%;
   }
+}
+
+.viewall-link {
+  display: block;
+  margin-top: 64px;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
 }
 </style>

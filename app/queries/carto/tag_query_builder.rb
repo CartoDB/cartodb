@@ -11,14 +11,21 @@ class Carto::TagQueryBuilder
   def build_paged(page, per_page)
     limit = per_page.to_i
     offset = (page.to_i - 1) * per_page.to_i
-    select_query = ActiveRecord::Base.send(:sanitize_sql_array, [select_sql, @user_id, limit, offset])
-    count_query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id])
+    query = ActiveRecord::Base.send(:sanitize_sql_array, [select_sql, @user_id, limit, offset])
 
     connection = ActiveRecord::Base.connection
-    select_result = connection.exec_query(select_query)
-    count_result = connection.exec_query(count_query)
+    result = connection.exec_query(query)
 
-    format_response(select_result, count_result)
+    format_response(result)
+  end
+
+  def total_count
+    query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id])
+
+    connection = ActiveRecord::Base.connection
+    result = connection.exec_query(query)
+
+    result.cast_values.first
   end
 
   private
@@ -48,16 +55,14 @@ class Carto::TagQueryBuilder
     }.squish
   end
 
-  def format_response(select_result, count_result)
-    count = count_result.cast_values.first
-    tags = select_result.map do |row|
+  def format_response(result)
+    result.map do |row|
       {
         tag: row['tag'],
         maps: row['derived_count'].to_i,
         datasets: row['table_count'].to_i
       }
     end
-    { tags: tags, total: count }
   end
 
 end

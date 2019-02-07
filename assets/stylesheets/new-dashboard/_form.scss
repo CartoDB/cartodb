@@ -7,8 +7,8 @@
     width: 24px;
     height: 24px;
     overflow: hidden;
-    border: 1px solid rgba($text-color, 0.16);
-    border-radius: 3px;
+    border: 1px solid $grey;
+    border-radius: 2px;
     pointer-events: none;
   }
 
@@ -42,6 +42,16 @@
     border-radius: 3px;
     background: none;
     cursor: pointer;
+
+    &::before {
+      content: ' ';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url('../../../lib/assets/javascripts/new-dashboard/assets/icons/common/check-hover.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+    }
 
     &::after {
       content: '';

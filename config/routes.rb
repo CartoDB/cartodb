@@ -173,14 +173,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/:page'          => 'visualizations#index', as: :datasets_shared_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag'       => 'visualizations#index', as: :datasets_shared_locked_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :datasets_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked'                        => 'visualizations#index', as: :datasets_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/:page'                  => 'visualizations#index', as: :datasets_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag'               => 'visualizations#index', as: :datasets_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag/:page'         => 'visualizations#index', as: :datasets_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked'                 => 'visualizations#index', as: :datasets_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/:page'           => 'visualizations#index', as: :datasets_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag'        => 'visualizations#index', as: :datasets_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :datasets_liked_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked'                       => 'visualizations#index', as: :datasets_locked
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/:page'                 => 'visualizations#index', as: :datasets_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag'              => 'visualizations#index', as: :datasets_locked_tag
@@ -211,10 +203,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q/:page'         => 'visualizations#index', as: :datasets_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q'        => 'visualizations#index', as: :datasets_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q/:page'  => 'visualizations#index', as: :datasets_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q'                => 'visualizations#index', as: :datasets_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q/:page'          => 'visualizations#index', as: :datasets_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q'         => 'visualizations#index', as: :datasets_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q/:page'   => 'visualizations#index', as: :datasets_liked_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q'              => 'visualizations#index', as: :datasets_library_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q/:page'        => 'visualizations#index', as: :datasets_library_search_page
 
@@ -253,14 +241,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/:page'          => 'visualizations#index', as: :maps_shared_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag'       => 'visualizations#index', as: :maps_shared_locked_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :maps_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked'                        => 'visualizations#index', as: :maps_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/:page'                  => 'visualizations#index', as: :maps_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag'               => 'visualizations#index', as: :maps_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag/:page'         => 'visualizations#index', as: :maps_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked'                 => 'visualizations#index', as: :maps_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/:page'           => 'visualizations#index', as: :maps_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag'        => 'visualizations#index', as: :maps_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :maps_liked_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked'                       => 'visualizations#index', as: :maps_locked
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/:page'                 => 'visualizations#index', as: :maps_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag'              => 'visualizations#index', as: :maps_locked_tag
@@ -291,10 +271,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q/:page'         => 'visualizations#index', as: :maps_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q'                => 'visualizations#index', as: :maps_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q/:page'          => 'visualizations#index', as: :maps_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q'         => 'visualizations#index', as: :maps_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q/:page'   => 'visualizations#index', as: :maps_liked_locked_search_page
 
     # Tags
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
@@ -366,9 +342,6 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#show',                          as: :api_v1_visualizations_show,              constraints: { id: /[^\/]+/ }
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'        => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                    => 'visualizations#likes_count',                   as: :api_v1_visualizations_likes_count,       constraints: { id: /[^\/]+/ }
-    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'           => 'visualizations#likes_list',                    as: :api_v1_visualizations_likes_list,        constraints: { id: /[^\/]+/ }
-    match  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#is_liked',                      as: :api_v1_visualizations_is_liked,          constraints: { id: /[^\/]+/ }, via: [:get, :options]
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#add_like',                      as: :api_v1_visualizations_add_like,          constraints: { id: /[^\/]+/ }
     delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#remove_like',                   as: :api_v1_visualizations_remove_like,       constraints: { id: /[^\/]+/ }
 
@@ -582,7 +555,6 @@ CartoDB::Application.routes.draw do
     get '/superadmin/stats/total_visualizations' => 'platform#total_visualizations'
     get '/superadmin/stats/total_maps' => 'platform#total_maps'
     get '/superadmin/stats/total_active_users' => 'platform#total_active_users'
-    get '/superadmin/stats/total_likes' => 'platform#total_likes'
   end
 
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/

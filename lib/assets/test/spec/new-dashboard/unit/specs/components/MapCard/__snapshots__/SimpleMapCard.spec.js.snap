@@ -7,7 +7,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -25,7 +25,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -42,7 +42,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -60,7 +60,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -77,7 +77,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -95,7 +95,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -112,7 +112,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -130,7 +130,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -148,7 +148,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
     <div class="MapCard-error"></div>
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -166,7 +166,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -183,7 +183,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -201,7 +201,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -218,7 +218,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -236,7 +236,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -253,7 +253,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -271,7 +271,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->
@@ -288,7 +288,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -321,7 +321,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
     <!---->
   </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -339,15 +339,15 @@ exports[`MapCard.vue should render description and tags 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li>
-            <router-link to="[object Object]">Hi</router-link><span>, </span>
+            <router-link to="[object Object]" class="card-tags__tag">Hi</router-link><span>, </span>
           </li>
           <li>
-            <router-link to="[object Object]">Hello</router-link><span>, </span>
+            <router-link to="[object Object]" class="card-tags__tag">Hello</router-link><span>, </span>
           </li>
           <li>
-            <router-link to="[object Object]">CARTO Rules</router-link>
+            <router-link to="[object Object]" class="card-tags__tag">CARTO Rules</router-link>
             <!---->
           </li>
           <!---->
@@ -367,7 +367,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   </div>
   <!---->
   <div class="card-actions">
-    <mapquickactions-stub map="[object Object]" storeactiontype="maps" hasshadow="true" dataset="[object Object]"></mapquickactions-stub>
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
@@ -385,7 +385,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
         <p>MapCard.lastUpdate</p>
       </li>
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
-        <ul class="card-tagList">
+        <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
         <!---->

@@ -138,7 +138,7 @@ export default {
     };
   },
   created: function () {
-    this.$store.dispatch('maps/setPerPage', this.maxVisibleMaps);
+    this.$store.dispatch('maps/setResultsPerPage', this.maxVisibleMaps);
     this.fetchMaps();
   },
   computed: {

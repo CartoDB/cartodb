@@ -59,6 +59,14 @@ export default {
   }
 }
 
+.card {
+  &:hover {
+    .tag__title {
+      color: $primary-color;
+    }
+  }
+}
+
 .tag__count {
   padding-left: 24px;
 }

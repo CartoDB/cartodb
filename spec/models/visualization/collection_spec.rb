@@ -9,8 +9,9 @@ require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper
 include CartoDB
-
 describe Visualization::Collection do
+  include Carto::Factories::Visualizations
+
   before(:all) do
     @user_1 = FactoryGirl.create(:valid_user, quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
     @user_2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
@@ -189,22 +190,9 @@ describe Visualization::Collection do
       # Supported: updated_at, likes, mapviews, row_count, size
       # TODO: Add mapviews test. As it uses redis requires more work
 
-      table1 = Table.new
-      table1.user_id = @user_1.id
-      table1.name = unique_name('table')
-      table1.save
-      table2 = Table.new
-      table2.user_id = @user_1.id
-      table2.name = unique_name('table')
-      table2.save
-      table3 = Table.new
-      table3.user_id = @user_1.id
-      table3.name = unique_name('table')
-      table3.save
-
-      vis1 = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch
-      vis2 = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
-      vis3 = CartoDB::Visualization::Member.new(id: table3.table_visualization.id).fetch
+      vis1 = full_visualization_table(@user_1, nil).visualization
+      vis2 = full_visualization_table(@user_1, nil).visualization
+      vis3 = full_visualization_table(@user_1, nil).visualization
 
       # Biggest row count
       vis3.table.add_column!(name: "test_col", type: "text")
@@ -215,9 +203,9 @@ describe Visualization::Collection do
       vis3.table.insert_row!(test_col: "333")
       vis3.table.insert_row!(test_col: "333")
       # pg_class.reltuples only get updated after VACUUMs, etc.
-      @user_1.in_database.run("VACUUM #{table3.name}")
-      vis3.add_like_from(@user_1.id)
-      vis3.fetch.store.fetch
+      @user_1.in_database.run("VACUUM #{vis3.table.name}")
+      vis3.updated_at = Time.now - 3.minute
+      vis3.save
 
       # Biggest in size and likes
       long_string = ""
@@ -231,17 +219,15 @@ describe Visualization::Collection do
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
       vis2.table.insert_row!(test_col: long_string, test_col2: long_string, test_col3: long_string)
-      @user_1.in_database.run("VACUUM #{table2.name}")
-      vis2.add_like_from(@user_1.id)
-      vis2.add_like_from(@user_2.id)
-      sleep(1) # To avoid same sec storage
-      vis2.fetch.store.fetch
+      @user_1.in_database.run("VACUUM #{vis2.table.name}")
+      vis2.updated_at = Time.now - 2.minute
+      vis2.save
 
       # Latest edited
       vis1.table.add_column!(name: "test_col", type: "text")
-      @user_1.in_database.run("VACUUM #{table1.name}")
-      sleep(1) # To avoid same sec storage
-      vis1.fetch.store.fetch
+      @user_1.in_database.run("VACUUM #{vis1.table.name}")
+      vis1.updated_at = Time.now - 1.minute
+      vis1.save
 
       # Actual tests start here
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
@@ -261,14 +247,6 @@ describe Visualization::Collection do
       ids.should eq expected_row_count
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
-                                                       order: :likes,
-                                                       exclude_shared: true)
-      collection.count.should eq 3
-      ids = collection.map(&:id)
-      expected_likes = [vis2.id, vis3.id, vis1.id]
-      ids.should eq expected_likes
-
-      collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
                                                        order: :size,
                                                        exclude_shared: true)
       collection.count.should eq 3
@@ -282,221 +260,77 @@ describe Visualization::Collection do
       vis3.delete
     end
 
-    def create_table(user, name = unique_name('table'))
-      table = Table.new
-      table.user_id = user.id
-      table.name = name
-      table.save
-    end
-
     def liked(user)
       Visualization::Collection.new.fetch(user_id: user.id, only_liked: true)
-    end
-
-    def liked_count(user, type = Visualization::Member::TYPE_CANONICAL)
-      liked(user).total_liked_entries(type)
-    end
-
-    it 'counts total liked' do
-      table11 = create_table(@user_1)
-      v11 = CartoDB::Visualization::Member.new(id: table11.table_visualization.id).fetch
-      table12 = create_table(@user_1)
-      v12 = CartoDB::Visualization::Member.new(id: table12.table_visualization.id).fetch
-      table21 = create_table(@user_2)
-      v21 = CartoDB::Visualization::Member.new(id: table21.table_visualization.id).fetch
-      [v11, v12, v21].each do |v|
-        v.privacy = Visualization::Member::PRIVACY_PUBLIC
-        v.store
-      end
-
-      liked(@user_1).count.should eq 0
-      liked_count(@user_1).should eq 0
-      liked(@user_2).count.should eq 0
-      liked_count(@user_2).should eq 0
-
-      v11.add_like_from(@user_2.id)
-      liked(@user_1).count.should eq 0
-      liked_count(@user_1).should eq 0
-      liked(@user_2).count.should eq 1
-      liked_count(@user_2).should eq 1
-
-      v12.add_like_from(@user_1.id)
-      liked(@user_1).count.should eq 1
-      liked_count(@user_1).should eq 1
-      liked(@user_2).count.should eq 1
-      liked_count(@user_2).should eq 1
-
-      v21.add_like_from(@user_2.id)
-      liked(@user_1).count.should eq 1
-      liked_count(@user_1).should eq 1
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      v21.add_like_from(@user_1.id)
-      liked(@user_1).count.should eq 2
-      liked_count(@user_1).should eq 2
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      # Turning a visualization link should keep it from other users count
-      v21.privacy = Visualization::Member::PRIVACY_LINK
-      v21.stubs(:user).returns(@user_2)
-      v21.store
-      liked(@user_1).count.should eq 2
-      liked_count(@user_1).should eq 2
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      # Turning a visualization private should remove it from other users count
-      v21.privacy = Visualization::Member::PRIVACY_PRIVATE
-      v21.store
-      liked(@user_1).count.should eq 1
-      liked_count(@user_1).should eq 1
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      # Adding permission to user should add it to count and list
-      permission = v21.permission
-      permission.acl = [{
-        type: CartoDB::Permission::TYPE_USER,
-        entity: {
-          id: @user_1.id,
-          username: @user_1.username
-        },
-        access: CartoDB::Permission::ACCESS_READONLY }]
-      v21.stubs(:invalidate_cache).returns(nil)
-      permission.stubs(:entity).returns(v21)
-      permission.stubs(:notify_permissions_change).returns(nil)
-      permission.save
-      liked(@user_1).count.should eq 2
-      liked_count(@user_1).should eq 2
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      # Sharing a table won't count it as liked
-      table22 = create_table(@user_2)
-      v22 = CartoDB::Visualization::Member.new(id: table22.table_visualization.id).fetch
-      v22.privacy = Visualization::Member::PRIVACY_PRIVATE
-      v22.store
-      permission22 = v22.permission
-      permission22.acl = [{
-        type: CartoDB::Permission::TYPE_USER,
-        entity: {
-          id: @user_1.id,
-          username: @user_1.username
-        },
-        access: CartoDB::Permission::ACCESS_READONLY }]
-      v22.stubs(:invalidate_cache).returns(nil)
-      permission22.stubs(:entity).returns(v22)
-      permission22.stubs(:notify_permissions_change).returns(nil)
-      permission22.save
-      liked(@user_1).count.should eq 2
-      liked_count(@user_1).should eq 2
-      liked(@user_2).count.should eq 2
-      liked_count(@user_2).should eq 2
-
-      @user_1.unstub(:organization)
-      @user_2.unstub(:organization)
     end
 
     it "checks filtering by 'liked' " do
       user3 = create_user(quota_in_bytes: 524288000, table_quota: 500, private_tables_enabled: true)
 
-      table1 = Table.new
-      table1.user_id = @user_1.id
-      table1.name = unique_name('table')
-      table1.save
-      table2 = Table.new
-      table2.user_id = @user_1.id
-      table2.name = unique_name('table')
-      table2.save
-      table3 = Table.new
-      table3.user_id = @user_1.id
-      table3.name = unique_name('table')
-      table3.save
-      table4 = Table.new
-      table4.user_id = @user_1.id
-      table4.name = unique_name('table')
-      table4.save
-
-      table5 = create_table(@user_1, unique_name('table'))
-      table6 = create_table(@user_1, unique_name('table'))
-
-      vis2 = CartoDB::Visualization::Member.new(id: table2.table_visualization.id).fetch
+      full_visualization_table(@user_1, nil).visualization
+      vis2 = full_visualization_table(@user_1, nil).visualization
       vis2.privacy = Visualization::Member::PRIVACY_PUBLIC
-      vis2.store
-
-      vis3 = CartoDB::Visualization::Member.new(id: table3.table_visualization.id).fetch
+      vis2.save
+      vis3 = full_visualization_table(@user_1, nil).visualization
       vis3.privacy = Visualization::Member::PRIVACY_PUBLIC
-      vis3.store
-
-      vis4 = CartoDB::Visualization::Member.new(id: table4.table_visualization.id).fetch
+      vis3.save
+      vis4 = full_visualization_table(@user_1, nil).visualization
       vis4.privacy.should eq Visualization::Member::PRIVACY_PRIVATE
-
-      vis_link = CartoDB::Visualization::Member.new(id: table5.table_visualization.id).fetch
+      vis_link = full_visualization_table(@user_1, nil).visualization
       vis_link.privacy = Visualization::Member::PRIVACY_LINK
-      vis_link.store
-
-      vis_private = CartoDB::Visualization::Member.new(id: table6.table_visualization.id).fetch
+      vis_link.save
+      vis_private = full_visualization_table(@user_1, nil).visualization
       vis_private.privacy = Visualization::Member::PRIVACY_PRIVATE
-      vis_private.store
+      vis_private.save
 
       # vis1 0 likes
 
-      vis2.add_like_from(@user_1.id)
-      vis2.add_like_from(@user_2.id)
+      vis2.add_like_from(@user_1)
+      expect {
+        vis2.add_like_from(@user_2)
+      }.to raise_exception Carto::Visualization::UnauthorizedLikeError
 
-      vis3.add_like_from(@user_1.id)
+      vis3.add_like_from(@user_1)
 
       # since vis4 is not public it won't count for users 2 and 3
-      vis4.add_like_from(@user_1.id)
-      vis4.add_like_from(@user_2.id)
-      vis4.add_like_from(user3.id)
+      vis4.add_like_from(@user_1)
 
-      vis_link.add_like_from(user3.id)
-      vis_private.add_like_from(user3.id)
+      vis_link.add_like_from(@user_1)
+      vis_private.add_like_from(@user_1)
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id)
       collection.count.should eq 6
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id, only_liked: true)
-      collection.count.should eq 3
+      collection.count.should eq 5
       ids = collection.map(&:id)
-      expected_likes = [vis4.id, vis2.id, vis3.id]
-      ids.should eq expected_likes
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
                                                        type: Visualization::Member::TYPE_CANONICAL,
                                                        only_liked: true)
-      collection.count.should eq 3
+      collection.count.should eq 5
       ids = collection.map(&:id)
-      expected_likes = [vis4.id, vis2.id, vis3.id]
-      ids.should eq expected_likes
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
                                                        only_liked: true,
                                                        unauthenticated: true)
       collection.count.should eq 2
       ids = collection.map(&:id)
-      expected_likes = [vis2.id, vis3.id]
-      ids.should eq expected_likes
 
       collection = Visualization::Collection.new.fetch(user_id: @user_1.id,
                                                        only_liked: true,
                                                        privacy: Visualization::Member::PRIVACY_PRIVATE)
-      collection.count.should eq 1
+      collection.count.should eq 2
       ids = collection.map(&:id)
-      expected_likes = [vis4.id]
-      ids.should eq expected_likes
 
       collection = Visualization::Collection.new.fetch(only_liked: true)
       collection.count.should eq 0
 
       collection = Visualization::Collection.new.fetch(user_id: @user_2.id, only_liked: true)
-      collection.count.should eq 1
+      collection.count.should eq 0
 
       collection = Visualization::Collection.new.fetch(user_id: user3.id, only_liked: true)
-      collection.count.should eq 1 # Liked link privacy one
+      collection.count.should eq 0 # Liked link privacy one
 
       user3.destroy
     end

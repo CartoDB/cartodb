@@ -80,10 +80,6 @@
   .FeedItem--card .FeedItem-avatar {
     display: none;
   }
-
-  .LikesIndicator-label {
-    display: none;
-  }
 }
 
 @media only screen and (max-width: 544px) {
@@ -119,8 +115,7 @@
     display: block !important;
   }
 
-  .FeedItem--card .FeedItem-avatar,
-  .LikesIndicator-label {
+  .FeedItem--card .FeedItem-avatar {
     display: none;
   }
 }

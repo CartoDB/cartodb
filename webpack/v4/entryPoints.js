@@ -133,7 +133,6 @@ module.exports = {
     rootDir('assets/stylesheets/common/default-time-diff.scss'),
     rootDir('assets/stylesheets/common/privacy-indicator.scss'),
     rootDir('assets/stylesheets/common/no-results.scss'),
-    rootDir('assets/stylesheets/common/likes-indicator.scss'),
     rootDir('assets/stylesheets/common/filters.scss'),
     rootDir('assets/stylesheets/common/intermediate-info.scss'),
     rootDir('assets/stylesheets/common/nav-button.scss'),

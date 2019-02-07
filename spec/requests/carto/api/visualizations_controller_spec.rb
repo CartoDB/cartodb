@@ -3104,6 +3104,20 @@ describe Carto::Api::VisualizationsController do
         response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
       end
     end
+
+    it 'generates the URL for tables shared by another user with hyphens in his username' do
+      user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
+      table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
+      shared_table = table.table_visualization
+      share_visualization(shared_table, @org_user_1)
+
+      request_url = api_v1_visualizations_show_url(user_domain: @org_user_1.username,
+                                                   id: shared_table.id, api_key: @org_user_1.api_key)
+      get_json request_url, {}, http_json_headers do |response|
+        response.status.should == 200
+        response.body[:url].should include("/tables/fulano-de-tal.tabluca")
+      end
+    end
   end
 
   describe 'filter canonical viz by bounding box' do

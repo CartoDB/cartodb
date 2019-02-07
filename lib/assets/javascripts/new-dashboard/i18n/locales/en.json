@@ -234,7 +234,7 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "allMapsLink" : "VIEW ALL MAPS"
+      "viewAll" : "VIEW ALL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",

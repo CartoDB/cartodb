@@ -46,7 +46,8 @@
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
           @orderChanged="applyOrder"
-          v-if="isCondensed && !emptyState && !initialState"></CondensedMapHeader>
+          v-if="isCondensed && !emptyState && !initialState">
+        </CondensedMapHeader>
 
         <ul class="grid" v-if="isFetchingMaps">
           <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
@@ -56,7 +57,14 @@
 
         <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
           <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
-            <MapCard :condensed="isCondensed" :visualization="map" :isSelected="isMapSelected(map)" @toggleSelection="toggleSelected" :selectMode="isSomeMapSelected" :canHover="canHoverCard"></MapCard>
+            <MapCard
+              :condensed="isCondensed"
+              :visualization="map"
+              :isSelected="isMapSelected(map)"
+              @toggleSelection="toggleSelected"
+              :selectMode="isSomeMapSelected"
+              :canHover="canHoverCard">
+            </MapCard>
           </li>
         </ul>
       </div>
@@ -170,17 +178,11 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
-    },
-    mapsLinkText () {
-      return this.$t('HomePage.MapsSection.allMapsLink');
     }
   },
   methods: {
     fetchMaps () {
       this.$store.dispatch('maps/fetch');
-    },
-    resetFilters () {
-      this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
       this.$emit('applyFilter', filter);

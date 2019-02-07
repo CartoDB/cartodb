@@ -40,7 +40,7 @@ export default {
       totalShared: state => state.maps.metadata.total_shared
     }),
     mapsLinkText () {
-      return this.$t('HomePage.MapsSection.allMapsLink');
+      return this.$t('HomePage.MapsSection.viewAll');
     },
     initialState () {
       return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;

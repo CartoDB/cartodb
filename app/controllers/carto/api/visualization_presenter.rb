@@ -240,8 +240,9 @@ module Carto
 
       def url
         if @visualization.canonical?
+          dataset_name = @visualization.qualified_name(@current_viewer).tr('"', '')
           CartoDB.url(@context, 'public_tables_show_bis',
-                      params: { id: @visualization.qualified_name(@current_viewer) },
+                      params: { id: dataset_name },
                       user: @current_viewer)
         else
           CartoDB.url(@context, 'public_visualizations_show_map',

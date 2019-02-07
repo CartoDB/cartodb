@@ -5,7 +5,7 @@
     </div>
 
     <h6 v-html="text" class="empty-state__text empty-state__title text is-caption is-txtSoftGrey"></h6>
-    <p v-html="subtitle" class="empty-state__text text is-caption is-txtSoftGrey"></p>
+    <p v-html="subtitle" v-if="subtitle" class="empty-state__text text is-caption is-txtSoftGrey"></p>
   </div>
 </template>
 

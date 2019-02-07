@@ -33,6 +33,25 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
+
+      <div class="metadata" v-if="hasTags || isShared">
+        <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+
+          <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
+            <li v-for="(tag, index) in visualization.tags" :key="tag">
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey metadata__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+            </li>
+          </ul>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
+            <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
+          </FeaturesDropdown>
+        </div>
+        <div class="metadata__element" v-if="isShared">
+          <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
+          <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
+        </div>
+      </div>
     </div>
 
     <div class="cell cell--large">
@@ -51,7 +70,7 @@
     </div>
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <div class="quick-actions__placeholder" v-if="!showInteractiveElements"></div>
+      <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
       <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" />
     </div>
   </a>
@@ -145,6 +164,11 @@ export default {
           stroke: $primary-color;
         }
       }
+    }
+
+    .metadata__tags-count,
+    .metadata__tag {
+      text-decoration: underline;
     }
   }
 
@@ -263,6 +287,37 @@ export default {
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
+    }
+  }
+
+  .metadata {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .metadata__element {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+
+  .metadata__icon {
+    margin-right: 4px;
+  }
+
+  .metadata__tags {
+    display: flex;
+  }
+
+  .metadata__tags-count,
+  .metadata__tag {
+    &:hover {
+      color: $primary-color;
     }
   }
 }

@@ -11,6 +11,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -37,6 +38,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -63,6 +65,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -89,6 +92,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -117,6 +121,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -143,6 +148,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -169,6 +175,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -195,6 +202,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -220,6 +228,13 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
       <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
+    </div>
+    <div class="metadata">
+      <div class="metadata__element"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="metadata__icon">
+        <!---->
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="tag" linkroute="tagSearch"><span class="metadata__tags-count text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
+      </div>
+      <!---->
     </div>
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
@@ -247,6 +262,24 @@ exports[`MapCard.vue should render description and tags 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <div class="metadata">
+      <div class="metadata__element"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="metadata__icon">
+        <ul class="metadata__tags">
+          <li>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey metadata__tag">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+          </li>
+          <li>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey metadata__tag">Hello</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>
+          </li>
+          <li>
+            <router-link to="[object Object]" class="text is-small is-txtSoftGrey metadata__tag">CARTO Rules</router-link>
+            <!---->
+          </li>
+        </ul>
+        <!---->
+      </div>
+      <!---->
+    </div>
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -273,6 +306,10 @@ exports[`MapCard.vue should show the map is shared 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
+    <div class="metadata">
+      <!---->
+      <div class="metadata__element"><img svg-inline="" src="../../assets/icons/common/user.svg" class="metadata__icon"> <span class="text is-small is-txtSoftGrey">hello</span></div>
+    </div>
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -282,7 +319,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
     </p>
   </div>
   <div class="cell quick-actions">
-    <!---->
+    <div class="quick-actions__placeholder"></div>
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" class="quick-actions__element"></mapquickactions-stub>
   </div>
 </a>

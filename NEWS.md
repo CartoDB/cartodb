@@ -10,6 +10,7 @@ Development
 
 ### Bug fixes / enhancements
 - Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
+- Improve the in_database operations fixing some rails behaviors that were problematic for us ([#14642]https://github.com/CartoDB/cartodb/pull/14642)
 - Makes maps listing go faster with related tables (user db size cache issue, #14165)
 - Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
 - Update CARTO.js to v4.1.10
@@ -27,6 +28,8 @@ Development
 - Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
 - Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
 - Tags section for Home Page ([CartoDB/product#208](https://github.com/CartoDB/product/issues/208))
+- Avoid sending seat limit reached email if the new user is viewer ([#14650](https://github.com/CartoDB/cartodb/pull/14650))
+- Fix visualization URL with hyphens in /viz ([product#229](https://github.com/CartoDB/product/issues/229))
 
 4.25.0 (2019-01-28)
 -------------------

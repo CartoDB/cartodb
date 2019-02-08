@@ -302,8 +302,8 @@ class Carto::UserCreation < ActiveRecord::Base
   def close_creation
     clean_password
     cartodb_user.notify_new_organization_user unless has_valid_invitation?
-    cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
-    cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization
+    cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization && !cartodb_user.viewer?
+    cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization && !cartodb_user.viewer?
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(created_via, cartodb_user)
     )

@@ -86,6 +86,8 @@ export default {
     getTags (options = {}) {
       this.isFetching = true;
 
+      options.perPage = this.perPage;
+
       this.$store.state.client.getTags(options,
         (err, _, tags) => {
           this.isFetching = false;

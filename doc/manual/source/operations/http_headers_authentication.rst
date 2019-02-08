@@ -1,11 +1,11 @@
 HTTP Header Authentication
 ==================================
 
-With web servers such as NGINX or others you can perform SSO by making the web server add a trusted, safe header to every request sent to CartoDB. Example:
+With web servers such as NGINX or others you can perform SSO by making the web server add a trusted, safe header to every request sent to CARTO. Example:
 
-User browser -- ``GET http://myorg.mycompany.lan/dashboard`` --> NGINX (adds ``'sso-user-email': 'alice@myorg.com'`` header) --> CartoDB server
+User browser -- ``GET http://myorg.mycompany.lan/dashboard`` --> NGINX (adds ``'sso-user-email': 'alice@myorg.com'`` header) --> CARTO server
 
-You can enable HTTP Header Authentication at CartoDB by adding the following to ``app_conf.yml`` (taken from ``app_conf.yml.sample``):
+You can enable HTTP Header Authentication at CARTO by adding the following to ``app_conf.yml`` (taken from ``app_conf.yml.sample``):
 
 .. code-block:: Ruby
 

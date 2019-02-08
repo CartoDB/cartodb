@@ -29,7 +29,7 @@ class GooglePlusAPI
   def request_user_data(access_token)
     http_client = Carto::Http::Client.get(self.class.name)
     http_client.request(
-      "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
+      "https://openidconnect.googleapis.com/v1/userinfo?access_token=#{access_token}",
       method: 'GET',
       ssl_verifypeer: true,
       timeout: 600

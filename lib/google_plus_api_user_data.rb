@@ -8,9 +8,7 @@ class GooglePlusAPIUserData
   end
 
   def email
-    @parsed_response['emails'].select { |mail| mail['type'] == 'account' }.first['value']
-  rescue
-    nil
+    @parsed_response['email']
   end
 
   def auto_username
@@ -18,7 +16,7 @@ class GooglePlusAPIUserData
   end
 
   def id
-    @parsed_response['id']
+    @parsed_response['sub']
   end
 
   def set_values(user)

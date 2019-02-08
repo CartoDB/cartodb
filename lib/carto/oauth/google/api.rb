@@ -39,19 +39,19 @@ module Carto
         private
 
         def id
-          user_data['id']
+          user_data['sub']
         end
 
         def first_name
-          user_data.fetch('name', {}).fetch('givenName', nil)
+          user_data.fetch('given_name', nil)
         end
 
         def last_name
-          user_data.fetch('name', {}).fetch('familyName', nil)
+          user_data.fetch('family_name', nil)
         end
 
         def email
-          user_data['emails'].select { |mail| mail['type'] == 'account' }.first['value']
+          user_data['email']
         end
 
         def user_data
@@ -64,7 +64,7 @@ module Carto
 
         def get_user_data
           response = Typhoeus::Request.new(
-            "https://www.googleapis.com/plus/v1/people/me?access_token=#{access_token}",
+            "https://openidconnect.googleapis.com/v1/userinfo?access_token=#{access_token}",
             method: 'GET',
             ssl_verifypeer: true,
             timeout: 600

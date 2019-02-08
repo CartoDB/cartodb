@@ -47,7 +47,7 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/feedback.svg"/>
         </div>
-        <a href="#" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">
           {{ $t('UserDropdown.feedback') }}
         </a>
       </li>

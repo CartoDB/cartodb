@@ -1,5 +1,5 @@
 <template>
-  <a class="feedback" href="https://carto.com">
+  <a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform">
     <div class="feedback__icon"></div>
 
     <div class="feedback__message">

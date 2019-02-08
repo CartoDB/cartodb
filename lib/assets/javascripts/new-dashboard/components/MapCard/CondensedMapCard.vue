@@ -97,8 +97,8 @@ export default {
   data () {
     return {
       ...data(),
-      thumbnailWidth: 48,
-      thumbnailHeight: 48
+      thumbnailWidth: 144,
+      thumbnailHeight: 144
     };
   },
   computed,

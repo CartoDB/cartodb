@@ -3,7 +3,7 @@
 exports[`MapCard.vue Events should receive and process correctly the event when dropdown is closed 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -32,7 +32,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
 exports[`MapCard.vue Events should receive and process correctly the event when dropdown is open 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--quick-actions-open row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -61,7 +61,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
 exports[`MapCard.vue Methods should close quick actions 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -90,7 +90,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
 exports[`MapCard.vue Methods should open quick actions 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--quick-actions-open row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -149,7 +149,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
 exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--no-hover row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -178,7 +178,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
 exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -207,7 +207,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
 exports[`MapCard.vue should render correct contents 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--selected row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -236,7 +236,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
 exports[`MapCard.vue should render description and tag dropdown 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -271,7 +271,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
 exports[`MapCard.vue should render description and tags 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
@@ -317,7 +317,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
 exports[`MapCard.vue should show the map is shared 1`] = `
 <a href="http://cdb.localhost.lan:3000/viz/hello.e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">
-    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/48/48.png" class="cell__map-thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
       <!---->
     </div> <span class="checkbox cell__checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>

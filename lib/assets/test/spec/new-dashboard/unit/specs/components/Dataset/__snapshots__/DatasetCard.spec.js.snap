@@ -46,7 +46,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
     </div>
     <div class="row-metadataContainer">
       <!---->
-      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/user.svg" class="icon-metadata"> <span class="text is-small is-txtSoftGrey">cdb</span></div>
+      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/user.svg" class="icon-metadata"> <span class="text is-small is-txtSoftGrey">cdb</span></div>
     </div>
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
@@ -144,9 +144,9 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
       </h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
     <div class="row-metadataContainer">
-      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
+      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon-metadata">
         <!---->
-        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Just one more tag here" feature="tag" linkroute="tagSearch"><span class="feature-text text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
+        <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Just one more tag here" feature="tag" linkroute="tagSearch"><span class="tag-list__more-tags text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
       </div>
       <!---->
     </div>
@@ -181,7 +181,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
       </h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
     <div class="row-metadataContainer">
-      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/datasets/tag.svg" class="icon-metadata">
+      <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon-metadata">
         <ul class="tag-list">
           <li>
             <router-link to="[object Object]" class="text is-small is-txtSoftGrey tag-list__tag">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>

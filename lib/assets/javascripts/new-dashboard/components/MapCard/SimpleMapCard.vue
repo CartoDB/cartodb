@@ -125,7 +125,13 @@ export default {
       default: false
     }
   },
-  data,
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 600,
+      thumbnailHeight: 280
+    };
+  },
   computed: {
     ...computed,
     quickActionsComponent () {

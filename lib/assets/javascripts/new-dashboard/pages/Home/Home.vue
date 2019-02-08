@@ -41,7 +41,7 @@ export default {
   },
   data () {
     return {
-      activeSection: 'RecentSection'
+      activeSection: this.$route.query.section || 'RecentSection'
     };
   },
   computed: {

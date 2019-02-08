@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- /tags endpoint to retrieve the user's tags with usage count (https://github.com/CartoDB/product/issues/208)
 - Remove support for likes in favor of having favorites [#14618](https://github.com/CartoDB/cartodb/pull/14618))
 
 ### Bug fixes / enhancements

@@ -4,9 +4,9 @@
       :hasBulkActions="false"
       :canHoverCard="false"
       :maxVisibleDatasets="maxVisibleDatasets"
+      :isInitialOrEmpty="showViewAllLink"
       @applyFilter="applyFilter"
-      @applyOrder="applyOrder"
-      @isInitialOrEmpty="showViewAllLink"/>
+      @applyOrder="applyOrder"/>
 
     <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ datasetsLinkText }}</router-link>
   </section>
@@ -32,8 +32,7 @@ export default {
       numResults: state => state.datasets.metadata.total_entries,
       appliedFilter: state => state.datasets.filterType,
       appliedOrder: state => state.datasets.order,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries,
-      filterType: state => state.datasets.filterType
+      totalUserEntries: state => state.datasets.metadata.total_user_entries
     }),
     datasetsLinkText () {
       return this.$t('HomePage.DatasetsSection.viewAll');
@@ -53,8 +52,8 @@ export default {
       this.$store.dispatch('datasets/orderDatasets', orderOptions);
       this.$store.dispatch('datasets/fetch');
     },
-    applyFilter (filterType) {
-      this.$store.dispatch('datasets/filterDatasets', filterType);
+    applyFilter (filter) {
+      this.$store.dispatch('datasets/filterDatasets', filter);
       this.$store.dispatch('datasets/fetch');
     },
     fetchDatasets () {

@@ -21,8 +21,7 @@
             :order="appliedOrder"
             :orderDirection="appliedOrderDirection"
             :metadata="mapsMetadata"
-            @filterChanged="applyFilter"
-            @orderChanged="applyOrder">
+            @filterChanged="applyFilter">
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
@@ -41,33 +40,31 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <div>
-        <CondensedMapHeader
-          :order="appliedOrder"
-          :orderDirection="appliedOrderDirection"
-          @orderChanged="applyOrder"
-          v-if="isCondensed && !emptyState && !initialState">
-        </CondensedMapHeader>
+      <CondensedMapHeader
+        :order="appliedOrder"
+        :orderDirection="appliedOrderDirection"
+        @orderChanged="applyOrder"
+        v-if="isCondensed && !emptyState && !initialState">
+      </CondensedMapHeader>
 
-        <ul class="grid" v-if="isFetchingMaps">
-          <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
-            <MapCardFake :condensed="isCondensed"></MapCardFake>
-          </li>
-        </ul>
+      <ul class="grid" v-if="isFetchingMaps">
+        <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
+          <MapCardFake :condensed="isCondensed"></MapCardFake>
+        </li>
+      </ul>
 
-        <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
-          <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
-            <MapCard
-              :condensed="isCondensed"
-              :visualization="map"
-              :isSelected="isMapSelected(map)"
-              @toggleSelection="toggleSelected"
-              :selectMode="isSomeMapSelected"
-              :canHover="canHoverCard">
-            </MapCard>
-          </li>
-        </ul>
-      </div>
+      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
+        <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
+          <MapCard
+            :condensed="isCondensed"
+            :visualization="map"
+            :isSelected="isMapSelected(map)"
+            @toggleSelection="toggleSelected"
+            :selectMode="isSomeMapSelected"
+            :canHover="canHoverCard">
+          </MapCard>
+        </li>
+      </ul>
 
       <EmptyState
         :text="emptyStateText"

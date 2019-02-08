@@ -21,8 +21,7 @@
             :order="appliedOrder"
             :orderDirection="appliedOrderDirection"
             :metadata="datasetsMetadata"
-            @filterChanged="applyFilter"
-            @orderChanged="applyOrder">
+            @filterChanged="applyFilter">
             <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
             <img svg-inline v-else src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
@@ -57,9 +56,9 @@
         <DatasetCard
         :dataset="dataset"
         :isSelected="isDatasetSelected(dataset)"
-        @toggleSelection="toggleSelected"
         :selectMode="isSomeDatasetSelected"
-        :canHover="canHoverCard">
+        :canHover="canHoverCard"
+        @toggleSelection="toggleSelected">
       </DatasetCard>
       </li>
     </ul>

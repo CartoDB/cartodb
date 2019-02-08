@@ -6,9 +6,9 @@
     :canChangeViewMode="false"
     :canHoverCard="false"
     :maxVisibleMaps="maxVisibleMaps"
+    :isInitialOrEmpty="showViewAllLink"
     @applyFilter="applyFilter"
-    @applyOrder="applyOrder"
-    @isInitialOrEmpty="showViewAllLink"/>
+    @applyOrder="applyOrder"/>
 
     <router-link :to="{ name: 'maps' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
@@ -34,7 +34,6 @@ export default {
       appliedOrder: state => state.maps.order,
       isFetchingMaps: state => state.maps.isFetching,
       numResults: state => state.maps.metadata.total_entries,
-      filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared
     }),
@@ -61,7 +60,7 @@ export default {
       this.$store.dispatch('maps/fetch');
     },
     hasFilterApplied (filter) {
-      return this.filterType === filter;
+      return this.appliedFilter === filter;
     }
   }
 };

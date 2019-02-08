@@ -35,6 +35,12 @@ export default {
   background-color: $white;
 }
 
+.tag__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tag__title,
 .tag__count {
   position: relative;

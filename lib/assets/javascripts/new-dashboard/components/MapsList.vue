@@ -190,7 +190,7 @@ export default {
     applyOrder (orderParams) {
       this.$emit('applyOrder', orderParams);
     },
-    toggleSelected ({ map, isSelected }) {
+    toggleSelected ({ map, isSelected, event }) {
       if (event.shiftKey) {
         this.doShiftClick(map);
         return;

@@ -6,7 +6,6 @@
     :canChangeViewMode="false"
     :canHoverCard="false"
     :maxVisibleMaps="maxVisibleMaps"
-    :showViewAll="true"
     @applyFilter="applyFilter"
     @applyOrder="applyOrder"
     @isInitialOrEmpty="showViewAllLink"/>

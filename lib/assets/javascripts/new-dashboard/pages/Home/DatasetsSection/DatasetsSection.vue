@@ -4,7 +4,6 @@
       :hasBulkActions="false"
       :canHoverCard="false"
       :maxVisibleDatasets="maxVisibleDatasets"
-      :showViewAll="true"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
       @isInitialOrEmpty="showViewAllLink"/>

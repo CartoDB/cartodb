@@ -177,7 +177,7 @@ export default {
     applyOrder (orderParams) {
       this.$emit('applyOrder', orderParams);
     },
-    toggleSelected ({ dataset, isSelected }) {
+    toggleSelected ({ dataset, isSelected, event }) {
       if (event.shiftKey) {
         this.doShiftClick(dataset);
         return;

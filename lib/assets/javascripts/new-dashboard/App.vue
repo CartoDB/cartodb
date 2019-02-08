@@ -4,7 +4,8 @@
       :user="user"
       :baseUrl="baseUrl"
       :notificationsCount="notificationsCount"
-      :isFirstTimeInDashboard="isFirstTimeInDashboard" />
+      :isFirstTimeInDashboard="isFirstTimeInDashboard"
+      bundleType="dashboard"/>
 
     <router-view/>
 

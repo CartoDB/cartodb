@@ -14,9 +14,20 @@
 </template>
 
 <script>
+import storageAvailable from 'new-dashboard/utils/is-storage-available';
+
 export default {
   name: 'FeedbackPopup',
-  methods: {}
+  mounted () {
+    if (storageAvailable('localStorage')) {
+      this.markFeedbackPopupAsOpened();
+    }
+  },
+  methods: {
+    markFeedbackPopupAsOpened () {
+      window.localStorage.setItem('carto.feedback.popupWasShown', JSON.stringify(true));
+    }
+  }
 };
 </script>
 

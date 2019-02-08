@@ -22,18 +22,17 @@
             :orderDirection="appliedOrderDirection"
             :metadata="datasetsMetadata"
             @filterChanged="applyFilter">
-            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
-            <img svg-inline v-else src="../assets/icons/common/filter.svg">
+            <img svg-inline src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!initialState && !selectedDatasets.length">
+        <template slot="actionButton" v-if="!isFirst">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
     </div>
 
-    <div class="grid-cell grid-cell--col12" v-if="initialState && !hasSharedDatasets">
+    <div class="grid-cell grid-cell--col12" v-if="isFirst">
       <InitialState :title="$t(`DataPage.zeroCase.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -47,7 +46,7 @@
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState && !initialState">
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState && !initialState && !isFirst">
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -141,7 +140,8 @@ export default {
       numResults: state => state.datasets.metadata.total_entries,
       filterType: state => state.datasets.filterType,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
-      totalShared: state => state.datasets.metadata.total_shared
+      totalShared: state => state.datasets.metadata.total_shared,
+      isFirst: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
@@ -149,11 +149,14 @@ export default {
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
+    firstState () {
+      return this.isFirst;
+    },
     initialState () {
-      return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+      return !this.isFirst && !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+      return !this.isFirst && !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});

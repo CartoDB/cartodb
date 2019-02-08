@@ -32,7 +32,8 @@ export default {
       numResults: state => state.datasets.metadata.total_entries,
       appliedFilter: state => state.datasets.filterType,
       appliedOrder: state => state.datasets.order,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries
+      totalUserEntries: state => state.datasets.metadata.total_user_entries,
+      isFirst: state => state.config.isFirstTimeViewingDashboard
     }),
     datasetsLinkText () {
       return this.$t('HomePage.DatasetsSection.viewAll');
@@ -44,16 +45,16 @@ export default {
       return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     showViewAllLink () {
-      return !(this.initialState || this.emptyState);
+      return !(this.initialState || this.emptyState || this.isFirst);
     }
   },
   methods: {
     applyOrder (orderOptions) {
-      this.$store.dispatch('datasets/orderDatasets', orderOptions);
+      this.$store.dispatch('datasets/order', orderOptions);
       this.$store.dispatch('datasets/fetch');
     },
     applyFilter (filter) {
-      this.$store.dispatch('datasets/filterDatasets', filter);
+      this.$store.dispatch('datasets/filter', filter);
       this.$store.dispatch('datasets/fetch');
     },
     fetchDatasets () {

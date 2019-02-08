@@ -35,7 +35,8 @@ export default {
       isFetchingMaps: state => state.maps.isFetching,
       numResults: state => state.maps.metadata.total_entries,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
-      totalShared: state => state.maps.metadata.total_shared
+      totalShared: state => state.maps.metadata.total_shared,
+      isFirst: state => state.config.isFirstTimeViewingDashboard
     }),
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.viewAll');
@@ -47,16 +48,16 @@ export default {
       return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     showViewAllLink () {
-      return !(this.initialState || this.emptyState);
+      return !(this.initialState || this.emptyState || this.isFirst);
     }
   },
   methods: {
     applyFilter (filter) {
-      this.$store.dispatch('maps/filterMaps', filter);
+      this.$store.dispatch('maps/filter', filter);
       this.$store.dispatch('maps/fetch');
     },
     applyOrder (orderOptions) {
-      this.$store.dispatch('maps/orderMaps', orderOptions);
+      this.$store.dispatch('maps/order', orderOptions);
       this.$store.dispatch('maps/fetch');
     },
     hasFilterApplied (filter) {

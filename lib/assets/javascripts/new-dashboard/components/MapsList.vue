@@ -22,8 +22,7 @@
             :orderDirection="appliedOrderDirection"
             :metadata="mapsMetadata"
             @filterChanged="applyFilter">
-            <span v-if="initialState" class="title is-small is-txtPrimary">{{ $t('SettingsDropdown.initialState') }}</span>
-            <img svg-inline v-else src="../assets/icons/common/filter.svg">
+            <img svg-inline src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
 
           <div class="mapcard-view-mode" @click="toggleViewMode" v-if="canChangeViewMode && !initialState && !emptyState && !selectedMaps.length">
@@ -31,12 +30,12 @@
             <img svg-inline src="../assets/icons/common/standardMap.svg" v-if="isCondensed">
           </div>
         </template>
-        <template slot="actionButton" v-if="!initialState && !selectedMaps.length">
+        <template slot="actionButton" v-if="!isFirst">
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="initialState && !hasSharedMaps">
+      <div class="grid-cell" v-if="isFirst">
         <CreateMapCard></CreateMapCard>
       </div>
 
@@ -44,7 +43,7 @@
         :order="appliedOrder"
         :orderDirection="appliedOrderDirection"
         @orderChanged="applyOrder"
-        v-if="isCondensed && !emptyState && !initialState">
+        v-if="isCondensed && !emptyState && !initialState && !isFirst">
       </CondensedMapHeader>
 
       <ul class="grid" v-if="isFetchingMaps">
@@ -68,7 +67,7 @@
 
       <EmptyState
         :text="emptyStateText"
-        v-if="emptyState || (initialState && hasSharedMaps)">
+        v-if="emptyState || initialState">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -149,7 +148,8 @@ export default {
       numResults: state => state.maps.metadata.total_entries,
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
-      totalShared: state => state.maps.metadata.total_shared
+      totalShared: state => state.maps.metadata.total_shared,
+      isFirst: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
@@ -158,10 +158,10 @@ export default {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
     initialState () {
-      return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+      return !this.isFirst && !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+      return !this.isFirst && !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'maps', params: { filter: 'shared' }});

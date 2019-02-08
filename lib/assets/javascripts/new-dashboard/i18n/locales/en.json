@@ -129,8 +129,7 @@
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
-    },
-    "initialState": "Change Filters"
+    }
   },
   "DatasetCard": {
     "shared": {

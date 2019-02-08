@@ -27,6 +27,11 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
       </router-link>
       <!---->
     </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.feedback
+      </a>
+    </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
     <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
     <div class="title is-small is-txtAlert">UserDropdown.logout</div>
@@ -59,6 +64,11 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
       <router-link to="[object Object]" staticroute="/dashboard/notifications" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.notifications
       </router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.feedback
+      </a>
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
     <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>
@@ -95,6 +105,11 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
         UserDropdown.notifications
       </router-link>
       <!---->
+    </li>
+    <li class="navbar-dropdown-iconLink">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+        UserDropdown.feedback
+      </a>
     </li>
   </ul> <a href="/logout" class="navbar-dropdown-bottom">
     <div class="arrow"><img src="../../assets/icons/navbar/dropdown/arrow-right.svg"></div>

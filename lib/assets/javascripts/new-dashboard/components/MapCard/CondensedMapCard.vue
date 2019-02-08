@@ -11,8 +11,10 @@
      @click="onClick">
 
     <div class="cell cell--thumbnail">
-      <div class="cell__media">
+      <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
         <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+
+        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
       </div>
 
       <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -92,7 +94,13 @@ export default {
     FeaturesDropdown
   },
   props,
-  data,
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 48,
+      thumbnailHeight: 48
+    };
+  },
   computed,
   methods
 };
@@ -132,6 +140,12 @@ export default {
     border-radius: 2px;
     background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
     background-size: cover;
+
+    &.has-error {
+      .MapCard-error {
+        display: block;
+      }
+    }
   }
 
   .cell__checkbox {

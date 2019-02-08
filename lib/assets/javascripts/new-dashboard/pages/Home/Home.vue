@@ -32,14 +32,12 @@ export default {
     this.$store.dispatch('recentContent/fetchContent');
   },
   created () {
+    this.$store.dispatch('datasets/resetFilters');
+    this.$store.dispatch('maps/resetFilters');
+
     if (this.isFirstTimeViewingDashboard) {
       sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
     }
-  },
-  beforeRouteLeave (to, from, next) {
-    this.$store.dispatch('datasets/resetFilters');
-    this.$store.dispatch('maps/resetFilters');
-    next();
   },
   data () {
     return {

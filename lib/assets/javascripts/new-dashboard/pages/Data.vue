@@ -46,9 +46,6 @@ export default {
       selectedDatasets: []
     };
   },
-  created () {
-    this.loadUserConfiguration();
-  },
   mounted () {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);
@@ -118,15 +115,6 @@ export default {
       const headerContainer = this.$refs.datasetsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
       return headerBoundingClientRect.top;
-    },
-    loadUserConfiguration () {
-      if (localStorage.hasOwnProperty('mapViewMode')) {
-        if (localStorage.mapViewMode === 'compact') {
-          this.isCondensed = true;
-        } else if (localStorage.mapViewMode === 'standard') {
-          this.isCondensed = false;
-        }
-      }
     }
   }
 };

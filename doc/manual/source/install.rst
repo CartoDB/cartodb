@@ -167,7 +167,7 @@ Redis
   For data safety, make sure to have proper values of *save*, *appendonly* and *appendfsync* config attributes. For more information check `http://redis.io/topics/persistence`
 
 Node.js
-------
+-------
 
 Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
 

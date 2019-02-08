@@ -32,8 +32,8 @@ export default {
     this.$store.dispatch('recentContent/fetchContent');
   },
   created () {
-    this.$store.dispatch('datasets/resetFilters');
     this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('datasets/resetFilters');
 
     if (this.isFirstTimeViewingDashboard) {
       sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });

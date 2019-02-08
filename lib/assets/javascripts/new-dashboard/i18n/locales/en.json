@@ -159,6 +159,7 @@
     "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
+    "feedback": "Share feedback",
     "logout": "LOG OUT"
   },
   "SolutionsPage": {
@@ -309,5 +310,9 @@
   "TagCard": {
     "maps": "0 maps | {maps} map | {maps} maps",
     "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
+  },
+  "FeedbackMessage": {
+    "title": "Share your feedback with us.",
+    "message": "Do you miss something? Should we be doing something differently?"
   }
 }

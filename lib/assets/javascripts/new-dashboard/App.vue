@@ -1,7 +1,13 @@
 <template>
   <div id="app">
-    <NavigationBar :user="user" :baseUrl="baseUrl" :notificationsCount="notificationsCount"/>
+    <NavigationBar
+      :user="user"
+      :baseUrl="baseUrl"
+      :notificationsCount="notificationsCount"
+      :isFirstTimeInDashboard="isFirstTimeInDashboard" />
+
     <router-view/>
+
     <Footer :user="user"/>
     <BackgroundPollingView ref="backgroundPollingView" :routeType="$route.name"/>
     <MamufasImportView ref="mamufasImportView"/>
@@ -31,6 +37,9 @@ export default {
     },
     notificationsCount () {
       return this.$store.state.user.organizationNotifications.length;
+    },
+    isFirstTimeInDashboard () {
+      return this.$store.state.config.isFirstTimeViewingDashboard;
     }
   },
   provide () {

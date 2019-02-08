@@ -37,6 +37,7 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
+        <FeedbackPopup class="feedback-popup" v-if="isFirstTimeInDashboard && !hasDropdownOpenedForFirstTime"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -48,26 +49,34 @@
 <script>
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
+import FeedbackPopup from '../FeedbackPopup';
 
 export default {
   name: 'NavigationBar',
   components: {
     Search,
-    UserDropdown
+    UserDropdown,
+    FeedbackPopup
   },
   props: {
     user: Object,
     baseUrl: String,
-    notificationsCount: Number
+    notificationsCount: Number,
+    isFirstTimeInDashboard: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
       isDropdownOpen: false,
-      isSearchOpen: false
+      isSearchOpen: false,
+      hasDropdownOpenedForFirstTime: false
     };
   },
   methods: {
     toggleDropdown () {
+      this.hasDropdownOpenedForFirstTime = true;
       this.isDropdownOpen = !this.isDropdownOpen;
     },
 
@@ -233,5 +242,11 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.feedback-popup {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
 }
 </style>

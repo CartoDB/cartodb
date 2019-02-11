@@ -8,7 +8,7 @@ class GooglePlusController < ApplicationController
 
   def google_plus
     headers['X-Frame-Options'] = 'SAMEORIGIN'
-    @config = GooglePlusConfig.new(CartoDB, Cartodb.config)
+    @config = GoogleSignInConfig.new(CartoDB, Cartodb.config)
     render 'google_plus'
   end
 

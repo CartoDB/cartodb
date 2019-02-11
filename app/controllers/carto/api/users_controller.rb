@@ -162,7 +162,7 @@ module Carto
       end
 
       def initialize_google_plus_config
-        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config)
+        @google_plus_config = ::GoogleSignInConfig.instance(CartoDB, Cartodb.config)
       end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)

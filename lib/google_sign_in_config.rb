@@ -1,4 +1,4 @@
-class GooglePlusConfig
+class GoogleSignInConfig
   attr_reader :domain, :iframe_src, :client_id, :cookie_policy, :access_token_field_id
   attr_accessor :unauthenticated_valid_access_token
 
@@ -8,7 +8,7 @@ class GooglePlusConfig
   # @param button_color: hex for the color
   def self.instance(app_module, config, access_token_field_id = 'google_access_token', button_color = nil)
     config[:oauth].present? && config[:oauth]['google_plus'].present? ?
-      GooglePlusConfig.new(app_module, config, access_token_field_id, button_color) : nil
+      GoogleSignInConfig.new(app_module, config, access_token_field_id, button_color) : nil
   end
 
   def initialize(app_module, config, access_token_field_id = 'google_access_token', button_color = nil)

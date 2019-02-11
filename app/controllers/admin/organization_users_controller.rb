@@ -290,7 +290,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def initialize_google_plus_config
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config)
+    @google_plus_config = ::GoogleSignInConfig.instance(CartoDB, Cartodb.config)
   end
 
   def check_permissions

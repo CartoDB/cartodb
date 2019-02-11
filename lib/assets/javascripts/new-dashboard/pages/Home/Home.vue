@@ -60,8 +60,9 @@ export default {
     changeSection (nextActiveSection) {
       this.activeSection = nextActiveSection;
     },
-    onContentChanged () {
+    onContentChanged (type) {
       this.$store.dispatch('recentContent/fetch');
+      this.$store.dispatch(`${type}/fetch`);
     }
   }
 };

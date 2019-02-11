@@ -40,7 +40,7 @@ export default {
         isSelected: !this.$props.isSelected,
         event: $event
       });
-    },
+    }
   }
 };
 </script>

@@ -14,7 +14,7 @@
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
       <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
@@ -179,10 +179,11 @@ export default {
     }
   },
   methods: {
-    toggleSelection () {
+    toggleSelection ($event) {
       this.$emit('toggleSelection', {
         dataset: this.$props.dataset,
-        isSelected: !this.$props.isSelected
+        isSelected: !this.$props.isSelected,
+        event: $event
       });
     },
     humanFileSize (size) {
@@ -221,7 +222,7 @@ export default {
     onClick (event) {
       if (this.$props.selectMode) {
         event.preventDefault();
-        this.toggleSelection();
+        this.toggleSelection(event);
       }
     }
   }

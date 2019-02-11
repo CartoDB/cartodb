@@ -95,7 +95,7 @@ export default {
       this.$emit('deselectAll');
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
+      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0], this.getActionHandlers()]);
     },
     duplicateMap () {
       DialogActions.duplicateVisualization.apply(this, [this.selectedMaps[0]]);

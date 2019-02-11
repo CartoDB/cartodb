@@ -53,6 +53,7 @@ Development
 * Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 * Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 * Send visited page event when is first time visiting New Dashboard ([product#209](https://github.com/CartoDB/product/issues/209))
+* Revisit maps and datasets in empty and initial status in New Dashboard ([#14534](https://github.com/CartoDB/cartodb/issues/14534)) ([product#227](https://github.com/CartoDB/product/issues/227))
 
 4.24.0 (2019-01-16)
 -------------------

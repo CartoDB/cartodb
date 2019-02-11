@@ -18,7 +18,7 @@
       </div>
 
       <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>

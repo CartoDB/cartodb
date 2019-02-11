@@ -4,11 +4,12 @@
       :hasBulkActions="false"
       :canHoverCard="false"
       :maxVisibleDatasets="maxVisibleDatasets"
-      :isInitialOrEmpty="showViewAllLink"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"/>
 
-    <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ datasetsLinkText }}</router-link>
+    <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">
+      {{ datasetsLinkText }}
+    </router-link>
   </section>
 </template>
 
@@ -29,23 +30,13 @@ export default {
   computed: {
     ...mapState({
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries,
-      appliedFilter: state => state.datasets.filterType,
-      appliedOrder: state => state.datasets.order,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries,
-      isFirst: state => state.config.isFirstTimeViewingDashboard
+      currentEntriesCount: state => state.datasets.metadata.total_entries
     }),
     datasetsLinkText () {
       return this.$t('HomePage.DatasetsSection.viewAll');
     },
-    isEmptyState () {
-      return !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
-    },
-    isInitialState () {
-      return !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
-    },
     showViewAllLink () {
-      return !(this.initialState || this.emptyState || this.isFirst);
+      return !this.isFetchingDatasets && this.currentEntriesCount;
     }
   },
   methods: {
@@ -59,9 +50,6 @@ export default {
     },
     fetchDatasets () {
       this.$store.dispatch('datasets/fetch');
-    },
-    hasFilterApplied (filter) {
-      return this.appliedFilter === filter;
     }
   }
 };

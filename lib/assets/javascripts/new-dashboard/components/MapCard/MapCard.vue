@@ -34,12 +34,13 @@ export default {
     CondensedMapCard
   },
   methods: {
-    toggleSelection () {
+    toggleSelection ($event) {
       this.$emit('toggleSelection', {
         map: this.$props.visualization,
-        isSelected: !this.$props.isSelected
+        isSelected: !this.$props.isSelected,
+        event: $event
       });
-    }
+    },
   }
 };
 </script>

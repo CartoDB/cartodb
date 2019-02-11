@@ -26,13 +26,13 @@
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!isFirst">
+        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
     </div>
 
-    <div class="grid-cell grid-cell--col12" v-if="isFirst">
+    <div class="grid-cell grid-cell--col12" v-if="initialState">
       <InitialState :title="$t(`DataPage.zeroCase.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
@@ -46,11 +46,11 @@
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="!emptyState && !initialState && !isFirst">
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="shouldShowHeader">
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
-    <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && numResults > 0">
+    <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets && currentEntriesCount > 0">
       <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
         <DatasetCard
         :dataset="dataset"
@@ -65,7 +65,7 @@
     <div class="grid-cell grid-cell--col12">
       <EmptyState
         :text="emptyStateText"
-        v-if="emptyState || (initialState && hasSharedDatasets)">
+        v-if="emptyState">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
     </div>
@@ -93,7 +93,7 @@ import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulk
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
-  name: 'DataPage',
+  name: 'DatasetsList',
   props: {
     maxVisibleDatasets: {
       type: Number,
@@ -137,11 +137,11 @@ export default {
       datasets: state => state.datasets.list,
       datasetsMetadata: state => state.datasets.metadata,
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries,
       filterType: state => state.datasets.filterType,
+      currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirst: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
@@ -149,18 +149,24 @@ export default {
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
-    firstState () {
-      return this.isFirst;
+    shouldShowHeader () {
+      return !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
     },
     initialState () {
-      return !this.isFirst && !this.isFetchingDatasets && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+      return this.isFirstTimeViewingDashboard &&
+        !this.hasSharedDatasets &&
+        !this.isFetchingDatasets &&
+        this.hasFilterApplied('mine') &&
+        this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFirst && !this.isFetchingDatasets && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+      return (!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) &&
+        !this.isFetchingDatasets &&
+        !this.currentEntriesCount;
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
-      return (this.initialState && this.hasSharedDatasets) ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
+      return this.hasSharedDatasets ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
     },
     hasSharedDatasets () {
       return this.totalShared > 0;
@@ -214,7 +220,7 @@ export default {
   },
   watch: {
     selectedDatasets () {
-      this.$emit('updateSelected', this.selectedDatasets);
+      this.$emit('selectionChange', this.selectedDatasets);
     }
   }
 };

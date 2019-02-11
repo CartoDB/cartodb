@@ -25,17 +25,17 @@
             <img svg-inline src="../assets/icons/common/filter.svg">
           </SettingsDropdown>
 
-          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="canChangeViewMode && !initialState && !emptyState && !selectedMaps.length">
+          <div class="mapcard-view-mode" @click="toggleViewMode" v-if="shouldShowViewSwitcher">
             <img svg-inline src="../assets/icons/common/compactMap.svg" v-if="!isCondensed">
             <img svg-inline src="../assets/icons/common/standardMap.svg" v-if="isCondensed">
           </div>
         </template>
-        <template slot="actionButton" v-if="!isFirst">
+        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
           <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
-      <div class="grid-cell" v-if="isFirst">
+      <div class="grid-cell" v-if="initialState">
         <CreateMapCard></CreateMapCard>
       </div>
 
@@ -43,7 +43,7 @@
         :order="appliedOrder"
         :orderDirection="appliedOrderDirection"
         @orderChanged="applyOrder"
-        v-if="isCondensed && !emptyState && !initialState && !isFirst">
+        v-if="shouldShowListHeader">
       </CondensedMapHeader>
 
       <ul class="grid" v-if="isFetchingMaps">
@@ -52,7 +52,7 @@
         </li>
       </ul>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && numResults > 0">
+      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
         <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard
             :condensed="isCondensed"
@@ -67,7 +67,7 @@
 
       <EmptyState
         :text="emptyStateText"
-        v-if="emptyState || initialState">
+        v-if="emptyState">
         <img svg-inline src="../assets/icons/common/compass.svg">
       </EmptyState>
 
@@ -145,11 +145,11 @@ export default {
       maps: state => state.maps.list,
       mapsMetadata: state => state.maps.metadata,
       isFetchingMaps: state => state.maps.isFetching,
-      numResults: state => state.maps.metadata.total_entries,
+      currentEntriesCount: state => state.maps.metadata.total_entries,
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      isFirst: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
@@ -158,15 +158,21 @@ export default {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
     initialState () {
-      return !this.isFirst && !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
+      return this.isFirstTimeViewingDashboard &&
+        !this.hasSharedMaps &&
+        !this.isFetchingMaps &&
+        this.hasFilterApplied('mine') &&
+        this.totalUserEntries <= 0;
     },
     emptyState () {
-      return !this.isFirst && !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
+      return (!this.isFirstTimeViewingDashboard || this.hasSharedMaps) &&
+        !this.isFetchingMaps &&
+        !this.currentEntriesCount;
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'maps', params: { filter: 'shared' }});
 
-      return (this.initialState && this.hasSharedMaps)
+      return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })
         : this.$t('MapsPage.emptyCase.default', { path: route.href });
     },
@@ -175,6 +181,12 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    shouldShowViewSwitcher () {
+      return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;
+    },
+    shouldShowListHeader () {
+      return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
     }
   },
   methods: {
@@ -232,7 +244,7 @@ export default {
       }
     },
     selectedMaps () {
-      this.$emit('updateSelected', this.selectedMaps);
+      this.$emit('selectionChange', this.selectedMaps);
     }
   }
 };

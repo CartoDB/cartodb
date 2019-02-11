@@ -4,13 +4,16 @@
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
       </h2>
+
       <MapBulkActions
         :selectedMaps="selectedMaps"
         :areAllMapsSelected="areAllMapsSelected"
         @selectAll="selectAll"
         @deselectAll="deselectAll"></MapBulkActions>
     </StickySubheader>
+
     <MapsList
+      ref="mapsList"
       :hasBulkActions="true"
       :isCondensedDefault="isCondensed"
       :canChangeViewMode="true"
@@ -18,8 +21,8 @@
       :maxVisibleMaps="maxVisibleMaps"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @updateSelected="updateSelected"
-      ref="mapsList"/>
+      @selectionChange="updateSelected" />
+
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>
@@ -68,13 +71,13 @@ export default {
       currentPage: state => state.maps.page,
       maps: state => state.maps.list,
       isFetchingMaps: state => state.maps.isFetching,
-      numResults: state => state.maps.metadata.total_entries
+      currentEntriesCount: state => state.maps.metadata.total_entries
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
     shouldShowPagination () {
-      return !this.isFetchingMaps && this.numResults > 0 && this.numPages > 1;
+      return !this.isFetchingMaps && this.currentEntriesCount > 0 && this.numPages > 1;
     }
   },
   methods: {
@@ -90,9 +93,6 @@ export default {
         params: this.$route.params,
         query: { ...this.$route.query, page }
       });
-    },
-    resetFilters () {
-      this.$router.push({ name: 'maps' });
     },
     applyFilter (filter) {
       this.$router.push({ name: 'maps', params: { filter } });

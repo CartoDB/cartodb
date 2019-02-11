@@ -10,14 +10,15 @@
         @selectAll="selectAll"
         @deselectAll="deselectAll"></DatasetBulkActions>
     </StickySubheader>
+
     <DatasetsList
+      ref="datasetsList"
       :hasBulkActions="true"
       :canHoverCard="true"
       :maxVisibleDatasets="maxVisibleDatasets"
       @applyFilter="applyFilter"
       @applyOrder="applyOrder"
-      @updateSelected="updateSelected"
-      ref="datasetsList"/>
+      @selectionChange="updateSelected" />
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
   </section>
 </template>

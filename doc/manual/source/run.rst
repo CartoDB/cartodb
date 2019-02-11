@@ -1,10 +1,10 @@
-Running CartoDB
-===============
+Running CARTO
+=============
 
 First run, setting up an user
 -----------------------------
 
-First run, setting up first time to run your development version of CartoDB. Let's suppose that we are going to create a development env and that our user/subdomain is going to be 'development'
+First run, setting up first time to run your development version of CARTO. Let's suppose that we are going to create a development env and that our user/subdomain is going to be 'development'
 
 .. highlight:: bash
 
@@ -31,7 +31,7 @@ Start the resque daemon (needed for import jobs):
 
     bundle exec script/resque
 
-Finally, start the CartoDB development server on port 3000:
+Finally, start the CARTO development server on port 3000:
 
 .. highlight:: bash
 

@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TagsSection.vue Render should render empty state 1`] = `
+<section class="tags-section is-bgSoftBlue">
+  <div class="container">
+    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <emptystate-stub text="HomePage.TagsSection.emptyState.title" subtitle="HomePage.TagsSection.emptyState.subtitle"></emptystate-stub>
+    <!---->
+    <!---->
+  </div>
+</section>
+`;
+
+exports[`TagsSection.vue Render should render loading state 1`] = `
+<section class="tags-section is-bgSoftBlue">
+  <div class="container">
+    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <loadingstate-stub text="HomePage.TagsSection.loading" class="loading"></loadingstate-stub>
+    <!---->
+    <!---->
+    <!---->
+  </div>
+</section>
+`;
+
+exports[`TagsSection.vue Render should render properly 1`] = `
+<section class="tags-section is-bgSoftBlue">
+  <div class="container">
+    <sectiontitle-stub title="HomePage.TagsSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <!---->
+    <!---->
+    <ul class="grid tags">
+      <li class="card grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile tag">
+        <tagcard-stub tag="[object Object]"></tagcard-stub>
+      </li>
+    </ul>
+    <pagination-stub page="1" numpages="4" class="pagination-element"></pagination-stub>
+  </div>
+</section>
+`;

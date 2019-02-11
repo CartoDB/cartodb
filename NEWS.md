@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- /tags endpoint to retrieve the user's tags with usage count (https://github.com/CartoDB/product/issues/208)
 - Remove support for likes in favor of having favorites [#14618](https://github.com/CartoDB/cartodb/pull/14618))
 
 ### Bug fixes / enhancements
@@ -26,8 +27,10 @@ Development
 - Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
 - Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
 - Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+- Tags section for Home Page ([CartoDB/product#208](https://github.com/CartoDB/product/issues/208))
 - Avoid sending seat limit reached email if the new user is viewer ([#14650](https://github.com/CartoDB/cartodb/pull/14650))
 - Fix visualization URL with hyphens in /viz ([product#229](https://github.com/CartoDB/product/issues/229))
+- Show user info in Condensed Map Card ([CartoDB/product#247](https://github.com/CartoDB/product/issues/247))
 
 4.25.0 (2019-01-28)
 -------------------
@@ -50,6 +53,7 @@ Development
 * Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 * Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
 * Send visited page event when is first time visiting New Dashboard ([product#209](https://github.com/CartoDB/product/issues/209))
+* Revisit maps and datasets in empty and initial status in New Dashboard ([#14534](https://github.com/CartoDB/cartodb/issues/14534)) ([product#227](https://github.com/CartoDB/product/issues/227))
 
 4.24.0 (2019-01-16)
 -------------------

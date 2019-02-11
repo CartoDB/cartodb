@@ -7,12 +7,12 @@ In this section you can find some helpful configuration examples related with **
 Basemaps
 --------
 
-The way to add/change the basemaps available in CartoDB is chaging the
+The way to add/change the basemaps available in CARTO is chaging the
 config/app_config.yml. Basically you need to add a new entry called basemaps,
 that entry can have different sections and each section one or more basemaps.
 
-Each section corresponds to row in CartoDB basemap dialog. If the basemaps entry
-is not present a set of default basemaps will be used (CartoDB and Stamen ones,
+Each section corresponds to row in CARTO basemap dialog. If the basemaps entry
+is not present a set of default basemaps will be used (CARTO and Stamen ones,
 check the default basemaps file
 https://github.com/CartoDB/cartodb/blob/master/lib/assets/javascripts/cartodb/table/default_layers.js)
 
@@ -27,7 +27,7 @@ Here is an example config.yml:
 .. code-block:: yaml
 
   basemaps:
-      CartoDB:
+      CARTO:
         positron_rainbow:
           default: true # Ident with spaces not with tab
           url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
@@ -86,14 +86,14 @@ you should add the labels key to the basemap config, as follows:
 Domainless URLs
 ---------------
 
-Historically, CartoDB URLs were based on a ``username.carto.com/PATH`` schema.
+Historically, CARTO URLs were based on a ``username.carto.com/PATH`` schema.
 When Multiuser accounts were introduced, an alternate schema
 ``organizationname.carto.com/u/username/PATH`` was built alongside the "classic" one.
 Both schemas introduce some problems for opensource and/or custom installs of the platform,
 as they require DNS changes each time a new user or organization is added.
 
 Subdomainless urls are the answer to this problems. Modifying some configuration settings,
-any CartoDB installation can be setup to work with a new schema, ``carto.com/user/username/PATH.``
+any CARTO installation can be setup to work with a new schema, ``carto.com/user/username/PATH.``
 
 The following sections details the steps to make it work and the limitations it has.
 
@@ -159,7 +159,7 @@ For example:
 
 Use ``https://common-data.carto.com`` as the base url to retrieve all the public datasets from that user.
 
-This is the default behaviour in CartoDB, but if you want to use your own system and user for this purpose you
+This is the default behaviour in CARTO, but if you want to use your own system and user for this purpose you
 have to define the ``username`` property pointing to the user that will provide the datasets in your own instance.
 The URL in this case is going to be built using your instance base url. For example if your instance base url is
 ``http://www.example.com`` and the config is:

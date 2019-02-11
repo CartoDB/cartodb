@@ -361,7 +361,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
 
 exports[`MapCard.vue should show the map is shared 1`] = `
 <a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
-  <div class="card-media"><img src="http://cdb.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
+  <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
   </div>

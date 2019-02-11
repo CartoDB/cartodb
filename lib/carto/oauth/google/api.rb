@@ -8,6 +8,8 @@ module Carto
       class Api < Carto::Oauth::Api
         include Carto::EmailCleaner
 
+        USERINFO_ENDPOINT = 'https://openidconnect.googleapis.com/v1/userinfo'.freeze
+
         def student?
           false
         end
@@ -66,7 +68,7 @@ module Carto
 
         def get_user_data
           response = Typhoeus::Request.new(
-            "https://openidconnect.googleapis.com/v1/userinfo?access_token=#{access_token}",
+            "#{USERINFO_ENDPOINT}?access_token=#{access_token}",
             method: 'GET',
             ssl_verifypeer: true,
             timeout: 600

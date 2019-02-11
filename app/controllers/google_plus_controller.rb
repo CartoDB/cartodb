@@ -8,8 +8,7 @@ class GooglePlusController < ApplicationController
 
   def google_plus
     headers['X-Frame-Options'] = 'SAMEORIGIN'
-    signup_url = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : CartoDB.path(self, 'google_plus_signup')
-    @config = GooglePlusConfig.new(CartoDB, Cartodb.config, signup_url)
+    @config = GooglePlusConfig.new(CartoDB, Cartodb.config)
     render 'google_plus'
   end
 

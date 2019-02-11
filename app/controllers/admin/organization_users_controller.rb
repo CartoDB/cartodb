@@ -290,8 +290,7 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
+    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config)
   end
 
   def check_permissions

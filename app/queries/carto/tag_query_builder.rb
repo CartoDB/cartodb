@@ -37,6 +37,7 @@ class Carto::TagQueryBuilder
         count(*) FILTER(WHERE type = 'table') AS table_count
       FROM visualizations
       WHERE user_id = ?
+      AND type IN ('table', 'derived')
       GROUP BY tag
       ORDER BY COUNT(*) DESC
       LIMIT ?
@@ -51,6 +52,7 @@ class Carto::TagQueryBuilder
         SELECT LOWER(unnest(tags)) AS tag
         FROM visualizations
         WHERE user_id = ?
+        AND type IN ('table', 'derived')
       ) AS tags
     }.squish
   end

@@ -7,18 +7,19 @@ class GoogleSignInConfig
   # @param access_token_field_id String
   # @param button_color: hex for the color
   def self.instance(app_module, config, access_token_field_id = 'google_access_token', button_color = nil)
-    config[:oauth].present? && config[:oauth]['google_plus'].present? ?
-      GoogleSignInConfig.new(app_module, config, access_token_field_id, button_color) : nil
+    return nil unless config[:oauth].present? && config[:oauth]['google_plus'].present?
+    GoogleSignInConfig.new(app_module, config, access_token_field_id, button_color)
   end
 
   def initialize(app_module, config, access_token_field_id = 'google_access_token', button_color = nil)
     schema = Rails.env.development? ? 'http' : 'https'
 
-    @domain = config[:domain_name].present? ? config[:domain_name] : app_module.account_host.scan(/([^:]*)(:.*)?/).first.first
+    @domain = config[:domain_name].presence || app_module.account_host.scan(/([^:]*)(:.*)?/).first.first
 
-    button_color_param = button_color.nil? ? '' : "?button_color=#{button_color}".gsub('#', '')
+    button_color_param = button_color.nil? ? '' : "?button_color=#{button_color}".delete('#')
 
-    @iframe_src = app_module.account_host.present? ? "#{schema}://#{app_module.account_host}/google_plus#{button_color_param}" : "#{@domain}/google_plus#{button_color_param}"
+    iframe_src_base_url = app_module.account_host.present? ? "#{schema}://#{app_module.account_host}" : @domain
+    @iframe_src = "#{iframe_src_base_url}/google_plus#{button_color_param}"
 
     @access_token_field_id = access_token_field_id
 
@@ -28,4 +29,3 @@ class GoogleSignInConfig
   end
 
 end
-

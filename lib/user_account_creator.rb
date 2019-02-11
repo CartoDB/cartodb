@@ -1,7 +1,6 @@
 # coding: UTF-8
 
 require 'securerandom'
-require_dependency 'google_plus_api'
 require_dependency 'carto/password_validator'
 require_dependency 'carto/strong_password_strategy'
 require_dependency 'carto/standard_password_strategy'

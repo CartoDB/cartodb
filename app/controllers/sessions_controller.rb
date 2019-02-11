@@ -1,6 +1,4 @@
 # encoding: UTF-8
-require_dependency 'google_plus_config'
-require_dependency 'google_plus_api'
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
@@ -267,10 +265,10 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_oauth_config
-    @oauth_configs = [google_plus_config, github_config].compact
+    @oauth_configs = [google_config, github_config].compact
   end
 
-  def google_plus_config
+  def google_config
     unless @organization && !@organization.auth_google_enabled
       Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
                                             invitation_token: params[:invitation_token],
@@ -354,13 +352,6 @@ class SessionsController < ApplicationController
       user = api.user
       if user
         [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
-      elsif user == false
-        # token not valid
-        nil
-      else
-        # token valid, unknown user
-        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-        nil
       end
     end
   end
@@ -374,7 +365,7 @@ class SessionsController < ApplicationController
   end
 
   def google_authentication?
-    params[:google_access_token].present? && @google_plus_config.present?
+    params[:google_access_token].present?
   end
 
   def ldap_authentication?

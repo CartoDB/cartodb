@@ -1,6 +1,5 @@
 # coding: utf-8
-require_dependency 'google_plus_api'
-require_dependency 'google_plus_config'
+require_dependency 'google_sign_in_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 
@@ -17,7 +16,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :login_required, :check_permissions, :load_organization
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
-  before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
 
@@ -287,10 +285,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @extras_enabled = extras_enabled?
     @extra_geocodings_enabled = extra_geocodings_enabled?
     @extra_tweets_enabled = extra_tweets_enabled?
-  end
-
-  def initialize_google_plus_config
-    @google_plus_config = ::GoogleSignInConfig.instance(CartoDB, Cartodb.config)
   end
 
   def check_permissions

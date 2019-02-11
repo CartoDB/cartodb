@@ -41,7 +41,7 @@ export default {
       });
     },
     onContentChanged (type) {
-      this.$store.dispatch(`${type}/fetch`);
+      this.$emit('contentChanged', type);
     }
   }
 };

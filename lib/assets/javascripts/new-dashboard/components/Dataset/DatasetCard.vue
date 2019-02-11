@@ -227,7 +227,7 @@ export default {
       }
     },
     onContentChanged (type) {
-      this.emit('contentChanged', type);
+      this.$emit('contentChanged', type);
     }
   }
 };

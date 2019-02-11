@@ -350,7 +350,8 @@ class SessionsController < ApplicationController
 
   def google_strategy_username
     if google_authentication? && !user_password_authentication?
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
+      api = Carto::Oauth::Api::Google.new(nil, params[:google_access_token])
+      user = api.user
       if user
         [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
       elsif user == false

@@ -127,8 +127,8 @@ module CartoDB
 
     def with_google_token(google_access_token)
       @built = false
-      # get_user_data can return nil
-      @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
+      api = Carto::Oauth::Api::Google.new(nil, google_access_token)
+      @google_user_data = api.user_params.email.present?
       self
     end
 

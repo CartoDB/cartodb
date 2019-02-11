@@ -6,6 +6,8 @@ module Carto
   module Oauth
     module Google
       class Api < Carto::Oauth::Api
+        include Carto::EmailCleaner
+
         def student?
           false
         end
@@ -21,7 +23,7 @@ module Carto
         end
 
         def user
-          User.where(email: email).first
+          User.where(email: clean_email(email)).first
         end
 
         def hidden_fields

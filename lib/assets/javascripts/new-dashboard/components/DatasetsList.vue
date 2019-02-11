@@ -26,7 +26,7 @@
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard">
+        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
           <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>

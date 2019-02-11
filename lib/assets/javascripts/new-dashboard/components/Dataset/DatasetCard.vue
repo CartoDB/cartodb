@@ -83,7 +83,8 @@
         :isShared="isShared"
         class="dataset--quick-actions"
         @open="openQuickActions"
-        @close="closeQuickActions"/>
+        @close="closeQuickActions"
+        @contentChanged="onContentChanged"/>
     </div>
   </a>
 </template>
@@ -224,6 +225,9 @@ export default {
         event.preventDefault();
         this.toggleSelection(event);
       }
+    },
+    onContentChanged (type) {
+      this.emit('contentChanged', type);
     }
   }
 };

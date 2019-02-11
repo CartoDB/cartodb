@@ -57,7 +57,8 @@
         :isSelected="isDatasetSelected(dataset)"
         :selectMode="isSomeDatasetSelected"
         :canHover="canHoverCard"
-        @toggleSelection="toggleSelected">
+        @toggleSelection="toggleSelected"
+        @contentChanged="onContentChanged">
       </DatasetCard>
       </li>
     </ul>
@@ -216,6 +217,9 @@ export default {
     },
     getHeaderContainer () {
       return this.$refs.headerContainer;
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   },
   watch: {

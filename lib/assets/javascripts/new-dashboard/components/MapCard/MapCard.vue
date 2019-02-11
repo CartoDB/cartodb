@@ -1,18 +1,12 @@
 <template>
-  <SimpleMapCard
-    v-if="!condensed"
+  <component
+    :is="componentType"
     :visualization="visualization"
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"
-    @toggleSelection="toggleSelection"/>
-  <CondensedMapCard
-    v-else
-    :visualization="visualization"
-    :isSelected="isSelected"
-    :canHover="canHover"
-    :selectMode="selectMode"
-    @toggleSelection="toggleSelection"/>
+    @toggleSelection="toggleSelection"
+    @contentChanged="onContentChanged" />
 </template>
 
 <script>
@@ -33,6 +27,11 @@ export default {
     SimpleMapCard,
     CondensedMapCard
   },
+  computed: {
+    componentType () {
+      return this.condensed ? 'CondensedMapCard' : 'SimpleMapCard';
+    }
+  },
   methods: {
     toggleSelection ($event) {
       this.$emit('toggleSelection', {
@@ -40,6 +39,9 @@ export default {
         isSelected: !this.$props.isSelected,
         event: $event
       });
+    },
+    onContentChanged (type) {
+      this.$store.dispatch(`${type}/fetch`);
     }
   }
 };

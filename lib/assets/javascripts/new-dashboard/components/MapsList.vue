@@ -58,9 +58,10 @@
             :condensed="isCondensed"
             :visualization="map"
             :isSelected="isMapSelected(map)"
-            @toggleSelection="toggleSelected"
             :selectMode="isSomeMapSelected"
-            :canHover="canHoverCard">
+            :canHover="canHoverCard"
+            @toggleSelection="toggleSelected"
+            @contentChanged="onContentChanged">
           </MapCard>
         </li>
       </ul>
@@ -233,6 +234,9 @@ export default {
     },
     getHeaderContainer () {
       return this.$refs.headerContainer;
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   },
   watch: {

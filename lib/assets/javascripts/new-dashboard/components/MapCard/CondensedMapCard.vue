@@ -73,7 +73,7 @@
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
-      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" />
+      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
     </div>
   </a>
 </template>
@@ -102,7 +102,12 @@ export default {
     };
   },
   computed,
-  methods
+  methods: {
+    ...methods,
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
+    }
+  }
 };
 </script>
 

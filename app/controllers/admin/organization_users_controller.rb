@@ -1,5 +1,4 @@
 # coding: utf-8
-require_dependency 'google_sign_in_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 

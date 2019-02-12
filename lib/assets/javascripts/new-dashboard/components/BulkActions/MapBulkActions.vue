@@ -64,10 +64,10 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$store.dispatch('maps/fetch');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+          this.$store.dispatch('maps/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },
@@ -95,7 +95,7 @@ export default {
       this.$emit('deselectAll');
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
+      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0], this.getActionHandlers()]);
     },
     duplicateMap () {
       DialogActions.duplicateVisualization.apply(this, [this.selectedMaps[0]]);

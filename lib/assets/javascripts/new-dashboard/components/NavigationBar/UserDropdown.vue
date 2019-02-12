@@ -32,7 +32,7 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked" >{{ $t('UserDropdown.publicProfile') }}</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">{{ $t('UserDropdown.publicProfile') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
@@ -42,6 +42,14 @@
           {{ $t('UserDropdown.notifications') }}
         </router-link>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
+      </li>
+      <li class="navbar-dropdown-iconLink">
+        <div class="icon-container">
+          <img svg-inline src="../../assets/icons/navbar/dropdown/feedback.svg"/>
+        </div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">
+          {{ $t('UserDropdown.feedback') }}
+        </a>
       </li>
     </ul>
     <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom" @click="linkClicked">

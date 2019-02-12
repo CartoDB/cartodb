@@ -11,12 +11,14 @@
      @click="onClick">
 
     <div class="cell cell--thumbnail">
-      <div class="cell__media">
+      <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
         <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+
+        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
       </div>
 
       <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
@@ -26,12 +28,31 @@
     <div class="cell cell--map-name cell--main">
       <div class="cell__title">
         <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
-          {{ map.name }}
+          {{ visualization.name }}
         </h3>
 
-        <span v-if="showInteractiveElements" class="cell__favorite" :class="{'is-favorite': map.liked, 'favorite-overflow': titleOverflow}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
+      </div>
+
+      <div class="metadata" v-if="hasTags || isShared">
+        <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+
+          <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
+            <li v-for="(tag, index) in visualization.tags" :key="tag">
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey metadata__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+            </li>
+          </ul>
+          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
+            <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
+          </FeaturesDropdown>
+        </div>
+        <div class="metadata__element" v-if="isShared">
+          <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
+          <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
+        </div>
       </div>
     </div>
 
@@ -46,13 +67,13 @@
     <div class="cell cell--privacy cell--medium">
       <span class="icon icon--privacy" :class="privacyIcon"></span>
       <p class="text is-small is-txtSoftGrey">
-        {{ $t(`MapCard.shared.${map.privacy}`) }}
+        {{ $t(`MapCard.shared.${visualization.privacy}`) }}
       </p>
     </div>
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <div class="quick-actions__placeholder" v-if="!showInteractiveElements"></div>
-      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="map" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" :hasShadow="false" />
+      <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
+      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @dataChanged="onDataChanged" />
     </div>
   </a>
 </template>
@@ -73,7 +94,13 @@ export default {
     FeaturesDropdown
   },
   props,
-  data,
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 144,
+      thumbnailHeight: 144
+    };
+  },
   computed,
   methods
 };
@@ -113,6 +140,12 @@ export default {
     border-radius: 2px;
     background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
     background-size: cover;
+
+    &.has-error {
+      .MapCard-error {
+        display: block;
+      }
+    }
   }
 
   .cell__checkbox {
@@ -146,11 +179,17 @@ export default {
         }
       }
     }
+
+    .metadata__tags-count,
+    .metadata__tag {
+      text-decoration: underline;
+    }
   }
 
   .cell__favorite {
     display: inline-block;
     margin-left: 8px;
+    transform: translate3d(0, 2px, 0);
     opacity: 0;
     vertical-align: middle;
 
@@ -262,6 +301,37 @@ export default {
       visibility: hidden;
       opacity: 0;
       pointer-events: none;
+    }
+  }
+
+  .metadata {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .metadata__element {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
+
+  .metadata__icon {
+    margin-right: 4px;
+  }
+
+  .metadata__tags {
+    display: flex;
+  }
+
+  .metadata__tags-count,
+  .metadata__tag {
+    &:hover {
+      color: $primary-color;
     }
   }
 }

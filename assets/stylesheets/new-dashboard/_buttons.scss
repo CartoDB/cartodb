@@ -22,7 +22,7 @@ a {
 }
 
 .button--ghost {
-  background: $white;
+  background: transparent;
   color: $primary-color;
 }
 
@@ -36,6 +36,10 @@ a {
   width: 14px;
   height: 14px;
   margin-right: 8px;
+}
+
+.button--last {
+  padding-right: 0;
 }
 
 .buttonLink {

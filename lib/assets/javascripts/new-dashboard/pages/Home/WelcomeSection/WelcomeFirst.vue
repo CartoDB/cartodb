@@ -30,12 +30,12 @@ export default {
     CreateButton
   },
   props: {
-    username: String,
+    name: String,
     userType: String
   },
   computed: {
     greeting () {
-      return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
+      return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     },
     text () {
       const organizationName = this.$store.state.user.organization && this.$store.state.user.organization.name;

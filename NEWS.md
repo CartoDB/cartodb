@@ -8,18 +8,39 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
-- Makes maps listing go faster with related tables (user db size cache issue, #14165)
-- Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
-- Update CARTO.js to v4.1.10
-- Show zero when remaining quota is negative in metrics section of New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
-- Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
-- New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
-- Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
-- Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
-- Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
-- Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
-- Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
+- None yet
+
+4.25.1 (2019-02-11)
+-------------------
+
+### Features
+* /tags endpoint to retrieve the user's tags with usage count (https://github.com/CartoDB/product/issues/208)
+* Remove support for likes in favor of having favorites [#14618](https://github.com/CartoDB/cartodb/pull/14618))
+
+### Bug fixes / enhancements
+* Add base URL to lockout redirection in static pages ([#14617](https://github.com/CartoDB/cartodb/pull/14617))
+* Improve the in_database operations fixing some rails behaviors that were problematic for us ([#14642]https://github.com/CartoDB/cartodb/pull/14642)
+* Makes maps listing go faster with related tables (user db size cache issue, #14165)
+* Do not redirect to /login by default when error is unknown in network interceptor ([#14616](https://github.com/CartoDB/cartodb/pull/14616))
+* Update CARTO.js to v4.1.10
+* Show zero when remaining quota is negative in metrics section of New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+* Enable search box geocoder provider selection ([#14622](https://github.com/CartoDB/cartodb/pull/14622))
+* New Lockout page for New Dashboard ([#14589](https://github.com/CartoDB/cartodb/issues/14589))
+* Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
+* Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
+* Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
+* Update maps section after usability tests in new dashboard ([#214](https://github.com/CartoDB/product/issues/214), [#215](https://github.com/CartoDB/product/issues/215), [#216](https://github.com/CartoDB/product/issues/216))
+* Avoid quota notifications for viewer users (https://github.com/CartoDB/support/issues/1916)
+* Fix Links to datasets shared with me ([CartoDB/product#229](https://github.com/CartoDB/product/issues/229))
+* Order Datasets by "Favourited first" and "Last Modified" ([CartoDB/product#237](https://github.com/CartoDB/product/issues/237))
+* Fix Cancel button not working in metadata edition view ([CartoDB/product#232](https://github.com/CartoDB/product/issues/232)))
+* Show latest maps/datasets within Recent Content in Home ([product#207](https://github.com/CartoDB/product/issues/207))
+* Usability Fixes for New Dashboard ([#14565](https://github.com/CartoDB/cartodb/issues/14565))
+* Tags section for Home Page ([CartoDB/product#208](https://github.com/CartoDB/product/issues/208))
+* Avoid sending seat limit reached email if the new user is viewer ([#14650](https://github.com/CartoDB/cartodb/pull/14650))
+* Fix visualization URL with hyphens in /viz ([product#229](https://github.com/CartoDB/product/issues/229))
+* Show user info in Condensed Map Card ([CartoDB/product#247](https://github.com/CartoDB/product/issues/247))
+* Show Feedback Popup ([CartoDB/product#222](https://github.com/CartoDB/product/issues/222))
 
 4.25.0 (2019-01-28)
 -------------------
@@ -41,6 +62,8 @@ Development
 * Fix organization invitation styles ([#14629](https://github.com/CartoDB/cartodb/issues/14629))
 * Fix typo in new dashboard search suggestions ([#14632](https://github.com/CartoDB/cartodb/pull/14632))
 * Update navigation in all private pages ([#14312](https://github.com/CartoDB/cartodb/issues/14312))
+* Send visited page event when is first time visiting New Dashboard ([product#209](https://github.com/CartoDB/product/issues/209))
+* Revisit maps and datasets in empty and initial status in New Dashboard ([#14534](https://github.com/CartoDB/cartodb/issues/14534)) ([product#227](https://github.com/CartoDB/product/issues/227))
 
 4.24.0 (2019-01-16)
 -------------------

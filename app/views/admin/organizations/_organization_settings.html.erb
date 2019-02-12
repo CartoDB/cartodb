@@ -52,4 +52,8 @@
     <div class="SupportBanner" id="support-banner"></div>
 <% end %>
 
-<%= render 'admin/shared/footer' %>
+<% if current_user.has_feature_flag?('new-dashboard-feature') %>
+  <%= render 'admin/shared/new_private_footer' %>
+<% else %>
+  <%= render 'admin/shared/footer' %>
+<% end %>

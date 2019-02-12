@@ -4,3 +4,7 @@
 @import "../typography";
 @import "../utilities";
 @import "../grid";
+
+#footer {
+  border-top: 1px solid $light-grey;
+}

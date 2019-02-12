@@ -5,6 +5,11 @@ require 'active_record'
 class Carto::TagQueryBuilder
 
   DEFAULT_TYPES = %w(table derived remote).freeze
+  TYPE_TRANSLATIONS = {
+    "table" => :datasets,
+    "derived" => :maps,
+    "remote" => :data_library
+  }.freeze
 
   def initialize(user_id)
     @user_id = user_id
@@ -74,22 +79,9 @@ class Carto::TagQueryBuilder
   def format_response(result)
     result.map do |row|
       types_count = @types.map { |type|
-        { translate_type(type) => row["#{type}_count"].to_i }
+        { TYPE_TRANSLATIONS.fetch(type, type) => row["#{type}_count"].to_i }
       }.inject(:merge)
       { tag: row['tag'] }.merge(types_count)
-    end
-  end
-
-  def translate_type(type)
-    case type
-    when 'table'
-      :datasets
-    when 'derived'
-      :maps
-    when 'remote'
-      :data_library
-    else
-      type
     end
   end
 

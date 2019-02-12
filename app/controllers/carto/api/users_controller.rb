@@ -1,4 +1,3 @@
-require_dependency 'google_sign_in_config'
 require_relative '../../helpers/avatar_helper'
 require_dependency 'carto/controller_helper'
 

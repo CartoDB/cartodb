@@ -23,21 +23,23 @@ module Carto
         [page, per_page, order, order_direction]
       end
 
-      def paged_result(result:, total_count:, page:, per_page:, order:)
-        last_page = (total_count / per_page.to_f).ceil
+      def paged_result(result:, total_count:, params:)
+        page = params[:page].to_i
+        per_page = params[:per_page].to_f
+        last_page = (total_count / per_page).ceil
 
         metadata = {
           total: total_count,
           count: result.count,
           result: result,
           _links: {
-            first: { href: yield(page: 1, per_page: per_page, order: order) },
-            last: { href: yield(page: last_page, per_page: per_page, order: order) }
+            first: { href: yield(params.merge(page: 1)) },
+            last: { href: yield(params.merge(page: last_page)) }
           }
         }
 
-        metadata[:_links][:prev] = { href: yield(page: page - 1, per_page: per_page, order: order) } if page > 1
-        metadata[:_links][:next] = { href: yield(page: page + 1, per_page: per_page, order: order) } if last_page > page
+        metadata[:_links][:prev] = { href: yield(params.merge(page: page - 1)) } if page > 1
+        metadata[:_links][:next] = { href: yield(params.merge(page: page + 1)) } if last_page > page
         metadata
       end
 

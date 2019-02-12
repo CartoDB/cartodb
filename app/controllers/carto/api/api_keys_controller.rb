@@ -53,9 +53,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
       paged_result(
         result: result,
         total_count: api_keys.count,
-        page: page,
-        per_page: per_page,
-        order: order
+        params: params
       ) { |params| api_keys_url(params) },
       200
     )

@@ -14,8 +14,10 @@ module Carto
 
       def index
         page, per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
+        types = params.fetch(:types, "").split(',')
 
         query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
+                                              .with_types(types)
         result = query_builder.build_paged(page, per_page)
         total_count = query_builder.total_count
 

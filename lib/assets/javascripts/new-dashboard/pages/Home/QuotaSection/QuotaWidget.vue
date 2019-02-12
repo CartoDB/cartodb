@@ -14,13 +14,19 @@
 
     <div class="quota-data">
       <div class="quota-cell cell--medium">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(remainingQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(remainingQuota)) : roundOneDecimal(remainingQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-cell cell--medium cell--mobile">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(usedQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(usedQuota)) : roundOneDecimal(usedQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-cell cell--medium">
-        <span class="text is-small is-txtSoftGrey">{{roundOneDecimal(availableQuota)}} {{unit}}</span>
+        <span class="text is-small is-txtSoftGrey">
+          {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(availableQuota)) : roundOneDecimal(availableQuota) }} {{unit}}
+        </span>
       </div>
       <div class="quota-help cell--small">
         <a href=""><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
@@ -37,7 +43,11 @@ export default {
     availableQuota: Number,
     usedQuota: Number,
     unit: String,
-    billingPeriod: String
+    billingPeriod: String,
+    formatToLocale: {
+      type: Boolean,
+      default: true
+    }
   },
   data: function () {
     return {
@@ -70,6 +80,9 @@ export default {
   methods: {
     roundOneDecimal (number) {
       return Math.round(number * 10) / 10;
+    },
+    getNumberInLocaleFormat (number) {
+      return number.toLocaleString();
     },
     onMouseOver () {
       this.active = true;

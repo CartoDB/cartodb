@@ -10,7 +10,11 @@
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth="false">
-              <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="getAmountInUnit(usedStorage, amountExponent)" :availableQuota="getAmountInUnit(availableStorage, amountExponent)" :unit="getUnit(amountExponent)"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.storage`)"
+                :usedQuota="getAmountInUnit(usedStorage, amountExponent)"
+                :availableQuota="getAmountInUnit(availableStorage, amountExponent)"
+                :unit="getUnit(amountExponent)"
+                :formatToLocale="false"></QuotaWidget>
             </QuotaContainer>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">

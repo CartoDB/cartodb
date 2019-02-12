@@ -9,7 +9,7 @@ describe Carto::Api::TagsController do
   include HelperMethods
 
   before(:all) do
-    @params = { user_domain: @user.username, api_key: @user.api_key }
+    @params = { user_domain: @user.username, api_key: @user.api_key, types: "derived,table" }
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end
 
@@ -20,9 +20,16 @@ describe Carto::Api::TagsController do
       end
     end
 
+    it 'raises a 400 error if types parameter is not valid' do
+      params = @params.merge(types: "table,wrong")
+      get_json api_v3_users_tags_url(params), @headers do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
     it 'returns a 200 response with the current user tags' do
       FactoryGirl.create(:derived_visualization, user_id: @user.id, tags: ["etiqueta"])
-      expected_tags = [{ tag: "etiqueta", maps: 1, datasets: 0, data_library: 0 }]
+      expected_tags = [{ tag: "etiqueta", maps: 1, datasets: 0 }]
 
       get_json api_v3_users_tags_url(@params), @headers do |response|
         expect(response.status).to eq(200)

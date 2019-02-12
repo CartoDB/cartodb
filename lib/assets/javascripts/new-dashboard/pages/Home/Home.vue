@@ -32,18 +32,16 @@ export default {
     this.$store.dispatch('recentContent/fetchContent');
   },
   created () {
+    this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('datasets/resetFilters');
+
     if (this.isFirstTimeViewingDashboard) {
       sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
     }
   },
-  beforeRouteLeave (to, from, next) {
-    this.$store.dispatch('datasets/resetFilters');
-    this.$store.dispatch('maps/resetFilters');
-    next();
-  },
   data () {
     return {
-      activeSection: 'RecentSection'
+      activeSection: this.$route.query.section || 'RecentSection'
     };
   },
   computed: {

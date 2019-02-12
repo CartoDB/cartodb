@@ -1,7 +1,7 @@
 Components
 ==========
 
-A common CartoDB stack is powered by those components:
+A common CARTO stack is powered by those components:
 
 .. toctree::
 

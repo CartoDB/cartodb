@@ -20,7 +20,7 @@
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection($event)" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../../assets/icons/common/checkbox.svg">
       </span>
@@ -125,7 +125,13 @@ export default {
       default: false
     }
   },
-  data,
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 600,
+      thumbnailHeight: 280
+    };
+  },
   computed: {
     ...computed,
     quickActionsComponent () {

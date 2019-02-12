@@ -82,7 +82,7 @@
     },
     "emptyCase": {
       "default": "There are no datasets here.",
-      "onlyShared": "There are no datasets here. Check out the <a href='{path}'>datasets shared with you</a>."
+      "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
     }
   },
   "MapsPage": {
@@ -106,7 +106,7 @@
     },
     "emptyCase": {
       "default": "There are no maps here.",
-      "onlyShared": "There are no maps here. Check out the <a href='{path}'>maps shared with you</a>."
+      "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
     }
   },
   "NotificationsPage": {
@@ -129,8 +129,7 @@
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
-    },
-    "initialState": "Change Filters"
+    }
   },
   "DatasetCard": {
     "shared": {
@@ -159,6 +158,7 @@
     "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
+    "feedback": "Share feedback",
     "logout": "LOG OUT"
   },
   "SolutionsPage": {
@@ -234,7 +234,7 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "allMapsLink" : "VIEW ALL MAPS"
+      "viewAll" : "VIEW ALL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",
@@ -251,7 +251,12 @@
     },
     "TagsSection": {
       "title": "Your tags",
-      "viewRecentContentAction": "View recent content"
+      "viewRecentContentAction": "View recent content",
+      "emptyState": {
+        "title": "You have no tags.",
+        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"https://carto.com/help/getting-started/dashboard/\">dashboard</a>."
+      },
+      "loading": "Asking the server politely for your tags."
     }
   },
   "TrialExpired": {
@@ -309,5 +314,9 @@
   "TagCard": {
     "maps": "0 maps | {maps} map | {maps} maps",
     "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
+  },
+  "FeedbackMessage": {
+    "title": "Share your feedback with us.",
+    "message": "Do you miss something? Should we be doing something differently?"
   }
 }

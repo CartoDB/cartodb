@@ -11,6 +11,7 @@ module Carto
       before_filter :load_parameters
 
       rescue_from StandardError, with: :rescue_from_standard_error
+      rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error
 
       DEFAULT_TAGS_PER_PAGE = 6
 
@@ -21,8 +22,6 @@ module Carto
         total_count = query_builder.total_count
 
         render json: format_response(result, total_count)
-      rescue Carto::ParamCombinationInvalidError => e
-        render_jsonp({ error: e.message }, e.status)
       end
 
       private

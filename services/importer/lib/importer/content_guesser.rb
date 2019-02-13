@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require 'byebug'
 require_relative 'ip_checker'
 require_relative 'table_sampler'
 require_relative 'namedplaces_guesser'

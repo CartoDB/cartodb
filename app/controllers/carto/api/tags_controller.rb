@@ -8,14 +8,14 @@ module Carto
 
       ssl_required
 
+      before_filter :load_parameters
+
       rescue_from StandardError, with: :rescue_from_standard_error
 
       DEFAULT_TAGS_PER_PAGE = 6
       VALID_TYPES = %w(table derived remote).freeze
 
       def index
-        read_params
-
         query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
                                               .with_types(@types)
         result = query_builder.build_paged(@page, @per_page)
@@ -28,7 +28,7 @@ module Carto
 
       private
 
-      def read_params
+      def load_parameters
         @page, @per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
 
         @types = params.fetch(:types, "").split(',')

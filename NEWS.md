@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Hash now doesn't return exception when accessing a non-existent element [#14666](https://github.com/CartoDB/cartodb/pull/14666)
+- In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
 
 4.25.1 (2019-02-11)
 -------------------

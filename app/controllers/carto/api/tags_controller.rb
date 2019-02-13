@@ -39,6 +39,8 @@ module Carto
         paged_result(
           result: result,
           total_count: total_count,
+          page: @page,
+          per_page: @per_page,
           params: params
         ) { |params| api_v3_users_tags_url(params) }
       end

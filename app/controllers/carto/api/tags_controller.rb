@@ -13,7 +13,6 @@ module Carto
       rescue_from StandardError, with: :rescue_from_standard_error
 
       DEFAULT_TAGS_PER_PAGE = 6
-      VALID_TYPES = %w(table derived remote).freeze
 
       def index
         query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
@@ -32,8 +31,8 @@ module Carto
         @page, @per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
 
         @types = params.fetch(:types, "").split(',')
-        if (@types - VALID_TYPES).present?
-          raise Carto::ParamCombinationInvalidError.new(:types, VALID_TYPES)
+        if (@types - Carto::Visualization::VALID_TYPES).present?
+          raise Carto::ParamCombinationInvalidError.new(:types, Carto::Visualization::VALID_TYPES)
         end
       end
 

@@ -49,20 +49,21 @@ describe Carto::TagQueryBuilder do
     it 'returns the tags in lowercase and merges tags with different letter case' do
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["USER1"])
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["uSeR1"])
-      expected_result = [{ tag: "user1", maps: 2, datasets: 0 }]
+      expected_result = [{ tag: "user1", maps: 2, datasets: 0, data_library: 0 }]
 
       result = @builder.build_paged(1, 10)
 
       result.should eql expected_result
     end
 
-    it 'returns the right count of single tags for maps and datasets' do
+    it 'returns the right count of single tags for any type' do
       FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["user1"])
       FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["user1"])
+      FactoryGirl.create(:carto_visualization, type: 'remote', user_id: @user1.id, tags: ["user1"])
       expected_result = [
-        { tag: "user1", maps: 1, datasets: 1 },
-        { tag: "dataset", maps: 0, datasets: 1 }
+        { tag: "user1", maps: 1, datasets: 1, data_library: 1 },
+        { tag: "dataset", maps: 0, datasets: 1, data_library: 0 }
       ]
 
       result = @builder.build_paged(1, 10)
@@ -70,12 +71,39 @@ describe Carto::TagQueryBuilder do
       result.should eql expected_result
     end
 
-    it 'returns the right count of multiple tags for maps and datasets' do
+    it 'allows to filter by one type' do
+      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["map"])
+      FactoryGirl.create(:carto_visualization, type: 'remote', user_id: @user1.id, tags: ["remote"])
+      expected_result = [{ tag: "map", maps: 1 }]
+
+      builder = Carto::TagQueryBuilder.new(@user1.id).with_types(["derived"])
+      result = builder.build_paged(1, 10)
+
+      result.should eql expected_result
+    end
+
+    it 'allows to filter by 2 types' do
+      FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
+      FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["map"])
+      FactoryGirl.create(:carto_visualization, type: 'remote', user_id: @user1.id, tags: ["remote"])
+      expected_result = [
+        { tag: "map", maps: 1, data_library: 0 },
+        { tag: "remote", maps: 0, data_library: 1 }
+      ]
+
+      builder = Carto::TagQueryBuilder.new(@user1.id).with_types(["derived", "remote"])
+      result = builder.build_paged(1, 10)
+
+      result.should eql expected_result
+    end
+
+    it 'returns the right count when having multiple tags' do
       FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["user1", "dataset"])
       FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset"])
       expected_result = [
-        { tag: "dataset", maps: 0, datasets: 2 },
-        { tag: "user1", maps: 0, datasets: 1 }
+        { tag: "dataset", maps: 0, datasets: 2, data_library: 0 },
+        { tag: "user1", maps: 0, datasets: 1, data_library: 0 }
       ]
 
       result = @builder.build_paged(1, 10)
@@ -88,9 +116,9 @@ describe Carto::TagQueryBuilder do
       FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["dataset", "user1"])
       FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["map", "user1"])
       expected_result = [
-        { tag: "user1", maps: 1, datasets: 2 },
-        { tag: "dataset", maps: 0, datasets: 2 },
-        { tag: "map", maps: 1, datasets: 0 }
+        { tag: "user1", maps: 1, datasets: 2, data_library: 0 },
+        { tag: "dataset", maps: 0, datasets: 2, data_library: 0 },
+        { tag: "map", maps: 1, datasets: 0, data_library: 0 }
       ]
 
       result = @builder.build_paged(1, 10)
@@ -107,8 +135,8 @@ describe Carto::TagQueryBuilder do
 
       it 'returns the expected result for the first page' do
         expected_result = [
-          { tag: "tag1", maps: 1, datasets: 2 },
-          { tag: "tag2", maps: 1, datasets: 1 }
+          { tag: "tag1", maps: 1, datasets: 2, data_library: 0 },
+          { tag: "tag2", maps: 1, datasets: 1, data_library: 0 }
         ]
 
         result = @builder.build_paged(1, 2)
@@ -117,7 +145,7 @@ describe Carto::TagQueryBuilder do
       end
 
       it 'returns the expected result for the last page' do
-        expected_result = [{ tag: "tag3", maps: 1, datasets: 0 }]
+        expected_result = [{ tag: "tag3", maps: 1, datasets: 0, data_library: 0 }]
 
         result = @builder.build_paged(2, 2)
 

@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
 - Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
 
 4.25.1 (2019-02-11)

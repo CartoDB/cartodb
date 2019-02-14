@@ -8,8 +8,8 @@ namespace :cartodb do
       routing: { method: :get_mapzen_routing_calls, column: 'routing_provider' }
     }.freeze
 
-    # e.g. bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01', '2018-01-31']
-    #      bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01', '2018-01-31', '/tmp/test.csv']
+    # e.g. bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01','2018-01-31']
+    #      bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01','2018-01-31', '/tmp/test.csv']
     desc 'Get DS provider metrics in a defined period of time'
     task :ds_provider_metrics, [:provider, :from, :to, :output_file] => :environment do |_t, args|
       provider = args[:provider]

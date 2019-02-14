@@ -2,4 +2,6 @@
   <div class="js-footer"></div>
 </div>
 
-<%= stylesheet_link_tag  'footer.css',  :media => 'all' %>
+<% content_for :css do %>
+  <%= stylesheet_link_tag  'footer.css',  :media => 'all' %>
+<% end %>

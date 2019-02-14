@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
 
 4.25.1 (2019-02-11)
 -------------------

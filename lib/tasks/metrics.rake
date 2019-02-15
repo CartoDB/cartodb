@@ -9,7 +9,7 @@ namespace :cartodb do
     }.freeze
 
     # e.g. bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01','2018-01-31']
-    #      bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01','2018-01-31', '/tmp/test.csv']
+    #      bundle exec rake cartodb:metrics:ds_provider_metrics['heremaps','2018-01-01','2018-01-31','/tmp/test.csv']
     desc 'Get DS provider metrics in a defined period of time'
     task :ds_provider_metrics, [:provider, :from, :to, :output_file] => :environment do |_t, args|
       provider = args[:provider]
@@ -38,6 +38,30 @@ namespace :cartodb do
             end
             if !usage.nil? and usage > 0
               csv << [provider, service, date_from, date_to, organization_name, user.username, usage]
+            end
+          end
+        end
+      end
+    end
+
+    # e.g. bundle exec rake cartodb:metrics:ds_user_metrics['rtorre','2019-01-01','2019-01-31']
+    #      bundle exec rake cartodb:metrics:ds_user_metrics['rtorre','2019-01-01','2019-01-31','/tmp/test.csv']
+    desc 'Get DS daily usage metrics for a user within a period of time'
+    task :ds_user_metrics, [:username, :from, :to, :output_file] => :environment do |_t, args|
+      username = args[:username]
+      from = args[:from].blank? ? nil : args[:from].to_date
+      to = args[:to].blank? ? nil : args[:to].to_date
+      default_output_file = "/tmp/ds_metrics_#{username}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
+      output_file = args[:output_file].blank? ? default_output_file : args[:output_file]
+      CSV.open(output_file, "wb") do |csv|
+        user = Carto::User.where(username: username).first
+        SERVICES.each do |service, data|
+          provider = user[data[:column]]
+          from.upto(to) do |date|
+            usage = nil
+            usage = user.public_send(data[:method], {from: date, to: date})
+            if !usage.nil? and usage > 0
+              csv << [username, service, provider, date.strftime('%Y-%m-%d'), usage]
             end
           end
         end

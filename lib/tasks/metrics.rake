@@ -67,5 +67,31 @@ namespace :cartodb do
         end
       end
     end
+
+    # e.g. bundle exec rake cartodb:metrics:ds_org_metrics['team','2019-01-01','2019-01-31']
+    #      bundle exec rake cartodb:metrics:ds_org_metrics['team','2019-01-01','2019-01-31','/tmp/test.csv']
+    desc 'Get DS daily usage metrics for a user within a period of time'
+    task :ds_org_metrics, [:orgname, :from, :to, :output_file] => :environment do |_t, args|
+      orgname = args[:orgname]
+      from = args[:from].blank? ? nil : args[:from].to_date
+      to = args[:to].blank? ? nil : args[:to].to_date
+      default_output_file = "/tmp/ds_metrics_#{orgname}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
+      output_file = args[:output_file].blank? ? default_output_file : args[:output_file]
+      CSV.open(output_file, "wb") do |csv|
+        organization_id = Carto::Organization.where(name: orgname).first.id
+        Carto::User.where(organization_id: organization_id).find_each do |user|
+          SERVICES.each do |service, data|
+            provider = user[data[:column]]
+            from.upto(to) do |date|
+              usage = nil
+              usage = user.public_send(data[:method], {from: date, to: date, orgwise: false})
+              if !usage.nil? and usage > 0
+                csv << [user.username, service, provider, date.strftime('%Y-%m-%d'), usage]
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end

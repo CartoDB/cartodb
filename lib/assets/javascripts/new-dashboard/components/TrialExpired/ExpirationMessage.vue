@@ -53,7 +53,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .upgrade-button {
   margin-right: 64px;

@@ -59,7 +59,7 @@ namespace :cartodb do
           provider = user[data[:column]]
           from.upto(to) do |date|
             usage = nil
-            usage = user.public_send(data[:method], {from: date, to: date})
+            usage = user.public_send(data[:method], {from: date, to: date, orgwise: false})
             if !usage.nil? and usage > 0
               csv << [username, service, provider, date.strftime('%Y-%m-%d'), usage]
             end

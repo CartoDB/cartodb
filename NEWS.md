@@ -10,6 +10,7 @@ Development
 ### Bug fixes / enhancements
 - Add filtering by types to /tags endpoint and use it in the new dashboard ([CartoDB/product#259](https://github.com/CartoDB/product/issues/259)))
 - In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
+- Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
 
 4.25.1 (2019-02-11)
 -------------------

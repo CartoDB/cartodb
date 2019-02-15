@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Updating shrinkwrap and package-lock before node.js upgrade
 
 ### Features
 - None yet

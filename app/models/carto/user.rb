@@ -786,6 +786,6 @@ class Carto::User < ActiveRecord::Base
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     orgwise = options.fetch(:orgwise, true)
-    return date_from, date_to, orgwise
+    [date_from, date_to, orgwise]
   end
 end

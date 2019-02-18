@@ -53,8 +53,8 @@ namespace :cartodb do
       to = args[:to].to_date
       default_output_file = "/tmp/ds_metrics_#{username}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
       output_file = args.fetch(:output_file, default_output_file)
+      user = Carto::User.where(username: username).first
       CSV.open(output_file, "wb") do |csv|
-        user = Carto::User.where(username: username).first
         SERVICES.each do |service, data|
           provider = user[data[:column]]
           from.upto(to) do |date|

@@ -12,6 +12,7 @@ Development
 - In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
 - Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
 - Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
+- Fix quick actions dropdown in maps and datasets card - Dashboard
 
 4.25.1 (2019-02-11)
 -------------------

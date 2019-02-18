@@ -52,7 +52,7 @@ namespace :cartodb do
       from = args.from.to_date
       to = args.to.to_date
       default_output_file = "/tmp/ds_metrics_#{username}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
-      args.with_defaults(:output_file => default_output_file)
+      args.with_defaults(output_file: default_output_file)
       user = Carto::User.where(username: username).first
       CSV.open(args.output_file, "wb") do |csv|
         SERVICES.each do |service, data|
@@ -75,7 +75,7 @@ namespace :cartodb do
       from = args.from.to_date
       to = args.to.to_date
       default_output_file = "/tmp/ds_metrics_#{orgname}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
-      args.with_defaults(:output_file => default_output_file)
+      args.with_defaults(output_file: default_output_file)
       organization_id = Carto::Organization.where(name: orgname).first.id
       CSV.open(args.output_file, "wb") do |csv|
         Carto::User.where(organization_id: organization_id).find_each do |user|

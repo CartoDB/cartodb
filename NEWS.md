@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- Added a rake task to generate finer grain LDS metrics reports [#14671](https://github.com/CartoDB/cartodb/pull/14671)
+- Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)
 
 ### Bug fixes / enhancements
 - Add filtering by types to /tags endpoint and use it in the new dashboard ([CartoDB/product#259](https://github.com/CartoDB/product/issues/259)))

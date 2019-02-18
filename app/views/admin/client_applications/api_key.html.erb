@@ -32,7 +32,7 @@
 
     <% if current_user.engine_enabled? %>
       <% if @has_new_dashboard %>
-        <div class="js-api-keys-new"></div>
+        <div class="api-keys js-api-keys-new"></div>
       <% else %>
         <%= render :partial => 'api_keys_form' %>
       <% end %>

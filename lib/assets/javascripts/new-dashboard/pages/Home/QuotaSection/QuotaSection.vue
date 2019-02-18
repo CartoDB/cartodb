@@ -71,10 +71,10 @@ export default {
       return 'https://carto.com/help/working-with-data/geocoding/';
     },
     isolinesHelpLink () {
-      return 'https://carto.com/help/working-with-data/isolines/'
+      return 'https://carto.com/help/working-with-data/isolines/';
     },
     routingHelpLink () {
-      return 'https://carto.com/help/working-with-data/routing/'
+      return 'https://carto.com/help/working-with-data/routing/';
     }
   },
   methods: {

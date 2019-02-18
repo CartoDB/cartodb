@@ -34,8 +34,8 @@ module DataServicesMetricsHelper
     get_routing_data(organization.owner, from, to)
   end
 
-  def get_user_obs_snapshot_data(user, from, to)
-    get_obs_snapshot_data(user, from, to)
+  def get_user_obs_snapshot_data(user, from, to, orgwise = true)
+    get_obs_snapshot_data(user, from, to, orgwise)
   end
 
   def get_organization_obs_snapshot_data(organization, from, to)
@@ -43,8 +43,8 @@ module DataServicesMetricsHelper
     get_obs_snapshot_data(organization.owner, from, to)
   end
 
-  def get_user_obs_general_data(user, from, to)
-    get_obs_general_data(user, from, to)
+  def get_user_obs_general_data(user, from, to, orgwise = true)
+    get_obs_general_data(user, from, to, orgwise)
   end
 
   def get_organization_obs_general_data(organization, from, to)
@@ -85,8 +85,8 @@ module DataServicesMetricsHelper
     success + empty
   end
 
-  def get_obs_snapshot_data(user, from, to)
-    orgname = user.organization.nil? ? nil : user.organization.name
+  def get_obs_snapshot_data(user, from, to, orgwise = true)
+    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
     usage_metrics = CartoDB::ObservatorySnapshotUsageMetrics.new(user.username, orgname)
     obs_snapshot_key = :obs_snapshot
     success = usage_metrics.get_sum_by_date_range(obs_snapshot_key, :success_responses, from, to)
@@ -94,8 +94,8 @@ module DataServicesMetricsHelper
     success + empty
   end
 
-  def get_obs_general_data(user, from, to)
-    orgname = user.organization.nil? ? nil : user.organization.name
+  def get_obs_general_data(user, from, to, orgwise = true)
+    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
     usage_metrics = CartoDB::ObservatoryGeneralUsageMetrics.new(user.username, orgname)
     obs_general_key = :obs_general
     success = usage_metrics.get_sum_by_date_range(obs_general_key, :success_responses, from, to)

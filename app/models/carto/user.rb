@@ -393,13 +393,15 @@ class Carto::User < ActiveRecord::Base
   def get_obs_snapshot_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_snapshot_data(self, date_from, date_to)
+    orgwise = options.fetch(:orgwise, true)
+    get_user_obs_snapshot_data(self, date_from, date_to, orgwise)
   end
 
   def get_obs_general_calls(options = {})
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_general_data(self, date_from, date_to)
+    orgwise = options.fetch(:orgwise, true)
+    get_user_obs_general_data(self, date_from, date_to, orgwise)
   end
 
   def get_mapzen_routing_calls(options = {})

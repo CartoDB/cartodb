@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
 
 ### Features
 - None yet
@@ -44,6 +44,7 @@ Development
 * Fix visualization URL with hyphens in /viz ([product#229](https://github.com/CartoDB/product/issues/229))
 * Show user info in Condensed Map Card ([CartoDB/product#247](https://github.com/CartoDB/product/issues/247))
 * Show Feedback Popup ([CartoDB/product#222](https://github.com/CartoDB/product/issues/222))
+* Set condensed maps view in Search page ([CartoDB/product#240](https://github.com/CartoDB/product/issues/240))
 
 4.25.0 (2019-01-28)
 -------------------

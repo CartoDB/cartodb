@@ -70,8 +70,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = saml_strategy_username || ldap_strategy_username ||
-                           google_strategy_username || credentials_strategy_username
+    strategies, username = saml_strategy_username || ldap_strategy_username || credentials_strategy_username
 
     unless strategies
       return saml_authentication? ? render_403 : render(action: 'new')
@@ -346,26 +345,12 @@ class SessionsController < ApplicationController
     end
   end
 
-  def google_strategy_username
-    if google_authentication? && !user_password_authentication?
-      api = Carto::Oauth::Api::Google.new(nil, params[:google_access_token])
-      user = api.user
-      if user
-        [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
-      end
-    end
-  end
-
   def credentials_strategy_username
     [:password, extract_username(request, params)] if user_password_authentication?
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
-  end
-
-  def google_authentication?
-    params[:google_access_token].present?
   end
 
   def ldap_authentication?

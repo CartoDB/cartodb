@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.49",
+  "version": "1.0.0-assets.50",
   "dependencies": {
     "@babel/polyfill": {
       "version": "7.0.0",

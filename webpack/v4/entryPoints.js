@@ -29,7 +29,7 @@ module.exports = {
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss')),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 

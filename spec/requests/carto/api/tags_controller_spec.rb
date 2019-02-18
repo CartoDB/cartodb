@@ -9,7 +9,7 @@ describe Carto::Api::TagsController do
   include HelperMethods
 
   before(:all) do
-    @params = { user_domain: @user.username, api_key: @user.api_key }
+    @params = { user_domain: @user.username, api_key: @user.api_key, types: "derived,table" }
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end
 
@@ -17,6 +17,13 @@ describe Carto::Api::TagsController do
     it 'returns 401 if there is no authenticated user' do
       get_json api_v3_users_tags_url, @headers do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    it 'raises a 400 error if types parameter is not valid' do
+      params = @params.merge(types: "table,wrong")
+      get_json api_v3_users_tags_url(params), @headers do |response|
+        expect(response.status).to eq(400)
       end
     end
 

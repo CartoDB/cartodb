@@ -377,33 +377,28 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_geocoding_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_geocoding_data(self, date_from, date_to, orgwise)
   end
 
   def get_here_isolines_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_here_isolines_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_here_isolines_data(self, date_from, date_to, orgwise)
   end
 
   def get_obs_snapshot_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_snapshot_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_obs_snapshot_data(self, date_from, date_to, orgwise)
   end
 
   def get_obs_general_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_general_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_obs_general_data(self, date_from, date_to, orgwise)
   end
 
   def get_mapzen_routing_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_mapzen_routing_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_mapzen_routing_data(self, date_from, date_to, orgwise)
   end
 
   # TODO: Remove unused param `use_total`
@@ -785,5 +780,12 @@ class Carto::User < ActiveRecord::Base
     begin
       self[column] = SecureRandom.urlsafe_base64
     end while Carto::User.exists?(column => self[column])
+  end
+
+  def ds_metrics_parameters_from_options(options)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    orgwise = options.fetch(:orgwise, true)
+    [date_from, date_to, orgwise]
   end
 end

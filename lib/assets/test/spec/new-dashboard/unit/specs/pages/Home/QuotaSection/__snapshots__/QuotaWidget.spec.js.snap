@@ -16,7 +16,7 @@ exports[`QuotaWidget.vue should render correct contents 1`] = `
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1194 GB</span></div>
     <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">40 GB</span></div>
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1234 GB</span></div>
-    <div class="quota-help cell--small"><a href=""><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
+    <div class="quota-help cell--small"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
   </div>
 </div>
 `;
@@ -37,7 +37,7 @@ exports[`QuotaWidget.vue should render correctly compact widget 1`] = `
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1222 </span></div>
     <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">12 </span></div>
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1234 </span></div>
-    <div class="quota-help cell--small"><a href=""><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
+    <div class="quota-help cell--small"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
   </div>
 </div>
 `;
@@ -58,7 +58,7 @@ exports[`QuotaWidget.vue should render problem bar if used ammount is over 90% 1
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">68 </span></div>
     <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">932 </span></div>
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1000 </span></div>
-    <div class="quota-help cell--small"><a href=""><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
+    <div class="quota-help cell--small"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
   </div>
 </div>
 `;
@@ -79,7 +79,7 @@ exports[`QuotaWidget.vue should render warning bar if used ammount is over 60% a
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">390 </span></div>
     <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">610 </span></div>
     <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">1000 </span></div>
-    <div class="quota-help cell--small"><a href=""><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
+    <div class="quota-help cell--small"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
   </div>
 </div>
 `;

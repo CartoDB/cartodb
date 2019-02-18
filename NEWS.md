@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
 
 ### Features
 - None yet

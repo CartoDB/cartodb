@@ -124,13 +124,6 @@ module CartoDB
       @user
     end
 
-    def with_google_token(google_access_token)
-      @built = false
-      api = Carto::Oauth::Api::Google.new(nil, google_access_token)
-      @google_user_data = api.user_params.email.present?
-      self
-    end
-
     def with_oauth_api(oauth_api)
       @built = false
       @oauth_api = oauth_api

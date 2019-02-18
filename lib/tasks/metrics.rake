@@ -49,8 +49,8 @@ namespace :cartodb do
     desc 'Get DS daily usage metrics for a user within a period of time'
     task :ds_user_metrics, [:username, :from, :to, :output_file] => :environment do |_t, args|
       username = args[:username]
-      from = args[:from].blank? ? nil : args[:from].to_date
-      to = args[:to].blank? ? nil : args[:to].to_date
+      from = args[:from].to_date
+      to = args[:to].to_date
       default_output_file = "/tmp/ds_metrics_#{username}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
       output_file = args[:output_file].blank? ? default_output_file : args[:output_file]
       CSV.open(output_file, "wb") do |csv|
@@ -72,8 +72,8 @@ namespace :cartodb do
     desc 'Get DS daily usage metrics for a user within a period of time'
     task :ds_org_metrics, [:orgname, :from, :to, :output_file] => :environment do |_t, args|
       orgname = args[:orgname]
-      from = args[:from].blank? ? nil : args[:from].to_date
-      to = args[:to].blank? ? nil : args[:to].to_date
+      from = args[:from].to_date
+      to = args[:to].to_date
       default_output_file = "/tmp/ds_metrics_#{orgname}_#{from.strftime('%Y%m%d')}_#{to.strftime('%Y%m%d')}.csv"
       output_file = args[:output_file].blank? ? default_output_file : args[:output_file]
       CSV.open(output_file, "wb") do |csv|

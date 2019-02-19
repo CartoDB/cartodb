@@ -59,7 +59,7 @@ export default {
       return this.$store.state.notifications.isFetching;
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.$store.dispatch('user/resetOrganizationNotifications');
   }
 };

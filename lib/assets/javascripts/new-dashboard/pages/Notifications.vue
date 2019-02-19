@@ -60,7 +60,7 @@ export default {
     }
   },
   mounted: function() {
-    this.$store.dispatch('user/emptyOrganizationNotifications', this.$store);
+    this.$store.dispatch('user/resetOrganizationNotifications');
   }
 };
 </script>

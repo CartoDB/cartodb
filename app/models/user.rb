@@ -126,7 +126,7 @@ class User < Sequel::Model
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
-  TRIAL_DURATION_DAYS = 15
+  MAGELLAN_TRIAL_DURATION_DAYS = 15
   PERSONAL30_TRIAL_DURATION_DAYS = 30
 
   DEFAULT_GEOCODING_QUOTA = 0
@@ -881,9 +881,9 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
-      upgraded_at + TRIAL_DURATION_DAYS.days
-    elsif account_type.to_s.downcase == 'personal30'
+    if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + MAGELLAN_TRIAL_DURATION_DAYS.days > Date.today
+      upgraded_at + MAGELLAN_TRIAL_DURATION_DAYS.days
+    elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DURATION_DAYS.days
     else
       nil

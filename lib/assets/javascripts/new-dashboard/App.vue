@@ -37,7 +37,6 @@ export default {
       return this.$store.state.user.base_url;
     },
     notificationsCount () {
-      console.log('notificationsCount', this.$store.state.user.organizationNotifications);
       return this.$store.state.user.organizationNotifications.length;
     },
     isFirstTimeInDashboard () {

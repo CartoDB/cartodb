@@ -58,6 +58,9 @@ export default {
     isFetching () {
       return this.$store.state.notifications.isFetching;
     }
+  },
+  mounted: function() {
+    this.$store.dispatch('user/emptyOrganizationNotifications', this.$store);
   }
 };
 </script>

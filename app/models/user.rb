@@ -127,6 +127,7 @@ class User < Sequel::Model
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
   TRIAL_DURATION_DAYS = 15
+  PERSONAL30_TRIAL_DURATION_DAYS = 30
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -882,6 +883,8 @@ class User < Sequel::Model
   def trial_ends_at
     if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
       upgraded_at + TRIAL_DURATION_DAYS.days
+    elsif account_type.to_s.downcase == 'personal30'
+      created_at + PERSONAL30_TRIAL_DURATION_DAYS.days
     else
       nil
     end

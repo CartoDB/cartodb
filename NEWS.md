@@ -13,6 +13,7 @@ Development
 - Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
 - Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
 - Fix quick actions dropdown in maps and datasets card - Dashboard
+- Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
 
 4.25.1 (2019-02-11)
 -------------------

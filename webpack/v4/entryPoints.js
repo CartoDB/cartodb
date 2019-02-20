@@ -29,13 +29,13 @@ module.exports = {
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('assets/stylesheets/new-dashboard/main.scss')),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
   header: [
     rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
-    rootDir('assets/stylesheets/new-dashboard/bundles/header.scss')
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/header.scss')
   ],
 
   footer: [

@@ -65,7 +65,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .page--welcome {
   padding: 64px 0 0;

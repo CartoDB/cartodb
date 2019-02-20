@@ -28,7 +28,9 @@ describe DatasourcesFactory do
       dropbox_provider.is_a?(Url::Box).should eq true
 
       # Stubs Google Drive client for connectionless testing
-      Google::APIClient.any_instance.stubs(:discovered_api)
+      Google::Apis::DriveV2::DriveService.any_instance.stubs(:get_file)
+      Google::Apis::DriveV2::DriveService.any_instance.stubs(:export_file)
+      Google::Apis::DriveV2::DriveService.any_instance.stubs(:list_files)
       gdrive_provider = DatasourcesFactory.get_datasource(Url::GDrive::DATASOURCE_NAME, user)
       gdrive_provider.is_a?(Url::GDrive).should eq true
 

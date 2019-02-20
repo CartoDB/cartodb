@@ -29,7 +29,7 @@
         </span>
       </div>
       <div class="quota-help cell--small">
-        <a href=""><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+        <a :href="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>
@@ -47,7 +47,8 @@ export default {
     formatToLocale: {
       type: Boolean,
       default: true
-    }
+    },
+    helpLink: String
   },
   data: function () {
     return {
@@ -95,7 +96,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .quota-widget {
   display: flex;

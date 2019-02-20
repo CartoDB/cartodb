@@ -1,6 +1,4 @@
 # encoding: UTF-8
-require_dependency 'google_plus_config'
-require_dependency 'google_plus_api'
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
@@ -72,8 +70,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    strategies, username = saml_strategy_username || ldap_strategy_username ||
-                           google_strategy_username || credentials_strategy_username
+    strategies, username = saml_strategy_username || ldap_strategy_username || credentials_strategy_username
 
     unless strategies
       return saml_authentication? ? render_403 : render(action: 'new')
@@ -267,10 +264,10 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_oauth_config
-    @oauth_configs = [google_plus_config, github_config].compact
+    @oauth_configs = [google_config, github_config].compact
   end
 
-  def google_plus_config
+  def google_config
     unless @organization && !@organization.auth_google_enabled
       Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
                                             invitation_token: params[:invitation_token],
@@ -348,32 +345,12 @@ class SessionsController < ApplicationController
     end
   end
 
-  def google_strategy_username
-    if google_authentication? && !user_password_authentication?
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
-        [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
-      elsif user == false
-        # token not valid
-        nil
-      else
-        # token valid, unknown user
-        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-        nil
-      end
-    end
-  end
-
   def credentials_strategy_username
     [:password, extract_username(request, params)] if user_password_authentication?
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
-  end
-
-  def google_authentication?
-    params[:google_access_token].present? && @google_plus_config.present?
   end
 
   def ldap_authentication?

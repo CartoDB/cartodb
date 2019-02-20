@@ -61,9 +61,6 @@ CartoDB::Application.routes.draw do
   # This is what an external SAML endpoint should redirect to after successful auth.
   post '(/user/:user_domain)(/u/:user_domain)/saml/finalize' => 'sessions#create'
 
-  get '/google_plus' => 'google_plus#google_plus', as: :google_plus
-  post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
-
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
     namespace :builder, path: '/' do

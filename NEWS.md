@@ -14,6 +14,7 @@ Development
 - Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
 - Update links in quota & metrics section in New Dashboard [#14574](https://github.com/CartoDB/cartodb/issues/14574)
 - Fix quick actions dropdown in maps and datasets card - Dashboard
+- Update pending notifications badge when checking out notifications in the New Dashboard
 
 4.25.1 (2019-02-11)
 -------------------

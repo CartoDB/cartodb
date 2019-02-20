@@ -44,8 +44,7 @@
     <%= insert_trackjs() -%>
     <%= yield :js -%>
     <% if current_user.has_feature_flag?('new-dashboard-feature') %>
-      <%= javascript_include_tag 'header' %>
-      <%= javascript_include_tag 'footer' %>
+      <%= javascript_include_tag 'header', 'footer' %>
     <% end %>
     <%= insert_google_analytics('primary') -%>
     <%= insert_hubspot() -%>

@@ -12,12 +12,12 @@
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
 
-  <% if current_user.has_feature_flag?('new-dashboard-feature') %>
+  <% if @has_engine_enabled || current_user.has_feature_flag?('new-dashboard-feature') %>
     <%= javascript_include_tag 'common', 'common_vendor' %>
   <% end %>
 
   <% if @has_engine_enabled %>
-    <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
+    <%= javascript_include_tag 'api_keys_new' %>
   <% end %>
 <% end %>
 

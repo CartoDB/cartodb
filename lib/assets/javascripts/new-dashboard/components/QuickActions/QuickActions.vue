@@ -1,9 +1,9 @@
 <template>
-  <div class="quick-actions">
+  <div class="quick-actions" v-click-outside="closeDropdown">
     <a href="javascript:void(0)" class="quick-actions-select" @click="toggleDropdown" :class="{'is-active': isOpen }">
       <img svg-inline src="new-dashboard/assets/icons/common/options.svg">
     </a>
-    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" v-click-outside="closeDropdown" @click="killEvent">
+    <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" @click="killEvent">
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.title`) }}</h6>
       <ul>
         <li v-for="action in actions" :key="action.name" v-if="!action.shouldBeHidden">

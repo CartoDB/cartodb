@@ -48,8 +48,8 @@
   </div>
 </div>
 
-<% if !Cartodb.config[:cartodb_com_hosted].present? %>
-    <div class="SupportBanner" id="support-banner"></div>
+<% if current_user.has_feature_flag?('new-dashboard-feature') %>
+  <%= render 'admin/shared/new_private_footer' %>
+<% else %>
+  <%= render 'admin/shared/footer' %>
 <% end %>
-
-<%= render 'admin/shared/footer' %>

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.52",
+  "version": "1.0.0-assets.54",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "internal-carto.js": "CartoDB/carto.js#v4.1.11-0",
     "jquery": "2.1.4",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
+    "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",

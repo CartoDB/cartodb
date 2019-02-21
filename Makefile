@@ -349,6 +349,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/visualization_query_orderer_spec.rb \
 	spec/queries/carto/tag_query_builder_spec.rb \
 	spec/requests/carto/api/tags_controller_spec.rb \
+	spec/lib/carto/oauth/google/api_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

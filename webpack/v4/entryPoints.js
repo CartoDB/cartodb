@@ -38,6 +38,11 @@ module.exports = {
     rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/header.scss')
   ],
 
+  footer: [
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/footer/footer.js'),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/footer.scss')
+  ],
+
   public_table_new: [
     rootDir('lib/assets/javascripts/dashboard/public-dataset.js'),
     rootDir('assets/stylesheets/table/table.scss'),

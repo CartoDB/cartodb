@@ -26,6 +26,15 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'lets an uncompressed file pass through and store it in a tmp dir with uppercase chars' do
+      uncompressed_file = zipfile_factory(filename: 'duplicated_column_name.csv')
+      unp = Unp.new({ 'unp_temporal_folder' => '/tmp/IMPORTS' })
+
+      unp.run(uncompressed_file)
+      Dir.entries(unp.temporary_directory).should include('duplicated_column_name.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a GPKG file' do
       zipfile   = zipfile_factory(filename: 'geopackage.zip')
       unp       = Unp.new

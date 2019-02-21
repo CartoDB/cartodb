@@ -4,7 +4,7 @@
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
         <span class="text is-small">{{ trialTimeLeft }}</span>
-        <a class="button button--small button--outline" :href="accountUpdateURL" v-if="accountUpdateURL">
+        <a class="button button--small button--outline" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
           {{ $t('HomePage.WelcomeSection.addPaymentMethod') }}
         </a>
       </template>

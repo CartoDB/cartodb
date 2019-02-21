@@ -28,7 +28,7 @@ describe Unp do
 
     it 'lets an uncompressed file pass through and store it in a tmp dir with uppercase chars' do
       uncompressed_file = file_factory(filename: 'duplicated_column_name.csv')
-      unp = Unp.new({ 'unp_temporal_folder' => '/tmp/IMPORTS' })
+      unp = Unp.new('unp_temporal_folder' => '/tmp/IMPORTS')
 
       unp.run(uncompressed_file)
       Dir.entries(unp.temporary_directory).should include('duplicated_column_name.csv')

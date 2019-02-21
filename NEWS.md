@@ -16,6 +16,7 @@ Development
 - Fix quick actions dropdown in maps and datasets card - Dashboard
 - Update pending notifications badge when checking out notifications in the New Dashboard
 - Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
+- Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
 
 4.25.1 (2019-02-11)
 -------------------

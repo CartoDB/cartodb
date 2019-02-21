@@ -12,7 +12,12 @@ Development
 - In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
 - Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
 - Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
+- Update links in quota & metrics section in New Dashboard [#14574](https://github.com/CartoDB/cartodb/issues/14574)
 - Fix quick actions dropdown in maps and datasets card - Dashboard
+- Update pending notifications badge when checking out notifications in the New Dashboard
+- Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
+- Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
+- Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
 - Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
 
 4.25.1 (2019-02-11)
@@ -46,6 +51,7 @@ Development
 * Fix visualization URL with hyphens in /viz ([product#229](https://github.com/CartoDB/product/issues/229))
 * Show user info in Condensed Map Card ([CartoDB/product#247](https://github.com/CartoDB/product/issues/247))
 * Show Feedback Popup ([CartoDB/product#222](https://github.com/CartoDB/product/issues/222))
+* Deprecate Google+ API and use Google Sign-In instead ([CartoDB/product#196](https://github.com/CartoDB/product/issues/196))
 * Set condensed maps view in Search page ([CartoDB/product#240](https://github.com/CartoDB/product/issues/240))
 
 4.25.0 (2019-01-28)

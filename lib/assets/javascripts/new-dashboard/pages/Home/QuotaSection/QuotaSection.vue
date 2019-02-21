@@ -10,14 +10,20 @@
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <QuotaContainer :title="$t(`QuotaSection.disk`)" :perMonth="false">
-              <QuotaWidget :name="$t(`QuotaSection.storage`)" :usedQuota="getAmountInUnit(usedStorage, amountExponent)" :availableQuota="getAmountInUnit(availableStorage, amountExponent)" :unit="getUnit(amountExponent)"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.storage`)"
+                :usedQuota="getAmountInUnit(usedStorage, amountExponent)"
+                :availableQuota="getAmountInUnit(availableStorage, amountExponent)"
+                :unit="getUnit(amountExponent)"
+                :formatToLocale="false"
+                :helpLink="storageHelpLink"
+                ></QuotaWidget>
             </QuotaContainer>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
             <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth="true">
-              <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable"></QuotaWidget>
-              <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable"></QuotaWidget>
-              <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable" :helpLink="geocodingHelpLink"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" :helpLink="isolinesHelpLink"></QuotaWidget>
+              <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" :helpLink="routingHelpLink"></QuotaWidget>
             </QuotaContainer>
           </li>
         </ul>
@@ -63,6 +69,18 @@ export default {
     },
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');
+    },
+    storageHelpLink () {
+      return 'https://carto.com/help/your-account/your-data-services-credits/';
+    },
+    geocodingHelpLink () {
+      return 'https://carto.com/help/working-with-data/geocoding/';
+    },
+    isolinesHelpLink () {
+      return 'https://carto.com/help/working-with-data/isolines/';
+    },
+    routingHelpLink () {
+      return 'https://carto.com/help/working-with-data/routing/';
     }
   },
   methods: {

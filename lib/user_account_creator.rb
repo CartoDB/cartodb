@@ -1,7 +1,6 @@
 # coding: UTF-8
 
 require 'securerandom'
-require_dependency 'google_plus_api'
 require_dependency 'carto/password_validator'
 require_dependency 'carto/strong_password_strategy'
 require_dependency 'carto/standard_password_strategy'
@@ -123,13 +122,6 @@ module CartoDB
 
     def user
       @user
-    end
-
-    def with_google_token(google_access_token)
-      @built = false
-      # get_user_data can return nil
-      @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
-      self
     end
 
     def with_oauth_api(oauth_api)

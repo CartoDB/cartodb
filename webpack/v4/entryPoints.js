@@ -40,7 +40,7 @@ module.exports = {
 
   footer: [
     rootDir('lib/assets/javascripts/new-dashboard/bundles/footer/footer.js'),
-    rootDir('assets/stylesheets/new-dashboard/bundles/footer.scss')
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/footer.scss')
   ],
 
   public_table_new: [

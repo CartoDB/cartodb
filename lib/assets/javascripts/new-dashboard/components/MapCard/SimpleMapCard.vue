@@ -1,5 +1,5 @@
 <template>
-  <a :href="visualization.url || vizUrl"
+  <a :href="vizUrl"
      target="_blank"
      class="card map-card"
      :class="{

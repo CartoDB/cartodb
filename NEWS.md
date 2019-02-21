@@ -12,7 +12,12 @@ Development
 - In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
 - Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
 - Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
+- Update links in quota & metrics section in New Dashboard [#14574](https://github.com/CartoDB/cartodb/issues/14574)
 - Fix quick actions dropdown in maps and datasets card - Dashboard
+- Update pending notifications badge when checking out notifications in the New Dashboard
+- Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
+- Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
+- Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
 - Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
 
 4.25.1 (2019-02-11)

@@ -17,6 +17,7 @@ Development
 - Update pending notifications badge when checking out notifications in the New Dashboard
 - Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
 - Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
+- Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
 
 4.25.1 (2019-02-11)
 -------------------

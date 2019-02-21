@@ -174,7 +174,6 @@ module CartoDB
           .gsub(/'/, '')
           .gsub(/"/, '')
           .gsub(/&/, '')
-          .downcase
           .gsub(/\.txt/, '.csv')
           .gsub(/\.tsv/, '.csv')
       end

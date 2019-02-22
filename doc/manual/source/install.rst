@@ -169,6 +169,9 @@ Redis
 Node.js
 -------
 
+.. note::
+    CARTO requires Node.js 10+ and npm 6+.
+
 Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
 
 * Install Node.js
@@ -232,17 +235,11 @@ MAPS API
     git clone git://github.com/CartoDB/Windshaft-cartodb.git
     cd Windshaft-cartodb
 
-* Maps API dependencies are managed using yarn. Install it:
-
-  .. code-block:: bash
-
-    sudo npm install -g yarn@0.27.5
-
 * Install yarn dependencies
 
   .. code-block:: bash
 
-    yarn install
+    npm install
 
 * Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let's assume it's development.
 

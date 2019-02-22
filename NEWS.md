@@ -27,6 +27,7 @@ sudo make install
 - Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
 - Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
 - Update recent content section when content changes in Home ([#14662](https://github.com/CartoDB/cartodb/issues/14662))
+- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
 
 4.25.1 (2019-02-11)
 -------------------

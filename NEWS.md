@@ -3,6 +3,11 @@ Development
 
 ### NOTICES
 - Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
+- This release upgrades the CartoDB PostgreSQL extension to `0.25.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 - Updating installation guide due to Node.js & Ruby version upgrades [#14692](https://github.com/CartoDB/cartodb/pull/14692)
 
 ### Features
@@ -19,6 +24,7 @@ Development
 - Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
 - Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
 - Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
+- Fix for importer, which did not work when configuring the temp directory (`unp_temporal_folder`) to a path containing capital letters [#14688](https://github.com/CartoDB/cartodb/pull/14688)
 - Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
 - Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
 

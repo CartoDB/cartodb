@@ -21,7 +21,7 @@ module Carto
         end
 
         def button_template
-          'google_plus/google_plus_button'
+          'google/google_button'
         end
 
         def valid_method_for?(user)

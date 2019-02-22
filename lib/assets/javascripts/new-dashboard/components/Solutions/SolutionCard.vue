@@ -38,7 +38,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .solutions-card {
   justify-content: space-between;

@@ -58,12 +58,15 @@ export default {
     isFetching () {
       return this.$store.state.notifications.isFetching;
     }
+  },
+  mounted: function () {
+    this.$store.dispatch('user/resetOrganizationNotifications');
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
+@import "new-dashboard/styles/variables";
 
 .notifications-list-container {
   margin-bottom: 44px;

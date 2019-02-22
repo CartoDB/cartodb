@@ -1,5 +1,5 @@
 <template>
-  <a :href="visualization.url || vizUrl"
+  <a :href="vizUrl"
      target="_blank"
      class="card map-card"
      :class="{
@@ -184,7 +184,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .map-card {
   display: block;

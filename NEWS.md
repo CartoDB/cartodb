@@ -26,6 +26,7 @@ sudo make install
 - Fix for importer, which did not work when configuring the temp directory (`unp_temporal_folder`) to a path containing capital letters [#14688](https://github.com/CartoDB/cartodb/pull/14688)
 - Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
 - Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
+- Update recent content section when content changes in Home ([#14662](https://github.com/CartoDB/cartodb/issues/14662))
 
 4.25.1 (2019-02-11)
 -------------------

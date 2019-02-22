@@ -41,7 +41,7 @@ export default {
       backgroundPollingView.model.on('change', model => {
         if (model.get('state') === 'complete') {
           if (this.$props.routeType === 'home') {
-            this.$store.dispatch('recentContent/fetchContent');
+            this.$store.dispatch('recentContent/fetch');
             this.$store.dispatch('maps/fetch');
             this.$store.dispatch('datasets/fetch');
           }

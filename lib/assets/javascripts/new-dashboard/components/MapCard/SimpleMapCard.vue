@@ -36,7 +36,7 @@
 
         @open="openQuickActions"
         @close="closeQuickActions"
-        @dataChanged="onDataChanged"></component>
+        @contentChanged="onContentChanged"></component>
     </div>
 
     <div class="card-text">
@@ -158,7 +158,12 @@ export default {
       return this.$props.visualization.type === 'derived';
     }
   },
-  methods,
+  methods: {
+    ...methods,
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
+    }
+  },
   mounted: function () {
     function isStarUnderText (textNode, starNode) {
       const range = document.createRange();

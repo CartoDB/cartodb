@@ -3,6 +3,11 @@ Development
 
 ### NOTICES
 - Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
+- This release upgrades the CartoDB PostgreSQL extension to `0.25.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)

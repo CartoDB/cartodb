@@ -53,7 +53,7 @@ export default {
       this.$store.dispatch('datasets/fetch');
     },
     onContentChanged (type) {
-      this.emit('contentChanged', type);
+      this.$emit('contentChanged', type);
     }
   }
 };

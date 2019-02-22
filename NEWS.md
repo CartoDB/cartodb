@@ -2,6 +2,8 @@ Development
 -----------
 
 ### NOTICES
+- **BREAKING**: Drop support for Node.js 6
+- **BREAKING**: Drop support for npm 3 and `npm-shrinkwrap.json` file.
 - Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
 
 ### Features

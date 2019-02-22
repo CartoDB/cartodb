@@ -4,7 +4,7 @@
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
         <span class="text is-small">{{ trialTimeLeft }}</span>
-        <a class="button button--small button--outline" :href="accountUpdateURL">
+        <a class="button button--small button--outline" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
           {{ $t('HomePage.WelcomeSection.addPaymentMethod') }}
         </a>
       </template>
@@ -32,7 +32,7 @@ export default {
   computed: {
     ...mapState({
       isFirst: state => state.config.isFirstTimeViewingDashboard,
-      accountUpdateURL: state => state.config.accountUpdateURL,
+      accountUpdateURL: state => state.config.account_update_url,
       trialEndDate: state => state.user.trial_ends_at,
       user: state => state.user,
       name: state => state.user.name || state.user.username,

@@ -35,6 +35,21 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'can deal with filenames with capital letters (compressed file)' do
+      zip_file = file_factory(filename: 'TestShape.zip')
+      unp = Unp.new
+
+      unp.run(zip_file)
+
+      # NOTE: the input zip file contains file names capitalized, e.g:
+      # Bryansk_stores_for_test_point.shp This test is added to make
+      # sure of backwards compatibility with other pieces of the
+      # importer. Observe the uncompressed file is "normalized" and
+      # thus downcased.
+      Dir.entries(unp.temporary_directory).should include('bryansk_stores_for_test_point.shp')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a GPKG file' do
       zipfile   = file_factory(filename: 'geopackage.zip')
       unp       = Unp.new

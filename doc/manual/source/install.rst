@@ -171,28 +171,19 @@ Node.js
 
 Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
 
-
-* Add the PPA
-
-  .. code-block:: bash
-
-    sudo add-apt-repository ppa:cartodb/nodejs && sudo apt-get update
-
 * Install Node.js
 
   .. code-block:: bash
 
-    sudo apt-get install nodejs
+    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 
-  Note this should install both Node.js 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
+  Note this should install both Node.js 10.x and npm 6.x. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
-    nodejs -v
+    node -v
     npm -v
-
-.. warning::
-      CARTO uses Node.js v6.9.2 and npm 3.10.9. You must use these precise versions to avoid problems.
 
 We will also install some development libraries that will be necessary to build some Node.js modules:
 

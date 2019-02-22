@@ -50,6 +50,20 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'can deal with filenames with capital letters (uncompressed file)' do
+      uncompressed_file = file_factory(filename: 'Name_With_Capitals.csv')
+      unp = Unp.new
+
+      unp.run(uncompressed_file)
+
+      # NOTE: the input is a file name capitalized. This test is added
+      # to make sure of backwards compatibility with other pieces of
+      # the importer. Observe the output file name is "normalized" and
+      # thus downcased.
+      Dir.entries(unp.temporary_directory).should include('name_with_capitals.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a GPKG file' do
       zipfile   = file_factory(filename: 'geopackage.zip')
       unp       = Unp.new

@@ -19,6 +19,7 @@ Development
 - Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
 - Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
 - Fix for importer, which did not work when configuring the temp directory (`unp_temporal_folder`) to a path containing capital letters [#14688](https://github.com/CartoDB/cartodb/pull/14688)
+- Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
 - Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
 
 4.25.1 (2019-02-11)

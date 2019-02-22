@@ -35,6 +35,9 @@ class Carto::User < ActiveRecord::Base
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
   FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
 
+  MAGELLAN_TRIAL_DAYS = 15
+  PERSONAL30_TRIAL_DAYS = 30
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -484,7 +487,9 @@ class Carto::User < ActiveRecord::Base
   alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
   def trial_ends_at
     if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+      upgraded_at + MAGELLAN_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('personal30').zero?
+      created_at + PERSONAL30_TRIAL_DAYS.days
     end
   end
 

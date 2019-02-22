@@ -260,7 +260,7 @@ Ruby
 ----
 
 .. note::
-  CARTO requires exactly Ruby 2.2.x. Older or newer versions won't work.
+  CARTO requires exactly Ruby 2.4.x. Older or newer versions won't work.
 
 * Add brightbox ruby repositories
 
@@ -268,11 +268,11 @@ Ruby
 
     sudo apt-add-repository ppa:brightbox/ruby-ng && sudo apt-get update
 
-* Install ruby 2.2
+* Install ruby 2.4
 
   .. code-block:: bash
 
-    sudo apt-get install ruby2.2 ruby2.2-dev
+    sudo apt-get install ruby2.4 ruby2.4-dev
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CARTO Builder
 

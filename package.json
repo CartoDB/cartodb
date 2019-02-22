@@ -211,7 +211,7 @@
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
     "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push origin master",
-    "update-internal-deps": "rm -rf node_modules && npm install && npm install",
+    "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",

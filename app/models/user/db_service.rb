@@ -420,19 +420,32 @@ module CartoDB
               raise e
             else
               database_with_conflicts = $1
-              revoke_all_on_database_from(conn, database_with_conflicts, username)
-              revoke_all_memberships_on_database_to_role(conn, username)
-              drop_owned_by_user(conn, username)
 
               conflict_database_conn = @user.in_database(
                 as: :cluster_admin,
                 'database' => database_with_conflicts
               )
+              DBService.close_sequel_connection(conflict_database_conn)
+              conflict_database_conn = @user.in_database(
+                as: :cluster_admin,
+                'database' => database_with_conflicts
+              )
+              revoke_all_on_database_from(conflict_database_conn, database_with_conflicts, username)
               drop_owned_by_user(conflict_database_conn, username)
               ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema].each do |s|
                 drop_users_privileges_in_schema(s, [username], conn: conflict_database_conn)
               end
               DBService.close_sequel_connection(conflict_database_conn)
+
+              revoke_all_memberships_on_database_to_role(conn, username)
+
+              if @user.database_name != database_with_conflicts
+                drop_owned_by_user(conn, username)
+                ['cdb', 'cdb_importer', 'cartodb', 'public', @user.database_schema].each do |s|
+                  drop_users_privileges_in_schema(s, [username], conn: conn)
+                end
+              end
+
               retry
             end
           else

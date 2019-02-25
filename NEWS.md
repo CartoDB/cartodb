@@ -2,7 +2,8 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- **BREAKING**: Drop support for Node.js 6
+- **BREAKING**: Drop support for npm 3 and `npm-shrinkwrap.json` file.
 
 ### Features
 - None yet

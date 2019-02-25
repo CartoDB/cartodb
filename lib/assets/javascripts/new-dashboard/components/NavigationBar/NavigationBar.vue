@@ -1,7 +1,7 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active" staticRoute="/dashboard">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
@@ -37,6 +37,7 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
+        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -48,26 +49,54 @@
 <script>
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
+import FeedbackPopup from '../FeedbackPopup';
+import storageAvailable from 'new-dashboard/utils/is-storage-available';
 
 export default {
   name: 'NavigationBar',
   components: {
     Search,
-    UserDropdown
+    UserDropdown,
+    FeedbackPopup
   },
   props: {
     user: Object,
     baseUrl: String,
-    notificationsCount: Number
+    notificationsCount: Number,
+    isFirstTimeInDashboard: Boolean,
+    bundleType: {
+      type: String,
+      default: 'other'
+    }
   },
   data () {
     return {
       isDropdownOpen: false,
-      isSearchOpen: false
+      isSearchOpen: false,
+      hasDropdownOpenedForFirstTime: false
     };
+  },
+  computed: {
+    isDashboardBundle () {
+      return this.$props.bundleType === 'dashboard';
+    },
+    popupWasShown () {
+      if (!storageAvailable('localStorage')) {
+        return true;
+      }
+
+      return JSON.parse(window.localStorage.getItem('carto.feedback.popupWasShown'));
+    },
+    shouldShowFeedbackPopup () {
+      return this.isDashboardBundle &&
+        !this.isFirstTimeInDashboard &&
+        !this.hasDropdownOpenedForFirstTime &&
+        !this.popupWasShown;
+    }
   },
   methods: {
     toggleDropdown () {
+      this.hasDropdownOpenedForFirstTime = true;
       this.isDropdownOpen = !this.isDropdownOpen;
     },
 
@@ -77,13 +106,16 @@ export default {
 
     toggleSearch () {
       this.isSearchOpen = !this.isSearchOpen;
+    },
+    isHomePage () {
+      return (this.$route || {}).name === 'home';
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .navbar {
   display: flex;
@@ -233,5 +265,11 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.feedback-popup {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
 }
 </style>

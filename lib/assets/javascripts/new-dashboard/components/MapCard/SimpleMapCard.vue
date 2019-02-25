@@ -1,5 +1,5 @@
 <template>
-  <a :href="visualization.url || vizUrl"
+  <a :href="vizUrl"
      target="_blank"
      class="card map-card"
      :class="{
@@ -20,7 +20,7 @@
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection($event)" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../../assets/icons/common/checkbox.svg">
       </span>
@@ -36,7 +36,7 @@
 
         @open="openQuickActions"
         @close="closeQuickActions"
-        @dataChanged="onDataChanged"></component>
+        @contentChanged="onContentChanged"></component>
     </div>
 
     <div class="card-text">
@@ -83,9 +83,9 @@
         <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
           <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
 
-          <ul class="card-tagList" v-if="tagsChars <= maxTagsChars">
+          <ul class="card-tags" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in visualization.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < visualization.tags.length - 1">,&#32;</span>
+              <router-link class="card-tags__tag" :to="{ name: 'tagSearch', params: { tag } }" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">{{ tag }}</router-link><span v-if="index < visualization.tags.length - 1">,&#32;</span>
             </li>
 
             <li v-if="!tagsLength">
@@ -125,7 +125,13 @@ export default {
       default: false
     }
   },
-  data,
+  data () {
+    return {
+      ...data(),
+      thumbnailWidth: 600,
+      thumbnailHeight: 280
+    };
+  },
   computed: {
     ...computed,
     quickActionsComponent () {
@@ -152,7 +158,12 @@ export default {
       return this.$props.visualization.type === 'derived';
     }
   },
-  methods,
+  methods: {
+    ...methods,
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
+    }
+  },
   mounted: function () {
     function isStarUnderText (textNode, starNode) {
       const range = document.createRange();
@@ -173,7 +184,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .map-card {
   display: block;
@@ -200,11 +211,23 @@ export default {
       .card-title {
         color: $text-color;
       }
+
+      .card-tags {
+        .card-tags__tag {
+          text-decoration: none;
+        }
+      }
     }
 
     .card-actions,
     .card-favorite {
       opacity: 1;
+    }
+
+    .card-tags {
+      .card-tags__tag {
+        text-decoration: underline;
+      }
     }
   }
 
@@ -380,7 +403,6 @@ export default {
   border-radius: 4px;
   opacity: 0;
   background: $white;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
@@ -401,17 +423,6 @@ export default {
   right: 8px;
   transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
-}
-
-.card-actionsSelect {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: $white;
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.12);
 }
 
 .card-favorite {
@@ -450,7 +461,7 @@ export default {
   }
 }
 
-.card-tagList > li {
+.card-tags > li {
   display: inline;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <a :href="dataset.url"
+  <a :href="vizUrl"
      target="_blank"
      class="dataset-row"
      :class="{
@@ -14,7 +14,7 @@
           <div class="icon--dataType" :class="`icon--${dataType}`"></div>
       </div>
       <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection" type="checkBox">
+        <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
         <span class="checkbox-decoration">
           <img svg-inline src="../../assets/icons/common/checkbox.svg">
         </span>
@@ -31,18 +31,18 @@
       </div>
       <div class="row-metadataContainer" v-if="hasTags || isShared">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/tag.svg">
+          <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
             <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey tag-list__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
             </li>
           </ul>
           <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
-            <span class="feature-text text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+            <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
         <div class="row-metadata" v-if="isShared">
-          <img class="icon-metadata" svg-inline src="../../assets/icons/datasets/user.svg">
+          <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
       </div>
@@ -62,7 +62,7 @@
       </span>
 
       <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
-          <span class="text is-small is-txtSoftGrey">
+          <span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
             {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
           </span>
 
@@ -83,7 +83,8 @@
         :isShared="isShared"
         class="dataset--quick-actions"
         @open="openQuickActions"
-        @close="closeQuickActions"/>
+        @close="closeQuickActions"
+        @contentChanged="onContentChanged"/>
     </div>
   </a>
 </template>
@@ -173,13 +174,17 @@ export default {
         visualization.url = Visualization.getURL(visualization, this.$cartoModels);
         return visualization;
       });
+    },
+    vizUrl () {
+      return Visualization.getURL(this.$props.dataset, this.$cartoModels);
     }
   },
   methods: {
-    toggleSelection () {
+    toggleSelection ($event) {
       this.$emit('toggleSelection', {
         dataset: this.$props.dataset,
-        isSelected: !this.$props.isSelected
+        isSelected: !this.$props.isSelected,
+        event: $event
       });
     },
     humanFileSize (size) {
@@ -218,15 +223,18 @@ export default {
     onClick (event) {
       if (this.$props.selectMode) {
         event.preventDefault();
-        this.toggleSelection();
+        this.toggleSelection(event);
       }
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .dataset-row {
   display: flex;
@@ -256,10 +264,24 @@ export default {
       .row-title {
         color: $primary-color;
       }
+
+      .tag-list {
+        .tag-list__tag {
+          text-decoration: underline;
+        }
+      }
+
+      .dataset__dependent-visualizations {
+        text-decoration: underline;
+      }
     }
 
     .card-favorite {
       opacity: 1;
+    }
+
+    .tag-list__more-tags {
+      text-decoration: underline;
     }
   }
 
@@ -282,6 +304,18 @@ export default {
 
 .tag-list {
   display: flex;
+
+  .tag-list__tag {
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+.tag-list__more-tags {
+  &:hover {
+    color: $primary-color;
+  }
 }
 
 .row-dataType {

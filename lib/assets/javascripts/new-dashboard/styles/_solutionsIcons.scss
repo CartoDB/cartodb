@@ -1,0 +1,139 @@
+.solutions-card {
+  #marker,
+  .marker {
+    animation: 2s slidein infinite linear;
+    animation-play-state: paused;
+  }
+
+  #cloud02,
+  .cloud--02 {
+    animation: 20s move infinite alternate linear;
+    animation-play-state: paused;
+  }
+
+  #cloud01,
+  .cloud--01 {
+    animation: 40s move infinite alternate linear;
+    animation-play-state: paused;
+  }
+
+  .sun {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: 60s rotate infinite linear;
+    animation-play-state: paused;
+  }
+
+  .plane {
+    animation: 0.5s flying infinite alternate linear;
+    animation-play-state: paused;
+  }
+
+  .user {
+    animation: 2s user infinite alternate linear;
+    animation-play-state: paused;
+  }
+}
+
+.solutions-card {
+  &:hover {
+    #marker,
+    .marker {
+      animation-play-state: running;
+    }
+
+    .marker--01 {
+      animation-delay: 1s;
+    }
+
+    .marker--02 {
+      animation-delay: 2s;
+    }
+
+    #cloud02,
+    .cloud--02 {
+      animation-play-state: running;
+    }
+
+    #cloud01,
+    .cloud--01 {
+      animation-play-state: running;
+    }
+
+    .sun {
+      animation-play-state: running;
+    }
+
+    .plane {
+      animation-play-state: running;
+    }
+
+    .user {
+      animation-play-state: running;
+    }
+
+    .user--01 {
+      animation-delay: 0s;
+    }
+
+    .user--02 {
+      animation-delay: 1.5s;
+    }
+
+    .user--03 {
+      animation-delay: 2.5s;
+    }
+  }
+}
+
+@keyframes flying {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, 1px, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes user {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, 12px, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slidein {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, 20px, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

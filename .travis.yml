@@ -10,23 +10,11 @@ notifications:
 jobs:
   include:
     - node_js:
-        - "6.9.2"
-      before_install:
-        - git submodule update --init --recursive
-        - git fetch origin master:refs/remotes/origin/master --depth=1
-      install:
-        - npm install
-      script:
-        - npm run ci
-    - node_js:
         - "10"
       before_install:
         - git submodule update --init --recursive
         - git fetch origin master:refs/remotes/origin/master --depth=1
-        - mv npm-shrinkwrap.json npm-shrinkwrap.json.backup
       install:
-        - npm ci
-      before_script:
-        - mv npm-shrinkwrap.json.backup npm-shrinkwrap.json
+        - npm ci # clean install
       script:
-        - npm run ci
+        - npm run ci # run tests

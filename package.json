@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.39",
+  "version": "1.0.0-assets.59",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "internal-carto.js": "CartoDB/carto.js#v4.1.11-0",
     "jquery": "2.1.4",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
+    "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "moment": "2.18.1",
     "moment-timezone": "^0.5.13",
     "node-polyglot": "1.0.0",
@@ -50,6 +51,7 @@
     "rangeslider.js": "2.3.0",
     "tinycolor2": "^1.4.1",
     "torque.js": "CartoDB/torque#master",
+    "trackjs": "^3.1.2",
     "underscore": "1.8.3",
     "urijs": "^1.19.0",
     "url-parse": "^1.4.0",
@@ -194,7 +196,8 @@
     "moment-v3": "global:moment"
   },
   "engine": {
-    "node": "6.9.2"
+    "node": "^10.15.1",
+    "npm": "^6.4.1"
   },
   "scripts": {
     "start": "npm run carto-node && npm run build:static && npm run dev",
@@ -209,8 +212,8 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json npm-shrinkwrap.json && git commit -m 'Bump assets version' && git push origin master",
-    "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
+    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push origin master",
+    "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
@@ -220,7 +223,6 @@
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
-    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json",
-    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
+    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }
 }

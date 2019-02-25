@@ -69,14 +69,6 @@
                   </li>
 
                   <li class="Navmenu-subItem">
-                    <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', params: { id: @visualization.id }, user: @visualization.user) %>" class="Navmenu-link js-likes"
-                      data-vis-id="<%= @visualization.id %>"
-                      data-likes-count="<%= @likes_count %>"
-                      data-likes-size="big">
-                    </a>
-                  </li>
-
-                  <li class="Navmenu-subItem">
                     <a href="#" class="Navmenu-link js-Navmenu-link--download-map">
                       <i class="CDB-IconFont CDB-IconFont-downloadCircle Navmenu-icon"></i>
                     </a>
@@ -199,10 +191,6 @@
                     <div class="DatasetsList-itemSecondaryInfo">
                       <div class="DatasetsList-itemMeta CDB-Size-medium">
                         <span class="CDB-Tag CDB-Text CDB-Size-small is-semibold u-upperCase PrivacyIndicator is-<%= vis.privacy %> u-hideOnTablet"><%= vis.privacy %></span>
-                        <a href="<%= CartoDB.url(self, 'api_v1_visualizations_add_like', params: { id: vis.id }, user: vis.user) %>" class="js-likes"
-                          data-vis-id="<%= vis.id %>"
-                          data-likes-count="<%= vis.likes.count %>">
-                        </a>
                         <% if (vis.user_table.service.rows_counted) %>
                           <span class="RowsIndicator u-hideOnTablet">
                             <i class="CDB-IconFont CDB-IconFont-rows RowsIndicator-icon u-altTextColor CDB-Size-small"></i>

@@ -72,6 +72,7 @@ module CartoDB
       carto_node.js
       embed.js
       header.js
+      footer.js
       dashboard_templates.js
       dashboard_deps.js
       dashboard.js
@@ -107,7 +108,6 @@ module CartoDB
       table.js
       public_dashboard_deps.js
       public_dashboard.js
-      public_like.js
       old_common.js
       old_common_without_core.js
       templates.js
@@ -167,6 +167,7 @@ module CartoDB
       builder_embed.css
 
       header.css
+      footer.css
       table.css
       leaflet.css
       map.css

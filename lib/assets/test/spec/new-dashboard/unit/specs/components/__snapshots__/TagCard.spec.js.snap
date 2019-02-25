@@ -5,10 +5,10 @@ exports[`TagCard should render properly 1`] = `
   <article class="card tag">
     <h3 class="tag__title title is-medium is-semibold">Test Tag</h3>
     <ul>
-      <li class="tag__count text is-caption">
+      <li class="tag__count tag__count--maps text is-caption">
         TagCard.maps
       </li>
-      <li class="tag__count text is-caption">
+      <li class="tag__count tag__count--datasets text is-caption">
         TagCard.datasets
       </li>
     </ul>

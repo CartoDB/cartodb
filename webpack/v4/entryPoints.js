@@ -29,13 +29,18 @@ module.exports = {
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
-    ...glob.sync(rootDir('assets/stylesheets/new-dashboard/main.scss')),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/main.scss'),
     rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
   ],
 
   header: [
     rootDir('lib/assets/javascripts/new-dashboard/bundles/header/header.js'),
-    rootDir('assets/stylesheets/new-dashboard/bundles/header.scss')
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/header.scss')
+  ],
+
+  footer: [
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/footer/footer.js'),
+    rootDir('lib/assets/javascripts/new-dashboard/styles/bundles/footer.scss')
   ],
 
   public_table_new: [
@@ -133,7 +138,6 @@ module.exports = {
     rootDir('assets/stylesheets/common/default-time-diff.scss'),
     rootDir('assets/stylesheets/common/privacy-indicator.scss'),
     rootDir('assets/stylesheets/common/no-results.scss'),
-    rootDir('assets/stylesheets/common/likes-indicator.scss'),
     rootDir('assets/stylesheets/common/filters.scss'),
     rootDir('assets/stylesheets/common/intermediate-info.scss'),
     rootDir('assets/stylesheets/common/nav-button.scss'),

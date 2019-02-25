@@ -18,7 +18,7 @@ export default {
     this.backgroundPollingView = this.renderView();
   },
   beforeDestroy () {
-    this.backgroundPollingView.clean();
+    this.cleanView();
   },
   methods: {
     getBackgroundPollingView () {
@@ -39,13 +39,27 @@ export default {
 
       backgroundPollingView.render();
       backgroundPollingView.model.on('change', model => {
-        if (model.get('state') === 'complete' &&
-            this.$props.routeType === 'datasets') {
-          this.$store.dispatch('datasets/fetch');
+        if (model.get('state') === 'complete') {
+          if (this.$props.routeType === 'home') {
+            this.$store.dispatch('recentContent/fetch');
+            this.$store.dispatch('maps/fetch');
+            this.$store.dispatch('datasets/fetch');
+          }
+
+          if (this.$props.routeType === 'maps') {
+            this.$store.dispatch('maps/fetch');
+          }
+
+          if (this.$props.routeType === 'datasets') {
+            this.$store.dispatch('datasets/fetch');
+          }
         }
       });
 
       return backgroundPollingView;
+    },
+    cleanView () {
+      this.backgroundPollingView.clean();
     }
   }
 };

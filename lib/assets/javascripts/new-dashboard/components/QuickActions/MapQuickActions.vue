@@ -5,8 +5,7 @@
     :actions="actions[actionMode]"
     v-on="getEventListeners()"
     @open="openQuickactions"
-    @close="closeQuickactions"
-    :hasShadow="hasShadow"></QuickActions>
+    @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
@@ -24,10 +23,6 @@ export default {
     storeActionType: {
       type: String,
       default: 'maps'
-    },
-    hasShadow: {
-      type: Boolean,
-      default: true
     }
   },
   computed: {
@@ -67,7 +62,7 @@ export default {
         },
         fetchList: () => {
           this.$store.dispatch(`${this.storeActionType}/fetch`);
-          this.$emit('dataChanged');
+          this.$emit('contentChanged', 'maps');
         }
       };
     },

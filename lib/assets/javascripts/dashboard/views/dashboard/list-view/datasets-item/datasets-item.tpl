@@ -39,9 +39,6 @@
           <%- datasetSize %>
         </li>
       <% } %>
-      <li>
-        <span class="js-likes-indicator"></span>
-      </li>
       <% if (rowCount) { %>
         <li>
           <%- rowCount %> <%- pluralizedRows %>

@@ -1,10 +1,10 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
-  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
+  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
   <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-  <MapsSection class="section" />
-  <DatasetsSection class="section section--noBorder" />
+  <MapsSection class="section" @contentChanged="onContentChanged"/>
+  <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
   <QuotaSection></QuotaSection>
 </section>
 </template>
@@ -29,21 +29,19 @@ export default {
     QuotaSection
   },
   beforeMount () {
-    this.$store.dispatch('recentContent/fetchContent');
+    this.$store.dispatch('recentContent/fetch');
   },
   created () {
+    this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('datasets/resetFilters');
+
     if (this.isFirstTimeViewingDashboard) {
       sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
     }
   },
-  beforeRouteLeave (to, from, next) {
-    this.$store.dispatch('datasets/resetFilters');
-    this.$store.dispatch('maps/resetFilters');
-    next();
-  },
   data () {
     return {
-      activeSection: 'RecentSection'
+      activeSection: this.$route.query.section || 'RecentSection'
     };
   },
   computed: {
@@ -61,13 +59,17 @@ export default {
     },
     changeSection (nextActiveSection) {
       this.activeSection = nextActiveSection;
+    },
+    onContentChanged (type) {
+      this.$store.dispatch('recentContent/fetch');
+      this.$store.dispatch(`${type}/fetch`);
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .page--welcome {
   padding: 64px 0 0;

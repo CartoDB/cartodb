@@ -85,7 +85,6 @@ module Carto
           options:        map_options(@visualization),
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
-          likes:          @visualization.likes.count,
           map_provider:   map.provider,
           overlays:       overlays_vizjson(@visualization),
           title:          @visualization.qualified_name(user),

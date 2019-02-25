@@ -31,7 +31,12 @@ export default {
 
       mamufasView.on('fileDropped', files => {
         const backgroundPollingView = this.backboneViews.backgroundPollingView.getBackgroundPollingView();
-        backgroundPollingView._onDroppedFile(files);
+        const filesToUpload = files.length ? Array.from(files) : [files];
+
+        filesToUpload.forEach(file => {
+          this.addVisPropertyToFile(file);
+          backgroundPollingView._onDroppedFile(file);
+        });
       });
 
       mamufasView.enable();
@@ -41,6 +46,17 @@ export default {
 
     getView () {
       return this.mamufasView;
+    },
+
+    addVisPropertyToFile (file) {
+      if (this.isCARTOFile(file.name)) {
+        file._createVis = true;
+      }
+    },
+
+    isCARTOFile (filename) {
+      return filename.indexOf('.carto') > -1 ||
+        filename.indexOf('.zip') > -1;
     }
   }
 };

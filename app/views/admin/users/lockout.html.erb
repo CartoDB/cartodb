@@ -15,10 +15,6 @@
 
     // Necessary for Google + actions
     var access_token = '';
-    <% if (@google_plus_config.present?) %>
-      document.domain = '<%= @google_plus_config.domain %>';
-      var iframe_src = '<%= @google_plus_config.iframe_src %>';
-    <% end %>
   </script>
 
   <% if @has_new_dashboard %>

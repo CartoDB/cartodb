@@ -1,10 +1,10 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
-  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection"/>
+  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
   <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-  <MapsSection class="section" />
-  <DatasetsSection class="section section--noBorder" />
+  <MapsSection class="section" @contentChanged="onContentChanged"/>
+  <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
   <QuotaSection></QuotaSection>
 </section>
 </template>
@@ -29,7 +29,7 @@ export default {
     QuotaSection
   },
   beforeMount () {
-    this.$store.dispatch('recentContent/fetchContent');
+    this.$store.dispatch('recentContent/fetch');
   },
   created () {
     this.$store.dispatch('maps/resetFilters');
@@ -59,6 +59,10 @@ export default {
     },
     changeSection (nextActiveSection) {
       this.activeSection = nextActiveSection;
+    },
+    onContentChanged (type) {
+      this.$store.dispatch('recentContent/fetch');
+      this.$store.dispatch(`${type}/fetch`);
     }
   }
 };

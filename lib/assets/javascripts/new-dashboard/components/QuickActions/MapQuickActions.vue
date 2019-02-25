@@ -62,7 +62,7 @@ export default {
         },
         fetchList: () => {
           this.$store.dispatch(`${this.storeActionType}/fetch`);
-          this.$emit('dataChanged');
+          this.$emit('contentChanged', 'maps');
         }
       };
     },

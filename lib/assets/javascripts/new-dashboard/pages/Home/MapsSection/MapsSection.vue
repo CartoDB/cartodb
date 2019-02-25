@@ -8,7 +8,8 @@
     :maxVisibleMaps="maxVisibleMaps"
     :isInitialOrEmpty="showViewAllLink"
     @applyFilter="applyFilter"
-    @applyOrder="applyOrder"/>
+    @applyOrder="applyOrder"
+    @contentChanged="onContentChanged"/>
 
     <router-link :to="{ name: 'maps' }" class="title is-small viewall-link" v-if="showViewAllLink">{{ mapsLinkText }}</router-link>
   </section>
@@ -41,12 +42,6 @@ export default {
     mapsLinkText () {
       return this.$t('HomePage.MapsSection.viewAll');
     },
-    initialState () {
-      return !this.isFetchingMaps && this.hasFilterApplied('mine') && this.totalUserEntries <= 0;
-    },
-    emptyState () {
-      return !this.isFetchingMaps && !this.numResults && (!this.hasFilterApplied('mine') || this.totalUserEntries > 0);
-    },
     showViewAllLink () {
       return !(this.initialState || this.emptyState || this.isFirst);
     }
@@ -62,6 +57,9 @@ export default {
     },
     hasFilterApplied (filter) {
       return this.appliedFilter === filter;
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   }
 };

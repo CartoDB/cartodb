@@ -24,7 +24,8 @@
               :visibleSections="visibleSections"
               :canHover="false"
               :singleLineTitle="true"
-              storeActionType="recentContent" />
+              storeActionType="recentContent"
+              @contentChanged="onContentChanged" />
           </li>
         </template>
         <template v-else>
@@ -71,6 +72,10 @@ export default {
 
       this.$emit('sectionChange', section);
       this.$router.push({ query: { section, sectionPage: 1 } });
+    },
+
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   }
 };

@@ -195,7 +195,8 @@
     "moment-v3": "global:moment"
   },
   "engine": {
-    "node": "6.9.2"
+    "node": "^10.15.1",
+    "npm": "^6.4.1"
   },
   "scripts": {
     "start": "npm run carto-node && npm run build:static && npm run dev",
@@ -210,8 +211,8 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json npm-shrinkwrap.json && git commit -m 'Bump assets version' && git push origin master",
-    "update-internal-deps": "rm -rf node_modules && npm install --production --no-optional --no-shrinkwrap && npm dedupe && npm prune && npm shrinkwrap && npm run fix-shrinkwrap-protocol && npm install",
+    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push origin master",
+    "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",
     "build": "NODE_ENV=production webpack --progress --config webpack/v4/webpack.prod.config.js",
@@ -221,7 +222,6 @@
     "dev": "NODE_ENV=development webpack --progress --watch --config webpack/v4/webpack.dev.config.js",
     "dev:editor": "grunt editor",
     "dev:static": "webpack --progress --watch --config webpack/static-pages/webpack.dev.config.js",
-    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json",
-    "fix-shrinkwrap-protocol": "node ./lib/build/fix-shrinkwrap.js"
+    "profile": "NODE_ENV=production webpack --profile --json --config webpack/v4/webpack.prod.config.js > compilation-stats.json"
   }
 }

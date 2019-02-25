@@ -57,7 +57,8 @@
         :isSelected="isDatasetSelected(dataset)"
         :selectMode="isSomeDatasetSelected"
         :canHover="canHoverCard"
-        @toggleSelection="toggleSelected">
+        @toggleSelection="toggleSelected"
+        @contentChanged="onContentChanged">
       </DatasetCard>
       </li>
     </ul>
@@ -71,7 +72,7 @@
     </div>
 
     <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
-      <li v-for="n in 12" :key="n" class="dataset-item">
+      <li v-for="n in maxVisibleDatasets" :key="n" class="dataset-item">
         <DatasetCardFake></DatasetCardfake>
       </li>
     </ul>
@@ -216,6 +217,9 @@ export default {
     },
     getHeaderContainer () {
       return this.$refs.headerContainer;
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   },
   watch: {

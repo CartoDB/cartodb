@@ -72,6 +72,7 @@ export default {
         deselectAll: () => {},
         fetchList: () => {
           this.$store.dispatch(`${this.storeActionType}/fetch`);
+          this.$emit('contentChanged', 'datasets');
         },
         updateVisualization: (model) => {
           this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });

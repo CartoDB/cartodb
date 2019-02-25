@@ -5,7 +5,8 @@
       :canHoverCard="false"
       :maxVisibleDatasets="maxVisibleDatasets"
       @applyFilter="applyFilter"
-      @applyOrder="applyOrder"/>
+      @applyOrder="applyOrder"
+      @contentChanged="onContentChanged"/>
 
     <router-link :to="{ name: 'datasets' }" class="title is-small viewall-link" v-if="showViewAllLink">
       {{ datasetsLinkText }}
@@ -50,6 +51,9 @@ export default {
     },
     fetchDatasets () {
       this.$store.dispatch('datasets/fetch');
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
     }
   }
 };

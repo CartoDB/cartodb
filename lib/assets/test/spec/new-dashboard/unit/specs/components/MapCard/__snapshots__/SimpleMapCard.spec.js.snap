@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MapCard.vue Events should receive and process correctly the event when dropdown is closed 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -36,7 +36,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
 `;
 
 exports[`MapCard.vue Events should receive and process correctly the event when dropdown is open 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--quick-actions-open card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--quick-actions-open card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -71,7 +71,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
 `;
 
 exports[`MapCard.vue Methods should close quick actions 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -106,7 +106,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
 `;
 
 exports[`MapCard.vue Methods should open quick actions 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--quick-actions-open card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--quick-actions-open card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -141,7 +141,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
 `;
 
 exports[`MapCard.vue Methods should show thumbnail error 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media has-error">
     <!---->
     <!---->
@@ -177,7 +177,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--child-hover card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--child-hover card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -212,7 +212,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
 `;
 
 exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -247,7 +247,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
 `;
 
 exports[`MapCard.vue should render correct contents 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--selected card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--selected card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -282,7 +282,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
 `;
 
 exports[`MapCard.vue should render description and tag dropdown 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -315,7 +315,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
 `;
 
 exports[`MapCard.vue should render description and tags 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
@@ -360,7 +360,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
 `;
 
 exports[`MapCard.vue should show the map is shared 1`] = `
-<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" target="_blank" class="card map-card card--can-hover">
+<a href="http://cdb.localhost.lan:3000/viz/hello.e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="card map-card card--can-hover">
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->

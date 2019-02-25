@@ -9,7 +9,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
 
 4.25.2 (2019-02-25)
 -------------------

@@ -31,7 +31,9 @@
         </div>
       <% end %>
 
-      <%= render 'admin/shared/trial_notification' %>
+      <% if !current_user.has_feature_flag?('new-dashboard-feature') %>
+        <%= render 'admin/shared/trial_notification' %>
+      <% end %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>

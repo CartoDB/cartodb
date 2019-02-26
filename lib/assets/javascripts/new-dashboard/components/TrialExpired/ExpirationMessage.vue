@@ -30,7 +30,6 @@ import format from 'date-fns/format';
 export default {
   name: 'ExpirationMessage',
   props: {
-    expirationDays: Number,
     addPaymentsURL: String
   },
   computed: {

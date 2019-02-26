@@ -72,7 +72,7 @@ export default {
           },
           {
             name: this.$t('BulkActions.datasets.deselectAllDatasets'),
-            event: 'deselectAll',
+            event: 'deselectAll'
           },
           {
             name: this.$t('BulkActions.datasets.createMap'),

@@ -14,7 +14,6 @@ export default {
   },
   data () {
     return {
-      expirationDays: window.expiration_days,
       addPaymentsURL: window.payments_url
     };
   }

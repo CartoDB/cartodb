@@ -28,43 +28,90 @@ export default {
     actions () {
       return {
         single: [
-          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll' },
-          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
-          { name: this.$t('BulkActions.datasets.changeDatasetPrivacy'), event: 'changePrivacy', shouldBeHidden: this.isAnyShared },
-          { name: this.$t('BulkActions.datasets.duplicateDataset'), event: 'duplicateDataset' },
-          { name: this.$t('BulkActions.datasets.lockDataset'), event: 'lockDataset', shouldBeHidden: this.isAnyShared },
-          { name: this.$t('BulkActions.datasets.deleteDataset'), event: 'deleteDataset', isDestructive: true, shouldBeHidden: this.isAnyShared }
+          {
+            name: this.$t('BulkActions.datasets.selectAllDatasets'),
+            event: 'selectAll',
+            shouldBeHidden: this.areAllMapsSelected
+          },
+          {
+            name: this.$t('BulkActions.datasets.createMap'),
+            event: 'createMap',
+            shouldBeHidden: this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.changeDatasetPrivacy'),
+            event: 'changePrivacy',
+            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.duplicateDataset'),
+            event: 'duplicateDataset'
+          },
+          {
+            name: this.$t('BulkActions.datasets.lockDataset'),
+            event: 'lockDataset',
+            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.unlockDataset'),
+            event: 'unlockDataset',
+            shouldBeHidden: !this.isAnyLocked || this.isAnyShared
+          },
+          {
+            name: this.$t('BulkActions.datasets.deleteDataset'),
+            event: 'deleteDataset',
+            isDestructive: true,
+            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+          }
         ],
         multiple: [
-          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
-          { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.datasets.createMap'), event: 'createMap' },
-          { name: this.$t('BulkActions.datasets.lockDatasets'), event: 'lockDatasets', shouldBeHidden: this.isAnyShared },
-          { name: this.$t('BulkActions.datasets.deleteDatasets'), event: 'deleteDatasets', isDestructive: true, shouldBeHidden: this.isAnyShared }
-        ],
-        lock: [
-          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll' },
-          { name: this.$t('BulkActions.datasets.duplicateDataset'), event: 'duplicateDataset' },
-          { name: this.$t('BulkActions.datasets.unlockDataset'), event: 'unlockDataset' }
-        ],
-        multipleLock: [
-          { name: this.$t('BulkActions.datasets.selectAllDatasets'), event: 'selectAll', shouldBeHidden: this.areAllDatasetsSelected },
-          { name: this.$t('BulkActions.datasets.deselectAllDatasets'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.datasets.unlockDatasets'), event: 'unlockDatasets' }
+          {
+            name: this.$t('BulkActions.datasets.selectAllDatasets'),
+            event: 'selectAll',
+            shouldBeHidden: this.areAllDatasetsSelected
+          },
+          {
+            name: this.$t('BulkActions.datasets.deselectAllDatasets'),
+            event: 'deselectAll',
+          },
+          {
+            name: this.$t('BulkActions.datasets.createMap'),
+            event: 'createMap',
+            shouldBeHidden: this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.lockDatasets'),
+            event: 'lockDatasets',
+            shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
+            shouldBeHidden: this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.unlockDatasets'),
+            event: 'unlockDatasets',
+            shouldBeDisabled: this.isAnyShared && this.areAllLocked,
+            shouldBeHidden: !this.areAllLocked
+          },
+          {
+            name: this.$t('BulkActions.datasets.deleteDatasets'),
+            event: 'deleteDatasets',
+            isDestructive: true,
+            shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
+            shouldBeHidden: this.isAnyLocked
+          }
         ]
       };
     },
     actionMode () {
-      const isAnyDatasetLocked = this.selectedDatasets.filter(dataset => dataset.locked);
-
-      if (isAnyDatasetLocked.length) {
-        return isAnyDatasetLocked.length > 1 ? 'multipleLock' : 'lock';
-      }
-
       return this.selectedDatasets.length > 1 ? 'multiple' : 'single';
     },
     isAnyShared () {
       return this.selectedDatasets.some(dataset => Visualization.isShared(dataset, this.$cartoModels));
+    },
+    isAnyLocked () {
+      return this.selectedDatasets.some(dataset => dataset.locked);
+    },
+    areAllLocked () {
+      return this.selectedDatasets.every(dataset => dataset.locked);
     }
   },
   methods: {

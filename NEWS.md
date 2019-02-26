@@ -12,6 +12,7 @@ Development
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
 - Update Dataservices API client default version to `0.26.2` (#14695)
 - Fix Lockout page ([product#261](https://github.com/CartoDB/product/issues/261))
+- Adapt current dashboard's request interceptor ([#14489](https://github.com/CartoDB/cartodb/issues/14489))
 
 4.25.2 (2019-02-25)
 -------------------

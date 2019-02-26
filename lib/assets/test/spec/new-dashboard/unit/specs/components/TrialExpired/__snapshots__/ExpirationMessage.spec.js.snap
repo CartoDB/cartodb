@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ExpirationMessage.vue should render correctly 1`] = `
-<section upgradeurl="https://user.carto.com/plan">
+<section expirationdays="10" upgradeurl="https://user.carto.com/plan">
   <div class="container warning-container">
     <div class="warning-icon"><img src="../../assets/icons/expired-trial/warning-icon.svg"></div>
     <h2 class="warning-title title is-title is-txtDarkBlue is-bold">

@@ -11,6 +11,7 @@ Development
 ### Bug fixes / enhancements
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
 - Update Dataservices API client default version to `0.26.2` (#14695)
+- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
 - Fix Lockout page ([product#261](https://github.com/CartoDB/product/issues/261))
 
 4.25.2 (2019-02-25)

@@ -393,6 +393,17 @@ describe Carto::Api::VisualizationsController do
       body['total_user_entries'].should == 4
     end
 
+    it 'allows to search datasets including dependent visualizations' do
+      FactoryGirl.create(:table_visualization, user_id: @user_1.id, name: 'foo')
+
+      body = response_body(q: 'foo', type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+                           with_dependent_visualizations: 10)
+
+      body['total_entries'].should == 1
+      body['total_user_entries'].should == 1
+      body['visualizations'][0]['dependent_visualizations_count'].should be_zero
+    end
+
     describe 'performance with many tables' do
       # The bigger the number the better the improvement, but test gets too slow
       VIZS_N = 20

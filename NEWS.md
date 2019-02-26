@@ -10,6 +10,7 @@ Development
 
 ### Bug fixes / enhancements
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
+- Bulk actions in datasets and maps revised and fixed ([#14700](https://github.com/CartoDB/cartodb/pull/14700))
 
 4.25.2 (2019-02-25)
 -------------------

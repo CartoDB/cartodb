@@ -211,7 +211,7 @@
     "WelcomeSection": {
       "greeting" : "Hello, {name}",
       "firstTime": {
-        "message": "Your brand new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
+        "message": "Welcome to your new dashboard! Take a look around and play with it or learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
           "30day": "Remember that you're currently on the 30-day personal trial.",

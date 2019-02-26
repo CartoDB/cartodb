@@ -2,32 +2,46 @@ Development
 -----------
 
 ### NOTICES
-- Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
-- This release upgrades the CartoDB PostgreSQL extension to `0.25.0`. Run the following to have it available:
+- **BREAKING**: Drop support for Node.js 6
+- **BREAKING**: Drop support for npm 3 and `npm-shrinkwrap.json` file.
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
+- Update Dataservices API client default version to `0.26.2` (#14695)
+- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
+
+4.25.2 (2019-02-25)
+-------------------
+
+### NOTICES
+* Updating shrinkwrap and package-lock before Node.js upgrade [#14669](https://github.com/CartoDB/cartodb/pull/14669)
+* This release upgrades the CartoDB PostgreSQL extension to `0.25.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)
+* Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)
 
 ### Bug fixes / enhancements
-- Add filtering by types to /tags endpoint and use it in the new dashboard ([CartoDB/product#259](https://github.com/CartoDB/product/issues/259)))
-- In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
-- Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
-- Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
-- Update links in quota & metrics section in New Dashboard [#14574](https://github.com/CartoDB/cartodb/issues/14574)
-- Fix quick actions dropdown in maps and datasets card - Dashboard
-- Update pending notifications badge when checking out notifications in the New Dashboard
-- Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
-- Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
-- Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
-- Fix for importer, which did not work when configuring the temp directory (`unp_temporal_folder`) to a path containing capital letters [#14688](https://github.com/CartoDB/cartodb/pull/14688)
-- Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
-- Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
-- Update recent content section when content changes in Home ([#14662](https://github.com/CartoDB/cartodb/issues/14662))
-- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
+* Add filtering by types to /tags endpoint and use it in the new dashboard ([CartoDB/product#259](https://github.com/CartoDB/product/issues/259)))
+* In ruby 2.4.5 looks like rescue fails for operator precendence [#14666](https://github.com/CartoDB/cartodb/pull/14666)
+* Fix users that had sort by likes stored [#14668](https://github.com/CartoDB/cartodb/pull/14668)
+* Relocate styles to the New Dashboard folder [#14672](https://github.com/CartoDB/cartodb/pull/14672)
+* Update links in quota & metrics section in New Dashboard [#14574](https://github.com/CartoDB/cartodb/issues/14574)
+* Fix quick actions dropdown in maps and datasets card - Dashboard
+* Update pending notifications badge when checking out notifications in the New Dashboard
+* Show new footer in settings and private user pages ([#14342](https://github.com/CartoDB/cartodb/issues/14342))
+* Format quota numbers with separators in Home Page ([#14680](https://github.com/CartoDB/cartodb/pull/14680))
+* Number of favorites in filter dropdown does not update when fav/unfav items in new Dashboard [CartoDB/product#256](https://github.com/CartoDB/product/issues/265)
+* Fix for importer, which did not work when configuring the temp directory (`unp_temporal_folder`) to a path containing capital letters [#14688](https://github.com/CartoDB/cartodb/pull/14688)
+* Add trial end date to personal30 account users [#14679](https://github.com/CartoDB/cartodb/pull/14679)
+* Fix Drag&Drop behaviour from Home Page ([#14682](https://github.com/CartoDB/cartodb/pull/14682))
+* Update recent content section when content changes in Home ([#14662](https://github.com/CartoDB/cartodb/issues/14662))
 
 4.25.1 (2019-02-11)
 -------------------

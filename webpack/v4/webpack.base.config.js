@@ -36,7 +36,8 @@ module.exports = {
 
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
-      __ENV__: JSON.stringify('prod')
+      __ENV__: JSON.stringify('prod'),
+      __ASSETS_VERSION__: JSON.stringify(version)
     }),
 
     new MiniCssExtractPlugin({

@@ -20,7 +20,7 @@
     </div>
 
     <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <input class="checkbox-input" :checked="isSelected" @click.prevent="toggleSelection($event)" type="checkBox">
+      <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../../assets/icons/common/checkbox.svg">
       </span>

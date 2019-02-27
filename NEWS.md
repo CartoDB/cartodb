@@ -14,6 +14,7 @@ Development
 - Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
 - Fix Lockout page ([product#261](https://github.com/CartoDB/product/issues/261))
 - Use .toLocaleDateString() to format date in notification page ([#14707](https://github.com/CartoDB/cartodb/pull/14707))
+- Fix likes feature in Search Page ([#14709](https://github.com/CartoDB/cartodb/pull/14709))
 
 4.25.2 (2019-02-25)
 -------------------

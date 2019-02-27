@@ -116,6 +116,10 @@ export default {
     selectMode: {
       type: Boolean,
       default: false
+    },
+    storeActionType: {
+      type: String,
+      default: 'datasets'
     }
   },
   data: function () {
@@ -216,10 +220,6 @@ export default {
     closeQuickActions () {
       this.areQuickActionsOpen = false;
     },
-    ...mapActions({
-      likeDataset: 'datasets/like',
-      deleteLikeDataset: 'datasets/deleteLike'
-    }),
     onClick (event) {
       if (this.$props.selectMode) {
         event.preventDefault();
@@ -228,6 +228,12 @@ export default {
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);
+    },
+    likeDataset (dataset) {
+      this.$store.dispatch(`${this.storeActionType}/like`, dataset);
+    },
+    deleteLikeDataset (dataset) {
+      this.$store.dispatch(`${this.storeActionType}/deleteLike`, dataset);
     }
   }
 };

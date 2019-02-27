@@ -102,10 +102,10 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
         <!---->
         <ul class="grid grid-cell">
           <li class="grid-cell grid-cell--col12 search-item">
-            <mapcard-stub visualization="[object Object]" storeactiontype="maps" condensed="true"></mapcard-stub>
+            <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
           </li>
           <li class="grid-cell grid-cell--col12 search-item">
-            <mapcard-stub visualization="[object Object]" storeactiontype="maps" condensed="true"></mapcard-stub>
+            <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
           </li>
           <!---->
         </ul>
@@ -115,10 +115,10 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
         <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
         <ul class="grid-cell grid-cell--col12">
           <li class="search-item">
-            <datasetcard-stub dataset="[object Object]"></datasetcard-stub>
+            <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
           </li>
           <li class="search-item">
-            <datasetcard-stub dataset="[object Object]"></datasetcard-stub>
+            <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
           </li>
           <!---->
         </ul>

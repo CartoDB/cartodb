@@ -1337,6 +1337,82 @@ module CartoDB
         raise exception.cause
       end
 
+      def create_ghost_tables_event_trigger
+        return unless @user.has_feature_flag?('ghost_tables') && @user.has_feature_flag?('ghost_tables_trigger')
+
+        add_python
+
+        redis_host = Cartodb.config[:redis].try(:[], 'host') || '127.0.0.1'
+        redis_port = Cartodb.config[:redis].try(:[], 'port') || 6379
+        redis_timeout = Cartodb.config[:redis].try(:[], 'write_timeout') || 5
+
+        @user.in_database(as: :superuser).run(
+          <<-TRIGGER
+            BEGIN;
+
+            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables() RETURNS void
+              AS $$
+                client = GD.get('redis', None)
+
+                retry = 3
+                error = ''
+
+                while True:
+
+                  if not client:
+                      try:
+                        import redis
+                        client = GD['redis'] = redis.Redis(host='#{redis_host}', port=#{redis_port}, socket_timeout=#{redis_timeout})
+                      except Exception as err:
+                        error = "client_error - %s" % str(err)
+                        # NOTE: we won't retry on connection error
+                        plpy.error('Ghost tables connection error: ' +  str(err))
+                        break
+
+                  try:
+                    job = '{"class":"Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables","args":["#{@user.id}"]}'
+                    client.rpush("resque:queue:user_dbs", job)
+                    break
+                  except Exception as err:
+                    error = "request_error - %s" % str(err)
+                    client = GD['redis'] = None # force reconnect
+                    if not retry:
+                      plpy.error('Ghost tables error: ' +  str(err))
+                      break
+                    retry -= 1 # try reconnecting
+
+            $$
+            LANGUAGE 'plpythonu' VOLATILE;
+            REVOKE ALL ON FUNCTION cartodb.cdb_link_ghost_tables() FROM PUBLIC;
+
+            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables_trigger() RETURNS event_trigger
+            LANGUAGE plpgsql
+              AS $$
+            BEGIN
+              PERFORM cdb_link_ghost_tables();
+            END;
+            $$;
+
+            CREATE EVENT TRIGGER link_ghost_tables
+              ON ddl_command_end
+              WHEN TAG IN ('CREATE TABLE', 'SELECT INTO', 'DROP TABLE', 'ALTER TABLE', 'CREATE VIEW', 'DROP VIEW', 'ALTER VIEW', 'CREATE TRIGGER', 'DROP TRIGGER')
+              EXECUTE PROCEDURE cdb_link_ghost_tables_trigger();
+
+            COMMIT;
+          TRIGGER
+        )
+      end
+
+      def drop_ghost_tables_event_trigger
+        @user.in_database(as: :superuser) do |database|
+          database.run(%{
+            DROP EVENT TRIGGER link_ghost_tables;
+            DROP FUNCTION cdb_link_ghost_tables_trigger();
+            DROP FUNCTION public.cdb_link_ghost_tables();
+          })
+        end
+      end
+
       private
 
       def http_client

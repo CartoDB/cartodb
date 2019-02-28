@@ -43,18 +43,21 @@ export default {
           {
             name: this.$t('BulkActions.maps.lockMap'),
             event: 'lockMap',
-            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+            shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
+            shouldBeHidden: this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.maps.unlockMap'),
             event: 'unlockMap',
-            shouldBeHidden: !this.isAnyLocked || this.isAnyShared
+            shouldBeDisabled: this.isAnyShared && this.areAllLocked,
+            shouldBeHidden: !this.areAllLocked
           },
           {
             name: this.$t('BulkActions.maps.deleteMap'),
             event: 'deleteMap',
             isDestructive: true,
-            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+            shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
+            shouldBeHidden: this.isAnyLocked
           }
         ],
         multiple: [

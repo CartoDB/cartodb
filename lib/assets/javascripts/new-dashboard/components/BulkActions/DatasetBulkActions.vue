@@ -50,18 +50,21 @@ export default {
           {
             name: this.$t('BulkActions.datasets.lockDataset'),
             event: 'lockDataset',
-            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+            shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
+            shouldBeHidden: this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.datasets.unlockDataset'),
             event: 'unlockDataset',
-            shouldBeHidden: !this.isAnyLocked || this.isAnyShared
+            shouldBeDisabled: this.isAnyShared && this.areAllLocked,
+            shouldBeHidden: !this.areAllLocked
           },
           {
             name: this.$t('BulkActions.datasets.deleteDataset'),
             event: 'deleteDataset',
             isDestructive: true,
-            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+            shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
+            shouldBeHidden: this.isAnyLocked
           }
         ],
         multiple: [

@@ -51,7 +51,7 @@ Default Value | `"count(cartodb_id)"`
 Available Values | `count(column_name), max(column_name), sum(column_name)`
 Related Example | Wiki page about [how spatial aggregation works](https://github.com/CartoDB/torque/wiki/How-spatial-aggregation-works).
 
-**Note:** Since the CARTO geospatial database is built on the PostgreSQL platform and supports advanced PostGIS capabilities, see [PostgreSQL Aggregate Functions](http://www.postgresql.org/docs/9.3/static/functions-aggregate.html) for additional supported values.
+**Note:** Since the CARTO geospatial database is built on the PostgreSQL platform and supports advanced PostGIS capabilities, see [PostgreSQL Aggregate Functions](http://www.postgresql.org/docs/10/static/functions-aggregate.html) for additional supported values.
 
 **Tip:** Functions can also be combinations of functions and operations. For example, `log(1 + max(column_name))`.
 

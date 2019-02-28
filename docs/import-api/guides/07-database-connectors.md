@@ -51,7 +51,7 @@ table | Identifies the table to be imported.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 encoding | The character encoding used by the MySQL database.
 
-For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/9.3/static/multibyte.html) can be applied.
+For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/10/static/multibyte.html) can be applied.
 
 #### Encoding Connection Parameters
 
@@ -623,7 +623,7 @@ table | Identifies the table to be imported.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 encoding | The character encoding used by the Microsoft SQL Server database.
 
-For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/9.3/static/multibyte.html) can be applied.
+For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/10/static/multibyte.html) can be applied.
 
 #### Encoding Connection Parameters
 
@@ -902,7 +902,7 @@ table | Identifies the table to be imported.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 encoding | The character encoding used by the Hive database.
 
-For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/9.3/static/multibyte.html) can be applied.
+For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/10/static/multibyte.html) can be applied.
 
 #### Encoding Connection Parameters
 

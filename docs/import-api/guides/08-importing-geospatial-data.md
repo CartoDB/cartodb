@@ -166,6 +166,8 @@ If the option `create_vis` is enabled in the import process, the different layer
 
 The maximum number of datasets created from a multilayer file is 10. If the imported file contains more than 10 layers, those layers are omitted.
 
+**Important note:** The "[personal geodatabase](http://desktop.arcgis.com/en/arcmap/latest/manage-data/administer-file-gdbs/personal-geodatabases.htm)" (having a `.mdb` extension) format used by ArcGIS 8 and ArcGIS 9 is not supported by CARTO.
+
 #### Shapefile
 
 The different layers included in a Shapefile are imported as independent datasets.

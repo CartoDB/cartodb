@@ -158,6 +158,18 @@ The following table contains a list of known errors codes and possible solutions
       <td>Invalid `cartodb_id` column - The import failed because your table contains an invalid `cartodb_id` column. If you want to use it as a primary key, its values must be integers, non-null, and unique. Otherwise, try renaming your current `cartodb_id` column.</td>
     </tr>
     <tr>
+      <td>2012</td>
+      <td>Incompatible schemas - The import failed because you are trying to overwrite a table but the data you are providing is not compatible with the data that table already has. You may me changing some types or removing a column. Please check and try again.</td>
+    </tr>
+     <tr>
+      <td>2013</td>
+      <td>Cannot overwrite table - The synchronization failed because the destination table could not be overwritten. Please make sure that there are no database objects (e.g: views) that depend on it.</td>
+    </tr>
+     <tr>
+      <td>2014</td>
+      <td>Invalid geometries - Your file appears to contain invalid geometries. Try opening the file with another GIS tool and checking the geometry validity.</td>
+    </tr>
+    <tr>
       <td>3007</td>
       <td>JSON may not be valid GeoJSON - We can only import GeoJSON formated JSON files. See if the source of this data supports GeoJSON or another file format for download.</td>
     </tr>

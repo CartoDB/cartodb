@@ -61,16 +61,16 @@ Root folder of new dashboard is `lib/assets/javascripts/new-dashboard`. You will
 	Custom Vue plugins. There is only one right now to inject `$cartoModels` in every component to be able to use initialized UserModel and ConfigModel wherever we need them.
 
 - **router**\
-	Router configuration for pages within Dashboard. It includes navigation hooks for loading data beforehand.
+	Router configuration for pages within the Dashboard. It includes navigation hooks for loading data beforehand.
 
 - **store**\
-	State management configuration and store for the application which hold all the visualizations, user data, application configuration, etc...
+	State management configuration and store for the application which holds all the visualizations, user data, application configuration, etc...
 
 - **styles**\
 	Global styles for the application. Here we put common or styles that don't belong to any specific components, such as grid styles, button styles, and so on and so forth.
 
 - **utils**\
-	Set of functions to be used application-wide that perform a specific action like counting characters in array or things like that.
+	Set of functions to be used application-wide that perform a specific action like counting characters in an array or things like that.
 
 ## Bundles
 There are several bundles within the application that serve different purposes.
@@ -86,7 +86,7 @@ The two bundles below are reduced bundles that are included within private pages
 	[Header Bundle folder](https://github.com/CartoDB/cartodb/tree/master/lib/assets/javascripts/new-dashboard/bundles/header)
 
 	- **Why we can't use $store within `<NavigationBar />`**\
-	We have a strong limitation with Vuex in this bundle because we don't want to include it to make the bundle as smaller as possible. So, we relay on component parameters to inject all the needed properties.
+	We have a strong limitation with Vuex in this bundle because we don't want to include it to make the bundle as smaller as possible. So, we rely on component parameters to inject all the needed properties.
 
 - **Footer Bundle**
 	This bundle renders `<Footer />` receiving `user` prop from `window.user_data`.
@@ -94,7 +94,7 @@ The two bundles below are reduced bundles that are included within private pages
 	[Footer Bundle folder](https://github.com/CartoDB/cartodb/tree/master/lib/assets/javascripts/new-dashboard/bundles/footer)
 
 	- **Why we can't use $store within `<Footer />`**\
-	We have a strong limitation with Vuex in this bundle because we don't want to include it to make the bundle as smaller as possible. So, we relay on component parameters to inject all the needed properties.
+	We have a strong limitation with Vuex in this bundle because we don't want to include it to make the bundle as smaller as possible. So, we rely on component parameters to inject all the needed properties.
 
 ## Store
 The store holds all the data which is needed at the current page to be rendered properly, in addition to configuration data and user data.
@@ -130,7 +130,7 @@ computed: {
 ## Components
 Components are one of the most important things within Vue applications. They are what allow us to build the application itself by using and composing them on one another.
 
-We split components in two types: page components and regular components.
+We split components into two types: page components and regular components.
 
 Page components are the ones that vue-router render when matching a predefined route. The regular ones are those which are within pages and build what we consider the whole page.
 
@@ -141,7 +141,7 @@ The template is a plain HTML string in which you can use the handy Vue modifiers
 For our components' style definition, we use SCSS and it is scoped, that means that there wouldn't be any collisions amongst CSS classes with the same name.
 
 ## Backbone Connection
-There is a special thing in the new dashboard related to modals. As we didn't want to rewrite or redesign the existing Dashboard/Builder modals, we thought of using the same ones that we had. That ones were written using Backbone.
+There is a special thing in the new dashboard related to modals. As we didn't want to rewrite or redesign the existing Dashboard/Builder modals, we thought of using the same ones that we had. Those ones were written using Backbone.
 
 So, we thought, why don't we render those modals within Vue components and use them as if they were Vue components. And that's what we did.
 

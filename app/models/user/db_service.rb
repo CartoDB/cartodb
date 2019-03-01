@@ -1350,7 +1350,7 @@ module CartoDB
           <<-TRIGGER
             BEGIN;
 
-            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables() RETURNS void
+            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables(user_id text) RETURNS void
               AS $$
                 client = GD.get('redis', None)
 
@@ -1370,7 +1370,7 @@ module CartoDB
                         break
 
                   try:
-                    job = '{"class":"Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables","args":["#{@user.id}"]}'
+                    job = '{{"class":"Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables","args":["{}"]}}'.format(user_id)
                     client.rpush("resque:queue:user_dbs", job)
                     break
                   except Exception as err:
@@ -1380,23 +1380,43 @@ module CartoDB
                       plpy.error('Ghost tables error: ' +  str(err))
                       break
                     retry -= 1 # try reconnecting
+              $$
+              LANGUAGE 'plpythonu' VOLATILE;
+            GRANT EXECUTE ON FUNCTION cartodb.cdb_link_ghost_tables(user_id text) TO PUBLIC;
 
-            $$
-            LANGUAGE 'plpythonu' VOLATILE;
-            REVOKE ALL ON FUNCTION cartodb.cdb_link_ghost_tables() FROM PUBLIC;
+            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables_trigger() RETURNS trigger
+            LANGUAGE plpgsql SECURITY DEFINER
+              AS $$
+                DECLARE
+                  user_id TEXT;
+                BEGIN
+                  EXECUTE 'SELECT (regexp_match(session_user, ''[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}''))[1];' INTO user_id;
+                  PERFORM cartodb.cdb_link_ghost_tables(user_id);
+                  DELETE FROM cartodb.cdb_ddl_execution WHERE txid = txid_current();
+                  RETURN NULL;
+                END;
+              $$;
 
-            CREATE OR REPLACE FUNCTION cartodb.cdb_link_ghost_tables_trigger() RETURNS event_trigger
-            LANGUAGE plpgsql
+            CREATE TABLE IF NOT EXISTS cartodb.cdb_ddl_execution(txid integer PRIMARY KEY);
+
+            CREATE CONSTRAINT TRIGGER check_ddl_update
+              AFTER INSERT ON cartodb.cdb_ddl_execution
+              INITIALLY DEFERRED
+              FOR EACH ROW
+              EXECUTE PROCEDURE cartodb.cdb_link_ghost_tables_trigger();
+
+            CREATE OR REPLACE FUNCTION cartodb.save_ddl_transaction() RETURNS event_trigger
+            LANGUAGE plpgsql SECURITY DEFINER
               AS $$
             BEGIN
-              PERFORM cdb_link_ghost_tables();
+              INSERT INTO cartodb.cdb_ddl_execution VALUES (txid_current()) ON CONFLICT (txid) DO NOTHING;
             END;
             $$;
 
             CREATE EVENT TRIGGER link_ghost_tables
               ON ddl_command_end
               WHEN TAG IN ('CREATE TABLE', 'SELECT INTO', 'DROP TABLE', 'ALTER TABLE', 'CREATE VIEW', 'DROP VIEW', 'ALTER VIEW', 'CREATE TRIGGER', 'DROP TRIGGER')
-              EXECUTE PROCEDURE cdb_link_ghost_tables_trigger();
+              EXECUTE PROCEDURE cartodb.save_ddl_transaction();
 
             COMMIT;
           TRIGGER
@@ -1407,8 +1427,11 @@ module CartoDB
         @user.in_database(as: :superuser) do |database|
           database.run(%{
             DROP EVENT TRIGGER link_ghost_tables;
-            DROP FUNCTION cdb_link_ghost_tables_trigger();
-            DROP FUNCTION public.cdb_link_ghost_tables();
+            DROP FUNCTION cartodb.save_ddl_transaction();
+            DROP TRIGGER check_ddl_update ON cartodb.cdb_ddl_execution;
+            DROP TABLE cartodb.cdb_ddl_execution;
+            DROP FUNCTION cartodb.cdb_link_ghost_tables_trigger();
+            DROP FUNCTION cartodb.cdb_link_ghost_tables(user_id text);
           })
         end
       end

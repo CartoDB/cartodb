@@ -9,8 +9,9 @@ exports[`MapBulkActions.vue should render all bulk actions 1`] = `
     BulkActions.maps.duplicateMap
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.lockMap
-  </button>
-  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.unlockMap
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.maps.deleteMap
   </button></section>
 `;

@@ -11,8 +11,9 @@ exports[`DatasetBulkActions.vue should render all bulk actions 1`] = `
     BulkActions.datasets.duplicateDataset
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.lockDataset
-  </button>
-  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.unlockDataset
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.deleteDataset
   </button></section>
 `;
@@ -71,11 +72,12 @@ exports[`DatasetBulkActions.vue should render multiple actions for a single shar
   </button>
   <!----><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.duplicateDataset
+  </button><button disabled="disabled" class="bulk-actions__button button button--ghost u-is-disabled">
+    BulkActions.datasets.lockDataset
   </button>
-  <!---->
-  <!---->
-  <!---->
-</section>
+  <!----><button disabled="disabled" class="bulk-actions__button button button--ghost is-txtAlert u-is-disabled">
+    BulkActions.datasets.deleteDataset
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple actions for selection containing shared datasets: "Select All", "Create Map", "Deselect All" 1`] = `

@@ -45,10 +45,10 @@ exports[`DatasetsList.vue should render properly 1`] = `
   </div>
   <ul class="grid-cell grid-cell--col12">
     <li class="dataset-item">
-      <datasetcard-stub dataset="[object Object]" canhover="true"></datasetcard-stub>
+      <datasetcard-stub dataset="[object Object]" canhover="true" storeactiontype="datasets"></datasetcard-stub>
     </li>
     <li class="dataset-item">
-      <datasetcard-stub dataset="[object Object]" canhover="true"></datasetcard-stub>
+      <datasetcard-stub dataset="[object Object]" canhover="true" storeactiontype="datasets"></datasetcard-stub>
     </li>
   </ul>
   <div class="grid-cell grid-cell--col12">

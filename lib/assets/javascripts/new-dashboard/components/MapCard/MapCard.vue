@@ -5,6 +5,7 @@
     :isSelected="isSelected"
     :canHover="canHover"
     :selectMode="selectMode"
+    :storeActionType="storeActionType"
     @toggleSelection="toggleSelection"
     @contentChanged="onContentChanged" />
 </template>

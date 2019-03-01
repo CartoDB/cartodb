@@ -9,9 +9,14 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Upgrade googleapis gem to 0.28 in order to make it compatible with ruby 2.4.5 [#14683](https://github.com/CartoDB/cartodb/pull/14683)
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
 - Update Dataservices API client default version to `0.26.2` (#14695)
+- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
 - Fix Lockout page ([product#261](https://github.com/CartoDB/product/issues/261))
+- Use .toLocaleDateString() to format date in notification page ([#14707](https://github.com/CartoDB/cartodb/pull/14707))
+- Fix likes feature in Search Page ([#14709](https://github.com/CartoDB/cartodb/pull/14709))
+- Adapt current dashboard's request interceptor ([#14489](https://github.com/CartoDB/cartodb/issues/14489))
 - Bulk actions in datasets and maps revised and fixed ([#14700](https://github.com/CartoDB/cartodb/pull/14700))
 
 4.25.2 (2019-02-25)

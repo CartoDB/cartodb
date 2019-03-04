@@ -28,7 +28,7 @@ Another important property of Regular API keys is that they inherit all the Data
 
 You can see below an example of a real API key as it is displayed in a CARTO account.
 
-![alt](../img/capture-auth-apikey.png)
+![Capture Auth API key section in dashboard](../img/capture-auth-apikey.png)
 
 #### Default Public
 
@@ -64,7 +64,7 @@ Your Master API key carries many privileges, so be sure to keep it secret. Do no
 
 Below you have an example of a master API key.
 
-![alt](../img/capture-auth-apikey-master.png)
+![Capture Master Auth API key section in dashboard](../img/capture-auth-apikey-master.png)
 
 **Tip:** If you think is has been compromised, regenerate it immediately.
 

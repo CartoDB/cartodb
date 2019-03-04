@@ -47,7 +47,6 @@ request.get('https://username.carto.com/endpoint/', {
 ##### Requests (Python)
 ```python
 r = requests.get('https://username.carto.com/endpoint/', auth=(username, 1234567890123456789012345678901234567890))
-
 ```
 
 ### Query string/Request body parameter
@@ -56,11 +55,11 @@ Alternatively, you can use an URL query string parameter or a field in the reque
 
 #### Examples:
 
-```
-curl -X GET 'https://username.carto.com/endpoint/?api_key=1234567890123456789012345678901234567890
+```bash
+curl -X GET 'https://username.carto.com/endpoint/?api_key=1234567890123456789012345678901234567890'
 ```
 
-```
+```bash
 curl -X POST \
   'https://username.carto.com/endpoint/' \
   -H 'content-type: application/json' \

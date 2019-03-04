@@ -19,7 +19,7 @@
       <div class="MapCard-error" v-if="isThumbnailErrored"></div>
     </div>
 
-    <span class="checkbox card-select" v-if="!isShared" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+    <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
       <input class="checkbox-input" :checked="isSelected" @click.stop="toggleSelection($event)" type="checkBox">
       <span class="checkbox-decoration">
         <img svg-inline src="../../assets/icons/common/checkbox.svg">

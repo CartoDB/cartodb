@@ -24,7 +24,7 @@
 
           <ul class="grid grid-cell" v-if="!isFetchingMaps">
             <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col12 search-item">
-              <MapCard :visualization=map :canHover=false :condensed="true"></MapCard>
+              <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
             </li>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">
@@ -44,7 +44,7 @@
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
             <li v-for="dataset in datasets" :key="dataset.id" class="search-item">
-              <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
+              <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
             </li>
 
             <div class="is-caption text" v-if="!hasDatasets">

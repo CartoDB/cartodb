@@ -18,10 +18,10 @@ export default {
       this.$emit('close');
     }
   },
-  beforeMount() {
+  beforeMount () {
     document.body.classList.add('u-overflow-hidden');
   },
-  beforeDestroy() {
+  beforeDestroy () {
     document.body.classList.remove('u-overflow-hidden');
   }
 };

@@ -80,6 +80,7 @@ body.is-inDialog {
   position: fixed;
   bottom: 0;
   width: 100%;
+  background: $cStructure-grayBkg;
 }
 
 .Dialog-content.is-newContent {
@@ -113,8 +114,11 @@ body.is-inDialog {
 }
 
 .Dialog-body.Dialog-body--create {
+  $createDialog-footerInner-height: 72px;
+  $createDialog-footerInner-padding: 16px;
   position: relative;
   width: 100%;
+  margin-bottom: calc(#{$createDialog-footerInner-height} + 2*#{$createDialog-footerInner-padding});
   overflow: auto;
 }
 

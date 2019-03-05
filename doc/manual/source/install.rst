@@ -169,30 +169,24 @@ Redis
 Node.js
 -------
 
+.. note::
+    CARTO requires Node.js 10+ and npm 6+.
+
 Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
-
-
-* Add the PPA
-
-  .. code-block:: bash
-
-    sudo add-apt-repository ppa:cartodb/nodejs && sudo apt-get update
 
 * Install Node.js
 
   .. code-block:: bash
 
-    sudo apt-get install nodejs
+    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 
-  Note this should install both Node.js 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
+  Note this should install both Node.js 10.x and npm 6.x. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
-    nodejs -v
+    node -v
     npm -v
-
-.. warning::
-      CARTO uses Node.js v6.9.2 and npm 3.10.9. You must use these precise versions to avoid problems.
 
 We will also install some development libraries that will be necessary to build some Node.js modules:
 
@@ -241,17 +235,11 @@ MAPS API
     git clone git://github.com/CartoDB/Windshaft-cartodb.git
     cd Windshaft-cartodb
 
-* Maps API dependencies are managed using yarn. Install it:
-
-  .. code-block:: bash
-
-    sudo npm install -g yarn@0.27.5
-
 * Install yarn dependencies
 
   .. code-block:: bash
 
-    yarn install
+    npm install
 
 * Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let's assume it's development.
 
@@ -272,7 +260,7 @@ Ruby
 ----
 
 .. note::
-  CARTO requires exactly Ruby 2.2.x. Older or newer versions won't work.
+  CARTO requires exactly Ruby 2.4.x. Older or newer versions won't work.
 
 * Add brightbox ruby repositories
 
@@ -280,11 +268,11 @@ Ruby
 
     sudo apt-add-repository ppa:brightbox/ruby-ng && sudo apt-get update
 
-* Install ruby 2.2
+* Install ruby 2.4
 
   .. code-block:: bash
 
-    sudo apt-get install ruby2.2 ruby2.2-dev
+    sudo apt-get install ruby2.4 ruby2.4-dev
 
 * Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CARTO Builder
 

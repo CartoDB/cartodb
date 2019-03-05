@@ -19,6 +19,7 @@ Development
 - Adapt current dashboard's request interceptor ([#14489](https://github.com/CartoDB/cartodb/issues/14489))
 - Bulk actions in datasets and maps revised and fixed ([#14700](https://github.com/CartoDB/cartodb/pull/14700))
 - Fix .carto not creating a map in old dashboard ([#14713](https://github.com/CartoDB/cartodb/pull/14713))
+- Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
 - Add developer center documentation folder to doc [14710](https://github.com/CartoDB/cartodb/pull/14710)
 
 4.25.2 (2019-02-25)
@@ -31,6 +32,7 @@ Development
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
+- Updating installation guide due to Node.js & Ruby version upgrades [#14692](https://github.com/CartoDB/cartodb/pull/14692)
 
 ### Features
 * Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)

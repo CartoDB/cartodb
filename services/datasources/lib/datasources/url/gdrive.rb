@@ -12,7 +12,7 @@ module CartoDB
         # Required for all providers
         DATASOURCE_NAME = 'gdrive'
 
-        OAUTH_SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+        OAUTH_SCOPES = ['https://www.googleapis.com/auth/drive'].freeze
         # For when using authorization code instead of callback with token
         REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
         FIELDS_TO_RETRIEVE = 'items(downloadUrl,exportLinks,id,modifiedDate,title,fileExtension,fileSize)'

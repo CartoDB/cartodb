@@ -11,6 +11,8 @@ exports[`DatasetBulkActions.vue should render all bulk actions 1`] = `
     BulkActions.datasets.duplicateDataset
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.lockDataset
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.datasets.unlockDataset
   </button><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.deleteDataset
   </button></section>
@@ -24,7 +26,8 @@ exports[`DatasetBulkActions.vue should render all multiple actions for all selec
     BulkActions.datasets.createMap
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.lockDatasets
-  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.deleteDatasets
   </button></section>
 `;
@@ -38,7 +41,8 @@ exports[`DatasetBulkActions.vue should render all multiple actions: "Select all"
     BulkActions.datasets.createMap
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.lockDatasets
-  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.deleteDatasets
   </button></section>
 `;
@@ -54,7 +58,8 @@ exports[`DatasetBulkActions.vue should render all single actions: "Select all", 
     BulkActions.datasets.duplicateDataset
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.lockDataset
-  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
     BulkActions.datasets.deleteDataset
   </button></section>
 `;
@@ -67,10 +72,12 @@ exports[`DatasetBulkActions.vue should render multiple actions for a single shar
   </button>
   <!----><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.duplicateDataset
+  </button><button disabled="disabled" class="bulk-actions__button button button--ghost u-is-disabled">
+    BulkActions.datasets.lockDataset
   </button>
-  <!---->
-  <!---->
-</section>
+  <!----><button disabled="disabled" class="bulk-actions__button button button--ghost is-txtAlert u-is-disabled">
+    BulkActions.datasets.deleteDataset
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple actions for selection containing shared datasets: "Select All", "Create Map", "Deselect All" 1`] = `
@@ -80,10 +87,12 @@ exports[`DatasetBulkActions.vue should render multiple actions for selection con
     BulkActions.datasets.deselectAllDatasets
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.createMap
+  </button><button disabled="disabled" class="bulk-actions__button button button--ghost u-is-disabled">
+    BulkActions.datasets.lockDatasets
   </button>
-  <!---->
-  <!---->
-</section>
+  <!----><button disabled="disabled" class="bulk-actions__button button button--ghost is-txtAlert u-is-disabled">
+    BulkActions.datasets.deleteDatasets
+  </button></section>
 `;
 
 exports[`DatasetBulkActions.vue should render multiple locked actions when not all datasets have been selected: "Select all", Deselect all" and "Unlock datasets" 1`] = `
@@ -91,17 +100,26 @@ exports[`DatasetBulkActions.vue should render multiple locked actions when not a
     BulkActions.datasets.selectAllDatasets
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.deselectAllDatasets
-  </button><button class="bulk-actions__button button button--ghost">
+  </button>
+  <!---->
+  <!----><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.unlockDatasets
-  </button></section>
+  </button>
+  <!---->
+</section>
 `;
 
 exports[`DatasetBulkActions.vue should render single locked actions: "Select all", "Duplicate dataset" and "Unlock dataset" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.selectAllDatasets
-  </button><button class="bulk-actions__button button button--ghost">
+  </button>
+  <!---->
+  <!----><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.duplicateDataset
-  </button><button class="bulk-actions__button button button--ghost">
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.unlockDataset
-  </button></section>
+  </button>
+  <!---->
+</section>
 `;

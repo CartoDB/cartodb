@@ -1415,7 +1415,7 @@ module CartoDB
 
             CREATE EVENT TRIGGER link_ghost_tables
               ON ddl_command_end
-              WHEN TAG IN ('CREATE TABLE', 'SELECT INTO', 'DROP TABLE', 'ALTER TABLE', 'CREATE VIEW', 'DROP VIEW', 'ALTER VIEW', 'CREATE TRIGGER', 'DROP TRIGGER')
+              WHEN TAG IN ('CREATE TABLE', 'SELECT INTO', 'DROP TABLE', 'ALTER TABLE', 'CREATE TRIGGER', 'DROP TRIGGER')
               EXECUTE PROCEDURE cartodb.save_ddl_transaction();
 
             COMMIT;

@@ -118,7 +118,7 @@ body.is-inDialog {
   $createDialog-footerInner-padding: 16px;
   position: relative;
   width: 100%;
-  margin-bottom: calc(#{$createDialog-footerInner-height} + 2*#{$createDialog-footerInner-padding});
+  margin-bottom: $createDialog-footerInner-height + 2 * $createDialog-footerInner-padding;
   overflow: auto;
 }
 

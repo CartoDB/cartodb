@@ -23,10 +23,10 @@
   },
   "QuickActions": {
     "title": "Quick actions",
-    "editInfo": "Edit Name & description",
-    "manageTags": "Manage Tags",
+    "editInfo": "Edit name & description",
+    "manageTags": "Manage tags",
     "createMap": "Create map",
-    "changePrivacy": "Change Privacy",
+    "changePrivacy": "Change privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
     "lock": "Lock",

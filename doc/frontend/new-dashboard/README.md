@@ -143,7 +143,7 @@ For our components' style definition, we use SCSS and it is scoped, that means t
 ## Backbone Connection
 There is a special thing in the new dashboard related to modals. As we didn't want to rewrite or redesign the existing Dashboard/Builder modals, we thought of using the same ones that we had. Those ones were written using Backbone.
 
-So, we thought, why don't we render those modals within Vue components and use them as if they were Vue components. And that's what we did.
+So, we thought, why don't we render those modals within Vue components and use them as if they were Vue components? And that's what we did.
 
 [Here](https://github.com/CartoDB/cartodb/tree/master/lib/assets/javascripts/new-dashboard/components/Backbone/Dialogs) you can find all the components mirroring Builder modals.
 

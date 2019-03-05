@@ -31,6 +31,7 @@ Development
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
+- Updating installation guide due to Node.js & Ruby version upgrades [#14692](https://github.com/CartoDB/cartodb/pull/14692)
 
 ### Features
 * Added a rake task to generate finer grain LDS metrics reports (user/day granularity) [#14671](https://github.com/CartoDB/cartodb/pull/14671)

@@ -117,7 +117,7 @@ type_guessing | A boolean indicating whether field type guessing (for Excel and 
 quoted_fields_guessing | A boolean indicating whether type guessing of CSV fields inside double quotes is enabled for the data import.
 content_guessing | A boolean indicating whether content guessing and automatic geocoding is enabled for the data import.
 create_visualization | A boolean indicating whether the import process will create a map automatically or not. Its value corresponds to the import option `create_vis` chosen by the user.
-visualization_id | A unique identifier for the map created in the import process. Only applies if `created_visualization` is set to `true`.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to `true`.
 user_defined_limits | Internal usage for user limits.
 get_error_text | This element contains an error description to be outputted in case of a failure during the import process. It contains  the error title and description, its source (`user` or `cartodb`), and troubleshooting details.
 display_name | Similar to `table_name`. For `url` uploads, it shows the name of the file. Otherwise, it shows the import id.

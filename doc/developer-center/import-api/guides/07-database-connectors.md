@@ -4,7 +4,7 @@ Typically when you import data, you are fetching a file or layer of data and imp
 
 Alternatively, you can use the Import API to connect to an external database. Your data from the external database is cached into a CARTO table by using the `connector` parameters.
 
-There are several types of database connectors that you can connect to your CARTO account.
+There are several types of database connectors that you can activate to your CARTO account.
 
 ### The MySQL Connector
 
@@ -254,7 +254,7 @@ service_name | This has the value **connector** for all connector-based synchron
 service_item_id | This contains all the parameters defining the connection.
 type_guessing | Deprecated (unused for connectors).
 content_guessing | Deprecated (unused for connectors).
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
 ```javascript
@@ -541,7 +541,7 @@ service_name | This has the value **connector** for all connector-based synchron
 service_item_id | This contains all the parameters defining the connection.
 type_guessing | Deprecated (unused for connectors).
 content_guessing | Deprecated (unused for connectors).
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
 ```javascript
@@ -818,7 +818,7 @@ service_name | This has the value **connector** for all connector-based synchron
 service_item_id | This contains all the parameters defining the connection.
 type_guessing | Deprecated (unused for connectors).
 content_guessing | Deprecated (unused for connectors).
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
 ```javascript
@@ -1097,7 +1097,7 @@ service_name | This has the value **connector** for all connector-based synchron
 service_item_id | This contains all the parameters defining the connection.
 type_guessing | Deprecated (unused for connectors).
 content_guessing | Deprecated (unused for connectors).
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | Has the value **false** for all connector-based synchronizations.
 
 ```javascript

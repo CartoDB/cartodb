@@ -45,7 +45,7 @@ service_item_id | A unique identifier used by CARTO to reference the sync table 
 type_guessing | A boolean indicating whether field type guessing (for Excel and CSVs) is enabled or not.
 quoted_fields_guessing | A boolean indicating whether type guessing of CSV fields inside double quotes is enabled for the data import.
 content_guessing | A boolean indicating whether content guessing and automatic geocoding is enabled for the data import.
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | A boolean indicating whether the Sync Table is connected to an external source, generally the CARTO Data library.
 
 Finally, the array includes a **total_entries** element that indicates the number of items contained in the response array.
@@ -145,7 +145,7 @@ service_item_id | A unique identifier used by CARTO to reference the sync table 
 type_guessing | A boolean indicating whether field type guessing (for Excel and CSVs) is enabled or not.
 quoted_fields_guessing | A boolean indicating whether type guessing of CSV fields inside double quotes is enabled for the data import.
 content_guessing | A boolean indicating whether content guessing and automatic geocoding is enabled for the data import.
-visualization_id | A unique identifier for the map created in the import process. Only applies if created_visualization is set to true.
+visualization_id | A unique identifier for the map created in the import process. Only applies if `create_visualization` is set to true.
 from_external_source | A boolean indicating whether the Sync Table is connected to an external source, generally the CARTO Common-Data library.
 
 #### Example

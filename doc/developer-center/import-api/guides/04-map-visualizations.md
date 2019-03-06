@@ -19,7 +19,7 @@ curl -H 'Content-Type: application/json' https://{username}.carto.com/api/v3/vis
 Param | Description
 --- | ---
 api_key | The target CARTO account API key.
-visualization_id | A unique identifier for the map created in the export process. Only applies if created_visualization is set to true when the map was created.
+visualization_id | A unique identifier for the map created in the export process. Only applies if `create_visualization` is set to true when the map was created.
 
 #### Response
 
@@ -44,7 +44,7 @@ The response includes:
 Attributes | Description
 --- | ---
 id | A unique identifier for the export process. It is the same as the _export id_ provided in the request.
-vizualization_id | A unique identifier for the map created in the export process. Only applies if created_visualization is set to true when the map was created.
+vizualization_id | A unique identifier for the map created in the export process. Only applies if `create_visualization` is set to true when the map was created.
 user_id | A unique alphanumeric element that identifies the CARTO account user in the internal database.
 state | A string value indicating the current state of the export process. It can have any of the following values: _enqueued, pending, uploading, unpacking, importing, guessing, complete_, or _failure_.
 url | The **public** URL address where the file to be exported is located.

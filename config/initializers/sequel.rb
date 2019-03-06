@@ -1,6 +1,8 @@
 require_dependency 'carto/configuration'
 require 'sequel_rails/railties/legacy_model_config'
 
+Sequel::Model.plugin :after_initialize
+
 ::Sequel::DATABASES.each do |d|
   # Make Sequel messages (SQL stastements) to have debug level.
   # They'll' appear in the logs only if the Logger's level is 0 (debug).

@@ -670,7 +670,7 @@ class Table
   # make all identifiers SEQUEL Compatible
   # https://github.com/Vizzuality/cartodb/issues/331
   def make_sequel_compatible(attributes)
-    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
+    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[Sequel.identifier(k)] = v }
   end
 
   def add_column!(options)

@@ -13,6 +13,6 @@ Always apply the following format when entering CartoCSS code and be mindful of 
   cartocss-property-name: value;
 }{% endhighlight %}
 
-**Note:** If you are entering CartoCSS syntax for Torque specific properties, all [Torque CartoCSS]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/) syntax is prefaced with a hypen.
+**Note:** If you are entering CartoCSS syntax for Torque specific properties, all [Torque CartoCSS](#cartocss-properties-for-torque-style-maps) syntax is prefaced with a hypen.
 
-**Tip:** See [CartoCSS Best Practices]({{ site.baseurl }}/carto-engine/cartocss/best-practices/) for suggestions about how to structure your CartoCSS syntax.
+**Tip:** See [CartoCSS Best Practices](#cartocss-best-practices) for suggestions about how to structure your CartoCSS syntax.

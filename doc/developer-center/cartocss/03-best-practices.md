@@ -2,7 +2,7 @@
 
 While there are many ways to apply the same visual effects with CartoCSS properties, this section describes the most efficient and intuitive methods for structuring your CartoCSS syntax.
 
-You can apply CartoCSS properties to the overall map style, or to specific map symbolizers (such as markers and points). Sometimes, applying properties to a symbolizer is not the most effective workflow for enhancing your overall map style. Other times, applying a style to the overall map is not rendered if there is no default value defined, and thus, not needed. For example, see how  [composite operations]({{ site.baseurl }}/carto-engine/cartocss/composite-operations/#composite-operation-effects) can be used for color blending, based on style or symbolizer.
+You can apply CartoCSS properties to the overall map style, or to specific map symbolizers (such as markers and points). Sometimes, applying properties to a symbolizer is not the most effective workflow for enhancing your overall map style. Other times, applying a style to the overall map is not rendered if there is no default value defined, and thus, not needed. For example, see how  [composite operations](#composite-operation-effects) can be used for color blending, based on style or symbolizer.
 
 When applying CartoCSS syntax, it helps to understand how values are applied to your map:
 
@@ -152,7 +152,7 @@ Apply the @ symbol to lists of all the color values for your categories. CartoCS
 
 ### Example 4: Multiple Symbolizers for a Map Layer
 
-In some cases, you may need to apply multiple symbolizers to one map layer. For example, a point layer typically contains marker syntax. You can also attach [other compatible symbolizer](https://carto.com/docs/carto-engine/cartocss/properties/#cartocss-symbolizer) properties, to achieve a desired styling effect.
+In some cases, you may need to apply multiple symbolizers to one map layer. For example, a point layer typically contains marker syntax. You can also attach [other compatible symbolizer](#cartocss-symbolizer) properties, to achieve a desired styling effect.
 
 Enter a double-colon symbol :: to indicate a duplicate map layer without actually adding a new layer to your map. This dummy layer created through CartoCSS styling acts as an attachment, enabling you to apply multiple symbolizers to the selected layer.
 

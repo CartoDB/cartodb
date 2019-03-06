@@ -67,8 +67,7 @@ password | Password of the user account.
 
 #### Syncing Connections
 
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by
-applying the `interval` parameter, similar to how you would use other [Sync Tables](/docs/carto-engine/import-api/sync-tables/) for your data.
+If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync_tables/)  for your data.
 
 Param | Description
 --- | ---
@@ -134,7 +133,7 @@ As when importing files, the response returns a success value if the connection 
 }
 ```
 
-The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
+The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_]({{site.importapi_docs}}/guides/standard-tables/#check-the-status-of-an-import-process) documentation.
 
 #### Connect to a SQL Query
 
@@ -361,7 +360,7 @@ disable | SSL will not be be used under any circumstances.
 
 #### Syncing Connections
 
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables](/docs/carto-engine/import-api/sync-tables/) for your data.
+If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
 
 Param | Description
 --- | ---
@@ -425,7 +424,7 @@ As when importing files, the response returns a success value if the connection 
 }
 ```
 
-The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
+The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_]({{site.importapi_docs}}/guides/standard-tables/#check-the-status-of-an-import-process) documentation.
 
 #### Connect to a SQL Query
 
@@ -639,7 +638,7 @@ password | Password of the user account.
 
 #### Syncing Connections
 
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables](/docs/carto-engine/import-api/sync-tables/) for your data.
+If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
 
 Param | Description
 --- | ---
@@ -703,7 +702,7 @@ As when importing files, the response returns a success value if the connection 
 }
 ```
 
-The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
+The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_]({{site.importapi_docs}}/guides/standard-tables/#check-the-status-of-an-import-process) documentation.
 
 #### Connect to a SQL Query
 
@@ -918,7 +917,7 @@ password | Password of the user account.
 
 #### Syncing Connections
 
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables](/docs/carto-engine/import-api/sync-tables/) for your data.
+If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
 
 Param | Description
 --- | ---
@@ -982,7 +981,7 @@ As when importing files, the response returns a success value if the connection 
 }
 ```
 
-The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_](/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) documentation.
+The `item_queue_id` value is a unique identifier that references the connection process. Once this process has started, its status can be obtained by making a request to the imports endpoint, as described in [_Check the status of an import process_]({{site.importapi_docs}}/guides/standard-tables/#check-the-status-of-an-import-process) documentation.
 
 #### Connect to a SQL Query
 

@@ -38,9 +38,9 @@ text-comp-op: screen;
 
 The following CartoCSS properties can be used as a blending effect on a map layer. Alternatively, these properties can be applied to invoke a composite operation effect on a particular symbolizer. For details, see [Effects of Composite Operations](#effects-of-composite-operations). Click a link to view the CartoCSS property description.
 
-[line-comp-op](/docs/carto-engine/cartocss/properties/#line-comp-op-keyword) | [line-pattern-comp-op](https://carto.com/docs/carto-engine/cartocss/properties/#line-pattern-comp-op-keyword)| [marker-comp-op](/docs/carto-engine/cartocss/properties/#marker-comp-op-keyword)
-[point-comp-op](/docs/carto-engine/cartocss/properties/#point-comp-op-keyword) | [polygon-comp-op](/docs/carto-engine/cartocss/properties/#polygon-comp-op-keyword) | [polygon-pattern-comp-op](/docs/carto-engine/cartocss/properties/#polygon-pattern-comp-op-keyword)
-[raster-comp-op](/docs/carto-engine/cartocss/properties/#raster-comp-op-keyword) | [shield-comp-op](/docs/carto-engine/cartocss/properties/#shield-comp-op-keyword) | [text-comp-op](/docs/carto-engine/cartocss/properties//#text-comp-op-keyword)
+[line-comp-op](#line-comp-op-keyword) | [line-pattern-comp-op](#line-pattern-comp-op-keyword)| [marker-comp-op](#marker-comp-op-keyword)
+[point-comp-op](#point-comp-op-keyword) | [polygon-comp-op](#polygon-comp-op-keyword) | [polygon-pattern-comp-op](#polygon-pattern-comp-op-keyword)
+[raster-comp-op](#raster-comp-op-keyword) | [shield-comp-op](#shield-comp-op-keyword) | [text-comp-op](/#text-comp-op-keyword)
 
 ### Color Blending Values
 
@@ -303,7 +303,7 @@ marker-comp-op: invert-rgb;
 
 The following alpha blending values can be applied with the `comp-op` property and combine different levels of source transparency with destination layers. These are useful for masking parts of one layer with another. They use the shape of the layer to show or hide the rest of the rendered map, as opposed to altering the color of a layer.
 
-**Tip:** Alpha values are useful when applying the `comp-op` property to the overall map style [effect]({{ site.baseurl }}/carto-engine/cartocss/composite-operations/#composite-operation-effects). As an additional resource for working with alpha composition methods, see [Duff-Porter Alpha Composition Methods](http://www.imagemagick.org/Usage/compose/#duff-porter).
+**Tip:** Alpha values are useful when applying the `comp-op` property to the overall map style [effect](#composite-operation-effects). As an additional resource for working with alpha composition methods, see [Duff-Porter Alpha Composition Methods](http://www.imagemagick.org/Usage/compose/#duff-porter).
 
 [src](#src) | [dst](#dst) | [src-over](#src-over)
 [dst-over](#dst-over) | [src-in](#src-in) | [dst-in](#dst-in)

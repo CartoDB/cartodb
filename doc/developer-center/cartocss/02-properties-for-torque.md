@@ -2,24 +2,24 @@
 
 While you can use _most_ of the CartoCSS properties to customize Torque maps, CARTO provides additional CartoCSS properties that are specific for Torque style maps. You can add these CartoCSS properties to [Torque](#cartocss---torque-maps), [Torque Heatmaps](#cartocss---torque-heatmaps), and [Torque Category](#cartocss---torque-category-maps) maps. 
 
-_**Note:** For a reference of the CartoCSS properties that are currently supported with Torque, see the [torque-reference.json file](https://github.com/CartoDB/torque-reference/blob/master/1.0.0/reference.json)._
+**Note:** For a reference of the CartoCSS properties that are currently supported with Torque, see the [torque-reference.json file](https://github.com/CartoDB/torque-reference/blob/master/1.0.0/reference.json).
 
 ### CartoCSS - Torque Maps
 
 The following CartoCSS properties can be applied to Torque style maps. Note that some values vary, depending on the type of Torque map you are creating.
 
-[-torque-frame-count](#torque-frame-count-number) | [-torque-animation-duration](#torque-animation-duration-number) | [-torque-time-attribute](#torque-time-attribute-string)
-[-torque-aggregation-function](#torque-aggregation-function-keyword) | [-torque-resolution](#torque-resolution-float) | [-torque-data-aggregation](#torque-data-aggregation-keyword) 
+[-torque-frame-count](#-torque-frame-count-number) | [-torque-animation-duration](#-torque-animation-duration-number) | [-torque-time-attribute](#-torque-time-attribute-string)
+[-torque-aggregation-function](#-torque-aggregation-function-keyword) | [-torque-resolution](#-torque-resolution-float) | [-torque-data-aggregation](#-torque-data-aggregation-keyword) 
 [frame-offset](#frame-offset-number) | 
 
-_**Note:** All Torque CartoCSS syntax is prefaced with a hypen._
+**Note:** All Torque CartoCSS syntax is prefaced with a hypen.
 
 #### -torque-frame-count `number`
 
 Description | Specifies the number of animation steps/frames in your torque animation.
 Sample CartoCSS Code | `-torque-frame-count:128;`
 Default Value | 128, the data is broken into 128 time frames when parsing CartoCSS. If the data contains a fewer number of total frames, a lessor value is used.
-Available Values | See [numbers]({{ site.baseurl }}/carto-engine/cartocss/properties/#numbers).
+Available Values | See [numbers](#numbers).
 
 **Tip:** In the CARTO Builder, this is the _STEPS_ value when the style is ANIMATED.
 
@@ -28,7 +28,7 @@ Available Values | See [numbers]({{ site.baseurl }}/carto-engine/cartocss/proper
 Description | Specifies the length of time for your animation, in seconds.
 Sample CartoCSS Code | `-torque-animation-duration:30;`
 Default Value | undefined. Any positive number value is accepted.
-Available Values | See [numbers]({{ site.baseurl }}/carto-engine/cartocss/properties/#numbers). _This can also be a decimal - see [float]({{ site.baseurl }}/carto-engine/cartocss/properties/#float)._
+Available Values | See [numbers](#numbers). _This can also be a decimal - see [float](#float)._
 
 **Tip:** In the CARTO Builder, this is the _DURATION_ value when the style is ANIMATED.
 
@@ -37,13 +37,13 @@ Available Values | See [numbers]({{ site.baseurl }}/carto-engine/cartocss/proper
 Description | Defines the name of the date column in your dataset. This column can be an integer *or* a date.
 Sample CartoCSS Code | `-torque-time-attribute:"cartodb_id";`
 Default Value | undefined
-Available Values | See [string]({{ site.baseurl }}/carto-engine/cartocss/properties/#string).
+Available Values | See [string](#string).
 
 **Tip:** In the CARTO Builder, this is the _COLUMN_ value when the style is ANIMATED.
 
 #### -torque-aggregation-function `keyword`
 
-_**Note:** Please note the different available values that should be applied if you are using a [Torque Category](#cartocss---torque-category-maps) map._
+**Note:** Please note the different available values that should be applied if you are using a [Torque Category](#cartocss---torque-category-maps) map.
 
 Description | Since Torque maps renders data in clusters, this property defines how values are displayed in each cluster of the map. Column data must be numeric. For example, you can define: a maximum value, a count, or the total number of values in each cluster.<br /><br />**Note:** When visualizing Torque style maps, it is required that you normalize your data to show a total count, or a range, of `0`-`255`. For more details, see this description about [statistical normalization](https://books.google.com/books?id=FrUQHIzXK6EC&pg=PT347&lpg=PT347&dq=choropleth+normalization&source=bl&ots=muDZhsb2jT&sig=DbomJnKedQjaKvcQgm_sVqHBt-8&hl=en&sa=X&ved=0CCYQ6AEwAjgKahUKEwje0ee8qaTHAhUCZj4KHRF5CjM#v=onepage&q=choropleth%20normalization&f=false).
 Sample CartoCSS Code | `-torque-aggregation-function: "count(cartodb_id)";`
@@ -80,7 +80,7 @@ Available Values | `linear` `cumulative`
 Description | Once your data is aggregated, you can further customize your Torque animation options by specifying how a pixel is rendered in the frames, after the initial rendering (the explosion effect on a Torque map).
 Sample CartoCSS Code | `[frame-offset=1] { ... }`
 Default Value | undefined, customize the marker options for each `frame-offset` property to add more styling. 
-Available Values | See [numbers]({{ site.baseurl }}/carto-engine/cartocss/properties/#numbers).
+Available Values | See [numbers](#numbers).
 
 **Tip:** In the CARTO Builder, this is the _TRAILS_ value when the style is ANIMATED.
 
@@ -140,15 +140,15 @@ Map {
 
 While any of the [Torque CartoCSS properties](#cartocss---torque-maps) can be applied to a Torque Heatmap, the following CartoCSS properties can also be applied to Torque Heatmaps.
 
-- [image-filters `functions`]({{ site.baseurl }}/carto-engine/cartocss/properties/#image-filters-function), enables you to define the color stop for your heatmap
+- [image-filters `functions`](#image-filters-function), enables you to define the color stop for your heatmap
 
-- [marker-file `uri`]({{ site.baseurl }}/carto-engine/cartocss/properties/#marker-file-uri), when creating a Torque Heatmap with Carto, marker files are automatically provided. You cannot change these options
+- [marker-file `uri`](#marker-file-uri), when creating a Torque Heatmap with Carto, marker files are automatically provided. You cannot change these options
 
-- [marker-fill-opacity `float`]({{ site.baseurl }}/carto-engine/cartocss/properties/#marker-fill-opacity-float)
+- [marker-fill-opacity `float`](#marker-fill-opacity-float)
 
-- [marker-width `expression`]({{ site.baseurl }}/carto-engine/cartocss/properties/#marker-width-expression)
+- [marker-width `expression`](#marker-width-expression)
 
-**Note:** It is a [known issue](http://gis.stackexchange.com/questions/137384/marker-file-for-torque-cartodb) that certain marker properties are not supported when applied to Torque and Torque Category maps. Specifically, when the [marker-file]({{ site.baseurl }}/carto-engine/cartocss/properties/#marker-file-uri) and [marker-fill]({{ site.baseurl }}/carto-engine/cartocss/properties/#marker-fill-color) CartoCSS properties are applied, you cannot color a sprite using the marker-fill value. You must create a sprite per color when applying these properties to Torque map. Optionally, change the map type to a Torque Heatmap as a workaround.
+**Note:** It is a [known issue](http://gis.stackexchange.com/questions/137384/marker-file-for-torque-cartodb) that certain marker properties are not supported when applied to Torque and Torque Category maps. Specifically, when the [marker-file](#marker-file-uri) and [marker-fill](#marker-fill-color) CartoCSS properties are applied, you cannot color a sprite using the marker-fill value. You must create a sprite per color when applying these properties to Torque map. Optionally, change the map type to a Torque Heatmap as a workaround.
 
 The following example displays CartoCSS properties with a Torque Heatmap.
 

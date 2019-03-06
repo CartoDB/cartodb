@@ -26,7 +26,7 @@ The response to this request appears in the following format, where a successful
 }
 ```
 
-The `item_queue_id` value is a unique identifier that references the import process. Once this process has started, its information can be obtained doing a request to the imports endpoint as explained in the ["Check the status of an import process](https://carto.com/docs/carto-engine/import-api/standard-tables/#check-the-status-of-an-import-process) section.
+The `item_queue_id` value is a unique identifier that references the import process. Once this process has started, its information can be obtained doing a request to the imports endpoint as explained in the ["Check the status of an import process]({{site.importapi_docs}}/guides/standard-tables/#check-the-status-of-an-import-process) section.
 
 ### Uploading from a Remote URL
 

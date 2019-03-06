@@ -23,7 +23,7 @@ The following table contains a list of known errors codes and possible solutions
     </tr>
     <tr>
       <td>1002</td>
-      <td>Unsupported file type - Check our <a href="/docs/carto-engine/import-api/importing-geospatial-data/#supported-geospatial-data-formats">list of supported files</a>. See if you can convert your file to one of these file types. If importing from a URL, make sure the remote server is returning the appropriate HTTP Content Type headers for the file type.</td>
+      <td>Unsupported file type - Check our <a href="{{site.importapi_docs}}/guides/importing-geospatial-data/#supported-geospatial-data-formats">list of supported files</a>. See if you can convert your file to one of these file types. If importing from a URL, make sure the remote server is returning the appropriate HTTP Content Type headers for the file type.</td>
     </tr>
     <tr>
       <td>1003</td>
@@ -235,7 +235,7 @@ The following table contains a list of known errors codes and possible solutions
     </tr>
     <tr>
       <td>6670</td>
-      <td>Too many map templates - You reached the limit of Named Map templates. If you are programatically generating these templates, check how to delete them in the <a href="http://docs.carto.com/carto-engine/maps-api/named-maps/#delete">Maps API documentation</a>. Otherwise, contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@carto.com</a>.</td>
+      <td>Too many map templates - You reached the limit of Named Map templates. If you are programatically generating these templates, check how to delete them in the <a href="{{site.mapsapi_docs}}/guides/quickstart/#named-maps">Maps API documentation</a>. Otherwise, contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20many%20concurrent%20imports%20error'>support@carto.com</a>.</td>
     </tr>
     <tr>
       <td>6671</td>

@@ -25,8 +25,8 @@ In addition to customizing the look of your maps using CartoCSS, CARTO provides 
 
 #### Torque CartoCSS Properties
 
-[-torque-frame-count]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-frame-count-number) | [-torque-animation-duration]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-animation-duration-number) | [-torque-time-attribute]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-time-attribute-string)
--[torque-aggregation-function]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-aggregation-function-keyword) | [-torque-resolution]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-resolution-float) | [-torque-data-aggregation]({{ site.baseurl }}/carto-engine/cartocss/properties-for-torque/#torque-data-aggregation-keyword)
+[-torque-frame-count](#-torque-frame-count-number) | [-torque-animation-duration](#-torque-animation-duration-number) | [-torque-time-attribute](#-torque-time-attribute-string)
+-[torque-aggregation-function]({#-torque-aggregation-function-keyword) | [-torque-resolution](#-torque-resolution-float) | [-torque-data-aggregation](#-torque-data-aggregation-keyword)
 
 
 ### Common Elements
@@ -41,9 +41,9 @@ Description | The composite operation define how a layer behaves, relative to th
 Sample CartoCSS Code | `comp-op: src-over;`
 Default Value | `src-over`, adds the current layer on top of other layers.
 Available Values | `clear` `src` `dst` `src-over` `dst-over` `src-in` `dst-in` `src-out` `dst-out` `src-atop` `dst-atop` `xor` `plus` `minus` `multiply` `screen` `overlay` `darken` `lighten` `color-dodge` `color-burn` `hard-light` `soft-light` `difference` `exclusion` `contrast` `invert` `invert-rgb` `grain-merge` `grain-extract` `hue` `saturation` `color` `value`
-Related Example | See [CartoCSS Composite Operations]({{ site.baseurl }}/carto-engine/cartocss/composite-operations/) for a description of composite operation effects.
+Related Example | See [CartoCSS Composite Operations](#cartocss-composite-operations) for a description of composite operation effects.
 
-**Note:** The `comp-op` value can be applied as an overall style effect, or it can be applied to the specific symbolizer property, depending on the color blending (or alpha blending) operation that you are trying to achieve. For details, see [Composite Operation Effects]({{ site.baseurl }}/carto-engine/cartocss/composite-operations/#composite-operation-effects).
+**Note:** The `comp-op` value can be applied as an overall style effect, or it can be applied to the specific symbolizer property, depending on the color blending (or alpha blending) operation that you are trying to achieve. For details, see [Composite Operation Effects](#effects-of-composite-operations).
 
 #### image-filters `function`
 
@@ -75,7 +75,7 @@ Sample CartoCSS Code | `background-image: url(imageurl);`
 Default Value | This parameter is not applied by default. The default background image is transparent.
 Available Values | See [uri](#uri).
 
-**Note:** The `background-image-uri` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** The `background-image-uri` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-js/), not with the CARTO Editor.
 
 #### background-image-comp-op `keyword`
 
@@ -84,7 +84,7 @@ Sample CartoCSS Code | `background-image-comp-op keyword`
 Default Value | `src-over`, the background image is placed on top of any existing `background-image`.
 Available Values | `clear` `src` `dst` `src-over` `dst-over` `src-in` `dst-in` `src-out` `dst-out` `src-atop` `dst-atop` `xor` `plus` `minus` `multiply` `screen` `overlay` `darken` `lighten` `color-dodge` `color-burn` `hard-light` `soft-light` `difference` `exclusion` `contrast` `invert` `invert-rgb` `grain-merge` `grain-extract` `hue` `saturation` `color` `value`
 
-**Note:** The `background-image-comp-op` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** The `background-image-comp-op` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-js/), not with the CARTO Editor.
 
 #### background-image-opacity `float`
 
@@ -93,7 +93,7 @@ Sample CartoCSS Code | `background-image-opacity: 1;`
 Default Value | `1`, indicates that the image opacity will not be changed when applied to the map background).
 Available Values | See [float](#float).
 
-_**Note:** The `background-image-opacity-float` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor._
+_**Note:** The `background-image-opacity-float` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-js/), not with the CARTO Editor._
 
 #### buffer-size `float`
 
@@ -157,7 +157,7 @@ Sample CartoCSS Code | `polygon-simplify: 0;`
 Default Value | `0`, geometry is  not simplified.
 Available Values | See [float](#float).
 
-**Note:** The `polygon-simplify-float` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** The `polygon-simplify-float` CartoCSS property is only supported when using the [Maps API]({{ site.baseurl }}/maps-api/) with [carto.js]({{ site.baseurl }}/carto-js/), not with the CARTO Editor.
 
 #### polygon-simplify-algorithm `keyword`
 
@@ -928,7 +928,7 @@ These CartoCSS properties can be applied to raster (grid) data layers on a map.
 [raster-mesh-size](#raster-mesh-size-unsigned) | [raster-comp-op](#raster-comp-op-keyword) | [raster-colorizer-default-mode](#raster-colorizer-default-mode-keyword)
 [raster-colorizer-default-color](#raster-colorizer-default-color-color) | [raster-colorizer-epsilon](#raster-colorizer-epsilon-float) | [raster-colorizer-stops](#raster-colorizer-stops-tags)
 
-**Note:** Raster CartoCSS symbolizer properties are only supported when using the [Maps API]({{ site.baseurl }}/carto-engine/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-engine/carto-js/), not with the CARTO Editor.
+**Note:** Raster CartoCSS symbolizer properties are only supported when using the [Maps API]({{ site.baseurl }}/maps-api/) with [Carto.js]({{ site.baseurl }}/carto-js/), not with the CARTO Editor.
 
 #### raster-opacity `float`
 

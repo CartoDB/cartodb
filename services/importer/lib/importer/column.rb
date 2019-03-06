@@ -38,7 +38,7 @@ module CartoDB
       def initialize(db, table_name, column_name, user, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
         @db           = db
-        @table_name   = table_name.to_sym
+        @table_name   = table_name
         @column_name  = column_name.to_sym
         @schema       = schema
         @capture_exceptions = capture_exceptions

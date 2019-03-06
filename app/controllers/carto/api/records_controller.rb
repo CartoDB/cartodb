@@ -59,7 +59,7 @@ module Carto
 
         current_user.in_database
                     .select
-                    .from(Sequel.qualify(schema_name.to_sym, @user_table.service.name.to_sym)
+                    .from(Sequel.qualify(schema_name.to_sym, @user_table.service.name.to_sym))
                     .where(cartodb_id: id)
                     .delete
 

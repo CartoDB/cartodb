@@ -61,10 +61,6 @@ gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 
-# Geocoder (synchronizer doesn't needs it anymore)
-gem 'eventmachine',            '1.0.4'
-gem 'em-pg-client',            '0.2.1'
-
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
 gem 'uuidtools',                '2.1.5'

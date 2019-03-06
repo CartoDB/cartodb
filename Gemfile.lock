@@ -124,9 +124,6 @@ GEM
       faraday (~> 0.9, ~> 0.8)
       oauth2 (~> 1.1)
     ejs (1.1.1)
-    em-pg-client (0.2.1)
-      eventmachine (>= 0.12.10)
-      pg (>= 0.13.2)
     equalizer (0.0.11)
     erubis (2.7.0)
     ethon (0.8.1)
@@ -229,7 +226,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     os (0.9.6)
-    pg (0.15.0)
+    pg (0.20.0)
     poltergeist (1.0.3)
       capybara (~> 1.1)
       childprocess (~> 0.3)
@@ -332,15 +329,15 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sequel (3.44.0)
-    sequel-rails (0.9.15)
-      actionpack (>= 3.2.0)
-      activemodel
-      railties (>= 3.2.0)
-      sequel (>= 3.28, < 5.0)
-    sequel_pg (1.6.3)
-      pg (>= 0.8.0)
-      sequel (>= 3.39.0)
+    sequel (4.45.0)
+    sequel-rails (1.0.1)
+      actionpack (>= 4.0.0)
+      activemodel (>= 4.0.0)
+      railties (>= 4.0.0)
+      sequel (>= 3.28, < 6.0)
+    sequel_pg (1.12.0)
+      pg (>= 0.18.0)
+      sequel (>= 4.38.0)
     signet (0.11.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -436,8 +433,6 @@ DEPENDENCIES
   delorean
   dropbox_api (= 0.1.6)
   ejs (~> 1.1.1)
-  em-pg-client (= 0.2.1)
-  eventmachine (= 1.0.4)
   execjs (~> 0.4)
   factory_girl_rails (~> 4.0.0)
   fake_net_ldap!
@@ -457,7 +452,7 @@ DEPENDENCIES
   nokogiri (~> 1.8.2)
   oauth (= 0.4.7)
   oauth-plugin!
-  pg (= 0.15.0)
+  pg (= 0.20.0)
   poltergeist (>= 1.0.0)
   protected_attributes
   rack
@@ -482,9 +477,9 @@ DEPENDENCIES
   ruby-prof (= 0.15.1)
   ruby-saml (= 1.4.1)
   selenium-webdriver (>= 2.5.0)
-  sequel (= 3.44.0)
-  sequel-rails (= 0.9.15)
-  sequel_pg (= 1.6.3)
+  sequel (~> 4.45.0)
+  sequel-rails (~> 1.0.1)
+  sequel_pg (~> 1.12.0)
   simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
@@ -502,4 +497,4 @@ DEPENDENCIES
   zeus
 
 BUNDLED WITH
-   1.17.1
+   1.17.3

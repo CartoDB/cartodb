@@ -119,7 +119,7 @@ module CartoDB
         }
         payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
         payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
-        if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].kind_of?(Integer) \
+        if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].is_a?(Integer) \
            && params[PARAM_MAXRESULTS] >= MIN_PAGE_RESULTS && params[PARAM_MAXRESULTS] <= MAX_PAGE_RESULTS
         payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
         end

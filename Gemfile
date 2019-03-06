@@ -3,8 +3,11 @@ source 'http://rubygems.org'
 gem 'rails',                   '4.2.11'
 
 gem 'rake',                    '0.9.2.2'
+
+# PostgreSQL
 gem 'pg',                      '0.20.0'
 gem 'sequel',                  '~> 4.45.0'
+gem 'sequel-rails', '~> 1.0.1'
 gem 'sequel_pg',               '~> 1.12.0', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
@@ -12,15 +15,15 @@ gem 'activerecord-postgresql-adapter'
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
-gem 'sequel-rails', '~> 1.0.1'
-
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.7'
 gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 
-gem 'redis',                   '~> 3.3.5'
+# Redis
 gem 'hiredis',                 '~> 0.6.1'
+gem 'redis',                   '~> 3.3.5'
+
 gem 'nokogiri',                '~> 1.8.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-s3',              '~> 1'

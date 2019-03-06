@@ -87,7 +87,7 @@ describe Organization do
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
+      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 3, viewer_seats: 2).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)

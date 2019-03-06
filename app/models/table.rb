@@ -1009,7 +1009,7 @@ class Table
   def data_last_modified
     owner.in_database.select(:updated_at)
                      .from(:cdb_tablemetadata.qualify(:cartodb))
-                     .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+                     .where(tabname: Sequel.lit("'#{self.name}'::regclass")).first[:updated_at]
   rescue
     nil
   end

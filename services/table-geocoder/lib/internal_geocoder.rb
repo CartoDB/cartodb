@@ -118,7 +118,7 @@ module CartoDB
 
       def load_results_to_temp_table
         log.append_and_store 'load_results_to_temp_table()'
-        connection.copy_into(temp_table_name.lit, data: File.read(geocoding_results), format: :csv)
+        connection.copy_into(Sequel.lit(temp_table_name), data: File.read(geocoding_results), format: :csv)
       end # load_results_to_temp_table
 
       def copy_results_to_table

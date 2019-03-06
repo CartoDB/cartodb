@@ -8,7 +8,7 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
       <ul class="grid quota-list">
         <li class="grid-cell grid-cell--col12 quota-listitem">
           <quotacontainer-stub title="QuotaSection.disk">
-            <quotawidget-stub name="QuotaSection.storage" availablequota="1024" usedquota="6.78125" unit="MB" helplink="https://carto.com/help/your-account/your-data-services-credits/"></quotawidget-stub>
+            <quotawidget-stub name="QuotaSection.storage" availablequota="1024" usedquota="6.78125" unit="MB" helplink="https://carto.com/help/your-account/your-disk-storage/"></quotawidget-stub>
           </quotacontainer-stub>
         </li>
         <li class="grid-cell grid-cell--col12 quota-listitem">

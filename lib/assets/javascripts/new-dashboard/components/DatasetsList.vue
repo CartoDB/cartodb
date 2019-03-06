@@ -123,7 +123,8 @@ export default {
   data () {
     return {
       isScrollPastHeader: false,
-      selectedDatasets: []
+      selectedDatasets: [],
+      lastCheckedItem: null
     };
   },
   created: function () {
@@ -193,6 +194,7 @@ export default {
       }
 
       if (isSelected) {
+        this.lastCheckedItem = dataset;
         this.selectedDatasets.push(dataset);
         return;
       }
@@ -201,7 +203,7 @@ export default {
     },
     doShiftClick (dataset) {
       const datasetsArray = [...Object.values(this.datasets)];
-      this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset);
+      this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset, this.lastCheckedItem);
     },
     selectAll () {
       this.selectedDatasets = [...Object.values(this.$store.state.datasets.list)];

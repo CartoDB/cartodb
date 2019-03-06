@@ -683,7 +683,7 @@ class Table
     update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
-    if e.message =~ /^(PG::Error|PGError)/
+    if e.message =~ /^(PG::Error|PGError|PG::UndefinedObject)/
       raise CartoDB::InvalidType, e.message
     else
       raise e

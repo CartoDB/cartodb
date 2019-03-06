@@ -71,7 +71,7 @@ export default {
       return format(new Date(this.billingPeriod), 'Do');
     },
     storageHelpLink () {
-      return 'https://carto.com/help/your-account/your-data-services-credits/';
+      return 'https://carto.com/help/your-account/your-disk-storage/';
     },
     geocodingHelpLink () {
       return 'https://carto.com/help/working-with-data/geocoding/';

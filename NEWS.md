@@ -21,6 +21,7 @@ Development
 - Fix .carto not creating a map in old dashboard ([#14713](https://github.com/CartoDB/cartodb/pull/14713))
 - Remove patches for Rails 3 and ruby 2.4 not longer needed [#14667](https://github.com/CartoDB/cartodb/pull/14667)
 - Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
+- Scroll fixes ([#14704](https://github.com/CartoDB/cartodb/issues/14704), [#14703](https://github.com/CartoDB/cartodb/issues/14703))
 
 4.25.2 (2019-02-25)
 -------------------

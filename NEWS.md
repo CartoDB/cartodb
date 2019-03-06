@@ -20,6 +20,7 @@ Development
 - Bulk actions in datasets and maps revised and fixed ([#14700](https://github.com/CartoDB/cartodb/pull/14700))
 - Fix .carto not creating a map in old dashboard ([#14713](https://github.com/CartoDB/cartodb/pull/14713))
 - Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
+- Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
 
 4.25.2 (2019-02-25)
 -------------------

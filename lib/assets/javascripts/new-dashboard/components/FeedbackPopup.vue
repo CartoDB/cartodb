@@ -1,5 +1,5 @@
 <template>
-  <a class="feedback" href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank">
+  <a class="feedback" href="javascript:void(0)" @click.stop.prevent="handleClick">
     <div class="feedback__icon"></div>
 
     <div class="feedback__message">
@@ -26,6 +26,9 @@ export default {
   methods: {
     markFeedbackPopupAsOpened () {
       window.localStorage.setItem('carto.feedback.popupWasShown', JSON.stringify(true));
+    },
+    handleClick () {
+      this.$emit('feedbackClick');
     }
   }
 };
@@ -39,7 +42,8 @@ export default {
   width: 320px;
   padding: 16px;
   border-radius: 4px;
-  background-color: #00D851;
+  background-color: $white;
+  box-shadow: 0 4px 12px 0 #C8D2DA;
 
   &:hover {
     text-decoration: none;
@@ -55,7 +59,7 @@ export default {
     transform: rotate(45deg) translateX(-50%);
     transform-origin: center center;
     border-radius: 4px;
-    background-color: #00D851;
+    background-color: $white;
   }
 }
 
@@ -72,7 +76,7 @@ export default {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: $white;
+    background: $primary-color;
   }
 
   &::after {
@@ -90,7 +94,7 @@ export default {
 
 .feedback__message {
   flex: 1;
-  color: $white;
+  color: #000;
 }
 
 .feedback__paragraph {

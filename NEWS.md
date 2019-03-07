@@ -25,6 +25,7 @@ Development
 - Scroll fixes ([#14704](https://github.com/CartoDB/cartodb/issues/14704), [#14703](https://github.com/CartoDB/cartodb/issues/14703))
 - Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
 - Improve shift and click behavior ([CartoDB/product#278](https://github.com/CartoDB/product/issues/278))
+- Improve feedback popup ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
 
 4.25.2 (2019-02-25)
 -------------------

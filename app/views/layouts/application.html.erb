@@ -16,12 +16,7 @@
   <body>
     <%= insert_google_tag_manager_no_script('primary') %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <% if current_user.has_feature_flag?('new-dashboard-feature') %>
-        <%= render 'admin/shared/new_private_header' %>
-      <% else %>
-        <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
-        <%= render 'admin/shared/private_header' , :breadcrumb => breadcrumb %>
-      <% end %>
+      <%= render 'admin/shared/new_private_header' %>
 
       <% if current_user.notification.present? %>
         <div class="CDB-Text FlashMessage">
@@ -29,10 +24,6 @@
             <p class="FlashMessage-info"><%= raw current_user.notification %></p>
           </div>
         </div>
-      <% end %>
-
-      <% if !current_user.has_feature_flag?('new-dashboard-feature') %>
-        <%= render 'admin/shared/trial_notification' %>
       <% end %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
@@ -45,9 +36,7 @@
 
     <%= insert_trackjs() -%>
     <%= yield :js -%>
-    <% if current_user.has_feature_flag?('new-dashboard-feature') %>
-      <%= javascript_include_tag 'header', 'footer' %>
-    <% end %>
+    <%= javascript_include_tag 'header', 'footer' %>
     <%= insert_google_analytics('primary') -%>
     <%= insert_hubspot() -%>
     <%= render 'admin/shared/intercom' %>

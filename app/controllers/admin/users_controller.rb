@@ -37,6 +37,6 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def check_new_dashboard
-    current_user.builder_enabled? && current_user.has_feature_flag?('new-dashboard-feature')
+    current_user.builder_enabled?
   end
 end

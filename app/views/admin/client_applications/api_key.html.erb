@@ -12,12 +12,8 @@
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
 
-  <% if @has_engine_enabled || current_user.has_feature_flag?('new-dashboard-feature') %>
-    <%= javascript_include_tag 'common', 'common_vendor' %>
-  <% end %>
-
   <% if @has_engine_enabled %>
-    <%= javascript_include_tag 'api_keys_new' %>
+    <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
   <% end %>
 <% end %>
 
@@ -48,8 +44,4 @@
 
 </div>
 
-<% if current_user.has_feature_flag?('new-dashboard-feature') %>
-  <%= render 'admin/shared/new_private_footer' %>
-<% else %>
-  <%= render 'admin/shared/footer' %>
-<% end %>
+<%= render 'admin/shared/new_private_footer' %>

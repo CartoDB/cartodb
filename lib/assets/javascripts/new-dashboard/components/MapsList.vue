@@ -131,7 +131,8 @@ export default {
       selectedMaps: [],
       cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
       condensedCSSClasses: 'card-condensed',
-      isCondensed: this.isCondensedDefault
+      isCondensed: this.isCondensedDefault,
+      lastCheckedItem: null
     };
   },
   created: function () {
@@ -201,12 +202,13 @@ export default {
       this.$emit('applyOrder', orderParams);
     },
     toggleSelected ({ map, isSelected, event }) {
-      if (event.shiftKey) {
+      if (this.selectedMaps.length && event.shiftKey) {
         this.doShiftClick(map);
         return;
       }
 
       if (isSelected) {
+        this.lastCheckedItem = map;
         this.selectedMaps.push(map);
         return;
       }
@@ -215,7 +217,7 @@ export default {
     },
     doShiftClick (map) {
       const mapsArray = [...Object.values(this.maps)];
-      this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+      this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map, this.lastCheckedItem || map);
     },
     selectAll () {
       this.selectedMaps = [...Object.values(this.$store.state.maps.list)];

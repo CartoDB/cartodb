@@ -9,6 +9,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 - Fix storage link [#14723](https://github.com/CartoDB/cartodb/pull/14723)
 - Upgrade googleapis gem to 0.28 in order to make it compatible with ruby 2.4.5 [#14683](https://github.com/CartoDB/cartodb/pull/14683)
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))

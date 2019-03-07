@@ -35,11 +35,7 @@ export default {
   },
   methods: {
     toggleSelection ($event) {
-      this.$emit('toggleSelection', {
-        map: this.$props.visualization,
-        isSelected: !this.$props.isSelected,
-        event: $event
-      });
+      this.$emit('toggleSelection', $event);
     },
     onContentChanged (type) {
       this.$emit('contentChanged', type);

@@ -9,6 +9,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Fix storage link [#14723](https://github.com/CartoDB/cartodb/pull/14723)
 - Upgrade googleapis gem to 0.28 in order to make it compatible with ruby 2.4.5 [#14683](https://github.com/CartoDB/cartodb/pull/14683)
 - Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
 - Update Dataservices API client default version to `0.26.2` (#14695)
@@ -22,6 +23,8 @@ Development
 - Remove patches for Rails 3 and ruby 2.4 not longer needed [#14667](https://github.com/CartoDB/cartodb/pull/14667)
 - Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
 - Scroll fixes ([#14704](https://github.com/CartoDB/cartodb/issues/14704), [#14703](https://github.com/CartoDB/cartodb/issues/14703))
+- Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
+- Improve shift and click behavior ([CartoDB/product#278](https://github.com/CartoDB/product/issues/278))
 - Add developer center documentation folder to doc [14710](https://github.com/CartoDB/cartodb/pull/14710)
 
 

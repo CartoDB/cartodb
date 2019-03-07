@@ -66,6 +66,7 @@
       border: 1px solid $primary-color;
     }
 
+    &.is-selected,
     &:checked {
       + .checkbox-decoration {
         border: 1px solid $primary-color;

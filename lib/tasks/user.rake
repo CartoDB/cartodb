@@ -80,4 +80,46 @@ namespace :user do
       Carto::Like.where(actor: u.id).delete_all
     end
   end
+
+  namespace :ghost_tables do
+    desc 'Install ghost tables trigger to user'
+    task :install_ghost_tables_trigger => :environment do
+      User.where(organization_id: nil).find_each do |user|
+        install_ghost_tables_trigger(user)
+      end
+
+      Organization.map { |org| install_ghost_tables_trigger(User.find(org.owner_id)) }
+    end
+
+    def install_ghost_tables_trigger(user)
+      if user.nil?
+        raise "ERROR: User #{username} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        raise "ERROR: User #{username} must be an org owner or not to be an organization user"
+      elsif @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        raise "ERROR: User #{username} have the 'ghost_tables_trigger_disabled' feature flag"
+      else
+        user.db_service.create_ghost_tables_event_trigger
+      end
+    end
+
+    desc 'Drop ghost_tables_trigger to user'
+    task :drop_ghost_tables_trigger => :environment do
+      User.where(organization_id: nil).find_each do |user|
+        drop_ghost_tables_trigger(user)
+      end
+
+      Organization.map { |org| drop_ghost_tables_trigger(User.find(org.owner_id)) }
+    end
+
+    def drop_ghost_tables_trigger(user)
+      if user.nil?
+        raise "ERROR: User #{username} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        raise "ERROR: User #{username} must be an org owner or not to be an organization user"
+      else
+        user.db_service.drop_ghost_tables_event_trigger
+      end
+    end
+  end
 end

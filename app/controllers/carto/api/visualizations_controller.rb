@@ -492,12 +492,12 @@ module Carto
                                                 .with_locked(false)
                                                 .build.size,
           total_shared: VisualizationQueryBuilder.new
-                                                .with_types(total_types)
-                                                .with_shared_with_user_id(current_user.id)
-                                                .with_user_id_not(current_user.id)
-                                                .with_locked(false)
-                                                .with_prefetch_table
-                                                .build.size
+                                                 .with_types(total_types)
+                                                 .with_shared_with_user_id(current_user.id)
+                                                 .with_user_id_not(current_user.id)
+                                                 .with_locked(false)
+                                                 .with_prefetch_table
+                                                 .build.size
         }
       end
     end

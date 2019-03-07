@@ -43,7 +43,7 @@ export default {
   padding: 16px;
   border-radius: 4px;
   background-color: $white;
-  box-shadow: 0 4px 12px 0 #C8D2DA;
+  box-shadow: 0 4px 12px 0 $shadow-color;
 
   &:hover {
     text-decoration: none;
@@ -94,7 +94,7 @@ export default {
 
 .feedback__message {
   flex: 1;
-  color: #000;
+  color: $text-color;
 }
 
 .feedback__paragraph {

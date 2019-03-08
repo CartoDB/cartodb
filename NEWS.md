@@ -26,7 +26,7 @@ Development
 - Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
 - Improve shift and click behavior ([CartoDB/product#278](https://github.com/CartoDB/product/issues/278))
 - Add developer center documentation folder to doc [14710](https://github.com/CartoDB/cartodb/pull/14710)
-
+- Improve feedback popup ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
 
 4.25.2 (2019-02-25)
 -------------------

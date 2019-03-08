@@ -1440,6 +1440,8 @@ module CartoDB
             DROP FUNCTION cartodb.cdb_link_ghost_tables(user_id text);
           })
         end
+      rescue Sequel::DatabaseError => e
+        raise e unless e.message =~ /does not exist/i
       end
 
       private

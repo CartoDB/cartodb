@@ -62,8 +62,7 @@ module CartoDB
       def setup_single_user_schema
         set_user_privileges_at_db
         rebuild_quota_trigger
-        # remove after testing
-        # create_ghost_tables_event_trigger
+        create_ghost_tables_event_trigger
       end
 
       # All methods called inside should allow to be executed multiple times without errors
@@ -79,8 +78,7 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
-          # remove after testing
-          # create_ghost_tables_event_trigger
+          create_ghost_tables_event_trigger
         end
 
         if @user.organization_admin?

@@ -263,10 +263,10 @@ module Carto
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
 
-    it 'TIS job should call ghost manager and work as intended' do
+    it 'perform a successfully ghost tables execution when is called from LinkGhostTablesByUsername' do
       Carto::GhostTablesManager.expects(:new).with(@user.id).returns(@ghost_tables_manager).once
       @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
-      ::Resque::UserDBJobs::UserDBMaintenance::TISGhostTables.perform(@user.username)
+      ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername.perform(@user.username)
     end
 
   end

@@ -189,16 +189,16 @@ export default {
 .card {
   position: relative;
   height: 100%;
-  background-color: $white;
-  background-clip: padding-box;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid $light-grey;
   border-radius: 2px;
-  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  background-clip: padding-box;
+  background-color: $white;
 
   &:hover {
-    cursor: pointer;
     border-color: transparent;
     box-shadow: $card__shadow;
+    cursor: pointer;
 
     &:not(.card--child-hover) {
       .card-title {

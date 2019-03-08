@@ -36,9 +36,10 @@ export default {
   display: block;
   position: relative;
   width: 100%;
-  padding: 16px 16px 16px 36px;
+  padding: 12px 16px 12px 36px;
   overflow: hidden;
-  color: $text-color;
+  border-bottom: 1px solid $softblue;
+  color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -61,8 +62,7 @@ export default {
 .suggestions--active {
   .suggestions__item {
     background-color: rgba($primary-color, 0.05);
-    color: $primary-color;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 

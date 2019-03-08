@@ -1348,7 +1348,6 @@ module CartoDB
 
       def drop_ghost_tables_event_trigger
         @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
-        end
       rescue Sequel::DatabaseError => e
         raise e unless e.message =~ /does not exist/i
       end

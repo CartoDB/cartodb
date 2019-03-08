@@ -12,7 +12,6 @@ $dark-blue: #003267;
 $alert: rgba(226, 7, 3, 1);
 $info: rgba(255, 195, 0, 0.48);
 $notification: #74FFA8;
-$shadow-color: #C8D2DA;
 
 //Progress bar colors
 $good-state: #72EEA8;
@@ -22,3 +21,6 @@ $error-state: #FA1414;
 //Dimensions
 $layout-tablet: 800px;
 $layout-mobile: 600px;
+
+$dropdown__shadow-color: rgba(0, 0, 0, 0.16);
+$dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;

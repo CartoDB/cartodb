@@ -43,7 +43,7 @@ export default {
   padding: 16px;
   border-radius: 4px;
   background-color: $white;
-  box-shadow: 0 4px 12px 0 $shadow-color;
+  box-shadow: $dropdown__shadow;
 
   &:hover {
     text-decoration: none;

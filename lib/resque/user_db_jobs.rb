@@ -18,6 +18,19 @@ module Resque
         end
       end
 
+      module TISGhostTables
+        extend ::Resque::Metrics
+        @queue = :user_dbs
+
+        def self.perform(username)
+          user = Carto::User.find_by_username(username)
+          Carto::GhostTablesManager.new(user.id).link_ghost_tables_synchronously
+        rescue => e
+          CartoDB.notify_exception(e)
+          raise e
+        end
+      end
+
       module AutoIndexTable
         @queue = :user_dbs
 

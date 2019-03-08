@@ -262,5 +262,12 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
+
+    it 'TIS job should call ghost manager and work as intended' do
+      Carto::GhostTablesManager.expects(:new).with(@user.id).returns(@ghost_tables_manager).once
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      ::Resque::UserDBJobs::UserDBMaintenance::TISGhostTables.perform(@user.username)
+    end
+
   end
 end

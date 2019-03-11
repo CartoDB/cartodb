@@ -17,7 +17,7 @@ module Carto
       is_locked = get_lock()
 
       begin
-        while true
+        loop do
           yield if (is_locked || force_block_execution)
           set_retry_after_finish(is_locked)
           break unless retriable && retry?

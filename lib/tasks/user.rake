@@ -82,16 +82,17 @@ namespace :user do
   end
 
   namespace :ghost_tables do
-    desc 'Install ghost tables trigger to user'
+    desc 'Install ghost tables trigger to all the organizations owners and regular users'
     task :install_ghost_tables_trigger => :environment do
       Carto::User.where(organization_id: nil).find_each do |user|
-        install_ghost_tables_trigger(::User.find(id: user.id))
+        install_ghost_tables_trigger(user.id)
       end
 
-      Organization.map { |org| install_ghost_tables_trigger(::User.find(id: org.owner_id)) }
+      Organization.each { |org| install_ghost_tables_trigger(org.owner_id) }
     end
 
-    def install_ghost_tables_trigger(user)
+    def install_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
       if user.nil?
         raise "ERROR: User #{username} does not exist"
       elsif user.organization_user? && !user.organization_owner?
@@ -103,16 +104,17 @@ namespace :user do
       end
     end
 
-    desc 'Drop ghost_tables_trigger to user'
+    desc 'Drop ghost_tables_trigger to all the organizations owners and regular users'
     task :drop_ghost_tables_trigger => :environment do
       Carto::User.where(organization_id: nil).find_each do |user|
-        drop_ghost_tables_trigger(::User.find(id: user.id))
+        drop_ghost_tables_trigger(user.id)
       end
 
-      Organization.map { |org| drop_ghost_tables_trigger(::User.find(id: org.owner_id)) }
+      Organization.each { |org| drop_ghost_tables_trigger(org.owner_id) }
     end
 
-    def drop_ghost_tables_trigger(user)
+    def drop_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
       if user.nil?
         raise "ERROR: User #{username} does not exist"
       elsif user.organization_user? && !user.organization_owner?

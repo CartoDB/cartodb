@@ -8,25 +8,6 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- Fix storage link [#14723](https://github.com/CartoDB/cartodb/pull/14723)
-- Upgrade googleapis gem to 0.28 in order to make it compatible with ruby 2.4.5 [#14683](https://github.com/CartoDB/cartodb/pull/14683)
-- Setup TrackJS and Google Tag Manager in New Dashboard ([#14693](https://github.com/CartoDB/cartodb/pull/14693))
-- Update Dataservices API client default version to `0.26.2` (#14695)
-- Fix dataset search with dependent visualizations ([CartoDB/product#267](https://github.com/CartoDB/product/issues/267)))
-- Fix Lockout page ([product#261](https://github.com/CartoDB/product/issues/261))
-- Use .toLocaleDateString() to format date in notification page ([#14707](https://github.com/CartoDB/cartodb/pull/14707))
-- Fix likes feature in Search Page ([#14709](https://github.com/CartoDB/cartodb/pull/14709))
-- Adapt current dashboard's request interceptor ([#14489](https://github.com/CartoDB/cartodb/issues/14489))
-- Bulk actions in datasets and maps revised and fixed ([#14700](https://github.com/CartoDB/cartodb/pull/14700))
-- Fix .carto not creating a map in old dashboard ([#14713](https://github.com/CartoDB/cartodb/pull/14713))
-- Remove patches for Rails 3 and ruby 2.4 not longer needed [#14667](https://github.com/CartoDB/cartodb/pull/14667)
-- Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
-- Scroll fixes ([#14704](https://github.com/CartoDB/cartodb/issues/14704), [#14703](https://github.com/CartoDB/cartodb/issues/14703))
-- Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
-- Improve shift and click behavior ([CartoDB/product#278](https://github.com/CartoDB/product/issues/278))
-- Add new Ghost tables resque task with username as parameter([#14731](https://github.com/CartoDB/cartodb/pull/14731))
-- Add developer center documentation folder to doc [14710](https://github.com/CartoDB/cartodb/pull/14710)
-- Improve feedback popup ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
 - Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 

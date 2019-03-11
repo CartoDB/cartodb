@@ -331,8 +331,8 @@ describe Carto::Api::VisualizationsController do
       expected_response = {
         'visualizations' => [],
         'total_entries' => 0,
-        'total_user_entries' => 0,
         'total_likes' => 0,
+        'total_user_entries' => 0,
         'total_shared' => 0,
         'total_locked' => 0
       }
@@ -365,16 +365,8 @@ describe Carto::Api::VisualizationsController do
       compare_with_dates(response['visualizations'][0], expected_visualization)
       response['total_entries'].should eq 1
       response['total_user_entries'].should eq 1
-      response['total_likes'].should eq 0
       response['total_shared'].should eq 0
       response['total_locked'].should eq 0
-    end
-
-    it 'returns liked count' do
-      vis = FactoryGirl.build(:derived_visualization, user_id: @user_1.id).store
-      vis.add_like_from(@user_1.id)
-
-      response_body(type: CartoDB::Visualization::Member::TYPE_DERIVED)['total_likes'].should == 1
     end
 
     it 'returns locked count' do
@@ -401,6 +393,17 @@ describe Carto::Api::VisualizationsController do
       body['total_user_entries'].should == 4
     end
 
+    it 'allows to search datasets including dependent visualizations' do
+      FactoryGirl.create(:table_visualization, user_id: @user_1.id, name: 'foo')
+
+      body = response_body(q: 'foo', type: CartoDB::Visualization::Member::TYPE_CANONICAL,
+                           with_dependent_visualizations: 10)
+
+      body['total_entries'].should == 1
+      body['total_user_entries'].should == 1
+      body['visualizations'][0]['dependent_visualizations_count'].should be_zero
+    end
+
     describe 'performance with many tables' do
       # The bigger the number the better the improvement, but test gets too slow
       VIZS_N = 20
@@ -419,7 +422,6 @@ describe Carto::Api::VisualizationsController do
       }.freeze
 
       NO_FETCHING_PARAMS = {
-        show_likes: false,
         show_liked: false,
         show_stats: false,
         show_table: false,
@@ -711,6 +713,7 @@ describe Carto::Api::VisualizationsController do
       before(:each) do
         @map, @table, @table_visualization, @map_visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: nil, privacy: Carto::Visualization::PRIVACY_PUBLIC })
         @vis = FactoryGirl.create(:carto_visualization, user: @carto_user1)
+        @vis_user2 = FactoryGirl.create(:carto_visualization, user: @carto_user2)
         @user_domain = @carto_user1.username
         @user_domain2 = @carto_user2.username
       end
@@ -719,74 +722,19 @@ describe Carto::Api::VisualizationsController do
         destroy_full_visualization(@map, @table, @table_visualization, @map_visualization)
       end
 
-      describe 'GET likes_count' do
-        it 'returns the number of likes for a given visualization' do
-          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
-
-          @vis.add_like_from(@carto_user1.id)
-
-          get api_v1_visualizations_likes_count_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
-        end
-      end
-
-      describe 'GET likes_list' do
-        it 'returns the likes for a given visualization' do
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes')).to eq([])
-
-          @vis.add_like_from(@carto_user1.id)
-
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @user_1.id}])
-
-          @vis.add_like_from(@carto_user2.id)
-          @vis.remove_like_from(@carto_user1.id)
-
-          get api_v1_visualizations_likes_list_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes')).to eq([{'actor_id' => @carto_user2.id}])
-        end
-      end
-
-      describe 'GET is_liked' do
-        it 'return true when a given user liked a visualization, false otherwise' do
-          @vis.add_like_from(@user_1.id)
-
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('liked')).to be_true
-
-          get api_v1_visualizations_is_liked_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user2.api_key)
-
-          expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('liked')).to be_false
-        end
-      end
-
       describe 'POST add_like' do
         it 'triggers error 403 if not authenticated' do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
           expect(last_response.status).to eq(403)
         end
 
+        it 'triggers error 403 if dont have at least read permission' do
+          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis_user2.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
         it 'add likes to a given visualization' do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
 
           expect(last_response.status).to eq(200)
         end
@@ -799,80 +747,38 @@ describe Carto::Api::VisualizationsController do
           post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
 
           expect(last_response.status).to eq(400)
-          expect(last_response.body).to eq("You've already liked this visualization")
-        end
-
-        it 'sends an email to the owner when a map is liked' do
-          vis = @map_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
-                .returns(true)
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'does not send an email when a map is liked by the owner' do
-          vis = @map_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::MapLiked, vis.id, @carto_user2.id, kind_of(String))
-                .never
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'sends an email to the owner when a dataset is liked' do
-          vis = @table_visualization
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain2, id: vis.id, api_key: @carto_user2.api_key)
-
-          expect(last_response.status).to eq(200)
-        end
-
-        it 'does not send an email when when a dataset is liked by the owner' do
-          vis = @table_visualization
-
-          Resque.expects(:enqueue)
-                .with(::Resque::UserJobs::Mail::TableLiked, vis.id, @carto_user1.id, kind_of(String))
-                .never
-
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: vis.id, api_key: @carto_user1.api_key)
-
-          expect(last_response.status).to eq(200)
+          expect(JSON.parse(last_response.body)['text']).to eq("You've already favorited this visualization")
         end
       end
 
       describe 'POST remove_like' do
         it 'triggers error 403 if not authenticated' do
-          post api_v1_visualizations_add_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: 'foo')
           expect(last_response.status).to eq(403)
         end
 
-        it 'removes a like from a given visualization and returns the number of likes' do
-          @vis.add_like_from(@carto_user1.id)
-          @vis.add_like_from(@carto_user2.id)
+        it 'triggers error 403 if you dont have at least read permission' do
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis_user2.id, api_key: 'foo')
+          expect(last_response.status).to eq(403)
+        end
+
+        it 'removes a like from a given visualization' do
+          @vis.add_like_from(@carto_user1)
 
           delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
 
           expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(1)
 
-          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain2, id: @vis.id, api_key: @carto_user2.api_key)
-
+          get api_v1_visualizations_show_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key, show_liked: true)
           expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+          expect(JSON.parse(last_response.body).fetch('liked')).to eq(false)
         end
 
         it 'does not returns error if you try to remove a non-existent like' do
-          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key)
+          delete api_v1_visualizations_remove_like_url(user_domain: @user_domain, id: @vis.id, api_key: @carto_user1.api_key, show_liked: true)
 
           expect(last_response.status).to eq(200)
-          expect(JSON.parse(last_response.body).fetch('likes').to_i).to eq(0)
+          expect(JSON.parse(last_response.body).fetch('liked')).to eq(false)
         end
       end
     end
@@ -965,7 +871,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 1
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 0
         body['total_locked'].should eq 0
         vis = body['visualizations'].first
@@ -975,7 +880,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 1
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 0
         body['total_locked'].should eq 0
         vis = body['visualizations'].first
@@ -996,7 +900,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 2
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 1
         body['total_locked'].should eq 0
 
@@ -1015,7 +918,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
 
@@ -1025,7 +927,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 1
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
 
@@ -1036,7 +937,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_DERIVED, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 1
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
 
@@ -1055,7 +955,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 2
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 1
         body['total_locked'].should eq 0
 
@@ -1073,7 +972,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 0
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
         body['visualizations'][0]['table']['name'].should == "\"#{@org_user_2.database_schema}\".#{u2_t_2.name}"
@@ -1084,7 +982,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 1
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
 
@@ -1095,7 +992,6 @@ describe Carto::Api::VisualizationsController do
                                             type: CartoDB::Visualization::Member::TYPE_CANONICAL, order: 'updated_at'), @headers
         body = JSON.parse(last_response.body)
         body['total_entries'].should eq 3
-        body['total_likes'].should eq 1
         body['total_shared'].should eq 2
         body['total_locked'].should eq 0
       end
@@ -1447,7 +1343,7 @@ describe Carto::Api::VisualizationsController do
         url = api_v1_visualizations_show_url(
           id: @visualization.id,
           api_key: @api_key,
-          show_likes: true
+          show_liked: true
         )
 
         get url, {}, @headers
@@ -1455,7 +1351,7 @@ describe Carto::Api::VisualizationsController do
         last_response.status.should == 200
         response = JSON.parse(last_response.body)
 
-        response['likes'].should eq 0
+        response['liked'].should eq false
       end
 
       it 'returns related_canonical_visualizations if requested' do
@@ -1535,7 +1431,6 @@ describe Carto::Api::VisualizationsController do
                    fetch_related_canonical_visualizations: true,
                    fetch_user: true,
                    show_liked: true,
-                   show_likes: true,
                    show_permission: true,
                    show_auth_tokens: true,
                    show_stats: true do |response|
@@ -1601,7 +1496,6 @@ describe Carto::Api::VisualizationsController do
                 # Optional information requiring parameters
                 response.body[:user].should eq nil
                 response.body[:liked].should eq nil
-                response.body[:likes].should eq 0
                 response.body[:stats].should be_empty
                 response.body[:auth_tokens].should be_empty
                 response.body[:permission].should eq nil
@@ -1612,7 +1506,6 @@ describe Carto::Api::VisualizationsController do
               url = api_v1_visualizations_show_url(
                 id: @visualization.id,
                 show_liked: true,
-                show_likes: true,
                 show_permission: true,
                 show_auth_tokens: true,
                 show_stats: true,
@@ -1624,7 +1517,6 @@ describe Carto::Api::VisualizationsController do
                 response.status.should eq 200
                 response.body[:user].should_not be_nil
                 response.body[:liked].should eq false
-                response.body[:likes].should eq 0
                 response.body[:stats].should_not be_empty
 
                 response_user = response.body[:user]
@@ -1764,7 +1656,6 @@ describe Carto::Api::VisualizationsController do
                          fetch_related_canonical_visualizations: true,
                          fetch_user: true,
                          show_liked: true,
-                         show_likes: true,
                          show_permission: true,
                          show_stats: true do |response|
                   response.status.should == 200
@@ -2918,7 +2809,7 @@ describe Carto::Api::VisualizationsController do
       it 'orders by favorited' do
         visualization_a = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
         visualization_b = FactoryGirl.create(:carto_visualization, user_id: @user.id).store
-        visualization_a.add_like_from(@user.id)
+        visualization_a.add_like_from(@user)
 
         get api_v1_visualizations_index_url(api_key: @user.api_key, types: 'derived', with_dependent_visualizations: 10,
                                             order: 'favorited', order_direction: 'desc'), {}, @headers
@@ -3222,6 +3113,20 @@ describe Carto::Api::VisualizationsController do
         response.status.should == 200
 
         response.body[:url].should == "http://#{@org_user_1.organization.name}#{Cartodb.config[:session_domain]}:#{Cartodb.config[:http_port]}/u/#{@org_user_1.username}/viz/#{visualization.id}/map"
+      end
+    end
+
+    it 'generates the URL for tables shared by another user with hyphens in his username' do
+      user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
+      table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
+      shared_table = table.table_visualization
+      share_visualization(shared_table, @org_user_1)
+
+      request_url = api_v1_visualizations_show_url(user_domain: @org_user_1.username,
+                                                   id: shared_table.id, api_key: @org_user_1.api_key)
+      get_json request_url, {}, http_json_headers do |response|
+        response.status.should == 200
+        response.body[:url].should include("/tables/fulano-de-tal.tabluca")
       end
     end
   end

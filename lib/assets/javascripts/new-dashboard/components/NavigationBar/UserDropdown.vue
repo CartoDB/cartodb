@@ -32,16 +32,24 @@
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/profile.svg"/>
         </div>
-        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked" >{{ $t('UserDropdown.publicProfile') }}</a>
+        <a :href="`${ baseUrl }/me`" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">{{ $t('UserDropdown.publicProfile') }}</a>
       </li>
       <li class="navbar-dropdown-iconLink">
         <div class="icon-container">
           <img svg-inline src="../../assets/icons/navbar/dropdown/notifications.svg"/>
         </div>
-        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked">
+        <router-link :to="{ name: 'notifications' }" class="text is-semibold is-caption is-txtGrey" @click.native="linkClicked" :staticRoute="'/dashboard/notifications'">
           {{ $t('UserDropdown.notifications') }}
         </router-link>
         <span v-if="notificationsCount > 0" class="notification-number text is-semibold is-small is-txtGrey">{{notificationsCount}}</span>
+      </li>
+      <li class="navbar-dropdown-iconLink">
+        <div class="icon-container">
+          <img svg-inline src="../../assets/icons/navbar/dropdown/feedback.svg"/>
+        </div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" class="text is-semibold is-caption is-txtGrey" target="_blank" @click="linkClicked">
+          {{ $t('UserDropdown.feedback') }}
+        </a>
       </li>
     </ul>
     <a :href="`${ baseUrl }/logout`" class="navbar-dropdown-bottom" @click="linkClicked">
@@ -73,7 +81,7 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .navbar-dropdown {
   visibility: hidden;
@@ -84,7 +92,7 @@ export default {
   transition: all 0.25s linear;
   border-radius: 4px;
   opacity: 0;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: $dropdown__shadow;
   pointer-events: none;
 
   &::before {
@@ -97,7 +105,7 @@ export default {
     transform-origin: center center;
     border-radius: 4px;
     background-color: $white;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: $dropdown__shadow;
   }
 
   &.is-open {

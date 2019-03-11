@@ -11,7 +11,7 @@
           {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="udpateActiveSuggestion(index + 1)">
+      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
         <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
       </li>
     </ul>
@@ -21,6 +21,7 @@
 <script>
 import _ from 'underscore';
 import SearchSuggestionsItem from './SearchSuggestionsItem';
+import CartoNode from 'carto-node';
 
 export default {
   name: 'SearchSuggestions',
@@ -41,6 +42,7 @@ export default {
     return {
       isFetching: true,
       searchResults: [],
+      client: new CartoNode.AuthenticatedClient(),
       activeSuggestionIndex: -1
     };
   },
@@ -95,7 +97,7 @@ export default {
   },
   methods: {
     fetchSuggestions () {
-      this.$store.state.client.getVisualization('',
+      this.client.getVisualization('',
         this.queryParameters,
 
         (err, _, data) => {
@@ -136,7 +138,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .suggestions {
   visibility: hidden;

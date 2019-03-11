@@ -3,22 +3,38 @@
     <div class="image-placeholder"></div>
     <div class="text-container-placeholder">
       <div class="text-placeholder"></div>
-      <div class="text-placeholder text-placeholder--double"></div>
-      <div class="text-placeholder"></div>
-      <div class="text-placeholder"></div>
-      <div class="text-placeholder"></div>
+      <div class="text-placeholder text-placeholder--double" v-if="sectionsToShow.description"></div>
+      <div class="text-placeholder" v-if="sectionsToShow.privacy"></div>
+      <div class="text-placeholder" v-if="sectionsToShow.lastModification"></div>
+      <div class="text-placeholder" v-if="sectionsToShow.tags"></div>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SimpleMapCardFake'
+  name: 'SimpleMapCardFake',
+  props: {
+    visibleSections: {
+      type: Array,
+      default: () => ['description', 'privacy', 'lastModification', 'tags']
+    }
+  },
+  computed: {
+    sectionsToShow () {
+      const visibleSections = this.$props.visibleSections || [];
+
+      return visibleSections.reduce((allSections, section) => {
+        allSections[section] = true;
+        return allSections;
+      }, {});
+    }
+  }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .map-fake-card {
   border: 1px solid $light-grey;

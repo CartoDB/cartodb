@@ -36,7 +36,8 @@ module.exports = {
 
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
-      __ENV__: JSON.stringify('prod')
+      __ENV__: JSON.stringify('prod'),
+      __ASSETS_VERSION__: JSON.stringify(version)
     }),
 
     new MiniCssExtractPlugin({
@@ -222,7 +223,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+        test: /\.(ttf|eot|woff|woff2)(.+#.+)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -233,7 +234,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(png|gif)$/,
+        test: /\.(png|gif|svg)$/,
         use: {
           loader: 'file-loader',
           options: {

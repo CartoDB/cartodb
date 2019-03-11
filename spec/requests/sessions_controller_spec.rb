@@ -755,6 +755,19 @@ describe SessionsController do
         expect_login
       end
 
+      it 'redirects to login and then to code verification when there is no session' do
+        get dashboard_url
+        follow_redirect!
+
+        login
+        post create_session_url(email: @user.username, password: @user.password)
+        ApplicationController.any_instance.stubs(:current_viewer).returns(@user)
+        ApplicationController.any_instance.stubs(:multifactor_authentication_required?).returns(true)
+        follow_redirect!
+
+        request.path.should eq multifactor_authentication_verify_code_path
+      end
+
       it 'does not verify an invalid code' do
         login
 

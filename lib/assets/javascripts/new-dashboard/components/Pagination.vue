@@ -96,12 +96,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .Pagination-list {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 28px;
 }
 
 .Pagination-listItem {

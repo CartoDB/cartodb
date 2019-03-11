@@ -6,6 +6,7 @@ module Carto
       include CartoDB::Factories
 
       def full_visualization_table(carto_user, map)
+        carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
         map_id = map.nil? ? nil : map.id
         Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id, map_id: map_id).id)
       end

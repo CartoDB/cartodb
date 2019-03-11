@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '4.2.10'
+gem 'rails',                   '4.2.11'
 
 gem 'rake',                    '0.9.2.2'
 gem 'pg',                      '0.15.0'
@@ -29,7 +29,7 @@ gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
-gem 'addressable',             '2.3.2', require: 'addressable/uri'
+gem 'addressable',             '~> 2.5', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
@@ -56,8 +56,7 @@ gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
-gem 'retriable',               '1.4.1'  # google-api-client needs this
-gem 'google-api-client',       '0.7.0'
+gem 'google-api-client',       '0.28.4'
 gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'

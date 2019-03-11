@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import format from 'date-fns/format';
 export default {
   name: 'NotificationCard',
   props: {
@@ -20,13 +19,13 @@ export default {
   },
   computed: {
     receivedAtFormatted () {
-      return format(new Date(this.receivedAt), 'DD/MM/YYYY');
+      return new Date(this.receivedAt).toLocaleDateString();
     }
   }
 };
 </script>
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .notification-info {
   display: flex;

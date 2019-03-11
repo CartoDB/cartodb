@@ -7,7 +7,7 @@ module Carto
       extend Forwardable
       include Carto::HtmlSafe
 
-      delegate [:id, :map, :qualified_name, :likes, :description, :retrieve_named_map?, :password_protected?, :overlays,
+      delegate [:id, :map, :qualified_name, :description, :retrieve_named_map?, :password_protected?, :overlays,
                 :prev_id, :next_id, :transition_options, :has_password?, :parent_id, :get_auth_tokens, :user,
                 :related_canonical_visualizations
                ] => :visualization

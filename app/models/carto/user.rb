@@ -35,6 +35,9 @@ class Carto::User < ActiveRecord::Base
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
   FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
 
+  MAGELLAN_TRIAL_DAYS = 15
+  PERSONAL30_TRIAL_DAYS = 30
+
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
                    "users.api_key, users.database_schema, users.database_name, users.name, users.location," \
@@ -377,33 +380,28 @@ class Carto::User < ActiveRecord::Base
   end
 
   def get_geocoding_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_geocoding_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_geocoding_data(self, date_from, date_to, orgwise)
   end
 
   def get_here_isolines_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_here_isolines_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_here_isolines_data(self, date_from, date_to, orgwise)
   end
 
   def get_obs_snapshot_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_snapshot_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_obs_snapshot_data(self, date_from, date_to, orgwise)
   end
 
   def get_obs_general_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_obs_general_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_obs_general_data(self, date_from, date_to, orgwise)
   end
 
   def get_mapzen_routing_calls(options = {})
-    date_to = (options[:to] ? options[:to].to_date : Date.today)
-    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
-    get_user_mapzen_routing_data(self, date_from, date_to)
+    date_from, date_to, orgwise = ds_metrics_parameters_from_options(options)
+    get_user_mapzen_routing_data(self, date_from, date_to, orgwise)
   end
 
   # TODO: Remove unused param `use_total`
@@ -489,7 +487,9 @@ class Carto::User < ActiveRecord::Base
   alias_method :hard_mapzen_routing_limit, :hard_mapzen_routing_limit?
   def trial_ends_at
     if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + 15.days > Date.today
-      upgraded_at + 15.days
+      upgraded_at + MAGELLAN_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('personal30').zero?
+      created_at + PERSONAL30_TRIAL_DAYS.days
     end
   end
 
@@ -785,5 +785,12 @@ class Carto::User < ActiveRecord::Base
     begin
       self[column] = SecureRandom.urlsafe_base64
     end while Carto::User.exists?(column => self[column])
+  end
+
+  def ds_metrics_parameters_from_options(options)
+    date_from = (options[:from] ? options[:from].to_date : last_billing_cycle)
+    date_to = (options[:to] ? options[:to].to_date : Date.today)
+    orgwise = options.fetch(:orgwise, true)
+    [date_from, date_to, orgwise]
   end
 end

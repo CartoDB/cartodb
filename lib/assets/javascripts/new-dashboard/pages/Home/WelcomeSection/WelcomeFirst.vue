@@ -2,7 +2,7 @@
   <section class="welcome-first">
     <div class="container">
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
-      <div class="welcome-first__text text is-caption">{{ text }}</div>
+      <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
         <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`DataPage.createDataset`) }}</CreateButton>
@@ -30,12 +30,12 @@ export default {
     CreateButton
   },
   props: {
-    username: String,
+    name: String,
     userType: String
   },
   computed: {
     greeting () {
-      return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
+      return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     },
     text () {
       const organizationName = this.$store.state.user.organization && this.$store.state.user.organization.name;
@@ -65,7 +65,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
+@import "new-dashboard/styles/variables";
 
 .welcome-first {
   position: relative;

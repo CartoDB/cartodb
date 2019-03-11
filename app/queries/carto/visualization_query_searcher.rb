@@ -12,9 +12,8 @@ class Carto::VisualizationQuerySearcher
 
   def search(tainted_search_pattern)
     search_pattern = escape_characters_from_pattern(tainted_search_pattern)
-    @query.select("#{select_rank_sql(search_pattern)} AS search_rank")
-          .where(partial_match_sql, search_pattern, "%#{search_pattern}%")
-          .order('search_rank DESC, visualizations.updated_at DESC')
+    @query.where(partial_match_sql, search_pattern, "%#{search_pattern}%")
+          .order("#{rank_sql(search_pattern)} DESC, visualizations.updated_at DESC")
   end
 
   private
@@ -30,7 +29,7 @@ class Carto::VisualizationQuerySearcher
     }
   end
 
-  def select_rank_sql(search_pattern)
+  def rank_sql(search_pattern)
     %{
       ts_rank(
         #{tsvector},

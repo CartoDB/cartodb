@@ -19,7 +19,7 @@
         <EmptyState v-if="!isFetching && emptyState" :text="emptyStateText">
           <img svg-inline src="../assets/icons/common/check-bubble.svg">
         </EmptyState>
-        <LoadingState v-if="isFetching" :text="loadingStateText"></LoadingState>
+        <LoadingState v-if="isFetching" :text="loadingStateText" class="loading-state"></LoadingState>
       </div>
     </div>
   </section>
@@ -30,6 +30,7 @@ import EmptyState from '../components/States/EmptyState';
 import LoadingState from '../components/States/LoadingState';
 import NotificationCard from '../components/NotificationCard';
 import SectionTitle from '../components/SectionTitle';
+
 export default {
   name: 'NotificationsPage',
   components: {
@@ -57,12 +58,15 @@ export default {
     isFetching () {
       return this.$store.state.notifications.isFetching;
     }
+  },
+  mounted: function () {
+    this.$store.dispatch('user/resetOrganizationNotifications');
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
+@import "new-dashboard/styles/variables";
 
 .notifications-list-container {
   margin-bottom: 44px;
@@ -85,7 +89,8 @@ export default {
   }
 }
 
-.empty-state {
+.empty-state,
+.loading-state {
   margin: 20vh 0 8vh;
 }
 </style>

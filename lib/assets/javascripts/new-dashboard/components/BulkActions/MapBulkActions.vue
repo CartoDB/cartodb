@@ -5,6 +5,7 @@
 <script>
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 
 export default {
   name: 'MapBulkActions',
@@ -25,36 +26,83 @@ export default {
     actions () {
       return {
         single: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll' },
-          { name: this.$t('BulkActions.maps.changeMapPrivacy'), event: 'changePrivacy' },
-          { name: this.$t('BulkActions.maps.duplicateMap'), event: 'duplicateMap' },
-          { name: this.$t('BulkActions.maps.lockMap'), event: 'lockMap' },
-          { name: this.$t('BulkActions.maps.deleteMap'), event: 'deleteMap', isDestructive: true }
+          {
+            name: this.$t('BulkActions.maps.selectAllMaps'),
+            event: 'selectAll',
+            shouldBeHidden: this.areAllMapsSelected
+          },
+          {
+            name: this.$t('BulkActions.maps.changeMapPrivacy'),
+            event: 'changePrivacy',
+            shouldBeHidden: this.isAnyShared || this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.maps.duplicateMap'),
+            event: 'duplicateMap'
+          },
+          {
+            name: this.$t('BulkActions.maps.lockMap'),
+            event: 'lockMap',
+            shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
+            shouldBeHidden: this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.maps.unlockMap'),
+            event: 'unlockMap',
+            shouldBeDisabled: this.isAnyShared && this.areAllLocked,
+            shouldBeHidden: !this.areAllLocked
+          },
+          {
+            name: this.$t('BulkActions.maps.deleteMap'),
+            event: 'deleteMap',
+            isDestructive: true,
+            shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
+            shouldBeHidden: this.isAnyLocked
+          }
         ],
         multiple: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldBeHidden: this.areAllMapsSelected },
-          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.maps.lockMaps'), event: 'lockMaps' },
-          { name: this.$t('BulkActions.maps.deleteMaps'), event: 'deleteMaps', isDestructive: true }
-        ],
-        lock: [
-          { name: this.$t('BulkActions.maps.selectAllMaps'), event: 'selectAll', shouldBeHidden: this.areAllMapsSelected },
-          { name: this.$t('BulkActions.maps.unlockMap'), event: 'unlockMap' }
-        ],
-        multipleLock: [
-          { name: this.$t('BulkActions.maps.deselectAllMaps'), event: 'deselectAll' },
-          { name: this.$t('BulkActions.maps.unlockMaps'), event: 'unlockMaps' }
+          {
+            name: this.$t('BulkActions.maps.selectAllMaps'),
+            event: 'selectAll',
+            shouldBeHidden: this.areAllMapsSelected
+          },
+          {
+            name: this.$t('BulkActions.maps.deselectAllMaps'),
+            event: 'deselectAll'
+          },
+          {
+            name: this.$t('BulkActions.maps.lockMaps'),
+            event: 'lockMaps',
+            shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
+            shouldBeHidden: this.isAnyLocked
+          },
+          {
+            name: this.$t('BulkActions.maps.unlockMaps'),
+            event: 'unlockMaps',
+            shouldBeDisabled: this.isAnyShared && this.areAllLocked,
+            shouldBeHidden: !this.areAllLocked
+          },
+          {
+            name: this.$t('BulkActions.maps.deleteMaps'),
+            event: 'deleteMaps',
+            isDestructive: true,
+            shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
+            shouldBeHidden: this.isAnyLocked
+          }
         ]
       };
     },
     actionMode () {
-      const isAnyMapLocked = this.selectedMaps.filter(map => map.locked);
-
-      if (isAnyMapLocked.length) {
-        return isAnyMapLocked.length > 1 ? 'multipleLock' : 'lock';
-      }
-
       return this.selectedMaps.length > 1 ? 'multiple' : 'single';
+    },
+    isAnyShared () {
+      return this.selectedMaps.some(map => Visualization.isShared(map, this.$cartoModels));
+    },
+    isAnyLocked () {
+      return this.selectedMaps.some(map => map.locked);
+    },
+    areAllLocked () {
+      return this.selectedMaps.every(map => map.locked);
     }
   },
   methods: {
@@ -64,10 +112,10 @@ export default {
           this.deselectAll();
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
+          this.$store.dispatch('maps/fetch');
         },
         updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+          this.$store.dispatch('maps/updateVisualization', { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         }
       };
     },
@@ -95,7 +143,7 @@ export default {
       this.$emit('deselectAll');
     },
     changePrivacy () {
-      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0]]);
+      DialogActions.changePrivacy.apply(this, [this.selectedMaps[0], this.getActionHandlers()]);
     },
     duplicateMap () {
       DialogActions.duplicateVisualization.apply(this, [this.selectedMaps[0]]);

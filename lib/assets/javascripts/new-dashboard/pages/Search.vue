@@ -16,15 +16,15 @@
         <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
 
-          <ul class="grid" v-if="isFetchingMaps">
-            <li v-for="n in 3" :key="n" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
-              <MapCardFake></MapCardFake>
+          <ul class="grid grid-cell" v-if="isFetchingMaps">
+            <li v-for="n in 6" :key="n" class="grid-cell grid-cell--col12 search-item">
+              <MapCardFake :condensed="true" class="search-item"></MapCardFake>
             </li>
           </ul>
 
-          <ul class="grid" v-if="!isFetchingMaps">
-            <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element">
-              <MapCard :map=map :canHover=false></MapCard>
+          <ul class="grid grid-cell" v-if="!isFetchingMaps">
+            <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col12 search-item">
+              <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
             </li>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">
@@ -43,8 +43,8 @@
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
-            <li v-for="dataset in datasets" :key="dataset.id" class="dataset-item">
-              <DatasetCard :dataset=dataset :canHover=false></DatasetCard>
+            <li v-for="dataset in datasets" :key="dataset.id" class="search-item">
+              <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
             </li>
 
             <div class="is-caption text" v-if="!hasDatasets">
@@ -53,7 +53,7 @@
           </ul>
 
           <ul class="grid-cell grid-cell--col12" v-if="isFetchingDatasets">
-            <li v-for="n in 3" :key="n" class="dataset-item">
+            <li v-for="n in 6" :key="n" class="search-item">
               <DatasetCardFake></DatasetCardFake>
             </li>
           </ul>
@@ -162,7 +162,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .page {
   padding-top: 192px;
@@ -210,7 +210,7 @@ export default {
   margin-top: 36px;
 }
 
-.dataset-item {
+.search-item {
   &:not(:last-child) {
     border-bottom: 1px solid $light-grey;
   }

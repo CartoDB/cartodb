@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DatasetsList.vue should render empty state 1`] = `
+<div class="container grid">
+  <div class="full-width">
+    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+  </div>
+  <!---->
+  <!---->
+  <!---->
+  <div class="grid-cell grid-cell--col12">
+    <emptystate-stub text="DataPage.emptyCase.default"><img svg-inline="" src="../assets/icons/common/compass.svg"></emptystate-stub>
+  </div>
+  <!---->
+</div>
+`;
+
+exports[`DatasetsList.vue should render initial state 1`] = `
+<div class="container grid">
+  <div class="full-width">
+    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template>
+      <!---->
+    </sectiontitle-stub>
+  </div>
+  <div class="grid-cell grid-cell--col12">
+    <initialstate-stub title="DataPage.zeroCase.title"><template></template> <template></template> <template></template></initialstate-stub>
+  </div>
+  <!---->
+  <!---->
+  <div class="grid-cell grid-cell--col12">
+    <!---->
+  </div>
+  <!---->
+</div>
+`;
+
+exports[`DatasetsList.vue should render properly 1`] = `
+<div class="container grid">
+  <div class="full-width">
+    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+  </div>
+  <!---->
+  <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+    <datasetlistheader-stub order="updated_at" orderdirection="desc"></datasetlistheader-stub>
+  </div>
+  <ul class="grid-cell grid-cell--col12">
+    <li class="dataset-item">
+      <datasetcard-stub dataset="[object Object]" canhover="true" storeactiontype="datasets"></datasetcard-stub>
+    </li>
+    <li class="dataset-item">
+      <datasetcard-stub dataset="[object Object]" canhover="true" storeactiontype="datasets"></datasetcard-stub>
+    </li>
+  </ul>
+  <div class="grid-cell grid-cell--col12">
+    <!---->
+  </div>
+  <!---->
+</div>
+`;

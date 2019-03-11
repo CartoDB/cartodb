@@ -88,6 +88,11 @@ module.exports = {
 
   lockout: rootDir('lib/assets/javascripts/dashboard/lockout.js'),
 
+  new_lockout: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
+  ],
+
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),
     rootDir('assets/stylesheets/plugins/tagit.scss'),
@@ -116,7 +121,6 @@ module.exports = {
     rootDir('assets/stylesheets/common/default-time-diff.scss'),
     rootDir('assets/stylesheets/common/privacy-indicator.scss'),
     rootDir('assets/stylesheets/common/no-results.scss'),
-    rootDir('assets/stylesheets/common/likes-indicator.scss'),
     rootDir('assets/stylesheets/common/filters.scss'),
     rootDir('assets/stylesheets/common/intermediate-info.scss'),
     rootDir('assets/stylesheets/common/nav-button.scss'),

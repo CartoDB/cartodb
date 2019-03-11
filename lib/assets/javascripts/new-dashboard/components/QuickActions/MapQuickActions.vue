@@ -5,14 +5,13 @@
     :actions="actions[actionMode]"
     v-on="getEventListeners()"
     @open="openQuickactions"
-    @close="closeQuickactions"
-    :hasShadow="hasShadow"></QuickActions>
+    @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
-import * as Visualization from 'new-dashboard/core/visualization';
+import * as Visualization from 'new-dashboard/core/models/visualization';
 
 export default {
   name: 'MapQuickActions',
@@ -21,9 +20,9 @@ export default {
   },
   props: {
     map: Object,
-    hasShadow: {
-      type: Boolean,
-      default: true
+    storeActionType: {
+      type: String,
+      default: 'maps'
     }
   },
   computed: {
@@ -59,11 +58,11 @@ export default {
       return {
         deselectAll: () => {},
         updateVisualization: (model) => {
-          this.$store.dispatch('maps/updateMap', { mapId: model.get('id'), mapAttributes: model.attributes });
+          this.$store.dispatch(`${this.storeActionType}/updateVisualization`, { visualizationId: model.get('id'), visualizationAttributes: model.attributes });
         },
         fetchList: () => {
-          this.$store.dispatch('maps/fetchMaps');
-          this.$emit('dataChanged');
+          this.$store.dispatch(`${this.storeActionType}/fetch`);
+          this.$emit('contentChanged', 'maps');
         }
       };
     },
@@ -102,7 +101,7 @@ export default {
       this.closeDropdown();
     },
     manageTags () {
-      DialogActions.editMapMetadata.apply(this, [this.map]);
+      DialogActions.editMapMetadata.apply(this, [this.map, this.getActionHandlers()]);
       this.closeDropdown();
     },
     duplicateMap () {

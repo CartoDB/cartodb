@@ -23,18 +23,18 @@ export default {
     CreateButton
   },
   props: {
-    username: String
+    name: String
   },
   computed: {
     greeting () {
-      return this.$t('HomePage.WelcomeSection.greeting', {username: this.$props.username});
+      return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import "stylesheets/new-dashboard/variables";
+@import "new-dashboard/styles/variables";
 
 .welcome-compact__content {
   display: flex;

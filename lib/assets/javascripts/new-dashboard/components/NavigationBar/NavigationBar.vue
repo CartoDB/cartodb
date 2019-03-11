@@ -1,13 +1,13 @@
 <template>
 <nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
   <ul class="navbar-elementsContainer">
-      <router-link :to="{ name: 'home' }" class="navbar-elementItem" exact-active-class="is-active">
+      <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/home.svg" />
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Home</span>
       </router-link>
-      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active">
+      <router-link :to="{ name: 'maps' }" class="navbar-elementItem" active-class="is-active" staticRoute="/dashboard/maps">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/maps.svg" />
         </span>
@@ -19,7 +19,7 @@
         </span>
         <span class="title is-caption is-txtWhite u-hideTablet">Solutions</span>
       </router-link> -->
-      <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active">
+      <router-link :to="{ name: 'datasets' }" class="navbar-elementItem" active-class="is-active" staticRoute="/dashboard/datasets">
         <span class="navbar-icon">
           <img svg-inline class="navbar-iconFill" src="../../assets/icons/navbar/data.svg" />
         </span>
@@ -37,6 +37,7 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
+        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup" @feedbackClick="onFeedbackClicked"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -48,47 +49,79 @@
 <script>
 import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
+import FeedbackPopup from '../FeedbackPopup';
+import storageAvailable from 'new-dashboard/utils/is-storage-available';
 
 export default {
   name: 'NavigationBar',
   components: {
     Search,
-    UserDropdown
+    UserDropdown,
+    FeedbackPopup
   },
   props: {
     user: Object,
     baseUrl: String,
-    notificationsCount: Number
+    notificationsCount: Number,
+    isFirstTimeInDashboard: Boolean,
+    bundleType: {
+      type: String,
+      default: 'other'
+    }
   },
   data () {
     return {
       isDropdownOpen: false,
-      isSearchOpen: false
+      isSearchOpen: false,
+      hasDropdownOpenedForFirstTime: false
     };
+  },
+  computed: {
+    isDashboardBundle () {
+      return this.$props.bundleType === 'dashboard';
+    },
+    popupWasShown () {
+      if (!storageAvailable('localStorage')) {
+        return true;
+      }
+
+      return JSON.parse(window.localStorage.getItem('carto.feedback.popupWasShown'));
+    },
+    shouldShowFeedbackPopup () {
+      return this.isDashboardBundle &&
+        !this.isFirstTimeInDashboard &&
+        !this.hasDropdownOpenedForFirstTime &&
+        !this.popupWasShown;
+    }
   },
   methods: {
     toggleDropdown () {
+      this.hasDropdownOpenedForFirstTime = true;
       this.isDropdownOpen = !this.isDropdownOpen;
     },
-
     closeDropdown () {
       this.isDropdownOpen = false;
     },
-
     toggleSearch () {
       this.isSearchOpen = !this.isSearchOpen;
+    },
+    isHomePage () {
+      return (this.$route || {}).name === 'home';
+    },
+    onFeedbackClicked () {
+      this.toggleDropdown();
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
-@import 'stylesheets/new-dashboard/variables';
+@import 'new-dashboard/styles/variables';
 
 .navbar {
   display: flex;
   position: fixed;
-  z-index: 3;
+  z-index: 11;
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -167,8 +200,11 @@ export default {
 }
 
 .navbar-imagotype {
+  position: absolute;
+  left: 50%;
   width: 24px;
   height: 24px;
+  transform: translate3d(-50%, 0, 0);
 }
 
 .navbar-user {
@@ -230,5 +266,11 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.feedback-popup {
+  position: absolute;
+  top: calc(100% + 18px);
+  right: 0;
 }
 </style>

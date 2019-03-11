@@ -7,7 +7,7 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
-    "condensedViews": "No mapviews | 1 mapview | {n} mapviews",
+    "condensedViews": "No views | 1 view | {n} views",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -17,16 +17,16 @@
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
-    "views": "Mapviews (30d)",
+    "views": "Views (30d)",
     "usage": "Usage",
     "privacy": "Privacy"
   },
   "QuickActions": {
     "title": "Quick actions",
-    "editInfo": "Edit Name & description",
-    "manageTags": "Manage Tags",
+    "editInfo": "Edit name & description",
+    "manageTags": "Manage tags",
     "createMap": "Create map",
-    "changePrivacy": "Change Privacy",
+    "changePrivacy": "Change privacy",
     "share": "Share with colleagues",
     "duplicate": "Duplicate",
     "lock": "Lock",
@@ -82,7 +82,7 @@
     },
     "emptyCase": {
       "default": "There are no datasets here.",
-      "onlyShared": "There are no datasets here. Check out the <a href='{path}'>datasets shared with you</a>."
+      "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
     }
   },
   "MapsPage": {
@@ -106,7 +106,7 @@
     },
     "emptyCase": {
       "default": "There are no maps here.",
-      "onlyShared": "There are no maps here. Check out the <a href='{path}'>maps shared with you</a>."
+      "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
     }
   },
   "NotificationsPage": {
@@ -129,8 +129,7 @@
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
       "passwordPrivacy": "Password"
-    },
-    "initialState": "Change Filters"
+    }
   },
   "DatasetCard": {
     "shared": {
@@ -159,6 +158,7 @@
     "apiKeys": "API Keys",
     "publicProfile": "Public Profile",
     "notifications": "Notifications",
+    "feedback": "Share feedback",
     "logout": "LOG OUT"
   },
   "SolutionsPage": {
@@ -209,9 +209,9 @@
   },
   "HomePage": {
     "WelcomeSection": {
-      "greeting" : "Hello, {username}",
+      "greeting" : "Hello, {name}",
       "firstTime": {
-        "message": "Your brand new CARTO Dashboard is ready! Take a look around and play with it or read more about it on our blog.",
+        "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
           "30day": "Remember that you're currently on the 30-day personal trial.",
@@ -234,7 +234,7 @@
     },
     "MapsSection": {
       "title": "Your Maps",
-      "allMapsLink" : "VIEW ALL MAPS"
+      "viewAll" : "VIEW ALL MAPS"
     },
     "DatasetsSection": {
       "title": "Your Datasets",
@@ -244,6 +244,29 @@
       "header": "Create your first map to predict key insights",
       "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
       "button": "Create your first Map"
+    },
+    "RecentSection": {
+      "title": "Recent content",
+      "viewTagsAction": "View your tags"
+    },
+    "TagsSection": {
+      "title": "Your tags",
+      "viewRecentContentAction": "View recent content",
+      "emptyState": {
+        "title": "You have no tags.",
+        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"https://carto.com/help/getting-started/dashboard/\">dashboard</a>."
+      },
+      "loading": "Asking the server politely for your tags."
+    }
+  },
+  "TrialExpired": {
+    "ExpirationMessage": {
+      "title": "Your trial has expired",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. If you have any question after your trial, please <a class='is-underline is-txtDarkBlue' href='mailto:sales@carto.com'>contact sales</a>.",
+      "actions": {
+        "addPayments": "Add payment method",
+        "deleteAccount": "Delete account"
+      }
     }
   },
   "QuotaSection": {
@@ -287,5 +310,13 @@
       "title": "Your organization's administrator",
       "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
     }
+  },
+  "TagCard": {
+    "maps": "0 maps | {maps} map | {maps} maps",
+    "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
+  },
+  "FeedbackMessage": {
+    "title": "Share your feedback with us.",
+    "message": "Do you miss something? Should we be doing something differently?"
   }
 }

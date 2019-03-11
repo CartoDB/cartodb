@@ -1342,14 +1342,10 @@ module CartoDB
       def create_ghost_tables_event_trigger
         return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
         @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
-      rescue Sequel::DatabaseError => e
-        raise e unless e.message =~ /already exists/i
       end
 
       def drop_ghost_tables_event_trigger
         @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
-      rescue Sequel::DatabaseError => e
-        raise e unless e.message =~ /does not exist/i
       end
 
       private

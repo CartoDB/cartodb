@@ -11,7 +11,7 @@ module Carto
       @ttl_ms = ttl_ms
     end
 
-    def run_locked(force_block_execution=false, retriable = false)
+    def run_locked(force_block_execution: false, retriable: false)
       raise 'no code block given' unless block_given?
 
       is_locked = get_lock()

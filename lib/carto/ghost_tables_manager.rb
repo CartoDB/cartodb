@@ -56,7 +56,7 @@ module Carto
     def sync_user_tables_with_db
       bolt = Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
 
-      got_locked = bolt.run_locked(retriable=true) { sync }
+      got_locked = bolt.run_locked(retriable: true) { sync }
 
       CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
     end

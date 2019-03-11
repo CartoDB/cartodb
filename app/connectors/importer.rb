@@ -64,7 +64,7 @@ module CartoDB
           log('Proceeding to register')
           bolt = Carto::Bolt.new("#{user.username}:#{Carto::Bolt::MUTEX_REDIS_KEY}",
                                  ttl_ms: Carto::Bolt::MUTEX_TTL_MS)
-          bolt.run_locked(force_block_execution=true) {
+          bolt.run_locked(force_block_execution: true) {
             results.select(&:success?).each { |result|
               register(result)
             }

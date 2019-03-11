@@ -230,10 +230,10 @@ module CartoDB
           end
 
           def ensure_id(item)
-            return item if item.class == String || item.class == Fixnum || item.nil?
+            return item if item.class == String || item.class == Integer || item.nil?
             return item.id if item.respond_to?(:id)
             return item['id'] if item.class == Hash
-            raise "Expecting an id of class String or Fixnum, or object that responds to :id"
+            raise "Expecting an id of class String or Integer, or object that responds to :id"
           end
 
           def get(uri, options = {})

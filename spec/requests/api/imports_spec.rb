@@ -161,7 +161,7 @@ describe "Imports API" do
                                        :table_name => "wadus")
     end
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.tables_created_count.should be_nil
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 8002
@@ -177,7 +177,7 @@ describe "Imports API" do
                                        :table_name => "wadus")
     end
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 8001
     @user.reload.tables.count.should == 0
@@ -190,14 +190,14 @@ describe "Imports API" do
       params.merge(:filename => upload_file('spec/support/data/_penguins_below_80.zip', 'application/octet-stream'))
 
     @table_from_import = UserTable.all.last.service
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'complete', "Import failure: #{last_import.log}"
 
     post api_v1_imports_create_url, params.merge(:table_name => 'wadus_copy__copy',
                                       :table_copy => @table_from_import.name)
 
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 8002
     @user.reload.tables.count.should == 1
@@ -212,7 +212,7 @@ describe "Imports API" do
     @table_from_import = UserTable.all.last.service
 
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'complete'
     @user.reload.tables.count.should == 1
   end
@@ -222,7 +222,7 @@ describe "Imports API" do
         params.merge(:filename => upload_file('spec/support/data/zipped_ab.zip', 'application/octet-stream'))
 
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'complete'
     last_import.tables_created_count.should eq 2
     last_import.table_names.should eq 'zipped_a zipped_b'
@@ -239,7 +239,7 @@ describe "Imports API" do
          params.merge(:filename => upload_file('spec/support/data/csv_with_lat_lon.csv', 'application/octet-stream'))
 
     response.code.should be == '200'
-    last_import = DataImport.order(:updated_at.desc).first
+    last_import = DataImport.order(Sequel.desc(:updated_at)).first
     last_import.state.should be == 'failure'
     last_import.error_code.should be == 6668
 

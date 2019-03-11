@@ -3,7 +3,7 @@
     "current_version": {
         "requires": {
             "gdal": "2.2.2",
-            "ruby": ">=2.2.6 <2.5.0",
+            "ruby": ">=2.4.0 <2.5.0",
             "nodejs": "6.9.2",
             "python": "~2.7.0",
             "unp": ">=2.0.0",

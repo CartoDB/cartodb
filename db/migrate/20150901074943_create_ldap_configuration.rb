@@ -3,7 +3,7 @@ Sequel.migration do
     SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :ldap_configurations do
-      Uuid      :id,                primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid      :id,                primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :organization_id, :organizations, type: 'uuid', null: false
       String    :host,              null: false
       Integer   :port,              null: false

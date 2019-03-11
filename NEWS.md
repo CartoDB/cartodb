@@ -4,6 +4,7 @@ Development
 ### NOTICES
 - **BREAKING**: Drop support for Node.js 6
 - **BREAKING**: Drop support for npm 3 and `npm-shrinkwrap.json` file.
+- **BREAKING**: CartoDB now requires Ruby 2.4
 
 ### Features
 - None yet
@@ -22,6 +23,7 @@ Development
 - Fix .carto not creating a map in old dashboard ([#14713](https://github.com/CartoDB/cartodb/pull/14713))
 - Remove patches for Rails 3 and ruby 2.4 not longer needed [#14667](https://github.com/CartoDB/cartodb/pull/14667)
 - Reorder Quick actions menu ([CartoDB/product#282](https://github.com/CartoDB/product/issues/282))
+- Update gems to ones that support Ruby 2.4 (#14722)
 - Scroll fixes ([#14704](https://github.com/CartoDB/cartodb/issues/14704), [#14703](https://github.com/CartoDB/cartodb/issues/14703))
 - Fix bug with Shift and Click ([CartoDB/product#279](https://github.com/CartoDB/product/issues/279))
 - Improve shift and click behavior ([CartoDB/product#278](https://github.com/CartoDB/product/issues/278))

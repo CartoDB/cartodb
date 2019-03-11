@@ -670,7 +670,7 @@ class Table
   # make all identifiers SEQUEL Compatible
   # https://github.com/Vizzuality/cartodb/issues/331
   def make_sequel_compatible(attributes)
-    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
+    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[Sequel.identifier(k)] = v }
   end
 
   def add_column!(options)
@@ -683,7 +683,7 @@ class Table
     update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
-    if e.message =~ /^(PG::Error|PGError)/
+    if e.message =~ /^(PG::Error|PGError|PG::UndefinedObject)/
       raise CartoDB::InvalidType, e.message
     else
       raise e
@@ -1007,9 +1007,10 @@ class Table
   end
 
   def data_last_modified
-    owner.in_database.select(:updated_at)
-                     .from(:cdb_tablemetadata.qualify(:cartodb))
-                     .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+    owner.in_database
+         .select(:updated_at)
+         .from(Sequel.qualify(:cartodb, :cdb_tablemetadata))
+         .where(tabname: Sequel.lit("'#{name}'::regclass")).first[:updated_at]
   rescue
     nil
   end

@@ -68,7 +68,7 @@ describe CartoDB::GeocoderCache do
 
   def load_csv(path)
     @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
-    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
+    @db.run("COPY #{Sequel.lit(@table_name)}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end # create_table
 
 end # CartoDB::GeocoderCache

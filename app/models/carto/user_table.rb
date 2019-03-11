@@ -114,6 +114,10 @@ module Carto
       affected_visualizations.select { |v| v.dependent_on?(self) }
     end
 
+    def affected_visualizations
+      layers.map(&:visualization).uniq.compact
+    end
+
     def name_for_user(other_user)
       is_owner?(other_user) ? name : fully_qualified_name
     end
@@ -219,10 +223,6 @@ module Carto
 
     def fully_qualified_name
       "\"#{user.database_schema}\".#{name}"
-    end
-
-    def affected_visualizations
-      layers.map(&:visualization).uniq.compact
     end
 
     def visualization_readable_by?(user)

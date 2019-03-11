@@ -11,13 +11,17 @@ module Carto
       @ttl_ms = ttl_ms
     end
 
-    def run_locked(force_block_execution=false)
+    def run_locked(force_block_execution=false, retriable = false)
       raise 'no code block given' unless block_given?
 
       is_locked = get_lock()
 
       begin
-        yield if (is_locked || force_block_execution)
+        while true
+          yield if (is_locked || force_block_execution)
+          set_retry_after_finish(is_locked)
+          break unless retriable && retry?
+        end
         !!is_locked
       ensure
         unlock if is_locked
@@ -27,6 +31,7 @@ module Carto
     private
 
     def unlock
+      @redis_object.del("#{@bolt_key}:retry")
       removed_keys = @redis_object.del(@bolt_key)
 
       # This may happen due to Redis failure. Highly unlikely, still nice to know.
@@ -39,6 +44,14 @@ module Carto
 
     def get_lock
       @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
+    end
+
+    def set_retry_after_finish(is_locked)
+      @redis_object.set("#{@bolt_key}:retry", true, px: @ttl_ms, nx: true) unless is_locked
+    end
+
+    def retry?
+      @redis_object.set("#{@bolt_key}:retry", true, px: @ttl_ms, nx: true)
     end
 
     def add_namespace_to_key(key)

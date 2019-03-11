@@ -11,13 +11,13 @@ module Carto
       @ttl_ms = ttl_ms
     end
 
-    def run_locked
+    def run_locked(force_block_execution=false)
       raise 'no code block given' unless block_given?
 
-      is_locked = @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
+      is_locked = get_lock()
 
       begin
-        yield if is_locked
+        yield if (is_locked || force_block_execution)
         !!is_locked
       ensure
         unlock if is_locked
@@ -35,6 +35,10 @@ module Carto
       end
 
       removed_keys > 0 ? true : false
+    end
+
+    def get_lock
+      @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
     end
 
     def add_namespace_to_key(key)

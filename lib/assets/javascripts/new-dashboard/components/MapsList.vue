@@ -46,13 +46,13 @@
         v-if="shouldShowListHeader">
       </CondensedMapHeader>
 
-      <ul class="grid" v-if="isFetchingMaps">
+      <ul class="grid grid-column grid-cell" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
       </ul>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
+      <ul :class="[isCondensed ? 'grid grid-column grid-cell' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
         <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard
             :condensed="isCondensed"

@@ -10,70 +10,78 @@
      }"
      @click="onClick">
 
-    <div class="cell cell--thumbnail">
-      <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
-        <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+    <div class="viz-column--main-info">
+      <div class="cell cell--thumbnail cell--first">
+        <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
+          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
 
-        <div class="MapCard-error" v-if="isThumbnailErrored"></div>
-      </div>
+          <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+        </div>
 
-      <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
-        <span class="checkbox-decoration">
-          <img svg-inline src="../../assets/icons/common/checkbox.svg">
-        </span>
-      </span>
-    </div>
-
-    <div class="cell cell--map-name cell--main">
-      <div class="cell__title">
-        <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
-          {{ visualization.name }}
-        </h3>
-
-        <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img svg-inline src="../../assets/icons/common/favorite.svg">
+        <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
+          <span class="checkbox-decoration">
+            <img svg-inline src="../../assets/icons/common/checkbox.svg">
+          </span>
         </span>
       </div>
 
-      <div class="metadata" v-if="hasTags || isShared">
-        <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+      <div class="cell cell--map-name cell--main">
+        <div class="cell__title">
+          <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
+            {{ visualization.name }}
+          </h3>
 
-          <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
-            <li v-for="(tag, index) in visualization.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey metadata__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
-            </li>
-          </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
-            <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
-          </FeaturesDropdown>
+          <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img svg-inline src="../../assets/icons/common/favorite.svg">
+          </span>
         </div>
-        <div class="metadata__element" v-if="isShared">
-          <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
-          <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
+
+        <div class="metadata" v-if="hasTags || isShared">
+          <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+
+            <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
+              <li v-for="(tag, index) in visualization.tags" :key="tag">
+                <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey metadata__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              </li>
+            </ul>
+            <FeaturesDropdown v-if="tagsChars > maxTagsChars" :list=visualization.tags linkRoute="tagSearch" feature="tag">
+              <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
+            </FeaturesDropdown>
+          </div>
+          <div class="metadata__element" v-if="isShared">
+            <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
+            <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
-    </div>
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell">
+          <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
+        </div>
+      </div>
 
-    <div class="cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
-    </div>
+      <div class="viz-column--share">
+        <div class="cell cell--small">
+          <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
+        </div>
 
-    <div class="cell cell--privacy cell--medium">
-      <span class="icon icon--privacy" :class="privacyIcon"></span>
-      <p class="text is-small is-txtSoftGrey">
-        {{ $t(`MapCard.shared.${visualization.privacy}`) }}
-      </p>
-    </div>
+        <div class="cell cell--privacy cell--small">
+          <span class="icon icon--privacy" :class="privacyIcon"></span>
+          <p class="text is-small is-txtSoftGrey">
+            {{ $t(`MapCard.shared.${visualization.privacy}`) }}
+          </p>
+        </div>
 
-    <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
-      <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
+        <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
+          <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
+        </div>
+      </div>
     </div>
   </a>
 </template>
@@ -155,7 +163,7 @@ export default {
 
   .cell__checkbox {
     position: absolute;
-    left: 22px;
+    left: 12px;
     transform: translateY(250%);
     transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
     opacity: 0;
@@ -163,11 +171,16 @@ export default {
   }
 
   &:hover {
+    background-color: $softblue;
     text-decoration: none;
 
     &:not(.row--no-hover) {
       .cell--map-name .cell--map-name__text {
         color: $primary-color;
+      }
+
+      .cell__title {
+        text-decoration: underline;
       }
     }
 
@@ -331,6 +344,10 @@ export default {
 
   .metadata__tags {
     display: flex;
+
+    li {
+      margin-right: .2em;
+    }
   }
 
   .metadata__tags-count,

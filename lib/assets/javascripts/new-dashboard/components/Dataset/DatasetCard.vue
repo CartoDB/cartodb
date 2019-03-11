@@ -9,82 +9,93 @@
        'dataset-row--can-hover': canHover
      }"
      @click="onClick">
-    <div class="cell cell--start">
-      <div class="row-dataType">
-          <div class="icon--dataType" :class="`icon--${dataType}`"></div>
-      </div>
-      <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
-        <span class="checkbox-decoration">
-          <img svg-inline src="../../assets/icons/common/checkbox.svg">
+
+    <div class="viz-column--main-info">
+      <div class="cell cell--start cell--first">
+        <div class="row-dataType">
+            <div class="icon--dataType" :class="`icon--${dataType}`"></div>
+        </div>
+        <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
+          <span class="checkbox-decoration">
+            <img svg-inline src="../../assets/icons/common/checkbox.svg">
+          </span>
         </span>
-      </span>
+      </div>
+
+      <div class="cell cell--main">
+        <div class="title-container">
+          <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
+            {{ dataset.name }}
+          </h3>
+          <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img svg-inline src="../../assets/icons/common/favorite.svg">
+          </span>
+        </div>
+        <div class="row-metadataContainer" v-if="hasTags || isShared">
+          <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
+            <ul v-if="tagsChars <= maxTagChars" class="tag-list">
+              <li v-for="(tag, index) in dataset.tags" :key="tag">
+                <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey tag-list__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
+              </li>
+            </ul>
+            <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
+              <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+            </FeaturesDropdown>
+          </div>
+          <div class="row-metadata" v-if="isShared">
+            <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
+            <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="cell cell--main">
-      <div class="title-container">
-        <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
-          {{ dataset.name }}
-        </h3>
-        <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img svg-inline src="../../assets/icons/common/favorite.svg">
-        </span>
+
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell cell--large">
+          <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
+        </div>
+        <div class="cell cell--small">
+          <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
+        </div>
+        <div class="cell cell--xsmall">
+          <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
+        </div>
       </div>
-      <div class="row-metadataContainer" v-if="hasTags || isShared">
-        <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
-          <ul v-if="tagsChars <= maxTagChars" class="tag-list">
-            <li v-for="(tag, index) in dataset.tags" :key="tag">
-              <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey tag-list__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
-            </li>
-          </ul>
-          <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
-            <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+
+      <div class="viz-column--share">
+        <div class="cell cell--small">
+          <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
+            {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
+          </span>
+          <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
+              <span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
+                {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
+              </span>
+
+              <template slot="footer" v-if="dataset.dependent_visualizations_count > 10">
+                + {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count - 10, { n: dataset.dependent_visualizations_count - 10 }) }}
+              </template>
           </FeaturesDropdown>
         </div>
-        <div class="row-metadata" v-if="isShared">
-          <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
-          <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
+        <div class="cell cell--small cell--privacy">
+          <span class="icon icon--privacy" :class="privacyIcon"></span>
+          <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
+        </div>
+        <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
+          <DatasetQuickActions
+            v-if="showInteractiveElements"
+            :dataset="dataset"
+            :isShared="isShared"
+            class="dataset--quick-actions"
+            @open="openQuickActions"
+            @close="closeQuickActions"
+            @contentChanged="onContentChanged"/>
         </div>
       </div>
-    </div>
-    <div class="cell cell--large">
-      <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
-    </div>
-    <div class="cell cell--small">
-      <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
-    </div>
-    <div class="cell cell--small">
-      <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
-    </div>
-    <div class="cell cell--small">
-      <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
-        {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
-      </span>
-
-      <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
-          <span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
-            {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
-          </span>
-
-          <template slot="footer" v-if="dataset.dependent_visualizations_count > 10">
-            + {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count - 10, { n: dataset.dependent_visualizations_count - 10 }) }}
-          </template>
-      </FeaturesDropdown>
-    </div>
-    <div class="cell cell--small cell--privacy">
-      <span class="icon icon--privacy" :class="privacyIcon"></span>
-      <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
-    </div>
-    <div class="cell" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <span class="quick-actions-placeholder" v-if="!showInteractiveElements"></span>
-      <DatasetQuickActions
-        v-if="showInteractiveElements"
-        :dataset="dataset"
-        :isShared="isShared"
-        class="dataset--quick-actions"
-        @open="openQuickActions"
-        @close="closeQuickActions"
-        @contentChanged="onContentChanged"/>
     </div>
   </a>
 </template>
@@ -265,9 +276,12 @@ export default {
   }
 
   &:hover {
+    background-color: $softblue;
+
     &:not(.dataset-row--no-hover) {
       .row-title {
         color: $primary-color;
+        text-decoration: underline;
       }
 
       .tag-list {
@@ -367,16 +381,6 @@ export default {
 
   &:first-of-type {
     margin-left: 0;
-  }
-}
-
-.cell {
-  &:first-of-type {
-    padding-left: 0;
-  }
-
-  &:last-of-type {
-    padding-right: 0;
   }
 }
 

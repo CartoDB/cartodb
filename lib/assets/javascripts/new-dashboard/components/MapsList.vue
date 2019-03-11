@@ -46,7 +46,7 @@
         v-if="shouldShowListHeader">
       </CondensedMapHeader>
 
-      <ul class="grid grid-column grid-cell" v-if="isFetchingMaps">
+      <ul class="grid grid-cell" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
@@ -292,9 +292,23 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-left: 32px;
+  width: 38px;
+  height: 36px;
+  margin-left: 24px;
+  padding: 9px;
   cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: $softblue;
+  }
+
+  &:active {
+    background-color: $primary-color;
+
+    .svgicon {
+      fill: $white;
+    }
+  }
 }
 </style>

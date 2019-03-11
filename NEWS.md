@@ -28,6 +28,8 @@ Development
 - Add new Ghost tables resque task with username as parameter([#14731](https://github.com/CartoDB/cartodb/pull/14731))
 - Add developer center documentation folder to doc [14710](https://github.com/CartoDB/cartodb/pull/14710)
 - Improve feedback popup ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
+- Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
+- Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 
 4.25.2 (2019-02-25)
 -------------------

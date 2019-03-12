@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :user_multifactor_auths do
-      Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, type: :uuid, null: false, index: true, on_delete: :cascade
       String      :type, null: false
       String      :shared_secret, null: false

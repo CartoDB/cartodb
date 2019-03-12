@@ -62,16 +62,16 @@ module CartoDB
           }
         else
           log('Proceeding to register')
-          bolt = Carto::Bolt.new("#{user.username}:#{Carto::Bolt::MUTEX_REDIS_KEY}",
-                                 ttl_ms: Carto::Bolt::MUTEX_TTL_MS)
-          bolt.run_locked(force_block_execution: true) {
-            results.select(&:success?).each { |result|
+          bolt = Carto::Bolt.new("#{user.username}:#{Carto::GhostTablesManager::MUTEX_REDIS_KEY}",
+                                 ttl_ms: Carto::GhostTablesManager::MUTEX_TTL_MS)
+          bolt.run_locked(force_block_execution: true) do
+            results.select(&:success?).each do |result|
               register(result)
-            }
-          }
-          results.select(&:success?).each { |result|
+            end
+          end
+          results.select(&:success?).each do |result|
             create_overviews(result)
-          }
+          end
 
           create_visualization if data_import.create_visualization
         end

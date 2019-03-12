@@ -14,11 +14,11 @@ module Carto
     def run_locked(force_block_execution: false, retriable: false)
       raise 'no code block given' unless block_given?
 
-      is_locked = get_lock()
+      is_locked = get_lock
 
       begin
         loop do
-          yield if (is_locked || force_block_execution)
+          yield if is_locked || force_block_execution
           set_retry_after_finish(is_locked)
           break unless retriable && retry?
         end

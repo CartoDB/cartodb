@@ -65,7 +65,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -87,7 +87,7 @@ describe Organization do
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 3, viewer_seats: 2).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -116,7 +116,7 @@ describe Organization do
     end
 
     it 'destroys users with unregistered tables' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -166,7 +166,7 @@ describe Organization do
 
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
-      org_quota = 1234567890
+      org_quota = 123456789000
       org_name = unique_name('org')
       org_seats = 5
 
@@ -201,7 +201,7 @@ describe Organization do
     end
 
     it 'validates viewer and builder quotas' do
-      quota = 1234567890
+      quota = 123456789000
       name = unique_name('org')
       seats = 1
       viewer_seats = 1
@@ -271,7 +271,7 @@ describe Organization do
 
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -303,7 +303,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -366,7 +366,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
       owner = create_test_user('orgowner')
       user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       user_org.promote_user_to_admin

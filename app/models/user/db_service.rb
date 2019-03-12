@@ -693,9 +693,9 @@ module CartoDB
 
       def set_statement_timeouts
         @user.in_database(as: :superuser) do |user_database|
-          user_database["ALTER ROLE \"?\" SET statement_timeout to ?", @user.database_username.lit,
+          user_database["ALTER ROLE \"?\" SET statement_timeout to ?", Sequel.lit(@user.database_username),
                         @user.user_timeout].all
-          user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", @user.database_name.lit,
+          user_database["ALTER DATABASE \"?\" SET statement_timeout to ?", Sequel.lit(@user.database_name),
                         @user.database_timeout].all
         end
         @user.in_database.disconnect

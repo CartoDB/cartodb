@@ -13,7 +13,7 @@ module Carto
       query
         .where('search_tweets.state' => ::SearchTweet::STATE_COMPLETE)
         .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
-        .sum("search_tweets.retrieved_items".lit).to_i
+        .sum("search_tweets.retrieved_items").to_i
     end
 
     def self.twitter_imports_count_by_date(query, date_from, date_to)

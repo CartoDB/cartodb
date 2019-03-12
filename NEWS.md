@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
 
 4.26.0 (2019-03-11)
 -------------------

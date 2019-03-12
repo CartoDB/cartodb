@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Webpack and static pages optimization ([#14606](https://github.com/CartoDB/cartodb/pull/14606))
 
 4.26.0 (2019-03-11)
 -------------------

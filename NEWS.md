@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 
 4.26.0 (2019-03-11)
 -------------------

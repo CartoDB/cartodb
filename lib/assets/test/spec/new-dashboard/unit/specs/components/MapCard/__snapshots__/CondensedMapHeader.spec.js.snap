@@ -2,19 +2,27 @@
 
 exports[`CondensedMapHeader.vue should render correct contents 1`] = `
 <div class="map-list-row">
-  <div class="map-list-cell cell cell--start"></div>
-  <div class="map-list-cell cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">
-      MapListHeader.name
-    </span></div>
-  <div class="map-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey is-active">
-      MapListHeader.lastModified
-    </span></div>
-  <div class="map-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
-      MapListHeader.views
-    </span></div>
-  <div class="map-list-cell cell cell--medium cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
-      MapListHeader.privacy
-    </span></div>
-  <div class="map-list-cell cell cell--end"></div>
+  <div class="viz-column--main-info">
+    <div class="cell cell--start"></div>
+    <div class="cell cell--main"><span class="text element-sort is-small is-txtSoftGrey">
+        MapListHeader.name
+      </span></div>
+  </div>
+  <div class="viz-column--extra-info">
+    <div class="viz-column--status">
+      <div class="cell"><span class="text element-sort is-small is-txtSoftGrey is-active">
+          MapListHeader.lastModified
+        </span></div>
+    </div>
+    <div class="viz-column--share">
+      <div class="cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
+          MapListHeader.views
+        </span></div>
+      <div class="cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
+          MapListHeader.privacy
+        </span></div>
+      <div class="cell cell--end"></div>
+    </div>
+  </div>
 </div>
 `;

@@ -37,7 +37,7 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
-        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup"/>
+        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup" @feedbackClick="onFeedbackClicked"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -99,16 +99,17 @@ export default {
       this.hasDropdownOpenedForFirstTime = true;
       this.isDropdownOpen = !this.isDropdownOpen;
     },
-
     closeDropdown () {
       this.isDropdownOpen = false;
     },
-
     toggleSearch () {
       this.isSearchOpen = !this.isSearchOpen;
     },
     isHomePage () {
       return (this.$route || {}).name === 'home';
+    },
+    onFeedbackClicked () {
+      this.toggleDropdown();
     }
   }
 };
@@ -269,7 +270,7 @@ export default {
 
 .feedback-popup {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 18px);
   right: 0;
 }
 </style>

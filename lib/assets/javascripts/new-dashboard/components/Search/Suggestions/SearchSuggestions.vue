@@ -3,9 +3,10 @@
     <ul v-if="searchResults" class="suggestions__content">
       <li :class="{'suggestions--active': activeSuggestionIndex === 0 }" @mouseover="updateActiveSuggestion(0)">
         <router-link
-          :to="{ name: searchRoute, params: searchRouteParameters }"
           class="suggestions__header is-caption text"
           :class="{ 'suggestions__header--loading': isFetching }"
+          :to="{ name: searchRoute, params: searchRouteParameters }"
+          :staticRoute="`/dashboard/search/${query}`"
           v-if="query"
           @click.native="onPageChange">
           {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>

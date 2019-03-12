@@ -17,7 +17,7 @@ exports[`Search.vue Rendering should render when search is open and filled corre
   <section class="suggestions suggestions--open">
     <ul class="suggestions__content">
       <li class="">
-        <router-link to="[object Object]" class="suggestions__header is-caption text suggestions__header--loading">
+        <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text suggestions__header--loading">
           Query text
           <!---->
         </router-link>

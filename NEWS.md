@@ -9,6 +9,8 @@ Development
 
 ### Bug fixes / enhancements
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
+- Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
+- Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 
 4.26.0 (2019-03-11)
 -------------------

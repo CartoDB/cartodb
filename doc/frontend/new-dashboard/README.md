@@ -46,7 +46,7 @@ Root folder of new dashboard is `lib/assets/javascripts/new-dashboard`. You will
 	Standalone components that can be composed or used within other components or pages.
 
 - **core**\
-	Set of common domain login separated from components. An example of this functions would be visualization functions to generate the proper visualisations' URL link.
+	Set of common domain login separated from components. An example of this functions would be visualization functions to generate the proper visualizations' URL link.
 
 - **directives**\
 	Common application directives for DOM behaviour like closing dropdowns when clicking outside.
@@ -103,7 +103,7 @@ There are several submodules attached to the main store that allow us to split a
 
 The way we handle actions and mutations is pretty straightforward.
 
-We do not manipulate data coming from API outside of the store, and whenever we need to retrieve visualisations or any other kind of data needed to render a page we do it through the store.
+We do not manipulate data coming from API outside of the store, and whenever we need to retrieve visualizations or any other kind of data needed to render a page we do it through the store.
 
 The flow would be like this:
 Let's say that we need visualizations to be rendered within a random component.

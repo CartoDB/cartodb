@@ -5,7 +5,7 @@ exports[`DatasetCard.vue should add class selected to the card when the property
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input is-selected"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">
@@ -36,7 +36,7 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">
@@ -70,7 +70,7 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">
@@ -101,7 +101,7 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">
@@ -135,7 +135,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">
@@ -172,7 +172,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
   <div class="cell cell--start">
     <div class="row-dataType">
       <div class="icon--dataType icon--point"></div>
-    </div> <span class="checkbox row-checkbox"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+    </div> <span class="checkbox row-checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   </div>
   <div class="cell cell--main">
     <div class="title-container">

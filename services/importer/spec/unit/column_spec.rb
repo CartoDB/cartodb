@@ -200,7 +200,7 @@ describe Column do
   describe '#records_with_data' do
     it 'returns a dataset with those records with  data in this column' do
       @column.records_with_data.should be_empty
-      @column.records_with_data.should be_an_instance_of Sequel::Postgres::Dataset
+      @column.records_with_data.is_a?(Sequel::Postgres::Dataset).should be_true
 
       @dataset.insert(random_wkt_record)
       @column.records_with_data.should_not be_empty

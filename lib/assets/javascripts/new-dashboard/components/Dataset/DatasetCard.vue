@@ -58,7 +58,9 @@
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
         <div class="cell cell--small">
-          <span class="text is-small is-txtSoftGrey">{{ $tc(`DatasetCard.numberRows`, dataset.table.row_count) }}</span>
+          <span class="text is-small is-txtSoftGrey" :title="$tc(`DatasetCard.numberRows`, dataset.table.row_count, { count: getNumberInLocaleFormat(dataset.table.row_count) })">
+            {{ $tc(`DatasetCard.numberRows`, dataset.table.row_count, { count: numberFormatter(dataset.table.row_count) }) }}
+          </span>
         </div>
         <div class="cell cell--xsmall">
           <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
@@ -106,6 +108,7 @@ import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/models/visualization';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
+import * as Formatter from 'new-dashboard/utils/formatter';
 
 export default {
   name: 'DatasetCard',
@@ -201,12 +204,14 @@ export default {
         event: $event
       });
     },
+    getNumberInLocaleFormat (number) {
+      return number.toLocaleString();
+    },
     humanFileSize (size) {
-      if (size === 0) {
-        return '0 B';
-      }
-      const i = Math.floor(Math.log(size) / Math.log(1024));
-      return `${(size / Math.pow(1024, i)).toFixed(2) * 1} ${['B', 'kB', 'MB', 'GB', 'TB'][i]}`;
+      return Formatter.humanFileSize(size);
+    },
+    numberFormatter(size){
+      return Formatter.numberFormatter(size);
     },
     toggleFavorite () {
       if (this.$props.dataset.liked) {
@@ -343,7 +348,7 @@ export default {
   padding: 9px;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-  border-radius: 4px;
+  border-radius: 2px;
   background-color: $light-grey;
 
   .row-typeIcon {

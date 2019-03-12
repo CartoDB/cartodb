@@ -26,6 +26,30 @@ module Carto
       @bolt.run_locked { other_bolt.run_locked {}.should be_false }.should be_true
     end
 
+    it 'should allow execute another block if force executiong is passed' do
+      other_bolt = Carto::Bolt.new('manolo_bolt_locked')
+
+      flag = false
+      @bolt.run_locked {
+        other_bolt.run_locked(force_block_execution: true) {flag=true} 
+      }.should be_true
+      flag.should be_true
+    end
+
+    it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
+
+      flag = 0
+      @bolt.run_locked(retriable: true) {
+        flag = flag + 1
+        sleep(1)
+      }.should be_true
+      p1 = fork { 
+        other_bolt = Carto::Bolt.new('manolo_bolt_locked')
+        other_bolt.run_locked {}.should be_false
+      }
+      flag.should be 2
+    end
+
     it 'should expire a lock after ttl_ms' do
       ttl_ms = 200
 

@@ -7,8 +7,8 @@
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.title`) }}</h6>
       <ul>
         <template v-for="action in actions">
-          <li :key="action.name" v-if="!action.shouldBeHidden">
-            <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
+          <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
+            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
           </li>
         </template>
       </ul>
@@ -97,13 +97,20 @@ export default {
 }
 
 .action {
-  display: block;
-  padding: 12px 24px;
-  border-bottom: 1px solid $softblue;
+  &__item {
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $softblue;
+    }
+  }
 
-  &:hover,
-  &:focus {
-    background-color: $softblue;
+  &__text {
+    display: block;
+    padding: 12px 24px;
+
+    &:hover,
+    &:focus {
+      background-color: $softblue;
+    }
   }
 }
 </style>

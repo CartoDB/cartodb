@@ -169,7 +169,6 @@ export default {
   width: 100%;
   padding: 16px 16px 16px 38px;
   overflow: hidden;
-  border-bottom: 1px solid $grey;
   color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;

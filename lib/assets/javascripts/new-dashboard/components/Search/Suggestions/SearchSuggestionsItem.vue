@@ -38,12 +38,19 @@ export default {
   width: 100%;
   padding: 12px 16px 12px 36px;
   overflow: hidden;
-  border-bottom: 1px solid $softblue;
   color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $softblue;
+  }
+
+  &:first-of-type {
+    border-top: 1px solid $grey;
+  }
 
   &::after {
     content: '';

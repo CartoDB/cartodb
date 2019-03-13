@@ -27,7 +27,7 @@
               <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
             </li>
 
-            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">
+            <div class="is-caption text maps--empty" v-if="!hasMaps">
               {{ $t('SearchPage.emptyText.maps') }}
             </div>
           </ul>

@@ -86,6 +86,10 @@ export default {
 }
 
 .type {
+  &:not(:last-child) {
+    border-bottom: 1px solid $softblue;
+  }
+
   &.type--selected {
     position: relative;
 
@@ -107,7 +111,6 @@ export default {
 .element {
   display: block;
   padding: 12px 24px 12px 36px;
-  border-bottom: 1px solid $softblue;
 
   &--inline {
     display: inline-block;

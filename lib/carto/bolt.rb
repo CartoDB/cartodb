@@ -45,6 +45,7 @@ module Carto
           current_attempt += 1
         end
       end
+      CartoDB::Logger.warning(message: "Couldn't acquire bolt and finish the task") unless is_locked && current_attempt < attempts
       is_locked
     end
 

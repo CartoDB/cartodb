@@ -48,7 +48,9 @@ module Carto
       end
       thr = Thread.new do
         flag = false
-        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1) { flag=true }
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1) do
+         flag=true
+        end
         flag.should be_false
       end
       thr.join
@@ -68,6 +70,23 @@ module Carto
       end
       thr.join
     end
+
+    it 'should execute once the rerun_func part despite of the number of calls to acquire the lock' do
+      Thread.new do
+        flag = 0
+        @bolt.run_locked(rerun_func: lambda {flag += 1}) {
+          flag += 1
+          sleep(1)
+        }.should be_true
+        flag.should eq(2)
+      end
+      threads = []
+      (1..10).each do
+        threads << Thread.new { Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_false }
+      end
+      threads.each { |thr| thr.join }
+    end
+
 
     it 'should expire a lock after ttl_ms' do
       ttl_ms = 200

@@ -22,9 +22,8 @@ module Carto
       is_locked = acquire_lock(attempts, timeout)
 
       begin
-        yield if is_locked
-        set_retry_after_finish unless is_locked
-        rerun_func.call if is_locked && retry?
+        is_locked ? yield : set_rerun_after_finish
+        try_to_rerun(rerun_func) if is_locked
         !!is_locked
       ensure
         unlock if is_locked
@@ -49,6 +48,16 @@ module Carto
       is_locked
     end
 
+    def try_to_rerun(rerun_func)
+      loop do
+        if retry?
+          rerun_func.call
+        else
+          break
+        end
+      end
+    end
+
     def is_proc?(proc)
       proc && proc.respond_to?(:call)
     end
@@ -68,7 +77,7 @@ module Carto
       @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
     end
 
-    def set_retry_after_finish
+    def set_rerun_after_finish
       @redis_object.set("#{@bolt_key}:retry", true, px: @ttl_ms, nx: true)
     end
 

@@ -27,7 +27,7 @@ module Carto
     end
 
     it 'should wait for execution if we pass attempts parameters' do
-      Thread.new do
+      main = Thread.new do
         @bolt.run_locked {
           sleep(1)
         }.should be_true
@@ -38,10 +38,11 @@ module Carto
         flag.should be_true
       end
       thr.join
+      main.join
     end
 
     it 'should wait for execution and exit without complete it if timeout and retries reach the limit' do
-      Thread.new do
+      main = Thread.new do
         @bolt.run_locked {
           sleep(1)
         }.should be_true
@@ -54,10 +55,11 @@ module Carto
         flag.should be_false
       end
       thr.join
+      main.join
     end
 
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
-      Thread.new do
+      main = Thread.new do
         flag = 0
         @bolt.run_locked(rerun_func: lambda {flag += 1}) {
           flag += 1
@@ -69,22 +71,27 @@ module Carto
         Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_false
       end
       thr.join
+      main.join
     end
 
     it 'should execute once the rerun_func part despite of the number of calls to acquire the lock' do
-      Thread.new do
+      main = Thread.new do
         flag = 0
-        @bolt.run_locked(rerun_func: lambda {flag += 1}) {
+        @bolt.run_locked(rerun_func: lambda { sleep(1); flag += 1}) {
           flag += 1
           sleep(1)
         }.should be_true
-        flag.should eq(2)
+        flag.should > 2
       end
       threads = []
-      (1..10).each do
-        threads << Thread.new { Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_false }
+      (1..5).each do
+        t = Thread.new do
+          Carto::Bolt.new('manolo_bolt_locked').run_locked {};
+          sleep(1.0/4.0)
+        end
+        t.join
       end
-      threads.each { |thr| thr.join }
+      main.join
     end
 
 

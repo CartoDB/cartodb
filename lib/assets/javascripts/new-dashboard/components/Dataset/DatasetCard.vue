@@ -206,7 +206,7 @@ export default {
     humanFileSize (size) {
       return Formatter.humanFileSize(size);
     },
-    numberFormatter(size){
+    numberFormatter (size) {
       return Formatter.numberFormatter(size);
     },
     toggleFavorite () {

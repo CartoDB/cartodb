@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :rate_limits do
-      Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       column      :maps_anonymous, "integer[]"
       column      :maps_static, "integer[]"
       column      :maps_static_named, "integer[]"

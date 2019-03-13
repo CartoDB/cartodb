@@ -535,6 +535,7 @@ describe SessionsController do
 
       before(:all) do
         create
+        Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
         @user.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user.id)
         @user.save
 

@@ -28,7 +28,9 @@
           </li>
         </ul>
         <div class="quota-billing">
-          <span class="quota-billingday text is-small is-txtSoftGrey">{{ $t(`QuotaSection.credits`, { day: billingDay })}}</span>
+          <span class="quota-billingday text is-small is-txtSoftGrey">
+            {{ $tc(`QuotaSection.credits`, remainingDaysUntilLDSRenewal, { remainingDays: remainingDaysUntilLDSRenewal, day: billingDay })}}
+          </span>
         </div>
       </div>
     </div>
@@ -41,6 +43,7 @@ import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import format from 'date-fns/format';
+import differenceInDays from 'date-fns/difference_in_days';
 
 export default {
   name: 'QuotasModule',
@@ -69,6 +72,9 @@ export default {
     },
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');
+    },
+    remainingDaysUntilLDSRenewal () {
+      return differenceInDays(new Date(this.billingPeriod), new Date());
     },
     storageHelpLink () {
       return 'https://carto.com/help/your-account/your-disk-storage/';

@@ -310,7 +310,7 @@ describe Table do
 
       it "should return a sequel interface" do
         table = create_table :user_id => @user.id
-        table.sequel.class.should == Sequel::Postgres::Dataset
+        table.sequel.is_a?(Sequel::Postgres::Dataset).should be_true
       end
 
       it "should have a privacy associated and it should be private by default" do

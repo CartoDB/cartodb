@@ -94,6 +94,12 @@ module Carto
       main.join
     end
 
+    it 'should raise error if rerun_func is not a lambda' do
+      expect {
+        @bolt.run_locked(rerun_func: "lala") {}.should_raise
+      }.to raise_error('no proc/lambda passed as rerun_func')
+    end
+
 
     it 'should expire a lock after ttl_ms' do
       ttl_ms = 200

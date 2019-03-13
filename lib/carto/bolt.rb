@@ -15,15 +15,15 @@ module Carto
 
     def run_locked(attempts: DEFAULT_RETRY_ATTEMPTS,
                    timeout: DEFAULT_RETRY_TIMEOUT,
-                   rerun_func: lambda {})
+                   rerun_func: nil)
       raise 'no code block given' unless block_given?
-      raise 'no proc/lambda give as rerun_func' unless is_proc?(rerun_func)
+      raise 'no proc/lambda passed as rerun_func' if rerun_func.present? && !is_proc?(rerun_func)
 
       is_locked = acquire_lock(attempts, timeout)
 
       begin
         is_locked ? yield : set_rerun_after_finish
-        try_to_rerun(rerun_func) if is_locked
+        try_to_rerun(rerun_func) if is_locked && rerun_func.present?
         !!is_locked
       ensure
         unlock if is_locked
@@ -59,7 +59,7 @@ module Carto
     end
 
     def is_proc?(proc)
-      proc && proc.respond_to?(:call)
+      proc.respond_to?(:call)
     end
 
     def unlock

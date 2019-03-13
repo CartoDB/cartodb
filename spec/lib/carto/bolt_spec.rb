@@ -34,7 +34,7 @@ module Carto
       end
       thr = Thread.new do
         flag = false
-        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1000) { flag=true }
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1000) { flag = true }
         flag.should be_true
       end
       thr.join
@@ -49,9 +49,7 @@ module Carto
       end
       thr = Thread.new do
         flag = false
-        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1) do
-         flag=true
-        end
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1) { flag = true }
         flag.should be_false
       end
       thr.join
@@ -61,7 +59,7 @@ module Carto
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
       main = Thread.new do
         flag = 0
-        @bolt.run_locked(rerun_func: lambda {flag += 1}) {
+        @bolt.run_locked(rerun_func: lambda { flag += 1 }) {
           flag += 1
           sleep(1)
         }.should be_true
@@ -77,17 +75,20 @@ module Carto
     it 'should execute once the rerun_func part despite of the number of calls to acquire the lock' do
       main = Thread.new do
         flag = 0
-        @bolt.run_locked(rerun_func: lambda { sleep(1); flag += 1}) {
+        rerun_func = lambda do
+          sleep(1)
+          flag += 1
+        end
+        @bolt.run_locked(rerun_func: rerun_func) {
           flag += 1
           sleep(1)
         }.should be_true
         flag.should > 2
       end
-      threads = []
-      (1..5).each do
+      5.times do
         t = Thread.new do
-          Carto::Bolt.new('manolo_bolt_locked').run_locked {};
-          sleep(1.0/4.0)
+          Carto::Bolt.new('manolo_bolt_locked').run_locked {}
+          sleep(1.0 / 4.0)
         end
         t.join
       end
@@ -99,7 +100,6 @@ module Carto
         @bolt.run_locked(rerun_func: "lala") {}.should_raise
       }.to raise_error('no proc/lambda passed as rerun_func')
     end
-
 
     it 'should expire a lock after ttl_ms' do
       ttl_ms = 200

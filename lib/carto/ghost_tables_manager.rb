@@ -227,7 +227,7 @@ module Carto
       new_table.keep_user_database_table = true
 
       new_table.save
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error creating UserTable',
                             exception: exception,
                             user: user,
@@ -248,7 +248,7 @@ module Carto
       user_table_vis.name = name
 
       user_table_vis.store
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error renaming Visualization',
                             exception: exception,
                             user: user,
@@ -269,7 +269,7 @@ module Carto
       table_to_drop = ::Table.new(user_table: user_table_to_drop)
       table_to_drop.keep_user_database_table = true
       table_to_drop.destroy
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',
                             exception: exception,
                             user: user,
@@ -288,7 +288,7 @@ module Carto
 
       user_table_to_regenerate.table_id = id
       user_table_to_regenerate.save
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
                             exception: exception,
                             user: user,

@@ -24,7 +24,7 @@ exports[`DatasetListHeader.vue should render correct contents 1`] = `
       <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
           DatasetListHeader.usage
         </span></div>
-      <div class="dataset-list-cell cell cell--small cell--privacy"><span class="text element-sort is-small is-txtSoftGrey">
+      <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
           DatasetListHeader.privacy
         </span></div>
       <div class="dataset-list-cell cell cell--end"></div>

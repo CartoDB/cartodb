@@ -23,7 +23,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -60,7 +60,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -97,7 +97,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -134,7 +134,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -172,7 +172,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -209,7 +209,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -246,7 +246,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -283,7 +283,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -326,7 +326,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -380,7 +380,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>
@@ -420,7 +420,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
-      <div class="cell cell--privacy cell--small"><span class="icon icon--privacy icon--public"></span>
+      <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
         </p>

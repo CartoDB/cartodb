@@ -169,7 +169,7 @@ export default {
 }
 
 .page-section {
-  margin-bottom: 12px;
+  margin-bottom: 48px;
 
   &.has-pagination,
   &:last-child {

@@ -28,12 +28,21 @@ a {
 .button--ghost {
   background: transparent;
   color: $primary-color;
+
+  &:hover {
+    background: transparent;
+    text-decoration: underline;
+  }
 }
 
 .button--outline {
   border: 1px solid $primary-color;
   background: $white;
   color: $primary-color;
+
+  &:hover {
+    background: $softblue;
+  }
 }
 
 .button-icon {

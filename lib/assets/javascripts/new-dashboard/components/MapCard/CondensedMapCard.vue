@@ -70,8 +70,7 @@
           <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
         </div>
 
-        <div class="cell cell--privacy cell--small">
-          <span class="icon icon--privacy" :class="privacyIcon"></span>
+        <div class="cell cell--small">
           <p class="text is-small is-txtSoftGrey">
             {{ $t(`MapCard.shared.${visualization.privacy}`) }}
           </p>
@@ -227,47 +226,6 @@ export default {
     }
   }
 
-  .cell--privacy {
-    display: flex;
-    align-items: center;
-
-    .icon {
-      display: flex;
-      justify-content: center;
-      width: 18px;
-      height: 18px;
-      margin-right: 8px;
-      background-repeat: no-repeat;
-      background-position: center;
-
-      &.icon--privacy {
-        background-repeat: no-repeat;
-        background-position: center;
-      }
-
-      &.icon--private {
-        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-lock.svg");
-      }
-
-      &.icon--public {
-        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-public.svg");
-      }
-
-      &.icon--link {
-        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-link.svg");
-      }
-
-      &.icon--password {
-        background-image: url("../../assets/icons/maps/privacy/condensed/condensed-password.svg");
-      }
-
-      &.icon--sharedBy {
-        border-radius: 2px;
-        background-size: contain;
-      }
-    }
-  }
-
   .quick-actions-placeholder {
     display: block;
     width: 24px;
@@ -346,7 +304,7 @@ export default {
     display: flex;
 
     li {
-      margin-right: .2em;
+      margin-right: 0.2em;
     }
   }
 

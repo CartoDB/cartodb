@@ -82,8 +82,7 @@
               </template>
           </FeaturesDropdown>
         </div>
-        <div class="cell cell--small cell--privacy">
-          <span class="icon icon--privacy" :class="privacyIcon"></span>
+        <div class="cell cell--small">
           <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
         </div>
         <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -144,9 +143,6 @@ export default {
     };
   },
   computed: {
-    privacyIcon () {
-      return `icon--${this.$props.dataset.privacy}`.toLowerCase();
-    },
     lastUpdated () {
       if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {
         return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.synchronization.updated_at, new Date()) });
@@ -345,6 +341,8 @@ export default {
 .row-dataType {
   width: 36px;
   height: 36px;
+  margin-right: 6px;
+  margin-left: 6px;
   padding: 9px;
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
@@ -366,7 +364,7 @@ export default {
 
 .row-checkbox {
   position: absolute;
-  left: 6px;
+  left: 12px;
   transform: translateY(250%);
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   opacity: 0;
@@ -395,42 +393,6 @@ export default {
   align-self: flex-start;
   height: 100%;
   overflow: hidden;
-}
-
-.cell--privacy {
-  display: flex;
-  align-items: center;
-}
-
-.icon--privacy {
-  display: flex;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-  background-repeat: no-repeat;
-  background-position: center;
-
-  &.icon--private {
-    background-image: url("../../assets/icons/datasets/privacy/dataset-lock.svg");
-  }
-
-  &.icon--public {
-    background-image: url("../../assets/icons/datasets/privacy/dataset-public.svg");
-  }
-
-  &.icon--link {
-    background-image: url("../../assets/icons/datasets/privacy/dataset-link.svg");
-  }
-
-  &.icon--password {
-    background-image: url("../../assets/icons/datasets/privacy/dataset-password.svg");
-  }
-
-  &.icon--sharedBy {
-    border-radius: 2px;
-    background-size: contain;
-  }
 }
 
 .icon--dataType {

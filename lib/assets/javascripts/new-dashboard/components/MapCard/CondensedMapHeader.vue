@@ -28,7 +28,7 @@
             {{ $t(`MapListHeader.views`) }}
           </span>
         </div>
-        <div class="cell cell--small cell--privacy" @click="changeOrder('privacy')">
+        <div class="cell cell--small" @click="changeOrder('privacy')">
           <span class="text element-sort is-small is-txtSoftGrey"
                 :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
             {{ $t(`MapListHeader.privacy`) }}
@@ -106,12 +106,7 @@ export default {
 }
 
 .cell--end {
-  width: 24px;
-}
-
-.cell--privacy {
-  display: flex;
-  align-items: center;
+  width: 34px;
 }
 
 .element-sort {

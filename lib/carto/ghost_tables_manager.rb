@@ -40,6 +40,10 @@ module Carto
         (cartodbfied_tables - user_tables).empty?
     end
 
+    def get_bolt
+      Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
+    end
+
     private
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
@@ -54,9 +58,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      bolt = Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
-
-      got_locked = bolt.run_locked(rerun_func: {sync} ) { sync }
+      got_locked = get_bolt.run_locked(rerun_func: lambda { sync }) { sync }
 
       CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
     end

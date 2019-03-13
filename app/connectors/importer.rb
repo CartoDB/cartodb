@@ -62,9 +62,9 @@ module CartoDB
           }
         else
           log('Proceeding to register')
-          bolt = Carto::Bolt.new("#{user.username}:#{Carto::GhostTablesManager::MUTEX_REDIS_KEY}",
-                                 ttl_ms: Carto::GhostTablesManager::MUTEX_TTL_MS)
-          rerun_func = lambda { Carto::GhostTablesManager.new(user.id).sync }
+          gtm = Carto::GhostTablesManager.new(user.id)
+          bolt = gtm.get_bolt
+          rerun_func = lambda { gtm.sync }
           bolt.run_locked(attempts: 10, timeout: 30000, rerun_func: rerun_func) do
             results.select(&:success?).each do |result|
               register(result)

@@ -148,8 +148,6 @@ module Carto
       ).first['org_member_role']
     end
 
-    private
-
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
     def cartodb_extension_semver(extension_version)
       extension_version.split('.').take(3).map(&:to_i)

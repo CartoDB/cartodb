@@ -300,9 +300,11 @@ module CartoDB
       def add_liked_by_conditions_to_dataset(dataset, user_id)
         user_shared_vis = user_shared_vis(user_id)
         dataset.where {
-          { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] } |
-          { user_id: user_id } |
-          { visualizations__id: user_shared_vis }
+          Sequel.|(
+            { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] },
+            { user_id: user_id },
+            { visualizations__id: user_shared_vis }
+          )
         }
         # TODO: this probably introduces duplicates. See #2899.
         # Should be removed when like count and list matches for organizations

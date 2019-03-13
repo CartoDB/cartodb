@@ -120,7 +120,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
 
   def data_imports
     page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
-    dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
+    dataset = @user.data_imports_dataset.order(Sequel.desc(order)).paginate(page, per_page)
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
     total_entries = dataset.pagination_record_count

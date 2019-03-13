@@ -26,28 +26,47 @@ module Carto
       @bolt.run_locked { other_bolt.run_locked {}.should be_false }.should be_true
     end
 
-    it 'should allow execute another block if force executiong is passed' do
-      other_bolt = Carto::Bolt.new('manolo_bolt_locked')
+    it 'should wait for execution if we pass attempts parameters' do
+      Thread.new do
+        @bolt.run_locked {
+          sleep(1)
+        }.should be_true
+      end
+      thr = Thread.new do
+        flag = false
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1000) { flag=true }
+        flag.should be_true
+      end
+      thr.join
+    end
 
-      flag = false
-      @bolt.run_locked {
-        other_bolt.run_locked(force_block_execution: true) {flag=true} 
-      }.should be_true
-      flag.should be_true
+    it 'should wait for execution and exit without complete it if timeout and retries reach the limit' do
+      Thread.new do
+        @bolt.run_locked {
+          sleep(1)
+        }.should be_true
+      end
+      thr = Thread.new do
+        flag = false
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(attempts: 5, timeout: 1) { flag=true }
+        flag.should be_false
+      end
+      thr.join
     end
 
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
-
-      flag = 0
-      @bolt.run_locked(retriable: true) {
-        flag = flag + 1
-        sleep(1)
-      }.should be_true
-      p1 = fork { 
-        other_bolt = Carto::Bolt.new('manolo_bolt_locked')
-        other_bolt.run_locked {}.should be_false
-      }
-      flag.should be 2
+      Thread.new do
+        flag = 0
+        @bolt.run_locked(rerun_func: lambda {flag += 1}) {
+          flag += 1
+          sleep(1)
+        }.should be_true
+        flag.should eq(2)
+      end
+      thr = Thread.new do
+        Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_false
+      end
+      thr.join
     end
 
     it 'should expire a lock after ttl_ms' do

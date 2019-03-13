@@ -10,7 +10,7 @@ migration(
     drop_column :visualization_backups, :export_vizjson
 
     add_column :visualization_backups, :id, :uuid, default: Sequel.lit('uuid_generate_v4()'), null: false
-    add_column :visualization_backups, :export, String, null: false
+    add_column :visualization_backups, :export, JSON, null: false
     run "ALTER TABLE visualization_backups ADD PRIMARY KEY (id)"
   end,
   Proc.new do

@@ -12,6 +12,7 @@ Development
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
 - Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 - Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
+- Webpack and static pages optimization ([#14606](https://github.com/CartoDB/cartodb/pull/14606))
 
 4.26.0 (2019-03-11)
 -------------------

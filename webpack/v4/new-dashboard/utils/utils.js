@@ -1,6 +1,4 @@
 'use strict';
-const path = require('path');
-const { name } = require('../../package.json');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 exports.cssLoaders = function (options) {
@@ -54,39 +52,5 @@ exports.cssLoaders = function (options) {
     scss: generateLoaders('sass'),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
-  };
-};
-
-// Generate loaders for standalone style files (outside of .vue)
-exports.styleLoaders = function (options) {
-  const output = [];
-  const loaders = exports.cssLoaders(options);
-
-  for (const extension in loaders) {
-    const loader = loaders[extension];
-    output.push({
-      test: new RegExp('\\.' + extension + '$'),
-      use: loader
-    });
-  }
-
-  return output;
-};
-
-exports.createNotifierCallback = () => {
-  const notifier = require('node-notifier');
-
-  return (severity, errors) => {
-    if (severity !== 'error') return;
-
-    const error = errors[0];
-    const filename = error.file && error.file.split('!').pop();
-
-    notifier.notify({
-      title: name,
-      message: severity + ': ' + error.name,
-      subtitle: filename || '',
-      icon: path.join(__dirname, 'logo.png')
-    });
   };
 };

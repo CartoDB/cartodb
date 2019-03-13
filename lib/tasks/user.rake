@@ -94,11 +94,11 @@ namespace :user do
     def install_ghost_tables_trigger(user_id)
       user = ::User.find(id: user_id)
       if user.nil?
-        raise "ERROR: User #{username} does not exist"
+        puts "ERROR: User #{username} does not exist"
       elsif user.organization_user? && !user.organization_owner?
-        raise "ERROR: User #{username} must be an org owner or not to be an organization user"
+        puts "ERROR: User #{username} must be an org owner or not to be an organization user"
       elsif user.has_feature_flag?('ghost_tables_trigger_disabled')
-        raise "ERROR: User #{username} have the 'ghost_tables_trigger_disabled' feature flag"
+        puts "WARN: Skipping user #{username} (it has 'ghost_tables_trigger_disabled' feature flag)"
       else
         user.db_service.create_ghost_tables_event_trigger
       end
@@ -116,9 +116,9 @@ namespace :user do
     def drop_ghost_tables_trigger(user_id)
       user = ::User.find(id: user_id)
       if user.nil?
-        raise "ERROR: User #{username} does not exist"
+        puts "ERROR: User #{username} does not exist"
       elsif user.organization_user? && !user.organization_owner?
-        raise "ERROR: User #{username} must be an org owner or not to be an organization user"
+        puts "ERROR: User #{username} must be an org owner or not to be an organization user"
       else
         user.db_service.drop_ghost_tables_event_trigger
       end

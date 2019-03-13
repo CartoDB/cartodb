@@ -36,8 +36,8 @@ module Carto
     def acquire_lock(attempts, timeout)
       current_attempt = 1
       is_locked = false
-      loop do
-        is_locked = get_lock()
+      while current_attempt <= attempts do
+        is_locked = get_lock
         if (is_locked || current_attempt == attempts)
           break
         else

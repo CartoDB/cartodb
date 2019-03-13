@@ -9,7 +9,7 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
         <!---->
         <ul class="grid-cell grid-cell--col12">
-          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty">
+          <div class="is-caption text maps--empty">
             SearchPage.emptyText.maps
           </div>
         </ul>

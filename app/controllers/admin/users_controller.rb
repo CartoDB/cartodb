@@ -34,8 +34,4 @@ class Admin::UsersController < Admin::AdminController
   def setup_user
     @user = current_user
   end
-
-  def check_new_dashboard
-    current_user.builder_enabled?
-  end
 end

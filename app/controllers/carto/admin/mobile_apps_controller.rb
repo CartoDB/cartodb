@@ -150,8 +150,4 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
       "#{relative_url_root}/#{frontend_version}/images/avatars/mobile_app_default_avatar.png"
     end
   end
-
-  def check_new_dashboard
-    current_user.builder_enabled?
-  end
 end

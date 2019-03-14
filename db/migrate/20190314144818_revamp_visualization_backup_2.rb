@@ -7,7 +7,7 @@ migration(
     create_table :visualization_backups do
       Uuid      :id,                primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, type: :uuid, null: false, on_delete: :cascade
-      foreign_key :visualization_id, :visualizations, type: :uuid, null: false
+      Uuid      :visualization_id,  null: false
       DateTime  :created_at,        default: Sequel::CURRENT_TIMESTAMP
       String    :category,          null: false
       json      :export,            null: false

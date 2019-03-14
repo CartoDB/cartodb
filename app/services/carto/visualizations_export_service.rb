@@ -28,22 +28,7 @@ module Carto
 
       data = export_to_json(visualization)
 
-      backup_present = Carto::VisualizationBackup.where(
-        username: visualization.user.username,
-        visualization: visualization.id).first != nil
-
-      if backup_present
-        false
-      else
-        backup_entry = Carto::VisualizationBackup.new(
-          username: visualization.user.username,
-          visualization: visualization.id,
-          export_vizjson: data
-        )
-        backup_entry.save
-
-        true
-      end
+      false
     rescue VisualizationsExportServiceError => export_error
       raise export_error
     rescue => exception
@@ -116,18 +101,11 @@ module Carto
     end
 
     def retrieve_old_backups
-      max_date = Date.today - DAYS_TO_KEEP_BACKUP
-      Carto::VisualizationBackup.where("created_at <= ?", max_date).pluck(:visualization)
+      return []
     end
 
     def remove_backup(visualization_id)
-      backup_item = Carto::VisualizationBackup.where(visualization: visualization_id).first
-      if backup_item
-        backup_item.destroy
-        true
-      else
-        false
-      end
+      false
     end
 
     def restore_backup(visualization_id, skip_version_check)
@@ -143,18 +121,7 @@ module Carto
     end
 
     def get_restore_data(visualization_id, skip_version_check)
-      restore_data = Carto::VisualizationBackup.where(visualization: visualization_id).first
-      unless restore_data
-        raise VisualizationsExportServiceError.new("Restore data not found for visualization id #{visualization_id}")
-      end
-      data = ::JSON.parse(restore_data.export_vizjson)
-
-      if data["export_version"] != export_version && !skip_version_check
-        raise VisualizationsExportServiceError.new(
-          "Stored data has different version (#{data['export_version']}) than Service (#{export_version})")
-      end
-
-      data
+      raise VisualizationsExportServiceError.new("Restore data not found for visualization id #{visualization_id}")
     end
 
     def add_overlays(visualization, exported_data)

@@ -31,12 +31,13 @@
           {{ visualization.name }}
         </h3>
 
+
         <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
 
-      <div class="metadata" v-if="hasTags || isShared">
+      <div class="metadata" v-if="hasTags || isShared || SharedWithColleaguesLength">
         <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
 
@@ -49,11 +50,15 @@
             <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
+
         <div class="metadata__element" v-if="isShared">
           <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
         </div>
+
+        <SharedBrief class="metadata__element" v-if="SharedWithColleaguesLength && !isShared" :colleagues="isSharedWithColleagues" />
       </div>
+
     </div>
 
     <div class="cell cell--large">
@@ -84,6 +89,7 @@ import computed from './shared/computed';
 import data from './shared/data';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import SharedBrief from 'new-dashboard/components/SharedBrief';
 import methods from './shared/methods';
 import props from './shared/props';
 
@@ -91,7 +97,8 @@ export default {
   name: 'CondensedMapCard',
   components: {
     MapQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    SharedBrief
   },
   props,
   data () {

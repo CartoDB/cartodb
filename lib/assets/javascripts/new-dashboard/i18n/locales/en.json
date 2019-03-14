@@ -318,5 +318,12 @@
   "FeedbackMessage": {
     "title": "Share your feedback with us.",
     "message": "Do you miss something? Should we be doing something differently?"
+  },
+  "SharedBrief": {
+    "sharedWith": "Shared with",
+    "org": "all your organization",
+    "groups": "{groupname} | {n} groups",
+    "users": "{username} | {n} users",
+    "and": "and"
   }
 }

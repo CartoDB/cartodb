@@ -29,7 +29,7 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
-      <div class="row-metadataContainer" v-if="hasTags || isShared">
+      <div class="row-metadataContainer" v-if="hasTags || isShared || sharedWithColleguesLength">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -45,6 +45,9 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
+
+
+        <SharedBrief class="row-metadata" v-if="sharedWithColleguesLength && !isShared" :colleagues="isSharedWithColleagues" />
       </div>
     </div>
     <div class="cell cell--large">
@@ -94,13 +97,15 @@ import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQu
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/models/visualization';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
+import SharedBrief from 'new-dashboard/components/SharedBrief';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
 
 export default {
   name: 'DatasetCard',
   components: {
     DatasetQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    SharedBrief
   },
   props: {
     dataset: Object,
@@ -180,6 +185,12 @@ export default {
     },
     vizUrl () {
       return Visualization.getURL(this.$props.dataset, this.$cartoModels);
+    },
+    isSharedWithColleagues () {
+      return this.$props.dataset.permission.acl;
+    },
+    sharedWithColleguesLength () {
+      return this.$props.dataset.permission.acl.length;
     }
   },
   methods: {

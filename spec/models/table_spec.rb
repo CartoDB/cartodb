@@ -1384,14 +1384,20 @@ describe Table do
         table = Table.new(user_table: UserTable[data_import.table_id])
         table.should_not be_nil, "Import failure: #{data_import.log}"
         table.name.should match(/^twitters/)
+
         @user.user_timeout = 1
         @user.database_timeout = 1
         @user.save
-        table.update_table_geom_pg_stats
+
+        begin
+          table.update_table_geom_pg_stats
+        ensure
+          @user.user_timeout = old_user_timeout
+          @user.database_timeout = old_user_db_timeout
+          @user.save
+        end
+
         table.rows_counted.should == 7
-        @user.user_timeout = old_user_timeout
-        @user.database_timeout = old_user_db_timeout
-        @user.save
       end
 
       it "should not drop a table that exists when upload fails" do

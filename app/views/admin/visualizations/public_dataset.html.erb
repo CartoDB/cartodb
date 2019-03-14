@@ -33,34 +33,6 @@
     var api_key             = <%= safe_js_object @api_key.to_json %>;
     var base_url            = '<%= @table.owner.public_url(nil, request.protocol == "https://" ? "https" : "http") %>';
     var login_url           = "<%= CartoDB.url(self, 'login') %>";
-
-    var debug = false;
-    <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-      debug = true;
-    <% end %>
-
-    <% unless @has_new_dashboard %>
-      cdb.config.set('debug', debug);
-
-      $(function() {
-        <% if Cartodb.config[:graphite_public] %>
-          if (location.protocol.indexOf('https') === -1) {
-            jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-              statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-                cartodb.core.Profiler.backend(function () {
-                statsc.send.apply(statsc, arguments);
-              })
-              // stop sending stats after 11 seconds
-              // statsc send stats in 5 secs interval so allow to send at least twice
-              setTimeout(function() {
-                  cartodb.core.Profiler.backend(null);
-              }, 11*1000);
-
-            })
-          }
-        <% end %>
-      });
-    <% end %>
   </script>
 
 <% end %>

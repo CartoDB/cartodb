@@ -19,42 +19,41 @@ module Carto
       raise 'no code block given' unless block_given?
       raise 'no proc/lambda passed as rerun_func' if rerun_func.present? && !proc?(rerun_func)
 
-      is_locked = acquire_lock(attempts, timeout)
+      locked_acquired = acquire_lock(attempts, timeout)
 
       begin
-        is_locked ? yield : set_rerun_after_finish
-        try_to_rerun(rerun_func) if is_locked && rerun_func.present?
-        !!is_locked
+        unless locked_acquired
+          set_rerun_after_finish
+          return !!locked_acquired
+        end
+        yield
+        try_to_rerun(rerun_func)
+        !!locked_acquired
       ensure
-        unlock if is_locked
+        unlock if locked_acquired
       end
     end
 
     private
 
     def acquire_lock(attempts, timeout)
-      current_attempt = 1
-      is_locked = false
-      while current_attempt <= attempts
-        is_locked = get_lock
-        if is_locked || current_attempt == attempts
-          break
-        else
-          sleep((timeout / 1000.0).second)
-          current_attempt += 1
+      attempts.times do
+        lock_acquired = get_lock
+        # With only 1 attempt, the default value, we dont sleep
+        # even if false
+        if lock_acquired || attempts == 1
+          return lock_acquired
         end
+        sleep((timeout / 1000.0).second)
       end
-      CartoDB::Logger.warning(message: "Couldn't acquire bolt and finish the task") unless is_locked && current_attempt < attempts
-      is_locked
+      CartoDB::Logger.warning(message: "Couldn't acquire bolt after #{attempts} attempts with #{timeout} timeout")
+      false
     end
 
     def try_to_rerun(rerun_func)
-      loop do
-        if retry?
-          rerun_func.call
-        else
-          break
-        end
+      return unless rerun_func.present?
+      while retry?
+        rerun_func.call
       end
     end
 

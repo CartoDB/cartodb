@@ -9,19 +9,19 @@ module Carto
     # @param Uuid user_id
     # @param Uuid visualization_id
     # @param DateTime created_at (CURRENT_TIMESTAMP)
-    # @param String type
+    # @param String category
     # @param String export
 
-    attr_accessible :id, :user_id, :visualization_id, :type, :export
+    attr_accessible :id, :user_id, :visualization_id, :category, :export
 
-    validates :user_id, :visualization_id, :type, :export, presence: true
+    validates :user_id, :visualization_id, :category, :export, presence: true
 
     FEATURE_FLAG_NAME = "visualizations_backup_2"
 
-    TYPE_VISUALIZATION = 'visualization'.freeze
-    TYPE_LAYER = 'layer'.freeze
+    CATEGORY_VISUALIZATION = 'visualization'.freeze
+    CATEGORY_LAYER = 'layer'.freeze
 
-    VALID_TYPES = [TYPE_VISUALIZATION, TYPE_LAYER].freeze
+    VALID_CATEGORIES = [CATEGORY_VISUALIZATION, CATEGORY_LAYER].freeze
 
   end
 end

@@ -783,9 +783,10 @@ class Carto::Visualization < ActiveRecord::Base
     if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
       export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
       visualization_backup = Carto::VisualizationBackup.new(
-        user: user,
-        visualization: self,
-        export: export_json
+        user_id: user.id,
+        visualization_id: self.id,
+        category: Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        export: export_json,
       )
       visualization_backup.save!
     end

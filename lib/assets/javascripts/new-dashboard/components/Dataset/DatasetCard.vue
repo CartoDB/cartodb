@@ -46,7 +46,6 @@
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
 
-
         <SharedBrief class="row-metadata" v-if="sharedWithColleguesLength && !isShared" :colleagues="isSharedWithColleagues" />
       </div>
     </div>

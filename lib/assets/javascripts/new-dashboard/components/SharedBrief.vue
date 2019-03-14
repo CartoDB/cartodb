@@ -30,19 +30,19 @@ export default {
       return this.colleagues.filter(colleague => colleague.type === 'user');
     },
     userText () {
-      return this.$tc(`SharedBrief.users`, this.users.length, {username: this.users[0].entity.username });
+      return this.$tc(`SharedBrief.users`, this.users.length, { username: this.users[0].entity.username });
     },
     groupText () {
-      return  this.$tc(`SharedBrief.groups`, this.groups.length, { groupname: this.groups[0].entity.name });
+      return this.$tc(`SharedBrief.groups`, this.groups.length, { groupname: this.groups[0].entity.name });
     },
     sharedWithText () {
       const andText = this.$t(`SharedBrief.and`);
       if (this.isSharedWithUsers && this.isSharedWithGroups) {
-        return `${this.userText} ${andText} ${this.groupText}`
+        return `${this.userText} ${andText} ${this.groupText}`;
       } else if (this.isSharedWithUsers) {
-        return `${this.userText}`
+        return `${this.userText}`;
       } else if (this.isSharedWithGroups) {
-        return `${this.groupText}`
+        return `${this.groupText}`;
       }
     }
   }

@@ -37,11 +37,11 @@ module Carto
     private
 
     def acquire_lock(attempts, timeout)
-      attempts.times do
+      attempts.times do |index|
         lock_acquired = get_lock
         # With only 1 attempt, the default value, we dont sleep
         # even if false
-        if lock_acquired || attempts == 1
+        if lock_acquired || (attempts == index + 1)
           return lock_acquired
         end
         sleep((timeout / 1000.0).second)

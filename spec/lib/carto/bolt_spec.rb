@@ -29,7 +29,7 @@ module Carto
     it 'should wait for execution if we pass attempts parameters' do
       main = Thread.new do
         @bolt.run_locked {
-          sleep(1.0 / 10.0)
+          sleep(0.1)
         }.should be_true
       end
       thr = Thread.new do
@@ -44,7 +44,7 @@ module Carto
     it 'should wait for execution and exit without complete it if timeout and retries reach the limit' do
       main = Thread.new do
         @bolt.run_locked {
-          sleep(1.0 / 10.0)
+          sleep(0.1)
         }.should be_true
       end
       thr = Thread.new do
@@ -61,7 +61,7 @@ module Carto
         flag = 0
         @bolt.run_locked(rerun_func: lambda { flag += 1 }) {
           flag += 1
-          sleep(1.0 / 10.0)
+          sleep(0.1)
         }.should be_true
         flag.should eq(2)
       end
@@ -76,19 +76,19 @@ module Carto
       main = Thread.new do
         flag = 0
         rerun_func = lambda do
-          sleep(1.0 / 10.0)
+          sleep(0.1)
           flag += 1
         end
         @bolt.run_locked(rerun_func: rerun_func) {
           flag += 1
-          sleep(1.0 / 10.0)
+          sleep(0.1)
         }.should be_true
         flag.should > 2
       end
       6.times do
         t = Thread.new do
           Carto::Bolt.new('manolo_bolt_locked').run_locked {}
-          sleep(1.0 / 40.0)
+          sleep(0.025)
         end
         t.join
       end

@@ -4,6 +4,7 @@ require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/visualization_invalidation_service'
+require_dependency 'carto/visualizations_export_service_2'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -30,6 +31,7 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
+  include Carto::VisualizationsExportService2Exporter
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -778,8 +780,14 @@ class Carto::Visualization < ActiveRecord::Base
   def backup_visualization
     return true if remote?
 
-    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-      Carto::VisualizationsExportService.new.export(id)
+    if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
+      export_json = export_visualization_json_hash(id, user, with_mapcaps: false)
+      visualization_backup = Carto::VisualizationBackup.new(
+        username: user.username,
+        visualization: id,
+        export: export_json
+      )
+      visualization_backup.save
     end
   rescue => exception
     # Don't break deletion flow

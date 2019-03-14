@@ -4,6 +4,7 @@ include Carto::Db::MigrationHelper
 
 migration(
   Proc.new do
+    drop_table :visualization_backups
     create_table :visualization_backups do
       Uuid      :id,                primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       foreign_key :user_id, :users, type: :uuid, null: false, on_delete: :cascade

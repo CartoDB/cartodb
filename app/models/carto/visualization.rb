@@ -781,13 +781,13 @@ class Carto::Visualization < ActiveRecord::Base
     return true if remote?
 
     if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
-      export_json = export_visualization_json_hash(id, user, with_mapcaps: false)
+      export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
       visualization_backup = Carto::VisualizationBackup.new(
-        username: user.username,
-        visualization: id,
+        user: user,
+        visualization: self,
         export: export_json
       )
-      visualization_backup.save
+      visualization_backup.save!
     end
   rescue => exception
     # Don't break deletion flow

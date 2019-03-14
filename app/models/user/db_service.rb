@@ -1341,7 +1341,15 @@ module CartoDB
 
       def create_ghost_tables_event_trigger
         return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        save_invalidation_service_configuration
         @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+      end
+
+      def save_invalidation_service_configuration
+        tis_config = Cartodb.config[:invalidation_service]
+        return unless tis_config
+        @user.in_database(as: :superuser)
+             .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
       end
 
       def drop_ghost_tables_event_trigger

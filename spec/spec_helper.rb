@@ -44,6 +44,8 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:save_invalidation_service_configuration).returns(true)
   end
 
   config.after(:all) do

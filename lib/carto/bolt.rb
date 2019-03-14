@@ -53,6 +53,7 @@ module Carto
     def try_to_rerun(rerun_func)
       return unless rerun_func.present?
       while retry?
+        refresh_lock_timeout
         rerun_func.call
       end
     end
@@ -78,6 +79,10 @@ module Carto
 
     def set_rerun_after_finish
       @redis_object.set("#{@bolt_key}:retry", true, px: @ttl_ms, nx: true)
+    end
+
+    def refresh_lock_timeout
+      @redis_object.pexpire(@bolt_key, @ttl_ms)
     end
 
     def retry?

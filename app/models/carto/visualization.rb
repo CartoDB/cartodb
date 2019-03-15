@@ -626,7 +626,7 @@ class Carto::Visualization < ActiveRecord::Base
   def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
     return true if remote?
 
-    if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
+    if map
       export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
       visualization_backup = Carto::VisualizationBackup.new(
         user_id: user.id,

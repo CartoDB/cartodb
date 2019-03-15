@@ -1,3 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SharedBrief.vue should render correct contents 1`] = `<div><img svg-inline="" src="../assets/icons/common/user.svg" class="brief__icon"> <span class="brief__text text is-small is-txtSoftGrey"> SharedBrief.sharedWith&nbsp;</span> <span class="brief__text text is-small is-txtSoftGrey u-ellipsis">SharedBrief.users SharedBrief.and SharedBrief.groups</span></div>`;
+exports[`SharedBrief.vue should not render the text for sharing with all organization members 1`] = `<div><img svg-inline="" src="../assets/icons/common/user.svg" class="brief__icon"> <span class="brief__text text is-small is-txtSoftGrey"> SharedBrief.sharedWith&nbsp;</span> <span class="brief__text text is-small is-txtSoftGrey u-ellipsis">SharedBrief.org</span></div>`;
+
+exports[`SharedBrief.vue should render the text for groups 1`] = `<div><img svg-inline="" src="../assets/icons/common/user.svg" class="brief__icon"> <span class="brief__text text is-small is-txtSoftGrey"> SharedBrief.sharedWith&nbsp;</span> <span class="brief__text text is-small is-txtSoftGrey u-ellipsis">SharedBrief.groups</span></div>`;
+
+exports[`SharedBrief.vue should render the text for groups and users 1`] = `<div><img svg-inline="" src="../assets/icons/common/user.svg" class="brief__icon"> <span class="brief__text text is-small is-txtSoftGrey"> SharedBrief.sharedWith&nbsp;</span> <span class="brief__text text is-small is-txtSoftGrey u-ellipsis">SharedBrief.users SharedBrief.and SharedBrief.groups</span></div>`;
+
+exports[`SharedBrief.vue should render the text for users 1`] = `<div><img svg-inline="" src="../assets/icons/common/user.svg" class="brief__icon"> <span class="brief__text text is-small is-txtSoftGrey"> SharedBrief.sharedWith&nbsp;</span> <span class="brief__text text is-small is-txtSoftGrey u-ellipsis">SharedBrief.users</span></div>`;

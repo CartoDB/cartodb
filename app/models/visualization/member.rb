@@ -230,17 +230,6 @@ module CartoDB
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
 
-        # from_table_deletion would be enough for canonical viz-based deletes,
-        # but common data loading also calls this delete without the flag to true, causing a call without a Map
-        begin
-          if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-            Carto::VisualizationsExportService.new.export(id)
-          end
-        rescue => exception
-          # Don't break deletion flow
-          CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
-        end
-
         repository.transaction do
           unlink_self_from_list!
 

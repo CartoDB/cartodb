@@ -5,7 +5,9 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
 
 ### Bug fixes / enhancements
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)

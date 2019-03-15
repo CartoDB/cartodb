@@ -29,7 +29,7 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
-      <div class="row-metadataContainer" v-if="hasTags || isShared || sharedWithColleguesLength">
+      <div class="row-metadataContainer" v-if="hasTags || isShared || isSharedWithCollegues">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -45,7 +45,7 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
-        <SharedBrief class="row-metadata" v-if="sharedWithColleguesLength && !isShared" :colleagues="isSharedWithColleagues" />
+        <SharedBrief class="row-metadata" v-if="isSharedWithCollegues && !isShared" :colleagues="sharedWithColleagues" />
       </div>
     </div>
     <div class="cell cell--large">
@@ -184,11 +184,11 @@ export default {
     vizUrl () {
       return Visualization.getURL(this.$props.dataset, this.$cartoModels);
     },
-    isSharedWithColleagues () {
+    sharedWithColleagues () {
       return this.$props.dataset.permission.acl;
     },
-    sharedWithColleguesLength () {
-      return this.$props.dataset.permission.acl.length;
+    isSharedWithCollegues () {
+      return this.$props.dataset.permission.acl.length > 0;
     }
   },
   methods: {

@@ -37,7 +37,7 @@
         </span>
       </div>
 
-      <div class="metadata" v-if="hasTags || isShared || SharedWithColleaguesLength">
+      <div class="metadata" v-if="hasTags || isShared || isSharedWithColleagues">
         <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
 
@@ -56,7 +56,7 @@
           <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
         </div>
 
-        <SharedBrief class="metadata__element" v-if="SharedWithColleaguesLength && !isShared" :colleagues="isSharedWithColleagues" />
+        <SharedBrief class="metadata__element" v-if="isSharedWithColleagues && !isShared" :colleagues="sharedWithColleagues" />
       </div>
 
     </div>

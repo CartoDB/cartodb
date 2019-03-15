@@ -623,6 +623,28 @@ class Carto::Visualization < ActiveRecord::Base
     user_table.try(:dependent_visualizations) || []
   end
 
+  def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    return true if remote?
+
+    if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
+      export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
+      visualization_backup = Carto::VisualizationBackup.new(
+        user_id: user.id,
+        visualization_id: self.id,
+        category: category,
+        export: export_json,
+      )
+      visualization_backup.save!
+    end
+  rescue => exception
+    # Don't break deletion flow
+    CartoDB::Logger.error(
+      message: 'Error backing up visualization',
+      exception: exception,
+      visualization_id: id
+    )
+  end
+
   private
 
   def generate_salt
@@ -775,28 +797,6 @@ class Carto::Visualization < ActiveRecord::Base
     if user.viewer
       errors.add(:user, 'cannot be viewer')
     end
-  end
-
-  def backup_visualization
-    return true if remote?
-
-    if user.has_feature_flag?(Carto::VisualizationBackup::FEATURE_FLAG_NAME) && map
-      export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
-      visualization_backup = Carto::VisualizationBackup.new(
-        user_id: user.id,
-        visualization_id: self.id,
-        category: Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
-        export: export_json,
-      )
-      visualization_backup.save!
-    end
-  rescue => exception
-    # Don't break deletion flow
-    CartoDB::Logger.error(
-      message: 'Error backing up visualization',
-      exception: exception,
-      visualization_id: id
-    )
   end
 
   def invalidation_service

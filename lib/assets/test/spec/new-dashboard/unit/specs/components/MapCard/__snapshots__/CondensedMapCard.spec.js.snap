@@ -314,6 +314,72 @@ exports[`MapCard.vue should render description and tags 1`] = `
 </a>
 `;
 
+exports[`MapCard.vue should render shared brief with all organisation members 1`] = `
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
+  <div class="cell cell--thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
+      <!---->
+    </div> <span class="checkbox cell__checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--map-name cell--main">
+    <div class="cell__title">
+      <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
+        First Map
+      </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
+    </div>
+    <div class="metadata">
+      <!---->
+      <!---->
+      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
+    </div>
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+    <p class="text is-small is-txtSoftGrey">
+      MapCard.shared.PUBLIC
+    </p>
+  </div>
+  <div class="cell quick-actions">
+    <!---->
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" class="quick-actions__element"></mapquickactions-stub>
+  </div>
+</a>
+`;
+
+exports[`MapCard.vue should render shared brief with user and group 1`] = `
+<a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
+  <div class="cell cell--thumbnail">
+    <div class="cell__media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/144/144.png" class="cell__map-thumbnail">
+      <!---->
+    </div> <span class="checkbox cell__checkbox"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div>
+  <div class="cell cell--map-name cell--main">
+    <div class="cell__title">
+      <h3 class="text is-caption is-txtGrey u-ellipsis cell--map-name__text">
+        First Map
+      </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
+    </div>
+    <div class="metadata">
+      <!---->
+      <!---->
+      <sharedbrief-stub colleagues="[object Object],[object Object]" class="metadata__element"></sharedbrief-stub>
+    </div>
+  </div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+  <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
+  <div class="cell cell--privacy cell--medium"><span class="icon icon--privacy icon--public"></span>
+    <p class="text is-small is-txtSoftGrey">
+      MapCard.shared.PUBLIC
+    </p>
+  </div>
+  <div class="cell quick-actions">
+    <!---->
+    <mapquickactions-stub map="[object Object]" storeactiontype="maps" class="quick-actions__element"></mapquickactions-stub>
+  </div>
+</a>
+`;
+
 exports[`MapCard.vue should show the map is shared 1`] = `
 <a href="http://cdb.localhost.lan:3000/viz/hello.e97e0001-f1c2-425e-8c9b-0fb28da59200" target="_blank" class="row row--can-hover">
   <div class="cell cell--thumbnail">

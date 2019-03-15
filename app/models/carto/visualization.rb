@@ -102,8 +102,6 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
-  before_destroy :backup_visualization
-
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -773,21 +771,6 @@ class Carto::Visualization < ActiveRecord::Base
     if user.viewer
       errors.add(:user, 'cannot be viewer')
     end
-  end
-
-  def backup_visualization
-    return true if remote?
-
-    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-      Carto::VisualizationsExportService.new.export(id)
-    end
-  rescue => exception
-    # Don't break deletion flow
-    CartoDB::Logger.error(
-      message: 'Error backing up visualization',
-      exception: exception,
-      visualization_id: id
-    )
   end
 
   def invalidation_service

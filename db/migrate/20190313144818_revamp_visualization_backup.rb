@@ -15,4 +15,3 @@ migration(
     end
   end
 )
-

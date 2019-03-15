@@ -17,4 +17,3 @@ migration(
     drop_table :visualization_backups
   end
 )
-

@@ -6,7 +6,8 @@ Development
 - **BREAKING**: Drop support for npm 3 and `npm-shrinkwrap.json` file.
 
 ### Features
-- None yet
+* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  * migration step 2 and revamp [#14745](https://github.com/CartoDB/cartodb/pull/14745)
 
 ### Bug fixes / enhancements
 - Fix storage link [#14723](https://github.com/CartoDB/cartodb/pull/14723)

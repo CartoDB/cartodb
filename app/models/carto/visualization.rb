@@ -630,13 +630,13 @@ class Carto::Visualization < ActiveRecord::Base
       export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
       visualization_backup = Carto::VisualizationBackup.new(
         user_id: user.id,
-        visualization_id: self.id,
+        visualization_id: id,
         category: category,
-        export: export_json,
+        export: export_json
       )
       visualization_backup.save!
     end
-  rescue => exception
+  rescue StandardError => exception
     # Don't break deletion flow
     CartoDB::Logger.error(
       message: 'Error backing up visualization',

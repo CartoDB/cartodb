@@ -16,7 +16,7 @@ module Carto
 
     validates :user_id, :visualization_id, :category, :export, presence: true
 
-    FEATURE_FLAG_NAME = "visualizations_backup_2"
+    FEATURE_FLAG_NAME = "visualizations_backup_2".freeze
 
     CATEGORY_VISUALIZATION = 'visualization'.freeze
     CATEGORY_LAYER = 'layer'.freeze

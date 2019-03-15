@@ -420,6 +420,8 @@ describe Carto::Visualization do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
       visualization.destroy
 
+      Carto::VisualizationBackup.all.count.should eq 1
+
       backup = Carto::VisualizationBackup.where(visualization_id: visualization.id).first
       backup.should_not eq nil
       backup.user_id.should eq @carto_user.id

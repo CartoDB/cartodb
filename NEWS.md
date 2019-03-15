@@ -7,7 +7,9 @@ Development
 
 ### Features
 * Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
-  * migration step 2 and revamp [#14745](https://github.com/CartoDB/cartodb/pull/14745)
+  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
+  * Visualization backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
 
 ### Bug fixes / enhancements
 - Fix storage link [#14723](https://github.com/CartoDB/cartodb/pull/14723)

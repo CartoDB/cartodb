@@ -3011,7 +3011,7 @@ describe User do
     end
 
     it 'saves the TIS config from app_config.yml to cdb_conf' do
-      CartoDB::UserModule::DBService.any_instance.unstub(:save_invalidation_service_configuration)
+      CartoDB::UserModule::DBService.any_instance.unstub(:configure_ghost_table_event_trigger)
       user = create_user
 
       cdb_conf = user.in_database(as: :superuser)
@@ -3019,7 +3019,7 @@ describe User do
       cdb_conf.should be
 
       user.destroy
-      CartoDB::UserModule::DBService.any_instance.stubs(:save_invalidation_service_configuration).returns(true)
+      CartoDB::UserModule::DBService.any_instance.stubs(:configure_ghost_table_event_trigger).returns(true)
     end
   end
 

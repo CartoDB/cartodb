@@ -101,7 +101,7 @@ module Carto
     end
 
     def retrieve_old_backups
-      return []
+      []
     end
 
     def remove_backup(visualization_id)

@@ -410,10 +410,12 @@ describe Carto::Visualization do
   describe '#backup' do
     before(:all) do
       @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      Carto::VisualizationBackup.all.map(&:destroy)
     end
 
     after(:all) do
       @map.destroy
+      Carto::VisualizationBackup.all.map(&:destroy)
     end
 
     it 'creates a backup when visualization is destroyed' do

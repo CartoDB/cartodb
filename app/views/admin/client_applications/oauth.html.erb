@@ -1,5 +1,5 @@
 <% content_for(:page_title) do %>
-  <% t('admin.client_apps.oauth.your_oauth') %>
+  <%= t('admin.client_apps.oauth.your_oauth') %>
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
@@ -23,27 +23,27 @@
   <div class="FormAccount-Content">
 
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><% t('admin.client_apps.oauth.approve') %></p>
+      <p class="FormAccount-titleText"><%= t('admin.client_apps.oauth.approve') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label"><% t('admin.client_apps.oauth.consumer_key') %></label>
+        <label class="FormAccount-label"><%= t('admin.client_apps.oauth.consumer_key') %></label>
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.key %>" readonly />
         <i data-title="Copy this" class="CDB-IconFont CDB-IconFont-anchor FormAccount-inputIcon FormAccount-copyIcon js-copy-value"></i>
       </div>
       <div class="FormAccount-rowInfo">
-        <p class="FormAccount-rowInfoText"><% t('admin.client_apps.oauth.learn_more') %><%= link_to "using oauth in CARTO", Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
+        <p class="FormAccount-rowInfoText"><%= t('admin.client_apps.oauth.learn_more') %><%= link_to t('admin.client_apps.oauth.using_oauth'), Cartodb.config[:developers_host] + "/cartodb-platform.html" %>.</p>
       </div>
     </div>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label"><% t('admin.client_apps.oauth.consumer_secret') %></label>
+        <label class="FormAccount-label"><%= t('admin.client_apps.oauth.consumer_secret') %></label>
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= current_user.client_application.secret %>" readonly />
@@ -55,7 +55,7 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label"><% t('admin.client_apps.oauth.request_token') %></label>
+        <label class="FormAccount-label"><%= t('admin.client_apps.oauth.request_token') %></label>
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'request_token', user: current_user) %>" readonly />
@@ -65,7 +65,7 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="FormAccount-label"><% t('admin.client_apps.oauth.access_token') %></label>
+        <label class="FormAccount-label"><%= t('admin.client_apps.oauth.access_token') %></label>
       </div>
       <div class="FormAccount-rowData">
         <input type="text" class="FormAccount-input FormAccount-input--long has-icon js-input" value="<%= CartoDB.url(self, 'access_token', user: current_user) %>" readonly />
@@ -76,11 +76,11 @@
     <div class="FormAccount-footer">
       <p class="FormAccount-footerText">
         <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
-        <span><% t('admin.client_apps.oauth.learn_more') %><%= link_to "here", "https://carto.com/developers/fundamentals/authorization/" %></span>
+        <span><%= t('admin.client_apps.oauth.learn_more') %><%= link_to t('admin.client_apps.oauth.here'), t('admin.client_apps.oauth.author_link') %></span>
       </p>
       <p class="FormAccount-footerText">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
-        <a class="js-regenerateOauth Button Button--main" href="#"><span><% t('admin.client_apps.oauth.gen_keys') %></span></a>
+        <a class="js-regenerateOauth Button Button--main" href="#"><span><%= t('admin.client_apps.oauth.gen_keys') %></span></a>
       </p>
     </div>
 

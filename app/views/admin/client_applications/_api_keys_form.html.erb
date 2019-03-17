@@ -1,20 +1,20 @@
 <div class="ApiKeysForm-container">
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label"><% t('admin.client_apps.api_keys_form.your_api') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label"><%= t('admin.client_apps.api_keys_form.your_api') %></label>
     </div>
     <div class="FormAccount-rowData">
-      <input type="text" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long" placeholder="<% t('admin.client_apps.api_keys_form.no_api_key') %>" value="<%= current_user.api_key %>" readonly />
+      <input type="text" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long" placeholder="<%= t('admin.client_apps.api_keys_form.no_api_key') %>" value="<%= current_user.api_key %>" readonly />
       <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
-        <a class="CDB-Size-medium js-regenerateApiKey" href="#"><% t('admin.client_apps.api_keys_form.request_new') %></a>
+        <a class="CDB-Size-medium js-regenerateApiKey" href="#"><%= t('admin.client_apps.api_keys_form.request_new') %></a>
       </div>
     </div>
   </div>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop">Example write</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop"><%= t('admin.client_apps.api_keys_form.example_write') %></label>
     </div>
     <div class="FormAccount-rowPreview">
       <% if CartoDB.subdomainless_urls? %>
@@ -27,7 +27,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop"><% t('admin.client_apps.api_keys_form.example_read') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label FormAccount-label--verticalAlignTop"><%= t('admin.client_apps.api_keys_form.example_read') %></label>
     </div>
     <div class="FormAccount-rowPreview">
       <% if CartoDB.subdomainless_urls? %>
@@ -40,14 +40,14 @@
 
   <% if show_google_api_keys?(current_user) %>
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><% t('admin.client_apps.api_keys_form.config_api') %></p>
+      <p class="FormAccount-titleText"><%= t('admin.client_apps.api_keys_form.config_api') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label"><% t('admin.client_apps.api_keys_form.google_maps') %></label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label"><%= t('admin.client_apps.api_keys_form.google_maps') %></label>
       </div>
       <div class="FormAccount-rowData">
         <input type="text" value="<%= current_user.organization.present? ? current_user.organization.google_maps_private_key : current_user.google_maps_private_key %>" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long is-disabled" readonly />
@@ -55,14 +55,14 @@
       <div class="FormAccount-rowInfo">
         <% if !current_user.organization.present? %>
           <p class="CDB-Text CDB-Size-small u-altTextColor">
-            <% t('admin.client_apps.api_keys_form.google_maps_query') %>
+            <%= t('admin.client_apps.api_keys_form.google_maps_query') %>
           </p>
         <% elsif current_user.organization.present? && current_user.organization_owner? %>
           <p class="CDB-Text CDB-Size-small u-altTextColor">
-            <% t('admin.client_apps.api_keys_form.google_maps_query_org_1') %><%= current_user.organization.name %><% t('admin.client_apps.api_keys_form.google_maps_query_org_2') %>
+            <%= t('admin.client_apps.api_keys_form.google_maps_query_org_1') %><%= current_user.organization.name %><%= t('admin.client_apps.api_keys_form.google_maps_query_org_2') %>
           </p>
         <% else %>
-          <p class="CDB-Text CDB-Size-small u-altTextColor"><% t('admin.client_apps.api_keys_form.google_maps_org_api') %></p>
+          <p class="CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.client_apps.api_keys_form.google_maps_org_api') %></p>
         <% end %>
       </div>
     </div>
@@ -72,6 +72,6 @@
 <div class="FormAccount-footer">
   <p class="FormAccount-footerText">
     <i class="CDB-IconFont CDB-IconFont-info FormAccount-footerIcon"></i>
-    <span><% t('admin.client_apps.api_keys_form.learn_more') %><%= link_to "here", "https://carto.com/developers/fundamentals/authorization/" %></span>
+    <span><%= t('admin.client_apps.api_keys_form.learn_more') %><%= link_to "here", "https://carto.com/developers/fundamentals/authorization/" %></span>
   </p>
 </div>

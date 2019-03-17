@@ -74,11 +74,17 @@ cs:
         create: 'Vytvářejte řešení použitím různých doplňků a API.'
         engine: 'Engine'
         free: 'Zdarma pro osobní a nekomerční užití'
+        discover: 'Prozkoumej'
+        incloud: 'V cloudu nebo na vlastních strojích'
+        enterprise: 'Přístup k enterprise BI konektorům'
+        fullapi: 'Přístup k plnému API'
+        payseat: 'Platby dle počtu vývojářů'
       api_keys_form:
         your_api: 'Váš API klíč'
         no_api_key: 'Žádný API klíč'
         request_new: 'Požadavek na nový API klíč'
-        example_read: 'Příklad čtetní osobních' #Example read private ???
+        example_write: 'Příklad zápisu'
+        example_read: 'Příklad soukromého čtetní' #Example read private ???
         config_api: 'Konfigurovat API klíče od externích dodavatelů'
         google_maps: 'Google Mapy'
         google_maps_query: 'Toto je váš dotazový Google řetězec, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
@@ -91,11 +97,14 @@ cs:
         approve: 'Potvrďte aplikaci, aby vykonávala akce svým jménem beze sdílení Vašeho hesla'
         consumer_key: 'Zákaznický klíč'
         learn_more: 'Zjistěte více o '
+        using_oauth: 'použití oauth v Cartu'
+        here: 'zde'
         consumer_secret: 'Zákazníkově tajemství' ## tohle chci ještě vidět
         request_token: 'Požadavku na URL token' ## tohle chci ještě vidět
         access_token: 'Přístupu k URL tokenu' ## tohle chci ještě vidět
         learn_more: 'Naučte se víc o autorizační místní aplikaci a správě API klíčů '
         gen_keys: 'Generovat nové klíče'
+        author_link: 'https://carto.com/developers/fundamentals/authorization/'
     orgs:
       auth:
         white_eml: 'Whitelist emailových domén'

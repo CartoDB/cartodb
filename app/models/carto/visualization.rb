@@ -628,13 +628,12 @@ class Carto::Visualization < ActiveRecord::Base
 
     if map && !destroyed?
       export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
-      visualization_backup = Carto::VisualizationBackup.new(
+      visualization_backup = Carto::VisualizationBackup.create!(
         user_id: user.id,
         visualization_id: id,
         category: category,
         export: export_json
       )
-      visualization_backup.save!
     end
   rescue StandardError => exception
     # Don't break deletion flow

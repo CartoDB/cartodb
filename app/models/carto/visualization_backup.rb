@@ -10,7 +10,7 @@ module Carto
     # @param Uuid visualization_id
     # @param DateTime created_at (CURRENT_TIMESTAMP)
     # @param String category
-    # @param String export
+    # @param JSON export
 
     attr_accessible :id, :user_id, :visualization_id, :category, :export
 
@@ -18,8 +18,5 @@ module Carto
 
     CATEGORY_VISUALIZATION = 'visualization'.freeze
     CATEGORY_LAYER = 'layer'.freeze
-
-    VALID_CATEGORIES = [CATEGORY_VISUALIZATION, CATEGORY_LAYER].freeze
-
   end
 end

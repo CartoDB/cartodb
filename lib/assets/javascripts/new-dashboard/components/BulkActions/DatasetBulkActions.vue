@@ -108,7 +108,7 @@ export default {
       return this.selectedDatasets.length > 1 ? 'multiple' : 'single';
     },
     isAnyShared () {
-      return this.selectedDatasets.some(dataset => Visualization.isShared(dataset, this.$cartoModels));
+      return this.selectedDatasets.some(dataset => Visualization.isSharedWithMe(dataset, this.$cartoModels));
     },
     isAnyLocked () {
       return this.selectedDatasets.some(dataset => dataset.locked);

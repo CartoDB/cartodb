@@ -29,7 +29,7 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
-      <div class="row-metadataContainer" v-if="hasTags || isShared || isSharedWithCollegues">
+      <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithCollegues">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -41,11 +41,11 @@
             <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
           </FeaturesDropdown>
         </div>
-        <div class="row-metadata" v-if="isShared">
+        <div class="row-metadata" v-if="isSharedWithMe">
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
-        <SharedBrief class="row-metadata" v-if="isSharedWithCollegues && !isShared" :colleagues="sharedWithColleagues" />
+        <SharedBrief class="row-metadata" v-if="isSharedWithCollegues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
       </div>
     </div>
     <div class="cell cell--large">
@@ -81,7 +81,7 @@
       <DatasetQuickActions
         v-if="showInteractiveElements"
         :dataset="dataset"
-        :isShared="isShared"
+        :isSharedWithMe="isSharedWithMe"
         class="dataset--quick-actions"
         @open="openQuickActions"
         @close="closeQuickActions"
@@ -169,8 +169,8 @@ export default {
     hasTags () {
       return this.numberTags > 0;
     },
-    isShared () {
-      return Visualization.isShared(this.$props.dataset, this.$cartoModels);
+    isSharedWithMe () {
+      return Visualization.isSharedWithMe(this.$props.dataset, this.$cartoModels);
     },
     showInteractiveElements () {
       return !this.$props.selectMode;
@@ -184,7 +184,7 @@ export default {
     vizUrl () {
       return Visualization.getURL(this.$props.dataset, this.$cartoModels);
     },
-    sharedWithColleagues () {
+    colleaguesSharedList () {
       return this.$props.dataset.permission.acl;
     },
     isSharedWithCollegues () {

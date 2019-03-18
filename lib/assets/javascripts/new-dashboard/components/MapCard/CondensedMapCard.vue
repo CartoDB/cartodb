@@ -31,13 +31,12 @@
           {{ visualization.name }}
         </h3>
 
-
         <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
 
-      <div class="metadata" v-if="hasTags || isShared || isSharedWithColleagues">
+      <div class="metadata" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
         <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
 
@@ -51,12 +50,12 @@
           </FeaturesDropdown>
         </div>
 
-        <div class="metadata__element" v-if="isShared">
+        <div class="metadata__element" v-if="isSharedWithMe">
           <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
         </div>
 
-        <SharedBrief class="metadata__element" v-if="isSharedWithColleagues && !isShared" :colleagues="sharedWithColleagues" />
+        <SharedBrief class="metadata__element" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
       </div>
 
     </div>
@@ -77,7 +76,7 @@
     </div>
 
     <div class="cell quick-actions" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-      <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
+      <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isSharedWithMe"></div>
       <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
     </div>
   </a>

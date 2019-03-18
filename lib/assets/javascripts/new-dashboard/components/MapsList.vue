@@ -135,10 +135,6 @@ export default {
       lastCheckedItem: null
     };
   },
-  created: function () {
-    this.$store.dispatch('maps/setResultsPerPage', this.maxVisibleMaps);
-    this.fetchMaps();
-  },
   computed: {
     ...mapState({
       appliedFilter: state => state.maps.filterType,

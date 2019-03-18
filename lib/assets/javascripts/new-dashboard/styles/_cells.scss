@@ -27,5 +27,17 @@
 }
 
 .cell--small {
-  width: 80px;
+  width: 90px;
+}
+
+.cell--xsmall {
+  width: 70px;
+}
+
+.cell--first {
+  padding-left: 0;
+}
+
+.cell--last {
+  padding-right: 0;
 }

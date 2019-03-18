@@ -1,27 +1,35 @@
 <template>
   <div class="dataset-fake-row">
-    <div class="cell-placeholder">
-      <div class="icon-placeholder"/>
+    <div class="viz-column--main-info">
+      <div class="cell-placeholder">
+        <div class="icon-placeholder"/>
+      </div>
+      <div class="cell-placeholder cell--main">
+        <div class="text-placeholder"/>
+      </div>
     </div>
-    <div class="cell-placeholder cell--main">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--large">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--small">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--quick-actions">
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell-placeholder cell--large">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--small">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--xsmall">
+          <div class="text-placeholder"/>
+        </div>
+      </div>
+      <div class="viz-column--share">
+        <div class="cell-placeholder cell--small">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--small">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--quick-actions">
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -628,7 +628,7 @@ class Carto::Visualization < ActiveRecord::Base
 
     if map && !destroyed?
       export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
-      visualization_backup = Carto::VisualizationBackup.create!(
+      Carto::VisualizationBackup.create!(
         user_id: user.id,
         visualization_id: id,
         category: category,

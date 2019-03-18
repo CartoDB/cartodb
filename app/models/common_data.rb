@@ -86,7 +86,7 @@ class CommonData
 
   def export_url(table_name)
     query = %Q[select * from "#{table_name}"]
-    sql_api_url(query, table_name, config('format', 'shp'))
+    sql_api_url(query, table_name, config('format', 'gpkg'))
   end
 
   def sql_api_url(query, filename, format)

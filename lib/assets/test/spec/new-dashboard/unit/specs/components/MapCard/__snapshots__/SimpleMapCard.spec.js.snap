@@ -11,9 +11,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -46,9 +44,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -81,9 +77,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -116,9 +110,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -152,9 +144,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -187,9 +177,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -222,9 +210,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -257,9 +243,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -292,9 +276,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
@@ -325,9 +307,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
@@ -370,9 +350,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">

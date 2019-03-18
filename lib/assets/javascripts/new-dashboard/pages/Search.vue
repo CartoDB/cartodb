@@ -16,18 +16,18 @@
         <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
 
-          <ul class="grid grid-cell" v-if="isFetchingMaps">
-            <li v-for="n in 6" :key="n" class="grid-cell grid-cell--col12 search-item">
+          <ul class="grid-cell grid-cell--col12" v-if="isFetchingMaps">
+            <li v-for="n in 6" :key="n" class="search-item">
               <MapCardFake :condensed="true" class="search-item"></MapCardFake>
             </li>
           </ul>
 
-          <ul class="grid grid-cell" v-if="!isFetchingMaps">
-            <li v-for="map in maps" :key="map.id" class="grid-cell grid-cell--col12 search-item">
+          <ul class="grid-cell grid-cell--col12" v-if="!isFetchingMaps">
+            <li v-for="map in maps" :key="map.id" class="search-item">
               <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
             </li>
 
-            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty" v-if="!hasMaps">
+            <div class="is-caption text maps--empty" v-if="!hasMaps">
               {{ $t('SearchPage.emptyText.maps') }}
             </div>
           </ul>
@@ -169,7 +169,7 @@ export default {
 }
 
 .page-section {
-  margin-bottom: 12px;
+  margin-bottom: 48px;
 
   &.has-pagination,
   &:last-child {

@@ -5,7 +5,8 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
 
 ### Bug fixes / enhancements
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
@@ -16,6 +17,8 @@ Development
 - New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
 - Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
+- Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
+- Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
 - Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
 
 4.26.0 (2019-03-11)

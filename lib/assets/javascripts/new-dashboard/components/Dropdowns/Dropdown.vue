@@ -37,7 +37,7 @@ export default {
   position: absolute;
   z-index: 2;
   right: 0;
-  width: 310px;
+  width: 316px;
   margin-top: 8px;
   overflow: hidden;
   transition: all 0.25s linear;
@@ -61,8 +61,16 @@ export default {
   padding: 0 9px;
   border-radius: 2px;
 
+  &:hover {
+    background-color: $softblue;
+  }
+
   &.dropdown__toggle--active {
-    background-color: #F2F6F9;
+    background-color: $primary-color;
+
+    .svgicon {
+      fill: $white;
+    }
   }
 }
 </style>

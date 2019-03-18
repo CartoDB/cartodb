@@ -6,9 +6,11 @@
     <div class="quick-actions-dropdown" :class="{'is-active' : isOpen}" v-if="isOpen" @click="killEvent">
       <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">{{ $t(`QuickActions.title`) }}</h6>
       <ul>
-        <li v-for="action in actions" :key="action.name" v-if="!action.shouldBeHidden">
-          <a href="#" class="action text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
-        </li>
+        <template v-for="action in actions">
+          <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
+            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
+          </li>
+        </template>
       </ul>
     </div>
   </div>
@@ -88,14 +90,27 @@ export default {
 }
 
 .quick-actions-title {
-  margin-top: 16px;
+  margin-top: 20px;
+  margin-bottom: 12px;
   margin-left: 24px;
   text-transform: uppercase;
 }
 
 .action {
-  display: block;
-  padding: 14px 24px 16px;
-  border-bottom: 1px solid $softblue;
+  &__item {
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $softblue;
+    }
+  }
+
+  &__text {
+    display: block;
+    padding: 12px 24px;
+
+    &:hover,
+    &:focus {
+      background-color: $softblue;
+    }
+  }
 }
 </style>

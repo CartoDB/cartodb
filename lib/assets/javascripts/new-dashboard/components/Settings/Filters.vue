@@ -79,9 +79,7 @@ export default {
   background-color: $white;
 
   &-title {
-    margin-top: 20px;
-    margin-bottom: 12px;
-    margin-left: 32px;
+    padding: 20px 24px 12px 36px;
   }
 }
 

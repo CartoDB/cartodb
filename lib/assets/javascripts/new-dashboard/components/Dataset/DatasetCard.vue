@@ -16,7 +16,7 @@
             <div class="icon--dataType" :class="`icon--${dataType}`"></div>
         </div>
         <span class="checkbox row-checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <input class="checkbox-input" :class="{'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
+          <input class="checkbox-input" :class="{ 'is-selected': isSelected }" @click.stop.prevent="toggleSelection($event)" type="checkbox">
           <span class="checkbox-decoration">
             <img svg-inline src="../../assets/icons/common/checkbox.svg">
           </span>
@@ -41,7 +41,7 @@
               </li>
             </ul>
             <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
-              <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
+              <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t('DatasetCard.tags')}}</span>
             </FeaturesDropdown>
           </div>
           <div class="row-metadata" v-if="isShared">
@@ -58,8 +58,8 @@
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
         <div class="cell cell--small">
-          <span class="text is-small is-txtSoftGrey" :title="$tc(`DatasetCard.numberRows`, dataset.table.row_count, { count: getNumberInLocaleFormat(dataset.table.row_count) })">
-            {{ $tc(`DatasetCard.numberRows`, dataset.table.row_count, { count: numberFormatter(dataset.table.row_count) }) }}
+          <span class="text is-small is-txtSoftGrey" :title="$tc('DatasetCard.numberRows', dataset.table.row_count, { count: getNumberInLocaleFormat(dataset.table.row_count) })">
+            {{ $tc('DatasetCard.numberRows', dataset.table.row_count, { count: numberFormatter(dataset.table.row_count) }) }}
           </span>
         </div>
         <div class="cell cell--xsmall">
@@ -70,15 +70,15 @@
       <div class="viz-column--share">
         <div class="cell cell--small">
           <span class="text is-small is-txtSoftGrey" v-if="!dataset.dependent_visualizations_count">
-            {{ $tc(`DatasetCard.maps`, 0, { n: 0 }) }}
+            {{ $tc('DatasetCard.maps', 0) }}
           </span>
           <FeaturesDropdown :list="dependentVisualizationsWithUrl" v-if="dataset.dependent_visualizations_count" @mouseover.native="mouseOverChildElement" @mouseleave.native="mouseOutChildElement">
               <span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
-                {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count, { n: dataset.dependent_visualizations_count }) }}
+                {{ $tc('DatasetCard.maps', dataset.dependent_visualizations_count) }}
               </span>
 
               <template slot="footer" v-if="dataset.dependent_visualizations_count > 10">
-                + {{ $tc(`DatasetCard.maps`, dataset.dependent_visualizations_count - 10, { n: dataset.dependent_visualizations_count - 10 }) }}
+                + {{ $tc('DatasetCard.maps', dataset.dependent_visualizations_count - 10) }}
               </template>
           </FeaturesDropdown>
         </div>
@@ -145,9 +145,9 @@ export default {
   computed: {
     lastUpdated () {
       if (this.$props.dataset.synchronization && this.$props.dataset.synchronization.updated_at) {
-        return this.$t(`DatasetCard.lastSynced`, { date: distanceInWordsStrict(this.$props.dataset.synchronization.updated_at, new Date()) });
+        return this.$t('DatasetCard.lastSynced', { date: distanceInWordsStrict(this.$props.dataset.synchronization.updated_at, new Date()) });
       } else {
-        return this.$t(`DatasetCard.lastUpdated`, { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
+        return this.$t('DatasetCard.lastUpdated', { date: distanceInWordsStrict(this.$props.dataset.updated_at, new Date()) });
       }
     },
     dataType () {
@@ -171,6 +171,7 @@ export default {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
     },
     tagsChars () {
+      console.log('tagsChars', this.$props.dataset.tags, countCharsArray(this.$props.dataset.tags, ', '));
       return countCharsArray(this.$props.dataset.tags, ', ');
     },
     hasTags () {
@@ -325,6 +326,10 @@ export default {
 .tag-list {
   display: flex;
 
+  li {
+    margin-right: 0.2em;
+  }
+
   .tag-list__tag {
     &:hover {
       color: $primary-color;
@@ -390,7 +395,6 @@ export default {
 .cell--start {
   display: flex;
   align-items: center;
-  align-self: flex-start;
   height: 100%;
   overflow: hidden;
 }

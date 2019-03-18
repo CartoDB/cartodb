@@ -16,6 +16,7 @@ Development
 - New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
 - Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
+- Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
 
 4.26.0 (2019-03-11)
 -------------------

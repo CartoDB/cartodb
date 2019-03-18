@@ -751,6 +751,8 @@ $sLabel-width: 140px;
 }
 
 .Form-tagsList.tagit {
+  display: flex;
+  align-items: flex-start;
   padding: 0 5px 5px;
 }
 

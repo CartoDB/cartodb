@@ -8,8 +8,8 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
       <section class="page-section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
         <!---->
-        <ul class="grid grid-cell">
-          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty">
+        <ul class="grid-cell grid-cell--col12">
+          <div class="is-caption text maps--empty">
             SearchPage.emptyText.maps
           </div>
         </ul>
@@ -39,23 +39,23 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
     <div class="full-width">
       <section class="page-section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
-        <ul class="grid grid-cell">
-          <li class="grid-cell grid-cell--col12 search-item">
+        <ul class="grid-cell grid-cell--col12">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
           </li>
         </ul>
@@ -100,11 +100,11 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
       <section class="page-section has-pagination">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
         <!---->
-        <ul class="grid grid-cell">
-          <li class="grid-cell grid-cell--col12 search-item">
+        <ul class="grid-cell grid-cell--col12">
+          <li class="search-item">
             <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
           </li>
-          <li class="grid-cell grid-cell--col12 search-item">
+          <li class="search-item">
             <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
           </li>
           <!---->

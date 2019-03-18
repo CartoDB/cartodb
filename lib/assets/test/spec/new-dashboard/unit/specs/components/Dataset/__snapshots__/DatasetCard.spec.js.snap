@@ -191,13 +191,10 @@ exports[`DatasetCard.vue should render shared brief with all organisation member
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="cell cell--small">
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
     <!---->
-    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
-          DatasetCard.maps
-        </span>
-      <!---->
-    </featuresdropdown-stub>
   </div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="cell">
@@ -229,13 +226,10 @@ exports[`DatasetCard.vue should render shared brief with user and group 1`] = `
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">DatasetCard.numberRows</span></div>
   <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
-  <div class="cell cell--small">
+  <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
+      DatasetCard.maps
+    </span>
     <!---->
-    <featuresdropdown-stub list="[object Object]"><span class="text is-small is-txtSoftGrey dataset__dependent-visualizations">
-          DatasetCard.maps
-        </span>
-      <!---->
-    </featuresdropdown-stub>
   </div>
   <div class="cell cell--small cell--privacy"><span class="icon icon--privacy icon--private"></span> <span class="text is-small is-txtSoftGrey">DatasetCard.shared.PRIVATE</span></div>
   <div class="cell">

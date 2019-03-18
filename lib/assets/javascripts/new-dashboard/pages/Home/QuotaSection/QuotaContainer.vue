@@ -13,7 +13,7 @@
           <p class="text is-small is-txtSoftGrey">{{ $t('QuotaSection.header.used') }}</p>
         </div>
         <div class="quota-cell cell--medium">
-          <p class="text is-small is-txtSoftGrey">
+          <p class="text is-small is-txtSoftGrey quota-total">
             {{$t(`QuotaSection.header.total`)}} <span v-if="perMonth" class="quota-month">{{ $t(`QuotaSection.header.perMonth`) }}</span>
           </p>
         </div>
@@ -101,15 +101,20 @@ export default {
 }
 
 .quota-month {
-  display: inline;
-
   &::after {
     content: '*';
   }
+}
 
-  @media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
+@media (max-width: $layout-tablet) and (min-width: $layout-mobile) {
+  .quota-total {
+    &::after {
+      content: '*';
+    }
+  }
+
+  .quota-month {
     display: none;
   }
 }
-
 </style>

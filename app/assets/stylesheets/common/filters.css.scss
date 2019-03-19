@@ -403,7 +403,7 @@ a.Filters-cleanSearch {
   font-size: $sFontSize-small;
 }
 
-.Filters--navListing .Button--create.is-disabled:hover {
+.Filters--navListing .Button--create.:hover {
   background: none;
   color: $cTypography-link;
 }

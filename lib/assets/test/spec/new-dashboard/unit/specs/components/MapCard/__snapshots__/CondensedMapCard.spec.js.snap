@@ -13,11 +13,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -46,11 +42,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -79,11 +71,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -112,11 +100,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -146,11 +130,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -179,11 +159,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
@@ -212,11 +188,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
         First Map
       </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
     </div>
-    <div class="metadata">
-      <!---->
-      <!---->
-      <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
-    </div>
+    <!---->
   </div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
   <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>

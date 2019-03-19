@@ -171,7 +171,6 @@ export default {
       return this.$props.dataset.tags ? this.$props.dataset.tags.length : 0;
     },
     tagsChars () {
-      console.log('tagsChars', this.$props.dataset.tags, countCharsArray(this.$props.dataset.tags, ', '));
       return countCharsArray(this.$props.dataset.tags, ', ');
     },
     hasTags () {

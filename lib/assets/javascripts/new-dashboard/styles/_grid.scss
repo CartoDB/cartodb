@@ -14,8 +14,16 @@
   flex: 1;
   flex-wrap: wrap;
 
-  &.grid--center {
+  &.grid--no-wrap {
+    flex-wrap: nowrap;
+  }
+
+  &.grid--align-center {
     align-items: center;
+  }
+
+  &.grid--justify-end {
+    justify-content: space-between;
   }
 
   &.grid--space {

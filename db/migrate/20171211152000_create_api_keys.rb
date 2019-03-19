@@ -5,7 +5,7 @@ include Carto::Db::MigrationHelper
 migration(
   Proc.new do
     create_table :api_keys do
-      Uuid        :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid        :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String      :token, null: false
       foreign_key :user_id, :users, type: :uuid, on_delete: :cascade, null: false
       String      :type, null: false

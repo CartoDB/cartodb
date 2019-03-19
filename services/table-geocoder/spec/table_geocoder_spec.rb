@@ -21,7 +21,7 @@ describe CartoDB::TableGeocoder do
     @log = mock
     @log.stubs(:append)
     @log.stubs(:append_and_store)
-    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution', 
+    @geocoding_model = FactoryGirl.create(:geocoding, kind: 'high-resolution',
                                           formatter: '{street}', remote_id: 'dummy_request_id')
 
     # Avoid issues on some machines if postgres system account can't read fixtures subfolder for the COPY
@@ -120,7 +120,7 @@ describe CartoDB::TableGeocoder do
 
   describe '#download_results' do
     it 'gets the geocoder results' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, 
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000,
                                       usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       geocoder = mock
       geocoder.expects(:result).times(1).returns('a')
@@ -134,7 +134,7 @@ describe CartoDB::TableGeocoder do
     it 'does not raise an error if no results file' do
       dir = Dir.mktmpdir
       tg = CartoDB::TableGeocoder.new(table_name: 'a',
-                                      connection: @db, working_dir: dir, max_rows: 1000, 
+                                      connection: @db, working_dir: dir, max_rows: 1000,
                                       usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       expect { tg.send(:deflate_results) }.to_not raise_error
     end
@@ -143,7 +143,7 @@ describe CartoDB::TableGeocoder do
       dir = Dir.mktmpdir
       `cp #{path_to('kXYkQhuDfxnUSmWFP3dmq6TzTZAzwy4x.zip')} #{dir}`
       tg = CartoDB::TableGeocoder.new(table_name: 'a',
-                                      connection: @db, working_dir: dir, max_rows: 1000, 
+                                      connection: @db, working_dir: dir, max_rows: 1000,
                                       usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       tg.send(:deflate_results)
       filename = 'result_20130919-04-55_6.2.46.1_out.txt'
@@ -154,7 +154,7 @@ describe CartoDB::TableGeocoder do
 
   describe '#create_temp_table' do
     it 'raises error if no remote_id' do
-      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000, 
+      tg = CartoDB::TableGeocoder.new(table_name: 'a', connection: @db, max_rows: 1000,
                                       usage_metrics: nil, log: @log, geocoding_model: @geocoding_model)
       expect { tg.send(:create_temp_table) }.to raise_error(Sequel::DatabaseError)
     end
@@ -282,6 +282,6 @@ describe CartoDB::TableGeocoder do
 
   def load_csv(path)
     @db.run("CREATE TABLE #{@table_name} (the_geom geometry, cartodb_id integer, name text, iso3 text)")
-    @db.run("COPY #{@table_name.lit}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
+    @db.run("COPY #{Sequel.lit(@table_name)}(cartodb_id, name, iso3) FROM '#{path}' DELIMITER ',' CSV")
   end
 end

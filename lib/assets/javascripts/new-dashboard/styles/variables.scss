@@ -1,5 +1,6 @@
 //colors
 $primary-color: #047AE6;
+$primary-color--dark: #1074b5;
 $premium-color: #F90;
 $white: #FFF;
 $text-color: #2E3C43;
@@ -24,3 +25,6 @@ $layout-mobile: 600px;
 
 $dropdown__shadow-color: rgba(0, 0, 0, 0.16);
 $dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
+
+$card__shadow-color: rgba(194, 205, 214, 0.8);
+$card__shadow: 0 8px 20px 0 $card__shadow-color;

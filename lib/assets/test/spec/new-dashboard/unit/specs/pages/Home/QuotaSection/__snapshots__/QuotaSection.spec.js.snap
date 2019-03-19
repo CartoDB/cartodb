@@ -19,7 +19,9 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
           </quotacontainer-stub>
         </li>
       </ul>
-      <div class="quota-billing"><span class="quota-billingday text is-small is-txtSoftGrey">QuotaSection.credits</span></div>
+      <div class="quota-billing"><span class="quota-billingday text is-small is-txtSoftGrey">
+          QuotaSection.credits
+        </span></div>
     </div>
   </div>
 </div>

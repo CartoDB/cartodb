@@ -36,29 +36,23 @@
   "BulkActions": {
     "selected": "{count} selected",
     "maps": {
-      "selectAllMaps": "Select all",
-      "deselectAllMaps": "Deselect all",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
       "changeMapPrivacy": "Change privacy",
-      "duplicateMap": "Duplicate map",
-      "unlockMap": "Unlock map",
-      "unlockMaps": "Unlock maps",
-      "lockMap": "Lock map",
-      "lockMaps": "Lock maps",
-      "deleteMap": "Delete map",
-      "deleteMaps": "Delete maps"
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
     },
     "datasets": {
-      "selectAllDatasets": "Select all",
-      "deselectAllDatasets": "Deselect all",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
       "createMap": "Create map",
       "changeDatasetPrivacy": "Change privacy",
-      "duplicateDataset": "Duplicate dataset",
-      "unlockDataset": "Unlock dataset",
-      "unlockDatasets": "Unlock datasets",
-      "lockDataset": "Lock dataset",
-      "lockDatasets": "Lock datasets",
-      "deleteDataset": "Delete dataset",
-      "deleteDatasets": "Delete datasets"
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
     }
   },
   "DataPage": {

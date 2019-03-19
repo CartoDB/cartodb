@@ -100,18 +100,6 @@ export default {
       background-color: $white;
     }
   }
-
-  &:hover {
-    background: $softblue;
-  }
-
-  &:first-of-type:hover {
-    background-color: $softblue;
-
-    &::before {
-      background-color: $softblue;
-    }
-  }
 }
 
 .footer {

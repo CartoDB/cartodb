@@ -2,7 +2,8 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
+  suitable random key by using `bundle exec rake secret`
 
 ### Features
 * Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)

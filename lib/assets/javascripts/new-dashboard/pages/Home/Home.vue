@@ -34,6 +34,9 @@ export default {
     this.$store.dispatch('maps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
+    this.$store.dispatch('maps/setResultsPerPage', 6);
+    this.$store.dispatch('datasets/setResultsPerPage', 6);
+
     this.$store.dispatch('maps/fetch');
     this.$store.dispatch('datasets/fetch');
   },

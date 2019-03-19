@@ -44,6 +44,7 @@ module Carto
         if lock_acquired || (attempts == index + 1)
           return lock_acquired
         end
+        CartoDB::Logger.debug(message: 'bolt retry', action: 'new attempt', attempts: attempts, timeout: timeout)
         sleep((timeout / 1000.0).second)
       end
       CartoDB::Logger.warning(message: "Couldn't acquire bolt after #{attempts} attempts with #{timeout} timeout")
@@ -53,6 +54,7 @@ module Carto
     def try_to_rerun(rerun_func)
       return unless rerun_func.present?
       while retry?
+        CartoDB::Logger.debug(message: 'bolt rerun', action: 'retry!', key: @bolt_key)
         refresh_lock_timeout
         rerun_func.call
       end

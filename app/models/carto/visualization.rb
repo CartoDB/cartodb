@@ -4,6 +4,7 @@ require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/visualization_invalidation_service'
+require_dependency 'carto/visualizations_export_service_2'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -30,6 +31,7 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
+  include Carto::VisualizationsExportService2Exporter
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -102,6 +104,7 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
+  before_destroy :backup_visualization
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -617,6 +620,27 @@ class Carto::Visualization < ActiveRecord::Base
 
   def dependent_visualizations
     user_table.try(:dependent_visualizations) || []
+  end
+
+  def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    return true if remote?
+
+    if map && !destroyed?
+      export_json = export_visualization_json_hash(id, user, with_mapcaps: true, with_password: true)
+      Carto::VisualizationBackup.create!(
+        user_id: user.id,
+        visualization_id: id,
+        category: category,
+        export: export_json
+      )
+    end
+  rescue StandardError => exception
+    # Don't break deletion flow
+    CartoDB::Logger.error(
+      message: 'Error backing up visualization',
+      exception: exception,
+      visualization_id: id
+    )
   end
 
   private

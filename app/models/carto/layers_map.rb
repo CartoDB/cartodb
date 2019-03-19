@@ -7,6 +7,7 @@ module Carto
     belongs_to :layer, class_name: Carto::Layer
     belongs_to :map, class_name: Carto::Map
 
+    before_destroy :backup_visualization
     after_destroy :invalidate_map, :destroy_layer
 
     private
@@ -22,6 +23,11 @@ module Carto
       return if @layer_destroyed || layer.destroyed?
       @layer_destroyed = true
       layer.destroy
+    end
+
+    def backup_visualization
+      return if @layer_destroyed || layer.destroyed?
+      map.visualization.backup_visualization(Carto::VisualizationBackup::CATEGORY_LAYER) if map.visualization
     end
   end
 end

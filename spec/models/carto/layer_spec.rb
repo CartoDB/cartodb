@@ -126,4 +126,36 @@ describe Carto::Layer do
       end
     end
   end
+
+  describe '#backup' do
+    before(:all) do
+      Carto::VisualizationBackup.all.map(&:destroy)
+      @user = create_user
+      @map, @table1, @table_visualization, @visualization = create_full_visualization(@user)
+    end
+
+    after(:all) do
+      @map.destroy
+      @table1.destroy
+      @table_visualization.destroy
+      @visualization.destroy
+      @user.destroy
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    it 'creates a backup when layer is destroyed' do
+      layer = @visualization.layers.first
+      layer.destroy
+
+      Carto::VisualizationBackup.all.count.should eq 1
+
+      backup = Carto::VisualizationBackup.where(visualization_id: @visualization.id).first
+      backup.should_not eq nil
+      backup.user_id.should eq @user.id
+      backup.created_at.should_not eq nil
+      backup.category.should eq Carto::VisualizationBackup::CATEGORY_LAYER
+      backup.export.should_not be_empty
+      backup.destroy
+    end
+  end
 end

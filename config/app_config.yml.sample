@@ -135,7 +135,7 @@ defaults: &defaults
     protocol: 'https'
     username: 'common-data'
     # base_url: 'https://common-data.carto.com'
-    format: 'shp'
+    format: 'gpkg'
     generate_every: 86400
   explore_api:
     username: ''

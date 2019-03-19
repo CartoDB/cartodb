@@ -53,6 +53,11 @@ describe Carto::UserCreation do
   describe 'validation token' do
     include_context 'organization with users helper'
 
+    before(:each) do
+      # Disable central for these tests
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+    end
+
     it 'assigns an enable_account_token if user has not signed up with Google' do
       ::User.any_instance.stubs(:create_in_central).returns(true)
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)

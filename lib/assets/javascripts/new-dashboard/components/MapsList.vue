@@ -46,13 +46,13 @@
         v-if="shouldShowListHeader">
       </CondensedMapHeader>
 
-      <ul class="grid" v-if="isFetchingMaps">
+      <ul class="grid grid-cell" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
       </ul>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
+      <ul :class="[isCondensed ? 'grid grid-column grid-cell' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
         <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard
             :condensed="isCondensed"
@@ -131,12 +131,9 @@ export default {
       selectedMaps: [],
       cardCSSClasses: 'grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile map-element',
       condensedCSSClasses: 'card-condensed',
-      isCondensed: this.isCondensedDefault
+      isCondensed: this.isCondensedDefault,
+      lastCheckedItem: null
     };
-  },
-  created: function () {
-    this.$store.dispatch('maps/setResultsPerPage', this.maxVisibleMaps);
-    this.fetchMaps();
   },
   computed: {
     ...mapState({
@@ -201,12 +198,13 @@ export default {
       this.$emit('applyOrder', orderParams);
     },
     toggleSelected ({ map, isSelected, event }) {
-      if (event.shiftKey) {
+      if (this.selectedMaps.length && event.shiftKey) {
         this.doShiftClick(map);
         return;
       }
 
       if (isSelected) {
+        this.lastCheckedItem = map;
         this.selectedMaps.push(map);
         return;
       }
@@ -215,7 +213,7 @@ export default {
     },
     doShiftClick (map) {
       const mapsArray = [...Object.values(this.maps)];
-      this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map);
+      this.selectedMaps = shiftClick(mapsArray, this.selectedMaps, map, this.lastCheckedItem || map);
     },
     selectAll () {
       this.selectedMaps = [...Object.values(this.$store.state.maps.list)];
@@ -290,9 +288,23 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-left: 32px;
+  width: 38px;
+  height: 36px;
+  margin-left: 24px;
+  padding: 9px;
   cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: $softblue;
+  }
+
+  &:active {
+    background-color: $primary-color;
+
+    .svgicon {
+      fill: $white;
+    }
+  }
 }
 </style>

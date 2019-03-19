@@ -5,15 +5,13 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -40,15 +38,13 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -75,15 +71,13 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -110,15 +104,13 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -146,15 +138,13 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
     <!---->
     <!---->
     <div class="MapCard-error"></div>
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -181,15 +171,13 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -216,15 +204,13 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -251,15 +237,13 @@ exports[`MapCard.vue should render correct contents 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input is-selected"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">
@@ -286,15 +270,13 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
@@ -319,15 +301,13 @@ exports[`MapCard.vue should render description and tags 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p title="Lorem ipsum dolor sit amet, consectetur adipiscing elit." class="card-description text is-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
     </div>
     <ul class="card-metadata">
@@ -364,15 +344,13 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   <div class="card-media"><img src="http://hello.example.com/api/v1/map/static/named/tpl_e97e0001_f1c2_425e_8c9b_0fb28da59200/600/280.png">
     <!---->
     <!---->
-  </div> <span class="checkbox card-select"><input type="checkBox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
+  </div> <span class="checkbox card-select"><input type="checkbox" class="checkbox-input"> <span class="checkbox-decoration"><img svg-inline="" src="../../assets/icons/common/checkbox.svg"></span></span>
   <div class="card-actions">
     <mapquickactions-stub map="[object Object]" storeactiontype="maps" dataset="[object Object]"></mapquickactions-stub>
   </div>
   <div class="card-text">
     <div class="card-header">
-      <h2 title="First Map" class="card-title title is-caption">
-        First Map&nbsp;
-        <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
+      <h2 title="First Map" class="card-title title is-caption"><span class="">First Map</span> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span></h2>
       <p class="card-description text is-caption is-txtSoftGrey">MapCard.noDescription</p>
     </div>
     <ul class="card-metadata">

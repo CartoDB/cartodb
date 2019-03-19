@@ -30,13 +30,24 @@ export default {
   position: relative;
   height: 100%;
   padding: 16px;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid $light-grey;
   background-color: $white;
+
+  &:hover {
+    border-color: transparent;
+    box-shadow: $card__shadow;
+
+    .tag__title {
+      color: $primary-color;
+      text-decoration: underline;
+    }
+  }
 }
 
 .tag__title {
   overflow: hidden;
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -62,14 +73,6 @@ export default {
 
   &:last-child {
     margin-bottom: 0;
-  }
-}
-
-.card {
-  &:hover {
-    .tag__title {
-      color: $primary-color;
-    }
   }
 }
 

@@ -1,44 +1,54 @@
 <template>
   <div class="dataset-list-row">
-    <div class="dataset-list-cell cell cell--start">
+    <div class="viz-column--main-info">
+      <div class="dataset-list-cell cell cell--start">
+      </div>
+      <div class="dataset-list-cell cell cell--main" @click="changeOrder('name')">
+        <span class="text element-sort is-small is-txtSoftGrey"
+              :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
+          {{ $t(`DatasetListHeader.name`) }}
+        </span>
+      </div>
     </div>
-    <div class="dataset-list-cell cell cell--main" @click="changeOrder('name')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
-        {{ $t(`DatasetListHeader.name`) }}
-      </span>
+
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="dataset-list-cell cell cell--large" @click="changeOrder('updated_at')">
+          <span class="text element-sort is-small is-txtSoftGrey"
+                :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
+            {{ $t(`DatasetListHeader.lastModified`) }}
+          </span>
+        </div>
+        <div class="dataset-list-cell cell cell--small" @click="changeOrder('estimated_row_count')">
+          <span class="text element-sort is-small is-txtSoftGrey"
+                :class="{ 'is-active': isOrderApplied('estimated_row_count'), 'is-reversed': isReverseOrderApplied('estimated_row_count') }">
+            {{ $t(`DatasetListHeader.rows`) }}
+          </span>
+        </div>
+        <div class="dataset-list-cell cell cell--small" @click="changeOrder('size')">
+          <span class="text element-sort is-small is-txtSoftGrey"
+                :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReverseOrderApplied('size') }">
+            {{ $t(`DatasetListHeader.size`) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="viz-column--share">
+        <div class="dataset-list-cell cell cell--small" @click="changeOrder('dependent_visualizations')">
+          <span class="text element-sort is-small is-txtSoftGrey"
+                :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
+            {{ $t(`DatasetListHeader.usage`) }}
+          </span>
+        </div>
+        <div class="dataset-list-cell cell cell--small" @click="changeOrder('privacy')">
+          <span class="text element-sort is-small is-txtSoftGrey"
+                :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
+            {{ $t(`DatasetListHeader.privacy`) }}
+          </span>
+        </div>
+        <div class="dataset-list-cell cell cell--end"></div>
+      </div>
     </div>
-    <div class="dataset-list-cell cell cell--large" @click="changeOrder('updated_at')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
-        {{ $t(`DatasetListHeader.lastModified`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('estimated_row_count')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('estimated_row_count'), 'is-reversed': isReverseOrderApplied('estimated_row_count') }">
-        {{ $t(`DatasetListHeader.rows`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('size')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('size'), 'is-reversed': isReverseOrderApplied('size') }">
-        {{ $t(`DatasetListHeader.size`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small" @click="changeOrder('dependent_visualizations')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('dependent_visualizations'), 'is-reversed': isReverseOrderApplied('dependent_visualizations') }">
-        {{ $t(`DatasetListHeader.usage`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--small cell--privacy" @click="changeOrder('privacy')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
-        {{ $t(`DatasetListHeader.privacy`) }}
-      </span>
-    </div>
-    <div class="dataset-list-cell cell cell--end"></div>
   </div>
 </template>
 
@@ -99,16 +109,6 @@ export default {
   background-color: $white;
 }
 
-.dataset-list-cell {
-  &:first-of-type {
-    padding-left: 0;
-  }
-
-  &:last-of-type {
-    padding-right: 0;
-  }
-}
-
 .cell--start {
   display: flex;
   align-items: center;
@@ -119,11 +119,6 @@ export default {
 
 .cell--end {
   width: 34px;
-}
-
-.cell--privacy {
-  display: flex;
-  align-items: center;
 }
 
 .element-sort {

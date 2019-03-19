@@ -142,6 +142,11 @@ export default {
   }
 }
 
+.Pagination-listItemInner--link:hover {
+  background-color: $softblue;
+  text-decoration: underline;
+}
+
 .Pagination-listItem.is-current,
 .Pagination-listItem.is-current .Pagination-listItemInner--link,
 .Pagination-listItem.is-current .Pagination-listItemInner--link:hover {

@@ -21,6 +21,10 @@ describe Carto::Api::VisualizationsController do
   include VisualizationDestructionHelper
   include FeatureFlagHelper
 
+  before(:all) do
+    create_account_type_fg('ORGANIZATION USER')
+  end
+
   describe 'vizjson2 generator' do
     it_behaves_like 'vizjson generator' do
       def api_vx_visualizations_vizjson_url(options)

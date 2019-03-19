@@ -1,7 +1,7 @@
 Sequel.migration do
   change do
     create_table :user_migration_exports do
-      Uuid     :id,            primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid     :id,            primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String   :state,         null: false
       String   :exported_file, null: true, text: true
       String   :json_file,     null: true
@@ -14,7 +14,7 @@ Sequel.migration do
     end
 
     create_table :user_migration_imports do
-      Uuid     :id,            primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid     :id,            primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String   :state,         null: false
       String   :exported_file, null: false, text: true
       String   :json_file,     null: false

@@ -140,7 +140,7 @@
     },
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
-    "numberRows": "0 rows | {n} row | {n} rows",
+    "numberRows": "0 rows | 1 row | {count} rows",
     "tags": "tags",
     "maps": "0 maps | 1 map | {n} maps"
   },
@@ -283,7 +283,7 @@
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
-    "credits": "Your credits will be renewed the {day} of next month. "
+    "credits": "Your credits will be renewed in 0 days ({day} of each month). | Your credits will be renewed in {remainingDays} day ({day} of each month). | Your credits will be renewed in {remainingDays} days ({day} of each month)."
   },
   "Footer": {
     "HelpCenter": {

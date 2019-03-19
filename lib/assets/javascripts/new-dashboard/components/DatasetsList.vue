@@ -123,12 +123,9 @@ export default {
   data () {
     return {
       isScrollPastHeader: false,
-      selectedDatasets: []
+      selectedDatasets: [],
+      lastCheckedItem: null
     };
-  },
-  created: function () {
-    this.$store.dispatch('datasets/setResultsPerPage', this.maxVisibleDatasets);
-    this.fetchDatasets();
   },
   computed: {
     ...mapState({
@@ -187,12 +184,13 @@ export default {
       this.$emit('applyOrder', orderParams);
     },
     toggleSelected ({ dataset, isSelected, event }) {
-      if (event.shiftKey) {
+      if (this.selectedDatasets.length && event.shiftKey) {
         this.doShiftClick(dataset);
         return;
       }
 
       if (isSelected) {
+        this.lastCheckedItem = dataset;
         this.selectedDatasets.push(dataset);
         return;
       }
@@ -201,7 +199,7 @@ export default {
     },
     doShiftClick (dataset) {
       const datasetsArray = [...Object.values(this.datasets)];
-      this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset);
+      this.selectedDatasets = shiftClick(datasetsArray, this.selectedDatasets, dataset, this.lastCheckedItem || dataset);
     },
     selectAll () {
       this.selectedDatasets = [...Object.values(this.$store.state.datasets.list)];

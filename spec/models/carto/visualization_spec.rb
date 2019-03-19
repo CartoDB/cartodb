@@ -407,6 +407,33 @@ describe Carto::Visualization do
     end
   end
 
+  describe '#backup' do
+    before(:all) do
+      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    after(:all) do
+      @map.destroy
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    it 'creates a backup when visualization is destroyed' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      visualization.destroy
+
+      Carto::VisualizationBackup.all.count.should eq 1
+
+      backup = Carto::VisualizationBackup.where(visualization_id: visualization.id).first
+      backup.should_not eq nil
+      backup.user_id.should eq @carto_user.id
+      backup.created_at.should_not eq nil
+      backup.category.should eq Carto::VisualizationBackup::CATEGORY_VISUALIZATION
+      backup.export.should_not be_empty
+      backup.destroy
+    end
+  end
+
   describe '#update' do
     before(:all) do
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user2)

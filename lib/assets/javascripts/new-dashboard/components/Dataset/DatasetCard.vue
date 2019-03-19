@@ -29,7 +29,7 @@
           <img svg-inline src="../../assets/icons/common/favorite.svg">
         </span>
       </div>
-      <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithCollegues">
+      <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
         <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
           <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -45,7 +45,7 @@
           <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
           <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
         </div>
-        <SharedBrief class="row-metadata" v-if="isSharedWithCollegues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
+        <SharedBrief class="row-metadata" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
       </div>
     </div>
     <div class="cell cell--large">
@@ -187,7 +187,7 @@ export default {
     colleaguesSharedList () {
       return this.$props.dataset.permission.acl;
     },
-    isSharedWithCollegues () {
+    isSharedWithColleagues () {
       return this.$props.dataset.permission.acl.length > 0;
     }
   },

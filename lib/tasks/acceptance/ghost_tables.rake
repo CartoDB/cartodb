@@ -25,7 +25,7 @@ namespace :cartodb do
     # helpers
 
     def create_acceptance_user
-      username = "acceptance-test-#{UUIDTools::UUID.random_create.to_s}"
+      username = "acceptance-test-#{UUIDTools::UUID.random_create}"
       Carto::User.find_by_username('acceptance-test').try(:destroy)
       @user = User.new
       @user.email = "#{username}@example.com"

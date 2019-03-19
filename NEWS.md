@@ -20,6 +20,7 @@ Development
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
 - Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
 - Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
+- Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
 
 4.26.0 (2019-03-11)
 -------------------

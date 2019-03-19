@@ -57,7 +57,7 @@ export default {
 .list-text {
   display: inline-block;
   width: 100%;
-  padding: 8px 22px;
+  padding: 10px 22px;
 }
 
 .dropdown-container {
@@ -77,30 +77,40 @@ export default {
   border: 1px solid $light-grey;
   border-radius: 4px;
   background-color: $white;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: -9px;
-    left: 24px;
-    width: 16px;
-    height: 16px;
-    transform: rotate(45deg);
-    border: 1px solid $light-grey;
-    border-right: none;
-    border-bottom: none;
-    border-radius: 2px;
-    background-color: $white;
-  }
 }
 
 .element {
-  &:first-of-type {
-    padding-top: 8px;
+  &:not(:last-of-type) {
+    border-bottom: 1px solid $softblue;
   }
 
-  &:last-of-type {
-    padding-bottom: 8px;
+  &:first-of-type {
+    &::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 24px;
+      width: 14px;
+      height: 14px;
+      transform: rotate(45deg);
+      border: 1px solid $light-grey;
+      border-right: none;
+      border-bottom: none;
+      border-radius: 2px;
+      background-color: $white;
+    }
+  }
+
+  &:hover {
+    background: $softblue;
+  }
+
+  &:first-of-type:hover {
+    background-color: $softblue;
+
+    &::before {
+      background-color: $softblue;
+    }
   }
 }
 

@@ -127,10 +127,6 @@ export default {
       lastCheckedItem: null
     };
   },
-  created: function () {
-    this.$store.dispatch('datasets/setResultsPerPage', this.maxVisibleDatasets);
-    this.fetchDatasets();
-  },
   computed: {
     ...mapState({
       appliedFilter: state => state.datasets.filterType,

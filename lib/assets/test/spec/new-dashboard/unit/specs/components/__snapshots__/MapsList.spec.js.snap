@@ -33,7 +33,7 @@ exports[`MapsList.vue should render properly with condensed card and without cha
     <!---->
     <condensedmapheader-stub order="updated_at" orderdirection="desc"></condensedmapheader-stub>
     <!---->
-    <ul class="grid grid-column">
+    <ul class="grid grid-column grid-cell">
       <li class="card-condensed">
         <mapcard-stub visualization="[object Object]" storeactiontype="maps" canhover="true" condensed="true"></mapcard-stub>
       </li>

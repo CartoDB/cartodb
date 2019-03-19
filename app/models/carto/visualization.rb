@@ -104,6 +104,7 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
+  before_destroy :backup_visualization
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only

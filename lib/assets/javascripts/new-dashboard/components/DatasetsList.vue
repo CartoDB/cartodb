@@ -27,7 +27,7 @@
         </template>
 
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.createDataset`) }}</CreateButton>
         </template>
       </SectionTitle>
     </div>
@@ -141,6 +141,9 @@ export default {
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
+    canCreateDatasets () {
+      return this.$store.getters['user/canCreateDatasets'];
+    },
     pageTitle () {
       return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },

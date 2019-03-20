@@ -56,7 +56,7 @@
             <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
           </div>
 
-          <SharedBrief class="metadata__element metadata__element_ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
+          <SharedBrief class="metadata__element u-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -311,13 +311,6 @@ export default {
       li {
         margin-right: 0.2em;
       }
-    }
-
-    .metadata__element_ellipsis {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
   }
 }

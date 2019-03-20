@@ -236,7 +236,7 @@ exports[`DatasetCard.vue should render shared brief with all organisation member
       <div class="row-metadataContainer">
         <!---->
         <!---->
-        <sharedbrief-stub colleagues="[object Object]" class="row-metadata row-metadata-ellipsis"></sharedbrief-stub>
+        <sharedbrief-stub colleagues="[object Object]" class="row-metadata u-ellipsis"></sharedbrief-stub>
       </div>
     </div>
   </div>

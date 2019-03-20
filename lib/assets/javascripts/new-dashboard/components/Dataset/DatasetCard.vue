@@ -48,7 +48,7 @@
             <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
             <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
           </div>
-          <SharedBrief class="row-metadata row-metadata-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
+          <SharedBrief class="row-metadata u-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -488,13 +488,6 @@ export default {
     li {
       margin-right: 0.2em;
     }
-  }
-
-  .row-metadata-ellipsis {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 }
 </style>

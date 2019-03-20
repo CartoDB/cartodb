@@ -1,9 +1,7 @@
 <template>
   <div>
     <img class="brief__icon" svg-inline src="../assets/icons/common/user.svg">
-    <span class="brief__text text is-small is-txtSoftGrey">
-      {{ $t(`SharedBrief.sharedWith`) }} {{ isSharedWithOrg ? $tc(`SharedBrief.org`) : sharedWithText }}
-    </span>
+    <span class="brief__text text is-small is-txtSoftGrey" :title="fullText">{{fullText}}</span>
   </div>
 </template>
 
@@ -44,6 +42,10 @@ export default {
       } else if (this.isSharedWithGroups) {
         return `${this.groupText}`;
       }
+    },
+    fullText () {
+      const colleaguesText = this.isSharedWithOrg ? this.$tc(`SharedBrief.org`) : this.sharedWithText;
+      return `${this.$t(`SharedBrief.sharedWith`)} ${colleaguesText}`;
     }
   }
 };
@@ -54,6 +56,7 @@ export default {
 
 .brief__icon {
   margin-right: 4px;
+  transform: translate(0, 1px);
 }
 
 .brief__text {

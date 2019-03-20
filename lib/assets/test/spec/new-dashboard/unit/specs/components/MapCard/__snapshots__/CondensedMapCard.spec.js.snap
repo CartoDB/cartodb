@@ -413,7 +413,7 @@ exports[`MapCard.vue should render shared brief with all organisation members 1`
       <div class="metadata">
         <!---->
         <!---->
-        <sharedbrief-stub colleagues="[object Object]" class="metadata__element"></sharedbrief-stub>
+        <sharedbrief-stub colleagues="[object Object]" class="metadata__element metadata__element_ellipsis"></sharedbrief-stub>
       </div>
     </div>
   </div>

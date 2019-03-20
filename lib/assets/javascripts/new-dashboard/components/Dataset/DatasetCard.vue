@@ -48,7 +48,7 @@
             <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
             <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
           </div>
-          <SharedBrief class="row-metadata" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
+          <SharedBrief class="row-metadata row-metadata-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -384,22 +384,6 @@ export default {
   pointer-events: none;
 }
 
-.row-metadataContainer {
-  display: flex;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.row-metadata {
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-
-  &:first-of-type {
-    margin-left: 0;
-  }
-}
-
 .cell--start {
   display: flex;
   align-items: center;
@@ -429,10 +413,6 @@ export default {
   &.icon--unknown {
     background-image: url("../../assets/icons/datasets/data-types/unknown.svg");
   }
-}
-
-.icon-metadata {
-  margin-right: 4px;
 }
 
 .title-container {
@@ -480,5 +460,41 @@ export default {
   display: block;
   width: 24px;
   height: 24px;
+}
+
+.row-metadataContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+
+  .row-metadata {
+    margin-left: 16px;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+
+    .icon-metadata,
+    ul,
+    li {
+      display: inline-block;
+    }
+
+    .icon-metadata {
+      margin-right: 4px;
+      transform: translate(0, 1px);
+    }
+
+    li {
+      margin-right: 0.2em;
+    }
+  }
+
+  .row-metadata-ellipsis {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>

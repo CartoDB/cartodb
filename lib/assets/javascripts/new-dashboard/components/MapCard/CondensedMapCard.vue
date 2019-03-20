@@ -56,7 +56,7 @@
             <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
           </div>
 
-          <SharedBrief class="metadata__element" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
+          <SharedBrief class="metadata__element metadata__element_ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -289,34 +289,35 @@ export default {
     display: flex;
     align-items: center;
     margin-top: 4px;
-  }
 
-  .metadata__element {
-    display: flex;
-    align-items: center;
-    margin-left: 16px;
+    .metadata__element {
+      margin-left: 16px;
 
-    &:first-of-type {
-      margin-left: 0;
+      &:first-of-type {
+        margin-left: 0;
+      }
+
+      .metadata__icon,
+      ul,
+      li {
+        display: inline-block;
+      }
+
+      .metadata__icon {
+        margin-right: 4px;
+        transform: translate(0, 1px);
+      }
+
+      li {
+        margin-right: 0.2em;
+      }
     }
-  }
 
-  .metadata__icon {
-    margin-right: 4px;
-  }
-
-  .metadata__tags {
-    display: flex;
-
-    li {
-      margin-right: 0.2em;
-    }
-  }
-
-  .metadata__tags-count,
-  .metadata__tag {
-    &:hover {
-      color: $primary-color;
+    .metadata__element_ellipsis {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }

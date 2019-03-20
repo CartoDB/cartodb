@@ -13,21 +13,21 @@
 
     <div class="viz-column--extra-info">
       <div class="viz-column--status">
-        <div class="cell" @click="changeOrder('updated_at')">
+        <div class="cell cell--large" @click="changeOrder('updated_at')">
           <span class="text element-sort is-small is-txtSoftGrey"
                 :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
             {{ $t(`MapListHeader.lastModified`) }}
           </span>
         </div>
-      </div>
-
-      <div class="viz-column--share">
-        <div class="cell cell--small" @click="changeOrder('mapviews')">
-          <span class="text element-sort is-small is-txtSoftGrey"
+        <div class="cell cell--large u-txt-right u-p0" @click="changeOrder('mapviews')">
+          <span class="text element-sort is-small is-txtSoftGrey views"
                 :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
             {{ $t(`MapListHeader.views`) }}
           </span>
         </div>
+      </div>
+
+      <div class="viz-column--share u-flex__justify--end">
         <div class="cell cell--small" @click="changeOrder('privacy')">
           <span class="text element-sort is-small is-txtSoftGrey"
                 :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
@@ -106,8 +106,9 @@ export default {
 }
 
 .cell--end {
-  width: 34px;
+  width: 38px;
 }
+
 
 .element-sort {
   &.is-active,
@@ -133,5 +134,9 @@ export default {
       }
     }
   }
+}
+
+.views {
+  margin-right: -2px;
 }
 </style>

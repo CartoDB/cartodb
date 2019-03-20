@@ -20,10 +20,10 @@ exports[`DatasetCard.vue should add class selected to the card when the property
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
@@ -65,10 +65,10 @@ exports[`DatasetCard.vue should add the name of the owner if the dataset is shar
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
@@ -106,10 +106,10 @@ exports[`DatasetCard.vue should render correct contents 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
@@ -147,10 +147,10 @@ exports[`DatasetCard.vue should render maps in usage dropdown 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small">
@@ -198,10 +198,10 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">
@@ -243,10 +243,10 @@ exports[`DatasetCard.vue should render shared brief with all organisation member
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">DatasetCard.lastUpdated</span></div>
-      <div class="cell cell--small"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
-          DatasetCard.numberRows
+      <div class="cell cell--small u-txt-right"><span title="DatasetCard.numberRows" class="text is-small is-txtSoftGrey">
+          0
         </span></div>
-      <div class="cell cell--xsmall"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
+      <div class="cell cell--xsmall u-txt-right"><span class="text is-small is-txtSoftGrey">34.4 MB</span></div>
     </div>
     <div class="viz-column--share">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">

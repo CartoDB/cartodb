@@ -7,7 +7,6 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
-    "condensedViews": "No views | 1 view | {n} views",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",

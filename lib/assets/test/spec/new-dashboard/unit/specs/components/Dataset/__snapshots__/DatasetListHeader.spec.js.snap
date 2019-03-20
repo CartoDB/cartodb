@@ -13,7 +13,7 @@ exports[`DatasetListHeader.vue should render correct contents 1`] = `
       <div class="dataset-list-cell cell cell--large"><span class="text element-sort is-small is-txtSoftGrey">
           DatasetListHeader.lastModified
         </span></div>
-      <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey">
+      <div class="dataset-list-cell cell cell--small u-txt-right"><span class="text element-sort is-small is-txtSoftGrey">
           DatasetListHeader.rows
         </span></div>
       <div class="dataset-list-cell cell cell--small"><span class="text element-sort is-small is-txtSoftGrey is-active">

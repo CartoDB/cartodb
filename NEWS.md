@@ -11,6 +11,7 @@ Development
   * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
 
 ### Bug fixes / enhancements
+- Add link to Help Center to invitation emails
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
 - Data Library defaults to .gpkg for import

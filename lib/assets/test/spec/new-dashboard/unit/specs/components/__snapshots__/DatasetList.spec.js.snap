@@ -41,7 +41,7 @@ exports[`DatasetsList.vue should render properly 1`] = `
   </div>
   <!---->
   <div class="grid-cell grid-cell--noMargin grid-cell--col12">
-    <datasetlistheader-stub order="updated_at" orderdirection="desc"></datasetlistheader-stub>
+    <datasetlistheader-stub order="updated_at" orderdirection="desc" issortable="true"></datasetlistheader-stub>
   </div>
   <ul class="grid-cell grid-cell--col12">
     <li class="dataset-item">

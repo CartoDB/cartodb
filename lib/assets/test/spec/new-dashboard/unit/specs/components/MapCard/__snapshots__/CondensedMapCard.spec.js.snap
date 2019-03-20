@@ -20,9 +20,9 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -57,9 +57,9 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -94,9 +94,9 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -131,9 +131,9 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -169,9 +169,9 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -206,9 +206,9 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -243,9 +243,9 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -280,9 +280,9 @@ exports[`MapCard.vue should render correct contents 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -324,9 +324,9 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -379,9 +379,9 @@ exports[`MapCard.vue should render description and tags 1`] = `
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC
@@ -420,9 +420,9 @@ exports[`MapCard.vue should render shared brief with all organisation members 1`
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
-      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey views">0</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
-    <div class="viz-column--share u-flex__justify--end">
+    <div class="viz-column--share">
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC

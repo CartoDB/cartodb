@@ -7,6 +7,9 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
     <div class="full-width">
       <section class="page-section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <condensedmapheader-stub order="" orderdirection=""></condensedmapheader-stub>
+        </div>
         <!---->
         <ul class="grid-cell grid-cell--col12">
           <div class="is-caption text maps--empty">
@@ -17,6 +20,9 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
       </section>
       <section class="page__section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <datasetlistheader-stub order="" orderdirection=""></datasetlistheader-stub>
+        </div>
         <ul class="grid-cell grid-cell--col12">
           <div class="is-caption text">
             SearchPage.emptyText.datasets
@@ -39,6 +45,9 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
     <div class="full-width">
       <section class="page-section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <condensedmapheader-stub order="" orderdirection=""></condensedmapheader-stub>
+        </div>
         <ul class="grid-cell grid-cell--col12">
           <li class="search-item">
             <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
@@ -64,6 +73,9 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
       </section>
       <section class="page__section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <datasetlistheader-stub order="" orderdirection=""></datasetlistheader-stub>
+        </div>
         <!---->
         <ul class="grid-cell grid-cell--col12">
           <li class="search-item">
@@ -99,6 +111,9 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
     <div class="full-width">
       <section class="page-section has-pagination">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <condensedmapheader-stub order="" orderdirection=""></condensedmapheader-stub>
+        </div>
         <!---->
         <ul class="grid-cell grid-cell--col12">
           <li class="search-item">
@@ -113,6 +128,9 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
       </section>
       <section class="page__section">
         <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+          <datasetlistheader-stub order="" orderdirection=""></datasetlistheader-stub>
+        </div>
         <ul class="grid-cell grid-cell--col12">
           <li class="search-item">
             <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>

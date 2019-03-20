@@ -3,7 +3,7 @@
 exports[`DatasetCardFake.vue should render correct contents 1`] = `
 <div class="dataset-fake-row">
   <div class="viz-column--main-info">
-    <div class="cell-placeholder">
+    <div class="cell-placeholder thumbnail">
       <div class="icon-placeholder"></div>
     </div>
     <div class="cell-placeholder cell--main">
@@ -15,10 +15,10 @@ exports[`DatasetCardFake.vue should render correct contents 1`] = `
       <div class="cell-placeholder cell--large">
         <div class="text-placeholder"></div>
       </div>
-      <div class="cell-placeholder cell--small">
+      <div class="cell-placeholder cell--xsmall">
         <div class="text-placeholder"></div>
       </div>
-      <div class="cell-placeholder cell--xsmall">
+      <div class="cell-placeholder cell--small">
         <div class="text-placeholder"></div>
       </div>
     </div>

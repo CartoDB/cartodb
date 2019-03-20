@@ -39,12 +39,14 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <CondensedMapHeader
-        :order="appliedOrder"
-        :orderDirection="appliedOrderDirection"
-        @orderChanged="applyOrder"
-        v-if="shouldShowListHeader">
-      </CondensedMapHeader>
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="shouldShowListHeader">
+        <CondensedMapHeader
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @orderChanged="applyOrder"
+          v-if="shouldShowListHeader">
+        </CondensedMapHeader>
+      </div>
 
       <ul class="grid grid-cell" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">

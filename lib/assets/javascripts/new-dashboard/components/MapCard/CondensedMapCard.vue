@@ -67,11 +67,11 @@
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
         <div class="cell cell--large u-txt-right u-p0">
-          <span class="text is-small is-txtSoftGrey views">{{ numberViews }}</span>
+          <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
 
-      <div class="viz-column--share u-flex__justify--end">
+      <div class="viz-column--share">
         <div class="cell cell--small">
           <p class="text is-small is-txtSoftGrey">
             {{ $t(`MapCard.shared.${visualization.privacy}`) }}
@@ -274,10 +274,6 @@ export default {
   .cell__title {
     display: flex;
     align-items: center;
-  }
-
-  .views {
-    margin-right: -2px;
   }
 
   .quick-actions {

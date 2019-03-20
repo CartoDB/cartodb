@@ -31,7 +31,9 @@ exports[`MapsList.vue should render properly with condensed card and without cha
   <div class="full-width">
     <sectiontitle-stub title="MapsPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
-    <condensedmapheader-stub order="updated_at" orderdirection="desc"></condensedmapheader-stub>
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+      <condensedmapheader-stub order="updated_at" orderdirection="desc" issortable="true"></condensedmapheader-stub>
+    </div>
     <!---->
     <ul class="grid grid-column grid-cell">
       <li class="card-condensed">

@@ -16,6 +16,10 @@
         <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
 
+          <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+            <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
+          </div>
+
           <ul class="grid-cell grid-cell--col12" v-if="isFetchingMaps">
             <li v-for="n in 6" :key="n" class="search-item">
               <MapCardFake :condensed="true" class="search-item"></MapCardFake>
@@ -41,6 +45,10 @@
 
         <section class="page__section" ref="datasets">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
+
+          <div class="grid-cell grid-cell--noMargin grid-cell--col12">
+            <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
+          </div>
 
           <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
             <li v-for="dataset in datasets" :key="dataset.id" class="search-item">
@@ -73,8 +81,10 @@
 
 <script>
 import StickySubheader from 'new-dashboard/components/StickySubheader';
+import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
+import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
@@ -86,8 +96,10 @@ const TWO_HEADERS_HEIGHT = 128;
 export default {
   name: 'SearchPage',
   components: {
+    CondensedMapHeader,
     DatasetCard,
     DatasetCardFake,
+    DatasetListHeader,
     MapCard,
     MapCardFake,
     Pagination,

@@ -6,16 +6,20 @@ namespace :cartodb do
     DEFAULT_SLEEP_TIME = 10
 
     desc 'Acceptance tests regarding Ghost Tables trigger'
-    task :ghost_tables, [:sleep_time] => :environment do |_t, args|
+    task :ghost_tables, [:username, :sleep_time] => :environment do |_t, args|
+      raise 'usage: rake cartodb:acceptance:ghost_tables[username]' if args[:username].blank?
+      @user = User.where(username: args[:username]).first
+      raise "user with username '#{args[:username]}' not found" unless @user
       args.with_defaults(sleep_time: DEFAULT_SLEEP_TIME)
       @sleep_time = args[:sleep_time].to_i
       @results = []
 
       9.times.each do |index|
-        create_acceptance_user
+        reset_user
         @results << send("test#{index + 1}")
-        destroy_acceptance_user
       end
+
+      reset_user
 
       puts "\n=======================================\n\n"
       @results.each { |result| p result }
@@ -24,20 +28,13 @@ namespace :cartodb do
 
     # helpers
 
-    def create_acceptance_user
-      username = "acceptance-test-#{UUIDTools::UUID.random_create}"
-      Carto::User.find_by_username('acceptance-test').try(:destroy)
-      @user = User.new
-      @user.email = "#{username}@example.com"
-      @user.password = username
-      @user.password_confirmation = username
-      @user.username = username
-      @user.quota_in_bytes = 50 * 1024 * 1024
-      @user.save
-    end
-
-    def destroy_acceptance_user
-      @user.destroy
+    def reset_user
+      @user.db_service.drop_ghost_tables_event_trigger
+      disable_feature_flag
+      Carto::Visualization.where(user_id: @user.id, name: 'casper').all.each(&:destroy)
+      @user.tables.where(name: 'casper').all.each(&:destroy)
+      @user.in_database.run('DROP TABLE IF EXISTS casper;')
+      @user.db_service.create_ghost_tables_event_trigger
     end
 
     def run_and_wait(query)
@@ -54,10 +51,10 @@ namespace :cartodb do
     end
 
     def create_map
-      source = Carto::Visualization.where(user_id: @user.id).first
+      source = Carto::Visualization.where(user_id: @user.id, name: 'casper').first
       map = CartoDB::Visualization::TableBlender.new(Carto::User.find(@user.id), [source.user_table]).blend
       Carto::Visualization.create!(
-        name: 'ghost map',
+        name: 'casper',
         type: Carto::Visualization::TYPE_DERIVED,
         user_id: @user.id,
         map_id: map.id,
@@ -71,9 +68,19 @@ namespace :cartodb do
       @user.reload
     end
 
+    def disable_feature_flag
+      ff = FeatureFlag.where(name: 'ghost_tables_trigger_disabled').first
+      FeatureFlagsUser.where(feature_flag_id: ff.id, user_id: @user.id).first.try(:destroy)
+      @user.reload
+    end
+
     def build_result(description, condition)
       result = condition ? "OK!" : "Fail!"
       "#{description}... #{result}"
+    end
+
+    def table_linked?
+      @user.tables.where(name: 'casper').count == 1
     end
 
     # tests
@@ -81,13 +88,13 @@ namespace :cartodb do
     def test1
       description = "Create table"
       run_and_wait("CREATE TABLE casper ();")
-      p build_result(description, @user.tables.empty?)
+      p build_result(description, !table_linked?)
     end
 
     def test2
       description = "Create table and cartodbfy"
       create_table_and_cartodbfy
-      p build_result(description, @user.tables.count == 1)
+      p build_result(description, table_linked?)
     end
 
     def test3
@@ -96,16 +103,16 @@ namespace :cartodb do
         SELECT INTO casper FROM (SELECT 1) AS tmp;
         SELECT * FROM CDB_CartodbfyTable('casper');
       })
-      p build_result(description, @user.tables.count == 1)
+      p build_result(description, table_linked?)
     end
 
     def test4
       description = "Drop table"
       create_table_and_cartodbfy
-      assert1 = @user.tables.count == 1
+      assert1 = table_linked?
 
       run_and_wait("DROP TABLE casper;")
-      assert2 = @user.tables.empty?
+      assert2 = !table_linked?
 
       p build_result(description, assert1 && assert2)
     end
@@ -114,7 +121,7 @@ namespace :cartodb do
       description = "Create table and cartodbfy without trigger"
       @user.db_service.drop_ghost_tables_event_trigger
       create_table_and_cartodbfy
-      p build_result(description, @user.tables.empty?)
+      p build_result(description, !table_linked?)
     end
 
     def test6
@@ -154,7 +161,7 @@ namespace :cartodb do
 
       create_table_and_cartodbfy
 
-      p build_result(description, @user.tables.empty?)
+      p build_result(description, !table_linked?)
     end
 
     def test9
@@ -163,7 +170,7 @@ namespace :cartodb do
 
       create_table_and_cartodbfy
 
-      p build_result(description, @user.tables.empty?)
+      p build_result(description, !table_linked?)
     end
   end
 end

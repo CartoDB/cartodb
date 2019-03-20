@@ -2,82 +2,82 @@
 
 exports[`MapBulkActions.vue should render all bulk actions 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.changeMapPrivacy
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.duplicateMap
+    BulkActions.maps.duplicate
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.lockMap
+    BulkActions.maps.lock
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.unlockMap
+    BulkActions.maps.unlock
   </button><button class="bulk-actions__button button button--ghost is-txtAlert">
-    BulkActions.maps.deleteMap
+    BulkActions.maps.delete
   </button></section>
 `;
 
-exports[`MapBulkActions.vue should render all multiple actions for all selected "Deselect all", "Lock maps" and "Delete maps" actions 1`] = `
+exports[`MapBulkActions.vue should render all multiple actions for all selected "Deselect all", "Lock" and "Delete" actions 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.deselectAllMaps
+    BulkActions.maps.deselectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.lockMaps
+    BulkActions.maps.lock
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
-    BulkActions.maps.deleteMaps
+    BulkActions.maps.delete
   </button></section>
 `;
 
-exports[`MapBulkActions.vue should render all multiple actions: "Select all", "Deselect all", "Lock maps", "Delete maps" 1`] = `
+exports[`MapBulkActions.vue should render all multiple actions: "Select all", "Deselect all", "Lock", "Delete" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.deselectAllMaps
+    BulkActions.maps.deselectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.lockMaps
+    BulkActions.maps.lock
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
-    BulkActions.maps.deleteMaps
+    BulkActions.maps.delete
   </button></section>
 `;
 
-exports[`MapBulkActions.vue should render all single actions: "Select all", "Create map", "Change privacy", "Duplicate map", "Lock map", "Delete map" 1`] = `
+exports[`MapBulkActions.vue should render all single actions: "Select all", "Create map", "Change privacy", "Duplicate", "Lock", "Delete" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.changeMapPrivacy
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.duplicateMap
+    BulkActions.maps.duplicate
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.lockMap
+    BulkActions.maps.lock
   </button>
   <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
-    BulkActions.maps.deleteMap
+    BulkActions.maps.delete
   </button></section>
 `;
 
-exports[`MapBulkActions.vue should render multiple locked action: "Unlock maps" 1`] = `
+exports[`MapBulkActions.vue should render multiple locked action: "Unlock" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.deselectAllMaps
+    BulkActions.maps.deselectAll
   </button>
   <!----><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.unlockMaps
+    BulkActions.maps.unlock
   </button>
   <!---->
 </section>
 `;
 
-exports[`MapBulkActions.vue should render single locked action: "Unlock map" 1`] = `
+exports[`MapBulkActions.vue should render single locked action: "Unlock" 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.selectAllMaps
+    BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.deselectAllMaps
+    BulkActions.maps.deselectAll
   </button>
   <!----><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.unlockMaps
+    BulkActions.maps.unlock
   </button>
   <!---->
 </section>

@@ -43,7 +43,7 @@
           <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
         </template>
       </InitialState>
     </div>

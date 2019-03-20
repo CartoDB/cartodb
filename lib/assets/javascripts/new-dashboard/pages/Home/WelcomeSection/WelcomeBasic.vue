@@ -13,13 +13,8 @@
 </template>
 
 <script>
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
-
 export default {
   name: 'WelcomeBasic',
-  components: {
-    CreateButton
-  },
   props: {
     username: String,
     notifications: Array

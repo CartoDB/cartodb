@@ -48,7 +48,7 @@
         </CondensedMapHeader>
       </div>
 
-      <ul class="grid grid-cell" v-if="isFetchingMaps">
+      <ul :class="[isCondensed ? 'grid grid-cell' : 'grid']" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>

@@ -5,9 +5,13 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
+  * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
 
 ### Bug fixes / enhancements
+- Add link to Help Center to invitation emails
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
 - Data Library defaults to .gpkg for import
@@ -17,6 +21,12 @@ Development
 - Fix initial rate limit setting
 - Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
+- Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
+- Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
+- Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
+- Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
+- Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
+
 
 4.26.0 (2019-03-11)
 -------------------

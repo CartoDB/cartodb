@@ -30,14 +30,18 @@ export default {
   },
   beforeMount () {
     this.$store.dispatch('recentContent/fetch');
-  },
-  created () {
+
     this.$store.dispatch('maps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
-    if (this.isFirstTimeViewingDashboard) {
-      sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
-    }
+    this.$store.dispatch('maps/setResultsPerPage', 6);
+    this.$store.dispatch('datasets/setResultsPerPage', 6);
+
+    this.$store.dispatch('maps/fetch');
+    this.$store.dispatch('datasets/fetch');
+  },
+  created () {
+    sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
   },
   data () {
     return {
@@ -60,9 +64,10 @@ export default {
     changeSection (nextActiveSection) {
       this.activeSection = nextActiveSection;
     },
-    onContentChanged (type) {
+    onContentChanged () {
       this.$store.dispatch('recentContent/fetch');
-      this.$store.dispatch(`${type}/fetch`);
+      this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('datasets/fetch');
     }
   }
 };

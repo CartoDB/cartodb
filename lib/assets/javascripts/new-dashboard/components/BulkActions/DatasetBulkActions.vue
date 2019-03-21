@@ -108,7 +108,7 @@ export default {
       return this.selectedDatasets.length > 1 ? 'multiple' : 'single';
     },
     isAnyShared () {
-      return this.selectedDatasets.some(dataset => Visualization.isShared(dataset, this.$cartoModels));
+      return this.selectedDatasets.some(dataset => Visualization.isSharedWithMe(dataset, this.$cartoModels));
     },
     isAnyLocked () {
       return this.selectedDatasets.some(dataset => dataset.locked);
@@ -171,7 +171,7 @@ export default {
       bgPollingView._addDataset({
         type: 'duplication',
         table_name: `${Table.getUnqualifiedName(selectedDataset.name)}_copy`,
-        value: selectedDataset.name,
+        value: `${selectedDataset.permission.owner.username}.${selectedDataset.name}`,
         create_vis: false
       });
       this.deselectAll();

@@ -42,12 +42,7 @@
     <div class="card-text">
       <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
         <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
-          <template v-if="singleLineTitle">
-            <span class="title-element">{{ visualization.name }}</span>&nbsp;
-          </template>
-          <template v-else>
-            {{ visualization.name }}&nbsp;
-          </template>
+          <span :class="{ 'title-element': singleLineTitle }">{{ visualization.name }}</span>
           <span
             v-if="showInteractiveElements"
             class="card-favorite"
@@ -65,12 +60,12 @@
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isSharedWithMe">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isSharedWithMe">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
           <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
@@ -194,16 +189,21 @@ export default {
 .card {
   position: relative;
   height: 100%;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid $light-grey;
+  border-radius: 2px;
+  background-clip: padding-box;
   background-color: $white;
 
   &:hover {
+    border-color: transparent;
+    box-shadow: $card__shadow;
     cursor: pointer;
 
     &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
+        text-decoration: underline;
       }
     }
 
@@ -309,7 +309,7 @@ export default {
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &.title-overflow {
     padding-right: 24px;
@@ -426,7 +426,7 @@ export default {
 }
 
 .card-favorite {
-  margin-left: 4px;
+  margin-left: 8px;
   opacity: 0;
 
   svg {

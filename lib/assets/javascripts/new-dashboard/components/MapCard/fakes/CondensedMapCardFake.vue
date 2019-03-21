@@ -1,21 +1,29 @@
 <template>
   <div class="condensed-fake-row">
-    <div class="cell-placeholder cell--icon">
-      <div class="icon-placeholder"/>
+    <div class="viz-column--main-info">
+      <div class="cell-placeholder cell--icon">
+        <div class="icon-placeholder"/>
+      </div>
+      <div class="cell-placeholder cell--main">
+        <div class="text-placeholder"/>
+      </div>
     </div>
-    <div class="cell-placeholder cell--main">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--large">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--large">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--medium">
-      <div class="text-placeholder"/>
-    </div>
-    <div class="cell-placeholder cell--quick-actions">
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell-placeholder cell--large">
+          <div class="text-placeholder"/>
+        </div>
+      </div>
+      <div class="viz-column--share">
+        <div class="cell-placeholder cell--large">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--medium">
+          <div class="text-placeholder"/>
+        </div>
+        <div class="cell-placeholder cell--quick-actions">
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +42,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 80px;
-  padding: 0 24px;
+  padding: 0 14px;
   background-color: $white;
 }
 

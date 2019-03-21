@@ -140,7 +140,7 @@
     },
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
-    "numberRows": "0 rows | {n} row | {n} rows",
+    "numberRows": "0 rows | 1 row | {count} rows",
     "tags": "tags",
     "maps": "0 maps | 1 map | {n} maps"
   },
@@ -318,5 +318,12 @@
   "FeedbackMessage": {
     "title": "Share your feedback with us.",
     "message": "Do you miss something? Should we be doing something differently?"
+  },
+  "SharedBrief": {
+    "sharedWith": "Shared with",
+    "org": "all your organization",
+    "groups": "{groupname} | {n} groups",
+    "users": "{username} | {n} users",
+    "and": "and"
   }
 }

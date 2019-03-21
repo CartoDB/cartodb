@@ -39,7 +39,7 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="shouldShowListHeader">
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowListHeader">
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
@@ -263,6 +263,10 @@ export default {
 
 .full-width {
   width: 100%;
+}
+
+.grid__head--sticky {
+  top: 64px;
 }
 
 .pagination-element {

@@ -44,6 +44,12 @@
   }
 }
 
+.grid__head--sticky {
+  position: sticky;
+  z-index: 1;
+  top: 0;
+}
+
 .grid-cell {
   padding-right: 10px;
   padding-left: 10px;

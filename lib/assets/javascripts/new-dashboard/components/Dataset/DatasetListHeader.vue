@@ -132,8 +132,9 @@ export default {
   align-items: center;
   width: 100%;
   margin-bottom: 0;
-  padding: 8px 14px;
+  padding: 14px;
   overflow: hidden;
+  border-bottom: 1px solid $softblue;
   background-color: $white;
   cursor: default;
 }

@@ -32,7 +32,7 @@ export default {
             shouldBeHidden: this.areAllMapsSelected
           },
           {
-            name: this.$t('BulkActions.maps.changeMapPrivacy'),
+            name: this.$t('BulkActions.maps.changePrivacy'),
             event: 'changePrivacy',
             shouldBeHidden: this.isAnyShared || this.isAnyLocked
           },

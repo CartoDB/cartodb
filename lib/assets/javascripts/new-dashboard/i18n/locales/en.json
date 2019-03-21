@@ -37,7 +37,7 @@
     "maps": {
       "selectAll": "Select all",
       "deselectAll": "Deselect all",
-      "changeMapPrivacy": "Change privacy",
+      "changePrivacy": "Change privacy",
       "duplicate": "Duplicate",
       "unlock": "Unlock",
       "lock": "Lock",

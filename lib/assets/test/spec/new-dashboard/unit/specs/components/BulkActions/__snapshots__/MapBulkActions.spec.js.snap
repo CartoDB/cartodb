@@ -4,7 +4,7 @@ exports[`MapBulkActions.vue should render all bulk actions 1`] = `
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.changeMapPrivacy
+    BulkActions.maps.changePrivacy
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.duplicate
   </button><button class="bulk-actions__button button button--ghost">
@@ -46,7 +46,7 @@ exports[`MapBulkActions.vue should render all single actions: "Select all", "Cre
 <section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.selectAll
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.maps.changeMapPrivacy
+    BulkActions.maps.changePrivacy
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.maps.duplicate
   </button><button class="bulk-actions__button button button--ghost">

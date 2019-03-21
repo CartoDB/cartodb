@@ -14,7 +14,7 @@ describe Carto::VisualizationBackupService do
     @user.destroy
   end
 
-  describe '#backup' do
+  describe '#create_visualization_backup' do
     before(:all) do
       @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
     end
@@ -97,6 +97,36 @@ describe Carto::VisualizationBackupService do
       Carto::VisualizationBackup.all.count.should eq 0
 
       visualization.destroy
+    end
+  end
+
+  describe '#create_visualization_backup' do
+    before(:all) do
+      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+      Carto::VisualizationBackup.all.map(&:destroy)
+
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+      @visualization.destroy # creates a Visualization backup
+    end
+
+    after(:all) do
+      @map.destroy
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    it 'restores a visualization backup' do
+      backup = Carto::VisualizationBackup.first
+      visualization = restore_visualization_backup(backup.id)
+      visualization.should_not eq nil
+      visualization.id.should eq @visualization.id
+      visualization.name.should eq @visualization.name
+      visualization.type.should eq @visualization.type
+    end
+
+    it 'fails restoring a visualization backup without viscualization id' do
+      backup = Carto::VisualizationBackup.first
+      visualization = restore_visualization_backup(nil)
+      visualization.should eq nil
     end
   end
 end

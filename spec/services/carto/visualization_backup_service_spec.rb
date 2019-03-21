@@ -124,7 +124,6 @@ describe Carto::VisualizationBackupService do
     end
 
     it 'fails restoring a visualization backup without viscualization id' do
-      backup = Carto::VisualizationBackup.first
       visualization = restore_visualization_backup(nil)
       visualization.should eq nil
     end

@@ -17,7 +17,7 @@
           <div class="text-placeholder"/>
         </div>
       </div>
-      <div class="viz-column--share u-flex__justify--end">
+      <div class="viz-column--share">
         <div class="cell-placeholder cell--small">
           <div class="text-placeholder"/>
         </div>

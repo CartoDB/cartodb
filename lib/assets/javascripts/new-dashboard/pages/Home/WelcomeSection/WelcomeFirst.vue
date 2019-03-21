@@ -4,7 +4,7 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <CreateButton v-if="!isOrganizationAdmin" visualizationType="map">
+        <CreateButton v-if="!isOrganizationAdmin" visualizationType="map" :disabled="isViewer">
           {{ $t(`MapsPage.createMap`) }}
         </CreateButton>
         <CreateButton v-if="!isOrganizationAdmin" visualizationType="dataset" :disabled="!canCreateDatasets">
@@ -66,6 +66,9 @@ export default {
     },
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   }
 };

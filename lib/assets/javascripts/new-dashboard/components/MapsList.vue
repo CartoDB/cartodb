@@ -31,7 +31,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton visualizationType="maps" :disabled="isViewer">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -185,6 +185,9 @@ export default {
     },
     shouldShowListHeader () {
       return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   },
   methods: {

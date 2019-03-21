@@ -165,7 +165,7 @@ namespace :cartodb do
     end
 
     desc "Restore visualization from backup"
-    task :restore_visualization, [:backup_id] => :environment do |t, args|
+    task :restore_visualization, [:backup_id] => :environment do |_, args|
       include Carto::VisualizationBackupService
 
       backup_id = args[:backup_id]

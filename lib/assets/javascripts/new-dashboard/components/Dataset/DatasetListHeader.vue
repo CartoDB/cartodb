@@ -113,7 +113,7 @@ export default {
   display: flex;
   align-items: center;
   align-self: flex-start;
-  width: 46px;
+  width: 58px;
   height: 100%;
 }
 

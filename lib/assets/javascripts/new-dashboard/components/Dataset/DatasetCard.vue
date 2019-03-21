@@ -32,7 +32,7 @@
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </div>
-        <div class="row-metadataContainer" v-if="hasTags || isShared">
+        <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
             <ul v-if="tagsChars <= maxTagChars" class="tag-list">
@@ -41,13 +41,14 @@
               </li>
             </ul>
             <FeaturesDropdown v-if="tagsChars > maxTagChars" :list=dataset.tags linkRoute="tagSearch" feature="tag">
-              <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t('DatasetCard.tags')}}</span>
+              <span class="tag-list__more-tags text is-small is-txtSoftGrey">{{numberTags}} {{$t(`DatasetCard.tags`)}}</span>
             </FeaturesDropdown>
           </div>
-          <div class="row-metadata" v-if="isShared">
+          <div class="row-metadata" v-if="isSharedWithMe">
             <img class="icon-metadata" svg-inline src="../../assets/icons/common/user.svg">
             <span class="text is-small is-txtSoftGrey">{{dataset.permission.owner.username}}</span>
           </div>
+          <SharedBrief class="row-metadata u-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -90,7 +91,7 @@
           <DatasetQuickActions
             v-if="showInteractiveElements"
             :dataset="dataset"
-            :isShared="isShared"
+            :isSharedWithMe="isSharedWithMe"
             class="dataset--quick-actions"
             @open="openQuickActions"
             @close="closeQuickActions"
@@ -106,6 +107,7 @@ import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQu
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/models/visualization';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
+import SharedBrief from 'new-dashboard/components/SharedBrief';
 import countCharsArray from 'new-dashboard/utils/count-chars-array';
 import * as Formatter from 'new-dashboard/utils/formatter';
 
@@ -113,7 +115,8 @@ export default {
   name: 'DatasetCard',
   components: {
     DatasetQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    SharedBrief
   },
   props: {
     dataset: Object,
@@ -176,8 +179,8 @@ export default {
     hasTags () {
       return this.numberTags > 0;
     },
-    isShared () {
-      return Visualization.isShared(this.$props.dataset, this.$cartoModels);
+    isSharedWithMe () {
+      return Visualization.isSharedWithMe(this.$props.dataset, this.$cartoModels);
     },
     showInteractiveElements () {
       return !this.$props.selectMode;
@@ -190,6 +193,12 @@ export default {
     },
     vizUrl () {
       return Visualization.getURL(this.$props.dataset, this.$cartoModels);
+    },
+    colleaguesSharedList () {
+      return this.$props.dataset.permission.acl;
+    },
+    isSharedWithColleagues () {
+      return this.$props.dataset.permission.acl.length > 0;
     }
   },
   methods: {
@@ -375,22 +384,6 @@ export default {
   pointer-events: none;
 }
 
-.row-metadataContainer {
-  display: flex;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.row-metadata {
-  display: flex;
-  align-items: center;
-  margin-left: 16px;
-
-  &:first-of-type {
-    margin-left: 0;
-  }
-}
-
 .cell--start {
   display: flex;
   align-items: center;
@@ -420,10 +413,6 @@ export default {
   &.icon--unknown {
     background-image: url("../../assets/icons/datasets/data-types/unknown.svg");
   }
-}
-
-.icon-metadata {
-  margin-right: 4px;
 }
 
 .title-container {
@@ -471,5 +460,34 @@ export default {
   display: block;
   width: 24px;
   height: 24px;
+}
+
+.row-metadataContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+
+  .row-metadata {
+    margin-left: 16px;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+
+    .icon-metadata,
+    ul,
+    li {
+      display: inline-block;
+    }
+
+    .icon-metadata {
+      margin-right: 4px;
+      transform: translate(0, 1px);
+    }
+
+    li {
+      margin-right: 0.2em;
+    }
+  }
 }
 </style>

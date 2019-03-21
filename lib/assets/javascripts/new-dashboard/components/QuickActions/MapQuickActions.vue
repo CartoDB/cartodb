@@ -1,6 +1,6 @@
 <template>
   <QuickActions
-    v-if="!isShared"
+    v-if="!isSharedWithMe"
     ref="quickActions"
     :actions="actions[actionMode]"
     v-on="getEventListeners()"
@@ -45,8 +45,8 @@ export default {
     actionMode () {
       return this.map.locked ? 'locked' : 'mine';
     },
-    isShared () {
-      return Visualization.isShared(this.$props.map, this.$cartoModels);
+    isSharedWithMe () {
+      return Visualization.isSharedWithMe(this.$props.map, this.$cartoModels);
     },
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;

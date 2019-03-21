@@ -96,7 +96,7 @@ export default {
       return this.selectedMaps.length > 1 ? 'multiple' : 'single';
     },
     isAnyShared () {
-      return this.selectedMaps.some(map => Visualization.isShared(map, this.$cartoModels));
+      return this.selectedMaps.some(map => Visualization.isSharedWithMe(map, this.$cartoModels));
     },
     isAnyLocked () {
       return this.selectedMaps.some(map => map.locked);

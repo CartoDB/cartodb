@@ -37,7 +37,7 @@
           </span>
         </div>
 
-        <div class="metadata" v-if="hasTags || isShared">
+        <div class="metadata" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
 
@@ -50,10 +50,13 @@
               <span class="metadata__tags-count text is-small is-txtSoftGrey">{{tagsLength}} {{$t(`DatasetCard.tags`)}}</span>
             </FeaturesDropdown>
           </div>
-          <div class="metadata__element" v-if="isShared">
+
+          <div class="metadata__element" v-if="isSharedWithMe">
             <img class="metadata__icon" svg-inline src="../../assets/icons/common/user.svg">
             <span class="text is-small is-txtSoftGrey">{{visualization.permission.owner.username}}</span>
           </div>
+
+          <SharedBrief class="metadata__element u-ellipsis" v-if="isSharedWithColleagues && !isSharedWithMe" :colleagues="colleaguesSharedList" />
         </div>
       </div>
     </div>
@@ -77,7 +80,7 @@
         </div>
 
         <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-          <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isShared"></div>
+          <div class="quick-actions__placeholder" v-if="!showInteractiveElements || isSharedWithMe"></div>
           <MapQuickActions class="quick-actions__element" v-if="showInteractiveElements" :map="visualization" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
         </div>
       </div>
@@ -91,6 +94,7 @@ import computed from './shared/computed';
 import data from './shared/data';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
+import SharedBrief from 'new-dashboard/components/SharedBrief';
 import methods from './shared/methods';
 import props from './shared/props';
 
@@ -98,7 +102,8 @@ export default {
   name: 'CondensedMapCard',
   components: {
     MapQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    SharedBrief
   },
   props,
   data () {
@@ -284,34 +289,28 @@ export default {
     display: flex;
     align-items: center;
     margin-top: 4px;
-  }
 
-  .metadata__element {
-    display: flex;
-    align-items: center;
-    margin-left: 16px;
+    .metadata__element {
+      margin-left: 16px;
 
-    &:first-of-type {
-      margin-left: 0;
-    }
-  }
+      &:first-of-type {
+        margin-left: 0;
+      }
 
-  .metadata__icon {
-    margin-right: 4px;
-  }
+      .metadata__icon,
+      ul,
+      li {
+        display: inline-block;
+      }
 
-  .metadata__tags {
-    display: flex;
+      .metadata__icon {
+        margin-right: 4px;
+        transform: translate(0, 1px);
+      }
 
-    li {
-      margin-right: 0.2em;
-    }
-  }
-
-  .metadata__tags-count,
-  .metadata__tag {
-    &:hover {
-      color: $primary-color;
+      li {
+        margin-right: 0.2em;
+      }
     }
   }
 }

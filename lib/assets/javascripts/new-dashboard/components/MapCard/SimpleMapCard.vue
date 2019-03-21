@@ -60,12 +60,12 @@
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isSharedWithMe">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isSharedWithMe">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
           <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>

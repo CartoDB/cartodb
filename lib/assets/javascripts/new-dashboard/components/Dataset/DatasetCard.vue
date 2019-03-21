@@ -475,6 +475,7 @@ export default {
     }
 
     .icon-metadata,
+    .features-dropdown,
     ul,
     li {
       display: inline-block;

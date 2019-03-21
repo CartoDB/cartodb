@@ -301,6 +301,7 @@ export default {
       }
 
       .metadata__icon,
+      .features-dropdown,
       ul,
       li {
         display: inline-block;

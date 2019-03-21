@@ -460,10 +460,10 @@ exports[`MapCard.vue should show the map is shared 1`] = `
   </div>
   <div class="viz-column--extra-info">
     <div class="viz-column--status">
-      <div class="cell"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+      <div class="cell cell--large"><span class="text is-small is-txtSoftGrey">MapCard.lastUpdate</span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey">0</span></div>
     </div>
     <div class="viz-column--share">
-      <div class="cell cell--small"><span class="text is-small is-txtSoftGrey">MapCard.condensedViews</span></div>
       <div class="cell cell--small">
         <p class="text is-small is-txtSoftGrey">
           MapCard.shared.PUBLIC

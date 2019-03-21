@@ -19,11 +19,11 @@ module Carto
         export: export_json
       )
     rescue StandardError => exception
-      # Don't break deletion flow
+      # The backup should not break the flow
       CartoDB::Logger.error(
         message: 'Error backing up visualization',
         exception: exception,
-        visualization_id: id
+        visualization_id: visualization_id
       )
     end
 

@@ -628,7 +628,6 @@ class Carto::Visualization < ActiveRecord::Base
     if map && !destroyed?
       create_visualization_backup(id, user, category, with_mapcaps: true, with_password: true)
     end
-
   end
 
   private

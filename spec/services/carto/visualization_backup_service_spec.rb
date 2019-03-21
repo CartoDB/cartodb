@@ -1,0 +1,102 @@
+require 'spec_helper_min'
+require_dependency 'carto/visualization_backup_service'
+
+describe Carto::VisualizationBackupService do
+  include Carto::Factories::Visualizations
+  include Carto::VisualizationBackupService
+
+  before(:all) do
+    @user = create_user
+    @carto_user = Carto::User.find(@user.id)
+  end
+
+  after(:all) do
+    @user.destroy
+  end
+
+  describe '#backup' do
+    before(:all) do
+      @map = FactoryGirl.create(:carto_map_with_layers, user: @carto_user)
+    end
+
+    before(:each) do
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    after(:each) do
+      Carto::VisualizationBackup.all.map(&:destroy)
+    end
+
+    after(:all) do
+      @map.destroy
+    end
+
+    it 'creates a backup with create_visualization_backup' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+
+      create_visualization_backup(
+        visualization.id,
+        @carto_user,
+        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        with_mapcaps: true,
+        with_password: true
+      )
+
+      Carto::VisualizationBackup.all.count.should eq 1
+
+      backup = Carto::VisualizationBackup.where(visualization_id: visualization.id).first
+      backup.should_not eq nil
+      backup.user_id.should eq @carto_user.id
+      backup.created_at.should_not eq nil
+      backup.category.should eq Carto::VisualizationBackup::CATEGORY_VISUALIZATION
+      backup.export.should_not be_empty
+      backup.destroy
+
+      visualization.destroy
+    end
+
+    it 'fails backup creation without visualization but not raises' do
+      create_visualization_backup(
+        nil,
+        @carto_user,
+        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        with_mapcaps: true,
+        with_password: true
+      )
+
+      Carto::VisualizationBackup.all.count.should eq 0
+    end
+
+    it 'fails backup creation without user but not raises' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+
+      create_visualization_backup(
+        visualization.id,
+        nil,
+        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        with_mapcaps: true,
+        with_password: true
+      )
+
+      Carto::VisualizationBackup.all.count.should eq 0
+
+      visualization.destroy
+    end
+
+    it 'fails backup creation without category but not raises' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
+
+      create_visualization_backup(
+        visualization.id,
+        @carto_user,
+        nil,
+        with_mapcaps: true,
+        with_password: true
+      )
+
+      Carto::VisualizationBackup.all.count.should eq 0
+
+      visualization.destroy
+    end
+  end
+end

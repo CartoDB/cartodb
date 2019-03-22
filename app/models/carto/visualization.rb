@@ -626,7 +626,7 @@ class Carto::Visualization < ActiveRecord::Base
     return true if remote?
 
     if map && !destroyed?
-      create_visualization_backup(id, user, category, with_mapcaps: true, with_password: true)
+      create_visualization_backup(visualization: self, category: category)
     end
   end
 

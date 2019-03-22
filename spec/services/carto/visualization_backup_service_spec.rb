@@ -35,9 +35,8 @@ describe Carto::VisualizationBackupService do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
 
       create_visualization_backup(
-        visualization.id,
-        @carto_user,
-        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        visualization: visualization,
+        category: Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
         with_mapcaps: true,
         with_password: true
       )
@@ -57,39 +56,21 @@ describe Carto::VisualizationBackupService do
 
     it 'fails backup creation without visualization but not raises' do
       create_visualization_backup(
-        nil,
-        @carto_user,
-        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
+        visualization: nil,
+        category: Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
         with_mapcaps: true,
         with_password: true
       )
 
       Carto::VisualizationBackup.all.count.should eq 0
-    end
-
-    it 'fails backup creation without user but not raises' do
-      visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
-
-      create_visualization_backup(
-        visualization.id,
-        nil,
-        Carto::VisualizationBackup::CATEGORY_VISUALIZATION,
-        with_mapcaps: true,
-        with_password: true
-      )
-
-      Carto::VisualizationBackup.all.count.should eq 0
-
-      visualization.destroy
     end
 
     it 'fails backup creation without category but not raises' do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
 
       create_visualization_backup(
-        visualization.id,
-        @carto_user,
-        nil,
+        visualization: visualization,
+        category: nil,
         with_mapcaps: true,
         with_password: true
       )

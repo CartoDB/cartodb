@@ -5,16 +5,16 @@ module Carto
     include Carto::VisualizationsExportService2Exporter
     include Carto::VisualizationsExportService2Importer
 
-    def create_visualization_backup(visualization_id, user, category, with_mapcaps: true, with_password: true)
+    def create_visualization_backup(visualization:, category:, with_mapcaps: true, with_password: true)
       export_json = export_visualization_json_hash(
-        visualization_id,
-        user,
+        visualization.id,
+        visualization.user,
         with_mapcaps: with_mapcaps,
         with_password: with_password
       )
       Carto::VisualizationBackup.create!(
-        user_id: user.id,
-        visualization_id: visualization_id,
+        user_id: visualization.user.id,
+        visualization_id: visualization.id,
         category: category,
         export: export_json
       )
@@ -23,7 +23,7 @@ module Carto
       CartoDB::Logger.error(
         message: 'Error creating a visualization backup',
         exception: exception,
-        visualization_id: visualization_id
+        visualization: visualization
       )
     end
 

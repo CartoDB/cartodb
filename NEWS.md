@@ -2,7 +2,8 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
+  suitable random key by using `bundle exec rake secret`
 
 ### Features
 * Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
@@ -27,7 +28,9 @@ Development
 - Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
 - Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
 - Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
+- Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
 - Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
+
 
 4.26.0 (2019-03-11)
 -------------------

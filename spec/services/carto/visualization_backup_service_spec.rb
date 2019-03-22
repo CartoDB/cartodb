@@ -100,5 +100,13 @@ describe Carto::VisualizationBackupService do
 
       Carto::Visualization.where(user: @carto_user).count.should eq 1
     end
+
+    it 'throws if the visualization already exists' do
+      backup = Carto::VisualizationBackup.first
+      restore_visualization_backup(backup.id)
+      expect {
+        restore_visualization_backup(backup.id)
+      }.to raise_error('A visualization with the same id as the backup one already exists')
+    end
   end
 end

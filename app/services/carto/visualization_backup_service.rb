@@ -29,8 +29,9 @@ module Carto
 
     def restore_visualization_backup(visualization_backup_id)
       backup = Carto::VisualizationBackup.find(visualization_backup_id)
-      if Carto::Visualization.find(backup.visualization_id)
+      if Carto::Visualization.find_by_id(backup.visualization_id)
         raise 'A visualization with the same id as the backup one already exists'
+      end
 
       user = Carto::User.find(backup.user_id)
       visualization_json = build_visualization_from_hash_export(backup.export)

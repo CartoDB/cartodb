@@ -25,6 +25,8 @@ describe Carto::VisualizationBackupService do
     it 'creates a backup with create_visualization_backup' do
       visualization = FactoryGirl.create(:carto_visualization, user: @carto_user, map: @map)
 
+      Carto::VisualizationBackup.all.count.should eq 0
+
       create_visualization_backup(
         visualization: visualization,
         category: Carto::VisualizationBackup::CATEGORY_VISUALIZATION,

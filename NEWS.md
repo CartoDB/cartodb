@@ -2,7 +2,8 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
+  suitable random key by using `bundle exec rake secret`
 
 ### Features
 * Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
@@ -18,6 +19,7 @@ Development
 - Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 - Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
 - New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
+- Fix initial rate limit setting
 - Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
 - Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
@@ -25,6 +27,7 @@ Development
 - Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
 - Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
 - Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
+- Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
 - Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
 
 

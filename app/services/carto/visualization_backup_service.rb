@@ -30,15 +30,10 @@ module Carto
     def restore_visualization_backup(visualization_backup_id)
       visualization_backup = Carto::VisualizationBackup.find(visualization_backup_id)
       user = Carto::User.find(visualization_backup.user_id)
-      visualization_json = build_visualization_from_json_export(JSON.dump(visualization_backup.export))
+
+      json_export = JSON.dump(visualization_backup.export)
+      visualization_json = build_visualization_from_json_export(json_export)
       Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_json, full_restore: true)
-    rescue StandardError => exception
-      # The backup should not break the flow
-      CartoDB::Logger.error(
-        message: 'Error restoring a visualization backup',
-        exception: exception,
-        visualization_backup_id: visualization_backup_id
-      )
     end
   end
 end

@@ -103,10 +103,5 @@ describe Carto::VisualizationBackupService do
       visualization.name.should eq @visualization.name
       visualization.type.should eq @visualization.type
     end
-
-    it 'fails restoring a visualization backup without viscualization id' do
-      visualization = restore_visualization_backup(nil)
-      visualization.should eq nil
-    end
   end
 end

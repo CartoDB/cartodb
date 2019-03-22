@@ -11,6 +11,7 @@ Development
   * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
 
 ### Bug fixes / enhancements
+- Add link to Help Center to invitation emails
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
 - Data Library defaults to .gpkg for import
@@ -23,6 +24,7 @@ Development
 - Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
 - Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
 - Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
+- Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
 - Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
 
 4.26.0 (2019-03-11)

@@ -28,11 +28,10 @@ module Carto
     end
 
     def restore_visualization_backup(visualization_backup_id)
-      visualization_backup = Carto::VisualizationBackup.find(visualization_backup_id)
-      user = Carto::User.find(visualization_backup.user_id)
-
-      json_export = JSON.dump(visualization_backup.export)
-      visualization_json = build_visualization_from_json_export(json_export)
+      backup = Carto::VisualizationBackup.find(visualization_backup_id)
+      raise 'A visualization with the same id as the backup one already exists' if Carto::Visualization.find(backup.visualization_id)
+      user = Carto::User.find(backup.user_id)
+      visualization_json = build_visualization_from_hash_export(backup.export)
       Carto::VisualizationsExportPersistenceService.new.save_import(user, visualization_json, full_restore: true)
     end
   end

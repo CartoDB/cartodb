@@ -4,8 +4,12 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`MapsPage.createMap`) }}</CreateButton>
-        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+        <CreateButton v-if="!isOrganizationAdmin" visualizationType="map" :disabled="isViewer">
+          {{ $t(`MapsPage.createMap`) }}
+        </CreateButton>
+        <CreateButton v-if="!isOrganizationAdmin" visualizationType="dataset" :disabled="!canCreateDatasets">
+          {{ $t(`DataPage.createDataset`) }}
+        </CreateButton>
         <a class="button button--small is-primary"
           :href="`mailto:${organizationMail}`"
           v-if="isOrganizationUser && !isOrganizationAdmin">
@@ -59,6 +63,12 @@ export default {
     organizationMail () {
       const organization = this.$store.state.user.organization;
       return organization.admin_email;
+    },
+    canCreateDatasets () {
+      return this.$store.getters['user/canCreateDatasets'];
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   }
 };

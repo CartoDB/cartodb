@@ -169,6 +169,7 @@ defaults: &defaults
     critical: false
     host: '127.0.0.1'
     port: 6082
+    http_port: 6081
     purge_command: 'purge'
     retries: 5
     timeout: 5

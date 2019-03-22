@@ -6,7 +6,7 @@ exports[`DatasetBulkActions.vue should render all bulk actions 1`] = `
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.createMap
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.datasets.changeDatasetPrivacy
+    BulkActions.datasets.changePrivacy
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.duplicate
   </button><button class="bulk-actions__button button button--ghost">
@@ -53,7 +53,7 @@ exports[`DatasetBulkActions.vue should render all single actions: "Select all", 
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.createMap
   </button><button class="bulk-actions__button button button--ghost">
-    BulkActions.datasets.changeDatasetPrivacy
+    BulkActions.datasets.changePrivacy
   </button><button class="bulk-actions__button button button--ghost">
     BulkActions.datasets.duplicate
   </button><button class="bulk-actions__button button button--ghost">

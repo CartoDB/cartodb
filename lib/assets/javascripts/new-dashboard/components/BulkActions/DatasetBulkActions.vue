@@ -39,7 +39,7 @@ export default {
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.changeDatasetPrivacy'),
+            name: this.$t('BulkActions.datasets.changePrivacy'),
             event: 'changePrivacy',
             shouldBeHidden: this.isAnyShared || this.isAnyLocked
           },

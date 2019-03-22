@@ -47,7 +47,7 @@
       "selectAll": "Select all",
       "deselectAll": "Deselect all",
       "createMap": "Create map",
-      "changeDatasetPrivacy": "Change privacy",
+      "changePrivacy": "Change privacy",
       "duplicate": "Duplicate",
       "unlock": "Unlock",
       "lock": "Lock",

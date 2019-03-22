@@ -1,7 +1,7 @@
 <template>
   <div class="dataset-fake-row">
     <div class="viz-column--main-info">
-      <div class="cell-placeholder">
+      <div class="cell-placeholder thumbnail">
         <div class="icon-placeholder"/>
       </div>
       <div class="cell-placeholder cell--main">
@@ -13,10 +13,10 @@
         <div class="cell-placeholder cell--large">
           <div class="text-placeholder"/>
         </div>
-        <div class="cell-placeholder cell--small">
+        <div class="cell-placeholder cell--xsmall">
           <div class="text-placeholder"/>
         </div>
-        <div class="cell-placeholder cell--xsmall">
+        <div class="cell-placeholder cell--small">
           <div class="text-placeholder"/>
         </div>
       </div>
@@ -48,7 +48,7 @@ export default {
   align-items: center;
   width: 100%;
   height: 81px;
-  padding: 22px 2px;
+  padding: 22px 14px;
   background-color: $white;
 }
 
@@ -75,6 +75,11 @@ export default {
 }
 
 .cell--quick-actions {
-  padding: 0 24px;
+  padding: 0 16px;
+}
+
+.thumbnail {
+  padding-right: 16px;
+  padding-left: 6px;
 }
 </style>

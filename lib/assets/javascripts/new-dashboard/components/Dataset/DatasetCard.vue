@@ -58,12 +58,12 @@
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--small">
+        <div class="cell cell--xsmall u-txt-right">
           <span class="text is-small is-txtSoftGrey" :title="$tc('DatasetCard.numberRows', dataset.table.row_count, { count: getNumberInLocaleFormat(dataset.table.row_count) })">
-            {{ $tc('DatasetCard.numberRows', dataset.table.row_count, { count: numberFormatter(dataset.table.row_count) }) }}
+            {{ numberFormatter(dataset.table.row_count) }}
           </span>
         </div>
-        <div class="cell cell--xsmall">
+        <div class="cell cell--small u-txt-right">
           <span class="text is-small is-txtSoftGrey">{{ humanFileSize(dataset.table.size) }}</span>
         </div>
       </div>
@@ -475,6 +475,7 @@ export default {
     }
 
     .icon-metadata,
+    .features-dropdown,
     ul,
     li {
       display: inline-block;

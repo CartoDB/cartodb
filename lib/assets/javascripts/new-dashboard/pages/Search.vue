@@ -15,55 +15,63 @@
       <div class="full-width">
         <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
+            <div class="js-grid__head--sticky">
+              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+                <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
+              </div>
 
-          <ul class="grid-cell grid-cell--col12" v-if="isFetchingMaps">
-            <li v-for="n in 6" :key="n" class="search-item">
-              <MapCardFake :condensed="true" class="search-item"></MapCardFake>
-            </li>
-          </ul>
+              <ul class="grid-cell grid-cell--col12" v-if="isFetchingMaps">
+                <li v-for="n in 6" :key="n" class="search-item">
+                  <MapCardFake :condensed="true" class="search-item"></MapCardFake>
+                </li>
+              </ul>
 
-          <ul class="grid-cell grid-cell--col12" v-if="!isFetchingMaps">
-            <li v-for="map in maps" :key="map.id" class="search-item">
-              <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
-            </li>
+              <ul class="grid-cell grid-cell--col12" v-if="!isFetchingMaps">
+                <li v-for="map in maps" :key="map.id" class="search-item">
+                  <MapCard :visualization=map :canHover=false :condensed="true" storeActionType="search"></MapCard>
+                </li>
 
-            <div class="is-caption text maps--empty" v-if="!hasMaps">
-              {{ $t('SearchPage.emptyText.maps') }}
+                <div class="is-caption text maps--empty" v-if="!hasMaps">
+                  {{ $t('SearchPage.emptyText.maps') }}
+                </div>
+              </ul>
             </div>
-          </ul>
-
-          <Pagination
-            v-if="hasMaps && mapsNumPages > 1"
-            :page=mapsPage
-            :numPages=mapsNumPages
-            @pageChange="page => onPageChange('maps', page)"></Pagination>
+            <Pagination
+              v-if="hasMaps && mapsNumPages > 1"
+              :page=mapsPage
+              :numPages=mapsNumPages
+              @pageChange="page => onPageChange('maps', page)"></Pagination>
         </section>
 
         <section class="page__section" ref="datasets">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
+            <div class="js-grid__head--sticky">
+              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+                <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
+              </div>
 
-          <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
-            <li v-for="dataset in datasets" :key="dataset.id" class="search-item">
-              <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
-            </li>
+              <ul class="grid-cell grid-cell--col12" v-if="!isFetchingDatasets">
+                <li v-for="dataset in datasets" :key="dataset.id" class="search-item">
+                  <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
+                </li>
 
-            <div class="is-caption text" v-if="!hasDatasets">
-              {{ $t('SearchPage.emptyText.datasets') }}
+                <div class="is-caption text" v-if="!hasDatasets">
+                  {{ $t('SearchPage.emptyText.datasets') }}
+                </div>
+              </ul>
+
+              <ul class="grid-cell grid-cell--col12" v-if="isFetchingDatasets">
+                <li v-for="n in 6" :key="n" class="search-item">
+                  <DatasetCardFake></DatasetCardFake>
+                </li>
+              </ul>
             </div>
-          </ul>
-
-          <ul class="grid-cell grid-cell--col12" v-if="isFetchingDatasets">
-            <li v-for="n in 6" :key="n" class="search-item">
-              <DatasetCardFake></DatasetCardFake>
-            </li>
-          </ul>
-
-          <Pagination
-            class="pagination-element"
-            v-if="hasDatasets && datasetsNumPages > 1"
-            :page=datasetsPage
-            :numPages=datasetsNumPages
-            @pageChange="page => onPageChange('datasets', page)"></Pagination>
+            <Pagination
+              class="pagination-element"
+              v-if="hasDatasets && datasetsNumPages > 1"
+              :page=datasetsPage
+              :numPages=datasetsNumPages
+              @pageChange="page => onPageChange('datasets', page)"></Pagination>
         </section>
       </div>
     </div>
@@ -73,8 +81,10 @@
 
 <script>
 import StickySubheader from 'new-dashboard/components/StickySubheader';
+import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
+import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import Pagination from 'new-dashboard/components/Pagination';
@@ -86,8 +96,10 @@ const TWO_HEADERS_HEIGHT = 128;
 export default {
   name: 'SearchPage',
   components: {
+    CondensedMapHeader,
     DatasetCard,
     DatasetCardFake,
+    DatasetListHeader,
     MapCard,
     MapCardFake,
     Pagination,
@@ -200,6 +212,10 @@ export default {
 
 .section-title {
   margin-bottom: 16px;
+}
+
+.grid__head--sticky {
+  top: 128px;
 }
 
 .map-element {

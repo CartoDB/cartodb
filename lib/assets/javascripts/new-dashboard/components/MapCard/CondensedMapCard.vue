@@ -63,16 +63,15 @@
 
     <div class="viz-column--extra-info">
       <div class="viz-column--status">
-        <div class="cell">
+        <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
+        </div>
+        <div class="cell cell--large u-txt-right u-p0">
+          <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
 
       <div class="viz-column--share">
-        <div class="cell cell--small">
-          <span class="text is-small is-txtSoftGrey">{{ $tc(`MapCard.condensedViews`, numberViews )}}</span>
-        </div>
-
         <div class="cell cell--small">
           <p class="text is-small is-txtSoftGrey">
             {{ $t(`MapCard.shared.${visualization.privacy}`) }}
@@ -231,6 +230,10 @@ export default {
     }
   }
 
+  .cell--last {
+    width: 38px;
+  }
+
   .quick-actions-placeholder {
     display: block;
     width: 24px;
@@ -298,6 +301,7 @@ export default {
       }
 
       .metadata__icon,
+      .features-dropdown,
       ul,
       li {
         display: inline-block;

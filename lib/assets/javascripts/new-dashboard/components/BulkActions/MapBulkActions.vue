@@ -27,33 +27,33 @@ export default {
       return {
         single: [
           {
-            name: this.$t('BulkActions.maps.selectAllMaps'),
+            name: this.$t('BulkActions.maps.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllMapsSelected
           },
           {
-            name: this.$t('BulkActions.maps.changeMapPrivacy'),
+            name: this.$t('BulkActions.maps.changePrivacy'),
             event: 'changePrivacy',
             shouldBeHidden: this.isAnyShared || this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.maps.duplicateMap'),
+            name: this.$t('BulkActions.maps.duplicate'),
             event: 'duplicateMap'
           },
           {
-            name: this.$t('BulkActions.maps.lockMap'),
+            name: this.$t('BulkActions.maps.lock'),
             event: 'lockMap',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.maps.unlockMap'),
+            name: this.$t('BulkActions.maps.unlock'),
             event: 'unlockMap',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
             shouldBeHidden: !this.areAllLocked
           },
           {
-            name: this.$t('BulkActions.maps.deleteMap'),
+            name: this.$t('BulkActions.maps.delete'),
             event: 'deleteMap',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
@@ -62,28 +62,28 @@ export default {
         ],
         multiple: [
           {
-            name: this.$t('BulkActions.maps.selectAllMaps'),
+            name: this.$t('BulkActions.maps.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllMapsSelected
           },
           {
-            name: this.$t('BulkActions.maps.deselectAllMaps'),
+            name: this.$t('BulkActions.maps.deselectAll'),
             event: 'deselectAll'
           },
           {
-            name: this.$t('BulkActions.maps.lockMaps'),
+            name: this.$t('BulkActions.maps.lock'),
             event: 'lockMaps',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.maps.unlockMaps'),
+            name: this.$t('BulkActions.maps.unlock'),
             event: 'unlockMaps',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
             shouldBeHidden: !this.areAllLocked
           },
           {
-            name: this.$t('BulkActions.maps.deleteMaps'),
+            name: this.$t('BulkActions.maps.delete'),
             event: 'deleteMaps',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,

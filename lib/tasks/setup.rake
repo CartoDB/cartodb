@@ -1,4 +1,19 @@
 namespace :cartodb do
+  namespace :db do
+    task :create, [:env] do |_t, args|
+      # When the db:create task runs, there is no prior database. Since we use models in our initializers, we need to
+      # skip the :environment dependency or Sequel will error out when trying to load the schema for the model table.
+      # This task overrides the default Sequel task, loading the bare minimum (db config) instead of all initializers
+      args.with_defaults(:env => Rails.env)
+
+      config = SequelRails::Configuration.for(Rails.root, Carto::Conf.new.db_config)
+
+      unless SequelRails::Storage.create_environment(config.environment_for(args.env))
+        abort "Could not create database for #{args.env}."
+      end
+    end
+  end
+
   namespace :test do
     task :prepare do
       if (ENV['RAILS_ENV'] == "test")

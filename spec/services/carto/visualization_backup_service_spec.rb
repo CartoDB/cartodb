@@ -1,18 +1,9 @@
 require 'spec_helper_min'
-require_dependency 'carto/visualization_backup_service'
 
 describe Carto::VisualizationBackupService do
   include Carto::Factories::Visualizations
   include Carto::VisualizationBackupService
-
-  before(:all) do
-    @user = create_user
-    @carto_user = Carto::User.find(@user.id)
-  end
-
-  after(:all) do
-    @user.destroy
-  end
+  include_context 'user helper'
 
   describe '#create_visualization_backup' do
     before(:all) do
@@ -96,12 +87,16 @@ describe Carto::VisualizationBackupService do
     end
 
     it 'restores a visualization backup' do
+      Carto::Visualization.where(user: @carto_user).count.should eq 0
+
       backup = Carto::VisualizationBackup.first
       visualization = restore_visualization_backup(backup.id)
       visualization.should_not eq nil
       visualization.id.should eq @visualization.id
       visualization.name.should eq @visualization.name
       visualization.type.should eq @visualization.type
+
+      Carto::Visualization.where(user: @carto_user).count.should eq 1
     end
   end
 end

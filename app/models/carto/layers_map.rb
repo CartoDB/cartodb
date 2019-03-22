@@ -29,7 +29,7 @@ module Carto
     end
 
     def backup_visualization
-      return if map.visualization && (@layer_destroyed || layer.destroyed?)
+      return if !map.visualization || map.visualization.destroyed? || @layer_destroyed || layer.destroyed?
       create_visualization_backup(
         visualization: map.visualization,
         category: Carto::VisualizationBackup::CATEGORY_LAYER

@@ -186,7 +186,7 @@ export default {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;
     },
     shouldShowListHeader () {
-      return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+      return this.isCondensed && !this.emptyState && !this.initialState;
     },
     isViewer () {
       return this.$store.getters['user/isViewer'];

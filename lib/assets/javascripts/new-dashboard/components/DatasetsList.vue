@@ -153,7 +153,7 @@ export default {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+      return !this.emptyState && !this.initialState;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&

@@ -18,6 +18,7 @@ module Carto
       def index
         query_builder = Carto::TagQueryBuilder.new(current_viewer.id)
                                               .with_types(@types)
+                                              .with_search_pattern(@pattern)
         result = query_builder.build_paged(@page, @per_page)
         total_count = query_builder.total_count
 
@@ -28,6 +29,8 @@ module Carto
 
       def load_parameters
         @page, @per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
+
+        @pattern = params[:q]
 
         @types = params.fetch(:types, "").split(',')
         if (@types - Carto::Visualization::VALID_TYPES).present?

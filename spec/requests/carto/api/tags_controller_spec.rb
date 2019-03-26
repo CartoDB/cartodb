@@ -38,5 +38,19 @@ describe Carto::Api::TagsController do
         expect(response.body[:count]).to eq 1
       end
     end
+
+    it 'returns a 200 response with filtered tags' do
+      FactoryGirl.create(:derived_visualization, user_id: @user.id, tags: ["etiqueta"])
+      FactoryGirl.create(:table_visualization, user_id: @user.id, tags: ["otra"])
+      expected_tags = [{ tag: "otra", maps: 0, datasets: 1 }]
+      search_params = @params.merge(q: 'otra')
+
+      get_json api_v3_users_tags_url(search_params), @headers do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:result]).to eq expected_tags
+        expect(response.body[:total]).to eq 1
+        expect(response.body[:count]).to eq 1
+      end
+    end
   end
 end

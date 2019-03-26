@@ -13,8 +13,9 @@ module Carto
     # @param JSON export
 
     attr_accessible :id, :user_id, :visualization_id, :category, :export
-
     validates :user_id, :visualization_id, :category, :export, presence: true
+    serialize :export, CartoJsonSymbolizerSerializer
+    validates :export, carto_json_symbolizer: true
 
     CATEGORY_VISUALIZATION = 'visualization'.freeze
     CATEGORY_LAYER = 'layer'.freeze

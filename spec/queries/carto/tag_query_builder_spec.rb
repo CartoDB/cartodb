@@ -152,6 +152,55 @@ describe Carto::TagQueryBuilder do
         result.should eql expected_result
       end
     end
+
+    context "search" do
+      before(:each) do
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1"])
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1", "tag2"])
+        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["several words"])
+      end
+
+      it 'finds tags with the exact word' do
+        expected_result = [{ tag: "tag2", datasets: 1, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new(@user1.id).with_search_pattern('tag2')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+
+      it 'finds tags with partial words' do
+        expected_result = [
+          { tag: "tag1", datasets: 2, maps: 0, data_library: 0 },
+          { tag: "tag2", datasets: 1, maps: 0, data_library: 0 }
+        ]
+
+        builder = Carto::TagQueryBuilder.new(@user1.id).with_search_pattern('tag')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+
+      it 'finds multiple tags' do
+        expected_result = [
+          { tag: "tag2", datasets: 1, maps: 0, data_library: 0 },
+          { tag: "several words", datasets: 0, maps: 1, data_library: 0 }
+        ]
+
+        builder = Carto::TagQueryBuilder.new(@user1.id).with_search_pattern('tag2 not-found word')
+        result = builder.build_paged(1, 10)
+        result.should =~ expected_result
+      end
+
+      it 'is not case sensitive' do
+        expected_result = [{ tag: "tag1", datasets: 2, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new(@user1.id).with_search_pattern('TAG1')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+    end
   end
 
   describe "#total_count" do

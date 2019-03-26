@@ -21,6 +21,11 @@ class Carto::TagQueryBuilder
     self
   end
 
+  def with_search_pattern(pattern)
+    @pattern = pattern.downcase.tr(' ', '|') if pattern.present?
+    self
+  end
+
   def build_paged(page, per_page)
     limit = per_page.to_i
     offset = (page.to_i - 1) * per_page.to_i
@@ -45,14 +50,18 @@ class Carto::TagQueryBuilder
 
   def select_sql
     %{
-      SELECT LOWER(unnest(tags)) AS tag, #{count_by_type_sql}
-      FROM visualizations
-      WHERE user_id = ?
-      AND type IN (?)
-      GROUP BY tag
-      ORDER BY COUNT(*) DESC
-      LIMIT ?
-      OFFSET ?
+      SELECT *
+      FROM (
+        SELECT LOWER(unnest(tags)) AS tag, #{count_by_type_sql}
+        FROM visualizations
+        WHERE user_id = ?
+        AND type IN (?)
+        GROUP BY tag
+        ORDER BY COUNT(*) DESC
+        LIMIT ?
+        OFFSET ?
+      ) AS tags
+      #{search_filter}
     }.squish
   end
 
@@ -64,6 +73,10 @@ class Carto::TagQueryBuilder
     queries.join(",")
   end
 
+  def search_filter
+    "WHERE tag SIMILAR TO '%(#{@pattern})%'" if @pattern
+  end
+
   def count_sql
     %{
       SELECT COUNT(DISTINCT(tag))
@@ -73,6 +86,7 @@ class Carto::TagQueryBuilder
         WHERE user_id = ?
         AND type IN (?)
       ) AS tags
+      #{search_filter}
     }.squish
   end
 

@@ -165,7 +165,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) ||
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedMaps) ||
         this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingMaps &&
         !this.currentEntriesCount;
@@ -178,7 +178,7 @@ export default {
         : this.$t('MapsPage.emptyCase.default', { path: route.href });
     },
     isFirstTimeViewerAfterAction () {
-      //First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
+      // First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
       return this.isFirstTimeViewingDashboard && this.currentEntriesCount <= 0 && !this.hasFilterApplied('mine');
     },
     hasSharedMaps () {

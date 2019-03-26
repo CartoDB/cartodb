@@ -5,8 +5,8 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+      <section class="section section--maps">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
         <div class="js-grid__head--sticky">
           <!---->
           <!---->
@@ -18,8 +18,8 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
         </div>
         <!---->
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
         <div class="js-grid__head--sticky">
           <!---->
           <ul class="grid-cell grid-cell--col12">
@@ -43,8 +43,8 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
       <span class="loading"><img svg-inline="" src="../assets/icons/common/loading.svg" class="loading__svg"></span></span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+      <section class="section section--maps">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
         <div class="js-grid__head--sticky">
           <!---->
           <ul class="grid-cell grid-cell--col12">
@@ -71,8 +71,8 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
         </div>
         <!---->
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
         <div class="js-grid__head--sticky">
           <!---->
           <!---->
@@ -109,8 +109,8 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section has-pagination">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
+      <section class="section section--maps has-pagination">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
         <div class="js-grid__head--sticky">
           <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
             <condensedmapheader-stub order="" orderdirection=""></condensedmapheader-stub>
@@ -128,8 +128,8 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
         </div>
         <pagination-stub page="1" numpages="2"></pagination-stub>
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
         <div class="js-grid__head--sticky">
           <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
             <datasetlistheader-stub order="" orderdirection=""></datasetlistheader-stub>

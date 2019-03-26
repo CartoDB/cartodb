@@ -121,7 +121,7 @@ export default {
 .navbar {
   display: flex;
   position: fixed;
-  z-index: 11;
+  z-index: $z-index__navbar;
   align-items: center;
   justify-content: space-between;
   width: 100%;

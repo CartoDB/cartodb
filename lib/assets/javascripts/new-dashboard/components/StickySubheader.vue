@@ -24,7 +24,7 @@ export default {
 .sticky-subheader {
   display: flex;
   position: fixed;
-  z-index: 2;
+  z-index: $z-index__subheader;
   top: 0;
   left: 0;
   justify-content: center;

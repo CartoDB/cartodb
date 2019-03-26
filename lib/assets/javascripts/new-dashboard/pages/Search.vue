@@ -13,8 +13,8 @@
 
     <div class="container grid">
       <div class="full-width">
-        <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
-          <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
+        <section class="section section--maps" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
+          <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
             <div class="js-grid__head--sticky">
               <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasMaps">
                 <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
@@ -43,8 +43,8 @@
               @pageChange="page => onPageChange('maps', page)"></Pagination>
         </section>
 
-        <section class="page__section" ref="datasets">
-          <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
+        <section class="section section--datasets" ref="datasets">
+          <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
               <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasDatasets">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
@@ -180,12 +180,27 @@ export default {
   padding-top: 192px;
 }
 
-.page-section {
+.section {
+  position: relative;
   margin-bottom: 48px;
+  padding: 0;
+  border-bottom: 0;
+
+  &--maps {
+    z-index: $z-index__stack-context--first;
+  }
+
+  &--datasets {
+    z-index: $z-index__stack-context--second;
+  }
 
   &.has-pagination,
   &:last-child {
     margin-bottom: 48px;
+  }
+
+  &__title {
+    margin-bottom: 16px;
   }
 }
 
@@ -208,10 +223,6 @@ export default {
 
 .full-width {
   width: 100%;
-}
-
-.section-title {
-  margin-bottom: 16px;
 }
 
 .grid__head--sticky {

@@ -165,8 +165,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return ((!this.isFirstTimeViewingDashboard || this.hasSharedMaps) ||
-        this.isFirstTimeViewerAfterAction) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedMaps) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingMaps &&
         !this.currentEntriesCount;
     },

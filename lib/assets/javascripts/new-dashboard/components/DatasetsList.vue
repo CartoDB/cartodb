@@ -163,8 +163,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets)
-        || this.isFirstTimeViewerAfterAction) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingDatasets &&
         !this.currentEntriesCount;
     },

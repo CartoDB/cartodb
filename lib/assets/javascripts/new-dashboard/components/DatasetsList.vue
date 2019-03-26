@@ -153,7 +153,7 @@ export default {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState;
+      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&
@@ -163,13 +163,18 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return (!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) ||
+        this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingDatasets &&
         !this.currentEntriesCount;
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
       return this.hasSharedDatasets ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
+    },
+    isFirstTimeViewerAfterAction () {
+      //First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
+      return this.isFirstTimeViewingDashboard && this.currentEntriesCount <= 0 && !this.hasFilterApplied('mine');
     },
     hasSharedDatasets () {
       return this.totalShared > 0;

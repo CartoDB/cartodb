@@ -340,9 +340,10 @@ $sStickyHeight: 97px;
 
 .Dialog-expandedSubContent {
   flex-grow: 100;
+  margin-bottom: 97px;
   overflow-x: hidden;
   overflow-y: auto;
-  border: 1px solid $cStructure-mainLine;
+  border-top: 1px solid $cStructure-mainLine;
   background-color: $cStructure-grayBkg;
 }
 
@@ -364,6 +365,7 @@ $sStickyHeight: 97px;
   bottom: 0;
   width: 100%;
   height: $sStickyHeight;
+  background-color: $cStructure-grayBkg;
 }
 
 .Dialog-contentSubHeader {

@@ -16,7 +16,6 @@ import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
-import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
 
 export default {
   name: 'Home',
@@ -39,9 +38,6 @@ export default {
 
     this.$store.dispatch('maps/fetch');
     this.$store.dispatch('datasets/fetch');
-  },
-  created () {
-    sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
   },
   data () {
     return {

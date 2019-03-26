@@ -15,7 +15,6 @@
 <script>
 import { mapState } from 'vuex';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
@@ -24,7 +23,6 @@ import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
 export default {
   name: 'Welcome',
   components: {
-    CreateButton,
     WelcomeBasic,
     WelcomeCompact,
     WelcomeFirst

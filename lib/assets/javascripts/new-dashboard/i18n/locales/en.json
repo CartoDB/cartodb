@@ -7,7 +7,6 @@
       "PASSWORD": "Password"
     },
     "views": "{views} views (30 days)",
-    "condensedViews": "No views | 1 view | {n} views",
     "sharedBy": "Shared by {owner}",
     "noDescription": "No description",
     "noTags": "No tags",
@@ -36,29 +35,23 @@
   "BulkActions": {
     "selected": "{count} selected",
     "maps": {
-      "selectAllMaps": "Select all",
-      "deselectAllMaps": "Deselect all",
-      "changeMapPrivacy": "Change privacy",
-      "duplicateMap": "Duplicate map",
-      "unlockMap": "Unlock map",
-      "unlockMaps": "Unlock maps",
-      "lockMap": "Lock map",
-      "lockMaps": "Lock maps",
-      "deleteMap": "Delete map",
-      "deleteMaps": "Delete maps"
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
     },
     "datasets": {
-      "selectAllDatasets": "Select all",
-      "deselectAllDatasets": "Deselect all",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
       "createMap": "Create map",
-      "changeDatasetPrivacy": "Change privacy",
-      "duplicateDataset": "Duplicate dataset",
-      "unlockDataset": "Unlock dataset",
-      "unlockDatasets": "Unlock datasets",
-      "lockDataset": "Lock dataset",
-      "lockDatasets": "Lock datasets",
-      "deleteDataset": "Delete dataset",
-      "deleteDatasets": "Delete datasets"
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
     }
   },
   "DataPage": {
@@ -318,5 +311,12 @@
   "FeedbackMessage": {
     "title": "Share your feedback with us.",
     "message": "Do you miss something? Should we be doing something differently?"
+  },
+  "SharedBrief": {
+    "sharedWith": "Shared with",
+    "org": "all your organization",
+    "groups": "{groupname} | {n} groups",
+    "users": "{username} | {n} users",
+    "and": "and"
   }
 }

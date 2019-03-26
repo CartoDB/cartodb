@@ -31,7 +31,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton visualizationType="maps" :disabled="isViewer">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -39,14 +39,16 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <CondensedMapHeader
-        :order="appliedOrder"
-        :orderDirection="appliedOrderDirection"
-        @orderChanged="applyOrder"
-        v-if="shouldShowListHeader">
-      </CondensedMapHeader>
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowListHeader">
+        <CondensedMapHeader
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @orderChanged="applyOrder"
+          v-if="shouldShowListHeader">
+        </CondensedMapHeader>
+      </div>
 
-      <ul class="grid grid-cell" v-if="isFetchingMaps">
+      <ul :class="[isCondensed ? 'grid grid-cell' : 'grid']" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
@@ -185,6 +187,9 @@ export default {
     },
     shouldShowListHeader () {
       return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   },
   methods: {
@@ -261,6 +266,10 @@ export default {
 
 .full-width {
   width: 100%;
+}
+
+.grid__head--sticky {
+  top: 64px;
 }
 
 .pagination-element {

@@ -642,6 +642,8 @@ describe Carto::Api::LayersController do
         }
       end
 
+      create_account_type_fg('ORGANIZATION USER')
+
       user_1 = create_user(
         username: unique_name('user'),
         email: unique_email,

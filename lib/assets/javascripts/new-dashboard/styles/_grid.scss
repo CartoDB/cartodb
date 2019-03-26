@@ -23,7 +23,7 @@
   }
 
   &.grid--justify-end {
-    justify-content: space-between;
+    justify-content: flex-end;
   }
 
   &.grid--space {
@@ -42,6 +42,12 @@
   &.grid--column {
     flex-direction: column;
   }
+}
+
+.grid__head--sticky {
+  position: sticky;
+  z-index: 1;
+  top: 0;
 }
 
 .grid-cell {

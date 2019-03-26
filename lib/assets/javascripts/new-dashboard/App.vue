@@ -20,6 +20,7 @@ import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar'
 import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
 import MamufasImportView from './components/Backbone/MamufasImportView.vue';
+import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
 
 export default {
   name: 'App',
@@ -28,6 +29,9 @@ export default {
     BackgroundPollingView,
     Footer,
     MamufasImportView
+  },
+  created () {
+    sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
   },
   computed: {
     user () {

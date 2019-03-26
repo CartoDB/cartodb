@@ -4,8 +4,12 @@
       <div class="cell cell--start">
       </div>
       <div class="cell cell--main" @click="changeOrder('name')">
-        <span class="text element-sort is-small is-txtSoftGrey"
-              :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('name'),
+                'is-reversed': isReverseOrderApplied('name'),
+                'element-sort': isSortable
+              }">
           {{ $t(`MapListHeader.name`) }}
         </span>
       </div>
@@ -13,24 +17,36 @@
 
     <div class="viz-column--extra-info">
       <div class="viz-column--status">
-        <div class="cell" @click="changeOrder('updated_at')">
-          <span class="text element-sort is-small is-txtSoftGrey"
-                :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
+        <div class="cell cell--large" @click="changeOrder('updated_at')">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('updated_at'),
+                  'is-reversed': isReverseOrderApplied('updated_at'),
+                  'element-sort': isSortable
+                }">
             {{ $t(`MapListHeader.lastModified`) }}
+          </span>
+        </div>
+        <div class="cell cell--large u-txt-right u-p0" @click="changeOrder('mapviews')">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('mapviews'),
+                  'is-reversed': isReverseOrderApplied('mapviews'),
+                  'element-sort': isSortable
+                }">
+            {{ $t(`MapListHeader.views`) }}
           </span>
         </div>
       </div>
 
       <div class="viz-column--share">
-        <div class="cell cell--small" @click="changeOrder('mapviews')">
-          <span class="text element-sort is-small is-txtSoftGrey"
-                :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
-            {{ $t(`MapListHeader.views`) }}
-          </span>
-        </div>
         <div class="cell cell--small" @click="changeOrder('privacy')">
-          <span class="text element-sort is-small is-txtSoftGrey"
-                :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('privacy'),
+                  'is-reversed': isReverseOrderApplied('privacy'),
+                  'element-sort': isSortable
+                }">
             {{ $t(`MapListHeader.privacy`) }}
           </span>
         </div>
@@ -45,7 +61,11 @@ export default {
   name: 'CondensedMapHeader',
   props: {
     order: String,
-    orderDirection: String
+    orderDirection: String,
+    isSortable: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     changeOrder (order) {
@@ -92,9 +112,11 @@ export default {
   align-items: center;
   width: 100%;
   margin-bottom: 0;
-  padding: 8px 24px;
+  padding: 14px;
   overflow: hidden;
+  border-bottom: 1px solid $softblue;
   background-color: $white;
+  cursor: default;
 }
 
 .cell--start {
@@ -106,7 +128,7 @@ export default {
 }
 
 .cell--end {
-  width: 34px;
+  width: 38px;
 }
 
 .element-sort {

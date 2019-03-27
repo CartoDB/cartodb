@@ -35,6 +35,7 @@ Development
 - Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
 - Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
 - Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
+- Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
 
 4.26.0 (2019-03-11)
 -------------------

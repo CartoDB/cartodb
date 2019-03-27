@@ -244,6 +244,14 @@
   overflow: hidden;
 }
 
+.Publish-modalBody .Pagination--searchShare {
+  bottom: 100px;
+}
+
+.Publish-modalBody.is-simple .Pagination--searchShare {
+  bottom: 50px;
+}
+
 .Publish-modalBody.is-simple,
 .Publish-modalFooter,
 .Publish-modalContent {

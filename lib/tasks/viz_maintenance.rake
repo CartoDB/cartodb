@@ -164,6 +164,16 @@ namespace :cartodb do
       end
     end
 
+    desc "Restore visualization from backup"
+    task :restore_visualization, [:backup_id] => :environment do |_, args|
+      include Carto::VisualizationBackupService
+
+      backup_id = args[:backup_id]
+      visualization = restore_visualization_backup(backup_id)
+      puts "Error restoring visualization" if visualization.nil?
+      puts "Visualization #{visualization.id} restored" unless visualization.nil?
+    end
+
     private
 
     def inconsistent?(viz)

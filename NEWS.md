@@ -10,6 +10,7 @@ Development
   * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
   * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
   * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
+  * Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -31,8 +32,9 @@ Development
 - Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
 - Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
 - Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
+- Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
+- Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
 - Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
-
 
 4.26.0 (2019-03-11)
 -------------------

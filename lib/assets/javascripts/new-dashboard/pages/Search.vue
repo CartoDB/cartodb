@@ -16,7 +16,7 @@
         <section class="page-section" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasMaps">
                 <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
               </div>
 
@@ -46,7 +46,7 @@
         <section class="page__section" ref="datasets">
           <div class="section-title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasDatasets">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
               </div>
 

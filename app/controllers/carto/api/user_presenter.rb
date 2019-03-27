@@ -5,8 +5,6 @@ module Carto
     class UserPresenter
       include AccountTypeHelper
 
-      BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
-
       def initialize(user,
                      fetch_groups: false,
                      current_viewer: nil,

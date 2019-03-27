@@ -1,7 +1,6 @@
 module CartoDB
   module UserDecorator
     include AccountTypeHelper
-    BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
     # Options:
     # - show_api_calls: load api calls. Default: true.

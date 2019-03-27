@@ -200,6 +200,16 @@ describe Carto::TagQueryBuilder do
 
         result.should =~ expected_result
       end
+
+      it 'finds tags with problematic characters' do
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["50%"])
+        expected_result = [{ tag: "50%", datasets: 1, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new(@user1.id).with_search_pattern('%')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
     end
   end
 

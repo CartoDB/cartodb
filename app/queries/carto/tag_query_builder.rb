@@ -4,6 +4,8 @@ require 'active_record'
 
 class Carto::TagQueryBuilder
 
+  PATTERN_ESCAPE_CHARS = ['_', '%'].freeze
+
   DEFAULT_TYPES = %w(table derived remote).freeze
   TYPE_TRANSLATIONS = {
     "table" => :datasets,
@@ -22,14 +24,22 @@ class Carto::TagQueryBuilder
   end
 
   def with_search_pattern(pattern)
-    @pattern = pattern.downcase.tr(' ', '|') if pattern.present?
+    return self unless pattern.present?
+    clean_pattern = escape_characters_from_pattern(pattern)
+    @pattern = clean_pattern.downcase.split(' ').map { |word| "%#{word}%" }
     self
+  end
+
+  def escape_characters_from_pattern(pattern)
+    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
   end
 
   def build_paged(page, per_page)
     limit = per_page.to_i
     offset = (page.to_i - 1) * per_page.to_i
-    query = ActiveRecord::Base.send(:sanitize_sql_array, [select_sql, @user_id, @types, limit, offset])
+    sql_array = [select_sql, @user_id, @types, limit, offset, @pattern].compact
+    query = ActiveRecord::Base.send(:sanitize_sql_array, sql_array)
+    p query
 
     connection = ActiveRecord::Base.connection
     result = connection.exec_query(query)
@@ -38,7 +48,7 @@ class Carto::TagQueryBuilder
   end
 
   def total_count
-    query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id, @types])
+    query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id, @types, @pattern].compact)
 
     connection = ActiveRecord::Base.connection
     result = connection.exec_query(query)
@@ -74,7 +84,7 @@ class Carto::TagQueryBuilder
   end
 
   def search_filter
-    "WHERE tag SIMILAR TO '%(#{@pattern})%'" if @pattern
+    "WHERE tag ilike any (array[?])" if @pattern
   end
 
   def count_sql

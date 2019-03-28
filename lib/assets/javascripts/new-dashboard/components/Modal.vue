@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button class="button button--outline" @click="open()">{{ this.buttonText }}</button>
     <modal name="wizard" :adaptive="true" width="100%" height="100%">
       <button class="modal__button modal__button--close" @click="close()" aria-label="Close"></button>
       <slot />
@@ -21,9 +20,9 @@ export default {
       type: String,
       default: 'modal'
     },
-    buttonText: {
-      type: String,
-      default: 'Open modal'
+    isOpen: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -32,6 +31,16 @@ export default {
     },
     close () {
       this.$modal.hide(this.name);
+      this.$emit('closeModal');
+    }
+  },
+  watch: {
+    isOpen() {
+      if (this.isOpen) {
+        this.open();
+      } else {
+        this.close();
+      }
     }
   }
 }

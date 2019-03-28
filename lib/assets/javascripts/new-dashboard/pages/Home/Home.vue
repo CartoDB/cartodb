@@ -1,6 +1,7 @@
 <template>
 <section class="page page--welcome">
   <Welcome />
+  <Wizard></Wizard>
   <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
   <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
   <MapsSection class="section" @contentChanged="onContentChanged"/>
@@ -11,6 +12,7 @@
 
 <script>
 import Welcome from './WelcomeSection/Welcome.vue';
+import Wizard from 'new-dashboard/components/Wizard/Wizard.vue';
 import TagsSection from './TagsSection/TagsSection.vue';
 import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
@@ -21,6 +23,7 @@ export default {
   name: 'Home',
   components: {
     Welcome,
+    Wizard,
     TagsSection,
     RecentSection,
     MapsSection,

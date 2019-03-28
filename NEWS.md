@@ -37,6 +37,8 @@ Development
 - Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
 - Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
 - Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
+- Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
+- Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
 
 4.26.0 (2019-03-11)
 -------------------

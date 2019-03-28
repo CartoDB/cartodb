@@ -98,6 +98,10 @@ export default {
   },
   methods: {
     fetchSuggestions () {
+      if (!this.query) {
+        return;
+      }
+
       this.client.getVisualization('',
         this.queryParameters,
 

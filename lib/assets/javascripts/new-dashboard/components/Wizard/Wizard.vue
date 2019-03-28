@@ -74,7 +74,7 @@ export default {
       this.step = stepNum;
     },
     isCurrentStep (stepNum) {
-      return this.step == stepNum;
+      return this.step === stepNum;
     },
     openModal () {
       this.isModalOpen = true;
@@ -83,7 +83,7 @@ export default {
       this.isModalOpen = false;
     }
   }
-}
+};
 </script>
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
@@ -95,5 +95,4 @@ export default {
   height: 100%;
   background-color: $softblue;
 }
-
 </style>

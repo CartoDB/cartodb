@@ -1,8 +1,8 @@
 <template>
   <div class="footer">
     <div class="container u-flex u-flex__justify--end">
-      <button class="button button--outline" v-if="showPrevButton" @click="prev">< Prev</button>
-      <button class="button is-primary" v-if="showNextButton" @click="next">Next ></button>
+      <button class="button button--outline" v-if="showPrevButton" @click="prev">&#60; Prev</button>
+      <button class="button is-primary" v-if="showNextButton" @click="next">Next &#62;</button>
     </div>
   </div>
 </template>
@@ -26,10 +26,10 @@ export default {
     }
   },
   methods: {
-    prev() {
+    prev () {
       this.$emit('goToStep', this.currentStep - 1);
     },
-    next() {
+    next () {
       this.$emit('goToStep', this.currentStep + 1);
     }
   }
@@ -44,5 +44,4 @@ export default {
   border-top: 1px solid $grey;
   background: $white;
 }
-
 </style>

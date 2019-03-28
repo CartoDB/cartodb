@@ -35,7 +35,7 @@ export default {
     }
   },
   watch: {
-    isOpen() {
+    isOpen () {
       if (this.isOpen) {
         this.open();
       } else {
@@ -43,8 +43,9 @@ export default {
       }
     }
   }
-}
+};
 </script>
+
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 

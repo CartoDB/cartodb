@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     isCurrentStep (stepNum, index) {
-      return index + 1 == stepNum;
+      return index + 1 === stepNum;
     }
   }
 };

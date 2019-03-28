@@ -1,8 +1,8 @@
 <template>
   <div class="footer">
     <div class="container u-flex u-flex__justify--end">
-        <button class="button button--outline" v-if="showPrevButton" @click="prev">< Prev</button>
-        <button class="button is-primary" v-if="showNextButton" @click="next">Next ></button>
+      <button class="button button--outline" v-if="showPrevButton" @click="prev">< Prev</button>
+      <button class="button is-primary" v-if="showNextButton" @click="next">Next ></button>
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@ export default {
 
 .footer {
   padding: 2em;
+  border-top: 1px solid $grey;
   background: $white;
 }
 

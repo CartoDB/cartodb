@@ -10,17 +10,20 @@
       <div class="welcome-compact__extra">
         <slot />
       </div>
+      <Wizard></Wizard>
     </div>
   </section>
 </template>
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import Wizard from 'new-dashboard/components/Wizard/Wizard.vue';
 
 export default {
   name: 'WelcomeCompact',
   components: {
-    CreateButton
+    CreateButton,
+    Wizard
   },
   props: {
     name: String

@@ -1,16 +1,18 @@
 <template>
   <div class="header">
-    <ul class="breadcrumbs">
+    <div class="container">
+      <ul class="breadcrumbs">
         <li class="breadcrumbs__item"
-            :class="[isCurrentStep (currentStep, index) ? 'current' : '']"
-            v-for="(stepName, index) in stepNames" :key="stepName">
-            <a href="">
-                <span class="breadcrumbs__checkpoint" :class="[isCurrentStep (currentStep, index) ? 'current' : '']">
-                    <span class="breadcrumbs__text">{{ index + 1 }} - {{ stepName }}</span>
-                </span>
-            </a>
+          :class="[isCurrentStep (currentStep, index) ? 'current' : '']"
+          v-for="(stepName, index) in stepNames" :key="stepName">
+          <a href="">
+            <span class="breadcrumbs__checkpoint" :class="[isCurrentStep (currentStep, index) ? 'current' : '']">
+              <span class="breadcrumbs__text">{{ index + 1 }} - {{ stepName }}</span>
+            </span>
+          </a>
         </li>
-    </ul>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -40,24 +42,23 @@ $timeline__border-width: 4px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100px;
+  padding: 4em 0 2em;
+  border-bottom: 1px solid $grey;
   background: $white;
+}
 
-  & > div {
-    min-width: 900px;
-  }
+.container {
+  width: 100%;
 }
 
 .breadcrumbs {
   display: flex;
   justify-content: space-between;
-  width: 80%;
   margin-bottom: 1em;
-  margin-left: 15%;
 
   &__item {
     position: relative;
-    width: 20%;
+    width: 100%;
     height: 50px;
 
     &:not(:last-child) {
@@ -65,6 +66,7 @@ $timeline__border-width: 4px;
     }
 
     &:last-child {
+      width: 0;
       border-top: $timeline__border-width solid transparent;
     }
 
@@ -122,10 +124,9 @@ $timeline__border-width: 4px;
       box-shadow: 0 0 0 12px rgba($primary-color, 0.2);
 
       .breadcrumbs__text {
-         color: $primary-color;
+        color: $primary-color;
       }
     }
   }
 }
-
 </style>

@@ -81,6 +81,8 @@ export default {
 <style lang="scss">
 .Dialog {
   .CreateDialog--new-dashboard {
+    // We set content-box because it seems like
+    // older content was laid out that way
     .Dialog-footer,
     .ImportOptions {
       box-sizing: content-box;
@@ -88,6 +90,11 @@ export default {
       * {
         box-sizing: content-box;
       }
+    }
+
+    // Reset style for radio button
+    .RadioButton-input {
+      box-sizing: border-box;
     }
   }
 }

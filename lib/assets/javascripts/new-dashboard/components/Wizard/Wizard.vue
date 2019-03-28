@@ -1,5 +1,6 @@
 <template>
   <div class="wizard">
+    <Header :stepNames="stepNames" :currentStep="step"></Header>
     <WizardStep
       v-if="isCurrentStep(1)"
       :title="'Step 1 Title'"
@@ -16,28 +17,47 @@
       :title="'Step 3'"
       :subTitle="'Step 3 Subtitle'"
       :stepNum="3"></WizardStep>
+    <WizardStep
+      v-if="isCurrentStep(4)"
+      :title="'Step 4'"
+      :subTitle="'Step 4 Subtitle'"
+      :stepNum="4"></WizardStep>
+    <WizardStep
+      v-if="isCurrentStep(5)"
+      :title="'Step 5'"
+      :subTitle="'Step 5 Subtitle'"
+      :stepNum="5"></WizardStep>
     <button v-if="showPrevButton" @click="prev">Prev</button>
     <button v-if="showNextButton" @click="next">Next</button>
   </div>
 </template>
 
 <script>
-import WizardStep from 'new-dashboard/components/WizardStep.vue';
+import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
+import Header from 'new-dashboard/components/Wizard/Header.vue';
 
 export default {
   name: 'Wizard',
   components: {
     WizardStep,
+    Header
   },
   props: {
     maxSteps: {
       type: Number,
-      default: 3
+      default: 5
     }
   },
   data () {
     return {
-      step: 2
+      step: 4,
+      stepNames: [
+        'Load CARTO VL',
+        'Define container',
+        'Create the map',
+        'Add data layer',
+        'Download'
+      ]
     };
   },
   computed: {

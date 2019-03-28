@@ -4,7 +4,7 @@
     <WizardStep
       v-if="isCurrentStep(1)"
       :title="'Step 1 Title'"
-      :subTitle="'Step 2 Subtitle'"
+      :subTitle="'Step 1 Subtitle'"
       :stepNum="1">
     </WizardStep>
     <WizardStep
@@ -27,20 +27,21 @@
       :title="'Step 5'"
       :subTitle="'Step 5 Subtitle'"
       :stepNum="5"></WizardStep>
-    <button v-if="showPrevButton" @click="prev">Prev</button>
-    <button v-if="showNextButton" @click="next">Next</button>
+    <Footer :currentStep="step"  @goToStep="goToStep"></Footer>
   </div>
 </template>
 
 <script>
 import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
 import Header from 'new-dashboard/components/Wizard/Header.vue';
+import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 
 export default {
   name: 'Wizard',
   components: {
     WizardStep,
-    Header
+    Header,
+    Footer
   },
   props: {
     maxSteps: {
@@ -50,7 +51,7 @@ export default {
   },
   data () {
     return {
-      step: 4,
+      step: 2,
       stepNames: [
         'Load CARTO VL',
         'Define container',
@@ -60,20 +61,12 @@ export default {
       ]
     };
   },
-  computed: {
-    showNextButton () {
-      return this.step < this.maxSteps;
-    },
-    showPrevButton () {
-      return this.step > 1;
-    }
-  },
   methods:{
-    prev() {
-      this.step--;
-    },
-    next() {
-      this.step++;
+    goToStep (stepNum) {
+      console.log('stepNum', stepNum);
+      this.step = stepNum;
+      console.log('step', this.step);
+      console.log('-----');
     },
     isCurrentStep (stepNum) {
       return this.step == stepNum;

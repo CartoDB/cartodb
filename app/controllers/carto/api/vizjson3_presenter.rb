@@ -33,21 +33,21 @@ module Carto
         @redis_vizjson_cache = redis_vizjson_cache
       end
 
-      def to_vizjson(https_request: false, vector: false)
-        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: nil)
+      def to_vizjson(https_request: false)
+        generate_vizjson(https_request: https_request, forced_privacy_version: nil)
       end
 
-      def to_named_map_vizjson(https_request: false, vector: false)
-        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_named)
+      def to_named_map_vizjson(https_request: false)
+        generate_vizjson(https_request: https_request, forced_privacy_version: :force_named)
       end
 
-      def to_anonymous_map_vizjson(https_request: false, vector: false)
-        generate_vizjson(https_request: https_request, vector: vector, forced_privacy_version: :force_anonymous)
+      def to_anonymous_map_vizjson(https_request: false)
+        generate_vizjson(https_request: https_request, forced_privacy_version: :force_anonymous)
       end
 
       private
 
-      def generate_vizjson(https_request:, vector:, forced_privacy_version:)
+      def generate_vizjson(https_request:, forced_privacy_version:)
         https_request ||= false
         version = case forced_privacy_version
                   when :force_named
@@ -65,10 +65,6 @@ module Carto
                   else
                     calculate_vizjson(https_request: https_request, forced_privacy_version: forced_privacy_version)
                   end
-
-        unless vector.nil? # true or false
-          vizjson[:vector] = vector
-        end
 
         vizjson
       end
@@ -89,11 +85,10 @@ module Carto
           options:        map_options(@visualization),
           id:             @visualization.id,
           layers:         layers_vizjson(forced_privacy_version),
-          likes:          @visualization.likes.count,
           map_provider:   map.provider,
           overlays:       overlays_vizjson(@visualization),
           title:          @visualization.qualified_name(user),
-          updated_at:     map.viz_updated_at,
+          updated_at:     @visualization.updated_at,
           user:           user_info_vizjson(user),
           version:        VIZJSON_VERSION,
           widgets:        widgets_vizjson,
@@ -224,7 +219,7 @@ module Carto
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
-      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      # @see https://github.com/CartoDB/carto.js/blob/privacy-maps/doc/vizjson_format.md
       def to_vizjson
         layer_vizjson = VizJSON3LayerPresenter.new(@layer, @configuration).to_vizjson
         if @layer.user_layer?
@@ -251,7 +246,8 @@ module Carto
           visible: layer_vizjson[:visible],
           options: {
             layer_name: layer_options[:layer_name],
-            attribution: layer_options[:attribution]
+            attribution: layer_options[:attribution],
+            cartocss: layer_options[:cartocss]
           }
         }
 
@@ -418,7 +414,8 @@ module Carto
         layer_alias = @layer.options.fetch('table_name_alias', nil)
         table_name  = @layer.options.fetch('table_name')
 
-        layer_alias.present? ? layer_alias : table_name
+        # .present? is not valid, as we want to allow whitespaced layer names.
+        layer_alias.nil? || layer_alias.empty? ? table_name : layer_alias
       end
 
       def sql_from(layer)

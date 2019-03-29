@@ -1,0 +1,159 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+ul.tagit {
+  margin-right: inherit;
+  margin-left: inherit; /* usually we don't want the regular ul margins. */
+  padding: 1px 5px;
+  overflow: auto;
+}
+
+ul.tagit li {
+  display: block;
+  margin: 2px 5px 2px 0;
+  float: left;
+}
+
+ul.tagit li.tagit-choice {
+  position: relative;
+  padding: 0.2em 18px 0.2em 0.5em;
+  line-height: inherit;
+}
+
+ul.tagit li.tagit-new {
+  padding: 0.25em 4px 0.25em 0;
+}
+
+ul.tagit li.tagit-choice a.tagit-label {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+ul.tagit li.tagit-choice .tagit-close {
+  position: absolute;
+  top: 50%;
+  right: 0.1em;
+  margin-top: -8px;
+  cursor: pointer;
+}
+
+/* used for some custom themes that don't need image icons */
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+  display: none;
+}
+
+ul.tagit li.tagit-choice input {
+  display: block;
+  margin: 2px 5px 2px 0;
+  float: left;
+}
+
+ul.tagit input[type="text"] {
+  box-sizing: border-box;
+  width: inherit;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-color: inherit;
+}
+
+.Form-tags {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  outline: none;
+  background: $cWhite;
+  font-size: $sFontSize-medium;
+}
+
+.Form-tagsList.tagit {
+  padding: 0 5px;
+}
+
+.Form-tagsList.tagit .tagit-choice {
+  margin: 7px 5px 0 0;
+  padding: 0 20px 0 4px;
+  overflow: hidden;
+  border: 1px solid $cBlue;
+  border-radius: 2px;
+  background: $cWhite;
+  color: $cBlue;
+  font-size: $sFontSize-small;
+  line-height: 14px;
+}
+
+.Form-tagsList.tagit .tagit-choice .tagit-close {
+  display: inline-block;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  overflow: hidden;
+  background-color: $cBlue;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 2px;
+    width: 10px;
+    height: 1px;
+    background: $cWhite;
+  }
+
+  &::before {
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+}
+
+.Form-tagsList.tagit .tagit-choice .tagit-close .text-icon {
+  display: none;
+}
+
+.Form-tagsList.tagit li.tagit-new {
+  padding: 4px 4px 5px 7px;
+}
+
+.Form-tagsList.tagit .ui-autocomplete-input::-webkit-input-placeholder {
+  color: #AAA;
+  font-style: normal;
+  font-weight: $sFontWeight-normal;
+}
+
+.Form-tagsList.tagit .ui-autocomplete-input::-moz-placeholder {
+  color: #AAA;
+  font-style: normal;
+  font-weight: $sFontWeight-normal;
+}
+
+.Form-tagsList.tagit .ui-autocomplete-input:-ms-placeholder {
+  color: #AAA;
+  font-style: normal;
+  font-weight: $sFontWeight-normal;
+}
+
+.Form-tags.is-hover {
+  border-color: $cHoverLine;
+}
+
+.Form-tags.is-focus {
+  border-color: $cBlue;
+}
+
+.Form-tags.is-disabled {
+  background: rgba(#F9F9F9, 1);
+
+  .tagit-choice { padding: 0 11px; }
+  .tagit-choice .tagit-close { display: none; }
+}

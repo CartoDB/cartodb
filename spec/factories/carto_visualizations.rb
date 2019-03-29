@@ -6,12 +6,13 @@ module Carto
       include CartoDB::Factories
 
       def full_visualization_table(carto_user, map)
+        carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
         map_id = map.nil? ? nil : map.id
         Carto::UserTable.find(create_table(name: unique_name('fvt_table'), user_id: carto_user.id, map_id: map_id).id)
       end
 
-      def create_full_builder_vis(carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
-        create_full_visualization(carto_user, visualization_attributes: { version: 3, privacy: privacy })
+      def create_full_builder_vis(carto_user, visualization_attributes: {})
+        create_full_visualization(carto_user, visualization_attributes: visualization_attributes.merge(version: 3))
       end
 
       # "Full visualization": with map, table... Including actual user table.
@@ -24,6 +25,8 @@ module Carto
         data_layer: nil,
         visualization_attributes: {}
       )
+
+        carto_user = Carto::User.find(carto_user.id) unless carto_user.is_a? Carto::User
 
         table_visualization = table.visualization || create_table_visualization(carto_user, table)
         visualization = FactoryGirl.create(:carto_visualization, { user: carto_user, map: map }

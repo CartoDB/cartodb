@@ -50,8 +50,9 @@ describe Layer do
       helper = TestUserFactory.new
       @organization = FactoryGirl.create(:organization, quota_in_bytes: 1000000000000)
       @owner = helper.create_owner(@organization)
+      @nonhyphen_user = helper.create_test_user(unique_name('user'), @organization)
       @hyphen_user = helper.create_test_user(unique_name('user-'), @organization)
-      @owner_table = FactoryGirl.create(:user_table, user: @owner, name: unique_name('table'))
+      @nonhyphen_table = FactoryGirl.create(:user_table, user: @nonhyphen_user, name: unique_name('table'))
       @subuser_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table'))
       @hyphen_table = FactoryGirl.create(:user_table, user: @hyphen_user, name: unique_name('table-'))
     end
@@ -60,13 +61,13 @@ describe Layer do
       @hyphen_user_layer = Layer.new
       @hyphen_user_layer.stubs(:user).returns(@hyphen_user)
 
-      @owner_layer = Layer.new
-      @owner_layer.stubs(:user).returns(@owner)
+      @nonhyphen_layer = Layer.new
+      @nonhyphen_layer.stubs(:user).returns(@nonhyphen_user)
     end
 
     it 'returns normal tables' do
-      @owner_layer.send(:affected_table_names, "SELECT * FROM #{@owner_table.name}")
-                  .should eq ["#{@owner.username}.#{@owner_table.name}"]
+      @nonhyphen_layer.send(:affected_table_names, "SELECT * FROM #{@nonhyphen_table.name}")
+                      .should eq ["#{@nonhyphen_user.username}.#{@nonhyphen_table.name}"]
     end
 
     it 'returns tables from users with hyphens' do

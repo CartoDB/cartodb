@@ -1,0 +1,49 @@
+[{
+  "id": "456",
+  "name": "Map 2",
+  "display_name": null,
+  "map_id": "123",
+  "active_layer_id": "a880e3f3-c292-4cb1-be06-e75f3dd74587",
+  "type": "derived",
+  "tags": ["test", "public", "static", "extra", "another"],
+  "description": "Another map",
+  "privacy": "PUBLIC",
+  "stats": {
+    "2017-10-16": 25.0
+  },
+  "created_at": "2017-10-03T15:29:11+02:00",
+  "updated_at": "2017-10-10T11:02:19+02:00",
+  "locked": false,
+  "source": null,
+  "title": null,
+  "license": null,
+  "attributions": null,
+  "kind": "geom",
+  "external_source": {},
+  "url": "http://user.localhost.lan:3000/viz/456/map",
+  "auth_tokens": [],
+  "version": 2,
+  "prev_id": null,
+  "next_id": null,
+  "parent_id": null,
+  "transition_options": {
+    "time": 0
+  },
+  "active_child": null,
+  "children": [],
+  "likes": 0,
+  "liked": false,
+  "table": {},
+  "permission": {
+    "id": "741a0237-dbb9-4051-82ce-dd0fee19eb64",
+    "owner": {
+      "id": "b4565b84-ae84-4b1c-8df2-83bef4d3ef81",
+      "username": "user",
+      "avatar_url": "/assets/unversioned/images/avatars/avatar_planet_green.png",
+      "base_url": "http://user.localhost.lan:3000",
+      "viewer": false
+    }
+  },
+  "synchronization": null,
+  "uses_builder_features": false
+}]

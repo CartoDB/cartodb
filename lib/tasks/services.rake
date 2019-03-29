@@ -5,7 +5,7 @@ namespace :cartodb do
     DS_PROVIDED_SERVICES = ['geocoder', 'routing', 'isolines'].freeze
 
     # service provider names
-    DS_PROVIDERS = ['heremaps', 'google', 'mapzen'].freeze
+    DS_PROVIDERS = ['heremaps', 'google', 'mapzen', 'mapbox', 'tomtom'].freeze
 
     # Prefixes/infixes corresponding to User columns names/REDIS keys that store quotas / soft limits
     # note that there's a couple of naming incosistence due to historical reasons:

@@ -1,0 +1,31 @@
+// Text elements styles
+// ----------------------------------------------
+
+.CDB-Widget-tag {
+  @include display-flex();
+  @include align-items(center);
+  height: 22px;
+  margin: 0 0 0 $baseSize + 4;
+  padding: 0 $baseSize - 2;
+  border-radius: $baseSize / 2;
+  vertical-align: middle;
+}
+// Widget tag types
+// They should not belong to widget themes because color should
+// not be related
+.CDB-Widget-tag--avg {
+  background-color: rgba(#EDF3DF, 1);
+}
+
+.CDB-Widget-tag--sum {
+  background-color: rgba(#DFF2FC, 1);
+}
+
+.CDB-Widget-tag--count {
+  background-color: rgba(#FEF4E2, 1);
+}
+
+.CDB-Widget-tag--min,
+.CDB-Widget-tag--max {
+  background-color: rgba(#FEE0DD, 1);
+}

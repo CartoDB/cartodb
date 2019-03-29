@@ -1,5 +1,6 @@
 require 'json'
-require 'carto/export/layer_exporter'
+require_dependency 'carto/export/layer_exporter'
+require_dependency 'carto/export/data_import_exporter'
 
 # Version History
 # TODO: documentation at http://cartodb.readthedocs.org/en/latest/operations/exporting_importing_visualizations.html
@@ -16,10 +17,12 @@ require 'carto/export/layer_exporter'
 # 2.0.8: export widget style
 # 2.0.9: export visualization id
 # 2.1.0: export datasets: permissions, user_tables and syncs
+# 2.1.1: export vizjson2 mark
+# 2.1.2: export locked and password
+# 2.1.3: export synchronization id
 module Carto
   module VisualizationsExportService2Configuration
-    CURRENT_VERSION = '2.1.0'.freeze
-    MAX_LOG_SIZE = 8192
+    CURRENT_VERSION = '2.1.3'.freeze
 
     def compatible_version?(version)
       version.to_i == CURRENT_VERSION.split('.')[0].to_i
@@ -29,16 +32,18 @@ module Carto
   module VisualizationsExportService2Validator
     def check_valid_visualization(visualization)
       raise 'Only derived or canonical visualizations can be exported' unless visualization.derived? ||
-                                                                              visualization.canonical?
+                                                                              visualization.canonical? ||
+                                                                              visualization.remote?
     end
   end
 
   module VisualizationsExportService2Importer
     include VisualizationsExportService2Configuration
     include LayerImporter
+    include DataImportImporter
 
     def build_visualization_from_json_export(exported_json_string)
-      build_visualization_from_hash_export(JSON.parse(exported_json_string).deep_symbolize_keys)
+      build_visualization_from_hash_export(parse_json(exported_json_string))
     end
 
     def build_visualization_from_hash_export(exported_hash)
@@ -47,7 +52,19 @@ module Carto
       build_visualization_from_hash(exported_hash[:visualization])
     end
 
+    def marked_as_vizjson2_from_json_export?(exported_json_string)
+      marked_as_vizjson2_from_hash_export?(parse_json(exported_json_string))
+    end
+
+    def marked_as_vizjson2_from_hash_export?(exported_hash)
+      exported_hash[:visualization][:uses_vizjson2]
+    end
+
     private
+
+    def parse_json(exported_json_string)
+      JSON.parse(exported_json_string, symbolize_names: true)
+    end
 
     def build_visualization_from_hash(exported_visualization)
       exported_layers = exported_visualization[:layers]
@@ -71,8 +88,15 @@ module Carto
           exported_visualization[:map],
           layers: build_layers_from_hash(exported_layers)),
         overlays: build_overlays_from_hash(exported_overlays),
-        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a.deep_symbolize_keys) },
-        permission: build_permission_from_hash(exported_visualization[:permission])
+        analyses: exported_visualization[:analyses].map { |a| build_analysis_from_hash(a) },
+        permission: build_permission_from_hash(exported_visualization[:permission]),
+        mapcaps: [build_mapcap_from_hash(exported_visualization[:mapcap])].compact,
+        external_source: build_external_source_from_hash(exported_visualization[:external_source]),
+        created_at: exported_visualization[:created_at],
+        updated_at: exported_visualization[:updated_at],
+        locked: exported_visualization[:locked] || false,
+        encrypted_password: exported_visualization[:encrypted_password],
+        password_salt: exported_visualization[:password_salt]
       )
 
       # This is optional as it was added in version 2.0.2
@@ -84,7 +108,7 @@ module Carto
       # Added in version 2.0.3
       visualization.state = build_state_from_hash(exported_visualization[:state])
 
-      active_layer_order = exported_layers.index { |l| l['active_layer'] }
+      active_layer_order = exported_layers.index { |l| l[:active_layer] }
       if active_layer_order
         visualization.active_layer = visualization.layers.find { |l| l.order == active_layer_order }
       end
@@ -99,6 +123,8 @@ module Carto
     end
 
     def build_map_from_hash(exported_map, layers:)
+      return nil unless exported_map
+
       Carto::Map.new(
         provider: exported_map[:provider],
         bounding_box_sw: exported_map[:bounding_box_sw],
@@ -118,7 +144,7 @@ module Carto
       return [] unless exported_overlays
 
       exported_overlays.map.with_index.map do |overlay, i|
-        build_overlay_from_hash(overlay.deep_symbolize_keys, order: (i + 1))
+        build_overlay_from_hash(overlay, order: (i + 1))
       end
     end
 
@@ -150,7 +176,7 @@ module Carto
     def build_synchronization_from_hash(exported_synchronization)
       return nil unless exported_synchronization
 
-      Carto::Synchronization.new(
+      sync = Carto::Synchronization.new(
         name: exported_synchronization[:name],
         interval: exported_synchronization[:interval],
         url: exported_synchronization[:url],
@@ -172,12 +198,9 @@ module Carto
         quoted_fields_guessing: exported_synchronization[:quoted_fields_guessing],
         content_guessing: exported_synchronization[:content_guessing]
       )
-    end
 
-    def build_log_from_hash(exported_log)
-      return nil unless exported_log
-
-      Carto::Log.new(type: exported_log[:type], entries: exported_log[:entries])
+      sync.id = exported_synchronization[:id]
+      sync
     end
 
     def build_user_table_from_hash(exported_user_table)
@@ -194,8 +217,34 @@ module Carto
       user_table.database_name = exported_user_table[:database_name]
       user_table.description = exported_user_table[:description]
       user_table.table_id = exported_user_table[:table_id]
+      user_table.data_import = build_data_import_from_hash(exported_user_table[:data_import])
 
       user_table
+    end
+
+    def build_mapcap_from_hash(exported_mapcap)
+      return nil unless exported_mapcap
+
+      Carto::Mapcap.new(
+        ids_json: exported_mapcap[:ids_json],
+        export_json: exported_mapcap[:export_json],
+        created_at: exported_mapcap[:created_at]
+      )
+    end
+
+    def build_external_source_from_hash(exported_external_source)
+      return nil unless exported_external_source
+
+      es = Carto::ExternalSource.new(
+        import_url: exported_external_source[:import_url],
+        rows_counted: exported_external_source[:rows_counted],
+        size: exported_external_source[:size],
+        username: exported_external_source[:username],
+        geometry_types: exported_external_source[:geometry_types]
+      )
+      es.id = exported_external_source[:id]
+
+      es
     end
   end
 
@@ -203,33 +252,35 @@ module Carto
     include VisualizationsExportService2Configuration
     include VisualizationsExportService2Validator
     include LayerExporter
+    include DataImportExporter
 
-    def export_visualization_json_string(visualization_id, user)
-      export_visualization_json_hash(visualization_id, user).to_json
+    def export_visualization_json_string(visualization_id, user, with_password: false)
+      export_visualization_json_hash(visualization_id, user, with_password: with_password).to_json
     end
 
-    def export_visualization_json_hash(visualization_id, user)
+    def export_visualization_json_hash(visualization_id, user, with_mapcaps: true, with_password: false)
       {
         version: CURRENT_VERSION,
-        visualization: export(Carto::Visualization.find(visualization_id), user)
+        visualization: export(Carto::Visualization.find(visualization_id), user,
+                              with_mapcaps: with_mapcaps, with_password: with_password)
       }
     end
 
     private
 
-    def export(visualization, user)
+    def export(visualization, user, with_mapcaps: true, with_password: false)
       check_valid_visualization(visualization)
-      export_visualization(visualization, user)
+      export_visualization(visualization, user, with_mapcaps: with_mapcaps, with_password: with_password)
     end
 
-    def export_visualization(visualization, user)
+    def export_visualization(visualization, user, with_mapcaps: true, with_password: false)
       layers = visualization.layers_with_data_readable_by(user)
       active_layer_id = visualization.active_layer_id
       layer_exports = layers.map do |layer|
         export_layer(layer, active_layer: active_layer_id == layer.id)
       end
 
-      {
+      export = {
         id: visualization.id,
         name: visualization.name,
         description: visualization.description,
@@ -252,8 +303,21 @@ module Carto
         state: export_state(visualization.state),
         permission: export_permission(visualization.permission),
         synchronization: export_syncronization(visualization.synchronization),
-        user_table: export_user_table(visualization.map.user_table)
+        user_table: export_user_table(visualization.map.try(:user_table)),
+        uses_vizjson2: visualization.uses_vizjson2?,
+        mapcap: with_mapcaps ? export_mapcap(visualization.latest_mapcap) : nil,
+        external_source: export_external_source(visualization.external_source),
+        created_at: visualization.created_at,
+        updated_at: visualization.updated_at,
+        locked: visualization.locked
       }
+
+      if with_password
+        export[:encrypted_password] = visualization.encrypted_password
+        export[:password_salt] = visualization.password_salt
+      end
+
+      export
     end
 
     def export_user(user)
@@ -263,6 +327,8 @@ module Carto
     end
 
     def export_map(map)
+      return nil unless map
+
       {
         provider: map.provider,
         bounding_box_sw: map.bounding_box_sw,
@@ -306,6 +372,7 @@ module Carto
     def export_syncronization(synchronization)
       return nil unless synchronization
       {
+        id: synchronization.id,
         name: synchronization.name,
         interval: synchronization.interval,
         url: synchronization.url,
@@ -329,15 +396,6 @@ module Carto
       }
     end
 
-    def export_log(log)
-      return nil unless log
-
-      {
-        type: log.type,
-        entries: log.entries && log.entries.length > MAX_LOG_SIZE ? log.entries.slice(-MAX_LOG_SIZE..-1) : log.entries
-      }
-    end
-
     def export_user_table(user_table)
       return nil unless user_table
 
@@ -351,7 +409,31 @@ module Carto
         indexes: user_table.indexes,
         database_name: user_table.database_name,
         description: user_table.description,
-        table_id: user_table.table_id
+        table_id: user_table.table_id,
+        data_import: export_data_import(user_table.data_import)
+      }
+    end
+
+    def export_external_source(external_source)
+      return nil unless external_source
+
+      {
+        id: external_source.id,
+        import_url: external_source.import_url,
+        rows_counted: external_source.rows_counted,
+        size: external_source.size,
+        username: external_source.username,
+        geometry_types: external_source.geometry_types
+      }
+    end
+
+    def export_mapcap(mapcap)
+      return nil unless mapcap
+
+      {
+        ids_json: mapcap.ids_json,
+        export_json: mapcap.export_json,
+        created_at: mapcap.created_at
       }
     end
   end

@@ -1,0 +1,500 @@
+// Dashboard info
+// --------------------------------------------------
+
+#dashboard {
+  height: 100%;
+}
+
+/* ~~~~~ CartoLogo ~~~~~ */
+
+.CDB-EmbedLogo-text {
+  opacity: 0;
+}
+
+.CDB-EmbedLogo-image {
+  @include transform(translateX(0));
+}
+
+.CDB-Dashboard-menu.is-active .CDB-Dashboard-menuLogo {
+  @include transition(transform, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  @include transform(translateX(56px));
+}
+
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-text {
+  @include animation(fadeInDown 0.8s both);
+  opacity: 1;
+  fill: rgb(22, 41, 69);
+}
+
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-image {
+  @include transform(translateX(37px));
+}
+
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-halo {
+  @include animation(fadeInDown 0.8s both);
+  fill: rgba(22, 41, 69, 0.1);
+}
+
+.CDB-Dashboard-menu.is-active .CDB-EmbedLogo-point {
+  @include animation(fadeInDown 0.8s both);
+  fill: rgb(22, 41, 69);
+}
+
+/* ~~~~~ Dashboard menu ~~~~~ */
+
+.CDB-Dashboard-menuTexts {
+  position: absolute;
+  top: 120px;
+  right: 64px;
+  bottom: 64px;
+  left: 72px;
+  opacity: 0;
+}
+
+.CDB-Dashboard-menuActions {
+  @include display-flex();
+  @include align-items(center);
+  position: absolute;
+  top: 80px;
+  right: 18px;
+  left: 72px;
+  width: 304px;
+  opacity: 0;
+}
+
+.CDB-Dashboard-menuActionsItem {
+  margin-right: 16px;
+
+  a:hover {
+    color: $cBlue;
+  }
+}
+
+.CDB-Dashboard-menuInner {
+  @include transition(width, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 56px;
+  max-width: 400px;
+  padding: 16px;
+  overflow: hidden;
+  background: $cBlue;
+}
+
+.CDB-Dashboard-menuTextActions {
+  display: none;
+}
+
+.CDB-Dashboard-menu.is-active {
+  .CDB-Dashboard-menuContainer {
+    width: 100%;
+    height: 100%;
+  }
+
+  .CDB-Dashboard-bg {
+    @include transition(background, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba($cSecondaryDark, 0.8);
+    cursor: pointer;
+  }
+
+  .CDB-Dashboard-bg:hover {
+    background: rgba($cSecondaryDark, 0.6);
+  }
+
+  .CDB-Dashboard-menuInner {
+    width: 400px;
+    background: $cWhite;
+    box-shadow: 0 0 40px 0 rgba($cMainBg, 0.4);
+  }
+
+  .CDB-Dashboard-menuTexts,
+  .CDB-Dashboard-menuActions,
+  .CDB-Dashboard-menuFooterTxt {
+    @include animation(fadeInDown 0.8s both);
+  }
+
+  .CDB-Dashboard-menuSnapshots {
+    opacity: 1;
+  }
+
+  .CDB-Dashboard-menuInfo {
+    transform: rotate(180deg);
+    color: #AAA;
+  }
+}
+
+.CDB-Dashboard-menuLogo {
+  @include transform(translateX(0)); /* change to -38px TODO */
+  margin-bottom: 36px;
+}
+
+.CDB-Dashboard-menuInfo {
+  width: 24px;
+  margin-bottom: 48px;
+  color: $cWhite;
+  text-align: center;
+}
+
+.CDB-Dashboard-menuTitle {
+  margin-bottom: 20px;
+}
+
+.CDB-Dashboard-menuDescription {
+  white-space: pre-wrap;
+}
+
+.CDB-Dashboard-menuFooter {
+  position: absolute;
+  right: 16px;
+  bottom: 24px;
+  left: 16px;
+  width: 280px;
+}
+
+.CDB-Dashboard-menuMedia {
+  display: inline-block;
+  width: 24px;
+  margin-right: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.CDB-Dashboard-menuAvatar img {
+  display: inline-block;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.CDB-Dashboard-menuFooterTxt {
+  @include inline-block();
+  width: 85%;
+  opacity: 0;
+}
+
+.CDB-Dashboard-menuFooterItem {
+  margin-top: 20px;
+}
+
+.CDB-Dashboard-menuSnapshots {
+  @include transition(opacity, 0.3s, ease-out);
+  position: relative;
+  box-sizing: border-box;
+  width: 280px;
+  height: 120px;
+  margin-left: -24px;
+  padding: 24px;
+  overflow: hidden;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.CDB-Dashboard-menuSnapshotsList {
+  display: flex;
+  position: absolute;
+  flex-flow: row wrap;
+  width: 1000px;
+}
+
+.CDB-Dashboard-menuSnapshotsListItem {
+  box-sizing: border-box;
+  width: 96px;
+  height: 72px;
+  margin-right: 8px;
+  padding: 12px;
+  border-radius: 4px;
+  background: $cWhite;
+}
+
+.CDB-Dashboard-menuSnapshotsListTitle {
+  margin-bottom: 8px;
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-semibold;
+  line-height: $sLineHeight-small;
+}
+
+.CDB-Dashboard-menuSnapshotsListDate {
+  color: #636D72;
+  font-size: $sFontSize-small;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-small;
+}
+
+.CDB-Dashboard-menuHeaderMobile {
+  @include transition(all, 150ms, cubic-bezier(0.01, 0.99, 0.97, 1.01));
+  @include transform(translateX(-100%));
+  @include opacity(0);
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 20%;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  padding: 32px;
+  background: $cWhite;
+}
+
+.CDB-Dashboard-menuHeaderMobileText {
+  @include opacity(0);
+}
+
+.CDB-Dashboard-metadata {
+  @include display-flex();
+  @include flex-direction(column);
+  position: absolute;
+  top: 0;
+  right: -20px;
+  bottom: 0;
+  left: 0;
+}
+
+.CDB-Dashboard-scrollWrapper {
+  @include display-flex();
+  @include flex-direction(column);
+  @include flex(1);
+  position: relative;
+  min-height: 0;
+}
+
+.CDB-Dashboard-scrollContent {
+  padding-right: 20px;
+}
+
+@include keyframes(fadeInDown) {
+  from {
+    @include css3-prefix(transform, translate3d(-5%, 0, 0));
+    opacity: 0;
+  }
+
+  to {
+    @include css3-prefix(transform, none);
+    opacity: 1;
+  }
+}
+
+.CDB-Dashboard-menu {
+  display: none;
+}
+
+@media (min-width: $sMedia-xl) {
+  .CDB-Dashboard-menu {
+    display: block;
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .CDB-Dashboard-hideMobile {
+    display: none;
+  }
+
+  .CDB-Dashboard-menu {
+    display: block;
+    position: absolute;
+    right: 1px;
+    bottom: 0;
+    left: 1px;
+    order: 4;
+    height: 39px;
+  }
+
+  .CDB-Dashboard-menuInner {
+    @include display-flex();
+    @include justify-content(space-between);
+    @include flex-direction(row-reverse);
+    position: static;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    padding: 8px;
+    overflow: hidden;
+    border-radius: 0 0 3px 3px;
+    background: #F2F6F9;
+  }
+
+  .CDB-Dashboard-menuMedia {
+    width: 16px;
+    margin-right: 8px;
+  }
+
+  .CDB-Dashboard-menuFooter {
+    @include display-flex();
+    @include align-items(center);
+    position: static;
+    width: auto;
+  }
+
+  .CDB-Dashboard-menuFooterItem {
+    @include display-flex();
+    @include align-items(center);
+    margin-top: 0;
+  }
+
+  .CDB-Dashboard-menuFooterTxt {
+    width: 100%;
+    opacity: 1;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .CDB-Dashboard-menuAvatar img {
+    display: block;
+    border-radius: 2px;
+  }
+
+  .CDB-Dashboard-menuActions {
+    @include opacity(1);
+    position: static;
+    width: auto;
+  }
+
+  .CDB-Dashboard-menuHeader {
+    display: flex;
+    flex-direction: inherit;
+    align-items: center;
+  }
+
+  .CDB-Dashboard-menuActionsItem .CDB-IconFont-heartFill,
+  .CDB-Dashboard-menuActionsItem .CDB-IconFont-twitter {
+    font-size: 13px;
+  }
+
+  .CDB-Dashboard-menuTexts {
+    position: absolute;
+    z-index: 2;
+    top: 16px;
+    right: auto;
+    left: 16px;
+    padding: 8px;
+    border-radius: 4px;
+    background: $cWhite;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  }
+
+  .CDB-Dashboard-menuTitle {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .CDB-Dashboard-menuTitle--mobile {
+    max-width: 290px;
+  }
+
+  .CDB-Dashboard-menuDescription,
+  .CDB-Dashboard-menuTime {
+    display: none;
+  }
+
+  .CDB-EmbedLogo-image {
+    @include transform(translateX(37px));
+  }
+
+  .CDB-Dashboard-menuLogo {
+    margin-bottom: 0;
+    transform: translateX(0);
+  }
+
+  .CDB-Dashboard-menuInfo {
+    margin-bottom: 0;
+  }
+
+  .CDB-EmbedLogo-text {
+    @include opacity(1);
+    fill: rgb(22, 41, 69);
+  }
+
+  .CDB-EmbedLogo-halo {
+    fill: rgba(22, 41, 69, 0.1);
+  }
+
+  .CDB-EmbedLogo-point {
+    fill: rgb(22, 41, 69);
+  }
+
+  .CDB-Dashboard-menuLogo svg {
+    height: 16px;
+    margin-bottom: -2px;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuInner {
+    width: auto;
+    box-shadow: none;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuInner .CDB-Dashboard-menuTexts {
+    display: none;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-bg {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuTime {
+    display: block;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobile {
+    @include transform(translate(0));
+    @include opacity(1);
+  }
+
+  .CDB-Dashboard-menuHeaderMobileActions {
+    @include transform(rotate(180deg));
+    margin-top: 58px;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuLogo {
+    @include transform(translateX(0));
+  }
+
+  .CDB-Dashboard-menu .CDB-Dashboard-menuInfo {
+    display: none;
+  }
+
+  .CDB-Dashboard-menuTextInner {
+    @include display-flex();
+    @include align-items(center);
+  }
+
+  .CDB-Dashboard-menuTextActions {
+    display: block;
+    margin-top: -8px;
+    margin-bottom: -6px;
+    margin-left: -8px;
+    padding: 8px 12px;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobileText {
+    @include animation(fadeInDown 0.8s both);
+    @include opacity(1);
+    width: 100%;
+    margin-left: 16px;
+  }
+
+  .CDB-Dashboard-menu.is-active .CDB-Dashboard-menuHeaderMobile svg {
+    width: auto;
+    height: auto;
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width: $sMedia-max-w-vertical) {
+  .CDB-Dashboard-menu {
+    position: fixed;
+  }
+}

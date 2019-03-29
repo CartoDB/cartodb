@@ -17,13 +17,16 @@ describe Carto::Admin::MobileAppsController do
   }.freeze
 
   before(:all) do
-    Cartodb.config[:cartodb_central_api] = {} unless Cartodb.config[:cartodb_central_api]
     @carto_user = FactoryGirl.create(:carto_user, mobile_max_open_users: 10000)
     @user = ::User[@carto_user.id]
   end
 
   after(:all) do
     @user.destroy
+  end
+
+  around(:each) do |example|
+    Cartodb.with_config(cartodb_central_api: {}, &example)
   end
 
   describe '#index' do
@@ -145,7 +148,7 @@ describe Carto::Admin::MobileAppsController do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       Cartodb::Central.any_instance.stubs(:delete_mobile_app).returns({}).once
       login(@user)
-      delete mobile_app_path(id: TEST_UUID)
+      delete mobile_app_path(id: TEST_UUID), password_confirmation: @carto_user.password
       response.status.should eq 302
       response.location.should end_with 'your_apps/mobile'
     end

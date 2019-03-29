@@ -10,17 +10,17 @@ module Carto
 
     belongs_to :layer, class_name: Carto::Layer
 
-    VALID_LEGEND_TYPES = %w(category bubble choropleth custom custom_choropleth).freeze
+    VALID_LEGEND_TYPES = %w(category bubble choropleth custom custom_choropleth torque).freeze
     LEGEND_TYPES_PER_ATTRIBUTE = {
-      color: %w(category choropleth custom custom_choropleth),
-      size: %(bubble)
+      color: %w(category choropleth custom custom_choropleth torque),
+      size: %w(bubble)
     }.freeze
 
-    serialize :definition, ::Carto::CartoJsonSerializer
-    serialize :conf, ::Carto::CartoJsonSerializer
+    serialize :definition, ::Carto::CartoJsonSymbolizerSerializer
+    serialize :conf, ::Carto::CartoJsonSymbolizerSerializer
 
     validates :definition, carto_json_symbolizer: true
-    serialize :conf, ::Carto::CartoJsonSerializer
+    serialize :conf, ::Carto::CartoJsonSymbolizerSerializer
     validates :type, :layer, presence: true
     validates :type, inclusion: { in: VALID_LEGEND_TYPES }, allow_nil: true
 

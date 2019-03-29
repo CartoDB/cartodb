@@ -1,0 +1,308 @@
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+
+/* WIP */
+.Dialog.is-white {
+  background: $cWhite;
+}
+
+.Filters-typeItem {
+  display: flex; /* todo when create new layout */
+}
+
+.DatasetsList-itemMeta {
+  align-items: baseline; /* todo when create new layout */
+}
+
+.Modal-body {
+  padding-top: 24px;
+}
+
+.Modal-body-inner {
+  width: 944px;
+  margin: 0 auto;
+}
+
+.Modal-body-header {
+  margin-bottom: 16px;
+}
+
+.Modal-analysisContainer {
+  margin-bottom: 48px;
+}
+
+.Modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  max-width: 640px;
+  margin: $baseSize * 4 auto 0;
+  padding: $baseSize * 4 0 0;
+  border-top: 1px solid $cMainLine;
+
+  &.is-narrow {
+    margin: 0 auto;
+  }
+}
+
+.Modal-actions-button {
+  margin-right: 20px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.ModalBlockList-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ModalBlockList-item-headerTitle {
+  flex: 1;
+}
+
+.ModalBlockList-item-headerSubTitle {
+  width: 100px; /* fix naming depending the rest of designs */
+}
+
+.ModalBlockList {
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.ModalBlockList-item {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  flex-direction: column;
+  width: 304px;
+  min-width: 304px;
+  margin: 0 4px 8px;
+  overflow: hidden;
+  border: 1px solid $cMainLine;
+  border-radius: 4px;
+  background: $cWhite;
+  cursor: pointer;
+
+  &:hover {
+    transition: border 200ms ease-in;
+
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cBlueHover;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  }
+
+  .is-disabled {
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: auto;
+
+    .ModalBlockList-item-headerTitle {
+      opacity: 0.5;
+    }
+  }
+
+  &.is-selected {
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: 10000;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      left: -1px;
+      width: calc(100% - 2px);
+      height: calc(100% - 2px);
+      border: 2px solid $cMainText;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+  }
+
+  &--full {
+    align-items: inherit;
+    width: 100%;
+    min-width: 100%;
+    margin: 16px 0 0;
+  }
+}
+
+.DatasetsList .ModalBlockList-item {
+  flex-direction: row;
+  padding: 12px;
+}
+
+.ModalBlockList-itemInput {
+  margin-right: $baseSize * 2;
+}
+
+.ModalBlockList-item-media {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  background: rgba($cBlue, 0.08);
+}
+
+.Form-row {
+  align-items: center;
+}
+
+/* Add Layer Modal */
+.ModalDataset-itemInfo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 850px;
+}
+
+.ModalDataset-itemInfoTitle {
+  box-sizing: border-box;
+  max-width: 50%;
+  padding-right: 24px;
+}
+
+.Carousel-Navigation.is-disabled {
+  opacity: 0.24;
+}
+
+.Upgrade-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-top: 1px solid rgba($cBlue, 0.32);
+  background: rgba($cBlue, 0.08);
+}
+
+.Upgrade-infoActions {
+  display: flex;
+  align-items: center;
+}
+
+.AddLayer-tabs {
+  display: block;
+  width: 780px;
+  padding: 28px 0;
+  overflow-x: hidden;
+}
+
+.ConnectDataset-header {
+  padding: 28px 0 16px;
+}
+
+.DatasetsList-avatarImg {
+  width: $baseSize * 2;
+  height: $baseSize * 2;
+  border-radius: 2px;
+}
+
+.Modal-containerList {
+  width: 528px;
+  margin: 0 auto;
+}
+
+.Publish-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.Publish-modalHeader {
+  flex: 0 0 auto;
+  padding: $baseSize * 3 0;
+}
+
+.Dialog-contentWrapper--withBreadcrumbs .Publish-modalHeader {
+  padding-top: 0;
+}
+
+.Publish-modalBody {
+  display: flex;
+  position: relative;
+  flex: 1;
+  flex-direction: column;
+  padding-bottom: 100px;
+  overflow: hidden;
+}
+
+.Publish-modalBody .Pagination--searchShare {
+  bottom: 100px;
+}
+
+.Publish-modalBody.is-simple .Pagination--searchShare {
+  bottom: 50px;
+}
+
+.Publish-modalBody.is-simple,
+.Publish-modalFooter,
+.Publish-modalContent {
+  background-color: $cThirdBackground;
+}
+
+.Publish-modalShadow {
+  width: 100%;
+  background-color: $cWhite;
+}
+
+.Publish-modalMenu,
+.Publish-modalShadow {
+  position: relative;
+  z-index: 1;
+  // In orden to change border by shadow, uncomment this
+  // min-height: 5px; // to be able to show the shadow if no content inside.
+  // box-shadow: 0 3px 5px rgba(#000, 0.1);
+  border-bottom: 1px solid $cMainLine;
+}
+
+.Publish-modalShare {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.Publish-optionsList {
+  width: 100%;
+}
+
+.Publish-modalButton {
+  height: 24px;
+}
+
+.CDB-NavSubmenu-item.is-selected .Publish-modalLink {
+  border-color: $cMainText;
+}
+
+.CDB-NavSubmenu-itemLink:hover {
+  text-decoration: underline;
+}
+
+.Upgrade-icon {
+  padding: $baseSize;
+  border-radius: $halfBaseSize;
+  background-color: $cWhite;
+}
+
+.Upgrade-body {
+  text-align: left;
+}

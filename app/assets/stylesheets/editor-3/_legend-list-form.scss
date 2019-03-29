@@ -1,37 +1,65 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/sizes';
 @import 'cdb-variables/colors';
 
-.LegendItem {
-  @include flex(1);
+.LegendItem,
+.ListItem {
   position: relative;
-  cursor: move;
+  flex: 1;
 
   [data-fieldsets],
   [data-fields] {
-    @include flex(1);
+    flex: 1;
   }
 }
 
-.LegendItem-deteleButton {
+.LegendItem.is-movable {
+  cursor: move;
+}
+
+.LegendItem .is-hidden {
+  visibility: hidden;
+}
+
+.ListItem--fixed {
+  cursor: auto;
+}
+
+.LegendItem-deleteButton {
   position: absolute;
-  top: 16px;
-  right: -16px;
+  top: -1px;
+  right: -24px;
+  padding: 16px 8px 8px;
   opacity: 0;
 
   .LegendItem:hover & {
-    @include opacity(1);
+    opacity: 1;
+  }
+}
+
+.ListItem-deleteButton {
+  visibility: hidden;
+  position: absolute;
+  top: -1px;
+  right: 0;
+  padding: 8px;
+  opacity: 0;
+
+  .ListItem:not(:first-child):hover & {
+    visibility: visible;
+    opacity: 1;
   }
 }
 
 .LegendItem-listFieldsOrder {
-  @include opacity(0);
   position: absolute;
-  top: 16px;
-  left: -19px;
+  top: -1px;
+  left: -24px;
+  padding: 16px 4px 8px;
+  opacity: 0;
+  cursor: move !important;
 
   .LegendItem:hover & {
-    @include opacity(1);
+    opacity: 1;
   }
 }
 
@@ -41,17 +69,17 @@
 }
 
 .LegendItem .Editor-fieldset {
-  @include display-flex();
-  @include justify-content(space-between);
+  display: flex;
+  justify-content: space-between;
 }
 
 .LegendItem .Editor-fieldset .Editor-formInner:nth-child(1) {
-  @include flex(0 100px);
+  flex: 0 100px;
   margin-right: 4px;
 }
 
 .LegendItem .Editor-fieldset .Editor-formInner:nth-child(2) {
-  @include flex(2);
+  flex: 2;
 }
 
 .LegendItems-container {

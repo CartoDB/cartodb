@@ -206,112 +206,111 @@ describe Table do
       end
 
       it "should create default associated map and layers" do
-        old_basemap_config = Cartodb.config[:basemaps]
-
-        # Basemap with no labels
-        Cartodb.config[:basemaps] = {
-          CartoDB: {
-            "waduson" => {
-              "default" => true,
-              "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              "subdomains" => "abcd",
-              "minZoom" => "0",
-              "maxZoom" => "18",
-              "name" => "Waduson",
-              "className" => "waduson",
-              "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-            }
-          }
-        }
-
-        visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-        table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
-        CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
-
-        map = table.map
-        map.should be
-        map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
-        map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
-        map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
-        map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
-        map.provider.should eq 'leaflet'
-        map.layers.count.should == 2
-        map.layers.map(&:kind).should == ['tiled', 'carto']
-        map.data_layers.first.infowindow["fields"].should == []
-        map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
-
-        map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        map.layers[0].options["subdomains"].should == "abcd"
-        map.layers[0].options["minZoom"].should == "0"
-        map.layers[0].options["maxZoom"].should == "18"
-        map.layers[0].options["name"].should == "Waduson"
-        map.layers[0].options["className"].should == "waduson"
-        map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        map.layers[0].order.should == 0
-
-        Cartodb.config[:basemaps] = old_basemap_config
-
-        map.visualization.overlays.count.should eq 5
-      end
-
-      it "should add a layer with labels if the baselayer has that option enabled" do
-        old_basemap_config = Cartodb.config[:basemaps]
-
-        # Basemap with labels on top
-        Cartodb.config[:basemaps] = {
-          CartoDB: {
-            "waduson" => {
-              "default" => true,
-              "url" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
-              "subdomains" => "abcd",
-              "minZoom" => "0",
-              "maxZoom" => "18",
-              "name" => "Waduson",
-              "className" => "waduson",
-              "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
-              "labels" => {
-                "url" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+        Cartodb.with_config(
+          basemaps: {
+            CartoDB: {
+              "waduson" => {
+                "default" => true,
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
+                "subdomains" => "abcd",
+                "minZoom" => "0",
+                "maxZoom" => "18",
+                "name" => "Waduson",
+                "className" => "waduson",
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
               }
             }
           }
-        }
+        ) do
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
-        table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
-        CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
+          visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
+          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
 
-        table.map.layers.count.should == 3
-        table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
+          map = table.map
+          map.should be
+          map.zoom.should eq Carto::Map::DEFAULT_OPTIONS[:zoom]
+          map.bounding_box_sw.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_sw]
+          map.bounding_box_ne.should eq Carto::Map::DEFAULT_OPTIONS[:bounding_box_ne]
+          map.center.should eq Carto::Map::DEFAULT_OPTIONS[:center]
+          map.provider.should eq 'leaflet'
+          map.layers.count.should == 2
+          map.layers.map(&:kind).should == ['tiled', 'carto']
+          map.data_layers.first.infowindow["fields"].should == []
+          map.data_layers.first.options["table_name"].should == "epaminondas_pantulis"
 
-        table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        table.map.layers[0].options["subdomains"].should == "abcd"
-        table.map.layers[0].options["minZoom"].should == "0"
-        table.map.layers[0].options["maxZoom"].should == "18"
-        table.map.layers[0].options["name"].should == "Waduson"
-        table.map.layers[0].options["className"].should == "waduson"
-        table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        table.map.layers[0].order.should == 0
+          map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
+          map.layers[0].options["subdomains"].should == "abcd"
+          map.layers[0].options["minZoom"].should == "0"
+          map.layers[0].options["maxZoom"].should == "18"
+          map.layers[0].options["name"].should == "Waduson"
+          map.layers[0].options["className"].should == "waduson"
+          map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          map.layers[0].order.should == 0
 
-        table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-        table.map.layers[2].options["url"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
-        table.map.layers[2].options["subdomains"].should == "abcd"
-        table.map.layers[2].options["minZoom"].should == "0"
-        table.map.layers[2].options["maxZoom"].should == "18"
-        table.map.layers[2].options["name"].should == "Waduson Labels"
-        table.map.layers[2].options["className"].should be_nil
-        table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
-        table.map.layers[2].options["type"].should == "Tiled"
-        table.map.layers[2].options["labels"].should be_nil
-        table.map.layers[2].order.should == 2
+          map.visualization.overlays.count.should eq 5
+        end
+      end
 
-        Cartodb.config[:basemaps] = old_basemap_config
+      it "should add a layer with labels if the baselayer has that option enabled" do
+        Cartodb.with_config(
+          basemaps: {
+            CartoDB: {
+              "waduson" => {
+                "default" => true,
+                "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png",
+                "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png",
+                "subdomains" => "abcd",
+                "minZoom" => "0",
+                "maxZoom" => "18",
+                "name" => "Waduson",
+                "className" => "waduson",
+                "attribution" => "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>",
+                "labels" => {
+                  "urlTemplate" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+                  "urlTemplate2x" => "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
+                }
+              }
+            }
+          }
+        ) do
+
+          visualizations = CartoDB::Visualization::Collection.new.fetch.to_a.length
+          table = create_table(name: "epaminondas_pantulis", user_id: @user.id)
+          CartoDB::Visualization::Collection.new.fetch.to_a.length.should == visualizations + 1
+
+          table.map.layers.count.should == 3
+          table.map.layers.map(&:kind).should == ['tiled', 'carto', 'tiled']
+
+          table.map.layers[0].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
+          table.map.layers[0].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png"
+          table.map.layers[0].options["subdomains"].should == "abcd"
+          table.map.layers[0].options["minZoom"].should == "0"
+          table.map.layers[0].options["maxZoom"].should == "18"
+          table.map.layers[0].options["name"].should == "Waduson"
+          table.map.layers[0].options["className"].should == "waduson"
+          table.map.layers[0].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[0].order.should == 0
+
+          table.map.layers[2].options["urlTemplate"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
+          table.map.layers[2].options["urlTemplate2x"].should == "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}@2x.png"
+          table.map.layers[2].options["subdomains"].should == "abcd"
+          table.map.layers[2].options["minZoom"].should == "0"
+          table.map.layers[2].options["maxZoom"].should == "18"
+          table.map.layers[2].options["name"].should == "Waduson Labels"
+          table.map.layers[2].options["className"].should be_nil
+          table.map.layers[2].options["attribution"].should == "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href= \"https://carto.com/attributions\">CARTO</a>"
+          table.map.layers[2].options["type"].should == "Tiled"
+          table.map.layers[2].options["labels"].should be_nil
+          table.map.layers[2].order.should == 2
+        end
       end
 
       it "should return a sequel interface" do
         table = create_table :user_id => @user.id
-        table.sequel.class.should == Sequel::Postgres::Dataset
+        table.sequel.is_a?(Sequel::Postgres::Dataset).should be_true
       end
 
       it "should have a privacy associated and it should be private by default" do
@@ -1340,6 +1339,7 @@ describe Table do
       end
 
       it "should add a the_geom column after importing a CSV" do
+        delete_user_data @user
         data_import = DataImport.create( :user_id       => @user.id,
                                          :data_source   => fake_data_path('twitters.csv') )
         data_import.run_import!
@@ -1350,6 +1350,54 @@ describe Table do
         table.rows_counted.should == 7
 
         table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
+      end
+
+      it "should not fail when the analyze is executed in update_table_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+        table.update_table_pg_stats
+        table.rows_counted.should == 7
+        @user.user_timeout = old_user_timeout
+        @user.database_timeout = old_user_db_timeout
+        @user.save
+      end
+
+      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+
+        begin
+          table.update_table_geom_pg_stats
+        ensure
+          @user.user_timeout = old_user_timeout
+          @user.database_timeout = old_user_db_timeout
+          @user.save
+        end
+
+        table.rows_counted.should == 7
       end
 
       it "should not drop a table that exists when upload fails" do
@@ -1743,24 +1791,6 @@ describe Table do
         table.name.should == 'exttable'
         table.rows_counted.should == 2
       end
-
-      it "create and migrate a table containing a valid the_geom" do
-        delete_user_data @user
-        @user.db_service.run_pg_query("CREATE TABLE exttable (cartodb_id INT, bed VARCHAR)")
-        @user.db_service.run_pg_query("SELECT public.AddGeometryColumn ('#{@user.database_schema}','exttable','the_geom',4326,'POINT',2);")
-        @user.db_service.run_pg_query("INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(10 14)',4326), 1, 'p');
-                           INSERT INTO exttable (the_geom, cartodb_id, bed) VALUES ( ST_GEOMETRYFROMTEXT('POINT(22 34)',4326), 2, 'p')")
-
-        data_import = DataImport.create( :user_id       => @user.id,
-                                         :migrate_table => 'exttable')
-        data_import.run_import!
-
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should == 'exttable'
-        table.rows_counted.should == 2
-        check_schema(table, [[:cartodb_id, "integer"], [:bed, "text"], [:the_geom, "geometry", "geometry", "point"]])
-      end
     end
 
     context "imports" do
@@ -1903,6 +1933,16 @@ describe Table do
 
     describe '#the_geom_conversions' do
       it 'tests the_geom conversions and expected results' do
+        def check_query_geometry(query, schema)
+          tablename = unique_name('table')
+          table = new_table(name: nil, user_id: @user.id)
+          table.migrate_existing_table = tablename
+          @user.db_service.run_pg_query("CREATE TABLE #{tablename} AS #{query}")
+          table.save
+          table.the_geom_type_value = nil # Reset geometry cache
+          check_schema(table, schema)
+        end
+
         # Empty table/default schema (no conversion)
         table = new_table(:name => 'one', :user_id => @user.id)
         table.save
@@ -1913,76 +1953,40 @@ describe Table do
         ])
 
         # latlong projection
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'two'
-        @user.db_service.run_pg_query('
-          CREATE TABLE two AS SELECT CDB_LatLng(0,0) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT CDB_LatLng(0,0) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point']
         ])
 
         # single multipoint, without srid
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'three'
-        @user.db_service.run_pg_query('
-          CREATE TABLE three AS SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)) AS the_geom;', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point'],
         ])
 
         # same as above (single multipoint), but with a SRID=4326 (latlong)
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'four'
-        @user.db_service.run_pg_query('
-          CREATE TABLE four AS SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Collect(ST_MakePoint(0,0),ST_MakePoint(1,1)),4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'point']
         ])
 
         # single polygon
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'five'
-        @user.db_service.run_pg_query('
-          CREATE TABLE five AS SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Buffer(ST_MakePoint(0,0),10), 4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'multipolygon']
         ])
 
         # single line
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'six'
-        @user.db_service.run_pg_query('
-          CREATE TABLE six AS SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom
-        ')
-        table.save
-        check_schema(table, [
+        check_query_geometry('SELECT ST_SetSRID(ST_Boundary(ST_Buffer(ST_MakePoint(0,0),10,1)), 4326) AS the_geom', [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'multilinestring']
         ])
 
         # field named "the_geom" being _not_ of type geometry
-        table = new_table(:name => nil, :user_id => @user.id)
-        table.migrate_existing_table = 'seven'
-        @user.db_service.run_pg_query(%Q{
-          CREATE TABLE seven AS SELECT 'wadus' AS the_geom;
-        })
-        table.save
-        check_schema(table, [
+        check_query_geometry("SELECT 'wadus' AS the_geom;", [
             [:cartodb_id, 'bigint'],
             [:the_geom, 'geometry', 'geometry', 'geometry'],
-            [:the_geom_str, 'unknown']
+            [:the_geom_str, 'text']
         ])
 
         # geometrycollection (concrete type) Unsupported
@@ -2183,6 +2187,24 @@ describe Table do
       end
     end
 
+    describe 'self.table_and_schema' do
+      it 'returns nil schema if schema is "public"' do
+        Table.table_and_schema("public.sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns the schema if it is different from "public"' do
+        Table.table_and_schema("manolito.sm_org_line_cartotest").should == ["sm_org_line_cartotest", "manolito"]
+      end
+
+      it 'returns the table name when there is no schema' do
+        Table.table_and_schema("sm_org_line_cartotest").should == ["sm_org_line_cartotest", nil]
+      end
+
+      it 'returns schema without quotes' do
+        Table.table_and_schema("\"user-hyphen\".table").should == ["table", "user-hyphen"]
+      end
+    end
+
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})
@@ -2215,22 +2237,6 @@ describe Table do
         pk_row1 = table.insert_row!(:name => 'name1')
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
-      end
-    end
-
-    describe '#public_values' do
-      it 'should work with a canonical visualizations that has two related tables' do
-        # Note: with Builder, this should not happen (canonical visualizations cannot be modified), for compatibility
-        # with older, migrated, canonical visualizations
-        main_table = create_table(user_id: @user.id)
-        aux_table = create_table(user_id: @user.id)
-
-        canonical_layer = main_table.layers.first
-        canonical_layer.options["query"] = "SELECT * FROM #{main_table.name} JOIN #{aux_table.name} ON true"
-        canonical_layer.save
-
-        main_table.public_values[:table_visualization][:related_tables].count.should eq 1
-        main_table.public_values[:table_visualization][:related_tables][0][:name].should eq aux_table.name
       end
     end
   end

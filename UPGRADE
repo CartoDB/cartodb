@@ -1,5 +1,32 @@
+Standard migration (default)
+----------------------------
+
+Unless stated otherwise, assume any new CARTO release requires calling these commands:
+
+ $ bundle exec rake db:migrate
+
+NOTES:
+ - Redis server must be listening on the configured port (see config/app_config.yml) for some of the steps below to work
+ - Rails must be restarted after an upgrade
+
+Extension migration
+-------------------
+
+Most CARTO releases need an updated cartodb-postgresql extension. After installing it, it must be upgraded in all existing databases:
+
+ $ bundle exec rake cartodb:db:upgrade_postgres_extension
+
+Specific version notes
+======================
+
+3.1.0 onwards
+-------------
+
+Upgrade notes are now kept in NEWS.md. Check the NOTICE section of the release you are upgrading to.
+
 3.0.0 -> 3.1.0
 --------------
+
 * Run rake task:
     bundle exec rake cartodb:overlays:create_overlays
 
@@ -11,28 +38,11 @@
 
 2.x -> 3.0.0
 ------------
+
 * Install CartoDB extension version 0.3.x
 * Run rake tasks:
   - bundle exec rake cartodb:db:create_default_vis_permissions
   - bundle exec rake cartodb:db:populate_permission_entity_id
-
-
-General notes
--------------
-
-NOTES:
- - Redis server must be listening on the configured
-   port (see config/app_config.yml) for some of the
-   steps below to work
- - Rails must be restarted after an upgrade
-
-
-Standard migration (default)
-----------------------------
-
-Unless stated otherwise, assume any new CartoDB release requires calling these commands:
-
- $ bundle exec rake db:migrate
 
 
 Mandatory migration

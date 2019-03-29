@@ -94,7 +94,8 @@ describe Carto::Api::ImportsController do
     response.code.should be == '200'
 
     import = JSON.parse(response.body)
-    import['state'].should be == 'stuck'
+    import['state'].should be == 'failure'
+    import['error_code'].should be 6671
   end
 
   it 'tries to import a tgz' do

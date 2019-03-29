@@ -1,0 +1,95 @@
+<% if @organization %>
+  <% content_for :title do %><%= @organization.name %><% end %>
+<% end %>
+
+<% content_for :js do %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
+<% end %>
+
+<div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
+  <div class="Sessions-content">
+    <div class="Sessions-inner">
+      <div class="Sessions-notloggedin is-active">
+        <div class="u-inner">
+          <div class="Sessions-left">
+            <div class="Sessions-logoContainer">
+              <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
+            </div>
+
+            <% if @mfa.needs_setup? %>
+              <div class="Sessions-centered Sessions-noMargin">
+                <img class="qr Sessions-toggle is-active" src="<%= @mfa.qr_code %>">
+                <div class="Sessions-sharedSecretContainer Sessions-toggle">
+                  <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-text--sharedSecret">
+                    <%= @mfa.shared_secret %>
+                  </p>
+                </div>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--qrCode Sessions-toggle is-active">
+                  Use Google Authenticator app to scan the QR code.
+                </p>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle is-active">
+                  If you have any problem with the QR code, please<br> <%= link_to 'try with a manual code', '#', class: 'js-sharedSecret-link' %>
+                </p>
+                <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description Sessions-text--code Sessions-toggle">
+                  If you have any problem, you can scan the QR code.<br> <%= link_to 'Try with the QR code', '#', class: 'js-sharedSecret-link' %>
+                </p>
+              </div>
+            <% end %>
+
+            <div class="Sessions-form">
+              <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>
+
+                <%= hidden_field_tag 'user_id', @user.id %>
+                <%= hidden_field_tag 'email', @user.username %>
+
+                <% if @flash_login_error %>
+                  <p class="CDB-Text CDB-Size-huge u-altTextColor u-tSpace--m u-justifyCenter Sessions-description" style="background: #f24440; border-radius: 4px; padding: 5px; color: #fff;">
+                    <%= raw @flash_login_error %>
+                  </p>
+                <% end %>
+
+                <div class="Sessions-field">
+                  <%= text_field_tag :code, "", :title => "Verification code", placeholder: "Verification code", class: "js-verification CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius" %>
+
+                  <% if @login_error %>
+                    <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
+                  <% end %>
+                </div>
+
+                <div class="Sessions-field">
+                  <p>
+                    <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
+                      <span class="js-Loading-text">Verify</span>
+                      <%= render :partial => 'shared/loading_animation' %>
+                    </button>
+                  </p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="Sessions-loggedin">
+        <div class="Spinner"></div>
+      </div>
+    </div>
+  </div>
+
+  <% if @mfa.needs_setup? %>
+    <%= form_tag CartoDB.path(self, 'multifactor_authentication_verify_code'), class: "js-Loading-form" do %>
+
+      <%= hidden_field_tag 'user_id', @user.id %>
+      <%= hidden_field_tag 'email', @user.username %>
+      <%= hidden_field_tag 'skip', true %>
+
+      <footer class="Sessions-footer">
+        <div class="u-inner">
+          <div class="Sessions-notloggedin is-active">
+            <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">If you have some issues with the configuration you can <%= link_to 'skip this step', '#', class: 'js-skipMfa-link' %></p>
+          </div>
+        </div>
+      </footer>
+    <% end %>
+  <% end %>
+</div>

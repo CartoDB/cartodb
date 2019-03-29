@@ -1,6 +1,6 @@
 <% content_for :settings_body do %>
   <div class="FormAccount-container js-OrganizationNotification">
-    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', {}, current_user) do |f| %>
+    <%= form_for @notification, url: CartoDB.url(self, 'new_organization_notification_admin', user: current_user) do |f| %>
       <%= csrf_meta_tags %>
 
       <div class="FormAccount-row FormAccount-row--smallMarginBottom">
@@ -44,7 +44,7 @@
         <div class="FormAccount-rowData js-send">
           <p class="Md-counter CDB-Text CDB-Size-medium u-secondaryTextColor u-rSpace--xl">140</p>
 
-          <button type="submit" class="OrganizationNotifications-button CDB-Button CDB-Button--primary is-disabled">
+          <button type="submit" class="OrganizationNotifications-button CDB-Button CDB-Button--primary is-disabled js-save">
             <div class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase u-flex">Send</div>
           </button>
         </div>

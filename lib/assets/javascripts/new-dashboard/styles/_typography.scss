@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:400,600');
+
+.text {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+.is-title {
+  font-size: 48px;
+  line-height: 64px;
+}
+
+.is-subheader {
+  font-size: 32px;
+  line-height: 48px;
+}
+
+.is-body {
+  font-size: 20px;
+  line-height: 32px;
+}
+
+.is-medium {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.is-caption {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.is-small {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.is-xsmall {
+  font-size: 10px;
+  line-height: 14px;
+}
+
+.is-regular {
+  font-weight: 400;
+}
+
+.is-semibold {
+  font-weight: 600;
+}
+
+.is-bold {
+  font-weight: 700;
+}
+
+.is-underline {
+  text-decoration: underline;
+}
+
+.letter-spacing {
+  letter-spacing: 1px;
+}

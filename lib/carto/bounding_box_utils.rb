@@ -40,10 +40,12 @@ module Carto::BoundingBoxUtils
   end
 
   def self.check_bounds_for(x, y)
-    return false if x.to_f > LIMIT_BOUNDS[:maxx].to_f || x.to_f < LIMIT_BOUNDS[:minx].to_f
-    return false if y.to_f > LIMIT_BOUNDS[:maxy].to_f || y.to_f < LIMIT_BOUNDS[:miny].to_f
+    return false if Float(x) > LIMIT_BOUNDS[:maxx].to_f || Float(x) < LIMIT_BOUNDS[:minx].to_f
+    return false if Float(y) > LIMIT_BOUNDS[:maxy].to_f || Float(y) < LIMIT_BOUNDS[:miny].to_f
     true
   rescue
+    # Reject coordinate values for which Float() conversion fails.
+    # e.g. nil values or Strings that do not contain just a valid numeric representation.
     false
   end
 end

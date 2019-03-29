@@ -1,0 +1,22 @@
+// Styles for Header Editor
+// --------------------------------------------------
+
+@import 'cdb-variables/sizes';
+@import 'cdb-variables/colors';
+
+.Editor-breadcrumb {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.Editor-breadcrumbItem {
+  &:hover {
+    .Editor-breadcrumbLink {
+      text-decoration: underline;
+    }
+  }
+}
+
+.Editor-breadcrumbSep {
+  margin-left: 4px;
+}

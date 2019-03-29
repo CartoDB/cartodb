@@ -4,54 +4,54 @@
 
 @import "compass/utilities/sprites/base";
 
- 
 // General Sprite Defaults
 // You can override them before you import this file.
 $map-sprite-base-class: ".map-sprite" !default;
 $map-sprite-dimensions: false !default;
- 
-$map-sprites: sprite-map("sprites/map/*.png",
-  $position:                         0%,
-  $spacing:                          0,
-  $repeat:                           no-repeat,
-  $readonly-spacing:                 0,
-  $map-wms-spacing:                  5px,
-  $map-cog-spacing:                  10px,
-  $map-plus-spacing:                 11px,
-  $map-toggle-slides-spacing:        11px,
+$map-sprites: sprite-map(
+  "sprites/map/*.png",
+  $position: 0%,
+  $spacing: 0,
+  $repeat: no-repeat,
+  $readonly-spacing: 0,
+  $map-wms-spacing: 5px,
+  $map-cog-spacing: 10px,
+  $map-plus-spacing: 11px,
+  $map-toggle-slides-spacing: 11px,
   $map-toggle-slides_active-spacing: 11px,
-  $map-slide_frame-spacing:          11px,
+  $map-slide_frame-spacing: 11px,
   $map-infowindow-edit-tools-spacing: 10px
 );
- 
+
 // All sprites should extend this class
 // The map-sprite mixin will do so for you.
 #{$map-sprite-base-class} {
   background: $map-sprites no-repeat;
 }
- 
+
 // Use this to set the dimensions of an element
 // based on the size of the original image.
 @mixin map-sprite-dimensions($name) {
-  @include sprite-dimensions($map-sprites, $name)
+  @include sprite-dimensions($map-sprites, $name);
 }
- 
+
 // Move the background position to display the sprite.
 @mixin map-sprite-position($name, $offset-x: 0, $offset-y: 0) {
-  @include sprite-position($map-sprites, $name, $offset-x, $offset-y)
+  @include sprite-position($map-sprites, $name, $offset-x, $offset-y);
 }
- 
+
 // Extends the sprite base class and set the background position for the desired sprite.
 // It will also apply the image dimensions if $dimensions is true.
 @mixin map-sprite($name, $dimensions: $map-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
   @extend #{$map-sprite-base-class};
-  @include sprite($map-sprites, $name, $dimensions, $offset-x, $offset-y)
+
+  @include sprite($map-sprites, $name, $dimensions, $offset-x, $offset-y);
 }
- 
+
 @mixin map-sprites($sprite-names, $dimensions: $map-sprite-dimensions, $prefix: sprite-map-name($map-sprites)) {
-  @include sprites($map-sprites, $sprite-names, $map-sprite-base-class, $dimensions, $prefix)
+  @include sprites($map-sprites, $sprite-names, $map-sprite-base-class, $dimensions, $prefix);
 }
- 
+
 // Generates a class for each sprited image.
 @mixin all-map-sprites($dimensions: $map-sprite-dimensions, $prefix: sprite-map-name($map-sprites)) {
   @include map-sprites(favorite important photos readonly symbolic-link system unreadable, $dimensions, $prefix);

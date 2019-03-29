@@ -97,21 +97,20 @@ module VisualizationsControllerHelper
     viz_locator.matches_visualization?(visualization) ? visualization : nil
   end
 
-  def generate_vizjson3(visualization, vector: false)
+  def generate_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_vizjson(https_request: is_https?, vector: vector)
+                                 .to_vizjson(https_request: is_https?)
   end
 
-  def generate_named_map_vizjson3(visualization, vector: false)
+  def generate_named_map_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_named_map_vizjson(https_request: is_https?, vector: vector)
+                                 .to_named_map_vizjson(https_request: is_https?)
   end
 
-  def generate_anonymous_map_vizjson3(visualization, vector: false)
+  def generate_anonymous_map_vizjson3(visualization)
     Carto::Api::VizJSON3Presenter.new(visualization)
-                                 .to_anonymous_map_vizjson(https_request: is_https?, vector: vector)
+                                 .to_anonymous_map_vizjson(https_request: is_https?)
   end
-
   private
 
   def get_priority_visualization_forcing_name(visualization_id, force_name: false, user_id: nil, organization_id: nil)

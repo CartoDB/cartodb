@@ -1,0 +1,38 @@
+{
+  "messages": [
+    {
+      "match": "Exception: (.*)$"
+    },
+    {
+      "match": "REMOTE ERROR: .*Error: (.*?)$"
+    },
+    {
+      "match": "ERROR: transform: (couldn't project point .*?)in executeQuery"
+    },
+    {
+      "match": "RuntimeError: Execution of function interrupted by signal",
+      "replaceWith": "timeout"
+    },
+    {
+      "match": "canceling statement due to statement timeout.*",
+      "replaceWith": "timeout"
+    },
+    {
+      "match": "^.*?PQconnectPoll: FATAL: no pg_hba.conf entry for host.*",
+      "replaceWith": "connect-poll"
+    },
+    {
+      "match": "^.*?column \"the_geom_webmercator\" does not exist.*",
+      "replaceWith": "without-geom-webmercator",
+      "errorType": "warning"
+    },
+    {
+      "match": "^.*?column \"cartodb_id\" does not exist.*",
+      "replaceWith": "without-cartodb-id",
+      "errorType": "warning"
+    },
+    {
+      "match": "ERROR: (column .*? does not exist)"
+    }
+  ]
+}

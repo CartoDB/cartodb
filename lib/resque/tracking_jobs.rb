@@ -5,13 +5,15 @@ require 'hubspot/events_api'
 module Resque
   module TrackingJobs
     module SendSegmentEvent
+      ANONYMOUS_SEGMENT_USER_ID = '00000000-0000-0000-0000-000000000000'.freeze
+
       @queue = :tracker
 
       def self.perform(user_id, name, properties)
         return unless segment_api_key = Cartodb.get_config(:segment, 'api_key')
 
         segment = Segment::Analytics.new(write_key: segment_api_key)
-        segment.track(user_id: user_id, event: name, properties: properties)
+        segment.track(user_id: user_id || ANONYMOUS_SEGMENT_USER_ID, event: name, properties: properties)
         segment.flush
       rescue => exception
         CartoDB::Logger.warning(message: 'Can\'t report to Segment',

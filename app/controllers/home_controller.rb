@@ -7,23 +7,23 @@ class HomeController < ApplicationController
   STATUS[true] = 'ok'
   STATUS[false] = 'error'
 
-  OS_VERSION = "Description:\tUbuntu 12.04"
-  PG_VERSION = 'PostgreSQL 9.5'.freeze
-  POSTGIS_VERSION = '2.2'.freeze
-  CDB_VALID_VERSION = '0.19'.freeze
-  CDB_LATEST_VERSION = '0.19.2'.freeze
-  REDIS_VERSION = '3'.freeze
-  RUBY_BIN_VERSION = 'ruby 2.2.3'.freeze
-  NODE_VERSION = 'v0.10'.freeze
+  OS_VERSION = "Description:\tUbuntu 16.04"
+  PG_VERSION = 'PostgreSQL 10'.freeze
+  POSTGIS_VERSION = '2.4'.freeze
+  CDB_VALID_VERSION = '0.25.0'.freeze
+  CDB_LATEST_VERSION = '0.25.0'.freeze
+  REDIS_VERSION = '4'.freeze
+  RUBY_BIN_VERSION = 'ruby 2.2'.freeze
+  NODE_VERSION = 'v6.9.2'.freeze
   GEOS_VERSION = '3.5.0'.freeze
-  GDAL_VERSION = '2.1'.freeze
+  GDAL_VERSION = '2.2'.freeze
 
-  WINDSHAFT_VALID_VERSION = '3.6'.freeze
-  WINDSHAFT_LATEST_VERSION = '3.6.0'.freeze
+  WINDSHAFT_VALID_VERSION = '6.1'.freeze
+  WINDSHAFT_LATEST_VERSION = '6.1.1'.freeze
   RUN_WINDSHAFT_INSTRUCTIONS = 'Run Windshaft: <span class="code">cd /Windshaft-cartodb && node app.js development'\
     '</span>'.freeze
-  SQL_API_VALID_VERSION = '1.45'.freeze
-  SQL_API_LATEST_VERSION = '1.45.1'.freeze
+  SQL_API_VALID_VERSION = '2.1'.freeze
+  SQL_API_LATEST_VERSION = '2.1.1'.freeze
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'.freeze
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque <span class="code">bundle exec script/resque</span>'.freeze
 
@@ -78,8 +78,8 @@ class HomeController < ApplicationController
     ['', [
       "Environment: #{environment}",
       "Subdomainless URLs: #{Cartodb.config[:subdomainless_urls]}",
-      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', {}, user)}",
-      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', {}, user)}"
+      "Sample Editor URL: #{CartoDB.url(self, 'datasets_index', user: user)}",
+      "Sample Editor APIs URL: #{CartoDB.url(self, 'api_v1_visualizations_index', user: user)}"
     ]]
   end
 

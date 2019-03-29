@@ -128,11 +128,11 @@ namespace :cartodb do
     def update_map_dataset_count
       offset = 0
       total_number_of_updates = 0
-      types_filter = [CartoDB::Visualization::Member::TYPE_DERIVED]
+      types_filter = [Carto::Visualization::TYPE_DERIVED]
       while (explore_visualizations = get_explore_visualizations(offset, types_filter)).length > 0
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch(ids: explore_visualization_ids)
+        visualizations = Carto::Visualization.where(id: explore_visualization_ids)
         visualizations.each do |vis|
           dataset_count = explore_api.get_map_layers(vis).length
           update_query = %[ UPDATE #{VISUALIZATIONS_TABLE} SET visualization_map_datasets = #{dataset_count} WHERE visualization_id = '#{vis.id}']
@@ -147,7 +147,13 @@ namespace :cartodb do
 
     def update_visualization_metadata(visualization, tables_data, likes, mapviews)
       table_data = tables_data[visualization.user_id].nil? ? {} : tables_data[visualization.user_id][visualization.name]
-      db_conn.run update_metadata_query(visualization, table_data, likes, mapviews)
+      query = update_metadata_query(visualization, table_data, likes, mapviews)
+      begin
+        db_conn.run query
+      rescue => err
+        STDERR.puts "ERROR updating metadata with query:\n#{query}"
+        raise
+      end
     end
 
     def update
@@ -189,7 +195,7 @@ namespace :cartodb do
         end
         explore_visualization_ids = explore_visualizations.map { |ev| ev[:visualization_id] }
 
-        visualizations = CartoDB::Visualization::Collection.new.fetch({ ids: explore_visualization_ids})
+        visualizations = Carto::Visualization.where(id: explore_visualization_ids)
 
         update_result = update_visualizations(visualizations, explore_visualizations_by_visualization_id, explore_visualization_ids)
         total_metadata_updated += update_result[:metadata_updated_count]
@@ -227,25 +233,30 @@ namespace :cartodb do
       metadata_updated_count = 0
       privated_visualization_ids = []
       visualizations.each do |v|
-        explore_visualization = explore_visualizations_by_visualization_id[v.id]
-        # We use to_i to remove the miliseconds that could give to erroneous updates
-        # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
-        if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
-          if v.privacy != CartoDB::Visualization::Member::PRIVACY_PUBLIC
-            privated_visualization_ids << v.id
+        begin
+          explore_visualization = explore_visualizations_by_visualization_id[v.id]
+          # We use to_i to remove the miliseconds that could give to erroneous updates
+          # http://railsware.com/blog/2014/04/01/time-comparison-in-ruby/
+          if v.updated_at.to_i != explore_visualization[:visualization_updated_at].to_i
+            if v.privacy != Carto::Visualization::PRIVACY_PUBLIC || !v.published?
+              privated_visualization_ids << v.id
+            else
+              updated = update_visualization(explore_visualization[:visualization_id], v)
+              full_updated_count += updated
+            end
           else
-            updated = update_visualization(explore_visualization[:visualization_id], v)
-            full_updated_count += updated
+            # INFO: retrieving mapviews makes this much slower
+            # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES
+            # in the last days
+            if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
+              table_data = explore_api.get_visualizations_table_data([v])
+              update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
+              metadata_updated_count += 1
+            end
           end
-        else
-          # INFO: retrieving mapviews makes this much slower
-          # We are only updating the visualizations that have received a liked since the DAYS_TO_CHECK_LIKES
-          # in the last days
-          if (@liked_visualizations.has_key?(v.id) || @mapviews_visualizations.has_key?(v.id))
-            table_data = explore_api.get_visualizations_table_data([v])
-            update_visualization_metadata(v, table_data, @liked_visualizations[v.id], @mapviews_visualizations[v.id])
-            metadata_updated_count += 1
-          end
+        rescue => err
+          STDERR.puts "ERROR updating visualization #{v.id}"
+          raise
         end
       end
       {
@@ -308,9 +319,9 @@ namespace :cartodb do
         per_page: BATCH_SIZE,
         order: :created_at,
         order_asc_desc: :asc,
-        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy: Carto::Visualization::PRIVACY_PUBLIC
       }
-      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
+      filter['types'] = [Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_DERIVED]
       filter[:min_created_at] = { date: min_created_at, included: true } if min_created_at
       filter[:min_updated_at] = { date: min_updated_at, included: true } if min_updated_at
       filter
@@ -322,9 +333,9 @@ namespace :cartodb do
         per_page: BATCH_SIZE,
         order: :user_id,
         order_asc_desc: :asc,
-        privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC
+        privacy: Carto::Visualization::PRIVACY_PUBLIC
       }
-      filter['types'] = [CartoDB::Visualization::Member::TYPE_CANONICAL, CartoDB::Visualization::Member::TYPE_DERIVED]
+      filter['types'] = [Carto::Visualization::TYPE_CANONICAL, Carto::Visualization::TYPE_DERIVED]
       filter
     end
 
@@ -362,7 +373,6 @@ namespace :cartodb do
 
       # We get strange errors from visualization without user so we need to check
       if user.nil?
-        CartoDB.notify_debug("Explore API: Visualization without user", visualization: visualization.id)
         return {}
       end
 
@@ -402,7 +412,7 @@ namespace :cartodb do
 
     def update_metadata_query(visualization, table_data, likes, mapviews)
       %[ UPDATE #{VISUALIZATIONS_TABLE} set
-            visualization_synced = #{!visualization.is_synced?}
+            visualization_synced = #{!visualization.synced?}
             #{update_mapviews(mapviews)}
             #{update_likes(likes)}
             #{update_tables(visualization)}
@@ -419,10 +429,10 @@ namespace :cartodb do
     end
 
     def update_tables(visualization)
-      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      if visualization.type == Carto::Visualization::TYPE_DERIVED
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}',
             visualization_map_datasets = #{explore_api.get_map_layers(visualization).length}]
-      elsif visualization.type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      elsif visualization.type == Carto::Visualization::TYPE_CANONICAL
         %[, visualization_table_names = '#{explore_api.get_visualization_tables(visualization)}']
       end
     end
@@ -433,7 +443,7 @@ namespace :cartodb do
       center_geometry = geometry_data[:center_geometry].nil? ? 'NULL' : geometry_data[:center_geometry]
       view_zoom = geometry_data[:zoom].nil? ? 'NULL' : geometry_data[:zoom]
       bbox_value = !visualization.bbox.nil? ? "ST_AsText('#{visualization.bbox}')" : 'NULL'
-      if visualization.type == CartoDB::Visualization::Member::TYPE_DERIVED
+      if visualization.type == Carto::Visualization::TYPE_DERIVED
         %[, visualization_bbox = #{bbox_value},
              visualization_view_box = #{view_box_polygon},
              visualization_view_box_center = #{center_geometry},
@@ -448,7 +458,7 @@ namespace :cartodb do
     # INFO Disable temporary becuase is really inefficient
     def update_table_data(visualization_type, table_data)
       return if table_data.blank?
-      if visualization_type == CartoDB::Visualization::Member::TYPE_CANONICAL
+      if visualization_type == Carto::Visualization::TYPE_CANONICAL
         %[ , visualization_table_rows = #{table_data[:rows]},
              visualization_table_size = #{table_data[:size]},
              visualization_geometry_types = '{#{table_data[:geometry_types].join(',')}}' ]

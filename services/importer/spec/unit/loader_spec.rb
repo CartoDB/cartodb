@@ -49,6 +49,8 @@ describe CartoDB::Importer2::Loader do
       ogr2ogr_mock.stubs(:duplicate_column?).returns(false)
       ogr2ogr_mock.stubs(:segfault_error?).returns(false)
       ogr2ogr_mock.stubs(:kml_style_missing?).returns(false)
+      ogr2ogr_mock.stubs(:missing_srs?).returns(false)
+      ogr2ogr_mock.stubs(:geometry_validity_error?).returns(false)
       ogr2ogr_mock.stubs(:exit_code).returns(0)
       ogr2ogr_mock.stubs(:run).returns(Object.new).at_least_once
 
@@ -95,6 +97,14 @@ describe CartoDB::Importer2::Loader do
     it 'initializes an ogr2ogr command wrapper if none passed' do
       loader  = CartoDB::Importer2::Loader.new(@job, @source_file)
       loader.ogr2ogr.class.name.should eq 'CartoDB::Importer2::Ogr2ogr'
+    end
+
+    it 'processes ogr2ogr generic errors' do
+      loader = CartoDB::Importer2::Loader.new(@job, @source_file)
+      loader.ogr2ogr.stubs(generic_error?: true, command: ['ogr2ogr', '-some', '-option'])
+      loader.send(:job).logger.stubs(:append)
+
+      expect { loader.send(:check_for_import_errors) }.to raise_error CartoDB::Importer2::LoadError
     end
   end
 

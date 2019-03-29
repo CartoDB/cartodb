@@ -77,7 +77,7 @@ module Carto
       private
 
       def validate_for_map(layer)
-        unless @map.can_add_layer?(current_user)
+        unless @map.can_add_layer?(current_user, layer)
           raise UnprocesableEntityError.new('Cannot add more layers to this visualization')
         end
         unless @map.admits_layer?(layer)
@@ -162,7 +162,7 @@ module Carto
       end
 
       def layer_attributes(param)
-        param.slice(:options, :kind, :infowindow, :tooltip, :order)
+        param.slice(:options, :kind, :infowindow, :tooltip, :order).permit!
       end
 
       def ensure_current_user

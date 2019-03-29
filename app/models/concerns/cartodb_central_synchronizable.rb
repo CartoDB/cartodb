@@ -1,9 +1,5 @@
-require_dependency 'carto/configuration'
-
 module Concerns
   module CartodbCentralSynchronizable
-    include Carto::Configuration
-
     # This validation can't be added to the model because if a user creation begins at Central we can't know if user is the same or existing
     def validate_credentials_not_taken_in_central
       return true unless self.is_a?(::User)
@@ -58,7 +54,7 @@ module Concerns
         end
       elsif is_a?(Organization)
         # See Organization#destroy_cascade
-        raise "Delete organizations is not allowed" if saas?
+        raise "Delete organizations is not allowed" if Carto::Configuration.saas?
         cartodb_central_client.delete_organization(name)
       end
       return true
@@ -78,7 +74,8 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled,
+           :password_expiration_in_d]
         when :update
           [:seats, :viewer_seats, :quota_in_bytes, :display_name, :description, :website,
            :discus_shortname, :twitter_username, :geocoding_quota, :map_view_quota,
@@ -90,10 +87,11 @@ module Concerns
            :obs_snapshot_quota, :obs_snapshot_block_price, :obs_general_quota,
            :obs_general_block_price, :salesforce_datasource_enabled, :geocoder_provider,
            :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo]
+           :mapzen_routing_quota, :mapzen_routing_block_price, :no_map_logo, :auth_github_enabled,
+           :password_expiration_in_d]
         end
       elsif is_a?(::User)
-        [:account_type, :admin, :crypted_password, :database_host,
+        [:account_type, :admin, :org_admin, :crypted_password, :database_host,
          :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
          :map_view_quota, :max_layers,
@@ -115,7 +113,9 @@ module Concerns
          :mobile_gis_extension, :mobile_max_open_users, :mobile_max_private_users,
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
-         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo]
+         :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
+         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role,
+         :password_reset_token, :password_reset_sent_at]
       end
     end
 
@@ -125,12 +125,13 @@ module Concerns
         when :create
           raise "Can't create organizations from editor"
         when :update
-          values.slice(:seats, :viewer_seats, :display_name, :description, :website,
-          :discus_shortname, :twitter_username, :auth_username_password_enabled, :auth_google_enabled)
+          values.slice(:seats, :viewer_seats, :display_name, :description, :website, :discus_shortname,
+                       :twitter_username, :auth_username_password_enabled, :auth_google_enabled,
+                       :password_expiration_in_d)
         end
       elsif self.is_a?(::User)
         attrs = values.slice(
-          :account_type, :admin, :crypted_password,
+          :account_type, :admin, :org_admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers,
@@ -145,8 +146,11 @@ module Concerns
           :soft_here_isolines_limit, :obs_snapshot_quota, :obs_snapshot_block_price, :soft_obs_snapshot_limit,
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
           :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
-          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit
+          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
+          :industry, :company, :phone, :job_role,
+          :password_reset_token, :password_reset_sent_at
         )
+        attrs[:multifactor_authentication_status] = multifactor_authentication_status
         case action
         when :create
           attrs[:remote_user_id] = self.id

@@ -8,9 +8,11 @@ require_relative '../../../services/datasources/lib/datasources'
 require_relative '../log'
 require_relative '../../../services/importer/lib/importer/unp'
 require_relative '../../../services/importer/lib/importer/post_import_handler'
+require_relative '../../../services/importer/lib/importer/overviews'
 require_relative '../../../lib/cartodb/errors'
 require_relative '../../../lib/cartodb/import_error_codes'
 require_relative '../../../services/platform-limits/platform_limits'
+
 require_dependency 'carto/configuration'
 
 include CartoDB::Datasources
@@ -96,7 +98,7 @@ module CartoDB
       end
 
       def synchronizations_logger
-        @@synchronizations_logger ||= ::Logger.new(log_file_path("synchronizations.log"))
+        @@synchronizations_logger ||= CartoDB.unformatted_logger(log_file_path("synchronizations.log"))
       end
 
       def interval=(seconds=3600)
@@ -180,6 +182,8 @@ module CartoDB
           raise "Couldn't instantiate synchronization user. Data: #{to_s}"
         end
 
+        raise "Can't run a synchronization for inactive user: #{user.username}" unless user.reload.active?
+
         if !authorize?(user)
           raise CartoDB::Datasources::AuthError.new('User is not authorized to sync tables')
         end
@@ -187,7 +191,8 @@ module CartoDB
         runner = service_name == 'connector' ? get_connector : get_runner
 
         database = user.in_database
-        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user)
+        overviews_creator = CartoDB::Importer2::Overviews.new(runner, user)
+        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user, overviews_creator)
 
         importer.run
         self.ran_at   = Time.now
@@ -263,7 +268,7 @@ module CartoDB
           downloader: downloader,
           log: log,
           user: user,
-          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
+          unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr]),
           post_import_handler: post_import_handler,
           importer_config: Cartodb.config[:importer]
         )
@@ -483,7 +488,7 @@ module CartoDB
       end
 
       def pg_options
-        Rails.configuration.database_configuration[Rails.env].symbolize_keys
+        SequelRails.configuration.environment_for(Rails.env)
           .merge(
             username:     user.database_username,
             password: user.database_password,
@@ -497,11 +502,15 @@ module CartoDB
         if options['binary'].nil? || options['csv_guessing'].nil?
           {}
         else
-          {
+          ogr_options = {
             ogr2ogr_binary:         options['binary'],
             ogr2ogr_csv_guessing:   options['csv_guessing'] && @type_guessing,
-            quoted_fields_guessing: @quoted_fields_guessing
+            quoted_fields_guessing: @quoted_fields_guessing,
           }
+          if options['memory_limit'].present?
+            ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
+          end
+          return ogr_options
         end
       end
 

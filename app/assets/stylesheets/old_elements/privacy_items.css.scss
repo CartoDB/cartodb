@@ -1,5 +1,5 @@
 
-  /**
+/**
    *  Privacy types styles
    *
    *  - PUBLIC
@@ -9,79 +9,108 @@
    *  - LOADING
    */
 
+@import "compass/css3/border-radius";
+@import "compass/css3/inline-block";
+@import "../table/table-sprite";
+@import "../old_common/mixins";
 
-  @import "compass/css3/border-radius";
-  @import "compass/css3/inline-block";
-  @import "compass/css3/opacity";
-  @import "../table/table-sprite";
-  @import "../old_common/mixins";
+.privacy-status {
+  display: inline-block;
+  width: auto;
+  min-width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 3px;
+  text-decoration: none;
+  vertical-align: top;
+  vertical-align: middle;
 
-  .privacy-status {
-    @include inline-block();
-    vertical-align: middle;
-    width:auto;
-    min-width:20px;
-    height:20px;
-    @include border-radius(3px);
+  @mixin privacy-disabled($color) {
+    opacity: 0.5;
+    background-color: rgba($color, 0.7);
+    cursor: default !important;
+  }
+
+  // Total shared users
+  span.shared_users {
+    display: flex;
+    align-items: center;
+    width: auto;
+    height: 20px;
+    margin: 0 0 0 20px;
+    padding: 0 6px 0 5px;
+    border-left: 1px solid rgba(black, 0.1);
+    color: rgba(black, 0.3);
+    font-family: Arial;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 20px;
     text-decoration: none;
-    border:0px;
+  }
 
-    // Total shared users
-    span.shared_users {
-      @include display-flex();
-      @include align-items(center, center);
-      width:auto;
-      height:20px;
-      line-height:20px;
-      margin:0 0 0 20px;
-      padding:0 6px 0 5px;
-      color:rgba(black,0.3);
-      border-left:1px solid rgba(black,0.1);
-      font-size:11px;
-      font-weight:bold;
-      font-family: Arial;
-      text-decoration:none;
+  &.public {
+    background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#97C341, 0.5);
+
+    &:hover {
+      background-color: rgba(#97C341, 0.7);
     }
 
-    @mixin privacy-disabled($color) {
-      @include opacity(0.5);
-      background-color:rgba($color, .7);
-      cursor:default!important;
-    }
-
-    &.public {
-      background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#97C341, .5);
-      &:hover { background-color:rgba(#97C341, .7) }
-      &.disabled { @include privacy-disabled(#97C341) }
-    }
-
-    &.link {
-      background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
-      &:hover { background-color:rgba(#FFA64D, .7) }
-      &.disabled { @include privacy-disabled(#FFA64D) }
-    }
-
-    &.password {
-      background: sprite($table-sprites, lock_key, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
-      &:hover { background-color:rgba(#FFA64D, .7) }
-      &.disabled { @include privacy-disabled(#FFA64D) }
-    }
-
-    &.organization {
-      background: sprite($table-sprites, lock_user, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, .5);
-      &:hover { background-color:rgba(#FFA64D, .7) }
-      &.disabled { @include privacy-disabled(#FFA64D) }
-    }
-
-    &.private {
-      background: sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FF7373, .5);
-      &:hover { background-color:rgba(#FF7373, .7) }
-      &.disabled { @include privacy-disabled(#FF7373) }
-    }
-
-    &.loading {
-      background: rgba(#FF7373, .5) image-url('layout/private_loader.gif') no-repeat;
-      background-size: 12px;
-      background-position: 50%;
+    &.disabled {
+      @include privacy-disabled(#97C341);
     }
   }
+
+  &.link {
+    background: sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, 0.5);
+
+    &:hover {
+      background-color: rgba(#FFA64D, 0.7);
+    }
+
+    &.disabled {
+      @include privacy-disabled(#FFA64D);
+    }
+  }
+
+  &.password {
+    background: sprite($table-sprites, lock_key, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, 0.5);
+
+    &:hover {
+      background-color: rgba(#FFA64D, 0.7);
+    }
+
+    &.disabled {
+      @include privacy-disabled(#FFA64D);
+    }
+  }
+
+  &.organization {
+    background: sprite($table-sprites, lock_user, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FFA64D, 0.5);
+
+    &:hover {
+      background-color: rgba(#FFA64D, 0.7);
+    }
+
+    &.disabled {
+      @include privacy-disabled(#FFA64D);
+    }
+  }
+
+  &.private {
+    background: sprite($table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat rgba(#FF7373, 0.5);
+
+    &:hover {
+      background-color: rgba(#FF7373, 0.7);
+    }
+
+    &.disabled {
+      @include privacy-disabled(#FF7373);
+    }
+  }
+
+  &.loading {
+    background: rgba(#FF7373, 0.5) image-url('layout/private_loader.gif') no-repeat;
+    background-position: 50%;
+    background-size: 12px;
+  }
+}

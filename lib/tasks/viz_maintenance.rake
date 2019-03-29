@@ -1,5 +1,6 @@
 require_relative "../../app/model_factories/layer_factory"
 require_relative "../../app/model_factories/map_factory"
+require 'carto/mapcapped_visualization_updater'
 
 namespace :cartodb do
   namespace :vizs do
@@ -9,11 +10,26 @@ namespace :cartodb do
       username = args[:username]
       raise "You should pass a username param" unless username
       user = ::User[username: username]
-      collection = CartoDB::Visualization::Collection.new.fetch(user_id: user.id)
+      collection = Carto::Visualization.where(user_id: user.id)
 
       collection.each do |viz|
         if inconsistent?(viz)
           delete_with_confirmation(viz)
+        end
+      end
+    end
+
+    desc "Purges broken canonical visualizations without related tables"
+    task :delete_inconsistent_canonical_viz_without_tables => :environment do |_|
+      Carto::Visualization.joins("left join user_tables ut on visualizations.map_id = ut.map_id").where("visualizations.type = 'table' and ut.id is null").find_each do |viz|
+        begin
+          puts "Checking for deletion --> User: #{viz.user.username} | Viz id: #{viz.id}"
+          if inconsistent_table?(viz)
+            puts "Deleting viz --> User: #{viz.user.username} | Viz id: #{viz.id}"
+            viz.destroy!
+          end
+        rescue => e
+          puts "Error deleting viz #{viz.id}: #{e}"
         end
       end
     end
@@ -39,14 +55,11 @@ namespace :cartodb do
       puts "Fetched ##{count} items"
       puts "> #{Time.now}"
 
-      vis_ids = vqb.pluck(:id)
-      vis_ids.each do |viz_id|
+      vqb.each do |vis|
         begin
           current += 1
 
-          # Sad, but using the Collection causes OOM, so instantiate one by one even if takes a while
-          vis = CartoDB::Visualization::Member.new(id: viz_id).fetch
-          vis.send(:save_named_map)
+          Carto::NamedMaps::Api.new(vis).upsert
           if current % 50 == 0
             print '.'
           end
@@ -62,58 +75,6 @@ namespace :cartodb do
       puts "\n> #{Time.now}\nFinished ##{count} items"
     end
 
-    desc "Outputs a visualization JSON. Usage example: `bundle exec rake cartodb:vizs:export_user_visualization_json['c54710aa-ad8f-11e5-8046-080027880ca6'] > c54710aa-ad8f-11e5-8046-080027880ca6.json`"
-    task :export_user_visualization_json, [:vis_id] => :environment do |_, args|
-      # Output is meant to be forwarded to a file, so we don't want logging output
-      ActiveRecord::Base.logger = nil
-      vis_id = args[:vis_id]
-      raise "vis_id argument missing" unless vis_id
-
-      puts Carto::VisualizationsExportService.new.export_to_json(Carto::Visualization.find(vis_id))
-    end
-
-    desc "Imports a visualization JSON from input (from export_user_visualization_json). Usage example: `cat c54710aa-ad8f-11e5-8046-080027880ca6.json | bundle exec rake cartodb:vizs:import_user_visualization_json['6950b745-5524-4d8d-9478-98a8a04d84ba']`. Ids are preserved, so if you want to import an existing visualization you must edit the JSON file and change the ids (any valid UUID will work)."
-    task :import_user_visualization_json, [:user_id] => :environment do |_, args|
-      json_string = STDIN.gets
-      json = JSON.parse(json_string)
-
-      user_id = args[:user_id]
-      raise "user_id argument missing" unless user_id
-
-      user = Carto::User.find(user_id)
-
-      json["owner"]["id"] = user_id
-      json["layers"].each do |layer|
-        if layer.fetch("options", {}).fetch("user_name", nil)
-          layer["options"]["user_name"] = user.username
-        end
-      end
-
-      Carto::VisualizationsExportService.new.restore_from_json(json)
-    end
-
-    desc "Exports/Backups a visualization"
-    task :export_user_visualization, [:vis_id] => :environment do |_, args|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      puts "Exporting visualization #{args[:vis_id]}..."
-      result = vis_export_service.export(args[:vis_id])
-      puts "Export result was: #{result ? 'OK' : 'NOK (export already present)'}"
-      puts "Export complete"
-    end
-
-    desc "Imports/Restores a visualization"
-    task :import_user_visualization, [:vis_id, :skip_version_check] => :environment do |_, args|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      skip_version_check = (args[:skip_version_check] == "true")
-
-      puts "Importing visualization data for uuid #{args[:vis_id]}"
-      vis_export_service.import(args[:vis_id], skip_version_check)
-
-      puts "Visualization #{args[:vis_id]} imported"
-    end
-
     desc "Exports a .carto file including visualization metadata and the tables"
     task :export_full_visualization, [:vis_id] => :environment do |_, args|
       visualization_id = args[:vis_id]
@@ -124,17 +85,6 @@ namespace :cartodb do
 
       file = Carto::VisualizationExport.new.export(visualization, visualization.user)
       puts "Visualization exported: #{file}"
-    end
-
-    desc "Purges old visualization backups"
-    task :purge_old_visualization_backups => :environment do |_|
-      vis_export_service = Carto::VisualizationsExportService.new
-
-      puts "Purging visualization backups older tan #{Carto::VisualizationsExportService::DAYS_TO_KEEP_BACKUP} days"
-
-      purged_count = vis_export_service.purge_old
-
-      puts "Purge complete. Removed #{purged_count} items"
     end
 
     desc "Updates visualizations auth tokens from named maps"
@@ -169,10 +119,69 @@ namespace :cartodb do
       end
     end
 
+    desc "Create analyses for all v3 visualizations"
+    task :create_analyses_for_v3_visualizations, [:dry] => :environment do |_, args|
+      include Carto::MapcappedVisualizationUpdater
+      dry = args[:dry] == '--dry'
+
+      puts "Adding analyses to v3 visualizations. Dry mode #{dry ? 'on' : 'off'}"
+
+      puts "=== STEP 1/2: Visualizations ==="
+      v3_no_analyses = Carto::Visualization.joins('LEFT JOIN analyses ON visualizations.id = analyses.visualization_id')
+                                           .where(version: 3, type: 'derived', analyses: { id: nil })
+
+      v3_no_analyses.find_each do |visualization|
+        begin
+          puts "Adding analyses to visualization #{visualization.id}"
+          visualization.add_source_analyses unless dry
+        rescue => e
+          puts "ERROR adding analyses to visualization #{visualization.id}: #{e.inspect}"
+        end
+      end
+
+      puts "=== STEP 2/2: Mapcaps ==="
+      mapcap_no_analyses = Carto::Mapcap.where("json_array_length(export_json->'visualization'->'analyses') = 0")
+
+      mapcap_no_analyses.find_each do |mapcap|
+        puts "Adding analyses to mapcap #{mapcap.id}"
+        unless dry
+          begin
+            rv = mapcap.regenerate_visualization
+
+            rv.data_layers.each_with_index do |layer, index|
+              analysis = Carto::Analysis.source_analysis_for_layer(layer, index)
+              rv.analyses << analysis
+              layer.options[:source] = analysis.natural_id
+              layer.options[:letter] = analysis.natural_id.first
+            end
+
+            mapcap.export_json = export_in_memory_visualization(rv, rv.user)
+            mapcap.save
+          rescue => e
+            puts "ERROR adding analyses to mapcap: #{mapcap.id}: #{e.inspect}"
+          end
+        end
+      end
+    end
+
+    desc "Restore visualization from backup"
+    task :restore_visualization, [:backup_id] => :environment do |_, args|
+      include Carto::VisualizationBackupService
+
+      backup_id = args[:backup_id]
+      visualization = restore_visualization_backup(backup_id)
+      puts "Error restoring visualization" if visualization.nil?
+      puts "Visualization #{visualization.id} restored" unless visualization.nil?
+    end
+
     private
 
     def inconsistent?(viz)
       (viz.table? && viz.related_tables.empty?) || (viz.derived? && viz.map.nil?)
+    end
+
+    def inconsistent_table?(viz)
+      (viz.user_table.nil? && viz.related_tables.empty?)
     end
 
     def delete_with_confirmation(viz)

@@ -1,0 +1,31 @@
+// Filter element styles
+// --------------------------------------------------
+
+.CDB-Widget-filter {
+  display: block;
+  max-height: 200px;
+  margin: $baseSize + 2 0 $baseSize;
+}
+
+.CDB-Widget-filterButtons {
+  @include display-flex();
+  @include justify-content(space-between, justify);
+  @include align-items(center);
+  transition: opacity 100ms ease-out;
+}
+
+.CDB-Widget-filterButtons.is-hidden {
+  opacity: 0;
+}
+
+.CDB-Widget-filterButton {
+  margin-right: $baseSize;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.CDB-Widget-filterButton.is-hidden {
+  display: none;
+}

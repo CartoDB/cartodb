@@ -1,26 +1,25 @@
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 
 .ScrollView {
-  @include display-flex();
-  @include flex-direction(column);
+  display: flex;
+  flex-direction: column;
   margin-top: -19px;
 
   &,
   .ScrollView-wrapper {
-    @include display-flex();
-    @include flex-direction(column);
-    @include flex(1);
+    display: flex;
     position: relative;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
     margin-right: -24px;
     margin-left: -24px;
     padding-right: 24px;
     padding-left: 24px;
-    min-height: 0;
   }
 
   .ScrollView-content {
-    @include flex(1);
+    flex: 1;
     padding: 18px 0;
   }
 }
@@ -29,15 +28,7 @@
   margin-top: 0;
 }
 
-.ie11-hotfix {
-  .ScrollView--horizontal {
-    /* Temporary hack. Apply necessary fixed height to parent .ie11-hotfix */
-    height: inherit;
-  }
-}
-
 .ScrollView--horizontal {
-
   &,
   & .ScrollView-wrapper {
     margin: 0;
@@ -58,12 +49,12 @@
 }
 
 .ScrollView-shadow {
-  @include transition(opacity, 400ms);
-  @include opacity(0);
   display: block;
   position: absolute;
-  pointer-events: none;
   z-index: 100;
+  transition: opacity 400ms;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .ScrollView-shadow--top,
@@ -75,14 +66,14 @@
 
 .ScrollView-shadow--top {
   top: 0;
-  background-image: linear-gradient(-180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 88%);
+  background-image: linear-gradient(-180deg, rgba(#000, 0.08), rgba(#000, 0) 88%);
 }
 
 .ScrollView-shadow--bottom {
   bottom: 0;
-  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 88%);
+  background-image: linear-gradient(0deg, rgba(#000, 0.08), rgba(#000, 0) 88%);
 }
 
 .ScrollView-shadow.is-visible {
-  @include opacity(1);
+  opacity: 1;
 }

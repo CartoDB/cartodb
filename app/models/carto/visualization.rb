@@ -4,6 +4,7 @@ require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/visualization_invalidation_service'
+require_dependency 'carto/visualization_backup_service'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -30,6 +31,7 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
+  include Carto::VisualizationBackupService
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -38,6 +40,8 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
 
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
 
@@ -45,26 +49,30 @@ class Carto::Visualization < ActiveRecord::Base
   PRIVACY_PRIVATE = 'private'.freeze
   PRIVACY_LINK = 'link'.freeze
   PRIVACY_PROTECTED = 'password'.freeze
+  PRIVACIES = [PRIVACY_LINK, PRIVACY_PROTECTED, PRIVACY_PUBLIC, PRIVACY_PRIVATE].freeze
 
   VERSION_BUILDER = 3
 
   V2_VISUALIZATIONS_REDIS_KEY = 'vizjson2_visualizations'.freeze
 
+  scope :remotes, -> { where(type: TYPE_REMOTE) }
+
   # INFO: disable ActiveRecord inheritance column
   self.inheritance_column = :_type
 
-  belongs_to :user, inverse_of: :visualizations, select: Carto::User::DEFAULT_SELECT
-  belongs_to :full_user, class_name: Carto::User, foreign_key: :user_id, primary_key: :id, inverse_of: :visualizations, readonly: true
+  belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
+  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, inverse_of: :visualizations,
+                                                primary_key: :id, foreign_key: :user_id
 
   belongs_to :permission, inverse_of: :visualization, dependent: :destroy
 
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy
+  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
   has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
 
-  has_many :overlays, order: '"order"', dependent: :destroy
+  has_many :overlays, -> { order(:order) }, dependent: :destroy, inverse_of: :visualization
 
   belongs_to :active_layer, class_name: Carto::Layer
 
@@ -76,15 +84,18 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :external_sources, class_name: Carto::ExternalSource
 
   has_many :analyses, class_name: Carto::Analysis
-  has_many :mapcaps, class_name: Carto::Mapcap, dependent: :destroy, order: 'created_at DESC'
+  has_many :mapcaps, -> { order('created_at DESC') }, class_name: Carto::Mapcap, dependent: :destroy
 
   has_one :state, class_name: Carto::State, autosave: true
 
   has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
 
-  validates :version, presence: true
+  validates :name, :privacy, :type, :user_id, :version, presence: true
+  validates :privacy, inclusion: { in: PRIVACIES }
+  validates :type, inclusion: { in: VALID_TYPES }
   validate :validate_password_presence
   validate :validate_privacy_changes
+  validate :validate_user_not_viewer, on: :create
 
   before_validation :set_default_version, :set_register_table_only
   before_create :set_random_id, :set_default_permission
@@ -94,13 +105,6 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-
-  # INFO: workaround for array saves not working. There is a bug in `activerecord-postgresql-array` which
-  # makes inserting including array fields to save, but updates work. Wo se insert without tags and add them
-  # with an update after creation. This is fixed in Rails 4.
-  before_create :delay_saving_tags
-  after_create :save_tags
-
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -196,12 +200,43 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def liked_by?(user_id)
-    likes_by_user_id(user_id).any?
+  def liked_by?(user)
+    likes_by_user(user).any?
   end
 
-  def likes_by_user_id(user_id)
-    likes.where(actor: user_id)
+  def likes_by_user(user)
+    likes.where(actor: user.id)
+  end
+
+  def add_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    likes.create!(actor: user.id)
+
+    self
+  rescue ActiveRecord::RecordNotUnique
+    raise AlreadyLikedError
+  end
+
+  def remove_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    item = likes.where(actor: user.id)
+    item.first.destroy unless item.first.nil?
+
+    self
+  end
+
+  def send_like_email(current_viewer, vis_preview_image)
+    if self.type == Carto::Visualization::TYPE_CANONICAL
+      ::Resque.enqueue(::Resque::UserJobs::Mail::TableLiked, self.id, current_viewer.id, vis_preview_image)
+    elsif self.type == Carto::Visualization::TYPE_DERIVED
+      ::Resque.enqueue(::Resque::UserJobs::Mail::MapLiked, self.id, current_viewer.id, vis_preview_image)
+    end
   end
 
   def is_viewable_by_user?(user)
@@ -210,6 +245,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def is_accesible_by_user?(user)
     is_viewable_by_user?(user) || password_protected?
+  end
+
+  def is_accessible_with_password?(user, password)
+    is_viewable_by_user?(user) || password_valid?(password)
   end
 
   def is_publically_accesible?
@@ -303,7 +342,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
   end
 
   def organization?
@@ -357,13 +396,14 @@ class Carto::Visualization < ActiveRecord::Base
   def has_read_permission?(user)
     user && (owner?(user) || (permission && permission.user_has_read_permission?(user)))
   end
+  alias :can_view_private_info? :has_read_permission?
 
   def estimated_row_count
-    table_service.nil? ? nil : table_service.estimated_row_count
+    user_table.try(:row_count)
   end
 
   def actual_row_count
-    table_service.nil? ? nil : table_service.actual_row_count
+    user_table.try(:actual_row_count)
   end
 
   def license_info
@@ -376,13 +416,9 @@ class Carto::Visualization < ActiveRecord::Base
     !is_privacy_private?
   end
 
-  def likes_count
-    likes.size
-  end
-
   def widgets
     # Preload widgets for all layers
-    ActiveRecord::Associations::Preloader.new(layers, :widgets).run
+    ActiveRecord::Associations::Preloader.new.preload(layers, :widgets)
     layers.map(&:widgets).flatten
   end
 
@@ -491,7 +527,7 @@ class Carto::Visualization < ActiveRecord::Base
   # deal with all the different the cases internally.
   # See https://github.com/CartoDB/cartodb/pull/9678
   def non_mapcapped
-    mapcapped? ? latest_mapcap.visualization : self
+    persisted? ? self : Carto::Visualization.find(id)
   end
 
   def mark_as_vizjson2
@@ -503,7 +539,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def open_in_editor?
-    !builder? && (uses_vizjson2? || layers.any?(&:gmapsbase?))
+    !builder? && uses_vizjson2?
   end
 
   def can_be_automatically_migrated_to_v3?
@@ -529,7 +565,7 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def is_owner?(user)
-    user.id == user_id
+    user && user.id == user_id
   end
 
   def unlink_from(user_table)
@@ -543,7 +579,9 @@ class Carto::Visualization < ActiveRecord::Base
   def invalidate_after_commit
     # This marks this visualization as affected by this transaction, so AR will call its `after_commit` hook, which
     # performs the actual invalidations. This takes this operation outside of the DB transaction to avoid long locks
-    raise 'invalidate_after_commit should be called within a transaction' if connection.open_transactions.zero?
+    if self.class.connection.open_transactions.zero?
+      raise 'invalidate_after_commit should be called within a transaction'
+    end
     add_to_transaction
     true
   end
@@ -576,6 +614,22 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
+  def synced?
+    synchronization.present?
+  end
+
+  def dependent_visualizations
+    user_table.try(:dependent_visualizations) || []
+  end
+
+  def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    return true if remote?
+
+    if map && !destroyed?
+      create_visualization_backup(visualization: self, category: category)
+    end
+  end
+
   private
 
   def generate_salt
@@ -589,12 +643,19 @@ class Carto::Visualization < ActiveRecord::Base
 
   def perform_invalidations
     invalidation_service.invalidate
+  rescue => e
+    # This is called at an after_commit. If there's any error, we won't notice
+    # but the after_commit chain stops.
+    # This was discovered during #12844, because "Updates changes even if named maps communication fails" test
+    # begun failing because Overlay#invalidate_cache invokes this method directly.
+    # We chose to log and continue to keep coherence on calls to this outside the callback.
+    CartoDB::Logger.error(message: "Error on visualization invalidation", exception: e, visualization_id: id)
   end
 
   def propagate_privacy_and_name_to
-    raise "Empty table sent to Visualization::Member propagate_privacy_and_name_to()" unless table
+    raise "Empty table sent to propagate_privacy_and_name_to()" unless table
     propagate_privacy if privacy_changed? && canonical?
-    propagate_name if name_changed?
+    propagate_name if name_was != name # name_changed? returns false positives in changes like a->A->a (sanitization)
   end
 
   def propagate_privacy
@@ -611,9 +672,10 @@ class Carto::Visualization < ActiveRecord::Base
     table.name = name
     if table.name != name
       # Sanitization. For example, spaces -> _
-      self.name = table.name
+      update_column(:name, table.name)
     end
     table.update(name: name)
+
     if name_changed?
       support_tables.rename(name_was, name, true, name_was)
     end
@@ -656,15 +718,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def delay_saving_tags
-    @cached_tags = tags
-    self.tags = nil
-  end
-
-  def save_tags
-    update_attribute(:tags, @cached_tags)
   end
 
   def password_digest(password, salt)
@@ -725,22 +778,58 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def backup_visualization
-    return true if remote?
-
-    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-      Carto::VisualizationsExportService.new.export(id)
+  def validate_user_not_viewer
+    if user.viewer
+      errors.add(:user, 'cannot be viewer')
     end
-  rescue => exception
-    # Don't break deletion flow
-    CartoDB::Logger.error(
-      message: 'Error backing up visualization',
-      exception: exception,
-      visualization_id: id
-    )
   end
 
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
+
+  class Watcher
+    # watcher:_orgid_:_vis_id_:_user_id_
+    KEY_FORMAT = "watcher:%s".freeze
+
+    # @params user Carto::User
+    # @params visualization Carto::Visualization
+    # @throws Carto::Visualization::WatcherError
+    def initialize(user, visualization, notification_ttl = nil)
+      raise WatcherError.new('User must belong to an organization') if user.organization.nil?
+      @user = user
+      @visualization = visualization
+
+      default_ttl = Cartodb.config[:watcher].present? ? Cartodb.config[:watcher].try("fetch", 'ttl', 60) : 60
+      @notification_ttl = notification_ttl.nil? ? default_ttl : notification_ttl
+    end
+
+    # Notifies that is editing the visualization
+    # NOTE: Expiration is handled internally by redis
+    def notify
+      key = KEY_FORMAT % @visualization.id
+      $tables_metadata.multi do
+        $tables_metadata.hset(key, @user.username, current_timestamp + @notification_ttl)
+        $tables_metadata.expire(key, @notification_ttl)
+      end
+    end
+
+    # Returns a list of usernames currently editing the visualization
+    def list
+      key = KEY_FORMAT % @visualization.id
+      users_expiry = $tables_metadata.hgetall(key)
+      now = current_timestamp
+      users_expiry.select { |_, expiry| expiry.to_i > now }.keys
+    end
+
+    private
+
+    def current_timestamp
+      Time.now.getutc.to_i
+    end
+  end
+
+  class WatcherError < CartoDB::BaseCartoDBError; end
+  class AlreadyLikedError < StandardError; end
+  class UnauthorizedLikeError < StandardError; end
 end

@@ -1,0 +1,12 @@
+<div class="sqlview">
+  <p class="displaced <% if(warnMsg) print("warn") %>">
+    <% if (!empty) { %>
+      <% if (warnMsg) { %>
+        <%- warnMsg %> ·
+      <% } %>
+      <a href="#/export-query" class="export_query">create dataset from query</a> or <a href="#/clear-view" class="clearview">clear view</a>
+    <% } else { %>
+      No resulting rows for this query, <a href="#/clear-view" class="clearview">clear this sql view</a>
+    <% } %>
+  </p>
+</div>

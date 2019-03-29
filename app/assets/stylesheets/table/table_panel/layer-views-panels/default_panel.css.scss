@@ -1,6 +1,6 @@
 
 
-  /**
+/**
    *  Default styles for layer panels.
    *
    *  - Info doc icon.
@@ -9,156 +9,178 @@
    *
    */
 
-  @import "compass/css3/border-radius";
-  @import "compass/css3/images";
-  @import "../../../table/table-sprite";
-  @import "../../../old_common/mixins";
+@import "compass/css3/border-radius";
+@import "compass/css3/images";
+@import "../../../table/table-sprite";
+@import "../../../old_common/mixins";
 
-  
-  
-  .layer-views {
+.layer-views {
 
-    // Info doc icon
-    a.doc_info {
-      position:absolute;
-      top:22px;
-      right:21px;
-      width:16px;
-      height:16px;
-      padding:0!important;
-      line-height:16px;
-      font-size:12px;
-      color:white;
-      text-align:center;
-      @include border-radius(20px);
-      background:#E5E5E5;
-      border:none;
-      &:hover {
-        text-decoration:none;
-        background:#AAA;
-      }
+  // Info doc icon
+  a.doc_info {
+    position: absolute;
+    top: 22px;
+    right: 21px;
+    width: 16px;
+    height: 16px;
+    padding: 0 !important;
+    border: none;
+    border-radius: 20px;
+    background: #E5E5E5;
+    color: white;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+
+    &:hover {
+      background: #AAA;
+      text-decoration: none;
+    }
+
+    &:active {
+      background: #898989;
+    }
+  }
+
+  // Actions block for each layer
+  // - Undo
+  // - Redo
+  // - Apply
+  // - ...etc
+  div.actions {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 38px;
+    padding: 20px 20px 20px 56px;
+    border-top: 1px solid rgba(#999, 0.25);
+
+    a.next,
+    a.back {
+      width: 30px;
+      height: 25px;
+      margin: 4px 0 0;
+      padding: 0;
+
+      @include text-indent();
+    }
+
+    a.next {
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+
+      @include text-indent();
+      @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
+      @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
+
+      &:hover,
       &:active {
-        background:#898989;
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
+        @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
       }
     }
 
+    a.back {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
 
-    // Actions block for each layer
-    // - Undo
-    // - Redo
-    // - Apply
-    // - ...etc
-    div.actions {
-      position:absolute;
-      bottom:0;
-      left:0;
-      right:0;
-      padding:20px 20px 20px 56px;
-      display:block;
-      height:38px;
-      border-top:1px solid rgba(#999999,0.25);
-      z-index:1;
+      @include text-indent();
+      @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
+      @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
 
-      a.next, a.back {
-        margin: 4px 0 0 0;
-        @include text-indent();
-        padding:0;
-        height:25px;
-        width:30px;
+      &:hover,
+      &:active {
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
       }
+    }
 
-      a.next {
-        @include border-left-radius(0);
-        @include text-indent();
+    a.disabled {
+      opacity: 0.6;
+
+      &.next,
+      &.next:active,
+      &.next:hover {
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-        border-left:0;
-
-        &:hover, &:active {
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
-        }
       }
 
-      a.back {
-        @include border-right-radius(0);
-        @include text-indent();
-        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB); //IE
+      &.back,
+      &.back:active,
+      &.back:hover {
+        @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
         @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-
-        &:hover, &:active {
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #DEDEDE);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#DEDEDE) 0 0);
-        }
       }
-
-      a.disabled {
-        opacity:0.6;
-
-        &.next, &.next:active, &.next:hover {
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat #F9F9F9);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:-38, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-        }
-        &.back, &.back:active, &.back:hover {
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat #EBEBEB);//IE
-          @include background(sprite($table-sprites, unredo, $offset-x:9, $offset-y:9) no-repeat, linear-gradient(#F9F9F9,#EBEBEB) 0 0);
-        }
-      }
-
-      a.clearview {margin-right:18px;}
-
-      button {margin:0;}
     }
 
+    a.clearview {
+      margin-right: 18px;
+    }
 
-    // Info block when action is done
-    // - Error
-    // - Success
-    // - Warning
-    // - ...etc
-    div.info {
-      display:none;
-      position:absolute;
-      bottom:78px;
-      right:0;
-      left:0;
-      max-height:30%;
-      padding:17px 17px 17px 52px;
-      background:#FFF7E0;
-      color:#888;
-      z-index:2;
-      font-size:13px;
-      border-top:1px solid #EBDCE0;
-      letter-spacing:0;
+    button {
+      margin: 0;
+    }
+  }
+
+  // Info block when action is done
+  // - Error
+  // - Success
+  // - Warning
+  // - ...etc
+  div.info {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 78px;
+    left: 0;
+    max-height: 30%;
+    padding: 17px 17px 17px 52px;
+    border-top: 1px solid #EBDCE0;
+    background: #FFF7E0;
+    color: #888;
+    font-size: 13px;
+    letter-spacing: 0;
+
+    p {
+      display: inline-block;
+      color: #666;
+      letter-spacing: 0;
+      line-height: 17px;
+      word-wrap: break-word;
+    }
+
+    &.error {
+      background: rgba(#FFD7E3, 0.5);
 
       p {
-        display:inline-block;
-        letter-spacing:0;
-        line-height:17px;
-        word-wrap: break-word;
-        color:#666666;
-      }
-
-      &.error {
-        background:rgba(#FFD7E3,0.5);
-        p {color:#EB2466;}
-      }
-
-      &.warning {
-        display:block;
-        bottom:0;
-        height:auto;
-        max-height:none;
-        padding:0;
-        z-index:1001; // Filter shadow forces me to do it :S
-
-        p { padding:20px 30px }
-
-        &.editor {
-          bottom:79px;
-          p { padding-left:56px }
-        }
+        color: #EB2466;
       }
     }
 
+    &.warning {
+      display: block;
+      z-index: 1001; // Filter shadow forces me to do it :S
+      bottom: 0;
+      height: auto;
+      max-height: none;
+      padding: 0;
+
+      p {
+        padding: 20px 30px;
+      }
+
+      &.editor {
+        bottom: 79px;
+
+        p {
+          padding-left: 56px;
+        }
+      }
+    }
   }
+}

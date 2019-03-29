@@ -16,11 +16,11 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   # Upon creation, no rate limit checks
   def create
+    return head(401) unless current_user.sync_tables_enabled || @external_source
+
     @stats_aggregator.timing('synchronizations.create') do
 
       begin
-        external_source = nil
-
         member_attributes = setup_member_attributes
         member = Synchronization::Member.new(member_attributes)
         member = @stats_aggregator.timing('member.save') do
@@ -39,6 +39,15 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
         end
 
         ::Resque.enqueue(::Resque::ImporterJobs, job_id: data_import.id)
+
+        # Need to mark the synchronization job as queued state.
+        # If this is missed there is an error state that can be
+        # achieved where the synchronization job can never be
+        # manually kicked off ever again.  This state will occur if the
+        # resque job fails to mark the synchronization state to success or
+        # failure (ie: resque never runs, or bug in ImporterJobs code)
+        member.state = Synchronization::Member::STATE_QUEUED
+        member.store
 
         response = {
           data_import: {
@@ -151,7 +160,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
       name:                   params[:table_name],
       user_id:                current_user.id,
       state:                  Synchronization::Member::STATE_CREATED,
-      # Keep in sync with https://carto.com/docs/carto-engine/import-api/sync-tables/#params-1
+      # Keep in sync with https://carto.com/developers/import-api/guides/sync-tables/#params-1
       type_guessing:          !["false", false].include?(params[:type_guessing]),
       quoted_fields_guessing: !["false", false].include?(params[:quoted_fields_guessing]),
       content_guessing:       ["true", true].include?(params[:content_guessing])
@@ -226,8 +235,8 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
   end
 
   def get_external_source(remote_visualization_id)
-    external_source = CartoDB::Visualization::ExternalSource.where(visualization_id: remote_visualization_id).first
-    unless remote_visualization_id.present? && external_source.importable_by(current_user)
+    external_source = Carto::ExternalSource.where(visualization_id: remote_visualization_id).first
+    unless remote_visualization_id.present? && external_source.importable_by?(current_user)
       raise CartoDB::Datasources::AuthError.new('Illegal external load')
     end
     external_source

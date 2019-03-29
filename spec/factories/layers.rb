@@ -12,14 +12,15 @@ FactoryGirl.define do
     options do
       {
         "default": true,
-        "url": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "url": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "subdomains": "abcd",
         "minZoom": "0",
         "maxZoom": "18",
         "attribution": "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors \u00a9 <a href=\"https://carto.com/attributions\">CARTO</a>",
-        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png",
+        "urlTemplate": "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         "type": "Tiled",
-        "name": "Positron Labels"
+        "className": "positron_rainbow",
+        "name": "Positron (labels below)"
       }
     end
   end
@@ -45,7 +46,7 @@ FactoryGirl.define do
         "alternative_names": {},
         "width": 226,
         "maxHeight": 180
-      }.to_json
+      }
 
       infowindow infowindow_light
     end
@@ -57,7 +58,7 @@ FactoryGirl.define do
         "template": "",
         "alternative_names": {},
         "maxHeight": 180
-      }.to_json
+      }
 
       tooltip tooltip_light
     end
@@ -93,7 +94,7 @@ module Fixtures
 
       # These depend on tooltip_light.jst.mustache at the following paths:
       # - /lib/assets/javascripts/cartodb/table/views/tooltip/templates/tooltip_light.jst.mustache
-      # - /lib/assets/javascripts/cartodb3/mustache-templates/tooltips/tooltip_light.jst.mustache
+      # - /lib/assets/javascripts/builder/mustache-templates/tooltips/tooltip_light.jst.mustache
       def v2_tooltip_light_template_fragment
         '<div class="cartodb-tooltip-content-wrapper">'
       end
@@ -105,7 +106,7 @@ module Fixtures
 
     # These depend on infowindow_light.jst.mustache at the following paths:
     # - /lib/assets/javascripts/cartodb/table/views/infowindow/templates/infowindow_light.jst.mustache
-    # - /lib/assets/javascripts/cartodb3/mustache-templates/infowindows/infowindow_light.jst.mustache
+    # - /lib/assets/javascripts/builder/mustache-templates/infowindows/infowindow_light.jst.mustache
     module Infowindows
       def custom_infowindow(template = 'wadus infowindow')
         {

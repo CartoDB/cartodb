@@ -11,7 +11,7 @@ module CartoDB
       GPX_LAYERS = ['waypoints', 'routes', 'tracks', 'route_points', 'track_points']
       ITEM_COUNT_REGEX = 'Feature Count:\s'
       OGRINFO_BINARY = 'ogrinfo'
-      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr2'
+      DEFAULT_OGR2OGR_BINARY = 'ogr2ogr'.freeze
 
       def self.support?(source_file)
         source_file.extension == '.gpx'
@@ -20,7 +20,11 @@ module CartoDB
       def initialize(source_file, temporary_directory, ogr2ogr_config = nil)
         @source_file = source_file
         @temporary_directory = temporary_directory
-        @ogr2ogr_binary = @ogr2ogr_config.nil? ? DEFAULT_OGR2OGR_BINARY : ogr2ogr_config['binary']
+        @ogr2ogr_binary = if ogr2ogr_config && ogr2ogr_config['binary'].present?
+                            `#{ogr2ogr_config['binary']}`.strip
+                          else
+                            DEFAULT_OGR2OGR_BINARY
+                          end
       end
 
       def run

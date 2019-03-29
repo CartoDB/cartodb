@@ -1,7 +1,8 @@
 <script>
   window._trackJs = {
     enabled: <%= enabled ? 'true' : 'false' %>,
-    application: '<%= app_key %>'
+    application: '<%= app_key %>',
+    version: '<%= version %>'
     <% if current_user.present? %>
       , userId: '<%= current_user.username %>'
     <% end %>

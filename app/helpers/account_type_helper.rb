@@ -9,6 +9,10 @@ module AccountTypeHelper
     plan_name(account_type).gsub(' - Monthly', '').gsub(' - Annual', '')
   end
 
+  def plan_name_no_trial(account_type)
+    plan_name(account_type).gsub(' Trial', '')
+  end
+
   def public_plan_name(account_type)
     PUBLIC_PLAN_NAME.fetch(account_type)
   end
@@ -17,24 +21,27 @@ module AccountTypeHelper
 
   PUBLIC_PLAN_NAME = {
     'FREE' => 'Free',
-    'BASIC' => 'Personal',
-    'BASIC LUMP-SUM' => 'Personal Lump-Sum'
+    'PERSONAL30' => 'Professional Trial',
+    'BASIC' => 'Professional',
+    'BASIC LUMP-SUM' => 'Professional Lump-Sum',
+    'ENTERPRISE' => 'Enterprise'
   }.freeze
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free',
-    'BASIC' => 'Personal',
-    'BASIC LUMP-SUM' => 'Personal',
-    'BASIC ACADEMIC' => 'Personal Non-Profit',
-    'BASIC NON-PROFIT' => 'Personal Non-Profit',
-    'BASIC LUMP-SUM ACADEMIC' => 'Personal Non-Profit',
-    'BASIC LUMP-SUM NON-PROFIT' => 'Personal Non-Profit',
+    'PERSONAL30' => 'Professional Trial',
+    'BASIC' => 'Professional',
+    'BASIC LUMP-SUM' => 'Professional',
+    'BASIC ACADEMIC' => 'Professional Non-Profit',
+    'BASIC NON-PROFIT' => 'Professional Non-Profit',
+    'BASIC LUMP-SUM ACADEMIC' => 'Professional Non-Profit',
+    'BASIC LUMP-SUM NON-PROFIT' => 'Professional Non-Profit',
     'Enterprise Builder - Annual' => 'Enterprise',
     'Enterprise Builder - On-premises - Annual' => 'Enterprise',
     'Cloud Engine & Enterprise Builder - Annual' => 'Enterprise',
-    'Internal use engine - Cloud - Annual' => 'Internal',
-    'Internal use engine - On-premises - Annual' => 'Internal',
-    'Internal use engine - On-premises Lite - Annual' => 'Internal',
+    'Internal use engine - Cloud - Annual' => 'Enterprise Engine',
+    'Internal use engine - On-premises - Annual' => 'Enterprise Engine',
+    'Internal use engine - On-premises Lite - Annual' => 'Enterprise Engine',
     'OEM engine - Cloud - Annual' => 'Enterprise',
     'OEM engine - On-premises - Annual' => 'Enterprise',
     'PARTNERS' => 'Partner',

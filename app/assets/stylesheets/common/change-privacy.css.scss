@@ -1,4 +1,3 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 
@@ -6,85 +5,102 @@
   padding: 20px 0;
   background: #F0F7FC;
 }
+
 .UpgradeElement.ChangePrivacy-upgradeBannerInner {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 $sMargin-group;
   padding: 0;
-  background: none;
   border: none;
+  background: none;
 }
+
 .ChangePrivacy-shareBanner {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .ChangePrivacy-shareBannerIcon {
   margin-right: $sMargin-elementInline;
 }
+
 .ChangePrivacy-startFooter {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(stretch);
-  @include align-content(space-between, justify);
+  display: flex;
+  align-content: space-between;
+  align-items: stretch;
+  justify-content: center;
 }
+
 .ChangePrivacy-shareHeader {
-  @include display-flex();
-  @include justify-content(flex-start);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   border-top: none; // override Dialog-body default
 }
+
 .ChangePrivacy-shareHeaderBackIcon {
   margin-right: $sMargin-element;
 }
+
 .ChangePrivacy-passwordInput {
   position: absolute;
-  left: 9px;
   bottom: 9px;
+  left: 9px;
   width: 172px;
-  outline:none;
+  outline: none;
 }
+
 .ChangePrivacy-shareListItem {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
-  padding-bottom: $sMargin-element;
-  padding-top: $sMargin-element;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 auto;
+  padding-top: $sMargin-element;
+  padding-bottom: $sMargin-element;
 }
-.ChangePrivacy-shareListItem:not(:nth-child(1)) { border-top: 1px solid $cStructure-mainLine }
+
+.ChangePrivacy-shareListItem:not(:nth-child(1)) {
+  border-top: 1px solid $cStructure-mainLine;
+}
+
 .ChangePrivacy-shareListItemInfo {
-  @include display-flex();
-  @include justify-content(flex-start);
+  display: flex;
+  justify-content: flex-start;
   max-width: 400px;
 }
+
 .ChangePrivacy-shareListItemToggler {
   margin-right: 8px;
 }
+
 .ChangePrivacy-shareListItemTogglerContainer {
   margin-right: 30px;
 }
+
 .ChangePrivacy-shareListItemIcon {
   margin-right: $sMargin-elementInline;
 }
+
 .ChangePrivacy-infoIcon {
-  @include display-flex();
-  @include justify-content(center);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 21px;
   height: 21px;
-  color: white;
-  background-color: #F6D35C;
+  margin-right: $sMargin-elementInline;
   border: 1px solid #F2C000;
   border-radius: 30px;
-  margin-right: $sMargin-elementInline;
+  background-color: #F6D35C;
+  color: WHITE;
 }
+
 .ChangePrivacy-shareFooter {
-  height: 97px;
+  display: flex;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  height: 97px;
   background-color: $cStructure-grayBkg;
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
 }

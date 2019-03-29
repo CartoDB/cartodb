@@ -1,0 +1,11 @@
+<div class='oauth-form__avatars'>
+  <% if @oauth_app %>
+    <img class='oauth-form__avatar-image' src="<%= @oauth_app.icon_url %>" alt="<%= @oauth_app.name %>" />
+  <% else %>
+    <img class='oauth-form__avatar-image' src="<%= image_path "oauth_provider/unknown_app_avatar.svg" %>" alt="Unknown app avatar">
+  <% end %>
+  <% if current_viewer %>
+    <img src="<%= image_path "oauth_provider/arrows_connect.svg" %>" alt="Arrows connect">
+    <img class='oauth-form__avatar-image' src="<%= current_viewer.avatar %>" alt="<%= current_viewer.username %>" />
+  <% end %>
+</div>

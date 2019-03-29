@@ -11,7 +11,7 @@ module Carto
             "fixed" => 7
           },
           "color" => {
-            "fixed" => "#FFB927",
+            "fixed" => "#EE4D5A",
             "opacity" => 0.9
           }
         },
@@ -20,7 +20,7 @@ module Carto
             "fixed" => 1
           },
           "color" => {
-            "fixed" => "#FFF",
+            "fixed" => "#FFFFFF",
             "opacity" => 1
           }
         },

@@ -1,0 +1,322 @@
+{
+  "MapCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "views": "{views} views (30 days)",
+    "sharedBy": "Shared by {owner}",
+    "noDescription": "No description",
+    "noTags": "No tags",
+    "lastUpdate": "Updated {date} ago",
+    "tags": "tags"
+  },
+  "MapListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "views": "Views (30d)",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
+  "QuickActions": {
+    "title": "Quick actions",
+    "editInfo": "Edit name & description",
+    "manageTags": "Manage tags",
+    "createMap": "Create map",
+    "changePrivacy": "Change privacy",
+    "share": "Share with colleagues",
+    "duplicate": "Duplicate",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "delete": "Delete"
+  },
+  "BulkActions": {
+    "selected": "{count} selected",
+    "maps": {
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    },
+    "datasets": {
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "createMap": "Create map",
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    }
+  },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your Public Datasets",
+        "link": "Your Link-shared Datasets",
+        "password": "Your Password-protected Datasets",
+        "private": "Your Private Datasets"
+      }
+    },
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, connect, or create your first dataset",
+      "description": "Bring your location data to CARTO so that you can visualise it and start predicting key insights. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
+      "createDataset": "Create your first dataset"
+    },
+    "emptyCase": {
+      "default": "There are no datasets here.",
+      "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
+    }
+  },
+  "MapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Maps",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
+        "locked": "Your Locked Maps",
+        "public": "Your Public Maps",
+        "link": "Your Link-shared Maps",
+        "password": "Your Password-protected Maps",
+        "private": "Your Private Maps"
+      }
+    },
+    "createMap": "New Map",
+    "zeroCase": {
+      "title": "Create your first map to predict key insights",
+      "description": "Build your first Location Intelligence app and start predicting key insights from your location data with our drag and drop tool for analysts and business users. Learn about Builder <a href='https://carto.com/help/tutorials/builder/'>here</a>.",
+      "createMap": "Create your first map"
+    },
+    "emptyCase": {
+      "default": "There are no maps here.",
+      "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    }
+  },
+  "NotificationsPage": {
+    "header": {
+      "title": "Notifications"
+    },
+    "emptyState": "There are no notifications yet.",
+    "loadingState": "Loading your notifications."
+  },
+  "SettingsDropdown": {
+    "filter": "Filter",
+    "orderMaps": "Order",
+    "types": {
+      "maps": "Your maps",
+      "datasets": "Your datasets",
+      "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
+      "locked": "Locked ({count})",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    }
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "Updated {date} ago",
+    "numberRows": "0 rows | 1 row | {count} rows",
+    "tags": "tags",
+    "maps": "0 maps | 1 map | {n} maps"
+  },
+  "DatasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
+  "UserDropdown": {
+    "settings": "Settings",
+    "organizationSettings": "Your organization",
+    "apiKeys": "API Keys",
+    "publicProfile": "Public Profile",
+    "notifications": "Notifications",
+    "feedback": "Share feedback",
+    "logout": "LOG OUT"
+  },
+  "SolutionsPage": {
+    "solutionsTitle": "Solutions for every business problem",
+    "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
+    "talkUsTitle": "Like what you see?",
+    "talkUsDescription": "Our account management team will give you a firsthand view and discuss with you how we can help your organization to do the same.",
+    "talkUsButton": "Talk to us!",
+    "sitePlanning": {
+      "title": "Site Planning",
+      "description": "Drive site selection and investment decisions with always-on data streams, enabling more accurate revenue prediction and reduced risk of failed location decisions."
+    },
+    "territoryManagement": {
+      "title": "Territory Management",
+      "description": "Design and align sales and service territories to increase productivity and reduce costs using spatial field operations data."
+    },
+    "logisticsOptimization": {
+      "title": "Logistics Optimization",
+      "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
+    }
+  },
+  "SolutionCard": {
+    "moreExamples": "View more examples",
+    "usedBy": "Used by:",
+    "goDemo": "Go to demo"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By :tag, name, or description"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets":  "No datasets found."
+    }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {name}",
+      "firstTime": {
+        "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
+        "planMessage": {
+          "free": "Remember that you're currently on the FREE plan.",
+          "30day": "Remember that you're currently on the 30-day personal trial.",
+          "pro": "Remember that you're currently on the Professional plan.",
+          "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
+          "organizationUser": "Remember that you're currently a member of the {organizationName} organization.",
+          "unknown": ""
+        },
+        "contactOrganizationAdmin": "Contact the admin",
+        "manageOrganization": "Manage my organization"
+      },
+      "trialMessage": "{date} left in your Trial.",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More",
+      "actions": {
+        "createMap": "New map",
+        "createDataset": "New dataset"
+      },
+      "addPaymentMethod": "Add payment"
+    },
+    "MapsSection": {
+      "title": "Your Maps",
+      "viewAll" : "VIEW ALL MAPS"
+    },
+    "DatasetsSection": {
+      "title": "Your Datasets",
+      "viewAll": "VIEW ALL DATASETS"
+    },
+    "CreateMapCard": {
+      "header": "Create your first map to predict key insights",
+      "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
+      "button": "Create your first Map"
+    },
+    "RecentSection": {
+      "title": "Recent content",
+      "viewTagsAction": "View your tags"
+    },
+    "TagsSection": {
+      "title": "Your tags",
+      "viewRecentContentAction": "View recent content",
+      "emptyState": {
+        "title": "You have no tags.",
+        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"https://carto.com/help/getting-started/dashboard/\">dashboard</a>."
+      },
+      "loading": "Asking the server politely for your tags."
+    }
+  },
+  "TrialExpired": {
+    "ExpirationMessage": {
+      "title": "Your trial has expired",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. If you have any question after your trial, please <a class='is-underline is-txtDarkBlue' href='mailto:sales@carto.com'>contact sales</a>.",
+      "actions": {
+        "addPayments": "Add payment method",
+        "deleteAccount": "Delete account"
+      }
+    }
+  },
+  "QuotaSection": {
+    "title": "Your Usage Metrics",
+    "header": {
+      "remaining": "Remaining",
+      "used": "Used",
+      "total": "Total",
+      "perMonth": "per month"
+    },
+    "disk": "Disk",
+    "dataServices": "Data Services",
+    "storage": "Storage",
+    "geocoding": "Geocoding",
+    "isolines": "Isolines",
+    "routing": "Routing",
+    "credits": "Your credits will be renewed in 0 days ({day} of each month). | Your credits will be renewed in {remainingDays} day ({day} of each month). | Your credits will be renewed in {remainingDays} days ({day} of each month)."
+  },
+  "Footer": {
+    "HelpCenter": {
+      "title": "Help Center",
+      "description": "Find answers to frequently asked questions, guides and tutorials about working with data, making Builder maps, managing your account, etc."
+    },
+    "DeveloperCenter": {
+      "title": "Developer Center",
+      "description": "Learn everything you need to know to build the next generation of Location Intelligence applications with the CARTO platform."
+    },
+    "GISStackExchange": {
+      "title": "GIS StackExchange",
+      "description": "Explore and share your CARTO-related questions with the GIS StackExchange Community."
+    },
+    "TechSupport": {
+      "title": "Tech Support",
+      "description": "Found a bug or technical issue? Contact our support team and let us know about it."
+    },
+    "DedicatedSupport": {
+      "title": "Dedicated Support",
+      "description": "Contact our dedicated support team and let us know how we can help you."
+    },
+    "OrganizationAdmin": {
+      "title": "Your organization's administrator",
+      "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
+    }
+  },
+  "TagCard": {
+    "maps": "0 maps | {maps} map | {maps} maps",
+    "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
+  },
+  "FeedbackMessage": {
+    "title": "Share your feedback with us.",
+    "message": "Do you miss something? Should we be doing something differently?"
+  },
+  "SharedBrief": {
+    "sharedWith": "Shared with",
+    "org": "all your organization",
+    "groups": "{groupname} | {n} groups",
+    "users": "{username} | {n} users",
+    "and": "and"
+  }
+}

@@ -6,7 +6,7 @@
     <%= yield :dashboard_js %>
 <% else %>
     <%= content_for(:js) do -%>
-        <%= javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
+        <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
     <% end %>
 <% end %>
 <%= content_for(:css) do -%>

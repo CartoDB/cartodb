@@ -35,23 +35,27 @@ describe Carto::Api::OrganizationUsersController do
     old_soft_limits
   end
 
-  def user_params_soft_limits(username, soft_limit)
+  def user_params_soft_limits(username, soft_limit, with_password: false)
     user_params(username,
                 soft_geocoding_limit: soft_limit,
                 soft_twitter_datasource_limit: soft_limit,
                 soft_here_isolines_limit: soft_limit,
                 soft_obs_snapshot_limit: soft_limit,
-                soft_obs_general_limit: soft_limit)
+                soft_obs_general_limit: soft_limit,
+                with_password: with_password)
   end
 
   def user_params(username = nil,
+                  with_password: false,
                   soft_geocoding_limit: false,
                   soft_twitter_datasource_limit: nil,
                   soft_here_isolines_limit: nil,
                   soft_obs_snapshot_limit: nil,
                   soft_obs_general_limit: nil,
                   viewer: nil,
-                  org_admin: nil)
+                  org_admin: nil,
+                  email: "#{username}@carto.com",
+                  force_password_change: false)
 
     params = {
       password: '2{Patrañas}',
@@ -59,7 +63,7 @@ describe Carto::Api::OrganizationUsersController do
     }
     unless username.nil?
       params[:username] = username
-      params[:email] = "#{username}@carto.com"
+      params[:email] = email
     end
     params[:soft_geocoding_limit] = soft_geocoding_limit unless soft_geocoding_limit.nil?
     params[:soft_twitter_datasource_limit] = soft_twitter_datasource_limit unless soft_twitter_datasource_limit.nil?
@@ -68,7 +72,9 @@ describe Carto::Api::OrganizationUsersController do
     params[:soft_obs_general_limit] = soft_obs_general_limit unless soft_obs_general_limit.nil?
     params[:viewer] = viewer if viewer
     params[:org_admin] = org_admin if org_admin
+    params[:force_password_change] = force_password_change
 
+    params.except!(:password) unless with_password
     params
   end
 
@@ -96,11 +102,15 @@ describe Carto::Api::OrganizationUsersController do
 
   before(:each) do
     @old_soft_limits = soft_limits(@organization.owner)
+    @old_whitelisted_email_domains = @organization.whitelisted_email_domains
   end
 
   after(:each) do
     set_soft_limits(@organization.owner, @old_soft_limits)
     @organization.owner.save
+
+    @organization.whitelisted_email_domains = @old_whitelisted_email_domains
+    @organization.save
   end
 
   describe 'user creation' do
@@ -158,13 +168,48 @@ describe Carto::Api::OrganizationUsersController do
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
-      last_response.body.include?('password is not present').should be true
+      last_response.body.include?("password can't be blank").should be true
+    end
+
+    it 'returns 410 if password is username' do
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: username }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?('must be different than the user name').should be true
+    end
+
+    it 'returns 410 if password is a common one' do
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: 'galina' }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?("can't be a common password").should be true
+    end
+
+    it 'returns 410 if password is not strong' do
+      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      login(@organization.owner)
+
+      username = 'manolo'
+      params = { username: username, email: "#{username}@carto.com", password: 'galina' }
+      post api_v2_organization_users_create_url(id_or_name: @organization.name), params
+
+      last_response.status.should eq 410
+      last_response.body.include?('must be at least 8 characters long').should be true
+      Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'correctly creates a user' do
       login(@organization.owner)
       username = 'manolo-escobar'
-      params = user_params(username)
+      params = user_params(username, with_password: true)
       post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
         response.status.should eq 200
         response.body[:username].should eq username
@@ -184,6 +229,7 @@ describe Carto::Api::OrganizationUsersController do
         # response.body[:avatar_url].should be
       end
 
+      @organization.reload
       last_user_created = @organization.users.find { |u| u.username == username }
       last_user_created.username.should eq username
       last_user_created.email.should eq "#{username}@carto.com"
@@ -196,10 +242,33 @@ describe Carto::Api::OrganizationUsersController do
       last_user_created.destroy
     end
 
+    it 'does not take email whitelisting into account for user creation' do
+      login(@organization.owner)
+      username = 'notwhitelisted'
+      domain = 'notwhitelisted.com'
+      email = "#{username}@#{domain}"
+      params = user_params(username, email: email, with_password: true)
+
+      old_whitelisted_email_domains = @organization.whitelisted_email_domains
+      @organization.whitelisted_email_domains = ['carto.com']
+      @organization.save
+
+      post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
+        response.status.should eq 200
+        response.body[:username].should eq username
+        response.body[:email].should eq email
+      end
+
+      @organization.reload
+      last_user_created = @organization.users.find { |u| u.username == username }
+      last_user_created.username.should eq username
+      last_user_created.email.should eq email
+    end
+
     it 'assigns soft_geocoding_limit to false by default' do
       login(@organization.owner)
       username = 'soft-geocoding-limit-false-user'
-      params = user_params(username, soft_geocoding_limit: nil)
+      params = user_params(username, soft_geocoding_limit: nil, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
@@ -214,7 +283,7 @@ describe Carto::Api::OrganizationUsersController do
       Carto::UserCreation.any_instance.expects(:load_common_data).never
       login(@organization.owner)
       username = 'viewer-user'
-      params = user_params(username, viewer: true)
+      params = user_params(username, viewer: true, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
@@ -228,7 +297,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'creates non-admin builders by default' do
       login(@organization.owner)
       username = 'builder-user'
-      params = user_params(username)
+      params = user_params(username, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
@@ -243,7 +312,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'can create organization admins' do
       login(@organization.owner)
       username = 'admin-user'
-      params = user_params(username, org_admin: true)
+      params = user_params(username, org_admin: true, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 200
@@ -257,7 +326,7 @@ describe Carto::Api::OrganizationUsersController do
     it 'admins cannot create other organization admins' do
       login(@org_user_2)
       username = 'admin-user'
-      params = user_params(username, org_admin: true)
+      params = user_params(username, org_admin: true, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
@@ -269,7 +338,7 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       username = 'soft-limits-true-user'
-      params = user_params_soft_limits(username, true)
+      params = user_params_soft_limits(username, true, with_password: true)
 
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
@@ -288,7 +357,7 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       username = 'soft-limits-false-user'
-      params = user_params_soft_limits(username, false)
+      params = user_params_soft_limits(username, false, with_password: true)
 
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
@@ -307,7 +376,7 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
       username = 'soft-limits-true-invalid-user'
-      params = user_params_soft_limits(username, true)
+      params = user_params_soft_limits(username, true, with_password: true)
       post api_v2_organization_users_create_url(id_or_name: @organization.name), params
 
       last_response.status.should eq 410
@@ -316,6 +385,32 @@ describe Carto::Api::OrganizationUsersController do
 
       @organization.reload
       @organization.users.find { |u| u.username == username }.should be_nil
+    end
+
+    describe 'with password expiration' do
+      before(:all) do
+        @organization.password_expiration_in_d = 10
+        @organization.save
+      end
+
+      after(:all) do
+        @organization.password_expiration_in_d = nil
+        @organization.save
+      end
+
+      it 'can create users with expired passwords' do
+        login(@organization.owner)
+        username = unique_name('user')
+        params = user_params(username, org_admin: true, with_password: true, force_password_change: true)
+        post_json api_v2_organization_users_create_url(id_or_name: @organization.name), params do |response|
+          response.status.should eq 200
+        end
+
+        @organization.reload
+        last_user_created = @organization.users.find { |u| u.username == username }
+        expect(last_user_created.password_expired?).to(be(true))
+        last_user_created.destroy
+      end
     end
   end
 
@@ -381,6 +476,66 @@ describe Carto::Api::OrganizationUsersController do
           params
 
       last_response.status.should == 200
+    end
+
+    it 'fails to update password if the same as old_password' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+      user_to_update.password = '00012345678'
+      user_to_update.password_confirmation = '00012345678'
+      user_to_update.save
+      user_to_update.reload
+      last_change = user_to_update.last_password_change_date
+
+      params = { password: '00012345678' }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      user_to_update.reload
+      expect(user_to_update.last_password_change_date.utc.to_s).to eq last_change.utc.to_s
+    end
+
+    it 'fails to update password if the same as username' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: user_to_update.username }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include 'must be different than the user name'
+    end
+
+    it 'fails to update password if it is a common one' do
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: 'galina' }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include "can't be a common password"
+    end
+
+    it 'fails to update password if strongs passwords enabled' do
+      Organization.any_instance.stubs(:strong_passwords_enabled).returns(true)
+      login(@organization.owner)
+
+      user_to_update = @organization.non_owner_users[0]
+
+      params = { password: 'galina' }
+      put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
+          params
+
+      last_response.status.should == 410
+      last_response.body.should include 'password must be at least 8 characters long'
+      Organization.any_instance.unstub(:strong_passwords_enabled)
     end
 
     it 'should update email' do
@@ -455,7 +610,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [false, false, false])
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { soft_geocoding_limit: true }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
@@ -468,7 +623,7 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true])
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       params = { soft_geocoding_limit: true }
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
@@ -492,7 +647,7 @@ describe Carto::Api::OrganizationUsersController do
 
       login(@organization.owner)
 
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       new_email = "#{user_to_update.email}.es"
       params = { email: new_email,
                  password: 'pataton',
@@ -500,6 +655,8 @@ describe Carto::Api::OrganizationUsersController do
                  quota_in_bytes: 2048 }
       put_json api_v2_organization_users_update_url(id_or_name: @organization.name,
                                                     u_username: user_to_update.username), params do |response|
+        user_to_update.reload
+
         response.status.should eq 200
         response.body[:username].should eq user_to_update.username
         response.body[:email].should eq new_email
@@ -513,11 +670,9 @@ describe Carto::Api::OrganizationUsersController do
         response.body[:table_count].should eq 0
         response.body[:public_visualization_count].should eq 0
         response.body[:all_visualization_count].should eq 0
-        response.body[:avatar_url].should be
+        response.body[:avatar_url].should eq user_to_update.avatar_url
         response.body[:soft_geocoding_limit].should eq true
       end
-
-      user_to_update.reload
 
       user_to_update.email.should eq new_email
       user_to_update.soft_geocoding_limit.should be true
@@ -528,8 +683,8 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
-      params = user_params_soft_limits(nil, true)
+      user_to_update = @organization.non_owner_users[0]
+      params = user_params_soft_limits(nil, true, with_password: false)
 
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
@@ -544,12 +699,11 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [true, true, true, true, true])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
-      params = user_params_soft_limits(nil, false)
+      user_to_update = @organization.non_owner_users[0]
+      params = user_params_soft_limits(nil, false, with_password: false)
 
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params
-
       last_response.status.should eq 200
 
       user_to_update.reload
@@ -560,9 +714,9 @@ describe Carto::Api::OrganizationUsersController do
       replace_soft_limits(@organization.owner, [false, false, false, false, false])
 
       login(@organization.owner)
-      user_to_update = @organization.users[0]
+      user_to_update = @organization.non_owner_users[0]
       replace_soft_limits(user_to_update, [false, false, false])
-      params = user_params_soft_limits(nil, true)
+      params = user_params_soft_limits(nil, true, with_password: false)
 
       put api_v2_organization_users_update_url(id_or_name: @organization.name, u_username: user_to_update.username),
           params

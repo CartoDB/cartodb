@@ -1,4 +1,5 @@
 require 'active_record'
+require_dependency 'cartodb/errors'
 
 class Carto::Permission < ActiveRecord::Base
   DEFAULT_ACL_VALUE = [].freeze
@@ -12,7 +13,7 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'.freeze
   TYPE_GROUP        = 'group'.freeze
 
-  belongs_to :owner, class_name: Carto::User, select: Carto::User::DEFAULT_SELECT
+  belongs_to :owner, -> { select(Carto::User::DEFAULT_SELECT) }, class_name: Carto::User
   has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
 
   validate :not_w_permission_to_viewers
@@ -178,10 +179,64 @@ class Carto::Permission < ActiveRecord::Base
     set_subject_permission(subject.id, access, TYPE_USER)
   end
 
+  def set_group_permission(group, access)
+    # You only want to switch it off when request is a permission request coming from database
+    @update_db_group_permission = false
+
+    granted_access = granted_access_for_group(group)
+    if granted_access == access
+      raise ModelAlreadyExistsError.new("Group #{group.name} already has #{access} access")
+    elsif granted_access == ACCESS_NONE
+      set_subject_permission(group.id, access, TYPE_GROUP)
+    else
+      # Remove group entry from acl in order to add new (or none if ACCESS_NONE)
+      new_acl = inputable_acl.reject { |entry| entry[:entity][:id] == group.id }
+
+      unless access == ACCESS_NONE
+        acl_entry = {
+          type: TYPE_GROUP,
+          entity: {
+            id: group.id,
+            name: group.name
+          },
+          access: access
+        }
+        new_acl << acl_entry
+      end
+
+      self.acl = new_acl
+    end
+  end
+
+  def remove_group_permission(group)
+    # You only want to switch it off when request is a permission request coming from database
+    @update_db_group_permission = false
+
+    set_group_permission(group, ACCESS_NONE)
+  end
+
   def remove_user_permission(user)
     granted_access = granted_access_for_user(user)
     if granted_access != ACCESS_NONE
       self.acl = inputable_acl.select { |entry| entry[:entity][:id] != user.id }
+    end
+  end
+
+  # acl write method expects entries to have entity, although they're not
+  # stored.
+  # TODO: fix this, since this is coupled to representation.
+  def inputable_acl
+    acl.map do |entry|
+      {
+        type: entry[:type],
+        entity: {
+          id: entry[:id],
+          avatar_url: '',
+          username: '',
+          name: ''
+        },
+        access: entry[:access]
+      }
     end
   end
 
@@ -200,7 +255,7 @@ class Carto::Permission < ActiveRecord::Base
 
   def users_with_permissions(access)
     user_ids = relevant_user_acl_entries(acl).select { |e| access == e[:access] }.map { |e| e[:id] }
-    Carto::User.where(id: user_ids).all
+    user_ids.empty? ? [] : Carto::User.where(id: user_ids).all
   end
 
   ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
@@ -261,6 +316,7 @@ class Carto::Permission < ActiveRecord::Base
   def update_changes
     if !@old_acl.nil?
       notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, acl))
+      Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
     update_shared_entities
   end
@@ -449,26 +505,12 @@ class Carto::Permission < ActiveRecord::Base
     self.acl = new_acl
   end
 
-  # acl write method expects entries to have entity, although they're not
-  # stored.
-  # TODO: fix this, since this is coupled to representation.
-  def inputable_acl
-    acl.map do |entry|
-      {
-        type: entry[:type],
-        entity: {
-          id: entry[:id],
-          avatar_url: '',
-          username: '',
-          name: ''
-        },
-        access: entry[:access]
-      }
-    end
-  end
-
   def granted_access_for_user(user)
     granted_access_for_entry_type(TYPE_USER, user)
+  end
+
+  def granted_access_for_group(group)
+    granted_access_for_entry_type(TYPE_GROUP, group)
   end
 
   def granted_access_for_entry_type(type, entity)

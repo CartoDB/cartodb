@@ -73,4 +73,68 @@ module FileServerHelper
     filename = filepath.split('/').last
     { "Content-Disposition" => "attachment; filename=#{filename}" }
   end
+
+  def stub_arcgis_response_with_file(
+    absolute_filepath,
+    absolute_metadata_filepath = File.expand_path('spec/fixtures/arcgis_metadata.json')
+  )
+    # Metadata of a layer
+    Typhoeus.stub(/\/arcgis\/rest\/services\/Planning\/EPI_Primary_Planning_Layers\/MapServer\/2\?f=json/) do
+      body = File.read(absolute_metadata_filepath)
+      Typhoeus::Response.new(
+        code: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: body
+      )
+    end
+
+    # IDs list of a layer
+    Typhoeus.stub(/\/arcgis\/rest\/(.*)query\?where=/) do
+      json_file = JSON.parse(File.read(absolute_filepath))
+      Typhoeus::Response.new(
+        code: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: JSON.dump(
+          objectIdFieldName: "OBJECTID",
+          objectIds: json_file['features'].map { |f| f['attributes']['OBJECTID'] }
+        )
+      )
+    end
+
+    Typhoeus.stub(/\/arcgis\/rest\/(.*)query$/) do |request|
+      response_body = File.read(absolute_filepath)
+      response_body = ::JSON.parse(response_body)
+
+      request_body = request.options[:body]
+
+      requested_object_id = nil
+      lower_match = nil
+      upper_match = nil
+      if request_body[:objectIds]
+        requested_object_id = request_body[:objectIds]
+      else
+        lower_match = /OBJECTID\s+>=(\d+)/ =~ request.options[:body][:where]
+        upper_match = /OBJECTID\s+<=(\d+)/ =~ request.options[:body][:where]
+      end
+
+      response_body['features'] = response_body['features'].select do |f|
+        object_id = f['attributes']['OBJECTID']
+        if requested_object_id
+          object_id == requested_object_id
+        elsif lower_match && upper_match
+          object_id >= lower_match[1].to_i && object_id <= upper_match[1].to_i
+        elsif lower_match
+          object_id >= lower_match[1].to_i
+        elsif upper_match
+          object_id <= upper_match[1].to_i
+        end
+      end
+
+      Typhoeus::Response.new(
+        code: 200,
+        headers: { 'Content-Type' => 'application/json' },
+        body: ::JSON.dump(response_body)
+      )
+    end
+  end
 end

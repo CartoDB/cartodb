@@ -84,14 +84,6 @@ describe Carto::Api::VizJSON3Presenter do
       v3n_vizjson[:version].should eq '3.0.0'
     end
 
-    it 'to_vizjson does not cache vector' do
-      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
-      vizjson_a = v3_presenter.to_vizjson(vector: true)
-      vizjson_b = v3_presenter.to_vizjson(vector: false)
-      vizjson_a[:vector].should eq true
-      vizjson_b[:vector].should eq false
-    end
-
     it 'to_named_map_vizjson uses the redis vizjson cache' do
       fake_vizjson = { fake: 'sure!', layers: [] }
 
@@ -102,14 +94,6 @@ describe Carto::Api::VizJSON3Presenter do
       v2 = presenter.to_named_map_vizjson
       v1.should eq fake_vizjson
       v1.should eq v2
-    end
-
-    it 'to_named_map_vizjson does not cache vector' do
-      v3_presenter = Carto::Api::VizJSON3Presenter.new(@visualization)
-      vizjson_a = v3_presenter.to_named_map_vizjson(vector: true)
-      vizjson_b = v3_presenter.to_named_map_vizjson(vector: false)
-      vizjson_a[:vector].should eq true
-      vizjson_b[:vector].should eq false
     end
   end
 
@@ -166,6 +150,16 @@ describe Carto::Api::VizJSON3Presenter do
       source_analysis_definition[:params].should be_nil
     end
 
+    it 'allows whitespace layer names' do
+      layer = @visualization.data_layers.first
+      layer.options['table_name_alias'] = ' '
+      layer.save
+      @visualization.reload
+
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:layer_name].should eq ' '
+    end
+
     it 'includes source at layers options' do
       source = 'a1'
       layer = @visualization.data_layers.first
@@ -177,6 +171,19 @@ describe Carto::Api::VizJSON3Presenter do
 
       v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
       v3_vizjson[:layers][1][:options][:source].should eq source
+    end
+
+    it 'includes cartocss at layers options' do
+      cartocss = '#layer { marker-fill: #fabada; }'
+      layer = @visualization.data_layers.first
+      layer.options['tile_style'] = cartocss
+      layer.save
+      @table.privacy = Carto::UserTable::PRIVACY_PRIVATE
+      @table.save!
+      @visualization.reload
+
+      v3_vizjson = Carto::Api::VizJSON3Presenter.new(@visualization, viewer_user).send :calculate_vizjson
+      v3_vizjson[:layers][1][:options][:cartocss].should eq cartocss
     end
   end
 
@@ -318,11 +325,9 @@ describe Carto::Api::VizJSON3Presenter do
 
       include_examples 'common layer checks'
 
-      it 'should not include sql nor cartocss fields in data layers' do
+      it 'should not include sql field in data layers' do
         data_layer_options = vizjson[:layers][1][:options]
         data_layer_options.should_not include :sql
-        data_layer_options.should_not include :cartocss
-        data_layer_options.should_not include :cartocss_version
       end
 
       it 'should include cartocss but not sql in torque layers' do

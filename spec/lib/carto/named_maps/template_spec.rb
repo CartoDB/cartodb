@@ -21,6 +21,20 @@ module Carto
         @map.reload
       end
 
+      describe '#to_hash' do
+        after(:all) do
+          destroy_full_visualization(@map1, @table1, @table_visualization1, @visualization1)
+        end
+
+        it 'should get view info from the map when the state center does not exist' do
+          @map1, @table1, @table_visualization1, @visualization1 = create_full_visualization(@user)
+          @visualization1.state = FactoryGirl.create(:state, visualization: @visualization1)
+          @visualization1.state.json[:map].delete(:center)
+          template_hash = Carto::NamedMaps::Template.new(@visualization1).to_hash
+          template_hash[:view][:center].values.reverse.should eq @visualization1.map.center_data.map(&:to_f)
+        end
+      end
+
       describe '#name' do
         it 'should generate the template name correctly' do
           template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
@@ -406,6 +420,44 @@ module Carto
             @template_hash[:layergroup][:layers].first[:options][:source].should be_nil
           end
 
+          describe 'when basemap options' do
+            before(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = true
+              @tms_layer.options[:urlTemplate] = 'http://url_template_example'
+              @tms_layer.options[:subdomains] = 'subdomains_example'
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = Carto::NamedMaps::Template.new(@visualization).to_hash[:layergroup][:layers][0]
+            end
+
+            after(:all) do
+              @tms_layer = @visualization.layers.first
+              @tms_layer.options[:tms] = nil
+              @tms_layer.options[:urlTemplate] = nil
+              @tms_layer.options[:subdomains] = nil
+
+              @tms_layer.save
+              @visualization.reload
+
+              @tms_layer_hash = nil
+            end
+
+            it 'should have tms options' do
+              @tms_layer_hash[:options][:tms].should be_true
+            end
+
+            it 'should have urlTemplate options' do
+              @tms_layer_hash[:options][:urlTemplate].should eq 'http://url_template_example'
+            end
+
+            it 'should have subdomains options' do
+              @tms_layer_hash[:options][:subdomains].should eq 'subdomains_example'
+            end
+          end
+
           describe 'when background' do
             before(:all) do
               @background_layer = @visualization.layers.first
@@ -680,6 +732,36 @@ module Carto
 
         it 'should contain bounds' do
           @template_hash[:view][:bounds].should eq @map.view_bounds_data
+        end
+
+        describe 'it should use the state when it is present' do
+          before do
+            @visualization.state.json = {
+              map: { ne: [-58.9, -143.9], sw: [37.4, 41.6], center: [-16.2, -51.1], zoom: 4 }
+            }
+            @template_hash = Carto::NamedMaps::Template.new(@visualization).to_hash
+          end
+
+          after do
+            @visualization.state.json = {}
+          end
+
+          it 'should use the state info for the view when instantiating a named map' do
+            @template_hash[:view][:zoom].should eq 4
+            template_center = @template_hash[:view][:center]
+            template_center[:lat].should eq -16.2
+            template_center[:lng].should eq -51.1
+            expected_bounds = { west: 37.4, south: 41.6, east: -58.9, north: -143.9 }
+            @template_hash[:view][:bounds].should eq expected_bounds
+          end
+
+          it 'should not fail when invalid state' do
+            @visualization.state.json[:map][:ne] = nil
+            result = Carto::NamedMaps::Template.new(@visualization).to_hash
+            result[:view][:zoom].should eq 3
+            expected_center = { lng: 0.0, lat: 30.0 }
+            result[:view][:center].should eq expected_center
+          end
         end
 
         describe '#preview_layers' do

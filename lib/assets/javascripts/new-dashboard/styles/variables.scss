@@ -1,0 +1,42 @@
+//colors
+$primary-color: #047AE6;
+$primary-color--dark: #1074B5;
+$premium-color: #F90;
+$white: #FFF;
+$text-color: #2E3C43;
+$text-secondary-color: #6F757B;
+$text-color-light: #BABEC0;
+$light-grey: #EBEEF5;
+$grey: #E6E8EB;
+$softblue: #F2F6F9;
+$dark-blue: #003267;
+$alert: rgba(226, 7, 3, 1);
+$info: rgba(255, 195, 0, 0.48);
+$notification: #74FFA8;
+
+//Progress bar colors
+$good-state: #72EEA8;
+$warning-state: #FFC300;
+$error-state: #FA1414;
+
+//Dimensions
+$layout-tablet: 800px;
+$layout-mobile: 600px;
+
+$dropdown__shadow-color: rgba(0, 0, 0, 0.16);
+$dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
+
+$card__shadow-color: rgba(194, 205, 214, 0.8);
+$card__shadow: 0 8px 20px 0 $card__shadow-color;
+
+$z-index__dialog: 1000;
+$z-index__navbar: 5;
+$z-index__subheader: 4;
+$z-index__dropdown: 3;
+$z-index__sticky: 2;
+$z-index__local-dropdown: 1;
+
+// Variables to create different stacking context
+// Used in pages where you have Maps and Dataset Lists
+$z-index__stack-context--first: 2;
+$z-index__stack-context--second: 1;

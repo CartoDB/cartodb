@@ -4,14 +4,26 @@ require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
 require 'carto/user_authenticator'
+require 'helpers/account_types_helper'
 
 feature "Superadmin's users API" do
   include Carto::UserAuthenticator
+  include AccountTypesHelper
 
   background do
     Capybara.current_driver = :rack_test
     @new_user = new_user(password: "this_is_a_password")
     @user_atts = @new_user.values
+  end
+
+  before(:all) do
+    @account_type = create_account_type_fg('FREE')
+    @account_type_juliet = create_account_type_fg('Juliet')
+  end
+
+  after(:all) do
+    @account_type.destroy if @account_type
+    @account_type_juliet.destroy if @account_type_juliet
   end
 
   scenario "Http auth is needed" do
@@ -96,6 +108,25 @@ feature "Superadmin's users API" do
       user.upgraded_at.should.to_s == t.to_s
     end
     ::User.where(username: @user_atts[:username]).first.destroy
+  end
+
+  scenario "user create with rate limits" do
+    t = Time.now
+    @user_atts[:upgraded_at] = t
+    rate_limits = FactoryGirl.create(:rate_limits)
+    @user_atts[:rate_limit] = rate_limits.api_attributes
+
+    CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+    post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
+      response.status.should == 201
+      response.body[:rate_limit_id].should_not be_nil
+
+      # Double check that the user has been created properly
+      user = ::User.filter(email: @user_atts[:email]).first
+      user.rate_limit.api_attributes.should eq @user_atts[:rate_limit]
+    end
+    ::User.where(username: @user_atts[:username]).first.destroy
+    rate_limits.destroy
   end
 
   scenario "user create non-default account settings" do
@@ -476,6 +507,36 @@ feature "Superadmin's users API" do
         }.to_json, superadmin_headers
       end.to change(FeatureFlagsUser, :count).by(1)
     end
+
+    it 'should create new rate limit if user does not have' do
+      user        = FactoryGirl.create(:user)
+      rate_limit  = FactoryGirl.create(:rate_limits)
+
+      expect {
+        put superadmin_user_url(user.id), {
+          user: { rate_limit: rate_limit.api_attributes }, id: user.id
+        }.to_json, superadmin_headers
+
+        user.reload
+        user.rate_limit.api_attributes.should eq rate_limit.api_attributes
+
+      }.to change(Carto::RateLimit, :count).by(1)
+    end
+
+    it 'should update existing user rate limit' do
+      user        = FactoryGirl.create(:user)
+      rate_limit  = FactoryGirl.create(:rate_limits)
+      user.rate_limit_id = rate_limit.id
+      user.save
+      rate_limit_custom = FactoryGirl.create(:rate_limits_custom)
+
+      put superadmin_user_url(user.id), {
+        user: { rate_limit: rate_limit_custom.api_attributes }, id: user.id
+      }.to_json, superadmin_headers
+
+      user.reload
+      user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
+    end
   end
 
   describe '#destroy' do
@@ -496,6 +557,18 @@ feature "Superadmin's users API" do
       expect do
         delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
       end.to change(FeatureFlagsUser, :count).by(-1)
+    end
+
+    it 'should destroy rate_limit' do
+      user       = FactoryGirl.create(:user)
+      rate_limit = FactoryGirl.create(:rate_limits)
+
+      user.rate_limit_id = rate_limit.id
+      user.save
+
+      expect {
+        delete superadmin_user_url(user.id), { user: user }.to_json, superadmin_headers
+      }.to change(Carto::RateLimit, :count).by(-1)
     end
   end
 
@@ -542,5 +615,91 @@ feature "Superadmin's users API" do
     end
   end
 
-  private
+  describe '#data_imports' do
+    before(:each) do
+      @user = create_user
+    end
+
+    after(:each) do
+      @user.destroy
+    end
+
+    it 'filters results if param status is present' do
+      successful_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: true, state: 'complete')
+      failed_data_import = FactoryGirl.create(:data_import, user_id: @user.id, success: false, state: 'failure')
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'complete' }, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+        expect(response.body[:data_imports].first[:id]).to eq(successful_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", { status: 'failure' }, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+        expect(response.body[:data_imports].first[:id]).to eq(failed_data_import.id)
+      end
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(2)
+      end
+    end
+
+    it 'paginates results' do
+      data_imports = FactoryGirl.create_list(:data_import, 2, user_id: @user.id)
+      data_import_ids = data_imports.map(&:id)
+
+      pagination_params = { page: 1, per_page: 1 }
+
+      expect(data_import_ids.size).to eq(2)
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:data_imports].size).to eq(1)
+
+        expect(response.body[:total_entries]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0][:id] }
+        expect(data_import_ids.size).to eq(1)
+      end
+
+      pagination_params = { page: 2, per_page: 1 }
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", pagination_params, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(1)
+
+        expect(response.body[:total_entries]).to eq(2)
+
+        data_import_ids.delete_if { |id| id == response.body[:data_imports][0][:id] }
+        expect(data_import_ids.size).to eq(0)
+      end
+    end
+
+    it 'returns all the data imports if no pagination params are present' do
+      FactoryGirl.create_list(:data_import, 3, user_id: @user.id)
+
+      get_json("/superadmin/users/#{@user.id}/data_imports", {}, superadmin_headers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:data_imports].size).to eq(3)
+      end
+    end
+
+    it 'validates order param' do
+      ['data_imports', 'geocodings', 'synchronizations'].each do |endpoint|
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :updated_at }, superadmin_headers) do |response|
+          response.status.should eq 200
+        end
+
+        get_json("/superadmin/users/#{@user.id}/#{endpoint}", { order: :invalid }, superadmin_headers) do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
+    end
+  end
 end

@@ -1,0 +1,4292 @@
+{
+  "currentVersion": 10.4,
+  "id": 2,
+  "name": "Land Zoning",
+  "type": "Feature Layer",
+  "description": "",
+  "geometryType": "esriGeometryPolygon",
+  "copyrightText": "",
+  "parentLayer": null,
+  "subLayers": [],
+  "minScale": 100000,
+  "maxScale": 0,
+  "drawingInfo": {
+    "renderer": {
+      "type": "uniqueValue",
+      "field1": "SYM_CODE",
+      "field2": null,
+      "field3": null,
+      "fieldDelimiter": ", ",
+      "defaultSymbol": null,
+      "defaultLabel": null,
+      "uniqueValueInfos": [
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              201,
+              255,
+              249,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B1",
+          "label": "B1 Neighbourhood Centre",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              98,
+              240,
+              245,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B2",
+          "label": "B2 Local Centre",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              0,
+              194,
+              237,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B3",
+          "label": "B3 Commercial Core",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              149,
+              157,
+              194,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B4",
+          "label": "B4 Mixed Use",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              125,
+              160,
+              171,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B5",
+          "label": "B5 Business Development",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              149,
+              191,
+              204,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B6",
+          "label": "B6 Enterprise Corridor",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              186,
+              214,
+              222,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B7",
+          "label": "B7 Business Park",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              200,
+              230,
+              224,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "B8",
+          "label": "B8 Metropolitan Centre",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              230,
+              153,
+              0,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "E1",
+          "label": "E1 National Parks and Nature Reserves",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              240,
+              174,
+              60,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "E2",
+          "label": "E2 Environmental Conservation",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              247,
+              197,
+              104,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "E3",
+          "label": "E3 Environmental Management",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              218,
+              150,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "E4",
+          "label": "E4 Environmental Living",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              222,
+              184,
+              245,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "IN1",
+          "label": "IN1 General Industrial",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              243,
+              219,
+              255,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "IN2",
+          "label": "IN2 Light Industrial",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              197,
+              149,
+              232,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "IN3",
+          "label": "IN3 Heavy Industrial",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              174,
+              115,
+              222,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "IN4",
+          "label": "IN4 Working Waterfront",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              207,
+              255,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "R1",
+          "label": "R1 General Residential",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              166,
+              163,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "R2",
+          "label": "R2 Low Density Residential",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              119,
+              110,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "R3",
+          "label": "R3 Medium Density Residential",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              72,
+              59,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "R4",
+          "label": "R4 High Density Residential",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              217,
+              217,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "R5",
+          "label": "R5 Large Lot Residential",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              85,
+              255,
+              0,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RE1",
+          "label": "RE1 Public Recreation",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              211,
+              255,
+              190,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RE2",
+          "label": "RE2 Private Recreation",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              237,
+              216,
+              173,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU1",
+          "label": "RU1 Primary Production",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              230,
+              202,
+              151,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU2",
+          "label": "RU2 Rural Landscape",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              222,
+              192,
+              131,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU3",
+          "label": "RU3 Forestry",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              214,
+              180,
+              111,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU4",
+          "label": "RU4 Primary Production Small Lots",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              215,
+              163,
+              158,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU5",
+          "label": "RU5 Village",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              199,
+              158,
+              76,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "RU6",
+          "label": "RU6 Transition",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              255,
+              161,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "SP1",
+          "label": "SP1 Special Activities",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              255,
+              112,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "SP2",
+          "label": "SP2 Infrastructure",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              255,
+              0,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "SP3",
+          "label": "SP3 Tourist",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              217,
+              255,
+              242,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "W1",
+          "label": "W1 Natural Waterways",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              153,
+              255,
+              221,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "W2",
+          "label": "W2 Recreational Waterways",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              51,
+              255,
+              187,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "W3",
+          "label": "W3 Working Waterways",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                0,
+                0,
+                0,
+                255
+              ],
+              "width": 0.8
+            }
+          },
+          "value": "UL",
+          "label": "UL Unzoned Land",
+          "description": ""
+        },
+        {
+          "symbol": {
+            "type": "esriSFS",
+            "style": "esriSFSSolid",
+            "color": [
+              255,
+              255,
+              255,
+              255
+            ],
+            "outline": {
+              "type": "esriSLS",
+              "style": "esriSLSSolid",
+              "color": [
+                255,
+                0,
+                0,
+                255
+              ],
+              "width": 1.5
+            }
+          },
+          "value": "DM",
+          "label": "DM Deferred Matter",
+          "description": ""
+        }
+      ]
+    },
+    "transparency": 0,
+    "labelingInfo": null
+  },
+  "defaultVisibility": false,
+  "extent": {
+    "xmin": 141.0021792330001,
+    "ymin": -37.50507658899994,
+    "xmax": 153.63883145700004,
+    "ymax": -28.15702055490766,
+    "spatialReference": {
+      "wkid": 4283,
+      "latestWkid": 4283
+    }
+  },
+  "hasAttachments": false,
+  "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+  "displayField": "LEP_NAME",
+  "typeIdField": null,
+  "fields": [
+    {
+      "name": "OGC_FID",
+      "type": "esriFieldTypeOID",
+      "alias": "OGC_FID"
+    },
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeInteger",
+      "alias": "OBJECTID",
+      "domain": null
+    },
+    {
+      "name": "LEP_NAME",
+      "type": "esriFieldTypeString",
+      "alias": "LEP_NAME",
+      "length": 150,
+      "domain": {
+        "type": "codedValue",
+        "name": "LEP_NAME",
+        "codedValues": [
+          {
+            "name": "Albury Local Environmental Plan 2010",
+            "code": "Albury Local Environmental Plan 2010"
+          },
+          {
+            "name": "Armidale Dumaresq Local Environmental Plan 2012",
+            "code": "Armidale Dumaresq Local Environmental Plan 2012"
+          },
+          {
+            "name": "Ashfield Local Environmental Plan 2013",
+            "code": "Ashfield Local Environmental Plan 2013"
+          },
+          {
+            "name": "Auburn Local Environmental Plan 2010",
+            "code": "Auburn Local Environmental Plan 2010"
+          },
+          {
+            "name": "Ballina Local Environmental Plan 2012",
+            "code": "Ballina Local Environmental Plan 2012"
+          },
+          {
+            "name": "Balranald Local Environmental Plan 2010",
+            "code": "Balranald Local Environmental Plan 2010"
+          },
+          {
+            "name": "Bankstown Local Environmental Plan 2015",
+            "code": "Bankstown Local Environmental Plan 2015"
+          },
+          {
+            "name": "Bathurst Regional Local Environmental Plan 2014",
+            "code": "Bathurst Regional Local Environmental Plan 2014"
+          },
+          {
+            "name": "Bega Valley Local Environmental Plan 2013",
+            "code": "Bega Valley Local Environmental Plan 2013"
+          },
+          {
+            "name": "Bellingen Local Environmental Plan 2010",
+            "code": "Bellingen Local Environmental Plan 2010"
+          },
+          {
+            "name": "Berrigan Local Environmental Plan 2013",
+            "code": "Berrigan Local Environmental Plan 2013"
+          },
+          {
+            "name": "Blacktown Local Environmental Plan 2015",
+            "code": "Blacktown Local Environmental Plan 2015"
+          },
+          {
+            "name": "Bland Local Environmental Plan 2011",
+            "code": "Bland Local Environmental Plan 2011"
+          },
+          {
+            "name": "Blayney Local Environmental Plan 2012",
+            "code": "Blayney Local Environmental Plan 2012"
+          },
+          {
+            "name": "Bogan Local Environmental Plan 2011",
+            "code": "Bogan Local Environmental Plan 2011"
+          },
+          {
+            "name": "Bombala Local Environmental Plan 2012",
+            "code": "Bombala Local Environmental Plan 2012"
+          },
+          {
+            "name": "Boorowa Local Environmental Plan 2012",
+            "code": "Boorowa Local Environmental Plan 2012"
+          },
+          {
+            "name": "Botany Bay Local Environmental Plan 2013",
+            "code": "Botany Bay Local Environmental Plan 2013"
+          },
+          {
+            "name": "Bourke Local Environmental Plan 2012",
+            "code": "Bourke Local Environmental Plan 2012"
+          },
+          {
+            "name": "Brewarrina Local Environmental Plan 2012",
+            "code": "Brewarrina Local Environmental Plan 2012"
+          },
+          {
+            "name": "Broken Hill Local Environmental Plan 2013",
+            "code": "Broken Hill Local Environmental Plan 2013"
+          },
+          {
+            "name": "Burwood Local Environmental Plan 2012",
+            "code": "Burwood Local Environmental Plan 2012"
+          },
+          {
+            "name": "Byron Local Environmental Plan 2014",
+            "code": "Byron Local Environmental Plan 2014"
+          },
+          {
+            "name": "Cabonne Local Environmental Plan 2012",
+            "code": "Cabonne Local Environmental Plan 2012"
+          },
+          {
+            "name": "Camden Local Environmental Plan 2010",
+            "code": "Camden Local Environmental Plan 2010"
+          },
+          {
+            "name": "Canada Bay Local Environmental Plan 2013",
+            "code": "Canada Bay Local Environmental Plan 2013"
+          },
+          {
+            "name": "Canterbury Local Environmental Plan 2012",
+            "code": "Canterbury Local Environmental Plan 2012"
+          },
+          {
+            "name": "Carrathool Local Environmental Plan 2012",
+            "code": "Carrathool Local Environmental Plan 2012"
+          },
+          {
+            "name": "Central Darling Local Environmental Plan 2012",
+            "code": "Central Darling Local Environmental Plan 2012"
+          },
+          {
+            "name": "Cessnock Local Environmental Plan 2011",
+            "code": "Cessnock Local Environmental Plan 2011"
+          },
+          {
+            "name": "Clarence Valley Local Environmental Plan 2011",
+            "code": "Clarence Valley Local Environmental Plan 2011"
+          },
+          {
+            "name": "Cobar Local Environmental Plan 2012",
+            "code": "Cobar Local Environmental Plan 2012"
+          },
+          {
+            "name": "Coffs Harbour Local Environmental Plan 2013",
+            "code": "Coffs Harbour Local Environmental Plan 2013"
+          },
+          {
+            "name": "Conargo Local Environmental Plan 2013",
+            "code": "Conargo Local Environmental Plan 2013"
+          },
+          {
+            "name": "Coolamon Local Environmental Plan 2011",
+            "code": "Coolamon Local Environmental Plan 2011"
+          },
+          {
+            "name": "Cooma-Monaro Local Environmental Plan 2013",
+            "code": "Cooma-Monaro Local Environmental Plan 2013"
+          },
+          {
+            "name": "Coonamble Local Environmental Plan 2011",
+            "code": "Coonamble Local Environmental Plan 2011"
+          },
+          {
+            "name": "Cootamundra Local Environmental Plan 2013",
+            "code": "Cootamundra Local Environmental Plan 2013"
+          },
+          {
+            "name": "Corowa Local Environmental Plan 2012",
+            "code": "Corowa Local Environmental Plan 2012"
+          },
+          {
+            "name": "Cowra Local Environmental Plan 2012",
+            "code": "Cowra Local Environmental Plan 2012"
+          },
+          {
+            "name": "Deniliquin Local Environmental Plan 2013",
+            "code": "Deniliquin Local Environmental Plan 2013"
+          },
+          {
+            "name": "Dubbo Local Environmental Plan 2011",
+            "code": "Dubbo Local Environmental Plan 2011"
+          },
+          {
+            "name": "Dungog Local Environmental Plan 2014",
+            "code": "Dungog Local Environmental Plan 2014"
+          },
+          {
+            "name": "Eurobodalla Local Environmental Plan 2012",
+            "code": "Eurobodalla Local Environmental Plan 2012"
+          },
+          {
+            "name": "Fairfield Local Environmental Plan 2013",
+            "code": "Fairfield Local Environmental Plan 2013"
+          },
+          {
+            "name": "Forbes Local Environmental Plan 2013",
+            "code": "Forbes Local Environmental Plan 2013"
+          },
+          {
+            "name": "Gilgandra Local Environmental Plan 2011",
+            "code": "Gilgandra Local Environmental Plan 2011"
+          },
+          {
+            "name": "Glen Innes Severn Local Environmental Plan 2012",
+            "code": "Glen Innes Severn Local Environmental Plan 2012"
+          },
+          {
+            "name": "Gloucester Local Environmental Plan 2010",
+            "code": "Gloucester Local Environmental Plan 2010"
+          },
+          {
+            "name": "Gosford Local Environmental Plan 2014",
+            "code": "Gosford Local Environmental Plan 2014"
+          },
+          {
+            "name": "Goulburn Mulwaree Local Environmental Plan 2009",
+            "code": "Goulburn Mulwaree Local Environmental Plan 2009"
+          },
+          {
+            "name": "Great Lakes Local Environmental Plan 2014",
+            "code": "Great Lakes Local Environmental Plan 2014"
+          },
+          {
+            "name": "Greater Hume Local Environmental Plan 2012",
+            "code": "Greater Hume Local Environmental Plan 2012"
+          },
+          {
+            "name": "Greater Taree Local Environmental Plan 2010",
+            "code": "Greater Taree Local Environmental Plan 2010"
+          },
+          {
+            "name": "Griffith Local Environmental Plan 2014",
+            "code": "Griffith Local Environmental Plan 2014"
+          },
+          {
+            "name": "Gundagai Local Environmental Plan 2011",
+            "code": "Gundagai Local Environmental Plan 2011"
+          },
+          {
+            "name": "Gunnedah Local Environmental Plan 2012",
+            "code": "Gunnedah Local Environmental Plan 2012"
+          },
+          {
+            "name": "Guyra Local Environmental Plan 2012",
+            "code": "Guyra Local Environmental Plan 2012"
+          },
+          {
+            "name": "Gwydir Local Environmental Plan 2013",
+            "code": "Gwydir Local Environmental Plan 2013"
+          },
+          {
+            "name": "Harden Local Environmental Plan 2011",
+            "code": "Harden Local Environmental Plan 2011"
+          },
+          {
+            "name": "Hawkesbury Local Environmental Plan 2012",
+            "code": "Hawkesbury Local Environmental Plan 2012"
+          },
+          {
+            "name": "Hay Local Environmental Plan 2011",
+            "code": "Hay Local Environmental Plan 2011"
+          },
+          {
+            "name": "Holroyd Local Environmental Plan 2013",
+            "code": "Holroyd Local Environmental Plan 2013"
+          },
+          {
+            "name": "Hornsby Local Environmental Plan 2013",
+            "code": "Hornsby Local Environmental Plan 2013"
+          },
+          {
+            "name": "Hunters Hill Local Environmental Plan 2012",
+            "code": "Hunters Hill Local Environmental Plan 2012"
+          },
+          {
+            "name": "Hurstville Local Environmental Plan 2012",
+            "code": "Hurstville Local Environmental Plan 2012"
+          },
+          {
+            "name": "Inverell Local Environmental Plan 2012",
+            "code": "Inverell Local Environmental Plan 2012"
+          },
+          {
+            "name": "Jerilderie Local Environmental Plan 2012",
+            "code": "Jerilderie Local Environmental Plan 2012"
+          },
+          {
+            "name": "Junee Local Environmental Plan 2012",
+            "code": "Junee Local Environmental Plan 2012"
+          },
+          {
+            "name": "Kempsey Local Environmental Plan 2013",
+            "code": "Kempsey Local Environmental Plan 2013"
+          },
+          {
+            "name": "Kiama Local Environmental Plan 2011",
+            "code": "Kiama Local Environmental Plan 2011"
+          },
+          {
+            "name": "Kogarah Local Environmental Plan 2012",
+            "code": "Kogarah Local Environmental Plan 2012"
+          },
+          {
+            "name": "Ku-ring-gai Local Environmental Plan 2015",
+            "code": "Ku-ring-gai Local Environmental Plan 2015"
+          },
+          {
+            "name": "Ku-ring-gai Local Environmental Plan (Local Centres) 2012",
+            "code": "Ku-ring-gai Local Environmental Plan (Local Centres) 2012"
+          },
+          {
+            "name": "Kyogle Local Environmental Plan 2012",
+            "code": "Kyogle Local Environmental Plan 2012"
+          },
+          {
+            "name": "Lachlan Local Environmental Plan 2013",
+            "code": "Lachlan Local Environmental Plan 2013"
+          },
+          {
+            "name": "Lake Macquarie Local Environmental Plan 2014",
+            "code": "Lake Macquarie Local Environmental Plan 2014"
+          },
+          {
+            "name": "Lane Cove Local Environmental Plan 2009",
+            "code": "Lane Cove Local Environmental Plan 2009"
+          },
+          {
+            "name": "Leeton Local Environmental Plan 2014",
+            "code": "Leeton Local Environmental Plan 2014"
+          },
+          {
+            "name": "Leichhardt Local Environmental Plan 2013",
+            "code": "Leichhardt Local Environmental Plan 2013"
+          },
+          {
+            "name": "Lismore Local Environmental Plan 2012",
+            "code": "Lismore Local Environmental Plan 2012"
+          },
+          {
+            "name": "Lithgow Local Environmental Plan 2014",
+            "code": "Lithgow Local Environmental Plan 2014"
+          },
+          {
+            "name": "Liverpool Local Environmental Plan 2008",
+            "code": "Liverpool Local Environmental Plan 2008"
+          },
+          {
+            "name": "Liverpool Plains Local Environmental Plan 2011",
+            "code": "Liverpool Plains Local Environmental Plan 2011"
+          },
+          {
+            "name": "Lockhart Local Environmental Plan 2012",
+            "code": "Lockhart Local Environmental Plan 2012"
+          },
+          {
+            "name": "Lord Howe Island Local Environmental Plan 2010",
+            "code": "Lord Howe Island Local Environmental Plan 2010"
+          },
+          {
+            "name": "Maitland Local Environmental Plan 2011",
+            "code": "Maitland Local Environmental Plan 2011"
+          },
+          {
+            "name": "Manly Local Environmental Plan 2013",
+            "code": "Manly Local Environmental Plan 2013"
+          },
+          {
+            "name": "Marrickville Local Environmental Plan 2011",
+            "code": "Marrickville Local Environmental Plan 2011"
+          },
+          {
+            "name": "Mid-Western Regional Local Environmental Plan 2012",
+            "code": "Mid-Western Regional Local Environmental Plan 2012"
+          },
+          {
+            "name": "Moree Plains Local Environmental Plan 2011",
+            "code": "Moree Plains Local Environmental Plan 2011"
+          },
+          {
+            "name": "Mosman Local Environmental Plan 2012",
+            "code": "Mosman Local Environmental Plan 2012"
+          },
+          {
+            "name": "Murray Local Environmental Plan 2011",
+            "code": "Murray Local Environmental Plan 2011"
+          },
+          {
+            "name": "Murrumbidgee Local Environmental Plan 2013",
+            "code": "Murrumbidgee Local Environmental Plan 2013"
+          },
+          {
+            "name": "Muswellbrook Local Environmental Plan 2009",
+            "code": "Muswellbrook Local Environmental Plan 2009"
+          },
+          {
+            "name": "Nambucca Local Environmental Plan 2010",
+            "code": "Nambucca Local Environmental Plan 2010"
+          },
+          {
+            "name": "Narrabri Local Environmental Plan 2012",
+            "code": "Narrabri Local Environmental Plan 2012"
+          },
+          {
+            "name": "Narrandera Local Environmental Plan 2013",
+            "code": "Narrandera Local Environmental Plan 2013"
+          },
+          {
+            "name": "Narromine Local Environmental Plan 2011",
+            "code": "Narromine Local Environmental Plan 2011"
+          },
+          {
+            "name": "Newcastle Local Environmental Plan 2012",
+            "code": "Newcastle Local Environmental Plan 2012"
+          },
+          {
+            "name": "North Sydney Local Environmental Plan 2013",
+            "code": "North Sydney Local Environmental Plan 2013"
+          },
+          {
+            "name": "Oberon Local Environmental Plan 2013",
+            "code": "Oberon Local Environmental Plan 2013"
+          },
+          {
+            "name": "Orange Local Environmental Plan 2011",
+            "code": "Orange Local Environmental Plan 2011"
+          },
+          {
+            "name": "Palerang Local Environmental Plan 2014",
+            "code": "Palerang Local Environmental Plan 2014"
+          },
+          {
+            "name": "Parkes Local Environmental Plan 2012",
+            "code": "Parkes Local Environmental Plan 2012"
+          },
+          {
+            "name": "Parramatta City Centre Local Environmental Plan 2007",
+            "code": "Parramatta City Centre Local Environmental Plan 2007"
+          },
+          {
+            "name": "Parramatta Local Environmental Plan 2011",
+            "code": "Parramatta Local Environmental Plan 2011"
+          },
+          {
+            "name": "Penrith Local Environmental Plan 2010",
+            "code": "Penrith Local Environmental Plan 2010"
+          },
+          {
+            "name": "Pittwater Local Environmental Plan 2014",
+            "code": "Pittwater Local Environmental Plan 2014"
+          },
+          {
+            "name": "Port Macquarie-Hastings Local Environmental Plan 2011",
+            "code": "Port Macquarie-Hastings Local Environmental Plan 2011"
+          },
+          {
+            "name": "Port Stephens Local Environmental Plan 2013",
+            "code": "Port Stephens Local Environmental Plan 2013"
+          },
+          {
+            "name": "Queanbeyan Local Environmental Plan 2012",
+            "code": "Queanbeyan Local Environmental Plan 2012"
+          },
+          {
+            "name": "Queanbeyan Local Environmental Plan (Poplars) 2013",
+            "code": "Queanbeyan Local Environmental Plan (Poplars) 2013"
+          },
+          {
+            "name": "Queanbeyan Local Environmental Plan (South Tralee) 2012",
+            "code": "Queanbeyan Local Environmental Plan (South Tralee) 2012"
+          },
+          {
+            "name": "Randwick Local Environmental Plan 2012",
+            "code": "Randwick Local Environmental Plan 2012"
+          },
+          {
+            "name": "Richmond Valley Local Environmental Plan 2012",
+            "code": "Richmond Valley Local Environmental Plan 2012"
+          },
+          {
+            "name": "Rockdale Local Environmental Plan 2011",
+            "code": "Rockdale Local Environmental Plan 2011"
+          },
+          {
+            "name": "Ryde Local Environmental Plan 2010",
+            "code": "Ryde Local Environmental Plan 2010"
+          },
+          {
+            "name": "Ryde Local Environmental Plan 2014",
+            "code": "Ryde Local Environmental Plan 2014"
+          },
+          {
+            "name": "Shellharbour Local Environmental Plan 2013",
+            "code": "Shellharbour Local Environmental Plan 2013"
+          },
+          {
+            "name": "Shoalhaven Local Environmental Plan 2014",
+            "code": "Shoalhaven Local Environmental Plan 2014"
+          },
+          {
+            "name": "Shoalhaven Local Environmental Plan (Jerberra Estate) 2014",
+            "code": "Shoalhaven Local Environmental Plan (Jerberra Estate) 2014"
+          },
+          {
+            "name": "Singleton Local Environmental Plan 2013",
+            "code": "Singleton Local Environmental Plan 2013"
+          },
+          {
+            "name": "Snowy River Local Environmental Plan 2013",
+            "code": "Snowy River Local Environmental Plan 2013"
+          },
+          {
+            "name": "Strathfield Local Environmental Plan 2012",
+            "code": "Strathfield Local Environmental Plan 2012"
+          },
+          {
+            "name": "Sutherland Shire Local Environmental Plan 2015",
+            "code": "Sutherland Shire Local Environmental Plan 2015"
+          },
+          {
+            "name": "Sydney Local Environmental Plan 2012",
+            "code": "Sydney Local Environmental Plan 2012"
+          },
+          {
+            "name": "Sydney Local Environmental Plan (Glebe Affordable Housing Project) 2011",
+            "code": "Sydney Local Environmental Plan (Glebe Affordable Housing Project) 2011"
+          },
+          {
+            "name": "Sydney Local Environmental Plan (Green Square Town Centre) 2013",
+            "code": "Sydney Local Environmental Plan (Green Square Town Centre) 2013"
+          },
+          {
+            "name": "Sydney Local Environmental Plan (Harold Park) 2011",
+            "code": "Sydney Local Environmental Plan (Harold Park) 2011"
+          },
+          {
+            "name": "Tamworth Regional Local Environmental Plan 2010",
+            "code": "Tamworth Regional Local Environmental Plan 2010"
+          },
+          {
+            "name": "Temora Local Environmental Plan 2010",
+            "code": "Temora Local Environmental Plan 2010"
+          },
+          {
+            "name": "Tenterfield Local Environmental Plan 2013",
+            "code": "Tenterfield Local Environmental Plan 2013"
+          },
+          {
+            "name": "The Hills Local Environmental Plan 2012",
+            "code": "The Hills Local Environmental Plan 2012"
+          },
+          {
+            "name": "Tumbarumba Local Environmental Plan 2010",
+            "code": "Tumbarumba Local Environmental Plan 2010"
+          },
+          {
+            "name": "Tumut Local Environmental Plan 2012",
+            "code": "Tumut Local Environmental Plan 2012"
+          },
+          {
+            "name": "Tweed City Centre Local Environmental Plan 2012",
+            "code": "Tweed City Centre Local Environmental Plan 2012"
+          },
+          {
+            "name": "Tweed Local Environmental Plan 2014",
+            "code": "Tweed Local Environmental Plan 2014"
+          },
+          {
+            "name": "Upper Hunter Local Environmental Plan 2013",
+            "code": "Upper Hunter Local Environmental Plan 2013"
+          },
+          {
+            "name": "Upper Lachlan Local Environmental Plan 2010",
+            "code": "Upper Lachlan Local Environmental Plan 2010"
+          },
+          {
+            "name": "Uralla Local Environmental Plan 2012",
+            "code": "Uralla Local Environmental Plan 2012"
+          },
+          {
+            "name": "Urana Local Environmental Plan 2011",
+            "code": "Urana Local Environmental Plan 2011"
+          },
+          {
+            "name": "Wagga Wagga Local Environmental Plan 2010",
+            "code": "Wagga Wagga Local Environmental Plan 2010"
+          },
+          {
+            "name": "Wakool Local Environmental Plan 2013",
+            "code": "Wakool Local Environmental Plan 2013"
+          },
+          {
+            "name": "Walcha Local Environmental Plan 2012",
+            "code": "Walcha Local Environmental Plan 2012"
+          },
+          {
+            "name": "Walgett Local Environmental Plan 2013",
+            "code": "Walgett Local Environmental Plan 2013"
+          },
+          {
+            "name": "Warren Local Environmental Plan 2012",
+            "code": "Warren Local Environmental Plan 2012"
+          },
+          {
+            "name": "Warringah Local Environmental Plan 2011",
+            "code": "Warringah Local Environmental Plan 2011"
+          },
+          {
+            "name": "Warrumbungle Local Environmental Plan 2013",
+            "code": "Warrumbungle Local Environmental Plan 2013"
+          },
+          {
+            "name": "Waverley Local Environmental Plan 2012",
+            "code": "Waverley Local Environmental Plan 2012"
+          },
+          {
+            "name": "Weddin Local Environmental Plan 2011",
+            "code": "Weddin Local Environmental Plan 2011"
+          },
+          {
+            "name": "Wellington Local Environmental Plan 2012",
+            "code": "Wellington Local Environmental Plan 2012"
+          },
+          {
+            "name": "Wentworth Local Environmental Plan 2011",
+            "code": "Wentworth Local Environmental Plan 2011"
+          },
+          {
+            "name": "Willoughby Local Environmental Plan 2012",
+            "code": "Willoughby Local Environmental Plan 2012"
+          },
+          {
+            "name": "Wingecarribee Local Environmental Plan 2010",
+            "code": "Wingecarribee Local Environmental Plan 2010"
+          },
+          {
+            "name": "Wollondilly Local Environmental Plan 2011",
+            "code": "Wollondilly Local Environmental Plan 2011"
+          },
+          {
+            "name": "Wollongong Local Environmental Plan 2009",
+            "code": "Wollongong Local Environmental Plan 2009"
+          },
+          {
+            "name": "Woollahra Local Environmental Plan 2014",
+            "code": "Woollahra Local Environmental Plan 2014"
+          },
+          {
+            "name": "Wyong Local Environmental Plan 2013",
+            "code": "Wyong Local Environmental Plan 2013"
+          },
+          {
+            "name": "Yass Valley Local Environmental Plan 2013",
+            "code": "Yass Valley Local Environmental Plan 2013"
+          },
+          {
+            "name": "Young Local Environmental Plan 2010",
+            "code": "Young Local Environmental Plan 2010"
+          },
+          {
+            "name": "Blue Mountains Local Environmental Plan 2015",
+            "code": "Blue Mountains Local Environmental Plan 2015"
+          },
+          {
+            "name": "Campbelltown Local Environmental Plan 2015",
+            "code": "Campbelltown Local Environmental Plan 2015"
+          },
+          {
+            "name": "Byron Local Environmental Plan 1988",
+            "code": "Byron Local Environmental Plan 1988"
+          },
+          {
+            "name": "Lake Macquarie Local Environmental Plan 2004",
+            "code": "Lake Macquarie Local Environmental Plan 2004"
+          },
+          {
+            "name": "Sutherland Shire Local Environmental Plan 2006",
+            "code": "Sutherland Shire Local Environmental Plan 2006"
+          },
+          {
+            "name": "Sydney Local Environmental Plan (Green Square Town Centre - Stage 2) 2013",
+            "code": "Sydney Local Environmental Plan (Green Square Town Centre - Stage 2) 2013"
+          },
+          {
+            "name": "Draft Central Coast Local Environmental Plan 2017",
+            "code": "Draft Central Coast Local Environmental Plan 2017"
+          },
+          {
+            "name": "Central Coast Local Environmental Plan 2018",
+            "code": "Central Coast Local Environmental Plan 2018"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LGA_CODE",
+      "type": "esriFieldTypeInteger",
+      "alias": "LGA_CODE",
+      "domain": {
+        "type": "codedValue",
+        "name": "LGA_CODE",
+        "codedValues": [
+          {
+            "name": "50",
+            "code": 50
+          },
+          {
+            "name": "110",
+            "code": 110
+          },
+          {
+            "name": "150",
+            "code": 150
+          },
+          {
+            "name": "200",
+            "code": 200
+          },
+          {
+            "name": "250",
+            "code": 250
+          },
+          {
+            "name": "300",
+            "code": 300
+          },
+          {
+            "name": "350",
+            "code": 350
+          },
+          {
+            "name": "470",
+            "code": 470
+          },
+          {
+            "name": "550",
+            "code": 550
+          },
+          {
+            "name": "600",
+            "code": 600
+          },
+          {
+            "name": "650",
+            "code": 650
+          },
+          {
+            "name": "750",
+            "code": 750
+          },
+          {
+            "name": "800",
+            "code": 800
+          },
+          {
+            "name": "850",
+            "code": 850
+          },
+          {
+            "name": "900",
+            "code": 900
+          },
+          {
+            "name": "950",
+            "code": 950
+          },
+          {
+            "name": "1000",
+            "code": 1000
+          },
+          {
+            "name": "1050",
+            "code": 1050
+          },
+          {
+            "name": "1100",
+            "code": 1100
+          },
+          {
+            "name": "1150",
+            "code": 1150
+          },
+          {
+            "name": "1200",
+            "code": 1200
+          },
+          {
+            "name": "1250",
+            "code": 1250
+          },
+          {
+            "name": "1300",
+            "code": 1300
+          },
+          {
+            "name": "1350",
+            "code": 1350
+          },
+          {
+            "name": "1400",
+            "code": 1400
+          },
+          {
+            "name": "1450",
+            "code": 1450
+          },
+          {
+            "name": "1500",
+            "code": 1500
+          },
+          {
+            "name": "1520",
+            "code": 1520
+          },
+          {
+            "name": "1550",
+            "code": 1550
+          },
+          {
+            "name": "1600",
+            "code": 1600
+          },
+          {
+            "name": "1700",
+            "code": 1700
+          },
+          {
+            "name": "1720",
+            "code": 1720
+          },
+          {
+            "name": "1730",
+            "code": 1730
+          },
+          {
+            "name": "1750",
+            "code": 1750
+          },
+          {
+            "name": "1800",
+            "code": 1800
+          },
+          {
+            "name": "1860",
+            "code": 1860
+          },
+          {
+            "name": "2000",
+            "code": 2000
+          },
+          {
+            "name": "2050",
+            "code": 2050
+          },
+          {
+            "name": "2150",
+            "code": 2150
+          },
+          {
+            "name": "2200",
+            "code": 2200
+          },
+          {
+            "name": "2300",
+            "code": 2300
+          },
+          {
+            "name": "2350",
+            "code": 2350
+          },
+          {
+            "name": "2500",
+            "code": 2500
+          },
+          {
+            "name": "2600",
+            "code": 2600
+          },
+          {
+            "name": "2700",
+            "code": 2700
+          },
+          {
+            "name": "2750",
+            "code": 2750
+          },
+          {
+            "name": "2850",
+            "code": 2850
+          },
+          {
+            "name": "2900",
+            "code": 2900
+          },
+          {
+            "name": "2950",
+            "code": 2950
+          },
+          {
+            "name": "3010",
+            "code": 3010
+          },
+          {
+            "name": "3050",
+            "code": 3050
+          },
+          {
+            "name": "3100",
+            "code": 3100
+          },
+          {
+            "name": "3310",
+            "code": 3310
+          },
+          {
+            "name": "3320",
+            "code": 3320
+          },
+          {
+            "name": "3340",
+            "code": 3340
+          },
+          {
+            "name": "3380",
+            "code": 3380
+          },
+          {
+            "name": "3450",
+            "code": 3450
+          },
+          {
+            "name": "3500",
+            "code": 3500
+          },
+          {
+            "name": "3550",
+            "code": 3550
+          },
+          {
+            "name": "3650",
+            "code": 3650
+          },
+          {
+            "name": "3660",
+            "code": 3660
+          },
+          {
+            "name": "3700",
+            "code": 3700
+          },
+          {
+            "name": "3800",
+            "code": 3800
+          },
+          {
+            "name": "3850",
+            "code": 3850
+          },
+          {
+            "name": "3950",
+            "code": 3950
+          },
+          {
+            "name": "4000",
+            "code": 4000
+          },
+          {
+            "name": "4100",
+            "code": 4100
+          },
+          {
+            "name": "4150",
+            "code": 4150
+          },
+          {
+            "name": "4200",
+            "code": 4200
+          },
+          {
+            "name": "4250",
+            "code": 4250
+          },
+          {
+            "name": "4300",
+            "code": 4300
+          },
+          {
+            "name": "4350",
+            "code": 4350
+          },
+          {
+            "name": "4400",
+            "code": 4400
+          },
+          {
+            "name": "4450",
+            "code": 4450
+          },
+          {
+            "name": "4500",
+            "code": 4500
+          },
+          {
+            "name": "4550",
+            "code": 4550
+          },
+          {
+            "name": "4600",
+            "code": 4600
+          },
+          {
+            "name": "4650",
+            "code": 4650
+          },
+          {
+            "name": "4700",
+            "code": 4700
+          },
+          {
+            "name": "4750",
+            "code": 4750
+          },
+          {
+            "name": "4800",
+            "code": 4800
+          },
+          {
+            "name": "4850",
+            "code": 4850
+          },
+          {
+            "name": "4870",
+            "code": 4870
+          },
+          {
+            "name": "4900",
+            "code": 4900
+          },
+          {
+            "name": "4920",
+            "code": 4920
+          },
+          {
+            "name": "4950",
+            "code": 4950
+          },
+          {
+            "name": "5050",
+            "code": 5050
+          },
+          {
+            "name": "5150",
+            "code": 5150
+          },
+          {
+            "name": "5200",
+            "code": 5200
+          },
+          {
+            "name": "5270",
+            "code": 5270
+          },
+          {
+            "name": "5300",
+            "code": 5300
+          },
+          {
+            "name": "5350",
+            "code": 5350
+          },
+          {
+            "name": "5500",
+            "code": 5500
+          },
+          {
+            "name": "5550",
+            "code": 5550
+          },
+          {
+            "name": "5650",
+            "code": 5650
+          },
+          {
+            "name": "5700",
+            "code": 5700
+          },
+          {
+            "name": "5750",
+            "code": 5750
+          },
+          {
+            "name": "5800",
+            "code": 5800
+          },
+          {
+            "name": "5850",
+            "code": 5850
+          },
+          {
+            "name": "5900",
+            "code": 5900
+          },
+          {
+            "name": "5950",
+            "code": 5950
+          },
+          {
+            "name": "6100",
+            "code": 6100
+          },
+          {
+            "name": "6150",
+            "code": 6150
+          },
+          {
+            "name": "6180",
+            "code": 6180
+          },
+          {
+            "name": "6200",
+            "code": 6200
+          },
+          {
+            "name": "6250",
+            "code": 6250
+          },
+          {
+            "name": "6350",
+            "code": 6350
+          },
+          {
+            "name": "6370",
+            "code": 6370
+          },
+          {
+            "name": "6380",
+            "code": 6380
+          },
+          {
+            "name": "6400",
+            "code": 6400
+          },
+          {
+            "name": "6470",
+            "code": 6470
+          },
+          {
+            "name": "6550",
+            "code": 6550
+          },
+          {
+            "name": "6610",
+            "code": 6610
+          },
+          {
+            "name": "6650",
+            "code": 6650
+          },
+          {
+            "name": "6700",
+            "code": 6700
+          },
+          {
+            "name": "6900",
+            "code": 6900
+          },
+          {
+            "name": "6950",
+            "code": 6950
+          },
+          {
+            "name": "7000",
+            "code": 7000
+          },
+          {
+            "name": "7050",
+            "code": 7050
+          },
+          {
+            "name": "7100",
+            "code": 7100
+          },
+          {
+            "name": "7150",
+            "code": 7150
+          },
+          {
+            "name": "7200",
+            "code": 7200
+          },
+          {
+            "name": "7310",
+            "code": 7310
+          },
+          {
+            "name": "7350",
+            "code": 7350
+          },
+          {
+            "name": "7400",
+            "code": 7400
+          },
+          {
+            "name": "7420",
+            "code": 7420
+          },
+          {
+            "name": "7450",
+            "code": 7450
+          },
+          {
+            "name": "7500",
+            "code": 7500
+          },
+          {
+            "name": "7550",
+            "code": 7550
+          },
+          {
+            "name": "7620",
+            "code": 7620
+          },
+          {
+            "name": "7640",
+            "code": 7640
+          },
+          {
+            "name": "7650",
+            "code": 7650
+          },
+          {
+            "name": "7700",
+            "code": 7700
+          },
+          {
+            "name": "7750",
+            "code": 7750
+          },
+          {
+            "name": "7800",
+            "code": 7800
+          },
+          {
+            "name": "7850",
+            "code": 7850
+          },
+          {
+            "name": "7900",
+            "code": 7900
+          },
+          {
+            "name": "7950",
+            "code": 7950
+          },
+          {
+            "name": "8000",
+            "code": 8000
+          },
+          {
+            "name": "8020",
+            "code": 8020
+          },
+          {
+            "name": "8050",
+            "code": 8050
+          },
+          {
+            "name": "8100",
+            "code": 8100
+          },
+          {
+            "name": "8150",
+            "code": 8150
+          },
+          {
+            "name": "8200",
+            "code": 8200
+          },
+          {
+            "name": "8250",
+            "code": 8250
+          },
+          {
+            "name": "8350",
+            "code": 8350
+          },
+          {
+            "name": "8400",
+            "code": 8400
+          },
+          {
+            "name": "8450",
+            "code": 8450
+          },
+          {
+            "name": "8500",
+            "code": 8500
+          },
+          {
+            "name": "8550",
+            "code": 8550
+          },
+          {
+            "name": "8710",
+            "code": 8710
+          },
+          {
+            "name": "8750",
+            "code": 8750
+          },
+          {
+            "name": "9339",
+            "code": 9339
+          },
+          {
+            "name": "0",
+            "code": 0
+          },
+          {
+            "name": "6260",
+            "code": 6260
+          },
+          {
+            "name": "5560",
+            "code": 5560
+          },
+          {
+            "name": "130",
+            "code": 130
+          },
+          {
+            "name": "1570",
+            "code": 1570
+          },
+          {
+            "name": "1650",
+            "code": 1650
+          },
+          {
+            "name": "2380",
+            "code": 2380
+          },
+          {
+            "name": "2730",
+            "code": 2730
+          },
+          {
+            "name": "2870",
+            "code": 2870
+          },
+          {
+            "name": "2930",
+            "code": 2930
+          },
+          {
+            "name": "3910",
+            "code": 3910
+          },
+          {
+            "name": "4170",
+            "code": 4170
+          },
+          {
+            "name": "5240",
+            "code": 5240
+          },
+          {
+            "name": "5520",
+            "code": 5520
+          },
+          {
+            "name": "5990",
+            "code": 5990
+          },
+          {
+            "name": "6490",
+            "code": 6490
+          },
+          {
+            "name": "7040",
+            "code": 7040
+          },
+          {
+            "name": "7080",
+            "code": 7080
+          }
+        ]
+      }
+    },
+    {
+      "name": "LGA_NAME",
+      "type": "esriFieldTypeString",
+      "alias": "LGA_NAME",
+      "length": 50,
+      "domain": {
+        "type": "codedValue",
+        "name": "LGANAME",
+        "codedValues": [
+          {
+            "name": "WARRUMBUNGLE",
+            "code": "WARRUMBUNGLE"
+          },
+          {
+            "name": "ARMIDALE REGIONAL",
+            "code": "ARMIDALE REGIONAL"
+          },
+          {
+            "name": "ASHFIELD",
+            "code": "ASHFIELD"
+          },
+          {
+            "name": "BANKSTOWN",
+            "code": "BANKSTOWN"
+          },
+          {
+            "name": "BELLINGEN",
+            "code": "BELLINGEN"
+          },
+          {
+            "name": "BLAYNEY",
+            "code": "BLAYNEY"
+          },
+          {
+            "name": "BOOROWA",
+            "code": "BOOROWA"
+          },
+          {
+            "name": "BREWARRINA",
+            "code": "BREWARRINA"
+          },
+          {
+            "name": "CABONNE",
+            "code": "CABONNE"
+          },
+          {
+            "name": "CANTERBURY",
+            "code": "CANTERBURY"
+          },
+          {
+            "name": "CLARENCE VALLEY",
+            "code": "CLARENCE VALLEY"
+          },
+          {
+            "name": "COONAMBLE",
+            "code": "COONAMBLE"
+          },
+          {
+            "name": "DENILIQUIN",
+            "code": "DENILIQUIN"
+          },
+          {
+            "name": "EUROBODALLA",
+            "code": "EUROBODALLA"
+          },
+          {
+            "name": "GOULBURN MULWAREE",
+            "code": "GOULBURN MULWAREE"
+          },
+          {
+            "name": "QUEANBEYAN",
+            "code": "QUEANBEYAN"
+          },
+          {
+            "name": "GUYRA",
+            "code": "GUYRA"
+          },
+          {
+            "name": "HAWKESBURY",
+            "code": "HAWKESBURY"
+          },
+          {
+            "name": "HUNTERS HILL",
+            "code": "HUNTERS HILL"
+          },
+          {
+            "name": "JUNEE",
+            "code": "JUNEE"
+          },
+          {
+            "name": "KU-RING-GAI",
+            "code": "KU-RING-GAI"
+          },
+          {
+            "name": "LANE COVE",
+            "code": "LANE COVE"
+          },
+          {
+            "name": "LIVERPOOL",
+            "code": "LIVERPOOL"
+          },
+          {
+            "name": "MANLY",
+            "code": "MANLY"
+          },
+          {
+            "name": "MOSMAN",
+            "code": "MOSMAN"
+          },
+          {
+            "name": "NAMBUCCA",
+            "code": "NAMBUCCA"
+          },
+          {
+            "name": "NEWCASTLE",
+            "code": "NEWCASTLE"
+          },
+          {
+            "name": "PARKES",
+            "code": "PARKES"
+          },
+          {
+            "name": "PITTWATER",
+            "code": "PITTWATER"
+          },
+          {
+            "name": "ROCKDALE",
+            "code": "ROCKDALE"
+          },
+          {
+            "name": "SHOALHAVEN",
+            "code": "SHOALHAVEN"
+          },
+          {
+            "name": "SUTHERLAND",
+            "code": "SUTHERLAND"
+          },
+          {
+            "name": "TUMBARUMBA",
+            "code": "TUMBARUMBA"
+          },
+          {
+            "name": "UPPER LACHLAN",
+            "code": "UPPER LACHLAN"
+          },
+          {
+            "name": "WAKOOL",
+            "code": "WAKOOL"
+          },
+          {
+            "name": "WARRINGAH",
+            "code": "WARRINGAH"
+          },
+          {
+            "name": "WENTWORTH",
+            "code": "WENTWORTH"
+          },
+          {
+            "name": "WOLLONGONG",
+            "code": "WOLLONGONG"
+          },
+          {
+            "name": "YOUNG",
+            "code": "YOUNG"
+          },
+          {
+            "name": "AUBURN",
+            "code": "AUBURN"
+          },
+          {
+            "name": "BATHURST REGIONAL",
+            "code": "BATHURST REGIONAL"
+          },
+          {
+            "name": "BERRIGAN",
+            "code": "BERRIGAN"
+          },
+          {
+            "name": "BLUE MOUNTAINS",
+            "code": "BLUE MOUNTAINS"
+          },
+          {
+            "name": "BOTANY BAY",
+            "code": "BOTANY BAY"
+          },
+          {
+            "name": "BROKEN HILL",
+            "code": "BROKEN HILL"
+          },
+          {
+            "name": "CAMDEN",
+            "code": "CAMDEN"
+          },
+          {
+            "name": "CARRATHOOL",
+            "code": "CARRATHOOL"
+          },
+          {
+            "name": "COBAR",
+            "code": "COBAR"
+          },
+          {
+            "name": "COOLAMON",
+            "code": "COOLAMON"
+          },
+          {
+            "name": "COOTAMUNDRA",
+            "code": "COOTAMUNDRA"
+          },
+          {
+            "name": "DUBBO",
+            "code": "DUBBO"
+          },
+          {
+            "name": "FAIRFIELD",
+            "code": "FAIRFIELD"
+          },
+          {
+            "name": "GLOUCESTER",
+            "code": "GLOUCESTER"
+          },
+          {
+            "name": "GREATER HUME",
+            "code": "GREATER HUME"
+          },
+          {
+            "name": "GRIFFITH",
+            "code": "GRIFFITH"
+          },
+          {
+            "name": "GWYDIR",
+            "code": "GWYDIR"
+          },
+          {
+            "name": "HAY",
+            "code": "HAY"
+          },
+          {
+            "name": "HURSTVILLE",
+            "code": "HURSTVILLE"
+          },
+          {
+            "name": "KEMPSEY",
+            "code": "KEMPSEY"
+          },
+          {
+            "name": "KYOGLE",
+            "code": "KYOGLE"
+          },
+          {
+            "name": "LEETON",
+            "code": "LEETON"
+          },
+          {
+            "name": "LIVERPOOL PLAINS",
+            "code": "LIVERPOOL PLAINS"
+          },
+          {
+            "name": "MARRICKVILLE",
+            "code": "MARRICKVILLE"
+          },
+          {
+            "name": "MURRAY",
+            "code": "MURRAY"
+          },
+          {
+            "name": "NARRABRI",
+            "code": "NARRABRI"
+          },
+          {
+            "name": "NORTH SYDNEY",
+            "code": "NORTH SYDNEY"
+          },
+          {
+            "name": "PARRAMATTA",
+            "code": "PARRAMATTA"
+          },
+          {
+            "name": "PORT STEPHENS",
+            "code": "PORT STEPHENS"
+          },
+          {
+            "name": "RYDE",
+            "code": "RYDE"
+          },
+          {
+            "name": "SINGLETON",
+            "code": "SINGLETON"
+          },
+          {
+            "name": "SYDNEY",
+            "code": "SYDNEY"
+          },
+          {
+            "name": "TUMUT",
+            "code": "TUMUT"
+          },
+          {
+            "name": "URALLA",
+            "code": "URALLA"
+          },
+          {
+            "name": "WALCHA",
+            "code": "WALCHA"
+          },
+          {
+            "name": "WAVERLEY",
+            "code": "WAVERLEY"
+          },
+          {
+            "name": "WILLOUGHBY",
+            "code": "WILLOUGHBY"
+          },
+          {
+            "name": "WOOLLAHRA",
+            "code": "WOOLLAHRA"
+          },
+          {
+            "name": "ALBURY",
+            "code": "ALBURY"
+          },
+          {
+            "name": "BALLINA",
+            "code": "BALLINA"
+          },
+          {
+            "name": "THE HILLS",
+            "code": "THE HILLS"
+          },
+          {
+            "name": "BLACKTOWN",
+            "code": "BLACKTOWN"
+          },
+          {
+            "name": "BOGAN",
+            "code": "BOGAN"
+          },
+          {
+            "name": "BURWOOD",
+            "code": "BURWOOD"
+          },
+          {
+            "name": "CAMPBELLTOWN",
+            "code": "CAMPBELLTOWN"
+          },
+          {
+            "name": "CENTRAL DARLING",
+            "code": "CENTRAL DARLING"
+          },
+          {
+            "name": "COFFS HARBOUR",
+            "code": "COFFS HARBOUR"
+          },
+          {
+            "name": "COOMA-MONARO",
+            "code": "COOMA-MONARO"
+          },
+          {
+            "name": "COROWA",
+            "code": "COROWA"
+          },
+          {
+            "name": "DUNGOG",
+            "code": "DUNGOG"
+          },
+          {
+            "name": "FORBES",
+            "code": "FORBES"
+          },
+          {
+            "name": "GOSFORD",
+            "code": "GOSFORD"
+          },
+          {
+            "name": "GREATER TAREE",
+            "code": "GREATER TAREE"
+          },
+          {
+            "name": "GUNDAGAI",
+            "code": "GUNDAGAI"
+          },
+          {
+            "name": "HARDEN",
+            "code": "HARDEN"
+          },
+          {
+            "name": "HOLROYD",
+            "code": "HOLROYD"
+          },
+          {
+            "name": "INVERELL",
+            "code": "INVERELL"
+          },
+          {
+            "name": "KIAMA",
+            "code": "KIAMA"
+          },
+          {
+            "name": "LACHLAN",
+            "code": "LACHLAN"
+          },
+          {
+            "name": "LEICHHARDT",
+            "code": "LEICHHARDT"
+          },
+          {
+            "name": "LOCKHART",
+            "code": "LOCKHART"
+          },
+          {
+            "name": "MID-WESTERN REGIONAL",
+            "code": "MID-WESTERN REGIONAL"
+          },
+          {
+            "name": "MURRUMBIDGEE",
+            "code": "MURRUMBIDGEE"
+          },
+          {
+            "name": "NARRANDERA",
+            "code": "NARRANDERA"
+          },
+          {
+            "name": "OBERON",
+            "code": "OBERON"
+          },
+          {
+            "name": "TAMWORTH REGIONAL",
+            "code": "TAMWORTH REGIONAL"
+          },
+          {
+            "name": "RANDWICK",
+            "code": "RANDWICK"
+          },
+          {
+            "name": "SNOWY RIVER",
+            "code": "SNOWY RIVER"
+          },
+          {
+            "name": "TEMORA",
+            "code": "TEMORA"
+          },
+          {
+            "name": "TWEED",
+            "code": "TWEED"
+          },
+          {
+            "name": "URANA",
+            "code": "URANA"
+          },
+          {
+            "name": "WALGETT",
+            "code": "WALGETT"
+          },
+          {
+            "name": "WEDDIN",
+            "code": "WEDDIN"
+          },
+          {
+            "name": "WINGECARRIBEE",
+            "code": "WINGECARRIBEE"
+          },
+          {
+            "name": "WYONG",
+            "code": "WYONG"
+          },
+          {
+            "name": "ARMIDALE DUMARESQ",
+            "code": "ARMIDALE DUMARESQ"
+          },
+          {
+            "name": "BALRANALD",
+            "code": "BALRANALD"
+          },
+          {
+            "name": "BEGA VALLEY",
+            "code": "BEGA VALLEY"
+          },
+          {
+            "name": "BLAND",
+            "code": "BLAND"
+          },
+          {
+            "name": "BOMBALA",
+            "code": "BOMBALA"
+          },
+          {
+            "name": "BOURKE",
+            "code": "BOURKE"
+          },
+          {
+            "name": "BYRON",
+            "code": "BYRON"
+          },
+          {
+            "name": "CANADA BAY",
+            "code": "CANADA BAY"
+          },
+          {
+            "name": "CESSNOCK",
+            "code": "CESSNOCK"
+          },
+          {
+            "name": "CONARGO",
+            "code": "CONARGO"
+          },
+          {
+            "name": "COWRA",
+            "code": "COWRA"
+          },
+          {
+            "name": "PALERANG",
+            "code": "PALERANG"
+          },
+          {
+            "name": "GILGANDRA",
+            "code": "GILGANDRA"
+          },
+          {
+            "name": "LITHGOW",
+            "code": "LITHGOW"
+          },
+          {
+            "name": "GREAT LAKES",
+            "code": "GREAT LAKES"
+          },
+          {
+            "name": "GUNNEDAH",
+            "code": "GUNNEDAH"
+          },
+          {
+            "name": "PORT MACQUARIE-HASTINGS",
+            "code": "PORT MACQUARIE-HASTINGS"
+          },
+          {
+            "name": "HORNSBY",
+            "code": "HORNSBY"
+          },
+          {
+            "name": "JERILDERIE",
+            "code": "JERILDERIE"
+          },
+          {
+            "name": "KOGARAH",
+            "code": "KOGARAH"
+          },
+          {
+            "name": "LAKE MACQUARIE",
+            "code": "LAKE MACQUARIE"
+          },
+          {
+            "name": "LISMORE",
+            "code": "LISMORE"
+          },
+          {
+            "name": "MAITLAND",
+            "code": "MAITLAND"
+          },
+          {
+            "name": "MOREE PLAINS",
+            "code": "MOREE PLAINS"
+          },
+          {
+            "name": "MUSWELLBROOK",
+            "code": "MUSWELLBROOK"
+          },
+          {
+            "name": "NARROMINE",
+            "code": "NARROMINE"
+          },
+          {
+            "name": "ORANGE",
+            "code": "ORANGE"
+          },
+          {
+            "name": "PENRITH",
+            "code": "PENRITH"
+          },
+          {
+            "name": "RICHMOND VALLEY",
+            "code": "RICHMOND VALLEY"
+          },
+          {
+            "name": "SHELLHARBOUR",
+            "code": "SHELLHARBOUR"
+          },
+          {
+            "name": "STRATHFIELD",
+            "code": "STRATHFIELD"
+          },
+          {
+            "name": "TENTERFIELD",
+            "code": "TENTERFIELD"
+          },
+          {
+            "name": "UPPER HUNTER",
+            "code": "UPPER HUNTER"
+          },
+          {
+            "name": "WAGGA WAGGA",
+            "code": "WAGGA WAGGA"
+          },
+          {
+            "name": "WARREN",
+            "code": "WARREN"
+          },
+          {
+            "name": "WELLINGTON",
+            "code": "WELLINGTON"
+          },
+          {
+            "name": "WOLLONDILLY",
+            "code": "WOLLONDILLY"
+          },
+          {
+            "name": "YASS VALLEY",
+            "code": "YASS VALLEY"
+          },
+          {
+            "name": "UNINCORPORATED",
+            "code": "UNINCORPORATED"
+          },
+          {
+            "name": "GLEN INNES SEVERN",
+            "code": "GLEN INNES SEVERN"
+          },
+          {
+            "name": "SNOWY MONARO REGIONAL",
+            "code": "SNOWY MONARO REGIONAL"
+          },
+          {
+            "name": "WESTERN PLAINS REGIONAL",
+            "code": "WESTERN PLAINS REGIONAL"
+          },
+          {
+            "name": "NORTHERN BEACHES",
+            "code": "NORTHERN BEACHES"
+          },
+          {
+            "name": "INNER WEST",
+            "code": "INNER WEST"
+          },
+          {
+            "name": "MURRAY RIVER",
+            "code": "MURRAY RIVER"
+          },
+          {
+            "name": "FEDERATION",
+            "code": "FEDERATION"
+          },
+          {
+            "name": "MID-COAST",
+            "code": "MID-COAST"
+          },
+          {
+            "name": "QUEANBEYAN-PALERANG REGIONAL",
+            "code": "QUEANBEYAN-PALERANG REGIONAL"
+          },
+          {
+            "name": "CUMBERLAND",
+            "code": "CUMBERLAND"
+          },
+          {
+            "name": "EDWARD RIVER",
+            "code": "EDWARD RIVER"
+          },
+          {
+            "name": "SNOWY VALLEYS",
+            "code": "SNOWY VALLEYS"
+          },
+          {
+            "name": "CANTERBURY-BANKSTOWN",
+            "code": "CANTERBURY-BANKSTOWN"
+          },
+          {
+            "name": "HILLTOPS",
+            "code": "HILLTOPS"
+          },
+          {
+            "name": "CENTRAL COAST",
+            "code": "CENTRAL COAST"
+          },
+          {
+            "name": "GEORGES RIVER",
+            "code": "GEORGES RIVER"
+          },
+          {
+            "name": "BAYSIDE",
+            "code": "BAYSIDE"
+          },
+          {
+            "name": "DUBBO REGIONAL",
+            "code": "DUBBO REGIONAL"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PUBLISHED_DATE",
+      "type": "esriFieldTypeDate",
+      "alias": "PUBLISHED_DATE",
+      "length": 8,
+      "domain": null
+    },
+    {
+      "name": "COMMENCED_DATE",
+      "type": "esriFieldTypeDate",
+      "alias": "COMMENCED_DATE",
+      "length": 8,
+      "domain": null
+    },
+    {
+      "name": "CURRENCY_DATE",
+      "type": "esriFieldTypeDate",
+      "alias": "CURRENCY_DATE",
+      "length": 8,
+      "domain": null
+    },
+    {
+      "name": "AMENDMENT",
+      "type": "esriFieldTypeString",
+      "alias": "AMENDMENT",
+      "length": 150,
+      "domain": null
+    },
+    {
+      "name": "MAP_TYPE",
+      "type": "esriFieldTypeString",
+      "alias": "MAP_TYPE",
+      "length": 4,
+      "domain": null
+    },
+    {
+      "name": "MAP_NAME",
+      "type": "esriFieldTypeString",
+      "alias": "MAP_NAME",
+      "length": 100,
+      "domain": null
+    },
+    {
+      "name": "LAY_NAME",
+      "type": "esriFieldTypeString",
+      "alias": "LAY_NAME",
+      "length": 100,
+      "domain": null
+    },
+    {
+      "name": "LAY_CLASS",
+      "type": "esriFieldTypeString",
+      "alias": "LAY_CLASS",
+      "length": 100,
+      "domain": {
+        "type": "codedValue",
+        "name": "ZONE_DESCRIPTION",
+        "codedValues": [
+          {
+            "name": "Primary Production",
+            "code": "Primary Production"
+          },
+          {
+            "name": "Rural Landscape",
+            "code": "Rural Landscape"
+          },
+          {
+            "name": "Forestry",
+            "code": "Forestry"
+          },
+          {
+            "name": "Primary Production Small Lots",
+            "code": "Primary Production Small Lots"
+          },
+          {
+            "name": "Village",
+            "code": "Village"
+          },
+          {
+            "name": "Transition",
+            "code": "Transition"
+          },
+          {
+            "name": "General Residential",
+            "code": "General Residential"
+          },
+          {
+            "name": "Low Density Residential",
+            "code": "Low Density Residential"
+          },
+          {
+            "name": "Medium Density Residential",
+            "code": "Medium Density Residential"
+          },
+          {
+            "name": "High Density Residential",
+            "code": "High Density Residential"
+          },
+          {
+            "name": "Large Lot Residential",
+            "code": "Large Lot Residential"
+          },
+          {
+            "name": "Neighbourhood Centre",
+            "code": "Neighbourhood Centre"
+          },
+          {
+            "name": "Local Centre",
+            "code": "Local Centre"
+          },
+          {
+            "name": "Commercial Core",
+            "code": "Commercial Core"
+          },
+          {
+            "name": "Mixed Use",
+            "code": "Mixed Use"
+          },
+          {
+            "name": "Business Development",
+            "code": "Business Development"
+          },
+          {
+            "name": "Enterprise Corridor",
+            "code": "Enterprise Corridor"
+          },
+          {
+            "name": "Business Park",
+            "code": "Business Park"
+          },
+          {
+            "name": "Metropolitan Centre",
+            "code": "Metropolitan Centre"
+          },
+          {
+            "name": "General Industrial",
+            "code": "General Industrial"
+          },
+          {
+            "name": "Light Industrial",
+            "code": "Light Industrial"
+          },
+          {
+            "name": "Heavy Industrial",
+            "code": "Heavy Industrial"
+          },
+          {
+            "name": "Working Waterfront",
+            "code": "Working Waterfront"
+          },
+          {
+            "name": "Special Activities",
+            "code": "Special Activities"
+          },
+          {
+            "name": "Infrastructure",
+            "code": "Infrastructure"
+          },
+          {
+            "name": "Tourist",
+            "code": "Tourist"
+          },
+          {
+            "name": "Public Recreation",
+            "code": "Public Recreation"
+          },
+          {
+            "name": "Private Recreation",
+            "code": "Private Recreation"
+          },
+          {
+            "name": "National Parks and Nature Reserves",
+            "code": "National Parks and Nature Reserves"
+          },
+          {
+            "name": "Environmental Conservation",
+            "code": "Environmental Conservation"
+          },
+          {
+            "name": "Environmental Management",
+            "code": "Environmental Management"
+          },
+          {
+            "name": "Environmental Living",
+            "code": "Environmental Living"
+          },
+          {
+            "name": "Natural Waterways",
+            "code": "Natural Waterways"
+          },
+          {
+            "name": "Recreational Waterways",
+            "code": "Recreational Waterways"
+          },
+          {
+            "name": "Working Waterways",
+            "code": "Working Waterways"
+          },
+          {
+            "name": "Unzoned Land",
+            "code": "Unzoned Land"
+          },
+          {
+            "name": "Deferred Matter",
+            "code": "Deferred Matter"
+          },
+          {
+            "name": "Sydney LEP (Green Square Town Centre) 2013",
+            "code": "Sydney LEP (Green Square Town Centre) 2013"
+          },
+          {
+            "name": "Sydney LEP (Green Square Town Centre 2) 2013",
+            "code": "Sydney LEP (Green Square Town Centre 2) 2013"
+          },
+          {
+            "name": "Sydney LEP (GSTC 2) 2013 & SS LEP 114",
+            "code": "Sydney LEP (GSTC 2) 2013 & SS LEP 114"
+          },
+          {
+            "name": "Sydney LEP (GSTC 2) 2013 & CoS PSO",
+            "code": "Sydney LEP (GSTC 2) 2013 & CoS PSO"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LABEL",
+      "type": "esriFieldTypeString",
+      "alias": "LABEL",
+      "length": 100,
+      "domain": null
+    },
+    {
+      "name": "SYM_CODE",
+      "type": "esriFieldTypeString",
+      "alias": "SYM_CODE",
+      "length": 10,
+      "domain": {
+        "type": "codedValue",
+        "name": "ZONE_CODE",
+        "codedValues": [
+          {
+            "name": "RU1",
+            "code": "RU1"
+          },
+          {
+            "name": "RU2",
+            "code": "RU2"
+          },
+          {
+            "name": "RU3",
+            "code": "RU3"
+          },
+          {
+            "name": "RU4",
+            "code": "RU4"
+          },
+          {
+            "name": "RU5",
+            "code": "RU5"
+          },
+          {
+            "name": "RU6",
+            "code": "RU6"
+          },
+          {
+            "name": "R1",
+            "code": "R1"
+          },
+          {
+            "name": "R2",
+            "code": "R2"
+          },
+          {
+            "name": "R3",
+            "code": "R3"
+          },
+          {
+            "name": "R4",
+            "code": "R4"
+          },
+          {
+            "name": "R5",
+            "code": "R5"
+          },
+          {
+            "name": "B1",
+            "code": "B1"
+          },
+          {
+            "name": "B2",
+            "code": "B2"
+          },
+          {
+            "name": "B3",
+            "code": "B3"
+          },
+          {
+            "name": "B4",
+            "code": "B4"
+          },
+          {
+            "name": "B5",
+            "code": "B5"
+          },
+          {
+            "name": "B6",
+            "code": "B6"
+          },
+          {
+            "name": "B7",
+            "code": "B7"
+          },
+          {
+            "name": "B8",
+            "code": "B8"
+          },
+          {
+            "name": "IN1",
+            "code": "IN1"
+          },
+          {
+            "name": "IN2",
+            "code": "IN2"
+          },
+          {
+            "name": "IN3",
+            "code": "IN3"
+          },
+          {
+            "name": "IN4",
+            "code": "IN4"
+          },
+          {
+            "name": "SP1",
+            "code": "SP1"
+          },
+          {
+            "name": "SP2",
+            "code": "SP2"
+          },
+          {
+            "name": "SP3",
+            "code": "SP3"
+          },
+          {
+            "name": "RE1",
+            "code": "RE1"
+          },
+          {
+            "name": "RE2",
+            "code": "RE2"
+          },
+          {
+            "name": "E1",
+            "code": "E1"
+          },
+          {
+            "name": "E2",
+            "code": "E2"
+          },
+          {
+            "name": "E3",
+            "code": "E3"
+          },
+          {
+            "name": "E4",
+            "code": "E4"
+          },
+          {
+            "name": "W1",
+            "code": "W1"
+          },
+          {
+            "name": "W2",
+            "code": "W2"
+          },
+          {
+            "name": "W3",
+            "code": "W3"
+          },
+          {
+            "name": "UL",
+            "code": "UL"
+          },
+          {
+            "name": "DM",
+            "code": "DM"
+          },
+          {
+            "name": "GS1",
+            "code": "GS1"
+          },
+          {
+            "name": "GS2",
+            "code": "GS2"
+          },
+          {
+            "name": "GS21",
+            "code": "GS21"
+          },
+          {
+            "name": "GS2P",
+            "code": "GS2P"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PURPOSE",
+      "type": "esriFieldTypeString",
+      "alias": "PURPOSE",
+      "length": 50,
+      "domain": null
+    },
+    {
+      "name": "COMMENTS",
+      "type": "esriFieldTypeString",
+      "alias": "COMMENTS",
+      "length": 100,
+      "domain": null
+    },
+    {
+      "name": "LEGIS_REF_AREA",
+      "type": "esriFieldTypeString",
+      "alias": "LEGIS_REF_AREA",
+      "length": 50,
+      "domain": null
+    },
+    {
+      "name": "LEGIS_REF_CLAUSE",
+      "type": "esriFieldTypeString",
+      "alias": "LEGIS_REF_CLAUSE",
+      "length": 50,
+      "domain": null
+    },
+    {
+      "name": "LEGIS_REF_VALUE",
+      "type": "esriFieldTypeString",
+      "alias": "LEGIS_REF_VALUE",
+      "length": 50,
+      "domain": null
+    },
+    {
+      "name": "PCO_REF_KEY",
+      "type": "esriFieldTypeString",
+      "alias": "PCO_REF_KEY",
+      "length": 50,
+      "domain": {
+        "type": "codedValue",
+        "name": "PCO_REF_KEY_LEP",
+        "codedValues": [
+          {
+            "name": "2013-213",
+            "code": "2013-213"
+          },
+          {
+            "name": "2011-684",
+            "code": "2011-684"
+          },
+          {
+            "name": "2011-681",
+            "code": "2011-681"
+          },
+          {
+            "name": "2011-645",
+            "code": "2011-645"
+          },
+          {
+            "name": "2011-641",
+            "code": "2011-641"
+          },
+          {
+            "name": "2011-639",
+            "code": "2011-639"
+          },
+          {
+            "name": "2011-647",
+            "code": "2011-647"
+          },
+          {
+            "name": "2011-646",
+            "code": "2011-646"
+          },
+          {
+            "name": "2011-642",
+            "code": "2011-642"
+          },
+          {
+            "name": "2011-648",
+            "code": "2011-648"
+          },
+          {
+            "name": "2011-640",
+            "code": "2011-640"
+          },
+          {
+            "name": "2011-644",
+            "code": "2011-644"
+          },
+          {
+            "name": "2011-621",
+            "code": "2011-621"
+          },
+          {
+            "name": "2011-622",
+            "code": "2011-622"
+          },
+          {
+            "name": "2014-320",
+            "code": "2014-320"
+          },
+          {
+            "name": "2010-514",
+            "code": "2010-514"
+          },
+          {
+            "name": "2011-580",
+            "code": "2011-580"
+          },
+          {
+            "name": "2010-76",
+            "code": "2010-76"
+          },
+          {
+            "name": "2012-589",
+            "code": "2012-589"
+          },
+          {
+            "name": "2014-301",
+            "code": "2014-301"
+          },
+          {
+            "name": "2012-255",
+            "code": "2012-255"
+          },
+          {
+            "name": "2013-389",
+            "code": "2013-389"
+          },
+          {
+            "name": "2013-525",
+            "code": "2013-525"
+          },
+          {
+            "name": "2004-116",
+            "code": "2004-116"
+          },
+          {
+            "name": "2012-98",
+            "code": "2012-98"
+          },
+          {
+            "name": "2014-137",
+            "code": "2014-137"
+          },
+          {
+            "name": "2013-313",
+            "code": "2013-313"
+          },
+          {
+            "name": "2014-176",
+            "code": "2014-176"
+          },
+          {
+            "name": "2010-433",
+            "code": "2010-433"
+          },
+          {
+            "name": "2012-304",
+            "code": "2012-304"
+          },
+          {
+            "name": "2014-51",
+            "code": "2014-51"
+          },
+          {
+            "name": "2013-758",
+            "code": "2013-758"
+          },
+          {
+            "name": "2013-670",
+            "code": "2013-670"
+          },
+          {
+            "name": "2013-753",
+            "code": "2013-753"
+          },
+          {
+            "name": "2013-756",
+            "code": "2013-756"
+          },
+          {
+            "name": "2013-759",
+            "code": "2013-759"
+          },
+          {
+            "name": "2013-754",
+            "code": "2013-754"
+          },
+          {
+            "name": "2013-700",
+            "code": "2013-700"
+          },
+          {
+            "name": "2013-655",
+            "code": "2013-655"
+          },
+          {
+            "name": "2009-56",
+            "code": "2009-56"
+          },
+          {
+            "name": "2013-614",
+            "code": "2013-614"
+          },
+          {
+            "name": "2013-569",
+            "code": "2013-569"
+          },
+          {
+            "name": "2013-587",
+            "code": "2013-587"
+          },
+          {
+            "name": "2013-564",
+            "code": "2013-564"
+          },
+          {
+            "name": "2013-429",
+            "code": "2013-429"
+          },
+          {
+            "name": "2013-152",
+            "code": "2013-152"
+          },
+          {
+            "name": "2013-411",
+            "code": "2013-411"
+          },
+          {
+            "name": "2013-541",
+            "code": "2013-541"
+          },
+          {
+            "name": "2013-506",
+            "code": "2013-506"
+          },
+          {
+            "name": "2013-507",
+            "code": "2013-507"
+          },
+          {
+            "name": "2013-467",
+            "code": "2013-467"
+          },
+          {
+            "name": "2013-34",
+            "code": "2013-34"
+          },
+          {
+            "name": "2013-428",
+            "code": "2013-428"
+          },
+          {
+            "name": "2013-357",
+            "code": "2013-357"
+          },
+          {
+            "name": "2013-399",
+            "code": "2013-399"
+          },
+          {
+            "name": "2013-391",
+            "code": "2013-391"
+          },
+          {
+            "name": "2013-373",
+            "code": "2013-373"
+          },
+          {
+            "name": "2012-578",
+            "code": "2012-578"
+          },
+          {
+            "name": "2012-573",
+            "code": "2012-573"
+          },
+          {
+            "name": "2013-23",
+            "code": "2013-23"
+          },
+          {
+            "name": "2012-470",
+            "code": "2012-470"
+          },
+          {
+            "name": "2012-467",
+            "code": "2012-467"
+          },
+          {
+            "name": "2012-374",
+            "code": "2012-374"
+          },
+          {
+            "name": "2012-358",
+            "code": "2012-358"
+          },
+          {
+            "name": "2013-22",
+            "code": "2013-22"
+          },
+          {
+            "name": "2013-21",
+            "code": "2013-21"
+          },
+          {
+            "name": "2013-14",
+            "code": "2013-14"
+          },
+          {
+            "name": "2013-2",
+            "code": "2013-2"
+          },
+          {
+            "name": "2007-650",
+            "code": "2007-650"
+          },
+          {
+            "name": "2014-42",
+            "code": "2014-42"
+          },
+          {
+            "name": "2014-297",
+            "code": "2014-297"
+          },
+          {
+            "name": "2014-177",
+            "code": "2014-177"
+          },
+          {
+            "name": "2010-616",
+            "code": "2010-616"
+          },
+          {
+            "name": "2014-353",
+            "code": "2014-353"
+          },
+          {
+            "name": "2013-20",
+            "code": "2013-20"
+          },
+          {
+            "name": "2011-680",
+            "code": "2011-680"
+          },
+          {
+            "name": "2013-755",
+            "code": "2013-755"
+          },
+          {
+            "name": "2012-333",
+            "code": "2012-333"
+          },
+          {
+            "name": "2011-649",
+            "code": "2011-649"
+          },
+          {
+            "name": "2013-66",
+            "code": "2013-66"
+          },
+          {
+            "name": "2013-712",
+            "code": "2013-712"
+          },
+          {
+            "name": "2013-713",
+            "code": "2013-713"
+          },
+          {
+            "name": "2013-115",
+            "code": "2013-115"
+          },
+          {
+            "name": "2013-36",
+            "code": "2013-36"
+          },
+          {
+            "name": "2013-471",
+            "code": "2013-471"
+          },
+          {
+            "name": "2013-462",
+            "code": "2013-462"
+          },
+          {
+            "name": "2013-139",
+            "code": "2013-139"
+          },
+          {
+            "name": "2013-25",
+            "code": "2013-25"
+          },
+          {
+            "name": "2012-576",
+            "code": "2012-576"
+          },
+          {
+            "name": "2012-552",
+            "code": "2012-552"
+          },
+          {
+            "name": "2012-525",
+            "code": "2012-525"
+          },
+          {
+            "name": "2012-509",
+            "code": "2012-509"
+          },
+          {
+            "name": "2013-26",
+            "code": "2013-26"
+          },
+          {
+            "name": "1988-329",
+            "code": "1988-329"
+          },
+          {
+            "name": "2013-33",
+            "code": "2013-33"
+          },
+          {
+            "name": "2012-679",
+            "code": "2012-679"
+          },
+          {
+            "name": "2012-591",
+            "code": "2012-591"
+          },
+          {
+            "name": "2010-404",
+            "code": "2010-404"
+          },
+          {
+            "name": "2012-332",
+            "code": "2012-332"
+          },
+          {
+            "name": "2011-540",
+            "code": "2011-540"
+          },
+          {
+            "name": "2010-368",
+            "code": "2010-368"
+          },
+          {
+            "name": "2010-363",
+            "code": "2010-363"
+          },
+          {
+            "name": "2010-317",
+            "code": "2010-317"
+          },
+          {
+            "name": "2015-319",
+            "code": "2015-319"
+          },
+          {
+            "name": "2014-608",
+            "code": "2014-608"
+          },
+          {
+            "name": "2012-302",
+            "code": "2012-302"
+          },
+          {
+            "name": "2012-303",
+            "code": "2012-303"
+          },
+          {
+            "name": "2012-263",
+            "code": "2012-263"
+          },
+          {
+            "name": "2015-140",
+            "code": "2015-140"
+          },
+          {
+            "name": "2006-669",
+            "code": "2006-669"
+          },
+          {
+            "name": "2012-613",
+            "code": "2012-613"
+          },
+          {
+            "name": "2010-316",
+            "code": "2010-316"
+          },
+          {
+            "name": "2014-605",
+            "code": "2014-605"
+          },
+          {
+            "name": "2013-408",
+            "code": "2013-408"
+          },
+          {
+            "name": "2015-239",
+            "code": "2015-239"
+          },
+          {
+            "name": "2012-628",
+            "code": "2012-628"
+          },
+          {
+            "name": "2008-403",
+            "code": "2008-403"
+          },
+          {
+            "name": "2015-20",
+            "code": "2015-20"
+          },
+          {
+            "name": "2013-140",
+            "code": "2013-140"
+          },
+          {
+            "name": "2015-134",
+            "code": "2015-134"
+          },
+          {
+            "name": "2011-702",
+            "code": "2011-702"
+          },
+          {
+            "name": "2013-524",
+            "code": "2013-524"
+          },
+          {
+            "name": "2013-141",
+            "code": "2013-141"
+          },
+          {
+            "name": "2010-540",
+            "code": "2010-540"
+          },
+          {
+            "name": "2014-179",
+            "code": "2014-179"
+          },
+          {
+            "name": "2014-824",
+            "code": "2014-824"
+          },
+          {
+            "name": "2014-729",
+            "code": "2014-729"
+          },
+          {
+            "name": "2012-252",
+            "code": "2012-252"
+          },
+          {
+            "name": "2014-623",
+            "code": "2014-623"
+          },
+          {
+            "name": "2012-673",
+            "code": "2012-673"
+          },
+          {
+            "name": "2012-676",
+            "code": "2012-676"
+          },
+          {
+            "name": "2012-674",
+            "code": "2012-674"
+          },
+          {
+            "name": "2012-636",
+            "code": "2012-636"
+          },
+          {
+            "name": "2012-678",
+            "code": "2012-678"
+          },
+          {
+            "name": "1977-136",
+            "code": "1977-136"
+          },
+          {
+            "name": "2009-129",
+            "code": "2009-129"
+          },
+          {
+            "name": "2012-119",
+            "code": "2012-119"
+          },
+          {
+            "name": "2012-55",
+            "code": "2012-55"
+          },
+          {
+            "name": "2011-701",
+            "code": "2011-701"
+          },
+          {
+            "name": "2010-378",
+            "code": "2010-378"
+          },
+          {
+            "name": "2012-637",
+            "code": "2012-637"
+          },
+          {
+            "name": "2012-611",
+            "code": "2012-611"
+          },
+          {
+            "name": "2012-615",
+            "code": "2012-615"
+          },
+          {
+            "name": "2012-614",
+            "code": "2012-614"
+          },
+          {
+            "name": "2012-550",
+            "code": "2012-550"
+          },
+          {
+            "name": "2012-540",
+            "code": "2012-540"
+          },
+          {
+            "name": "2011-683",
+            "code": "2011-683"
+          },
+          {
+            "name": "2011-682",
+            "code": "2011-682"
+          },
+          {
+            "name": "2011-508",
+            "code": "2011-508"
+          },
+          {
+            "name": "2011-507",
+            "code": "2011-507"
+          },
+          {
+            "name": "2011-84",
+            "code": "2011-84"
+          },
+          {
+            "name": "2011-85",
+            "code": "2011-85"
+          },
+          {
+            "name": "2011-77",
+            "code": "2011-77"
+          },
+          {
+            "name": "2011-79",
+            "code": "2011-79"
+          },
+          {
+            "name": "2011-27",
+            "code": "2011-27"
+          },
+          {
+            "name": "2012-522",
+            "code": "2012-522"
+          },
+          {
+            "name": "2010-418",
+            "code": "2010-418"
+          },
+          {
+            "name": "2010-401",
+            "code": "2010-401"
+          },
+          {
+            "name": "2010-287",
+            "code": "2010-287"
+          },
+          {
+            "name": "2010-245",
+            "code": "2010-245"
+          },
+          {
+            "name": "2010-243",
+            "code": "2010-243"
+          },
+          {
+            "name": "2010-241",
+            "code": "2010-241"
+          },
+          {
+            "name": "2010-49",
+            "code": "2010-49"
+          },
+          {
+            "name": "2011-506",
+            "code": "2011-506"
+          },
+          {
+            "name": "2015-754",
+            "code": "2015-754"
+          },
+          {
+            "name": "2015-829",
+            "code": "2015-829"
+          },
+          {
+            "name": "2010-88",
+            "code": "2010-88"
+          },
+          {
+            "name": "2011-335",
+            "code": "2011-335"
+          },
+          {
+            "name": "20XX-YY",
+            "code": "20XX-YY"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EPI_TYPE",
+      "type": "esriFieldTypeString",
+      "alias": "EPI_TYPE",
+      "length": 5,
+      "domain": null
+    },
+    {
+      "name": "CADID",
+      "type": "esriFieldTypeInteger",
+      "alias": "CADID",
+      "domain": null
+    },
+    {
+      "name": "SHAPE",
+      "type": "esriFieldTypeGeometry",
+      "alias": "SHAPE",
+      "domain": null
+    },
+    {
+      "name": "SHAPE.STArea()",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE.STArea()",
+      "domain": null
+    }
+  ],
+  "indexes": [
+    {
+      "name": "R6208_pk",
+      "fields": "OBJECTID",
+      "isAscending": true,
+      "isUnique": true,
+      "description": ""
+    },
+    {
+      "name": "S6080_idx",
+      "fields": "SHAPE",
+      "isAscending": true,
+      "isUnique": true,
+      "description": ""
+    }
+  ],
+  "relationships": [],
+  "canModifyLayer": false,
+  "canScaleSymbols": false,
+  "hasLabels": false,
+  "capabilities": "Map,Query,Data",
+  "maxRecordCount": 1000,
+  "supportsStatistics": true,
+  "supportsAdvancedQueries": true,
+  "supportedQueryFormats": "JSON, AMF, geoJSON",
+  "ownershipBasedAccessControlForFeatures": {
+    "allowOthersToQuery": true
+  },
+  "advancedQueryCapabilities": {
+    "useStandardizedQueries": false,
+    "supportsStatistics": true,
+    "supportsOrderBy": true,
+    "supportsDistinct": true,
+    "supportsPagination": true,
+    "supportsTrueCurve": true,
+    "supportsReturningQueryExtent": true,
+    "supportsQueryWithDistance": true
+  },
+  "dateFieldsTimeReference": null
+}

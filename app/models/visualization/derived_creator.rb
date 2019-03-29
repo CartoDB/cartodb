@@ -22,19 +22,19 @@ module CartoDB
         blender = CartoDB::Visualization::TableBlender.new(user, tables)
         map = blender.blend
 
-        vis = CartoDB::Visualization::Member.new(
+        vis = Carto::Visualization.new(
           name: beautify_name,
           map_id: map.id,
-          type: CartoDB::Visualization::Member::TYPE_DERIVED,
+          type: Carto::Visualization::TYPE_DERIVED,
           privacy: blender.blended_privacy,
           user_id: user.id
         )
         unless user.private_maps_enabled
-          vis.privacy = CartoDB::Visualization::Member::PRIVACY_PUBLIC
+          vis.privacy = Carto::Visualization::PRIVACY_PUBLIC
         end
 
+        vis.save!
         CartoDB::Visualization::Overlays.new(vis).create_default_overlays
-        vis.store
 
         [vis, @rejected_layers]
       end

@@ -20,13 +20,17 @@ module CartoDB
     attr_reader   :response_code, :parsed_response
 
     # privacy: 'public' / 'private'
-    def self.with_user(user, privacy)
+    def self.with_username_api_key(username, api_key, privacy,
+                                   base_url: ::ApplicationHelper.sql_api_url(username, privacy))
       new(
-        base_url: ::ApplicationHelper.sql_api_url(user.username, privacy),
-        protocol: 'https',
-        username: user.username,
-        api_key: user.api_key
+        base_url: base_url,
+        username: username,
+        api_key: api_key
       )
+    end
+
+    def self.with_user(user, privacy)
+      with_username_api_key(user.username, user.api_key, privacy)
     end
 
     def initialize(arguments)
@@ -38,6 +42,11 @@ module CartoDB
 
     def url(query, format = '', filename = '')
       build_request(query, format, filename, :get, :public).url
+    end
+
+    def export_table_url(table, format = 'gpkg', filename = table)
+      query = %{select * from "#{table}"}
+      url(query, format, filename)
     end
 
     def fetch(query, format = '')

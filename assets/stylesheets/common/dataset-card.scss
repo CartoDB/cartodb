@@ -1,0 +1,98 @@
+@import '../variables/colors';
+@import '../variables/sizes';
+
+$sBorderCompensation: 2px;
+$opacityTransition: 250ms;
+$sEditButtonSize: 50px;
+
+.DatasetCard {
+  position: relative;
+  width: $sCard-width - 10px - $sBorderCompensation;
+  margin: 0 auto;
+  border: 1px solid #DBDBDB;
+  border-radius: $sCard-borderRadius;
+  background-color: $cStructure-mainBkg;
+}
+
+.DatasetCard-title {
+  width: 100%; // required for child text-overflow to work as expected in FF
+  margin: 0 0 3px;
+}
+
+.DatasetCard-content { // To position contentDetail at top of content, and contentFooter at bottom
+  display: flex;
+  position: relative;
+  z-index: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px $sMargin-element 16px;
+  transition: opacity $opacityTransition;
+  border-radius: $sCard-borderRadius;
+  opacity: 1;
+}
+
+.DatasetCard-contentFooter {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.DatasetCard-contentFooter > *:not(:last-child) {
+  margin-right: 20px;
+}
+
+.DatasetCard-contentBody {
+  width: 100%;
+}
+
+.DatasetCard-contentBodyRow {
+  margin-bottom: $sMargin-min;
+}
+
+.DatasetCard-contentBodyRow--flex {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.DatasetCard-contentBodyDetails--left {
+  display: flex;
+}
+
+.DatasetCard-contentBodyDetails--right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+// Animation function
+@keyframes pulsate {
+  0% {
+    right: 100%;
+  }
+
+  50% {
+    right: 0%;
+  }
+
+  100% {
+    right: -100%;
+  }
+}
+
+@media (min-width: $sMedia-tablet) {
+  .DatasetCard {
+    width: $sCard-width - $sBorderCompensation;
+  }
+}
+
+@media only screen and (max-width: 544px) {
+  .DatasetCard-contentFooter > *:not(:last-child) {
+    margin-right: 10px;
+  }
+}

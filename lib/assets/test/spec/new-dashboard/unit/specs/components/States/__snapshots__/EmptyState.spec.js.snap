@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EmptyState.vue should render correctly the empty state box 1`] = `
+<div class="empty-state">
+  <div class="empty-state__icon"><img src="test.svg"></div>
+  <h6 class="empty-state__text empty-state__title text is-caption is-txtSoftGrey">There are no maps here.</h6>
+  <p class="empty-state__text text is-caption is-txtSoftGrey">Here is the subtitle as well</p>
+</div>
+`;

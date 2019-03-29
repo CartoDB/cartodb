@@ -10,7 +10,8 @@
     var authenticity_token = "<%= form_authenticity_token %>";
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
+
+  <%= javascript_include_tag 'common', 'common_vendor', 'mobile_apps' %>
 <% end %>
 <%= content_for(:css) do %>
   <%= stylesheet_link_tag 'mobile_apps.css', :media => 'all' %>
@@ -29,7 +30,7 @@
         <div class="Filters-row">
           <ul class="Filters-group">
             <li class="u-flex u-alignCenter">
-              <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="u-actionTextColor u-flex u-alignCenter">
+              <a href="<%= CartoDB.url(self, 'mobile_apps', user: current_user) %>" class="u-actionTextColor u-flex u-alignCenter">
                 <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
@@ -46,4 +47,8 @@
 
 </div>
 
-<%= render 'admin/shared/footer' %>
+<% if current_user.has_feature_flag?('new-dashboard-feature') %>
+  <%= render 'admin/shared/new_private_footer' %>
+<% else %>
+  <%= render 'admin/shared/footer' %>
+<% end %>

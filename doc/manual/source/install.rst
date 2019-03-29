@@ -3,9 +3,11 @@ Installation
 ============
 
 .. warning::
-  CartoDB is guaranteed to run without any issue in Ubuntu 12.04 x64. This documentation describes the process to install CartoDB in this specific OS version.
+  CARTO works with Ubuntu 16.04 x64. This documentation describes the process to install CartoDB in this specific OS version.
 
   However this doesn't mean that it won't work with other Operating Systems or other Ubuntu. There are also many successful installations on Amazon EC2, Linode, dedicated instances and development machines running OS X and Ubuntu 12.04+.
+
+  You will find notes along this guide explaining some of the Ubuntu 16.04 specifics, and pointing to alternative solutions for other environments.
 
 System requirements
 -------------------
@@ -21,13 +23,6 @@ Installations assume you use UTF8. You can set the locale by doing this:
   sudo locale-gen en_US.UTF-8
   sudo update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
-APT tools
-~~~~~~~~~
-In order to easily install some packages repositories sources is suggested to install this tool:
-
-.. code-block:: bash
-
-  sudo apt-get install python-software-properties
 
 Build essentials
 ~~~~~~~~~~~~~~~~
@@ -36,16 +31,8 @@ Although we try to maintain packaged versions of almost every part of the stack,
 
 .. code-block:: bash
 
-  sudo apt-get install autoconf binutils-doc bison build-essential flex
+  sudo apt-get install make pkg-config
 
-You will also need to install GCC 4.9 in order to build some Node modules later. You can install it doing this:
-
-.. code-block:: bash
-
-  sudo add-apt-repository ppa:cartodb/gcc && sudo apt-get update
-  sudo apt-get install gcc-4.9 g++-4.9
-  export CC=/usr/bin/gcc-4.9
-  export CXX=/usr/bin/g++-4.9
 
 GIT
 ~~~
@@ -59,37 +46,27 @@ You will need git commands in order to handle some repositories and install some
 PostgreSQL
 ----------
 
+.. note::
+  CARTO requires PostgreSQL 10+. The PPA packages also provide some additional patches, which are not needed but help improve the experience in production environments.
+
 * Add PPA repository
 
   .. code-block:: bash
 
-    sudo add-apt-repository ppa:cartodb/postgresql-9.5 && sudo apt-get update
+    sudo add-apt-repository ppa:cartodb/postgresql-10 && sudo apt-get update
 
-
-* Install client packages
-
-  .. code-block:: bash
-
-    sudo apt-get install libpq5 \
-                         libpq-dev \
-                         postgresql-client-9.5 \
-                         postgresql-client-common
-
-* Install server packages
+* Install packages
 
   .. code-block:: bash
 
-    sudo apt-get install postgresql-9.5 \
-                         postgresql-contrib-9.5 \
-                         postgresql-server-dev-9.5 \
-                         postgresql-plpython-9.5
+    sudo apt-get install postgresql-10 \
+                         postgresql-plpython-10 \
+                         postgresql-server-dev-10
 
 
+PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in ``/etc/postgresql/10/main/pg_hba.conf``. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CARTO apps.
 
-
-PostgreSQL access authorization is managed through pg_hba.conf configuration file, which is normally in /etc/postgresql/9.5/main/pg_hba.conf. Here it's defined how the users created in postgresql cluster can access the server. This involves several aspects like type of authentication (md5, no password, etc..) or source IP of the connection. In order to simplify the process of the installation we are going to allow connections with postgres user from localhost without authentication. Of course this can be configured in a different way at any moment but changes here should imply changes in database access configuration of CartoDB apps.
-
-This is the pg_hba.conf with the no password access from localhost:
+Edit ``/etc/postgresql/10/main/pg_hba.conf``, modifying the existing lines to use ``trust`` authentication (no password access from localhost):
 
   .. code-block:: bash
 
@@ -101,18 +78,17 @@ For these changes to take effect, you'll need to restart postgres:
 
   .. code-block:: bash
 
-    sudo service postgresql restart
+    sudo systemctl restart postgresql
 
 
-
-* Create some users in PostgreSQL. These users are used by some CartoDB apps internally
+* Create some users in PostgreSQL. These users are used by some CARTO apps internally
 
   .. code-block:: bash
 
     sudo createuser publicuser --no-createrole --no-createdb --no-superuser -U postgres
     sudo createuser tileuser --no-createrole --no-createdb --no-superuser -U postgres
 
-* Install CartoDB postgresql extension. This extension contains functions that are used by different parts of the CartoDB platform, included the Editor and the SQL and Maps API.
+* Install CartoDB postgresql extension. This extension contains functions that are used by different parts of the CartoDB platform, included Builder and the SQL and Maps API.
 
   .. code-block:: bash
 
@@ -130,52 +106,34 @@ GIS dependencies
 
     sudo add-apt-repository ppa:cartodb/gis && sudo apt-get update
 
-* Install Proj
-
-  .. code-block:: bash
-
-    sudo apt-get install proj proj-bin proj-data libproj-dev
-
-* Install JSON
-
-  .. code-block:: bash
-
-    sudo apt-get install libjson0 libjson0-dev python-simplejson
-
-* Install GEOS
-
-  .. code-block:: bash
-
-    sudo apt-get install libgeos-c1v5 libgeos-dev
 
 * Install GDAL
 
   .. code-block:: bash
 
-    sudo apt-get install gdal-bin libgdal1-dev libgdal-dev
-    sudo apt-get install gdal2.1-static-bin
-
+    sudo apt-get install gdal-bin libgdal-dev
 
 PostGIS
 -------
+
+.. note::
+  CARTO requires PostGIS 2.4. The PPA just packages this version for Ubuntu 16.04.
 
 * Install PostGIS
 
   .. code-block:: bash
 
-    sudo apt-get install libxml2-dev
-    sudo apt-get install liblwgeom-2.2.2 postgis postgresql-9.5-postgis-2.2 postgresql-9.5-postgis-scripts
+    sudo apt-get install postgis
 
 * Initialize template postgis database. We create a template database in postgresql that will contain the postgis extension. This way, every time CartoDB creates a new user database it just clones this template database
 
   .. code-block:: bash
 
     sudo createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis
-    sudo createlang plpgsql -U postgres -d template_postgis
     psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;'
     sudo ldconfig
 
-* Run an installcheck to verify the database has been installed properly
+* (Optional) Run an installcheck to verify the database has been installed properly
 
   .. code-block:: bash
 
@@ -183,67 +141,54 @@ PostGIS
 
   Check https://github.com/cartodb/cartodb-postgresql for further reference
 
-* Restart PostgreSQL after all this process
-
-  .. code-block:: bash
-
-    sudo service postgresql restart
-
 
 Redis
 -----
 
-Redis 3+ is needed.
+.. note::
+    CARTO requires Redis 4+. You can also optionally install redis-cell for rate limiting, which is not described by this guide.
 
 * Add redis PPA
 
   .. code-block:: bash
 
-    sudo add-apt-repository ppa:cartodb/redis && sudo apt-get update
+    sudo add-apt-repository ppa:cartodb/redis-next && sudo apt-get update
 
 * Install redis
 
   .. code-block:: bash
 
-    sudo apt-get install redis-server
+    sudo apt-get install redis
 
 .. warning::
 
-  By default redis server is configured to not have any type of disk persistence. If stopped or restarted everything stored in redis will be lost. In CartoDB redis is not just a simple cache storage. It stores information that need to be persisted.
+  By default redis server is configured to only have periodic snapshotting to disk. If stopped or restarted some data stored in redis since the last snahpshot can be lost. In CARTO redis is not just a simple cache storage. It stores information that need to be persisted.
 
-  Make sure to have proper values of *save*, *appendonly* and *appendfsync* config attributes. For more information check `http://redis.io/topics/persistence`
+  For data safety, make sure to have proper values of *save*, *appendonly* and *appendfsync* config attributes. For more information check `http://redis.io/topics/persistence`
 
-NodeJS
-------
+Node.js
+-------
 
-NodeJS is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of the editor.
+.. note::
+    CARTO requires Node.js 10+ and npm 6+.
 
-* Add the PPA
+Node.js is required by different parts of the stack. The more significant are the Maps and SQL APIs. It's also used to install and execute some dependencies of Builder.
 
-  .. code-block:: bash
-
-    sudo add-apt-repository ppa:cartodb/nodejs && sudo apt-get update
-
-* Install NodeJS
+* Install Node.js
 
   .. code-block:: bash
 
-    sudo apt-get install nodejs
+    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+    sudo apt-get install -y nodejs
 
-  Note this should install both NodeJS 6.9.2 and npm 3.10.9. You can verify the installation went as expected with:
+  Note this should install both Node.js 10.x and npm 6.x. You can verify the installation went as expected with:
 
   .. code-block:: bash
 
-    nodejs -v
+    node -v
     npm -v
 
-If npm version is wrong you should update it:
-
-  .. code-block:: bash
-
-    npm install npm@3.10.9 -g
-
-We will also install some development libraries that will be necessary to build some Node modules:
+We will also install some development libraries that will be necessary to build some Node.js modules:
 
   .. code-block:: bash
 
@@ -259,7 +204,6 @@ SQL API
 
     git clone git://github.com/CartoDB/CartoDB-SQL-API.git
     cd CartoDB-SQL-API
-    git checkout master
 
 * Install npm dependencies
 
@@ -290,20 +234,19 @@ MAPS API
 
     git clone git://github.com/CartoDB/Windshaft-cartodb.git
     cd Windshaft-cartodb
-    git checkout master
 
-* Install npm dependencies
+* Install yarn dependencies
 
   .. code-block:: bash
 
     npm install
-
 
 * Create configuration. The name of the filename of the configuration must be the same than the environment you are going to use to start the service. Let's assume it's development.
 
   .. code-block:: bash
 
     cp config/environments/development.js.example config/environments/development.js
+    mkdir logs
 
 
 * Start the service. The second parameter is always the environment of the service. Remember to use the same you used in the configuration.
@@ -316,51 +259,42 @@ MAPS API
 Ruby
 ----
 
-* Download ruby-install. Ruby-install is a script that makes ruby install easier. It's not needed to get ruby installed but it helps in the process.
+.. note::
+  CARTO requires exactly Ruby 2.4.x. Older or newer versions won't work.
+
+* Add brightbox ruby repositories
 
   .. code-block:: bash
 
-    wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
-    tar -xzvf ruby-install-0.5.0.tar.gz
-    cd ruby-install-0.5.0/
-    sudo make install
+    sudo apt-add-repository ppa:brightbox/ruby-ng && sudo apt-get update
 
-* Install some ruby dependencies
+* Install ruby 2.4
 
   .. code-block:: bash
 
-    sudo apt-get install libreadline6-dev openssl
+    sudo apt-get install ruby2.4 ruby2.4-dev
 
-* Install ruby 2.2.3. CartoDB has been deeply tested with Ruby 2.2.
-
-  .. code-block:: bash
-
-    sudo ruby-install ruby 2.2.3
-
-* Ruby-install will leave everything in /opt/rubies/ruby-2.2.3/bin. To be able to run ruby and gem later on, you'll need to add the Ruby 2.2.3 bin folder to your PATH variable. It's also a good idea to include this line in your bashrc so that it gets loaded on restart
+* Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CARTO Builder
 
   .. code-block:: bash
 
-    export PATH=/opt/rubies/ruby-2.2.3/bin:$PATH
-
-* Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CartoDB's editor
-
-  .. code-block:: bash
-
-    sudo gem install bundler
+    sudo apt-get install ruby-bundler
 
 
-* Install compass. It will be needed later on by CartoDB's editor
+* Install compass. It will be needed later on by CARTO's Builder
 
   .. code-block:: bash
 
     sudo gem install compass
 
 
-Editor
-------
+Builder
+-------
 
-* Download the editor code
+.. note::
+  CARTO users Python 2.7+. Python 3 will not work correctly.
+
+* Download Builder's code
 
   .. code-block:: bash
 
@@ -371,23 +305,21 @@ Editor
 
   .. code-block:: bash
 
-    sudo wget  -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py
-    sudo python /tmp/get-pip.py
-
-* Install a necessary package for python dependencies
-
-  .. code-block:: bash
-
-   sudo apt-get install python-all-dev
+   sudo apt-get install python-pip
 
 
-* Install dependencies
+* Install ruby dependencies
 
   .. code-block:: bash
 
-    sudo apt-get install imagemagick unp zip
+    sudo apt-get install imagemagick unp zip libicu-dev
     RAILS_ENV=development bundle install
-    npm install
+
+
+* Install python dependencies
+
+  .. code-block:: bash
+
     sudo pip install --no-use-wheel -r python_requirements.txt
 
 .. warning::
@@ -407,24 +339,25 @@ Editor
 
     If gdal keeps failing, see more information here: http://gis.stackexchange.com/questions/28966/python-gdal-package-missing-header-file-when-installing-via-pip
 
-* Add the grunt command to the PATH
+* Install Node.js dependencies
+
+  .. code-block:: bash
+
+    npm install
+
+
+* Compile static assets
+
+  .. code-block:: bash
+
+    npm run carto-node && npm run build:static
+
+* (Optional) Precompile assets. Needed if you don't want to use CARTO's CDN for assets.
 
   .. code-block:: bash
 
     export PATH=$PATH:$PWD/node_modules/grunt-cli/bin
-
-* Install all necesary gems
-
-  .. code-block:: bash
-
-    bundle install
-
-
-* Precompile assets. Note that the last parameter is the environment used to run the application. It must be the same used in the Maps and SQL APIs
-
-  .. code-block:: bash
-
-    bundle exec grunt --environment development
+    bundle exec grunt --environment=development
 
 
 * Create configuration files
@@ -434,6 +367,12 @@ Editor
     cp config/app_config.yml.sample config/app_config.yml
     cp config/database.yml.sample config/database.yml
 
+* Start the redis-server that allows access to the SQL and Maps APIs:
+
+  .. code-block:: bash
+
+    sudo systemctl start redis-server
+
 * Initialize the metadata database
 
   .. code-block:: bash
@@ -441,13 +380,7 @@ Editor
     RAILS_ENV=development bundle exec rake db:create
     RAILS_ENV=development bundle exec rake db:migrate
 
-* Start the redis-server that allows access to the SQL and Maps APIs:
-
-  .. code-block:: bash
-
-    redis-server &
-
-* Start the editor HTTP server
+* Start Builder's HTTP server
 
   .. code-block:: bash
 

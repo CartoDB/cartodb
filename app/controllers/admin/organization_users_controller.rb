@@ -1,6 +1,4 @@
 # coding: utf-8
-require_dependency 'google_plus_api'
-require_dependency 'google_plus_config'
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 
@@ -17,7 +15,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
   before_filter :login_required, :check_permissions, :load_organization
   before_filter :get_user, only: [:edit, :update, :destroy, :regenerate_api_key]
   before_filter :ensure_edit_permissions, only: [:edit, :update, :destroy, :regenerate_api_key]
-  before_filter :initialize_google_plus_config, only: [:edit, :update]
 
   layout 'application'
 
@@ -53,6 +50,10 @@ class Admin::OrganizationUsersController < Admin::AdminController
     # The error is deferred to display values in the form in the error scenario.
     validation_failure = !soft_limits_validation(@user, params[:user], @organization.owner)
 
+    # set organization first, so some validations related to org users are applied (i.e. strong passwords)
+    @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
+    @user.organization = @organization
+
     if !@organization.auth_username_password_enabled &&
        !params[:user][:password].present? &&
        !params[:user][:password_confirmation].present?
@@ -70,14 +71,15 @@ class Admin::OrganizationUsersController < Admin::AdminController
       ]
     )
     @user.viewer = params[:user][:viewer] == 'true'
-    @user.org_admin = params[:user][:org_admin] unless params[:user][:org_admin].nil?
-    @user.organization = @organization
     current_user.copy_account_features(@user)
 
     # Validate password first, so nicer errors are displayed
-    model_validation_ok = @user.valid_password?(:password, @user.password, @user.password_confirmation) &&
+    model_validation_ok = @user.valid_password?(:password,
+                                                params[:user][:password],
+                                                params[:user][:password_confirmation]) &&
                           @user.valid_creation?(current_user)
 
+    valid_password_confirmation
     unless model_validation_ok
       raise Sequel::ValidationFailed.new("Validation failed: #{@user.errors.full_messages.join(', ')}")
     end
@@ -88,13 +90,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
     common_data_url = CartoDB::Visualization::CommonDataService.build_url(self)
     ::Resque.enqueue(::Resque::UserDBJobs::CommonData::LoadCommonData, @user.id, common_data_url)
     @user.notify_new_organization_user
-    @user.organization.notify_if_seat_limit_reached
+    @user.organization.notify_if_seat_limit_reached unless @user.viewer?
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(
         CartoGearsApi::Events::UserCreationEvent::CREATED_VIA_ORG_ADMIN, @user
       )
     )
-    redirect_to CartoDB.url(self, 'organization', {}, current_user), flash: { success: "New user created successfully" }
+    redirect_to CartoDB.url(self, 'organization', user: current_user),
+                flash: { success: "New user created successfully" }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -111,12 +114,16 @@ class Admin::OrganizationUsersController < Admin::AdminController
     flash.now[:error] = e.user_message
     @user = default_user
     render 'new'
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'new', status: e.status
   rescue Sequel::ValidationFailed => e
     flash.now[:error] = e.message
     render 'new'
   end
 
   def update
+    valid_password_confirmation
     session[:show_dashboard_details_flash] = params[:show_dashboard_details_flash].present?
     session[:show_account_settings_flash] = params[:show_account_settings_flash].present?
 
@@ -160,16 +167,24 @@ class Admin::OrganizationUsersController < Admin::AdminController
 
     raise Carto::UnprocesableEntityError.new("Soft limits validation error") if validation_failure
 
-    # update_in_central is duplicated because we don't wan ta local save if Central fails,
-    # but before/after save at user can change some attributes that we also want to persist.
-    # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
-    @user.update_in_central
+    ActiveRecord::Base.transaction do
+      if attributes[:mfa].present?
+        service = Carto::UserMultifactorAuthUpdateService.new(user_id: @user.id)
+        service.update(enabled: attributes[:mfa] == '1')
+      end
 
-    @user.save(raise_on_failure: true)
+      # update_in_central is duplicated because we don't wan ta local save if Central fails,
+      # but before/after save at user can change some attributes that we also want to persist.
+      # Since those callbacks aren't idempotent there's no much better solution without a big refactor.
+      @user.update_in_central
 
-    @user.update_in_central
+      @user.save(raise_on_failure: true)
 
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+      @user.update_in_central
+    end
+
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
   rescue Carto::UnprocesableEntityError => e
     CartoDB::Logger.error(exception: e, message: "Validation error")
     set_flash_flags
@@ -179,27 +194,34 @@ class Admin::OrganizationUsersController < Admin::AdminController
     set_flash_flags
     flash.now[:error] = "There was a problem while updating this user. Please, try again and contact us if the problem persists. #{e.user_message}"
     render 'edit'
-  rescue Sequel::ValidationFailed => e
+  rescue Carto::PasswordConfirmationError => e
+    flash.now[:error] = e.message
+    render action: 'edit', status: e.status
+  rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid => e
     flash.now[:error] = e.message
     render 'edit', status: 422
   end
 
   def destroy
-    raise "Can't delete user. #{'Has shared entities' if @user.has_shared_entities?}" unless @user.can_delete
+    valid_password_confirmation
+    raise "Can't delete user. Has shared entities" if @user.has_shared_entities?
 
     @user.destroy
     @user.delete_in_central
     flash[:success] = "User was successfully deleted."
-    redirect_to CartoDB.url(self, 'organization', {}, current_user)
+    redirect_to CartoDB.url(self, 'organization', user: current_user)
   rescue CartoDB::CentralCommunicationFailure => e
     if e.user_message =~ /No organization user found with username/
       flash[:success] = "User was successfully deleted."
-      redirect_to CartoDB.url(self, 'organization', {}, current_user)
+      redirect_to CartoDB.url(self, 'organization', user: current_user)
     else
       CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user from central', target_user: @user.username)
       flash[:success] = "#{e.user_message}. User was deleted from the organization server."
       redirect_to organization_path(user_domain: params[:user_domain])
     end
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    redirect_to organization_path(user_domain: params[:user_domain])
   rescue => e
     CartoDB::Logger.error(exception: e, message: 'Error deleting organizational user', target_user: @user.username)
     flash[:error] = "User was not deleted. #{e.message}"
@@ -207,9 +229,14 @@ class Admin::OrganizationUsersController < Admin::AdminController
   end
 
   def regenerate_api_key
-    @user.regenerate_api_key
+    valid_password_confirmation
+    @user.regenerate_all_api_keys
     flash[:success] = "User API key regenerated successfully"
-    redirect_to CartoDB.url(self, 'edit_organization_user', { id: @user.username }, current_user), flash: { success: "Your changes have been saved correctly." }
+    redirect_to CartoDB.url(self, 'edit_organization_user', params: { id: @user.username }, user: current_user),
+                flash: { success: "Your changes have been saved correctly." }
+  rescue Carto::PasswordConfirmationError => e
+    flash[:error] = e.message
+    render action: 'edit', status: e.status
   rescue => e
     CartoDB.notify_exception(e, { user_id: @user.id, current_user: current_user.id })
     flash[:error] = "There was an error regenerating the API key. Please, try again and contact us if the problem persists"
@@ -257,11 +284,6 @@ class Admin::OrganizationUsersController < Admin::AdminController
     @extras_enabled = extras_enabled?
     @extra_geocodings_enabled = extra_geocodings_enabled?
     @extra_tweets_enabled = extra_tweets_enabled?
-  end
-
-  def initialize_google_plus_config
-    signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-    @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
   end
 
   def check_permissions

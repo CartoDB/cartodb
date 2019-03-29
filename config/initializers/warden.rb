@@ -1,13 +1,39 @@
+require 'base64'
+
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/errors'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
   manager.failure_app = SessionsController
 end
 
-module LoginEventTrigger
+# All strategies should:
+# - Include this module
+# - Override the methods as needed
+module CartoStrategy
+  def affected_by_password_expiration?
+    true
+  end
+
+  def affected_by_reset_password_locked?
+    false
+  end
+
+  def check_password_expired(user)
+    if affected_by_password_expiration? && user.password_expired?
+      throw(:warden, action: :password_change, username: user.username)
+    end
+  end
+
+  def reset_password_rate_limit(user)
+    user.reset_password_rate_limit if affected_by_reset_password_locked?
+  end
+
   def trigger_login_event(user)
+    check_password_expired(user)
+    reset_password_rate_limit(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -32,7 +58,11 @@ end
 Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def affected_by_reset_password_locked?
+    true
+  end
 
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
@@ -61,7 +91,7 @@ Warden::Strategies.add(:password) do
 end
 
 Warden::Strategies.add(:enable_account_token) do
-  include LoginEventTrigger
+  include CartoStrategy
 
   def authenticate!
     if params[:id]
@@ -82,60 +112,21 @@ Warden::Strategies.add(:enable_account_token) do
   end
 end
 
-Warden::Strategies.add(:google_access_token) do
-  include LoginEventTrigger
+Warden::Strategies.add(:oauth) do
+  include CartoStrategy
 
-  def valid_google_access_token_strategy_for_user(user)
-    user.organization.nil? || user.organization.auth_google_enabled
-  end
-
-  def authenticate!
-    if params[:google_access_token]
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user && valid_google_access_token_strategy_for_user(user)
-        if user.enable_account_token.nil?
-          trigger_login_event(user)
-
-          success!(user)
-        else
-          throw(:warden, :action => 'account_token_authentication_error', :user_id => user.id)
-        end
-      else
-        fail!
-      end
-    else
-      fail!
-    end
-  end
-end
-
-Warden::Strategies.add(:github_oauth) do
-  include LoginEventTrigger
-  include Carto::EmailCleaner
-
-  def valid_github_oauth_strategy_for_user(user)
+  def valid_oauth_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_github_enabled
   end
 
   def authenticate!
-    if params[:github_api]
-      github_api = params[:github_api]
-      github_id = github_api.id
-      user = User.where(github_user_id: github_id).first
-      unless user
-        user = User.where(email: clean_email(github_api.email), github_user_id: nil).first
-        if user && valid_github_oauth_strategy_for_user(user)
-          user.github_user_id = github_id
-          user.save
-        end
-      end
-      if user && valid_github_oauth_strategy_for_user(user)
-        trigger_login_event(user)
+    fail! unless env[:oauth_api]
+    oauth_api = env[:oauth_api]
+    user = oauth_api.user
+    if user && oauth_api.config.valid_method_for?(user)
+      trigger_login_event(user)
 
-        success!(user)
-      else
-        fail!
-      end
+      success!(user)
     else
       fail!
     end
@@ -143,10 +134,14 @@ Warden::Strategies.add(:github_oauth) do
 end
 
 Warden::Strategies.add(:ldap) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def authenticate!
-    (fail! and return) unless (params[:email] && params[:password])
+    (fail! and return) if (params[:email].blank? || params[:password].blank?)
 
     user = nil
     begin
@@ -167,6 +162,12 @@ Warden::Strategies.add(:ldap) do
 end
 
 Warden::Strategies.add(:api_authentication) do
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
+
   def authenticate!
     # WARNING: The following code is a modified copy of the oauth10_token method from
     # oauth-plugin-0.4.0.pre4/lib/oauth/controllers/application_controller_methods.rb
@@ -189,43 +190,16 @@ Warden::Strategies.add(:api_authentication) do
         end
       end
     end
-    throw(:warden)
-  end
-end
-
-Warden::Strategies.add(:api_key) do
-  def valid?
-    params[:api_key].present?
-  end
-
-  # We don't want to store a session and send a response cookie
-  def store?
-    false
-  end
-
-  def authenticate!
-    begin
-      if (api_key = params[:api_key]) && api_key.present?
-        user_name = CartoDB.extract_subdomain(request)
-        if $users_metadata.HMGET("rails:users:#{user_name}", "map_key").first == api_key
-          user_id = $users_metadata.HGET "rails:users:#{user_name}", 'id'
-          return fail! if user_id.blank?
-          user = ::User[user_id]
-          success!(user)
-        else
-          return fail!
-        end
-      else
-        return fail!
-      end
-    rescue
-      return fail!
-    end
+    fail!
   end
 end
 
 Warden::Strategies.add(:http_header_authentication) do
-  include LoginEventTrigger
+  include CartoStrategy
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def valid?
     Carto::HttpHeaderAuthentication.new.valid?(request)
@@ -245,8 +219,12 @@ Warden::Strategies.add(:http_header_authentication) do
 end
 
 Warden::Strategies.add(:saml) do
-  include LoginEventTrigger
+  include CartoStrategy
   include Carto::EmailCleaner
+
+  def affected_by_password_expiration?
+    false
+  end
 
   def organization_from_request
     subdomain = CartoDB.extract_subdomain(request)
@@ -291,6 +269,8 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
+
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
   # Only at the editor, and only after new authentications, destroy other sessions
@@ -309,8 +289,14 @@ Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   end
 end
 
+Warden::Manager.after_set_user do |user, auth, opts|
+  # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
+  should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
+  throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
+end
+
 Warden::Strategies.add(:user_creation) do
-  include LoginEventTrigger
+  include CartoStrategy
 
   def authenticate!
     username = params[:username]
@@ -327,5 +313,89 @@ Warden::Strategies.add(:user_creation) do
     else
       fail!
     end
+  end
+end
+
+module Carto::Api::AuthApiAuthentication
+  include CartoStrategy
+  # We don't want to store a session and send a response cookie
+  def store?
+    false
+  end
+
+  def affected_by_password_expiration?
+    false
+  end
+
+  def valid?
+    base64_auth.present? || params[:api_key].present?
+  end
+
+  def base64_auth
+    match = AUTH_HEADER_RE.match(request.headers['Authorization'])
+    match && match[:auth]
+  end
+
+  def authenticate_user(require_master_key)
+    user, token = user_and_token_from_request
+    return fail! unless user && token
+
+    api_key = user.api_keys.where(token: token)
+    api_key = require_master_key ? api_key.master : api_key
+
+    return fail! unless api_key.exists?
+    success!(user)
+  rescue
+    fail!
+  end
+
+  def request_api_key
+    return @request_api_key if @request_api_key
+
+    user, token = user_and_token_from_request
+    @request_api_key = user.api_keys.where(token: token).first if user && token
+
+    # If user is logged in though other means, assume a master key
+    @request_api_key = current_user.api_keys.master.first if !@request_api_key && current_user
+
+    @request_api_key
+  end
+
+  private
+
+  AUTH_HEADER_RE = /basic\s(?<auth>\w+)/i
+
+  def user_and_token_from_request
+    return unless valid?
+
+    if base64_auth.present?
+      username, token = split_auth
+      return unless username == CartoDB.extract_subdomain(request)
+    elsif params[:api_key]
+      token = params[:api_key]
+      username = CartoDB.extract_subdomain(request)
+    end
+    [User[username: username], token]
+  end
+
+  def split_auth
+    decoded_auth = Base64.decode64(base64_auth)
+    decoded_auth.split(':')
+  end
+end
+
+Warden::Strategies.add(:auth_api) do
+  include Carto::Api::AuthApiAuthentication
+
+  def authenticate!
+    authenticate_user(true)
+  end
+end
+
+Warden::Strategies.add(:any_auth_api) do
+  include Carto::Api::AuthApiAuthentication
+
+  def authenticate!
+    authenticate_user(false)
   end
 end

@@ -1,0 +1,261 @@
+// Styles for Form Layout
+// --------------------------------------------------
+
+@import 'cdb-variables/colors';
+@import 'cdb-variables/sizes';
+
+.Editor-formInner {
+  display: flex;
+  align-items: center;
+  min-height: $baseSize * 3;
+  margin-top: $baseSize * 2;
+}
+
+.Editor-formInner.Editor-formInner--NoTabs {
+  margin-top: $baseSize;
+  padding: 0;
+
+  .js-menu {
+    display: none;
+  }
+
+  .Editor-formInner--Number {
+    margin-top: 0;
+  }
+}
+
+.Editor-formInner.Editor-formInner--Size {
+  align-items: baseline;
+  padding-top: $baseSize;
+}
+
+.Editor-formInner.Editor-formInner--Size.Editor-formInner--NoTabs {
+  align-items: center;
+}
+
+.Editor-formInner.Editor-formInner--FillColor {
+  align-items: baseline;
+  margin-top: 0;
+
+  .Form-InputFill {
+    margin-top: $baseSize * 2;
+  }
+}
+
+.Editor-formInner.Editor-formInner--FillColor.Editor-formInner--NoTabs {
+  .Form-InputFill {
+    margin-top: $baseSize;
+  }
+}
+
+.Options-form .Editor-formInner {
+  margin-top: 0;
+}
+
+.Editor-formInput,
+.Editor-formLabel {
+  position: relative;
+  flex: 1;
+}
+
+.Editor-formInput:focus {
+  outline: none;
+}
+
+.Editor-formLabel label {
+  cursor: pointer;
+}
+
+.Editor-formInner--noMargin {
+  margin-top: 0;
+}
+
+.Editor-formInner--nested {
+  position: relative;
+}
+
+.Editor-formInner--nested::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 12px;
+  left: 8px;
+  width: 1px;
+  background: $cSecondaryLine;
+}
+
+.Editor-formInner--nested .CDB-Legend {
+  position: relative;
+  width: 72px;
+  padding-left: 24px;
+}
+
+.Editor-formInner--nested .CDB-Legend::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  box-sizing: border-box;
+  width: 5px;
+  height: 5px;
+  border: 1px solid $cMainLine;
+  border-radius: 50%;
+  background: $cWhite;
+}
+
+.Editor-formInner--Toggle {
+  margin-top: 0;
+}
+
+.Editor-toggleHelp {
+  margin-top: -12px;
+}
+
+.Editor-toggleRadio {
+  display: none;
+}
+
+.Editor-formInner--nested .Editor-formInner.Editor-formInner--DataObservatoryDropdown {
+  align-items: flex-start;
+}
+
+.Editor-formInner--nested .Editor-formInner--DataObservatoryDropdown .CDB-Legend {
+  width: 96px;
+  padding-left: 0;
+  background-color: $cWhite;
+  line-height: 32px;
+
+  &::before {
+    display: none;
+  }
+}
+
+.Editor-formInner {
+  &.Editor-formSelect,
+  .Editor-Form-InputSize {
+    max-width: 160px;
+  }
+}
+
+.Editor-formSelect {
+  flex: 1;
+
+  &.is-active {
+    .CDB-InputText {
+      border: 1px solid $cBlackHover;
+    }
+  }
+
+  .CDB-InputText {
+    max-width: 160px;
+  }
+}
+
+.Editor-formHelp {
+  padding: 0 0 1px;
+}
+
+.Editor-boxModal .CDB-Legend {
+  padding-left: 0;
+}
+
+.Editor-boxModal .CDB-Legend::before {
+  display: none;
+}
+
+.Editor-checker {
+  align-items: flex-start;
+  width: 100%;
+}
+
+.Editor-checker--slim .Editor-formInner {
+  min-height: 20px;
+}
+
+.Editor-checkerInput {
+  display: flex;
+  align-items: center;
+  width: 92px;
+  height: 32px;
+  min-height: 32px;
+  margin-right: 12px;
+}
+
+/* move to CartoAssets */
+.Editor-checkerInput .CDB-Checkbox-face {
+  width: 16px; // Forcing to be at least that width
+  min-width: 0;
+}
+
+.Editor-checkerLabel {
+  margin-left: 8px;
+}
+
+.Editor-checkerComponent {
+  width: 160px;
+}
+
+// TODO: fix this in CartoAsssets
+.CDB-Legend--textarea {
+  margin-top: -16px;
+}
+
+.CDB-OptionInput-container {
+  height: 100%;
+}
+
+.CDB-OptionInput-item.is-disabled .CDB-OptionInput-content {
+  color: #CCC;
+}
+
+.CDB-OptionInput-item--categories .InputColor {
+  padding: 0;
+}
+
+.CDB-ColorBar.is-link {
+  cursor: pointer;
+}
+
+.Form-InputSize {
+  width: 100%;
+  max-width: 160px;
+
+  .Editor-formInner--Number {
+    margin-top: $baseSize * 2;
+  }
+}
+
+.Form-InputFill {
+  width: 100%;
+  max-width: 160px;
+}
+
+.Form-StyleByValue {
+  margin-top: $baseSize * 2;
+}
+
+.Form-StyleByValue--column {
+  display: flex;
+  justify-content: space-between;
+
+  .by-column-name {
+    padding-right: 4px;
+  }
+
+  .by-column-range {
+
+    padding-left: 8px;
+    border-left: 1px #CCC solid;
+    text-align: right;
+    text-align: center;
+  }
+}
+
+.RampItem-bar {
+  width: 20px;
+}
+
+// TODO: fix this in CartoAssets
+.u-isHidden {
+  display: none;
+}

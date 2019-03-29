@@ -16,14 +16,8 @@ describe Visualization::Member do
   before(:each) do
     bypass_named_maps
 
-    user_id = UUIDTools::UUID.timestamp_create.to_s
     user_name = 'whatever'
-    @user_mock = create_mocked_user(
-      user_id: user_id,
-      user_name: user_name,
-      public_url: "http://#{user_name}.carto.com",
-      groups: []
-    )
+    @user_mock = FactoryGirl.build(:user, username: user_name)
     CartoDB::Visualization::Relator.any_instance.stubs(:user).returns(@user_mock)
 
     support_tables_mock = Doubles::Visualization::SupportTables.new
@@ -91,7 +85,6 @@ describe Visualization::Member do
       vis_mock.stubs(:transition_options).returns({})
       vis_mock.stubs(:active_child).returns(nil)
       vis_mock.stubs(:likes).returns([])
-      vis_mock.stubs(:likes_count).returns(0)
 
       vis_mock.stubs(:synchronization).returns(nil)
 
@@ -117,7 +110,6 @@ describe Visualization::Member do
       data[:parent_id].should eq nil
       data[:children].should eq Array.new
       data[:kind].should eq Visualization::Member::KIND_GEOM
-      data[:likes].should eq 0
       data[:prev_id].should eq nil
       data[:next_id].should eq nil
       data[:transition_options].should eq Hash.new
@@ -201,7 +193,6 @@ describe Visualization::Member do
       data[:children][2][:id].should eq member_c.id
       data[:children][3][:id].should eq member_d.id
       data[:children][4][:id].should eq member_e.id
-      data[:likes].should eq 0
     end
   end
 

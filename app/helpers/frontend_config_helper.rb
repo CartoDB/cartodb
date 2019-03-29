@@ -1,5 +1,12 @@
+require_dependency 'helpers/avatar_helper'
+
 module FrontendConfigHelper
-  def frontend_config
+  include AvatarHelper
+  include FullstoryHelper
+
+  UPGRADE_LINK_ACCOUNT = 'PERSONAL30'.freeze
+
+  def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
       maps_api_template:          maps_api_template,
@@ -7,6 +14,16 @@ module FrontendConfigHelper
       user_name:                  CartoDB.extract_subdomain(request),
       cartodb_com_hosted:         Cartodb.config[:cartodb_com_hosted].present?,
       account_host:               CartoDB.account_host,
+      trackjs_customer:           Cartodb.get_config(:trackjs, 'customer'),
+      trackjs_enabled:            Cartodb.get_config(:trackjs, 'enabled'),
+      trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
+      google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
+      google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
+      google_tag_manager_id:      Cartodb.get_config(:google_tag_manager, 'primary'),
+      hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
+      intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
+      fullstory_enabled:          fullstory_enabled?(user),
+      fullstory_org:              Cartodb.get_config(:fullstory, 'org'),
       dropbox_api_key:            Cartodb.get_config(:dropbox_api_key),
       gdrive_api_key:             Cartodb.get_config(:gdrive, 'api_key'),
       gdrive_app_id:              Cartodb.get_config(:gdrive, 'app_id'),
@@ -22,10 +39,18 @@ module FrontendConfigHelper
       datasource_search_twitter:  nil,
       max_asset_file_size:        Cartodb.config[:assets]["max_file_size"],
       watcher_ttl:                Cartodb.config[:watcher].try("fetch", 'ttl', 60),
-      upgrade_url:                cartodb_com_hosted? ? false : "#{current_user.upgrade_url(request.protocol)}",
+      upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
-      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?
+      data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
+      avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS,
+      app_name:                   Cartodb.get_config(:mailer, 'template', 'app_name') || 'CARTO'
     }
+
+    if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?
+      config[:hubspot_token] = CartoDB::Hubspot::instance.token
+      config[:hubspot_ids] = CartoDB::Hubspot::instance.event_ids.to_json.html_safe
+      config[:hubspot_form_ids] = CartoDB::Hubspot::instance.form_ids
+    end
 
     if Cartodb.config[:datasource_search].present? && Cartodb.config[:datasource_search]['twitter_search'].present? \
       && Cartodb.config[:datasource_search]['twitter_search']['standard'].present?
@@ -54,6 +79,20 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
-    config.to_json
+    if CartoDB.account_host.present? && show_account_update_url(user)
+      config[:account_update_url] = "#{CartoDB.account_host}"\
+                                    "#{CartoDB.account_path}/"\
+                                    "#{user.username}/update_payment"
+    end
+
+    config
+  end
+
+  def frontend_config
+    frontend_config_hash.to_json
+  end
+
+  def show_account_update_url(user)
+    user && user.account_type.casecmp(UPGRADE_LINK_ACCOUNT).zero?
   end
 end

@@ -6,16 +6,8 @@
   .cartodb-text a.user { text-decoration:none }
   .cartodb-text img {display:inline-block; *display:inline; vertical-align:middle; border-radius:16px; -webkit-border-radius:16px; -moz-border-radius:16px; zoom:1; text-decoration:none }
   .cartodb-text span.username { text-decoration:underline }
-  /* likes */
-  .cartodb-text .like { float: right; display:inline-block; *display:inline; vertical-align:middle; zoom:1; text-decoration: none; color: #666; }
-  .cartodb-text .like .icon { display:inline-block; *display:inline; vertical-align:middle; zoom:1; position:relative; top: -1px; width: 14px; height: 14px; background-image:url('<%= image_path "layout/heart.png" %>'); background-size: 14px 14px; -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7);  }
-  .cartodb-text .like.is-highlighted .icon { background-image:url('<%= image_path "layout/heart_highlighted.png" %>'); background-size: 14px 14px; -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7); }
-  .cartodb-text .like .icon.is-animated { -ms-animation-duration: 400ms; -webkit-animation-duration: 400ms; animation-duration: 400ms; -webkit-animation-fill-mode: both; -ms-animation-fill-mode: both; animation-fill-mode: both; animation-timing-function: ease-in; -webkit-animation-timing-function: ease-in; } 
-  @-webkit-keyframes pulse { 0% { -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7); } 25% { -webkit-transform: scale(1); -ms-transform: scale(1); transform: scale(1); } 50% { -webkit-transform: scale(.5); -ms-transform: scale(.5); transform: scale(.5); } 75% { -webkit-transform: scale(1); -ms-transform: scale(1); transform: scale(1); } 100% { -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7); } }
-  @keyframes pulse { 0% { -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7); } 25% { -webkit-transform: scale(1); -ms-transform: scale(1); transform: scale(1); } 50% { -webkit-transform: scale(.5); -ms-transform: scale(.5); transform: scale(.5); } 75% { -webkit-transform: scale(1); -ms-transform: scale(1); transform: scale(1); } 100% { -webkit-transform: scale(.7); -ms-transform: scale(.7); transform: scale(.7); } }
-  .cartodb-text .like .icon.is-pulsating { -webkit-animation-name: pulse; -ms-animation-name: pulse; animation-name: pulse; }
 
-  /* not supported dialog */ 
+  /* not supported dialog */
   #not_supported_dialog {position:absolute; width:356px; height:213px; top:50%; left:50%; margin-top:-107px; margin-left:-178px; padding:0; background-color:#FFF; text-align:center; font-family:'Helvetica', Arial; color:#666666; z-index:10000;}
   #not_supported_dialog h2 {display:inline-block; width:77px; margin:30px 0 0; padding-bottom:16px; font-size:13px; font-weight:bold; border-bottom:1px solid #D9D9D9; vertical-align:top; zoom:1; *display:inline;}
   #not_supported_dialog p {display:block; padding:0 40px; margin:12px 0 0; font-size:15px;}
@@ -23,9 +15,9 @@
   #not_supported_dialog ul li {float:left; margin:0; padding:0; border-right:1px solid #D9D9D9;}
   #not_supported_dialog ul li a {display:block; width:118px; height:74px; background-repeat:no-repeat; background-position:center center; font-size:0; line-height:0; text-indent:-9999px;}
   #not_supported_dialog ul li.last {border:none;}
-  #not_supported_dialog a.safari {background-image:url('<%= image_path "layout/safari.png" %>');}
-  #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
-  #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
+  #not_supported_dialog a.safari {background-image:url('<%= editor_image_path "layout/safari.png" %>');}
+  #not_supported_dialog a.chrome {background-image:url('<%= editor_image_path "layout/chrome.png" %>');}
+  #not_supported_dialog a.firefox {background-image:url('<%= editor_image_path "layout/firefox.png" %>');}
 
 
   :-webkit-full-screen .cartodb-map-wrapper { height: 100%!important; }
@@ -49,4 +41,4 @@
 
 </style>
 
-<%= stylesheet_link_tag 'cartodb.css' %>
+<%= editor_stylesheet_link_tag 'cartodb.css' %>

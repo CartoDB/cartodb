@@ -22,14 +22,14 @@
 }
 
 .CodeMirror-hint {
-  margin: 0;
-  padding: 0 4px;
   border-radius: 2px;
-  max-width: 19em;
-  overflow: hidden;
-  white-space: pre;
   color: black;
   cursor: pointer;
+  margin: 0;
+  max-width: 19em;
+  overflow: hidden;
+  padding: 0 4px;
+  white-space: pre;
 }
 
 .CodeMirror-hint-active {

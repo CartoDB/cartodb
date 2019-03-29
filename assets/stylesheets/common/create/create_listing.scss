@@ -1,0 +1,28 @@
+@import "../../variables/mixins";
+@import "../../variables/colors";
+@import "../../variables/sizes";
+
+// Create dialog listing block styles
+
+.CreateDialog-listing {
+  display: block;
+  padding-top: 52px; // padded on top of the normal Dialog-body it seems, for content to appear below the subheader (.Filters) fold
+}
+.CreateDialog-listing.CreateDialog-listing--withFlashMessage { padding-top: 126px; }
+.CreateDialog-listing.CreateDialog-listing--noPaddingTop { padding-top: 0; }
+
+.DatasetsPaginator {
+  width: 940px;
+  margin: 0 auto;
+  padding: 30px 0;
+
+  &:empty {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.DatasetsPaginator .Pagination {
+  justify-content: flex-end;
+}
+

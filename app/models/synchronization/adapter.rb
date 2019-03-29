@@ -1,20 +1,30 @@
 # encoding: utf-8
 
+require 'carto/importer/table_setup'
+
 module CartoDB
   module Synchronization
     class Adapter
-      DESTINATION_SCHEMA = 'public'
-      STATEMENT_TIMEOUT = 1.hour * 1000
+      STATEMENT_TIMEOUT = (1.hour * 1000).freeze
+      DESTINATION_SCHEMA = 'public'.freeze
       THE_GEOM = 'the_geom'.freeze
+      OVERWRITE_ERROR = 2013
 
       attr_accessor :table
 
-      def initialize(table_name, runner, database, user)
+      def initialize(table_name, runner, database, user, overviews_creator)
         @table_name   = table_name
         @runner       = runner
         @database     = database
         @user         = user
+        @overviews_creator = overviews_creator
         @failed       = false
+        @table_setup = ::Carto::Importer::TableSetup.new(
+          user: user,
+          overviews_creator: overviews_creator,
+          log: runner.log
+        )
+        @error_code = nil
       end
 
       def run(&tracker)
@@ -27,15 +37,16 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          index_statements = generate_index_statements(user.database_schema, table_name)
+          index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
-          cartodbfy(result.table_name)
-          copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
+          @table_setup.cartodbfy(result.table_name)
+          @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result)
           setup_table(table_name, geo_type)
-          run_index_statements(index_statements)
+          @table_setup.run_index_statements(index_statements, @database)
+          @table_setup.recreate_overviews(table_name)
         end
         self
       rescue => exception
@@ -46,6 +57,10 @@ module CartoDB
         puts '=================='
         drop(result.table_name) if result && exists?(result.table_name)
         raise exception
+      end
+
+      def user
+        @user
       end
 
       def overwrite(table_name, result)
@@ -62,55 +77,22 @@ module CartoDB
           drop(temporary_name) if exists?(temporary_name)
           rename(result.table_name, table_name)
         end
-        fix_oid(table_name)
-        update_cdb_tablemetadata(table_name)
+        @table_setup.fix_oid(table_name)
+        @table_setup.update_cdb_tablemetadata(table_name)
       rescue => exception
+        @error_code = OVERWRITE_ERROR
         puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
 
         # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
         result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
                                                             .compact.to_h
-        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
+        CartoDB::Logger.error(message: 'Error in sync overwrite',
                               exception: exception,
                               user: user,
                               table: table_name,
                               result: result_hash)
         drop(result.table_name) if exists?(result.table_name)
         raise exception
-      end
-
-      def fix_oid(table_name)
-        user_table = Carto::UserTable.find(user.tables.where(name: table_name).first.id)
-
-        user_table.sync_table_id
-        user_table.save
-      end
-
-      def cartodbfy(table_name)
-        schema_name = user.database_schema
-        qualified_table_name = "\"#{schema_name}\".#{table_name}"
-
-        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
-          user_conn.run(%Q{
-            SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{qualified_table_name}'::REGCLASS);
-          })
-        end
-
-        update_table_pg_stats(qualified_table_name)
-      rescue => exception
-        CartoDB::Logger.error(message: 'Error in sync cartodbfy',
-                              exception: exception,
-                              user: user,
-                              table: table_name)
-        raise exception
-      end
-
-      def update_table_pg_stats(qualified_table_name)
-        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
-          user_conn.run(%Q{
-            ANALYZE #{qualified_table_name};
-          })
-        end
       end
 
       def setup_table(table_name, geo_type)
@@ -132,7 +114,7 @@ module CartoDB
                               user: user,
                               table: table_name)
       ensure
-        fix_oid(table_name)
+        @table_setup.fix_oid(table_name)
       end
 
       # From Table#get_the_geom_type!, adapted to unregistered tables
@@ -209,16 +191,9 @@ module CartoDB
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid
           #  - If cartodb_id does not exist, treat this field as the auxiliary column
-          aux_cartodb_id_column = user_database[%Q{
-            SELECT a.attname, t.typname
-            FROM pg_attribute a, pg_type t
-            WHERE attrelid = '#{qualified_table_name}'::regclass
-            AND (a.attname = 'ogc_fid' OR a.attname = 'gid')
-            AND a.atttypid = t.oid
-            AND a.attstattarget < 0
-            LIMIT 1
-          }].first
-          aux_cartodb_id_column = aux_cartodb_id_column[:attname] unless aux_cartodb_id_column.nil?
+          aux_cartodb_id_column = [:ogc_fid, :gid].find do |col|
+            valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col)
+          end
 
           # Remove primary key
           existing_pk = user_database[%Q{
@@ -269,10 +244,6 @@ module CartoDB
         end
       end
 
-      def update_cdb_tablemetadata(name)
-        user.tables.where(name: name).first.update_cdb_tablemetadata
-      end
-
       def success?
         (!@failed  && runner.success?)
       end
@@ -308,8 +279,6 @@ module CartoDB
 
       def drop(table_name)
         database.execute(%Q(DROP TABLE "#{user.database_schema}"."#{table_name}"))
-      rescue
-        self
       end
 
       def exists?(table_name)
@@ -321,7 +290,7 @@ module CartoDB
       end
 
       def error_code
-        runner.results.map(&:error_code).compact.first
+        @error_code || runner.results.map(&:error_code).compact.first
       end
 
       def runner_log_trace
@@ -336,77 +305,26 @@ module CartoDB
         "#{table_name}_to_be_deleted"
       end
 
-      def copy_privileges(origin_schema, origin_table_name, destination_schema, destination_table_name)
-        user.in_database(as: :superuser).execute(%Q(
-          UPDATE pg_class
-          SET relacl=(
-            SELECT r.relacl FROM pg_class r, pg_namespace n
-            WHERE r.relname='#{origin_table_name}'
-            and r.relnamespace = n.oid
-            and n.nspname = '#{origin_schema}'
-          )
-          WHERE relname='#{destination_table_name}'
-          and relnamespace = (select oid from pg_namespace where nspname = '#{destination_schema}')
-        ))
-      rescue => exception
-        CartoDB::Logger.error(exception: exception,
-                              message: 'Error copying privileges',
-                              origin_schema: origin_schema,
-                              origin_table_name: origin_table_name,
-                              destination_schema: destination_schema,
-                              destination_table_name: destination_table_name)
-      end
-
-      # Store all indexes to re-create them after "syncing" the table by reimporting and swapping it
-      # INFO: As upon import geom index names are not enforced, they might "not collide" and generate one on the new import
-      # plus the one already existing, so we skip those
-      def generate_index_statements(origin_schema, origin_table_name)
-        # INFO: This code discerns gist indexes like lib/sql/CDB_CartodbfyTable.sql -> _CDB_create_the_geom_columns
-        user.in_database(as: :superuser)[%Q(
-          SELECT indexdef AS indexdef
-          FROM pg_indexes
-          WHERE schemaname = '#{origin_schema}'
-          AND tablename = '#{origin_table_name}'
-          AND indexname NOT IN (
-            SELECT ir.relname
-              FROM pg_am am, pg_class ir,
-                pg_class c, pg_index i,
-                pg_attribute a
-              WHERE c.oid  = '#{origin_schema}.#{origin_table_name}'::regclass::oid AND i.indrelid = c.oid
-                AND i.indexrelid = ir.oid
-                AND i.indnatts = 1
-                AND i.indkey[0] = a.attnum
-                AND a.attrelid = c.oid
-                AND NOT a.attisdropped
-                AND am.oid = ir.relam
-                AND (
-                  (
-                    (a.attname = '#{::Table::THE_GEOM}' OR a.attname = '#{::Table::THE_GEOM_WEBMERCATOR}')
-                    AND am.amname = 'gist'
-                  ) OR (
-                    a.attname = '#{::Table::CARTODB_ID}'
-                    AND ir.relname <> '#{origin_table_name}_pkey'
-                  )
-                )
-            )
-        )].map { |record| record.fetch(:indexdef) }
-      end
-
-      def run_index_statements(statements)
-        statements.each { |statement|
-          begin
-            database.run(statement)
-          rescue => exception
-            if exception.message !~ /relation .* already exists/
-              CartoDB::Logger.error(exception: exception,
-                                    message: 'Error copying indexes',
-                                    statement: statement)
-            end
-          end
-        }
-      end
-
       private
+
+      def valid_cartodb_id_candidate?(user, table_name, qualified_table_name, col_name)
+        return false unless column_names(user, table_name).include?(col_name)
+        user.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
+          return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
+        end
+      end
+
+      def column_names(user, table_name)
+        user.in_database.schema(table_name, schema: user.database_schema).map { |row| row[0] }
+      rescue => e
+        CartoDB::Logger.error(
+          message: 'Error in column_names from sync adapter',
+          exception: e,
+          user: user,
+          table: table_name
+        )
+        []
+      end
 
       attr_reader :table_name, :runner, :database, :user
     end

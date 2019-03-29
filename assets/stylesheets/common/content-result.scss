@@ -1,0 +1,153 @@
+// Content Result
+//
+// Show the result of any action made in the
+// dashboard, example (search, no results, error,
+// loading, ...)
+// --------------------------------------------------
+
+@import "../variables/colors";
+@import "../variables/mixins";
+@import "../variables/sizes";
+
+.ContentResult {
+  width: 460px;
+  min-height: 360px;
+  margin: 0 auto;
+  padding-top: 160px;
+  text-align: center;
+}
+
+.ContentResult.is-empty {
+  width: auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding-top: 0;
+}
+
+.ContentResult.no-datasets {
+  $blueBkg: #F5FAFE;
+  position: relative;
+  z-index: 9;
+  width: auto;
+  height: 232px;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 28px 0 0;
+  overflow: hidden;
+  border-bottom: 1px solid $cStructure-softLine;
+
+  &::after,
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .NoDatasets-illustration {
+    position: absolute;
+    bottom: -52px;
+    left: 50%;
+    width: 671px;
+    height: 195px;
+    margin-left: -335px;
+    background-image: url($assetsDir + '/images/layout/search_lens_bkg.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+  }
+
+  .NoDatasets-illustration--secondary {
+    background: url($assetsDir + '/images/layout/connect-dataset.png') center center no-repeat;
+  }
+}
+
+.ContentResult-smallLoader {
+  position: absolute;
+  z-index: 10;
+  top: -2px;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  overflow: hidden;
+  background: transparent;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    right: 0;
+    width: 600px;
+    height: 2px;
+    animation: pulsate 1.5s linear infinite;
+    background: rgba(black, 0.55);
+  }
+}
+
+.ContentResult-icon {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  border: 1px solid $cStructure-mainLine;
+  border-radius: 2px;
+  color: $cTypography-help;
+  font-size: 22px;
+  line-height: 36px;
+  vertical-align: top;
+}
+// Icon types
+.ContentResult-iconNegative {
+  border-color: $cHighlight-negative;
+  color: $cHighlight-negative;
+}
+
+.ContentResult-iconPositive {
+  border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
+}
+
+.ContentResult-iconAlert {
+  border-color: $cHighlight-alert;
+  color: $cHighlight-alert;
+}
+
+.ContentResult-title {
+  display: block;
+  margin: 15px 0 10px;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-largest;
+  font-weight: $sFontWeight-normal;
+  line-height: $sLineHeight-largest;
+}
+
+.ContentResult-text {
+  display: block;
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+}
+
+.ContentResult-textTitle {
+  color: $cTypography-link;
+  text-decoration: underline;
+
+  &:hover {
+    color: $cTypography-linkHover;
+  }
+}
+
+@keyframes pulsate {
+  0% {
+    right: 100%;
+  }
+
+  50% {
+    right: 0%;
+  }
+
+  100% {
+    right: -100%;
+  }
+}

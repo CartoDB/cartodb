@@ -2,6 +2,8 @@ require_relative '../spec_helper'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/organization.rb'
 require_relative 'organization_shared_examples'
+require_relative '../factories/visualization_creation_helpers'
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 require 'helpers/storage_helper'
 require 'factories/organizations_contexts'
@@ -45,6 +47,10 @@ describe Organization do
     end
   end
 
+  before(:each) do
+    create_account_type_fg('ORGANIZATION USER')
+  end
+
   describe '#destroy_cascade' do
     include TableSharing
 
@@ -59,7 +65,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -81,7 +87,7 @@ describe Organization do
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 3, viewer_seats: 2).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -110,7 +116,7 @@ describe Organization do
     end
 
     it 'destroys users with unregistered tables' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -160,7 +166,7 @@ describe Organization do
 
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
-      org_quota = 1234567890
+      org_quota = 123456789000
       org_name = unique_name('org')
       org_seats = 5
 
@@ -195,7 +201,7 @@ describe Organization do
     end
 
     it 'validates viewer and builder quotas' do
-      quota = 1234567890
+      quota = 123456789000
       name = unique_name('org')
       seats = 1
       viewer_seats = 1
@@ -265,7 +271,7 @@ describe Organization do
 
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -297,7 +303,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -355,6 +361,37 @@ describe Organization do
         organization.reload
       }.to raise_error Sequel::Error
     end
+    it 'Tests removing a normal member with analysis tables' do
+      ::User.any_instance.stubs(:create_in_central).returns(true)
+      ::User.any_instance.stubs(:update_in_central).returns(true)
+
+      org_name = unique_name('org')
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
+      owner = create_test_user('orgowner')
+      user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
+      user_org.promote_user_to_admin
+      organization.reload
+      owner.reload
+
+      member1 = create_test_user('member1', organization)
+      create_random_table(member1, 'analysis_user_table')
+      create_random_table(member1, 'users_table')
+      member1.in_database.run(%{CREATE TABLE #{member1.database_schema}.analysis_4bd65e58e4_246c4acb2c67e4f3330d76c4be7c6deb8e07f344 (id serial)})
+      member1.reload
+
+      organization.reload
+      organization.users.count.should eq 2
+
+      results = member1.in_database(as: :public_user).fetch(%{
+        SELECT has_function_privilege('#{member1.database_public_username}', 'CDB_QueryTablesText(text)', 'execute')
+      }).first
+      results.nil?.should eq false
+      results[:has_function_privilege].should eq true
+
+      member1.destroy
+      organization.reload
+      organization.users.count.should eq 1
+    end
   end
 
   describe '#non_org_user_removal' do
@@ -409,105 +446,6 @@ describe Organization do
       organization2.valid?.should eq false
 
       organization.destroy
-    end
-  end
-
-  describe '#org_shared_vis' do
-    it "checks fetching all shared visualizations of an organization's members " do
-      bypass_named_maps
-
-      # Don't check/handle DB permissions
-      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
-      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-
-      vis_1_name = 'viz_1'
-      vis_2_name = 'viz_2'
-      vis_3_name = 'viz_3'
-
-      user1 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-      user2 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-      user3 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-
-      organization = Organization.new
-      organization.name = 'qwerty'
-      organization.seats = 5
-      organization.quota_in_bytes = 1234567890
-      organization.save.reload
-      user1.organization_id = organization.id
-      user1.save.reload
-      organization.owner_id = user1.id
-      organization.save.reload
-      user2.organization_id = organization.id
-      user2.save.reload
-      user3.organization_id = organization.id
-      user3.save.reload
-
-      vis1 = Visualization::Member.new(random_attributes(name: vis_1_name, user_id: user1.id)).store
-      vis2 = Visualization::Member.new(random_attributes(name: vis_2_name, user_id: user2.id)).store
-      vis3 = Visualization::Member.new(random_attributes(name: vis_3_name, user_id: user3.id)).store
-
-      perm = vis1.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      perm = vis2.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      perm = vis3.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      # Setup done, now to the proper test
-
-      org_vis_array = organization.public_visualizations.map { |vis|
-        vis.id
-      }
-      # Order is newest to oldest
-      org_vis_array.should eq [vis3.id, vis2.id, vis1.id]
-
-      # Clear first shared entities to be able to destroy
-      vis1.permission.acl = []
-      vis1.permission.save
-      vis2.permission.acl = []
-      vis2.permission.save
-      vis3.permission.acl = []
-      vis3.permission.save
-
-      begin
-        user3.destroy
-        user2.destroy
-        user1.destroy
-      rescue
-        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
-      end
     end
   end
 
@@ -670,6 +608,74 @@ describe Organization do
       Organization.overquota.map(&:id).should include(@organization.id)
       Organization.overquota.size.should == Organization.count
     end
+  end
+
+  it 'should validate password_expiration_in_d' do
+    organization = FactoryGirl.create(:organization)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # minimum 1 day
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 0)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # maximum 1 year
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 365)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 365
+
+    expect {
+      organization = FactoryGirl.create(:organization, password_expiration_in_d: 366)
+    }.to raise_error(Sequel::ValidationFailed, /password_expiration_in_d must be greater than 0 and lower than 366/)
+
+    # nil or blank means unlimited
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: nil)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: '')
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should_not be
+
+    # defaults to global config if no value
+    organization = FactoryGirl.build(:organization, password_expiration_in_d: 1)
+    organization.valid?.should be_true
+    organization.save
+
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 1
+
+    organization.password_expiration_in_d = nil
+    organization.valid?.should be_true
+    organization.save
+    organization = Carto::Organization.find(organization.id)
+    organization.password_expiration_in_d.should_not be
+
+    # override default config if a value is set
+    organization = FactoryGirl.create(:organization, password_expiration_in_d: 10)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+
+    # keep values configured
+    organization = Carto::Organization.find(organization.id)
+    organization.valid?.should be_true
+    organization.password_expiration_in_d.should eq 10
+  end
+
+  it 'should handle redis keys properly' do
+    @organization = create_organization_with_users(name: 'overquota-org')
+
+    $users_metadata.hkeys(@organization.key).should_not be_empty
+
+    @organization.destroy
+
+    $users_metadata.hkeys(@organization.key).should be_empty
   end
 
   def random_attributes(attributes = {})

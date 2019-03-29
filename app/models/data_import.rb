@@ -163,7 +163,7 @@ class DataImport < Sequel::Model
   end
 
   def dataimport_logger
-    @@dataimport_logger ||= Logger.new(log_file_path("imports.log"))
+    @@dataimport_logger ||= CartoDB.unformatted_logger(log_file_path("imports.log"))
   end
 
   # Meant to be used when calling from API endpoints (hides some fields not needed at editor scope)
@@ -270,9 +270,7 @@ class DataImport < Sequel::Model
 
     log.append "Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}"
 
-    self.success  = false
-    self.state    = STATE_STUCK
-    save
+    handle_failure(CartoDB::Importer2::StuckImportJobError.new)
 
     CartoDB::notify_exception(
       CartoDB::Importer2::GenericImportError.new('Import timed out or got stuck'),
@@ -417,7 +415,6 @@ class DataImport < Sequel::Model
 
   def dispatch
     self.state = STATE_UPLOADING
-    return migrate_existing   if migrate_table.present?
     return from_table         if table_copy.present? || from_query.present?
 
     if service_name == 'connector'
@@ -460,7 +457,7 @@ class DataImport < Sequel::Model
     else
       self.log = CartoDB::Log.new(
         type:     CartoDB::Log::TYPE_DATA_IMPORT,
-        user_id:  current_user.id
+        user_id:  user_id
       )
     end
   end
@@ -472,9 +469,10 @@ class DataImport < Sequel::Model
   # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
-    ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(self.state) &&
-    self.created_at < 5.minutes.ago &&
-    !running_import_ids.include?(self.id)
+    state == STATE_STUCK ||
+      ![STATE_ENQUEUED, STATE_PENDING, STATE_COMPLETE, STATE_FAILURE].include?(state) &&
+        created_at < 5.minutes.ago &&
+        !running_import_ids.include?(id)
   end
 
   def from_table
@@ -488,6 +486,8 @@ class DataImport < Sequel::Model
 
     query = table_copy ? "SELECT * FROM #{table_copy}" : from_query
     new_table_name = import_from_query(table_name, query)
+    return true unless new_table_name && !overwrite_strategy?
+
     sanitize_columns(new_table_name)
 
     self.update(table_names: new_table_name, service_name: nil)
@@ -511,10 +511,23 @@ class DataImport < Sequel::Model
     save
 
     taken_names = Carto::Db::UserSchema.new(current_user).table_names
+
+    if taken_names.include?(name) && collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
+      log.append("Table with name #{name} already exists. Skipping")
+      return
+    end
+
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
-    # current_user.db_services.in_database.run(%{CREATE TABLE #{table_name} AS #{query}})
-    current_user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
+
+    if overwrite_strategy?
+      overwrite_table_from_query(table_name, name, query)
+      results.push CartoDB::Importer2::Result.new(success: true, error: nil)
+    else
+      current_user.db_service.in_database_direct_connection(
+        statement_timeout: DIRECT_STATEMENT_TIMEOUT
+      ) do |user_direct_conn|
         user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
+      end
     end
     if current_user.over_disk_quota?
       log.append "Over storage quota. Dropping table #{table_name}"
@@ -528,6 +541,24 @@ class DataImport < Sequel::Model
     table_name
   end
 
+  def overwrite_table_from_query(new_table_name, overwrite_table_name, query)
+    importer = new_importer_with_unused_runner
+    importer.overwrite_register(
+      CartoDB::Importer2::Result.new(tables: [new_table_name]),
+      overwrite_table_name
+    ) do |database, schema|
+      database.execute(%{CREATE TABLE #{new_table_name} AS #{query}})
+      importer.drop("\"#{schema}\".\"#{overwrite_table_name}\"")
+      database.execute(%{
+        ALTER TABLE "#{schema}"."#{new_table_name}" RENAME TO "#{overwrite_table_name}"
+      })
+    end
+  end
+
+  def overwrite_strategy?
+    collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_OVERWRITE
+  end
+
   def sanitize_columns(table_name)
     Table.sanitize_columns(table_name, {
         connection: current_user.in_database,
@@ -536,15 +567,12 @@ class DataImport < Sequel::Model
       })
   end
 
-
-  def migrate_existing(imported_name=migrate_table, name=nil)
-    new_name = imported_name || name
-
+  def migrate_existing(imported_name)
     log.append 'migrate_existing()'
 
     table         = ::Table.new
     table.user_id = user_id
-    table.name    = new_name
+    table.name    = imported_name
     table.migrate_existing_table = imported_name
     table.data_import_id = self.id
 
@@ -575,7 +603,7 @@ class DataImport < Sequel::Model
   end
 
   def pg_options
-    Rails.configuration.database_configuration[Rails.env].symbolize_keys
+    SequelRails.configuration.environment_for(Rails.env)
       .merge(
         username: current_user.database_username,
         password: current_user.database_password,
@@ -589,11 +617,15 @@ class DataImport < Sequel::Model
     if options['binary'].nil? || options['csv_guessing'].nil?
       {}
     else
-      {
+      ogr_options = {
         ogr2ogr_binary:         options['binary'],
         ogr2ogr_csv_guessing:   options['csv_guessing'] && self.type_guessing,
         quoted_fields_guessing: self.quoted_fields_guessing
       }
+      if options['memory_limit'].present?
+        ogr_options.merge!(ogr2ogr_memory_limit: options['memory_limit'])
+      end
+      return ogr_options
     end
   end
 
@@ -629,6 +661,24 @@ class DataImport < Sequel::Model
         error_code: 1012,
         log_info: ex.to_s
       }
+    rescue ExternalServiceError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1012,
+        log_info: ex.to_s
+      }
+    rescue ExternalServiceTimeoutError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1020,
+        log_info: ex.to_s
+      }
+    rescue DataDownloadTimeoutError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1020,
+        log_info: ex.to_s
+      }
     rescue ResponseError => ex
       had_errors = true
       manual_fields = {
@@ -645,6 +695,12 @@ class DataImport < Sequel::Model
       had_errors = true
       manual_fields = {
         error_code: 1012,
+        log_info: ex.to_s
+      }
+    rescue UnsupportedOperationError => ex
+      had_errors = true
+      manual_fields = {
+        error_code: 1023,
         log_info: ex.to_s
       }
     rescue CartoDB::Importer2::FileTooBigError => ex
@@ -675,27 +731,9 @@ class DataImport < Sequel::Model
       database_options = pg_options
       self.host = database_options[:host]
 
-      runner = CartoDB::Importer2::Runner.new({
-                                                pg: database_options,
-                                                downloader: downloader,
-                                                log: log,
-                                                user: current_user,
-                                                unpacker: CartoDB::Importer2::Unp.new(Cartodb.config[:importer]),
-                                                post_import_handler: post_import_handler,
-                                                importer_config: Cartodb.config[:importer],
-                                                collision_strategy: collision_strategy
-                                              })
-      runner.loader_options = ogr2ogr_options.merge content_guessing_options
-      runner.set_importer_stats_host_info(Socket.gethostname)
-      registrar     = CartoDB::TableRegistrar.new(current_user, ::Table)
-      quota_checker = CartoDB::QuotaChecker.new(current_user)
-      database      = current_user.in_database
-      destination_schema = current_user.database_schema
-      public_user_roles = current_user.db_service.public_user_roles
-      overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
-      importer      = CartoDB::Connector::Importer.new(runner, registrar, quota_checker, database, id,
-                                                       overviews_creator,
-                                                       destination_schema, public_user_roles)
+      unp = CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr])
+
+      importer, runner = new_importer_with_runner(downloader, unp, post_import_handler)
     end
 
     [importer, runner, datasource_provider, manual_fields]
@@ -727,11 +765,64 @@ class DataImport < Sequel::Model
     public_user_roles = current_user.db_service.public_user_roles
     overviews_creator = CartoDB::Importer2::Overviews.new(connector, current_user)
     importer = CartoDB::Connector::Importer.new(
-      connector, registrar, quota_checker, database, id,
-      overviews_creator,
-      destination_schema, public_user_roles
+      runner: connector,
+      table_registrar: registrar,
+      quota_checker: quota_checker,
+      database: database,
+      data_import_id: id,
+      overviews_creator: overviews_creator,
+      destination_schema: destination_schema,
+      public_user_roles: public_user_roles
     )
     [importer, connector, nil, nil]
+  end
+
+  # Create an Importer object (using a Runner to fetch the data).
+  # This methods returns an array with two elements:
+  # * importer: the new importer (nil if download errors detected)
+  # * runner: the runner that the importer uses
+  def new_importer_with_runner(downloader, unpacker, post_import_handler)
+    runner = CartoDB::Importer2::Runner.new(
+      pg: pg_options,
+      downloader: downloader,
+      log: log,
+      user: user,
+      unpacker: unpacker,
+      post_import_handler: post_import_handler,
+      importer_config: Cartodb.config[:importer],
+      collision_strategy: collision_strategy
+    )
+
+    runner.loader_options = ogr2ogr_options.merge content_guessing_options
+    runner.set_importer_stats_host_info(Socket.gethostname)
+    registrar = CartoDB::TableRegistrar.new(current_user, ::Table)
+    quota_checker = CartoDB::QuotaChecker.new(current_user)
+    database = current_user.in_database
+    destination_schema = current_user.database_schema
+    public_user_roles = current_user.db_service.public_user_roles
+    overviews_creator = CartoDB::Importer2::Overviews.new(runner, current_user)
+    importer = CartoDB::Connector::Importer.new(
+      runner: runner,
+      table_registrar: registrar,
+      quota_checker: quota_checker,
+      database: database,
+      data_import_id: id,
+      overviews_creator: overviews_creator,
+      destination_schema: destination_schema,
+      public_user_roles: public_user_roles,
+      collision_strategy: collision_strategy
+    )
+
+    [importer, runner]
+  end
+
+  # Create an Importer object with a runner that it's not able to fetch data.
+  # This method is useful when you just need some logic from the Importer class
+  # This methods returns an array with two elements:
+  # * importer: the new importer (nil if download errors detected)
+  def new_importer_with_unused_runner
+    importer, = new_importer_with_runner(nil, nil, nil)
+    importer
   end
 
   # Run importer, store results and return success state.
@@ -780,8 +871,8 @@ class DataImport < Sequel::Model
 
       if importer.success?
         update_visualization_id(importer)
-        update_synchronization(importer)
       end
+      update_synchronization(importer)
 
       importer.success? ? set_datasource_audit_to_complete(datasource_provider,
                                                          importer.success? && importer.table ? importer.table.id : nil)
@@ -961,7 +1052,7 @@ class DataImport < Sequel::Model
 
   def decorate_log(data_import)
     decoration = { retrieved_items: 0 }
-    if data_import.success && data_import.table_id && data_import.migrate_table.nil? && data_import.from_query.nil? &&
+    if data_import.success && data_import.table_id && data_import.from_query.nil? &&
        data_import.table_copy.nil?
       datasource = get_datasource_provider
       if datasource && datasource.persists_state_via_data_import?

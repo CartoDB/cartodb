@@ -1,6 +1,6 @@
 <% content_for :settings_body do %>
   <div class="FormAccount-container">
-    <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', {}, current_user), multipart: true do |f| %>
+    <%= form_for @organization, url: CartoDB.url(self, 'organization_settings_update', user: current_user), multipart: true do |f| %>
       <%= csrf_meta_tags %>
 
       <div class="FormAccount-row js-avatarSelector">
@@ -32,20 +32,6 @@
               <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="FormAccount-row">
-        <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Brand color</label>
-        </div>
-        <div class="FormAccount-rowData">
-          <button type="button" class="js-colorPicker UserSettings-ColorPicker" style="background:<%= @organization.color.blank? ? "#354046" : @organization.color %>">
-            <span class="ColorPicker-handle">
-              <b class="ColorPicker-handleTriangle"></b>
-            </span>
-          </button>
-          <%= f.hidden_field :color, :class => "js-colorInput" %>
         </div>
       </div>
 
@@ -196,7 +182,7 @@
 
       <div class="FormAccount-footer">
         <p class="FormAccount-footerText"></p>
-          <button type="submit" class="CDB-Button CDB-Button--primary">
+          <button type="submit" class="CDB-Button CDB-Button--primary js-save">
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
           </button>
       </div>

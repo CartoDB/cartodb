@@ -7,13 +7,19 @@ module Carto
     class OrganizationsController < ::Api::ApplicationController
       include OrganizationsHelper
       include PagedSearcher
+      include Carto::ControllerHelper
 
       ssl_required :users
 
       before_filter :load_organization, :load_group
 
+      rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
+
+      VALID_ORDER_PARAMS = [:username, :updated_at].freeze
+
       def users
-        page, per_page, order = page_per_page_order_params(50, :username)
+        page, per_page, order, = page_per_page_order_params(VALID_ORDER_PARAMS, default_per_page: 50,
+                                                                                default_order: :username)
         query = params[:q]
         users_query = [@group, @organization].compact.first.users
         users_query = users_query.where('(username like ? or email like ?)', "%#{query}%", "#{query}") if query

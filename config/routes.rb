@@ -14,7 +14,9 @@ CartoDB::Application.routes.draw do
   root to: 'admin/pages#index'
 
   get   '/signup'           => 'signup#signup',     as: :signup
-  post  '/signup'           => 'signup#create',  as: :signup_organization_user
+  post  '/signup'           => 'signup#create',     as: :signup_organization_user
+  get   '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#signup', as: :signup_subdomainless
+  post  '(/user/:user_domain)(/u/:user_domain)/signup' => 'signup#create',  as: :signup_subdomainless_organization_user
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication' => 'signup#create_http_authentication', as: :signup_http_authentication
   get   '(/user/:user_domain)(/u/:user_domain)/signup_http_authentication_in_progress' => 'signup#create_http_authentication_in_progress', as: :signup_http_authentication_in_progress
 
@@ -23,11 +25,24 @@ CartoDB::Application.routes.draw do
   get   '(/user/:user_domain)(/u/:user_domain)/account_token_authentication_error' => 'sessions#account_token_authentication_error',     as: :account_token_authentication_error
 
   get   '(/user/:user_domain)/login' => 'sessions#new',     as: :login
-  get   '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout
+  match '(/user/:user_domain)(/u/:user_domain)/logout'          => 'sessions#destroy', as: :logout, via: [:get, :post]
   match '(/user/:user_domain)(/u/:user_domain)/sessions/create' => 'sessions#create',  as: :create_session, via: [:get, :post]
+  get '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication',  as: :multifactor_authentication_session
+  post '(/user/:user_domain)(/u/:user_domain)/multifactor_authentication' => 'sessions#multifactor_authentication_verify_code',  as: :multifactor_authentication_verify_code
 
   get '(/user/:user_domain)(/u/:user_domain)/status'          => 'home#app_status'
   get '(/user/:user_domain)(/u/:user_domain)/diagnosis'       => 'home#app_diagnosis'
+
+  # Password change
+  resources :password_change, only: [:edit, :update]
+
+  # Password resets
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/new'         => 'password_resets#new',      as: :new_password_reset
+  post '(/user/:user_domain)(/u/:user_domain)/password_resets'            => 'password_resets#create',   as: :create_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'    => 'password_resets#edit',     as: :edit_password_reset
+  match '(/user/:user_domain)(/u/:user_domain)/password_resets/:id/edit'  => 'password_resets#update',   as: :update_password_reset, via: [:put, :patch]
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
+  get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
   # Explore
   get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
@@ -46,9 +61,6 @@ CartoDB::Application.routes.draw do
   # This is what an external SAML endpoint should redirect to after successful auth.
   post '(/user/:user_domain)(/u/:user_domain)/saml/finalize' => 'sessions#create'
 
-  get '/google_plus' => 'google_plus#google_plus', as: :google_plus
-  post '/google/signup' => 'google_plus#google_signup', as: :google_plus_signup
-
   # Editor v3
   scope module: 'carto', path: '(/user/:user_domain)(/u/:user_domain)' do
     namespace :builder, path: '/' do
@@ -61,6 +73,8 @@ CartoDB::Application.routes.draw do
         end
       end
 
+      match '/builder/:id/*other', to: 'visualizations#show', via: :get
+
       resources :datasets, path: '/dataset', only: :show, constraints: { id: /[0-z\.\-]+/ }
     end
 
@@ -70,8 +84,14 @@ CartoDB::Application.routes.draw do
       }
     end
 
-    get '/github' => 'github#github', as: :github
+    get '/github' => 'oauth_login#github', as: :github
+    get '/google/oauth' => 'oauth_login#google', as: :google_oauth
     get '/saml/metadata' => 'saml#metadata'
+
+    # Oauth2 provider
+    get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
+    post '/oauth2/authorize', to: 'oauth_provider#authorize'
+    post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -81,13 +101,13 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#show',            as: :organization
     delete '(/user/:user_domain)(/u/:user_domain)/organization'                 => 'organizations#destroy',          as: :organization_destroy
     get    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings',        as: :organization_settings
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/settings'        => 'organizations#settings_update', as: :organization_settings_update, via: [:put, :patch]
     post '(/user/:user_domain)(/u/:user_domain)/organization/regenerate_api_keys'       => 'organizations#regenerate_all_api_keys', as: :regenerate_organization_users_api_key
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/groups(/*other)' => 'organizations#groups',          as: :organization_groups
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth',        as: :organization_auth
-    put    '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update
+    match  '(/user/:user_domain)(/u/:user_domain)/organization/auth'        => 'organizations#auth_update', as: :organization_auth_update, via: [:put, :patch]
 
     get    '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#notifications',          as: :organization_notifications_admin
     post   '(/user/:user_domain)(/u/:user_domain)/organization/notifications' => 'organizations#new_notification',          as: :new_organization_notification_admin
@@ -95,7 +115,7 @@ CartoDB::Application.routes.draw do
 
     # Organization users management
     get '(/user/:user_domain)(/u/:user_domain)/organization/users/:id/edit'  => 'organization_users#edit',    as: :edit_organization_user,   constraints: { id: /[0-z\.\-]+/ }
-    put '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }
+    match '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#update',  as: :update_organization_user, constraints: { id: /[0-z\.\-]+/ }, via: [:put, :patch]
     get '(/user/:user_domain)(/u/:user_domain)/organization/users'                 => 'organizations#show',            as: :organization_users
     post '(/user/:user_domain)(/u/:user_domain)/organization/users'           => 'organization_users#create',  as: :create_organization_user
     delete '(/user/:user_domain)(/u/:user_domain)/organization/users/:id'       => 'organization_users#destroy', as: :delete_organization_user, constraints: { id: /[0-z\.\-]+/ }
@@ -104,11 +124,10 @@ CartoDB::Application.routes.draw do
 
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
-    put    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile_update', as: :profile_update_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account' => 'users#delete',        as: :account_delete_user
-    put    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account_update', as: :account_update_user
-    delete '(/user/:user_domain)(/u/:user_domain)/account/:id' => 'users#delete', as: :delete_user
+
+    # Lockout
+    get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
@@ -151,14 +170,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/:page'          => 'visualizations#index', as: :datasets_shared_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag'       => 'visualizations#index', as: :datasets_shared_locked_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :datasets_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked'                        => 'visualizations#index', as: :datasets_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/:page'                  => 'visualizations#index', as: :datasets_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag'               => 'visualizations#index', as: :datasets_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/tag/:tag/:page'         => 'visualizations#index', as: :datasets_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked'                 => 'visualizations#index', as: :datasets_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/:page'           => 'visualizations#index', as: :datasets_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag'        => 'visualizations#index', as: :datasets_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :datasets_liked_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked'                       => 'visualizations#index', as: :datasets_locked
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/:page'                 => 'visualizations#index', as: :datasets_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/tag/:tag'              => 'visualizations#index', as: :datasets_locked_tag
@@ -189,10 +200,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/locked/search/:q/:page'         => 'visualizations#index', as: :datasets_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q'        => 'visualizations#index', as: :datasets_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/shared/locked/search/:q/:page'  => 'visualizations#index', as: :datasets_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q'                => 'visualizations#index', as: :datasets_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/search/:q/:page'          => 'visualizations#index', as: :datasets_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q'         => 'visualizations#index', as: :datasets_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/liked/locked/search/:q/:page'   => 'visualizations#index', as: :datasets_liked_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q'              => 'visualizations#index', as: :datasets_library_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/library/search/:q/:page'        => 'visualizations#index', as: :datasets_library_search_page
 
@@ -231,14 +238,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/:page'          => 'visualizations#index', as: :maps_shared_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag'       => 'visualizations#index', as: :maps_shared_locked_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/tag/:tag/:page' => 'visualizations#index', as: :maps_shared_locked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked'                        => 'visualizations#index', as: :maps_liked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/:page'                  => 'visualizations#index', as: :maps_liked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag'               => 'visualizations#index', as: :maps_liked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/tag/:tag/:page'         => 'visualizations#index', as: :maps_liked_tag_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked'                 => 'visualizations#index', as: :maps_liked_locked
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/:page'           => 'visualizations#index', as: :maps_liked_locked_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag'        => 'visualizations#index', as: :maps_liked_locked_tag
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/tag/:tag/:page'  => 'visualizations#index', as: :maps_liked_locked_tag_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked'                       => 'visualizations#index', as: :maps_locked
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/:page'                 => 'visualizations#index', as: :maps_locked_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/tag/:tag'              => 'visualizations#index', as: :maps_locked_tag
@@ -269,10 +268,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q/:page'         => 'visualizations#index', as: :maps_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q'                => 'visualizations#index', as: :maps_liked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/search/:q/:page'          => 'visualizations#index', as: :maps_liked_search_page
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q'         => 'visualizations#index', as: :maps_liked_locked_search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/liked/locked/search/:q/:page'   => 'visualizations#index', as: :maps_liked_locked_search_page
 
     # Tags
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
@@ -282,6 +277,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data'       => 'pages#common_data',    as: :dashboard_common_data
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/common_data/:tag'  => 'pages#common_data',    as: :dashboard_common_data_tag
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications/'    => 'visualizations#index', as: :notifications
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications'     => 'visualizations#index', as: :notifications_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions/'        => 'visualizations#index', as: :solutions
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -336,17 +335,20 @@ CartoDB::Application.routes.draw do
 
   scope module: 'carto/api', defaults: { format: :json } do
     # Visualizations
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                                => 'visualizations#index',           as: :api_v1_visualizations_index
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                            => 'visualizations#show',            as: :api_v1_visualizations_show,            constraints: { id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes'                      => 'visualizations#likes_count',     as: :api_v1_visualizations_likes_count,     constraints: { id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/likes/detailed'             => 'visualizations#likes_list',      as: :api_v1_visualizations_likes_list,      constraints: { id: /[^\/]+/ }
-    match '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#is_liked',        as: :api_v1_visualizations_is_liked,        constraints: { id: /[^\/]+/ }, via: [:get, :options]
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'          => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                              => 'visualizations#index',                         as: :api_v1_visualizations_index
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#show',                          as: :api_v1_visualizations_show,              constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/related_templates'        => 'templates#related_templates_by_visualization', as: :api_v1_visualizations_related_templates, constraints: { id: /[^\/]+/ }
 
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                            => 'visualizations#create',          as: :api_v1_visualizations_create
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                        => 'visualizations#update',          as: :api_v1_visualizations_update,          constraints: { id: /[^\/]+/ }
-    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                         => 'visualizations#destroy',         as: :api_v1_visualizations_destroy,         constraints: { id: /[^\/]+/ }
-    get '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/google_maps_static_image'  => 'visualizations#google_maps_static_image', as: :api_v1_google_maps_static_image, constraints: { id: /[^\/]+/ }
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#add_like',                      as: :api_v1_visualizations_add_like,          constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                     => 'visualizations#remove_like',                   as: :api_v1_visualizations_remove_like,       constraints: { id: /[^\/]+/ }
+
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                 => 'visualizations#notify_watching',               as: :api_v1_visualizations_list_watching,     constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                 => 'visualizations#list_watching',                 as: :api_v1_visualizations_notify_watching,   constraints: { id: /[^\/]+/ }
+
+    post   '(/user/:user_domain)(/u/:user_domain)/api/v1/viz'                              => 'visualizations#create',                        as: :api_v1_visualizations_create
+    put    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#update',                        as: :api_v1_visualizations_update,            constraints: { id: /[^\/]+/ }
+    delete '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id'                          => 'visualizations#destroy',                       as: :api_v1_visualizations_destroy,           constraints: { id: /[^\/]+/ }
+    get    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/google_maps_static_image' => 'visualizations#google_maps_static_image',      as: :api_v1_google_maps_static_image,         constraints: { id: /[^\/]+/ }
 
     # Tables
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/tables/:id'                     => 'tables#show',   as: :api_v1_tables_show, constraints: { id: /[^\/]+/ }
@@ -398,9 +400,6 @@ CartoDB::Application.routes.draw do
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'            => 'synchronizations#show',     as: :api_v1_synchronizations_show
     # INFO: sync_now is public API
     get    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id/sync_now'   => 'synchronizations#syncing?', as: :api_v1_synchronizations_syncing
-
-    # Watching
-    get     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#list_watching',   as: :api_v1_visualizations_notify_watching, constraints: { id: /[^\/]+/ }
 
     # Oembed
     get '(/user/:user_domain)(/u/:user_domain)/api/v1/oembed' => 'oembed#show', as: :api_v1_oembed
@@ -496,13 +495,6 @@ CartoDB::Application.routes.draw do
     post '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings'                                => 'geocodings#create',               as: :api_v1_geocodings_create
     put  '(/user/:user_domain)(/u/:user_domain)/api/v1/geocodings/:id'                            => 'geocodings#update',               as: :api_v1_geocodings_update
 
-    # Visualizations
-    # TODO: deprecate?
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/watching'                   => 'visualizations#notify_watching', as: :api_v1_visualizations_list_watching,   constraints: { id: /[^\/]+/ }
-    put     '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/next_id'                    => 'visualizations#set_next_id',     as: :api_v1_visualizations_set_next_id,     constraints: { id: /[^\/]+/ }
-    post    '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#add_like',        as: :api_v1_visualizations_add_like,        constraints: { id: /[^\/]+/ }
-    delete  '(/user/:user_domain)(/u/:user_domain)/api/v1/viz/:id/like'                       => 'visualizations#remove_like',     as: :api_v1_visualizations_remove_like,     constraints: { id: /[^\/]+/ }
-
     # Synchronizations
     post   '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations'              => 'synchronizations#create',   as: :api_v1_synchronizations_create
     put    '(/user/:user_domain)(/u/:user_domain)/api/v1/synchronizations/:id'          => 'synchronizations#update',   as: :api_v1_synchronizations_update
@@ -531,6 +523,8 @@ CartoDB::Application.routes.draw do
     resources :organizations
     resources :synchronizations
     resources :feature_flags
+    resources :account_types, only: [:create, :update, :destroy]
+    resources :oauth_apps, only: [:create, :update, :destroy]
   end
 
   scope module: 'carto' do
@@ -549,6 +543,7 @@ CartoDB::Application.routes.draw do
 
   scope module: 'superadmin', defaults: { format: :json } do
     get '/superadmin/get_databases_info' => 'platform#databases_info'
+    get '/superadmin/database_validation' => 'platform#database_validation'
     get '/superadmin/stats/total_users' => 'platform#total_users'
     get '/superadmin/stats/total_pay_users' => 'platform#total_pay_users'
     get '/superadmin/stats/total_datasets' => 'platform#total_datasets'
@@ -557,13 +552,26 @@ CartoDB::Application.routes.draw do
     get '/superadmin/stats/total_visualizations' => 'platform#total_visualizations'
     get '/superadmin/stats/total_maps' => 'platform#total_maps'
     get '/superadmin/stats/total_active_users' => 'platform#total_active_users'
-    get '/superadmin/stats/total_likes' => 'platform#total_likes'
   end
 
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
+    scope 'v4/', module: 'public' do
+      # This scope is intended for public APIs that only authenticate via API Key and have CORS enabled
+      match '*path', via: [:OPTIONS], to: 'application#options'
+
+      get 'me', to: 'users#me_public', as: :api_v4_users_me
+    end
+
     scope 'v3/' do
+      # Front/back split
+      get 'me' => 'users#me', as: :api_v3_users_me
+      put 'me' => 'users#update_me', as: :api_v3_users_update_me
+      delete 'me' => 'users#delete_me', as: :api_v3_users_delete_me
+
+      put 'maps/:map_id/widgets' => 'widgets#update_many', as: :api_v3_maps_layers_update_many_widgets
+
       scope 'maps/:map_id/layers/:map_layer_id', constraints: { map_id: /[^\/]+/, map_layer_id: /[^\/]+/ } do
         resources :widgets, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
       end
@@ -573,6 +581,11 @@ CartoDB::Application.routes.draw do
       end
 
       resource :metrics, only: [:create]
+
+      resources :api_keys, only: [:create, :destroy, :index, :show], constraints: { id: /[^\/]+/ }
+      scope 'api_keys/:id/token' do
+        post 'regenerate' => 'api_keys#regenerate_token', as: :regenerate_api_key_token
+      end
 
       scope '/viz/:visualization_id', constraints: { id: /[^\/]+/ } do
         resources :analyses, only: [:show, :create, :update, :destroy], constraints: { id: /[^\/]+/ }
@@ -607,6 +620,13 @@ CartoDB::Application.routes.draw do
                                   controller: :received_notifications,
                                   constraints: { id: UUID_REGEXP }
       end
+
+      # Multi-factor authentication
+      resources :multifactor_auths, only: [:create, :destroy, :show, :index], constraints: { id: /[^\/]+/ } do
+        post 'verify_code', on: :member
+      end
+
+      get 'tags' => 'tags#index', as: :api_v3_users_tags
     end
 
     scope 'v2/' do
@@ -619,6 +639,9 @@ CartoDB::Application.routes.draw do
         get    'users/:u_username', to: 'organization_users#show',    as: :api_v2_organization_users_show
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
+
+        post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
+        delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end
     end
 

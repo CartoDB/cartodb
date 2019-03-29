@@ -9,9 +9,9 @@ module Carto
         let(:production_default_point_cartocss) do
           "#layer {\n"\
           "  marker-width: 7;\n"\
-          "  marker-fill: #FFB927;\n"\
+          "  marker-fill: #EE4D5A;\n"\
           "  marker-fill-opacity: 0.9;\n"\
-          "  marker-line-color: #FFF;\n"\
+          "  marker-line-color: #FFFFFF;\n"\
           "  marker-line-width: 1;\n"\
           "  marker-line-opacity: 1;\n"\
           "  marker-placement: point;\n"\

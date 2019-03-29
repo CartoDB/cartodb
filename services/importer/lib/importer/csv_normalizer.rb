@@ -195,11 +195,14 @@ module CartoDB
           data.close
 
           result = CharlockHolmes::EncodingDetector.detect(sample)
-          if result.fetch(:confidence, 0) < ENCODING_CONFIDENCE
-            @encoding = DEFAULT_ENCODING
-          else
-            @encoding = result.fetch(:encoding, DEFAULT_ENCODING)
-          end
+          # Looks like an ICU problem https://github.com/brianmario/charlock_holmes/issues/38
+          @encoding = if result.fetch(:encoding, 'UTF-8') == 'IBM424_rtl'
+                        DEFAULT_ENCODING
+                      elsif result.fetch(:confidence, 0) < ENCODING_CONFIDENCE
+                        DEFAULT_ENCODING
+                      else
+                        result.fetch(:encoding, DEFAULT_ENCODING)
+                      end
         end
 
         @encoding

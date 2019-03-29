@@ -3,7 +3,6 @@ require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 
 class ApplicationController < ActionController::Base
-  include ::SslRequirement
   include UrlHelper
   protect_from_forgery
 
@@ -20,6 +19,7 @@ class ApplicationController < ActionController::Base
   before_filter :browser_is_html5_compliant?
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
+  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -27,17 +27,67 @@ class ApplicationController < ActionController::Base
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
-  # this disables SSL requirement in non-production environments (add "|| Rails.env.development?" for local https)
-  unless Rails.env.production? || Rails.env.staging?
-    def self.ssl_required(*splat)
-      false
-    end
-    def self.ssl_allowed(*splat)
-      true
+  ME_ENDPOINT_COOKIE = :_cartodb_base_url
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(lockout login logout unauthenticated multifactor_authentication).freeze
+
+  def self.ssl_required(*splat)
+    if Rails.env.production? || Rails.env.staging?
+      if splat.any?
+        force_ssl only: splat
+      else
+        force_ssl
+      end
     end
   end
 
+  def self.ssl_allowed(*_splat)
+    # noop
+  end
+
+  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
+  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
+  # - Else: the first session found at request.session that comes from warden
+  def current_viewer
+    if @current_viewer.nil?
+      if current_user && env["warden"].authenticated?(current_user.username)
+        @current_viewer = current_user if validate_session(current_user)
+      else
+        authenticated_usernames = request.session.to_hash.select { |k, _|
+          k.start_with?("warden.user") && !k.end_with?(".session")
+        }.values
+        # See if there's a session of the viewed subdomain corresponding user
+        current_user_present = authenticated_usernames.select { |username|
+          CartoDB.extract_subdomain(request) == username
+        }.first
+
+        # If current user session was there, do nothing; else, retrieve first available
+        if current_user_present.nil?
+          unless authenticated_usernames.first.nil?
+            user = ::User.where(username: authenticated_usernames.first).first
+            validate_session(user, false) unless user.nil?
+            @current_viewer = user
+          end
+        end
+      end
+    end
+    @current_viewer
+  end
+
   protected
+
+  Warden::Manager.after_authentication do |user, auth, opts|
+    auth.cookies.permanent[ME_ENDPOINT_COOKIE] = {
+      value: CartoDB.base_url(user.username),
+      domain: Cartodb.config[:session_domain]
+    } if opts[:store]
+
+    # Do not even send the Set-Cookie header if the strategy did not store anything in the session
+    auth.request.session_options[:skip] = true if opts[:store] == false
+  end
+
+  Warden::Manager.before_logout do |_user, auth, _opts|
+    auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
+  end
 
   def handle_unverified_request
     render_403
@@ -108,7 +158,7 @@ class ApplicationController < ActionController::Base
   end
 
   def cors_preflight_check
-    if request.method == :options && check_cors_headers_for_whitelisted_referer
+    if request.method == :options && check_cors_headers_for_whitelisted_origin
       common_cors_headers
       response.headers['Access-Control-Max-Age'] = '3600'
     elsif !Rails.env.production? && !Rails.env.staging?
@@ -117,7 +167,7 @@ class ApplicationController < ActionController::Base
   end
 
   def allow_cross_domain_access
-    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_referer
+    if !request.headers['origin'].blank? && check_cors_headers_for_whitelisted_origin
       common_cors_headers
       response.headers['Access-Control-Allow-Credentials'] = 'true'
     elsif !Rails.env.production? && !Rails.env.staging?
@@ -137,18 +187,31 @@ class ApplicationController < ActionController::Base
     response.headers['Access-Control-Allow-Headers'] = '*'
   end
 
-  def check_cors_headers_for_whitelisted_referer
-    referer = request.env["HTTP_REFERER"]
+  def check_cors_headers_for_whitelisted_origin
     origin = request.headers['origin']
-    whitelist_referer = []
-    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/explore" }
-    whitelist_referer << %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}/data-library" }
-    whitelist_referer.flatten!
-    whitelist_origin = %w{http https}.map { |proto| "#{proto}://#{Cartodb.config[:account_host]}" }
-    # It seems that Firefox and IExplore don't send the Referer header in the preflight request
-    right_referer = request.method == "OPTIONS" ? true : whitelist_referer.include?(referer)
-    right_origin = whitelist_origin.include?(origin)
-    right_referer && right_origin
+
+    cors_enabled_hosts = Cartodb.get_config(:cors_enabled_hosts) || []
+    allowed_hosts = ([Cartodb.config[:account_host]] + cors_enabled_hosts).compact
+
+    allowed_hosts.include?(URI.parse(origin).host)
+  end
+
+  def check_user_state
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
+
+    viewed_username = CartoDB.extract_subdomain(request)
+    if current_user.nil? || current_user.username != viewed_username
+      user = Carto::User.find_by_username(viewed_username)
+      if user.try(:locked?)
+        render_locked_owner
+        return
+      end
+    elsif current_user.locked?
+      render_locked_user
+      return
+    end
+
+    render_multifactor_authentication if multifactor_authentication_required?
   end
 
   def render_403
@@ -184,22 +247,69 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def multifactor_authentication_required?(user = current_viewer)
+    user &&
+      user.multifactor_authentication_configured? &&
+      !warden.session(user.username)[:multifactor_authentication_performed] &&
+      !warden.session(user.username)[:skip_multifactor_authentication]
+  rescue Warden::NotAuthenticated
+    false
+  end
+
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
     is_auth ? validate_session(current_user) : not_authorized
   end
 
+  def login_required_any_user
+    current_viewer ? validate_session(current_viewer) : not_authorized
+  end
+
   def api_authorization_required
-    authenticate!(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
+    authenticate!(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    validate_session(current_user)
+  end
+
+  def any_api_authorization_required
+    authenticate!(:any_auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
     validate_session(current_user)
   end
 
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
-  # but doesn't breaks the request if can't authenticate
+  # but doesn't break the request if can't authenticate
   def optional_api_authorization
-    if params[:api_key].present?
-      got_auth = authenticate(:api_key, :api_authentication, :scope => CartoDB.extract_subdomain(request))
-      validate_session(current_user) if got_auth
+    got_auth = authenticate(:auth_api, :api_authentication, scope: CartoDB.extract_subdomain(request))
+    validate_session(current_user) if got_auth
+  end
+
+  def redirect_or_forbidden(path, error)
+    respond_to do |format|
+      format.html do
+        redirect_to CartoDB.url(self, path)
+      end
+      format.json do
+        render(json: { error: error }, status: 403)
+      end
+    end
+  end
+
+  def render_multifactor_authentication
+    session[:return_to] = request.original_url
+    redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
+  end
+
+  def render_locked_user
+    redirect_or_forbidden('lockout', 'lockout')
+  end
+
+  def render_locked_owner
+    respond_to do |format|
+      format.html do
+        render_404
+      end
+      format.json do
+        head 404
+      end
     end
   end
 
@@ -207,7 +317,8 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
-        redirect_to CartoDB.path(self, 'login') and return
+        redirect_to CartoDB.url(self, 'login', keep_base_url: true)
+        return
       end
       format.json do
         head :unauthorized
@@ -321,42 +432,25 @@ class ApplicationController < ActionController::Base
     super(CartoDB.extract_subdomain(request))
   end
 
-  # current_user relies on request subdomain ALWAYS, so current_viewer will always return:
-  # - If subdomain is present in the sessions: subdomain-based session (aka current_user)
-  # - Else: the first session found at request.session that comes from warden
-  def current_viewer
-    if @current_viewer.nil?
-      if current_user && env["warden"].authenticated?(current_user.username)
-        @current_viewer = current_user if validate_session(current_user)
-      else
-        authenticated_usernames = request.session.to_hash.select { |k, _|
-          k.start_with?("warden.user") && !k.end_with?(".session")
-        }.values
-        # See if there's a session of the viewed subdomain corresponding user
-        current_user_present = authenticated_usernames.select { |username|
-          CartoDB.extract_subdomain(request) == username
-        }.first
-
-        # If current user session was there, do nothing; else, retrieve first available
-        if current_user_present.nil?
-          unless authenticated_usernames.first.nil?
-            user = ::User.where(username: authenticated_usernames.first).first
-            validate_session(user, reset_session = false) unless user.nil?
-            @current_viewer = user
-          end
-        end
-      end
-    end
-    @current_viewer
-  end
-
   def update_user_last_activity
     return false if current_user.nil?
     current_user.set_last_active_time
     current_user.set_last_ip_address request.remote_ip
   end
 
+  def ensure_required_params(required_params)
+    params_with_value = params.reject { |_, v| v.empty? }
+    missing_params = required_params - params_with_value.keys
+    raise Carto::MissingParamsError.new(missing_params) unless missing_params.empty?
+  end
+
   protected :current_user
+
+  def json_formatted_request?
+    format = request.format
+
+    format.json? if format
+  end
 
   private
 
@@ -367,5 +461,6 @@ class ApplicationController < ActionController::Base
   def set_security_headers
     headers['X-Frame-Options'] = 'DENY'
     headers['X-XSS-Protection'] = '1; mode=block'
+    headers['X-Content-Type-Options'] = 'nosniff'
   end
 end

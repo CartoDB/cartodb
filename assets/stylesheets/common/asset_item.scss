@@ -1,0 +1,91 @@
+.AssetItem {
+  display: inline-block;
+  position: relative;
+  width: 58px;
+  height: 58px;
+  margin: 0 20px 20px 0;
+  overflow: hidden;
+  border: 1px solid #DDD;
+  border-radius: 3px;
+  background: url($assetsDir + "/images/layout/loader_transparent.gif") no-repeat center;
+
+  &:nth-child(12n) {
+    margin-right: 0;
+  }
+}
+
+.AssetItem .image {
+  position: absolute;
+  width: 60px;
+  max-width: 60px;
+  height: 60px;
+  max-height: 60px;
+  border-radius: 3px;
+  background-repeat: no-repeat;
+  background-position: center;
+  line-height: 60px;
+  text-align: center;
+  vertical-align: top;
+}
+
+.AssetItem:hover .delete {
+  display: block;
+  opacity: 1;
+}
+
+.AssetItem.AssetItem-User.is-selected .image {
+  top: 1px;
+  left: 1px;
+  width: 56px;
+  height: 56px;
+  background-color: #FFF;
+}
+
+.AssetItem.is-selected {
+  border: 1px solid #BBD7F2;
+}
+
+.AssetItem.is-selected .image {
+  background-color: #FFF;
+}
+
+.AssetItem .delete {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 10px;
+  padding: 0;
+  transition: opacity 100ms;
+  border-top-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+  opacity: 0;
+  background: #333;
+  background: rgba(black, 0.5);
+  text-indent: 0;
+}
+
+.AssetItem .delete::before {
+  content: ' ';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 0;
+  height: 0;
+  border-top: 3px solid white;
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
+}
+
+.AssetItem.destroying:hover a.delete {
+  display: none;
+}
+
+.AssetItem.simpleicon a {
+  background-size: auto 24px !important;
+}
+
+.AssetItem.pin-maps a {
+  background-size: auto 24px !important;
+}

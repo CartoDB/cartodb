@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'fileutils'
 require_relative '../../lib/importer/unp'
 require_relative '../../../../spec/rspec_configuration.rb'
@@ -8,7 +9,7 @@ include CartoDB::Importer2
 describe Unp do
   describe '#run' do
     it 'extracts the contents of the file' do
-      zipfile   = zipfile_factory
+      zipfile   = file_factory
       unp       = Unp.new
 
       unp.run(zipfile)
@@ -17,7 +18,7 @@ describe Unp do
     end
 
     it 'extracts the contents of a carto file (see #11954)' do
-      zipfile   = zipfile_factory(filename: 'this_is_a_zip_file.carto')
+      zipfile   = file_factory(filename: 'this_is_a_zip_file.carto')
       unp       = Unp.new
 
       unp.run(zipfile)
@@ -25,8 +26,79 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'lets an uncompressed file pass through and store it in a tmp dir with uppercase chars' do
+      uncompressed_file = file_factory(filename: 'duplicated_column_name.csv')
+      unp = Unp.new('unp_temporal_folder' => '/tmp/IMPORTS')
+
+      unp.run(uncompressed_file)
+      Dir.entries(unp.temporary_directory).should include('duplicated_column_name.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'can deal with filenames with capital letters (compressed file)' do
+      zip_file = file_factory(filename: 'TestShape.zip')
+      unp = Unp.new
+
+      unp.run(zip_file)
+
+      # NOTE: the input zip file contains file names capitalized, e.g:
+      # Bryansk_stores_for_test_point.shp This test is added to make
+      # sure of backwards compatibility with other pieces of the
+      # importer. Observe the uncompressed file is "normalized" and
+      # thus downcased.
+      Dir.entries(unp.temporary_directory).should include('bryansk_stores_for_test_point.shp')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'can deal with filenames with capital letters (uncompressed file)' do
+      uncompressed_file = file_factory(filename: 'Name_With_Capitals.csv')
+      unp = Unp.new
+
+      unp.run(uncompressed_file)
+
+      # NOTE: the input is a file name capitalized. This test is added
+      # to make sure of backwards compatibility with other pieces of
+      # the importer. Observe the output file name is "normalized" and
+      # thus downcased.
+      Dir.entries(unp.temporary_directory).should include('name_with_capitals.csv')
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a GPKG file' do
+      zipfile   = file_factory(filename: 'geopackage.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('geopackage.gpkg')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = file_factory(filename: 'filegeodatabase.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
+    it 'extracts the contents of a FGDB file' do
+      zipfile   = file_factory(filename: 'filegeodatabase.gdb.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('filegeodatabase.gdb')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a carto file with rar in the name (see #11954)' do
-      zipfile   = zipfile_factory(filename: 'this_is_not_a_rar_file.carto')
+      zipfile   = file_factory(filename: 'this_is_not_a_rar_file.carto')
       unp       = Unp.new
 
       unp.run(zipfile)
@@ -35,7 +107,7 @@ describe Unp do
     end
 
     it 'populates a list of source files' do
-      zipfile   = zipfile_factory
+      zipfile   = file_factory
       unp       = Unp.new
 
       unp.source_files.should be_empty
@@ -47,7 +119,7 @@ describe Unp do
       unp       = Unp.new
 
       unp.source_files.should be_empty
-      unp.run(zipfile_factory)
+      unp.run(file_factory)
       unp.source_files.length.should eq 2
     end
   end
@@ -57,7 +129,7 @@ describe Unp do
       unp       = Unp.new
 
       unp.source_files.should be_empty
-      unp.without_unpacking(zipfile_factory)
+      unp.without_unpacking(file_factory)
       unp.source_files.size.should eq 1
     end
 
@@ -72,6 +144,7 @@ describe Unp do
 
       unp.compressed?('bogus.gz').should eq true
       unp.compressed?('bogus.csv').should eq false
+      unp.compressed?('bogus.zip').should eq true
     end
   end
 
@@ -89,26 +162,25 @@ describe Unp do
 
   describe '#crawl' do
     it 'returns a list of full paths for files in the directory' do
-      fixture1  = '/var/tmp/bogus1.csv'
-      fixture2  = '/var/tmp/bogus2.csv'
-      FileUtils.touch(fixture1)
-      FileUtils.touch(fixture2)
+      Dir.mktmpdir do |path|
+        fixture1  = "#{path}/bogus1.csv"
+        fixture2  = "#{path}/bogus2.csv"
+        FileUtils.touch(fixture1)
+        FileUtils.touch(fixture2)
 
-      unp       = Unp.new
-      files     = unp.crawl('/var/tmp')
+        unp       = Unp.new
+        files     = unp.crawl(path)
 
-      files.should include(fixture1)
-      files.should include(fixture2)
-
-      FileUtils.rm(fixture1)
-      FileUtils.rm(fixture2)
+        files.should include(fixture1)
+        files.should include(fixture2)
+      end
     end
   end
 
   describe '#extract' do
     it 'generates a temporary directory' do
       dir       = '/var/tmp/bogus'
-      zipfile   = zipfile_factory(dir)
+      zipfile   = file_factory(dir)
       unp       = Unp.new.extract(zipfile)
 
       File.directory?(unp.temporary_directory).should eq true
@@ -118,7 +190,7 @@ describe Unp do
 
     it 'extracts the contents of the file into the temporary directory' do
       dir       = '/var/tmp/bogus'
-      zipfile   = zipfile_factory(dir)
+      zipfile   = file_factory(dir)
       unp       = Unp.new.extract(zipfile)
 
       (Dir.entries(unp.temporary_directory).size > 2).should eq true
@@ -161,6 +233,9 @@ describe Unp do
 
       unp.supported?('foo.doc').should eq false
       unp.supported?('foo.xls').should eq true
+      unp.supported?('foo.gpkg').should eq true
+      unp.supported?('foo.gdb').should eq true
+      unp.supported?('foo.fgdb').should eq true
     end
   end
 
@@ -273,7 +348,7 @@ describe Unp do
     end
   end
 
-  def zipfile_factory(dir = '/var/tmp/bogus', filename: 'bogus.zip')
+  def file_factory(dir = '/var/tmp/bogus', filename: 'bogus.zip')
     zipfile = "#{dir}/#{filename}"
 
     FileUtils.rm(zipfile) if File.exists?(zipfile)

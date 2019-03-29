@@ -240,8 +240,7 @@ module CartoDB
           @url = sanitize_id(id, subresource_id)
 
           response = http_client.get(METADATA_URL % [@url], http_options)
-          raise DataDownloadError.new("#{METADATA_URL % [@url]} (#{response.code}) : #{response.body}") \
-            if response.code != 200
+          validate_response(METADATA_URL % [@url], response)
 
           # non-rails symbolize keys
           data = ::JSON.parse(response.body).inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
@@ -332,8 +331,7 @@ module CartoDB
         def get_layers_list(url)
           request_url = LAYERS_URL % [url]
           response = http_client.get(request_url, http_options)
-          raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
-            if response.code != 200
+          validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('layers')
@@ -369,8 +367,7 @@ module CartoDB
         def get_ids_list(url)
           request_url = FEATURE_IDS_URL % [url]
           response = http_client.get(request_url, http_options)
-          raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
-            if response.code != 200
+          validate_response(request_url, response)
 
           begin
             data = ::JSON.parse(response.body).fetch('objectIds').sort
@@ -431,6 +428,10 @@ module CartoDB
           if response.code != 200
             raise DataDownloadError.new("ERROR: #{prepared_url} POST " +
                                         "#{params_data} (#{response.code}) : #{response.body} #{self.to_s}")
+          end
+          if response.code == 400 && !response.return_message.nil? \
+              && response.return_message.downcase.include?('operation is not supported')
+            raise UnsupportedOperationError.new("#{request_url} (#{response.code}) : #{response.body}") \
           end
 
           begin
@@ -520,6 +521,18 @@ module CartoDB
           feature_name.gsub(/[^\w]/, '_').downcase + '.json'
         end
 
+        def validate_response(request_url, response)
+          raise ExternalServiceTimeoutError.new("TIMEOUT: #{request_url} : #{response.return_message}") \
+            if response.code.zero? && !response.return_message.nil? \
+              && response.return_message.downcase.include?('timeout')
+
+          raise UnsupportedOperationError.new("#{request_url} (#{response.code}) : #{response.body}") \
+            if response.code == 400 && !response.return_message.nil? \
+              && response.return_message.downcase.include?('operation is not supported')
+
+          raise DataDownloadError.new("#{request_url} (#{response.code}) : #{response.body}") \
+            if response.code != 200
+        end
       end
     end
 

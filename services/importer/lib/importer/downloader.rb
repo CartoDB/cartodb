@@ -75,7 +75,7 @@ module CartoDB
       end
 
       def run(_available_quota_in_bytes = nil)
-        if @translated_url =~ %r{://}
+        if @translated_url.include?('://')
           raise_if_over_storage_quota(requested_quota: content_length || 0,
                                       available_quota: size_limit_in_bytes,
                                       user_id: @user.id)
@@ -162,7 +162,7 @@ module CartoDB
                     url
                   end
 
-        raw_url.is_a?(String) ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
+        raw_url.is_a?(String) && raw_url.include?('://') ? URI.escape(raw_url.strip, URL_ESCAPED_CHARACTERS) : raw_url
       end
 
       def raise_if_url_invalid(url)
@@ -373,10 +373,6 @@ module CartoDB
         {
           content_types: ['application/gpx+xml'],
           extensions: ['.gpx']
-        },
-        {
-          content_types: ['application/zip'],
-          extensions: ['.zip', '.carto']
         },
         {
           content_types: ['application/x-gzip'],

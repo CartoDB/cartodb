@@ -1,53 +1,67 @@
 // Context switcher styles (map view, table view)
 // ----------------------------------------------
 
-@import 'cdb-utilities/mixins';
 @import 'cdb-variables/colors';
 @import 'vars';
 
-.Editor-contextSwitcher {
+.Editor-contextSwitchers {
+  display: flex;
   position: absolute;
+  z-index: 11;
+  right: 16px;
+  bottom: 16px;
+}
+
+.Editor-contextSwitchers--table {
+  position: fixed;
   right: 32px;
   bottom: 32px;
+}
+
+@media (max-width: 1200px) {
+  .Editor-contextSwitchers--table {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+.Editor-contextSwitcher {
+  margin-left: 8px;
+  overflow: hidden;
   border-radius: 4px;
   background: $cBlue;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
-  overflow: hidden;
-  z-index: 4;
+  box-shadow: 0 0 2px 0 rgba(#000, 0.24), 0 4px 8px 0 rgba(#000, 0.16);
 }
-.Editor-contextSwitcher.is-moved {
-  right: 392px;
+
+.Editor-contextSwitcher.Editor-contextSwitcher--view {
+  height: 32px;
+  margin-top: -1px;
+  padding-left: 12px;
+  background: #FFF;
 }
-.Editor-contextSwitcher.has-timeSeries {
-  bottom: 167px;
-}
-.Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-  bottom: 190px;
-}
-.Editor-contextSwitcher--geom {
-  right: 102px;
-}
-.Editor-contextSwitcher--geom.in-table {
+
+.Editor-contextSwitchers--table .Editor-contextSwitcher--geom {
   display: none;
 }
-.Editor-contextSwitcher--geom.is-moved {
-  right: 462px;
-}
+
 .Editor-contextSwitcherButton {
-  @include display-flex();
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   text-align: center;
   cursor: pointer;
 }
+
 .Editor-contextSwitcherItem {
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba(#000, 0.08);
+
   &:last-child {
     border-right: 0;
   }
 }
+
 .Editor-contextSwitcherItem.is-disabled {
   opacity: 0.24;
 
@@ -55,62 +69,11 @@
     cursor: default;
   }
 }
+
 .Editor-contextSwitcherButton.is-selected .Editor-contextSwitcherMedia {
-  fill: rgba(0, 0, 0, 0.16);
+  fill: rgba(#000, 0.16);
 }
+
 .Editor-contextSwitcherMedia {
   fill: $cWhite;
 }
-.Editor .CDB-Widget-content--timeSeries {
-  margin-right: 16px;
-  margin-left: 16px;
-}
-@media (max-width: 1600px) {
-  .Editor-contextSwitcher.is-moved {
-    right: 317px;
-    bottom: 32px;
-  }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 151px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 174px;
-  }
-  .Editor-contextSwitcher--geom.is-moved {
-    right: 390px;
-  }
-
-}
-@media (max-width: $sViewport-xl) {
-  .Editor-contextSwitcher.is-moved {
-    right: 28px;
-    bottom: 222px;
-  }
-  .Editor-contextSwitcher--geom.is-moved {
-    right: 101px;
-  }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 341px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 364px;
-  }
-}
-@media (max-width: $sViewport-xl) {
-  .Editor-contextSwitcher.in-table {
-    right: 16px;
-    bottom: 16px;
-  }
-  .Editor-contextSwitcher.is-moved {
-    bottom: 214px;
-  }
-  .Editor-contextSwitcher.has-timeSeries {
-    bottom: 333px;
-  }
-  .Editor-contextSwitcher.has-timeSeries.has-timeSeries--animated {
-    bottom: 358px;
-  }
-}
-
-
-

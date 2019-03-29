@@ -19,8 +19,8 @@ class Carto::UserCreation < ActiveRecord::Base
   IN_PROGRESS_STATES = [:initial, :enqueuing, :creating_user, :validating_user, :saving_user, :promoting_user, :load_common_data, :creating_user_in_central]
   FINAL_STATES = [:success, :failure]
 
-  scope :http_authentication, where(created_via: CREATED_VIA_HTTP_AUTENTICATION)
-  scope :in_progress, where(state: IN_PROGRESS_STATES)
+  scope :http_authentication, -> { where(created_via: CREATED_VIA_HTTP_AUTENTICATION) }
+  scope :in_progress, -> { where(state: IN_PROGRESS_STATES) }
 
   belongs_to :log, class_name: Carto::Log
   belongs_to :user, class_name: Carto::User
@@ -52,6 +52,7 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.created_via = created_via
     user_creation.viewer = user.viewer || false
     user_creation.org_admin = user.org_admin || false
+    user_creation.last_password_change_date = user.last_password_change_date
 
     user_creation
   end
@@ -162,14 +163,14 @@ class Carto::UserCreation < ActiveRecord::Base
     !valid_invitation.nil?
   end
 
+  def pertinent_invitation
+    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+  end
+
   private
 
   def enabled?
     cartodb_user.enable_account_token.nil? && cartodb_user.enabled
-  end
-
-  def pertinent_invitation
-    @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
   end
 
   def valid_invitation
@@ -234,6 +235,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.soft_mapzen_routing_limit = soft_mapzen_routing_limit unless soft_mapzen_routing_limit.nil?
     @cartodb_user.viewer = viewer if viewer
     @cartodb_user.org_admin = org_admin if org_admin
+    @cartodb_user.last_password_change_date = last_password_change_date unless last_password_change_date.nil?
 
     if pertinent_invitation
       @cartodb_user.viewer = pertinent_invitation.viewer
@@ -300,8 +302,8 @@ class Carto::UserCreation < ActiveRecord::Base
   def close_creation
     clean_password
     cartodb_user.notify_new_organization_user unless has_valid_invitation?
-    cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization
-    cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization
+    cartodb_user.organization.notify_if_disk_quota_limit_reached if cartodb_user.organization && !cartodb_user.viewer?
+    cartodb_user.organization.notify_if_seat_limit_reached if cartodb_user.organization && !cartodb_user.viewer?
     CartoGearsApi::Events::EventManager.instance.notify(
       CartoGearsApi::Events::UserCreationEvent.new(created_via, cartodb_user)
     )

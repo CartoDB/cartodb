@@ -26,6 +26,7 @@ module CartoDB
                              Cartodb.get_config(:overviews, 'tolerance_px') ||
                              DEFAULT_TOLERANCE_PX
         @importer_stats = CartoDB::Stats::Importer.instance # TODO: delegate to @runner?
+        @logger = options[:log]
       end
 
       attr_reader :user, :min_rows, :schema
@@ -36,7 +37,8 @@ module CartoDB
       end
 
       def log(message)
-        @runner.log.append(message)
+        log = @logger || @runner.log
+        log.append(message)
       end
 
       def get_table(table_name)
@@ -59,6 +61,14 @@ module CartoDB
         end
       end
 
+      def delete_overviews!(table_name)
+        @user.transaction_with_timeout statement_timeout: @statement_timeout do |db|
+          log("Will delete overviews for #{table_name}")
+          Carto::OverviewsService.new(db).delete_overviews(table_name)
+          log("Overviews deleted for #{table_name}")
+        end
+      end
+
       # Dataset overview creation
       class Dataset
         def initialize(overviews_service, table_name)
@@ -76,7 +86,16 @@ module CartoDB
         end
 
         def create_overviews!
-          @service.create_overviews! @table_name
+          @service.create_overviews! @table_name if should_create_overviews?
+        end
+
+        def delete_overviews!
+          @service.delete_overviews! @table_name
+        end
+
+        def update_overviews!
+          delete_overviews!
+          create_overviews!
         end
 
         private

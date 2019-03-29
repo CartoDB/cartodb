@@ -1,0 +1,402 @@
+// Table styles
+// ----------------------------------------------
+
+@import '~cartoassets/src/scss/cdb-variables/colors';
+@import '~cartoassets/src/scss/cdb-variables/sizes';
+@import 'vars';
+
+$elementWidth: 180px;
+$elementWidthShort: 120px;
+$elementPadding: 14px 14px 18px;
+$tableBorderColor: $cSecondaryLine;
+
+.Table-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: $cMainBg;
+}
+
+.Table {
+  display: flex;
+  position: absolute;
+  z-index: 2;
+  top: $baseSize * 2;
+  right: $baseSize * 2;
+  bottom: $baseSize * 2;
+  left: $baseSize * 2;
+  flex-direction: column;
+  align-items: start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: $cWhite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 65px;
+    background: $cThirdBackground;
+  }
+
+  &--relative {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0;
+    border-top: 1px solid $cMainLine;
+  }
+}
+
+.Table-head {
+  position: relative;
+  background: $cThirdBackground;
+}
+
+.Table-headItem {
+  border-right: 1px solid $tableBorderColor;
+  background: $cThirdBackground;
+
+  &.is-highlighted {
+    background: $cSecondaryLine;
+  }
+}
+
+.Table-headItemInfo {
+  margin-top: 2px;
+  font-family: 'Monaco', 'Monospace';
+}
+
+.Table-headItemWrapper {
+  box-sizing: border-box;
+  width: $elementWidth;
+  padding: $elementPadding;
+  text-align: left;
+
+  &--short {
+    width: $elementWidthShort;
+  }
+}
+
+.Table-headItemName {
+  box-sizing: border-box;
+  width: 180px; // ie11
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+
+  &.is-active {
+    box-sizing: border-box;
+    height: 28px;
+    margin-top: -6px;
+    margin-right: 0;
+    margin-bottom: -5px;
+    margin-left: -6px;
+    padding: 5px;
+    border: 1px solid $cBlue;
+    border-radius: 2px;
+    background: $cWhite;
+  }
+}
+
+.Table-columnSorted--asc {
+  transform: rotate(-90deg);
+}
+
+.Table-columnSorted--desc {
+  transform: rotate(90deg);
+}
+
+.Table-columnMenu {
+  .CustomList-list {
+    max-height: none;
+  }
+}
+
+.Table-columnTypeMenu {
+  z-index: 20;
+  top: 81px;
+  left: 100%;
+  min-width: 95px;
+  max-width: 95px;
+  margin-left: 4px;
+
+  &--toLeft {
+    right: 100%;
+    left: auto;
+    margin-right: 10px;
+    margin-left: 0;
+  }
+}
+
+.Table-body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  background: $cWhite;
+
+  table {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: $cWhite;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 175px);
+    padding-bottom: 60px;
+    overflow-y: scroll;
+    border-top: 1px solid $cMainLine;
+  }
+
+  &--relative tbody {
+    height: calc(100vh - 360px);
+  }
+}
+
+.Table-row {
+  height: 40px;
+  min-height: 40px;
+  border-bottom: 1px solid $tableBorderColor;
+  background: none;
+
+  &:hover,
+  &.is-highlighted {
+    background: rgba($cBlue, 0.08);
+  }
+}
+
+.Table-cellItem {
+  position: relative;
+  box-sizing: content-box;
+  border-right: 1px solid $tableBorderColor;
+  vertical-align: top;
+
+  &:hover,
+  &.is-highlighted {
+    cursor: pointer;
+
+    .Table-cellItemOptions {
+      display: block;
+      padding: 2px 4px 0;
+    }
+  }
+
+  &:hover::after,
+  &.is-highlighted::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    bottom: -1px;
+    left: -1px;
+    border: 1px solid $cBlueHover;
+    pointer-events: none;
+  }
+}
+
+.Table-rowMenu {
+  &--bottom {
+    margin-top: -200px;
+  }
+}
+
+.Table-row:hover .Table-cellItem::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: 0;
+  border-top: 1px solid rgba($cHighlight, 0.32);
+  border-bottom: 1px solid rgba($cHighlight, 0.32);
+  pointer-events: none;
+}
+
+.Table-editor {
+  position: absolute;
+  z-index: 100;
+  min-width: 200px;
+  padding: 10px;
+}
+
+.Table-cell {
+  box-sizing: border-box;
+  align-items: center;
+  width: $elementWidth;
+  height: 40px;
+  padding: 12px 14px;
+
+  .CDB-Shape-threePoints {
+    display: none;
+  }
+
+  .CDB-Text {
+    flex: 2;
+
+    &.is-number {
+      color: darken($cHighlight, 16%);
+    }
+
+    &.is-null {
+      color: $cHintText;
+      font-style: italic;
+    }
+
+    &.is-cartodbId {
+      color: $cAltText;
+      text-align: right;
+    }
+
+    &.is-disabled {
+      color: $cAltText;
+    }
+  }
+
+  &--short {
+    width: $elementWidthShort;
+  }
+}
+
+// Disabled state color
+.Table.is-disabled .Table-headItemName,
+.Table.is-disabled .Table-cell .CDB-Text,
+.Table.is-disabled .Table-cell .CDB-Text.is-number,
+.Table.is-disabled .Table-cell .CDB-Text.is-cartodbId {
+  color: $cAltText;
+}
+
+.Table-paginator {
+  display: flex;
+  position: fixed;
+  z-index: 10;
+  right: calc(50% - 280px);
+  bottom: 33px;
+  box-sizing: border-box;
+  align-items: center;
+  border-radius: $halfBaseSize;
+  background: $cWhite;
+  box-shadow: 0 2px 4px 0 rgba(#000, 0.24);
+
+  &--relative {
+    position: absolute;
+    right: 25px;
+    bottom: 25px;
+    left: auto;
+  }
+}
+
+.Table-paginatorText {
+  min-width: 76px;
+  text-align: center;
+}
+
+.Table-paginatorButton {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: $baseSize * 4;
+  height: $halfBaseSize * 7;
+  cursor: default;
+
+  &.is-active {
+    cursor: pointer;
+  }
+
+  &.is-active:hover {
+    background: rgba($cBlue, 0.08);
+  }
+
+  .CDB-IconFont {
+    width: 100%;
+  }
+
+  &--prev {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 1px;
+      height: $halfBaseSize * 7;
+      background: #F9F9F9;
+    }
+  }
+
+  &--next {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -1px;
+      width: 1px;
+      height: $halfBaseSize * 7;
+      background: $cThirdBackground;
+    }
+  }
+}
+
+.Table-editorTextarea {
+  $width: 280px;
+  $height: 96px;
+  width: $width;
+  height: $height;
+  resize: vertical;
+}
+
+.Table-editorDate {
+  margin-left: -8px;
+
+  .CDB-Legend {
+    display: none;
+  }
+
+  .Editor-formInner {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: top;
+  }
+
+  input[name="day"] {
+    width: 32px;
+  }
+
+  input[name="year"] {
+    width: 48px;
+  }
+
+  input[name="time"] {
+    width: 68px;
+  }
+}
+
+@media (max-width: $sMedia-xl) {
+  .Table {
+    top: $baseSize;
+    right: $baseSize;
+    bottom: $baseSize;
+    left: $baseSize;
+  }
+
+  .Table-paginator {
+    bottom: 17px;
+  }
+}

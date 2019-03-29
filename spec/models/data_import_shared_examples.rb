@@ -2,11 +2,11 @@
 shared_examples_for 'DataImport model' do
   describe 'validation' do
     before(:all) do
-      @user = FactoryGirl.build(:valid_user).save
+      @user = FactoryGirl.create(:valid_user)
     end
 
     after(:all) do
-      @user.destroy
+      @user.destroy if @user
     end
 
     it 'only allows valid collision strategies' do

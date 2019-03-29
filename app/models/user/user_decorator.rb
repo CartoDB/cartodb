@@ -1,7 +1,6 @@
 module CartoDB
   module UserDecorator
     include AccountTypeHelper
-    BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
     # Options:
     # - show_api_calls: load api calls. Default: true.
@@ -17,7 +16,9 @@ module CartoDB
         email: email,
         name: name,
         last_name: last_name,
+        created_at: created_at,
         username: username,
+        state: state,
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
@@ -71,7 +72,8 @@ module CartoDB
           block_price: organization_user? ? organization.twitter_datasource_block_price : twitter_datasource_block_price,
           block_size:  organization_user? ? organization.twitter_datasource_block_size : twitter_datasource_block_size,
           monthly_use: organization_user? ? organization.get_twitter_imports_count : get_twitter_imports_count,
-          hard_limit:  hard_twitter_datasource_limit
+          hard_limit:  hard_twitter_datasource_limit,
+          customized_config: CartoDB::Datasources::DatasourcesFactory.customized_config?(CartoDB::Datasources::Search::Twitter::DATASOURCE_NAME, self)
         },
         mailchimp: {
           enabled: Carto::AccountType.new.mailchimp?(self)
@@ -92,7 +94,6 @@ module CartoDB
         upgraded_at: upgraded_at,
         show_trial_reminder: trial_ends_at.present?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
-        show_builder_activated_message: created_at < BUILDER_ACTIVATION_DATE,
         actions: {
           private_tables: private_tables_enabled,
           private_maps: private_maps_enabled?,
@@ -117,8 +118,22 @@ module CartoDB
         base_url: public_url,
         needs_password_confirmation: needs_password_confirmation?,
         viewer: viewer,
-        org_admin: organization_admin?
+        org_admin: organization_admin?,
+        description: description,
+        website: website,
+        twitter_username: twitter_username,
+        disqus_shortname: disqus_shortname,
+        available_for_hire: available_for_hire,
+        location: location,
+        industry: industry,
+        company: company,
+        phone: phone,
+        job_role: job_role
       }
+
+      if google_maps_geocoder_enabled? && (!organization.present? || organization_owner?)
+        data[:google_maps_private_key] = google_maps_private_key
+      end
 
       if organization.present?
         data[:organization] = organization.to_poro

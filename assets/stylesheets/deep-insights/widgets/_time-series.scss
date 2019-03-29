@@ -1,0 +1,62 @@
+// Time-series widget, i.e. histogram of dates
+// For a Torque layer there might be more elements too (play/pause control + step-time info)
+//
+// Layout component:
+// [Btn (play/pause)] [.Widget-timeSeriesTimeInfo]
+// [.Widget-timeSeriesFakeChart]
+//
+// Example desktop layout (default):
+//  (▶)  06:37 9/25/2015
+//  [ ▆ ▃ ▅ ▇ ▃ ▆ ▂ ▄ ▅  ▇ ▁ ▂ █ ]
+//
+// Example Mobile layout:
+//  (▶)  06:37 9/25/2015  [ ▆ ▃ ▅ ▇ ▃ ▆ ▂ ▄ ▅  ▇ ▁ ▂ █ ]
+//
+// ------------------------------------------------------
+
+.CDB-Widget-timeSeriesFakeControl {
+  width: $baseSize * 3;
+  height: $baseSize * 3;
+  margin-top: 29px;
+  margin-right: $baseSize * 3;
+}
+
+.CDB-Widget-timeSeriesTimeInfo {
+  margin-right: $baseSize;
+  white-space: nowrap;
+}
+
+.CDB-Widget-timeSeriesTimeInfo--fake {
+  width: 140px;
+  height: $baseSize;
+}
+
+.CDB-Widget-timeSeriesFakeChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  height: 92px; // value to match real widget content height, to avoid "jumpy" behavior
+  margin-top: 29px;
+}
+
+.CDB-Widget-timeSeriesFakeChart--torque {
+  height: 89px; // value to match real widget content height, to avoid "jumpy" behavior
+}
+
+.CDB-Widget-timeSeriesFakeChartItem {
+  display: inline-block;
+  flex-grow: 1;
+  margin-right: $baseSize / 4;
+}
+
+@media (max-width: $sMedia-l) {
+  .CDB-Widget-timeSeriesFakeChart {
+    height: $baseSize * 2;
+  }
+
+  .CDB-Widget-timeSeriesTimeInfo .CDB-Size-large {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

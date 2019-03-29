@@ -135,9 +135,10 @@ class Map < Sequel::Model
     return admits_more_base_layers?(layer) if layer.base_layer?
   end
 
-  def can_add_layer(user)
-    return false if self.user.max_layers && self.user.max_layers <= data_layers.count
-    return false if self.user.viewer
+  def can_add_layer?(user, layer)
+    return true if layer.base_layer?
+    return false if user.max_layers && user.max_layers <= data_layers.count
+    return false if user.viewer
 
     current_vis = visualizations.first
     current_vis.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
@@ -168,20 +169,12 @@ class Map < Sequel::Model
 
   # (lat,lon) points on all map data
   def center_data
-    (center.nil? || center == '') ? DEFAULT_OPTIONS[:center] : center.gsub(/\[|\]|\s*/, '').split(',')
+    center.presence || DEFAULT_OPTIONS[:center]
   end
 
   def view_bounds_data
-    if view_bounds_sw.nil? || view_bounds_sw == ''
-      bbox_sw = DEFAULT_OPTIONS[:bounding_box_sw]
-    else
-      bbox_sw = view_bounds_sw.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
-    if view_bounds_ne.nil? || view_bounds_ne == ''
-      bbox_ne = DEFAULT_OPTIONS[:bounding_box_ne]
-    else
-      bbox_ne = view_bounds_ne.gsub(/\[|\]|\s*/, '').split(',').map(&:to_f)
-    end
+    bbox_sw = view_bounds_sw.presence || DEFAULT_OPTIONS[:bounding_box_sw]
+    bbox_ne = view_bounds_ne.presence || DEFAULT_OPTIONS[:bounding_box_ne]
 
     {
       # LowerCorner longitude, in decimal degrees

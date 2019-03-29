@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'tempfile'
 require 'fileutils'
 require 'open3'
@@ -7,6 +8,8 @@ require_relative './source_file'
 require_relative './kml_splitter'
 require_relative './gpx_splitter'
 require_relative './osm_splitter'
+require_relative './fgdb_splitter'
+require_relative './gpkg_splitter'
 
 module CartoDB
   module Importer2
@@ -16,9 +19,9 @@ module CartoDB
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
-        .gpx .tab .tsv .txt
+        .gpx .tab .tsv .txt .gdb .fgdb
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter]
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter].freeze
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 
@@ -78,7 +81,12 @@ module CartoDB
           next if subpath =~ /\.version\.txt/i
 
           fullpath = normalize("#{path}/#{subpath}")
-          (crawl(fullpath, files) and next) if File.directory?(fullpath)
+          if File.directory?(fullpath)
+            gdbpath = normalize("#{fullpath}/gdb")
+            if !(File.file?(gdbpath) && fullpath =~ /\.gdb$/i)
+              crawl(fullpath, files) && next
+            end
+          end
           files.push(fullpath)
         end
 
@@ -152,9 +160,10 @@ module CartoDB
         filename.force_encoding("UTF-8").valid_encoding?
       end
 
-      def normalize(filename)
-        normalized = underscore(filename)
-        rename(filename, normalized)
+      def normalize(path)
+        dir, filename = File.split(path)
+        normalized = File.join(dir, underscore(filename))
+        rename(path, normalized)
         normalized
       end
 

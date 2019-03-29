@@ -1,0 +1,28 @@
+<%= content_for(:title) do %>CARTO · OAuth Authentication<% end %>
+
+<%= content_for(:head) do %>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:600" rel="stylesheet">
+<% end %>
+
+
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'oauth', :media => 'all' %>
+<% end %>
+
+<div class='oauth-page'>
+  <div class='oauth-form'>
+    <header class='oauth-form__header'>
+      <%= render :partial => 'header' %>
+    </header>
+
+    <% if @error.present? %>
+      <%= render :partial => 'errors' %>
+    <% else %>
+      <%= render :partial => 'scopes' %>
+    <% end %>
+
+    <footer class='oauth-form__footer'>
+      <%= render :partial => 'footer' %>
+    </footer>
+  </div>
+</div>

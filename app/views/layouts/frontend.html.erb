@@ -6,12 +6,15 @@
   <title><%= "#{yield(:title)} — " if content_for?(:title) %>CARTO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="<%= content_for?(:title) ? yield(:title) : "Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud." %>">
-  <%= favicon_link_tag "/favicons/favicon.ico" %>
+  <%= favicon_link_tag "favicons/favicon.ico" %>
   <%= stylesheet_link_tag "sessions" %>
   <%= yield :css %>
   <%= csrf_meta_tag %>
+  <%= insert_google_tag_manager('primary') %>
+  <%= yield :head %>
 </head>
 <body class="frontend">
+  <%= insert_google_tag_manager_no_script('primary') %>
   <%= yield %>
   <%= insert_trackjs() %>
   <%= yield :js %>

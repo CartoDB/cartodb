@@ -1,0 +1,85 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "type"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "apis",
+          "database",
+          "dataservices",
+          "user"
+        ]
+      },
+      "apis": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "sql",
+            "maps"
+          ]
+        }
+      },
+      "tables": {
+        "type": "array",
+        "additionalProperties": false,
+        "items": {
+          "type": "object",
+          "required": [
+            "schema",
+            "name",
+            "permissions"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "insert",
+                  "select",
+                  "update",
+                  "delete"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "services": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "geocoding",
+            "routing",
+            "isolines",
+            "observatory"
+          ]
+        }
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "profile"
+          ]
+        }
+      }
+    }
+  }
+}

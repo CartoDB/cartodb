@@ -6,19 +6,18 @@
 @import "../old_elements/dropdown";
 
 div.dropdown {
+  z-index: 1000;
   -webkit-transform: translate3d(0, 0, 10px) translateZ(10px);
-  z-index:1000;
-  
+
   a {
-    color:#2483B4;
+    color: #2483B4;
+    font-family: $text-fonts;
     font-size: 13px;
     text-decoration: none;
-    font-family: $text-fonts;
 
     &:hover {
-      color:black;
+      color: BLACK;
       text-decoration: underline;
     }
   }
-
 }

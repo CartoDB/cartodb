@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'aws-sdk-s3'
+
 module CartoDB
   class FileUpload
 
@@ -27,7 +29,8 @@ module CartoDB
                                s3_config: nil,
                                timestamp: Time.now,
                                allow_spaces: false,
-                               force_s3_upload: false)
+                               force_s3_upload: false,
+                               random_token: nil)
       results = {
         file_uri: nil,
         enqueue:  true
@@ -52,7 +55,7 @@ module CartoDB
 
       filename = filename.tr(' ', '_') unless allow_spaces
 
-      random_token = Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id.to_s}").first(20)
+      random_token ||= Digest::SHA2.hexdigest("#{timestamp.utc}--#{filename.object_id}").first(20)
 
       use_s3 = !s3_config.nil? && s3_config['access_key_id'].present? && s3_config['secret_access_key'].present? &&
                s3_config['bucket_name'].present? && s3_config['url_ttl'].present?
@@ -96,27 +99,25 @@ module CartoDB
       s3_config_hash = {
         access_key_id: s3_config['access_key_id'],
         secret_access_key: s3_config['secret_access_key'],
-        proxy_uri: (s3_config['proxy_uri'].present? ?  s3_config['proxy_uri'] : nil),
-        use_ssl: s3_config['use_ssl']
+        http_proxy: s3_config['proxy_uri'].present? ? s3_config['proxy_uri'] : nil,
+        region: s3_config['region']
       }
       # This allows to override the S3 endpoint in case a non AWS compatible
       # S3 storage service is being used
       # WARNING: This attribute may not work in some aws-sdk v1 versions newer
       # than 1.8.5 (http://lists.basho.com/pipermail/riak-users_lists.basho.com/2013-May/011984.html)
-      s3_config_hash['s3_endpoint'] = s3_config['s3_endpoint'] if s3_config['s3_endpoint'].present?
-      AWS.config(s3_config_hash)
-      s3_bucket = AWS::S3.new.buckets[s3_config['bucket_name']]
+      s3_config_hash[:endpoint] = s3_config['s3_endpoint'] if s3_config['s3_endpoint'].present?
+      Aws.config = s3_config_hash
 
-      path = "#{token}/#{File.basename(filename)}"
-      o = s3_bucket.objects[path]
-      o.write(Pathname.new(filepath), { acl: :authenticated_read })
+      s3 = Aws::S3::Resource.new
+      obj = s3.bucket(s3_config['bucket_name']).object("#{token}/#{File.basename(filename)}")
 
+      obj.upload_file(filepath, acl: 'authenticated-read')
+
+      options = { expires_in: s3_config['url_ttl'] }
       content_disposition = s3_config['content-disposition']
-      if content_disposition.present?
-        o.url_for(:get, expires: s3_config['url_ttl'], response_content_disposition: content_disposition).to_s
-      else
-        o.url_for(:get, expires: s3_config['url_ttl']).to_s
-      end
+      options[:response_content_disposition] = content_disposition if content_disposition.present?
+      obj.presigned_url(:get, options)
     end
 
     private

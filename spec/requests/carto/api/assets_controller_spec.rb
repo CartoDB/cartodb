@@ -7,7 +7,6 @@ describe Carto::Api::AssetsController do
   describe '#show legacy tests' do
     before(:all) do
       @user = create_user
-      AWS.stub!
     end
 
     before(:each) do

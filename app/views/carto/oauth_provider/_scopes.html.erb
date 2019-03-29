@@ -1,0 +1,41 @@
+<% @scopes_by_category.each_with_index do |category, index| %>
+  <div class='oauth-scopes-category'>
+    <div class='oauth-scopes-category__header'>
+      <div>
+        <% if category[:icon]%>
+          <img class='oauth-scopes-category__icon' src="<%= image_path "oauth_provider/category_#{category[:icon]}.svg" %>">
+        <% end %>
+        <h3 class='oauth-scopes-category__title'><%= category[:description] %></h3>
+      </div>
+      <span class='chevron chevron--up' data-scopes-category="<%=index%>"></span>
+    </div>
+    <ul id='oauth-scopes-category-<%=index%>' class='oauth-scopes-category__list'>
+      <% category[:scopes].each do |scope| %>
+        <li class='oauth-scopes-category__scope <%= "oauth-scopes-category__scope--disabled" unless scope[:new] %>'>
+          <%= scope[:description] %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+
+<% content_for :js do %>
+  <script>
+
+    var createHandler = function(toggler) {
+      toggler.addEventListener('click', function (event){
+        var toggler = event.target;
+        var categoryList = '#oauth-scopes-category-' + toggler.dataset.scopesCategory;
+        document.querySelector(categoryList).classList.toggle('oauth-scopes-category__list--hidden');
+        toggler.classList.toggle('chevron--up');
+        toggler.classList.toggle('chevron--down');
+      });
+    };
+
+    var togglers = document.querySelectorAll('.chevron');
+    for (var i = 0; i < togglers.length; i++) {
+      createHandler(togglers[i]);
+    }
+  </script>
+<% end %>

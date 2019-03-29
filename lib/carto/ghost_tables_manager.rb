@@ -30,9 +30,7 @@ module Carto
       sync_user_tables_with_db unless user_tables_synced_with_db?
     end
 
-    private
-
-    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run sync
+    # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
     def user_tables_synced_with_db?
       user_tables = fetch_user_tables
       cartodbfied_tables = fetch_cartodbfied_tables
@@ -41,6 +39,12 @@ module Carto
         (user_tables - cartodbfied_tables).empty? &&
         (cartodbfied_tables - user_tables).empty?
     end
+
+    def get_bolt
+      Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
+    end
+
+    private
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
     # the workers for more that 180 seconds
@@ -54,9 +58,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      bolt = Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
-
-      got_locked = bolt.run_locked { sync }
+      got_locked = get_bolt.run_locked(rerun_func: lambda { sync }) { sync }
 
       CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
     end
@@ -225,7 +227,7 @@ module Carto
       new_table.keep_user_database_table = true
 
       new_table.save
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error creating UserTable',
                             exception: exception,
                             user: user,
@@ -246,7 +248,7 @@ module Carto
       user_table_vis.name = name
 
       user_table_vis.store
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error renaming Visualization',
                             exception: exception,
                             user: user,
@@ -267,7 +269,7 @@ module Carto
       table_to_drop = ::Table.new(user_table: user_table_to_drop)
       table_to_drop.keep_user_database_table = true
       table_to_drop.destroy
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error dropping Table',
                             exception: exception,
                             user: user,
@@ -286,7 +288,7 @@ module Carto
 
       user_table_to_regenerate.table_id = id
       user_table_to_regenerate.save
-    rescue => exception
+    rescue StandardError => exception
       CartoDB::Logger.error(message: 'Ghost tables: Error syncing table_id for UserTable',
                             exception: exception,
                             user: user,

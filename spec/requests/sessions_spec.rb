@@ -39,18 +39,25 @@ feature "Sessions" do
     end
 
     scenario "Login in the application" do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+      SessionsController.any_instance.stubs(:central_enabled?).returns(false)
       visit login_path
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => 'blablapassword'
-      click_link_or_button 'Login'
+      click_link_or_button 'Log in'
 
       page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
       page.should have_css("[@data-content='Your account or your password is not ok']")
 
       fill_in 'email', :with => @user.email
       fill_in 'password', :with => @user.email.split('@').first
-      click_link_or_button 'Login'
-      page.should be_dashboard
+      click_link_or_button 'Log in'
+      page.status_code.should eq 200
+
+      page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
+      page.should_not have_css("[@data-content='Your account or your password is not ok']")
     end
 
     scenario "Get the session information via OAuth" do
@@ -105,7 +112,171 @@ feature "Sessions" do
 
       visit '/login'
 
-      page.should have_content("Login")
+      page.should have_content("Log in")
+    end
+  end
+
+  describe 'Multifactor Authentication' do
+    before(:each) do
+      @user_mfa_setup.user_multifactor_auths.each(&:destroy)
+      @user_mfa_setup.user_multifactor_auths << FactoryGirl.create(:totp, :needs_setup, user_id: @user_mfa_setup.id)
+      @user_mfa_setup.reload
+
+      @user_mfa.user_multifactor_auths.each(&:destroy)
+      @user_mfa.user_multifactor_auths << FactoryGirl.create(:totp, :active, user_id: @user_mfa.id)
+      @user_mfa.reload
+
+      @user_mfa.reset_password_rate_limit
+      @user_mfa_setup.reset_password_rate_limit
+    end
+
+    shared_examples_for 'login with MFA setup' do
+      scenario "Login in the application with MFA that needs setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        mfa = @user_mfa_setup.active_multifactor_authentication
+        mfa.enabled = false
+        mfa.save!
+        @user_mfa_setup.reload
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa_setup.email
+        fill_in 'password', with: @user_mfa_setup.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
+        page.body.should include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.body.should include("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa_setup.active_multifactor_authentication.shared_secret).now
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.body.should_not include(@user_mfa_setup.active_multifactor_authentication.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should_not include("Verification code")
+        page.body.should_not include("Use Google Authenticator app to scan the QR code")
+      end
+
+      scenario "MFA setup screen has skip link when mfa needs setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+        mfa = @user_mfa_setup.active_multifactor_authentication
+        mfa.enabled = false
+        mfa.save!
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa_setup.email
+        fill_in 'password', with: @user_mfa_setup.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should include("Verification code")
+        page.body.should include("skip this step")
+      end
+    end
+
+    shared_examples_for 'login with MFA' do
+      scenario "Login in the application with MFA that does not need setup" do
+        # we use this to avoid generating the static assets in client_application
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa.email
+        fill_in 'password', with: @user_mfa.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.body.should_not include("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: ROTP::TOTP.new(@user_mfa.active_multifactor_authentication.shared_secret).now
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should_not include("Verification code")
+        page.body.should_not include("Use Google Authenticator app to scan the QR code")
+      end
+
+      scenario "Failed login in the application with MFA that does not need setup" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa.email
+        fill_in 'password', with: @user_mfa.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should_not include(@user_mfa.active_multifactor_authentication.shared_secret)
+        page.body.should_not include("data:image/png;base64")
+        page.body.should include("Verification code")
+        page.body.should_not include("Use Google Authenticator app to scan the QR code")
+
+        fill_in 'code', with: 'wrong_code'
+        click_link_or_button 'Verify'
+
+        page.status_code.should eq 200
+        page.body.should include("Verification code")
+        page.should have_css(".Sessions-fieldError.js-Sessions-fieldError")
+        page.should have_css("[@data-content='Verification code is not valid']")
+      end
+
+      scenario "MFA screen does not have skip link when mfa is active" do
+        # we use this to avoid generating the static assets in CI
+        Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
+        SessionsController.any_instance.stubs(:central_enabled?).returns(false)
+        visit login_path
+        fill_in 'email', with: @user_mfa.email
+        fill_in 'password', with: @user_mfa.email.split('@').first
+        click_link_or_button 'Log in'
+        page.status_code.should eq 200
+
+        page.body.should include("Verification code")
+        page.body.should_not include("skip this step")
+      end
+    end
+
+    describe 'valid user with MFA' do
+      before(:all) do
+        @user_mfa_setup = FactoryGirl.create(:carto_user_mfa_setup)
+        @user_mfa = FactoryGirl.create(:carto_user_mfa)
+      end
+
+      after(:all) do
+        @user_mfa_setup.destroy
+        @user_mfa.destroy
+      end
+
+      it_behaves_like 'login with MFA'
+      it_behaves_like 'login with MFA setup'
+    end
+
+    describe 'org owner with MFA' do
+      before(:all) do
+        @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
+        @user_mfa = @organization.owner
+        @user_mfa_setup = @organization.users.last
+      end
+
+      after(:all) do
+        @organization.destroy
+      end
+
+      it_behaves_like 'login with MFA'
+      it_behaves_like 'login with MFA setup'
     end
   end
 
@@ -113,9 +284,14 @@ feature "Sessions" do
     include_context 'organization with users helper'
 
     it 'allows login to organization users' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       visit org_login_url(@org_user_1.organization)
       send_login_form(@org_user_1)
-      page.should be_dashboard
+
+      page.status_code.should eq 200
+      page.should_not have_css(".Sessions-fieldError.js-Sessions-fieldError")
     end
 
     it 'does not allow user+password login to organization users if auth_username_password_enabled is false' do
@@ -161,9 +337,9 @@ feature "Sessions" do
   end
 
   def send_login_form(user)
-    fill_in 'email', :with => user.email
-    fill_in 'password', :with => user.username
-    click_link_or_button 'Login'
+    fill_in 'email', with: user.email
+    fill_in 'password', with: user.password
+    click_link_or_button 'Log in'
   end
 
   def be_dashboard

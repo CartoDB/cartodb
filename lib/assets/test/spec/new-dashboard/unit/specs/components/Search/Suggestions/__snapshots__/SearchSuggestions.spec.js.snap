@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
+<section class="suggestions suggestions--open">
+  <ul class="suggestions__content">
+    <li class="">
+      <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text">
+        Query text <span>- 1 results</span></router-link>
+    </li>
+    <li class=""><a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" class="suggestions__item text is-caption suggestions__item--derived">
+        First Map
+      </a></li>
+    <li class=""><a href="http://example.com/viz/8b378bf8-e74d-4187-9e57-4249db4c0f1f/map" class="suggestions__item text is-caption suggestions__item--derived">
+        Second map
+      </a></li>
+  </ul>
+</section>
+`;
+
+exports[`SearchSuggestions.vue Rendering should render isFetching state 1`] = `
+<section class="suggestions suggestions--open">
+  <ul class="suggestions__content">
+    <li class="">
+      <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text suggestions__header--loading">
+        Query text
+        <!---->
+      </router-link>
+    </li>
+  </ul>
+</section>
+`;

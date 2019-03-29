@@ -1,0 +1,18 @@
+<div class='oauth-form__powered-by'>
+  <a href='https://carto.com/' title='Visit carto.com'>Powered by CARTO</a>
+</div>
+<div class='oauth-form__buttons'>
+  <% if @error.blank? %>
+    <%= form_tag(CartoDB.url(self, :oauth2_authorize, user: current_viewer), method: :post) do %>
+      <%= hidden_field_tag 'response_type', @response_type %>
+      <%= hidden_field_tag 'client_id', @oauth_app.client_id %>
+      <%= hidden_field_tag 'scope', @scopes.join(' ') %>
+      <%= hidden_field_tag 'state', @state %>
+      <%= hidden_field_tag 'redirect_uri', @redirect_uri %>
+      <%= submit_tag 'Reject', class: 'oauth-form__button' %>
+      <%= submit_tag 'Accept', name: 'accept', class: 'oauth-form__button oauth-form__button--primary' %>
+    <% end %>
+  <% else %>
+    <%= link_to 'Go to dashboard', CartoDB.url(self, 'dashboard', params: { trailing_slash: true }, user: current_viewer), class: 'oauth-form__button oauth-form__button--primary oauth-form__button--is-link' %>
+  <% end %>
+</div>

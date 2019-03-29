@@ -1,34 +1,31 @@
 
-  /*
+/*
    * Styles for the table-thead dropdown options
    */
-  
-  @import "compass/css3/inline-block";
-  @import "compass/css3/box-shadow";
-  
-  table th div.dropdown {
 
-    &.public:before {
-      border-bottom: 6px solid #F6F6F6!important;
-    }
+@import "compass/css3/inline-block";
+@import "compass/css3/box-shadow";
 
-    li.tip {
-      padding:14px 13px;
-      font-size:12px;
-      color:#999999;
-      background:#F6F6F6;
-      line-height:normal;
-
-      a {
-        @include inline-block();
-        vertical-align: top;
-        padding:0;
-        text-decoration: underline;
-      }
-
-      @include box-shadow(inset 0 -4px 7px 0 rgba(black,0.1));
-    }
-
-    li.order { position:relative }
-
+table th div.dropdown {
+  &.public::before {
+    border-bottom: 6px solid #F6F6F6 !important;
   }
+
+  li.tip {
+    padding: 14px 13px;
+    background: #F6F6F6;
+    box-shadow: inset 0 -4px 7px 0 rgba(#000, 0.1);
+    color: #999;
+    font-size: 12px;
+    line-height: normal;
+
+    a {
+      display: inline-block;
+      padding: 0;
+      text-decoration: underline;
+      vertical-align: top;
+    }
+  }
+
+  li.order { position: relative; }
+}

@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Search.vue Rendering should render correctly 1`] = `
+<form autocomplete="off" class="navbar-search is-search-open"><input type="text" placeholder="SearchComponent.placeholder.default" class="title is-small is-regular navbar-searchInput">
+  <section class="suggestions">
+    <ul class="suggestions__content">
+      <li class="">
+        <!---->
+      </li>
+    </ul>
+  </section>
+</form>
+`;
+
+exports[`Search.vue Rendering should render when search is open and filled correctly 1`] = `
+<form autocomplete="off" class="navbar-search is-search-open"><input type="text" placeholder="SearchComponent.placeholder.active" class="title is-small is-regular navbar-searchInput navbar-searchInput--filled">
+  <section class="suggestions suggestions--open">
+    <ul class="suggestions__content">
+      <li class="">
+        <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text suggestions__header--loading">
+          Query text
+          <!---->
+        </router-link>
+      </li>
+    </ul>
+  </section>
+</form>
+`;

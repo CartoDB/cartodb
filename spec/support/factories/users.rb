@@ -1,9 +1,11 @@
+require 'helpers/account_types_helper'
 require 'helpers/unique_names_helper'
 
 module CartoDB
   @default_test_user = nil
   module Factories
     include UniqueNamesHelper
+    include AccountTypesHelper
     def default_user(attributes = {})
       user = nil
       unless @default_test_username.nil?
@@ -59,14 +61,17 @@ module CartoDB
       user.period_end_date       = attributes[:period_end_date] if attributes.has_key?(:period_end_date)
       user.user_timeout          = attributes[:user_timeout] || 300000
       user.database_timeout      = attributes[:database_timeout] || 300000
+      user.geocoder_provider     = attributes[:geocoder_provider] || nil
       user.geocoding_quota       = attributes[:geocoding_quota] || 1000
       user.geocoding_block_price = attributes[:geocoding_block_price] || 1500
+      user.isolines_provider     = attributes[:isolines_provider] || nil
       user.here_isolines_quota   = attributes[:here_isolines_quota] || 1000
       user.here_isolines_block_price = attributes[:here_isolines_block_price] || 1500
       user.obs_snapshot_quota = attributes[:obs_snapshot_quota] || 1000
       user.obs_snapshot_block_price = attributes[:obs_snapshot_block_price] || 1500
       user.obs_general_quota = attributes[:obs_general_quota] || 1000
       user.obs_general_block_price = attributes[:obs_general_block_price] || 1500
+      user.routing_provider       = attributes[:routing_provider] || nil
       user.mapzen_routing_quota   = attributes[:mapzen_routing_quota] || 1000
       user.mapzen_routing_block_price = attributes[:mapzen_routing_block_price] || 1500
       user.sync_tables_enabled   = attributes[:sync_tables_enabled] || false
@@ -86,7 +91,7 @@ module CartoDB
       user = new_user(attributes)
       raise "User not valid: #{user.errors}" unless user.valid?
       # INFO: avoiding enable_remote_db_user
-      Cartodb.config[:signups] = nil
+      create_account_type(user.account_type)
       user.save
       load_user_functions(user)
       user
@@ -96,7 +101,7 @@ module CartoDB
     def create_validated_user(attributes = {})
       user = new_user(attributes)
       # INFO: avoiding enable_remote_db_user
-      Cartodb.config[:signups] = nil
+      create_account_type(user.account_type)
       user.save
       if user.valid?
         load_user_functions(user)
@@ -109,11 +114,12 @@ module CartoDB
       attributes[:email]    = 'admin@example.com'
       attributes[:admin]    = true
       user = new_user(attributes)
+      create_account_type(user.account_type)
       user.save
     end
 
     def create_owner(organization)
-      org_user_owner = create_test_user(unique_name('user'))
+      org_user_owner = create_test_user(organization.name + '-admin')
       user_org = CartoDB::UserOrganization.new(organization.id, org_user_owner.id)
       user_org.promote_user_to_admin
       organization.reload
@@ -126,10 +132,11 @@ module CartoDB
       user = create_user(
         username: username,
         email: "#{username}@example.com",
-        password: username,
+        password: "000#{username}",
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
-        organization: organization
+        organization: organization,
+        account_type: 'ORGANIZATION USER'
       )
       user.save.reload
       organization.reload if organization
@@ -144,7 +151,15 @@ module CartoDB
                            avatar_url: nil)
       user_mock = mock
       user_mock.stubs(:id).returns(user_id)
+      user_mock.stubs(:name).returns(user_name)
+      user_mock.stubs(:last_name).returns(user_name)
       user_mock.stubs(:username).returns(user_name)
+      user_mock.stubs(:website).returns('http://carto.rocks')
+      user_mock.stubs(:description).returns('description')
+      user_mock.stubs(:location).returns('location')
+      user_mock.stubs(:twitter_username).returns('twitter_username')
+      user_mock.stubs(:disqus_shortname).returns('disqus_shortname')
+      user_mock.stubs(:available_for_hire).returns(false)
       user_mock.stubs(:api_key).returns(user_apikey)
       user_mock.stubs(:invalidate_varnish_cache).returns(nil)
       user_mock.stubs(:has_feature_flag?).returns(false)
@@ -154,6 +169,7 @@ module CartoDB
       user_mock.stubs(:public_url).returns(public_url)
       user_mock.stubs(:avatar_url).returns(avatar_url)
       user_mock.stubs(:new_visualizations_version).returns(2)
+
       user_mock
     end
 

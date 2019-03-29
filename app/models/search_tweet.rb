@@ -21,9 +21,9 @@ class SearchTweet < Sequel::Model
 
   def self.get_twitter_imports_count(dataset, date_from, date_to)
     dataset
-        .where(state: ::SearchTweet::STATE_COMPLETE)
-        .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
-        .sum("retrieved_items".lit).to_i
+      .where('search_tweets.state = ?', ::SearchTweet::STATE_COMPLETE)
+      .where('search_tweets.created_at >= ? AND search_tweets.created_at <= ?', date_from, date_to + 1.days)
+      .sum(Sequel.lit("retrieved_items")).to_i
   end
 
   def set_importing_state

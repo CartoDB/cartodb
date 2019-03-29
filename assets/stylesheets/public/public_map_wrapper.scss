@@ -1,0 +1,107 @@
+
+/**
+ *  Styles for public map showed in (public table or map)
+ *
+ */
+
+@import "../variables/sizes";
+
+// Public map
+.pane_map {
+  .cartodb-map.public {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    bottom: 8px;
+    left: 65%;
+  }
+
+  .Checkbox {
+    position: absolute;
+    z-index: 30;
+    top: 28px;
+    right: 28px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    background-color: rgba(#000, 0.5);
+  }
+
+  .Checkbox-label {
+    color: #FFF;
+    font-size: $sFontSize-normal;
+  }
+}
+
+.cartodb-map.public {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: 3px;
+
+  .cartodb-map-wrapper.with_header div.cartodb-zoom,
+  .cartodb-map-wrapper.with_header div.cartodb-share,
+  .cartodb-map-wrapper.with_header div.cartodb-searchbox,
+  .cartodb-map-wrapper.with_header div.cartodb-layer-selector-box {
+    margin-top: 70px;
+  }
+
+  div.cartodb-fullscreen {
+    position: relative;
+    margin: 41px 0 0 20px;
+  }
+
+  div.cartodb-layer-selector-box {
+    position: relative;
+    margin: 20px 20px 0 0;
+    float: right;
+  }
+
+  div.cartodb-share {
+    display: none;
+    position: relative;
+    z-index: 5;
+    margin: 20px 20px 0 0;
+    float: right;
+  }
+
+  div.cartodb-tiles-loader {
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+    float: left;
+  }
+
+  div.cartodb-tiles-loader div.loader {
+    display: block;
+    position: absolute;
+    top: 70px;
+    left: -30px;
+    width: 28px;
+    height: 28px;
+    margin: 20px 0 0;
+  }
+
+  div.cartodb-zoom {
+    position: absolute;
+    top: 0;
+    margin: 20px 0 0 20px;
+  }
+
+  div.cartodb-tiles-loader {
+    position: absolute;
+    top: 80px;
+  }
+
+  div.cartodb-searchbox {
+    margin-right: 0;
+  }
+
+  .leaflet-right .leaflet-control,
+  #cartodb_attribution {
+    margin-right: 0 !important;
+  }
+}

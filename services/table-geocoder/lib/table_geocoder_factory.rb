@@ -19,7 +19,7 @@ module Carto
       if user == table_service.owner
         user_connection = user.in_database
       else
-        if !table_service.table_visualization.has_permission?(user, CartoDB::Visualization::Member::PERMISSION_READWRITE)
+        if !table_service.table_visualization.has_permission?(user, Carto::Permission::ACCESS_READWRITE)
           raise 'Insufficient permissions on table'
         end
         user_connection = table_service.owner.in_database
@@ -44,8 +44,10 @@ module Carto
 
           instance_config[:client_id] = user.google_maps_client_id
           instance_config[:private_key] = user.google_maps_private_key
-        else
+        elsif user.geocoder_provider == 'heremaps'
           geocoder_class = CartoDB::TableGeocoder
+        else
+          raise 'Unsupported geocoder provider'
         end
       else
         geocoder_class = CartoDB::InternalGeocoder::Geocoder

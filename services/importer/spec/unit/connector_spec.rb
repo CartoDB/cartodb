@@ -87,7 +87,6 @@ end
 
 describe Carto::Connector do
   before(:all) do
-    Cartodb.config[:connectors] = {}
     @user = create_user
     @user.save
     @fake_log = CartoDB::Importer2::Doubles::Log.new(@user)
@@ -99,6 +98,10 @@ describe Carto::Connector do
   before(:each) do
     CartoDB::Stats::Aggregator.stubs(:read_config).returns({})
     @executed_commands = []
+  end
+
+  around(:each) do |example|
+    Cartodb.with_config(connectors: {}, &example)
   end
 
   after(:all) do

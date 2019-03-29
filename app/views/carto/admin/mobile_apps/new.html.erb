@@ -9,7 +9,8 @@
     var icon_valid_extensions = <%= raw @icon_valid_extensions %>;
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-  <%= javascript_include_tag 'cdb.js', 'models.js', 'mobile_apps_templates.js', 'mobile_apps_deps.js', 'mobile_apps.js' -%>
+
+  <%= javascript_include_tag 'common', 'common_vendor', 'mobile_apps' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
@@ -44,4 +45,9 @@
 
 </div>
 
-<%= render 'admin/shared/footer' %>
+<% if current_user.has_feature_flag?('new-dashboard-feature') %>
+  <%= render 'admin/shared/new_private_footer' %>
+<% else %>
+  <%= render 'admin/shared/footer' %>
+<% end %>
+

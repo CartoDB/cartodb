@@ -1,290 +1,359 @@
-@import "../variables/mixins";
 @import "../variables/colors";
 @import "../variables/sizes";
 @import 'cdb-variables/colors';
-
-
 $sSmallWidth: 670px;
 
 /* set by base dialog */
 body.is-inDialog {
   overflow: hidden;
 }
+
 .Dialog {
   position: fixed;
+  z-index: 1000;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(white,1);
-  background: -moz-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(white,1)), color-stop(50%, rgba(white,0.95)), color-stop(100%, rgba(white,0.9)));
-  background: -webkit-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -o-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: -ms-linear-gradient(top, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  background: linear-gradient(to bottom, rgba(white,1) 0%, rgba(white,0.95) 50%, rgba(white,0.9) 100%);
-  z-index: 1000;
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
+  background: linear-gradient(to bottom, rgba(white, 1) 0%, rgba(white, 0.95) 50%, rgba(white, 0.9) 100%);
 }
+
 .Dialog-contentWrapper { // this is necessary since the Dialog element might have `position: block` set by .hide/.show
-  @include display-flex();
-  @include flex-direction(column);
-  @include align-items(center);
-  @include justify-content(center);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
+
 /* If the animation duration is changed make sure to update the timeout value in Dialog's view! */
 .Dialog.is-opening {
-  @include animation(fade-and-scale-in 100ms ease-out);
+  animation: fade-and-scale-in 100ms ease-out;
 }
+
 .Dialog.is-closing {
   /* "forwards" to keep the last keyframe's styles after animation ended */
-  @include animation(fade-and-scale-out 80ms ease-in forwards);
+  animation: fade-and-scale-out 80ms ease-in forwards;
 }
+
 .Dialog.is-sticky .Dialog-closeBtn {
   display: none;
 }
+
 .Dialog-closeBtn {
   position: fixed;
+  z-index: 2;
   top: $sMargin-group; // to be aligned with header icon
   right: $sMargin-section;
-  z-index: 2;
 }
+
 .Dialog-backBtn {
   position: fixed;
   top: $sMargin-group; // to be aligned with header icon
   left: $sMargin-section;
 }
+
 .Dialog-content {
   width: 100%;
 }
+
 .Dialog-content--expanded {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(space-around, stretch);
-  @include align-items(stretch, stretch);
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-around;
   width: 100%;
+  height: 100%;
 }
-.Dialog-header--expanded { @include flex-grow(1) }
+
+.Dialog-header--expanded {
+  flex-grow: 1;
+}
+
 .Dialog-body--expanded {
-  @include flex-grow(100);
-  // Forcing to get 80% of height
-  // if not IE10 will not show
-  // scrollbar in higher content
-  -ms-flex: 100 0 80%;
+  flex-grow: 100;
   background-color: $cStructure-grayBkg;
 }
+
 .Dialog-footer--expanded {
-  width: 100%;
   position: fixed;
   bottom: 0;
+  width: 100%;
 }
+
 .Dialog-content.is-newContent {
-  @include animation(fade-and-scale-in 100ms ease-out);
+  animation: fade-and-scale-in 100ms ease-out;
 }
+
 .Dialog-header {
-  text-align: center;
   padding: $sMargin-group 0;
+  text-align: center;
 }
+
 .Dialog-body {
+  width: $sLayout-width;
+  margin: 0 auto;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
   border-top: 1px solid $cStructure-mainLine;
-  width: $sLayout-width;
-  margin: 0 auto;
 }
+
 .Dialog-body.Dialog-body--tall {
   padding-top: $sMargin-section;
   padding-bottom: $sMargin-section;
 }
-.Dialog-body.Dialog-body--noPaddingTop { padding-top: 0 }
-.Dialog-body.Dialog-body--withoutBorder { border-top: none }
+
+.Dialog-body.Dialog-body--noPaddingTop {
+  padding-top: 0;
+}
+
+.Dialog-body.Dialog-body--withoutBorder {
+  border-top: none;
+}
+
 .Dialog-body.Dialog-body--create {
   position: relative;
   width: 100%;
   overflow: auto;
 }
+
 .Dialog-body.Dialog-body--share {
-  @include display-flex();
-  @include align-items(center);
-  @include flex-direction(column);
-  padding-top: 0px;
-  & .u-inner { width: 620px }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+
+  & .u-inner {
+    width: 620px;
+  }
 }
-.Dialog-body.Dialog-body--small { width: $sSmallWidth }
+
+.Dialog-body.Dialog-body--small {
+  width: $sSmallWidth;
+}
+
 .Dialog-Stretcher {
+  display: flex;
+  justify-content: center;
   width: $sLayout-width;
-  @include display-flex();
-  @include justify-content(center);
 }
+
 .Dialog-Stretcher--small {
   width: 700px;
 }
+
 .Dialog-Stretcher--medium {
   width: 830px;
 }
+
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
 }
+
 .Filters.Dialog-bodyFilters {
   position: relative;
   background: none;
 }
+
 .Dialog-body .ListingContent {
   margin-bottom: 100px;
 }
+
 .Dialog-footer {
   padding: $sMargin-group 0;
   text-align: center;
 }
-.Dialog-footer--withoutBorder { border-top: none }
-.Dialog-footer--simple {
-  @include display-flex();
-  @include justify-content(center);
+
+.Dialog-footer--withoutBorder {
+  border-top: none;
 }
+
+.Dialog-footer--simple {
+  display: flex;
+  justify-content: center;
+}
+
 .Dialog-footer--small {
   width: $sSmallWidth;
 }
+
 .Dialog-footerContent {
-  @include display-flex();
-  @include justify-content(center);
+  display: flex;
+  justify-content: center;
 }
+
+.Dialog-footerWarning {
+  color: $cHighlight-negative;
+}
+
 .Dialog-preFooter {
   position: fixed;
+  z-index: 3;
+  right: 5%;
   bottom: 100px; // to be located on top of the .Dialog-footer
   left: 0;
-  background: $cStructure-grayBkg;
-  z-index: 3;
+  left: 5%;
   // Make the item not go all the way to the edge, since that would cover the scrollbar…
   // Make margins on both sides to accomodate this
-  left: 5%;
-  right: 5%;
   width: 90%;
+  background: $cStructure-grayBkg;
 
-  // same as .CreateDialog-footerShadow but using :before to not have to add more markup
-  &:before {
+  // same as .CreateDialog-footerShadow but using ::before to not have to add more markup
+  &::before {
     content: '';
-    position: absolute;
-    top: -18px;
     display: block;
+    position: absolute;
+    z-index: 2;
+    top: -18px;
     width: 100%;
     height: 18px;
-    @include background-gradient(rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
-    z-index: 2;
+    background-image: linear-gradient(to bottom, rgba(#F9F9F9, 0), rgba(#F9F9F9, 1));
   }
 }
+
 .Dialog-headerIcon {
   position: relative;
   width: $sIcon-layout;
   height: $sIcon-layout;
-  border: 1px solid $cStructure-softLine;
-  border-radius: $sIcon-borderRadius;
-  margin-left: auto; // auto to center it in the container
   margin-right: auto;
   margin-bottom: $sMargin-elementInline;
+  margin-left: auto; // auto to center it in the container
+  border: 1px solid $cStructure-softLine;
+  border-radius: $sIcon-borderRadius;
   font-size: 22px;
   line-height: 44px;
 }
+
 .Dialog-headerIcon--neutral {
   // TODO: !important to not be overrided by .CreateDialog-headerIcon overriding stuff over here :(
   border-color: $cIcons-active !important;
+
   .CDB-IconFont {
     color: $cIcons-active !important;
   }
 }
+
 .Dialog-headerIcon--twitter {
   border-color: #55ACEE;
   color: #55ACEE;
 }
+
 .Dialog-headerIcon--negative {
-  color: $cError;
   border-color: $cError;
+  color: $cError;
 }
+
 .Dialog-headerIcon--positive {
-  color: $cHighlight-positive;
   border-color: $cHighlight-positive;
+  color: $cHighlight-positive;
 }
+
 .Dialog-headerIcon--alert {
-  color: $cHighlight-alert2;
   border-color: $cHighlight-alert2;
+  color: $cHighlight-alert2;
 }
+
 .Dialog-headerIcon--small {
-  font-size: 10px;
-  vertical-align: middle;
   position: relative;
   top: -3px;
+  font-size: 10px;
+  vertical-align: middle;
 }
+
 .Dialog-headerIconBadge {
   /* "backwards" to use the first keyframe's styles before animation starts */
-  @include animation(fade-and-bounce-up 0.6s 350ms ease-in-out backwards);
+  animation: fade-and-bounce-up 0.6s 350ms ease-in-out backwards;
 }
+
 .Dialog-headerTitle {
-  line-height: $sLineHeight-larger;
+  color: $cTypography-paragraphs;
   font-size: $sFontSize-larger;
   font-weight: $sFontWeight-normal;
-  color: $cTypography-paragraphs;
+  line-height: $sLineHeight-larger;
 }
+
 .Dialog-headerTitle--warning {
   color: $cHighlight-alert2;
 }
-.Dialog-headerTitle--error { color: $cHighlight-negative }
-.Dialog-headerText {
-  font-size: $sFontSize-large;
-  line-height: $sLineHeight-large;
-  font-weight: $sFontWeight-lighter;
-  color: $cTypography-paragraphs;
+
+.Dialog-headerTitle--error {
+  color: $cHighlight-negative;
 }
-.Dialog-headerText:not(:last-child) { margin-bottom: $sMargin-elementInline }
-.Dialog-headerText--centered { margin: auto }
+
+.Dialog-headerText {
+  color: $cTypography-paragraphs;
+  font-size: $sFontSize-large;
+  font-weight: $sFontWeight-lighter;
+  line-height: $sLineHeight-large;
+}
+
+.Dialog-headerText:not(:last-child) {
+  margin-bottom: $sMargin-elementInline;
+}
+
+.Dialog-headerText--centered {
+  margin: auto;
+}
+
 .Dialog-headerText--ellipsis {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
 }
+
 .Dialog-headerText--small {
   width: $sSmallWidth;
 }
+
 .Dialog-footerBtn {
   margin-right: $sMargin-element;
 }
+
 .Dialog-affectedEntities {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 // Styles related to expanded styles, where body--expanded is intended to be scrollable
 $sStickyHeight: 97px;
 
 .Dialog-content--expanded {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(space-around, stretch);
-  @include align-items(stretch, stretch);
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-around;
   width: 100%;
+  height: 100%;
 }
+
 .Dialog-header--expanded {
-  @include flex-grow(1);
+  flex-grow: 1;
   min-height: 100px; // required to have its content visible, actual height is more like 17Xpx
 }
+
 .Dialog-expandedSubContent {
-  @include flex-grow(100);
+  flex-grow: 100;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 1px solid $cStructure-mainLine;
   background-color: $cStructure-grayBkg;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
+
 .Dialog-expandedSubContentInner {
   position: relative; // necessary to position subHeader properly
 }
 // These additional paddings are required to be applied on an inner element, for the paddings to apply in FF
 // See http://stackoverflow.com/questions/26888428/display-flex-loses-right-padding-when-overflowing for an isolated explanation
-.Dialog-bodyInnerExpandedWithSubFooter { padding-bottom: $sStickyHeight }
-.Dialog-bodyInnerExpandedWithPreFooter { padding-bottom: $sStickyHeight + 100px }
+.Dialog-bodyInnerExpandedWithSubFooter {
+  padding-bottom: $sStickyHeight;
+}
+
+.Dialog-bodyInnerExpandedWithPreFooter {
+  padding-bottom: $sStickyHeight + 100px;
+}
 
 .Dialog-stickyFooter {
   position: fixed;
@@ -292,10 +361,11 @@ $sStickyHeight: 97px;
   width: 100%;
   height: $sStickyHeight;
 }
+
 .Dialog-contentSubHeader {
-  @include display-flex();
-  @include justify-content(space-between, justify);
-  @include align-items(center, center);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   padding-top: $sMargin-group;
   padding-bottom: $sMargin-group;
@@ -304,76 +374,97 @@ $sStickyHeight: 97px;
 
 // Results body, used for modals with additional "step" info (e.g. georeference results, help dialogs)
 $sNarrower-width: 620px;
+
 .Dialog-resultsBody {
-  @include display-flex();
-  @include justify-content(flex-start, justify);
-  @include align-items(flex-start, justify);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   width: $sNarrower-width;
 }
-.Dialog-resultsBody--vcenter { @include align-items(center, center) }
-.Dialog-resultsBodyIcon { margin-right: $sMargin-element }
+
+.Dialog-resultsBody--vcenter {
+  align-items: center;
+}
+
+.Dialog-resultsBodyIcon {
+  margin-right: $sMargin-element;
+}
+
 .Dialog-resultsBodyTexts {
-  @include display-flex();
-  @include flex-direction(column);
-  @include justify-content(flex-start, justify);
-  @include align-items(flex-start, justify);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   width: 520px;
 }
-.Dialog-narrowerContent { width: $sNarrower-width }
+
+.Dialog-narrowerContent {
+  width: $sNarrower-width;
+}
+
 .Dialog-countryBack {
-  float: right;
   margin-left: 12px;
+  float: right;
   pointer-events: auto;
 }
-@include keyframes(fade-and-scale-in) {
+
+@keyframes fade-and-scale-in {
   0% {
-    @include opacity(0.0);
-    @include transform(scale(2.0));
+    transform: scale(2);
+    opacity: 0;
   }
+
   10% {
-    @include opacity(0.9);
-    @include transform(scale(1.1));
+    transform: scale(1.1);
+    opacity: 0.9;
   }
+
   100% {
-    @include opacity(1.0);
-    @include transform(scale(1.0));
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-@include keyframes(fade-and-bounce-up) {
+@keyframes fade-and-bounce-up {
   0% {
-    @include opacity(0.0);
-    @include transform(translateY(6px));
+    transform: translateY(6px);
+    opacity: 0;
   }
+
   15% {
-    @include opacity(0.8);
-    @include transform(translateY(-3px));
+    transform: translateY(-3px);
+    opacity: 0.8;
   }
+
   45% {
-    @include opacity(1.0);
-    @include transform(translateY(2px));
+    transform: translateY(2px);
+    opacity: 1;
   }
+
   70% {
-    @include transform(translateY(-1px));
+    transform: translateY(-1px);
   }
+
   100% {
-    @include opacity(1.0);
-    @include transform(translateY(0));
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-@include keyframes(fade-and-scale-out) {
+@keyframes fade-and-scale-out {
   0% {
-    @include opacity(1.0);
-    @include transform(scale(1.0));
+    transform: scale(1);
+    opacity: 1;
   }
+
   80% {
-    @include opacity(0.05);
-    @include transform(scale(1.40));
+    transform: scale(1.4);
+    opacity: 0.05;
   }
+
   100% {
-    @include opacity(0.0);
-    @include transform(scale(2.0));
+    transform: scale(2);
+    opacity: 0;
   }
 }
 

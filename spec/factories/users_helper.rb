@@ -1,14 +1,15 @@
 shared_context 'users helper' do
   include_context 'database configuration'
+  include CartoDB::Factories
 
   before(:each) do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
   end
 
   before(:all) do
-    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user1 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @carto_user1 = Carto::User.find(@user1.id)
-    @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true)
+    @user2 = FactoryGirl.create(:valid_user, private_tables_enabled: true, private_maps_enabled: true)
     @carto_user2 = Carto::User.find(@user2.id)
   end
 
@@ -26,6 +27,8 @@ shared_context 'users helper' do
 end
 
 shared_context 'user helper' do
+  include CartoDB::Factories
+
   before(:all) do
     @user = FactoryGirl.create(:valid_user)
     @carto_user = Carto::User.find(@user.id)

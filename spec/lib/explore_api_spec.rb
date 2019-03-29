@@ -11,63 +11,54 @@ describe 'ExploreAPI' do
   end
 
   it 'should return the visualization table' do
-    user = FactoryGirl.build(:user)
-    map = FactoryGirl.build(:map, user_id: user.id)
-    visualization = FactoryGirl.build(:table_visualization, user_id: user.id, map_id: map.id)
-    layer_1 = create_layer('table_1', 'user_name_1', 1)
-    visualization.stubs(:map).returns(map)
-    visualization.stubs(:layers).with(:data).returns([layer_1])
+    user = FactoryGirl.build(:carto_user)
+    map = FactoryGirl.build(:carto_map, user_id: user.id)
+    visualization = FactoryGirl.build(:carto_table_visualization, user_id: user.id, map: map)
+    visualization.map.layers << create_layer('table_1', 'user_name_1', 1)
     tables = @explore_api.get_visualization_tables(visualization)
     tables.should eq '{\"user_name_1\".table_1}'
   end
 
   it 'should return the visualizations tables with multiple layers' do
-    user = FactoryGirl.build(:user)
-    map = FactoryGirl.build(:map, user_id: user.id)
-    visualization = FactoryGirl.build(:derived_visualization, user_id: user.id, map_id: map.id)
-    layer_1 = create_layer('table_1', 'user_name_1', 1)
-    layer_2 = create_layer('table_2', 'user_name_2', 2)
-    visualization.stubs(:map).returns(map)
-    visualization.stubs(:layers).with(:data).returns([layer_1, layer_2])
+    user = FactoryGirl.build(:carto_user)
+    map = FactoryGirl.build(:carto_map, user_id: user.id)
+    visualization = FactoryGirl.build(:carto_visualization, user_id: user.id, map: map)
+    visualization.map.layers << create_layer('table_1', 'user_name_1', 1)
+    visualization.map.layers << create_layer('table_2', 'user_name_2', 2)
     tables = @explore_api.get_visualization_tables(visualization)
     tables.should eq '{\"user_name_1\".table_1,\"user_name_2\".table_2}'
   end
 
   it 'should return the visualizations tables with multiple layers without duplicates' do
-    user = FactoryGirl.build(:user)
-    map = FactoryGirl.build(:map, user_id: user.id)
-    visualization = FactoryGirl.build(:derived_visualization, user_id: user.id, map_id: map.id)
-    layer_1 = create_layer('table_1', 'user_name_1', 1)
-    layer_2 = create_layer('table_1', 'user_name_1', 2)
-    visualization.stubs(:map).returns(map)
-    visualization.stubs(:layers).with(:data).returns([layer_1, layer_2])
+    user = FactoryGirl.build(:carto_user)
+    map = FactoryGirl.build(:carto_map, user_id: user.id)
+    visualization = FactoryGirl.build(:carto_visualization, user_id: user.id, map: map)
+    visualization.map.layers << create_layer('table_1', 'user_name_1', 1)
+    visualization.map.layers << create_layer('table_1', 'user_name_1', 2)
     tables = @explore_api.get_visualization_tables(visualization)
     tables.should eq '{\"user_name_1\".table_1}'
   end
 
   it 'should empty if the is no user name or table name in the layer' do
-    user = FactoryGirl.build(:user)
-    map = FactoryGirl.build(:map, user_id: user.id)
-    visualization = FactoryGirl.build(:table_visualization, user_id: user.id, map_id: map.id)
-    layer_1 = create_layer('table_1', '', 1)
-    layer_2 = create_layer('', 'user_name_2', 1)
-    visualization.stubs(:map).returns(map)
-    visualization.stubs(:layers).with(:data).returns([layer_1, layer_2])
+    user = FactoryGirl.build(:carto_user)
+    map = FactoryGirl.build(:carto_map, user_id: user.id)
+    visualization = FactoryGirl.build(:carto_table_visualization, user_id: user.id, map: map)
+    visualization.map.layers << create_layer('table_1', '', 1)
+    visualization.map.layers << create_layer('', 'user_name_2', 1)
     tables = @explore_api.get_visualization_tables(visualization)
     tables.should eq '{}'
   end
 
   it 'should return the geometry data properly setted' do
-    user = FactoryGirl.build(:user)
-    map = FactoryGirl.build(:map,
+    user = FactoryGirl.build(:carto_user)
+    map = FactoryGirl.build(:carto_map,
                             user_id: user.id,
                             zoom: 3,
-                            center: [30, 0],
-                            view_bounds_ne: [85.0511, 179],
-                            view_bounds_sw: [-85.0511, -179]
+                            center: '[30, 0]',
+                            view_bounds_ne: '[85.0511, 179]',
+                            view_bounds_sw: '[-85.0511, -179]'
                            )
-    visualization = FactoryGirl.build(:derived_visualization, user_id: user.id, map_id: map.id)
-    visualization.stubs(:map).returns(map)
+    visualization = FactoryGirl.build(:carto_visualization, user_id: user.id, map: map)
     geometry_data = @explore_api.get_geometry_data(visualization)
     expected_data = {
       zoom: 3,
@@ -79,9 +70,8 @@ describe 'ExploreAPI' do
   end
 
   it 'should return empty if there is no map associated to the visualization' do
-    user = FactoryGirl.build(:user)
-    visualization = FactoryGirl.build(:derived_visualization, user_id: user.id)
-    visualization.stubs(:map).returns(nil)
+    user = FactoryGirl.build(:carto_user)
+    visualization = FactoryGirl.build(:carto_visualization, user_id: user.id, map: nil)
     geometry_data = @explore_api.get_geometry_data(visualization)
     expected_data = {}
     geometry_data.should eq expected_data

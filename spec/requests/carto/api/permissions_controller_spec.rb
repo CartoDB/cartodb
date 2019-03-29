@@ -95,7 +95,12 @@ describe Carto::Api::PermissionsController do
       # base_url deletion because during tests subdomains might not match
       acl[0][:entity].delete(:base_url)
       client_acl_modified_expected[0][:entity].delete(:base_url)
-      acl.should eq client_acl_modified_expected
+      # The response is a superset of the expectations
+      acl.size.should eq 1
+      acl_entity = acl[0].delete(:entity)
+      client_acl_modified_expected_entity = client_acl_modified_expected[0].delete(:entity)
+      acl[0].should include client_acl_modified_expected[0]
+      acl_entity.should include client_acl_modified_expected_entity
       put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}", { user_domain: @user.username, acl: client_acl_final}.to_json, @headers
       last_response.status.should == 200
       response = JSON.parse(last_response.body, symbolize_names: true)

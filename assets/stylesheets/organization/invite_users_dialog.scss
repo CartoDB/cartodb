@@ -1,0 +1,60 @@
+// Invite users dialog styles
+// ---------------------------------------------
+
+@import '../variables/colors';
+@import '../variables/sizes';
+
+$width: 800px;
+
+.InviteUsers {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.InviteUsers-form {
+  width: $width;
+}
+
+.InviteUsers-formContent,
+.InviteUsers-formFooter {
+  width: $width;
+  margin: 0 auto;
+}
+
+.InviteUsers-formContent {
+  position: relative;
+  padding: 28px 0 120px;
+}
+
+.InviteUsers-formFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: $width;
+  border-top: 1px solid $cStructure-mainLine;
+  background: $cStructure-grayBkg;
+}
+
+.Form-rowData.InviteUsers-userType {
+  justify-content: flex-start;
+
+  .Form-label {
+    margin-left: 10px;
+  }
+}
+
+.InviteUsers-formFooterSticky {
+  position: fixed;
+  z-index: 10;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 97px;
+  background-color: $cStructure-grayBkg;
+}
+
+.InviteUsers .Form-rowInfoText--error {
+  width: 140px;
+}

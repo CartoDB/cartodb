@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeaturesDropdown.vue should render correct contents 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          one tag test
+        </router-link>
+      </li>
+      <!---->
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`FeaturesDropdown.vue should render correct multiple elements 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          my first map
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          another map
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          Madrid visualization
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          NoSpacesMap
+        </router-link>
+      </li>
+      <!---->
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`FeaturesDropdown.vue should render elements with url if present 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element"><a href="https://carto.com" class="list-text text is-small">Name 1</a>
+        <!---->
+      </li>
+      <li class="element"><a href="https://carto.com" class="list-text text is-small">Name 2</a>
+        <!---->
+      </li>
+      <!---->
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`FeaturesDropdown.vue should render footer if slot is present 1`] = `
+<div class="features-dropdown">Default text <div class="dropdown-container">
+    <ul class="list">
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          my first map
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          another map
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          Madrid visualization
+        </router-link>
+      </li>
+      <li class="element">
+        <!---->
+        <router-link to="[object Object]" class="list-text text is-small">
+          NoSpacesMap
+        </router-link>
+      </li>
+      <li class="element"><span class="list-text text is-small footer">+ 10 more</span></li>
+    </ul>
+  </div>
+</div>
+`;

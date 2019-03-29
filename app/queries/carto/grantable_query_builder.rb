@@ -12,7 +12,10 @@ class Carto::GrantableQueryBuilder
   end
 
   def with_filter(filter)
-    @filter = "%#{filter}%"
+    return self unless filter
+
+    clean_filter = filter.gsub('%', '\\%').gsub('_', '\\_')
+    @filter = "%#{clean_filter}%"
     self
   end
 

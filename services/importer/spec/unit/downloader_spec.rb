@@ -63,6 +63,15 @@ describe Downloader do
       downloader.source_file.name.should eq 'ne_110m_lakes'
     end
 
+    it 'extracts the source_file name from the URL for FGDB ZIP files' do
+      url = "http://s3.amazonaws.com/filegeodatabase.gdb.zip"
+      stub_download(url: url, filepath: @file_filepath, content_disposition: false)
+
+      downloader = Downloader.new(@user.id, url)
+      downloader.run
+      downloader.source_file.name.should eq 'filegeodatabase.gdb'
+    end
+
     it 'uses Content-Type header for files without extension' do
       stub_download(url: @file_url_without_extension, filepath: @file_filepath_without_extension, headers: { 'Content-Type' => 'text/csv' })
       downloader = Downloader.new(@user.id, @file_url_without_extension)
@@ -203,6 +212,13 @@ describe Downloader do
       url_with_percentage = 'https://s3.amazonaws.com/com.cartodb.imports.staging/03b0c2199fc814ceeb75/a_file.zip?AWSAccessKeyId=AKIAIUI5FFFJIRAMEEMA&Expires=1433349484&Signature=t6m%2Bji%2BlKsnrOVqPsptXajPiozw%3D'
       downloader = Downloader.new(@user.id, url_with_percentage)
       downloader.instance_variable_get("@translated_url").should == url_with_percentage
+    end
+
+    it 'does not break local filenames with special characters on it' do
+      # INFO: notice this URL is fake
+      path_with_percentage = '/public/uploads/tést file%.csv'
+      downloader = Downloader.new(@user.id, path_with_percentage)
+      downloader.instance_variable_get("@translated_url").should == path_with_percentage
     end
 
     it "doesn't download the file if ETag hasn't changed" do

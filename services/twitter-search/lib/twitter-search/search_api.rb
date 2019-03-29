@@ -94,17 +94,8 @@ module CartoDB
                                                         : @params.merge({PARAM_NEXT_PAGE => more_results_cursor}))
 
         if @config[CONFIG_REDIS_RL_ACTIVE]
-          key = REDIS_KEY
-          rl_value = @redis.keys(key)
-          # wait until semaphore open
-          while !rl_value.nil? && rl_value.count >= @config[CONFIG_REDIS_RL_MAX_CONCURRENCY] do
-            sleep(@config[CONFIG_REDIS_RL_WAIT_SECS])
-            rl_value = @redis.keys(key)
-          end
-          @redis.multi do
-            @redis.set(key, 1)  # Value is not important, only number of keys
-            @redis.expire(key, @config[CONFIG_REDIS_RL_TTL])
-          end
+          # TODO: proper rate limiting (previous one was broken)
+          sleep(@config[CONFIG_REDIS_RL_WAIT_SECS])
         end
 
         http_client = Carto::Http::Client.get('search_api')
@@ -114,7 +105,7 @@ module CartoDB
 
         unless response.body.nil?
           ::JSON.parse(
-            @pre_json_parse_cleaner.nil? ? response.body : @pre_json_parse_cleaner.clean_string(response.body), 
+            @pre_json_parse_cleaner.nil? ? response.body : @pre_json_parse_cleaner.clean_string(response.body),
             symbolize_names: true
             )
         end
@@ -128,7 +119,7 @@ module CartoDB
         }
         payload[PARAM_FROMDATE] = params[PARAM_FROMDATE] unless params[PARAM_FROMDATE].nil? or params[PARAM_FROMDATE].empty?
         payload[PARAM_TODATE] = params[PARAM_TODATE] unless params[PARAM_TODATE].nil? or params[PARAM_TODATE].empty?
-        if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].kind_of?(Fixnum) \
+        if !params[PARAM_MAXRESULTS].nil? && params[PARAM_MAXRESULTS].is_a?(Integer) \
            && params[PARAM_MAXRESULTS] >= MIN_PAGE_RESULTS && params[PARAM_MAXRESULTS] <= MAX_PAGE_RESULTS
         payload[PARAM_MAXRESULTS] = params[PARAM_MAXRESULTS]
         end

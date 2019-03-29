@@ -14,21 +14,34 @@ module CartoDB
           Object.new
         end
 
-        def set_default_properties; return; end
+        def set_default_properties; end
 
-        def generic_error?; return; end
-        def encoding_error?; return; end
-        def invalid_dates?; return; end
-        def duplicate_column?; return; end
-        def invalid_geojson?; return; end
-        def too_many_columns?; return; end
-        def unsupported_format?; return; end
-        def file_too_big?; return; end
-        def statement_timeout?; return; end
-        def segfault_error?; return; end
-        def kml_style_missing?; return; end
+        def generic_error?; end
+
+        def encoding_error?; end
+
+        def invalid_dates?; end
+
+        def duplicate_column?; end
+
+        def invalid_geojson?; end
+
+        def too_many_columns?; end
+
+        def unsupported_format?; end
+
+        def file_too_big?; end
+
+        def statement_timeout?; end
+
+        def segfault_error?; end
+
+        def kml_style_missing?; end
+
+        def missing_srs?; end
+
+        def geometry_validity_error?; end
       end
     end
   end
 end
-

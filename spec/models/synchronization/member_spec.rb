@@ -60,7 +60,10 @@ describe Synchronization::Member do
 
     before(:each) do
       bypass_named_maps
-      Cartodb.config[:metrics] = {}
+    end
+
+    around(:each) do |example|
+      Cartodb.with_config(metrics: {}, &example)
     end
 
     after(:all) do
@@ -111,6 +114,129 @@ describe Synchronization::Member do
         ).run_import!
 
         member.run
+      end
+
+      it 'fails if user is inactive' do
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user1.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user1.id,
+          data_source: fake_data_path('guess_country.csv'),
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+        @user1.state = Carto::User::STATE_LOCKED
+        @user1.save
+
+        CartoDB::Logger.stubs(:error).once
+
+        member.fetch.run
+
+        member.log.entries.should match /Can't run a synchronization for inactive user/
+        expect(member.state).to eq 'failure'
+
+        @user1.state = Carto::User::STATE_ACTIVE
+        @user1.sync_tables_enabled = true
+        @user1.save
+        @user1.reload
+      end
+
+      it 'fails to overwrite tables with views' do
+        url = 'https://wadus.com/guess_country.csv'
+
+        path = fake_data_path('guess_country.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user2.id).merge(service_item_id: url, url: url, name: 'guess_country')
+        member = Synchronization::Member.new(attrs).store
+
+        DataImport.create(
+          user_id: @user2.id,
+          data_source: path,
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+
+        @user2.in_database.execute('CREATE VIEW wadus AS SELECT * FROM guess_country')
+
+        member.run
+        expect(member.state).to eq 'failure'
+        expect(member.error_code).to eq 2013
+      end
+
+      it 'should sync files with missing ogc_fid' do
+        stub_arcgis_response_with_file(
+          File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'),
+          File.expand_path('spec/fixtures/arcgis_metadata_ogc_fid.json')
+        )
+
+        url = 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+
+        attrs = random_attributes(user_id: @user1.id)
+                .merge(service_item_id: url, url: url, name: 'land_zoning')
+        member = Synchronization::Member.new(attrs).store
+
+        data_import = DataImport.create(
+          user_id: @user1.id,
+          synchronization_id: member.id,
+          service_name: 'arcgis',
+          service_item_id: url,
+          updated_at: Time.now
+        )
+
+        data_import.run_import!
+        expect(data_import.state).to eq 'complete'
+
+        source_file = CartoDB::Importer2::SourceFile.new(
+          File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'),
+          'arcgis_response_missing_ogc_fid.json'
+        )
+        CartoDB::Importer2::Downloader.any_instance.stubs(:download_and_store).returns(source_file)
+        CartoDB::Importer2::Downloader.any_instance.stubs(:source_file).returns(source_file)
+        member.run
+        expect(member.state).to eq 'success'
+      end
+
+      it 'keeps indices' do
+        url = 'https://wadus.com/clubbing.csv'
+
+        path = fake_data_path('clubbing.csv')
+        stub_download(url: url, filepath: path, content_disposition: false)
+
+        attrs = random_attributes(user_id: @user2.id).merge(service_item_id: url, url: url, name: 'clubbing')
+        member = Synchronization::Member.new(attrs).store
+
+        # Create table with index
+        DataImport.create(
+          user_id: @user2.id,
+          data_source: path,
+          synchronization_id: member.id,
+          service_name: 'public_url',
+          service_item_id: url,
+          updated_at: Time.now
+        ).run_import!
+        @user2.in_database.execute('CREATE INDEX ON clubbing (nombre)')
+
+        # Sync the table
+        member.run
+        expect(member.state).to eq 'success'
+
+        # Expect custom and default indices to still exist
+        table = UserTable.where(user: @user2, name: 'clubbing').first
+        indexed_columns = table.service.pg_indexes.map { |x| x[:column] }
+        expected_indices = ['cartodb_id', 'the_geom', 'the_geom_webmercator', 'nombre']
+
+        expect(indexed_columns.sort).to eq(expected_indices.sort)
       end
     end
   end

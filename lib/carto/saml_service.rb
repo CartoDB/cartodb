@@ -29,10 +29,11 @@ module Carto
 
     # SLO (Single Log Out) request initiated from CARTO
     # Returns the SAML logout request that to be redirected to
-    def sp_logout_request
+    def sp_logout_request(user)
       settings = saml_settings
 
       if logout_url_configured?
+        settings.name_identifier_value = user.email
         OneLogin::RubySaml::Logoutrequest.new.create(settings)
       else
         raise "SLO IdP Endpoint not found in settings for #{@organization}"
@@ -62,9 +63,7 @@ module Carto
 
       logout_response = OneLogin::RubySaml::Logoutresponse.new(saml_response_param, settings)
 
-      if logout_response.validate && logout_response.success?
-        yield
-      else
+      unless logout_response.validate && logout_response.success?
         raise "SAML Logout response error. Validate: #{logout_response.validate}; Success: #{logout_response.success?};"
       end
     end
@@ -109,17 +108,24 @@ module Carto
     # Adapted from https://github.com/hryk/warden-saml-example/blob/master/application.rb
     def saml_settings(settings_hash = carto_saml_configuration)
       settings = OneLogin::RubySaml::Settings.new
+
       # Make validations throw an error
       settings.soft = false
+
       settings_hash.each do |k, v|
-        method = "#{k}="
-        settings.__send__(method, v) if settings.respond_to?(method)
+        if k.to_s == 'security'
+          settings.security.merge!(v.symbolize_keys)
+        else
+          method = "#{k}="
+          settings.__send__(method, v) if settings.respond_to?(method)
+        end
       end
+
       settings
     end
 
     def carto_saml_configuration
-      @organization.try(:auth_saml_configuration)
+      @organization.try(:auth_saml_configuration).try(:deep_symbolize_keys)
     end
   end
 end

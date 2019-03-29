@@ -18,7 +18,7 @@ module Carto
       imports.map { |import|
         if import.created_at < Time.now - 60.minutes && !running_ids.include?(import.id)
           # INFO: failure is handled with old model
-          ::DataImport[import.id].handle_failure
+          ::DataImport[import.id].handle_failure(CartoDB::Importer2::StuckImportJobError.new)
           nil
         else
           import
@@ -34,8 +34,7 @@ module Carto
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model
         ::DataImport[id].mark_as_failed_if_stuck!
-        # INFO: avoiding `reload` usage because of #7718
-        import = Carto::DataImport.where(id: id).first
+        import.reload
       end
       import
     rescue RecordNotFound => e

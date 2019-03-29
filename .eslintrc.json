@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "semistandard",
+    "plugin:vue/essential"
+  ],
+  "env": {
+    "es6": true,
+    "browser": true,
+    "jasmine": true,
+    "jest": true
+  },
+  "globals": {
+    "_t": true,
+    "__ENV__": true,
+    "grunt": true,
+    "CartoNode": true
+  },
+  "rules": {
+    "camelcase": "off",
+    "no-mixed-operators": "off",
+    "no-useless-escape": "off",
+    "prefer-promise-reject-errors": "off"
+  }
+}

@@ -1,10 +1,7 @@
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 @import 'cdb-variables/colors';
 @import 'cdb-variables/sizes';
-
-$sViewport-xl: 1200px;
 
 $sSmallDescriptionWidth: 200px;
 $sRegularDescriptionWidth: 445px;
@@ -14,7 +11,7 @@ $sWidgetsPadWidth: 378px;
 $cBackgroundColor: #2E3C43;
 
 .BuilderOnboarding {
-  @include display-flex();
+  display: flex;
   height: 100%;
   pointer-events: auto;
 }
@@ -28,27 +25,27 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding-contentWrapper {
-  @include flex(1);
-  @include display-flex();
-  @include align-items(center);
+  display: flex;
+  z-index: 5;
+  flex: 1;
+  align-items: center;
   height: 100%;
   background: rgba($cBackgroundColor, 0.88);
   pointer-events: all;
-  z-index: 5;
 }
 
 .BuilderOnboarding-contentWrapper.is-step0 {
-  @include justify-content(center);
+  justify-content: center;
 }
 
 .BuilderOnboarding-contentWrapper.is-step1,
 .BuilderOnboarding-contentWrapper.is-step2,
 .BuilderOnboarding-contentWrapper.is-step3 {
-  @include justify-content(flex-start);
+  justify-content: flex-start;
 }
 
 .BuilderOnboarding-contentWrapper.is-step4 {
-  @include justify-content(flex-end);
+  justify-content: flex-end;
 }
 
 .BuilderOnboarding-forget,
@@ -67,12 +64,12 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-footer .BuilderOnboarding-footerButtons,
 .BuilderOnboarding-contentWrapper .BuilderOnboarding-header p,
 .BuilderOnboarding-contentWrapper .BuilderOnboarding-step p {
-  @include opacity(0);
-  @include transition(opacity, 200ms, ease-in-out, 1s);
+  transition: opacity 200ms ease-in-out 1s;
+  opacity: 0;
 }
 
 .BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step p {
-  @include transition(opacity, 100ms, ease-in-out, 100ms);
+  transition: opacity 100ms ease-in-out 100ms;
 }
 
 .BuilderOnboarding-contentWrapper.is-step0 .BuilderOnboarding-footer.is-step0 .BuilderOnboarding-footerButtons,
@@ -86,7 +83,7 @@ $cBackgroundColor: #2E3C43;
 .BuilderOnboarding-contentWrapper.is-step2 .BuilderOnboarding-step.is-step2 p,
 .BuilderOnboarding-contentWrapper.is-step3 .BuilderOnboarding-step.is-step3 p,
 .BuilderOnboarding-contentWrapper.is-step4 .BuilderOnboarding-step.is-step4 p {
-  @include opacity(1);
+  opacity: 1;
 }
 
 .BuilderOnboarding.is-step0 .BuilderOnboarding-header,
@@ -104,7 +101,7 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding.is-step0 .BuilderOnboarding-step.is-step1 {
-  @include opacity(0);
+  opacity: 0;
 }
 
 .BuilderOnboarding-body {
@@ -113,9 +110,9 @@ $cBackgroundColor: #2E3C43;
 }
 
 .BuilderOnboarding-description {
-  @include transition(width, 100ms, ease-in-out);
   width: $sRegularDescriptionWidth;
   margin-bottom: $sMargin-elementInline;
+  transition: width 100ms ease-in-out;
   color: #FFF;
   font-size: $sFontSize-large;
   font-weight: $sFontWeight-normal;
@@ -124,32 +121,32 @@ $cBackgroundColor: #2E3C43;
 
 .BuilderOnboarding-pad,
 .BuilderOnboarding-pad4 {
-  @include opacity(0.88);
+  opacity: 0.88;
   background: $cBackgroundColor;
 }
 
 .BuilderOnboarding-pad4,
 .BuilderOnboarding-pad5 {
-  @include transition(all, 200ms, ease-in-out, 300ms);
   position: absolute;
+  z-index: 0;
   top: 0;
   right: -$sWidgetsPadWidth;
   width: $sWidgetsPadWidth;
   height: 100%;
+  transition: all 200ms ease-in-out 300ms;
   background: image-url('layout/widgets.png') no-repeat center center;
   background-color: $cSecondaryBackground;
   background-position: 50% 0;
-  z-index: 0;
 }
 
 .BuilderOnboarding-pad,
 .BuilderOnboarding-pad2,
 .BuilderOnboarding-pad3,
 .BuilderOnboarding-pad4 {
-  @include transition(width, 300ms, ease-in-out);
+  z-index: 10;
   width: 0;
   height: 100%;
-  z-index: 10;
+  transition: width 300ms ease-in-out;
 }
 
 .BuilderOnboarding.is-step1 {
@@ -160,14 +157,16 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad2 {
     width: 72px;
 
-    @media (max-width: $sViewport-xl) {
+    @media (max-width: $sMedia-xl) {
       width: $sToolbarWidth-mediaXL;
     }
   }
+
   .BuilderOnboarding-description {
     width: $sBigDescriptionWidth;
   }
 }
+
 .BuilderOnboarding.is-step2 {
   .BuilderOnboarding-body {
     width: 0;
@@ -176,17 +175,20 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad {
     width: 72px;
 
-    @media (max-width: $sViewport-xl) {
+    @media (max-width: $sMedia-xl) {
       width: $sToolbarWidth-mediaXL;
     }
   }
+
   .BuilderOnboarding-pad2 {
     width: 345px;
   }
+
   .BuilderOnboarding-pad5 {
-    @include transition(right, 0, ease-in-out, 0);
     right: -$sWidgetsPadWidth;
+    transition: right 0 ease-in-out 0;
   }
+
   .BuilderOnboarding-description {
     width: $sBigDescriptionWidth;
   }
@@ -200,8 +202,9 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad2 {
     width: 0;
   }
+
   .BuilderOnboarding-pad3 {
-    @include flex(1);
+    flex: 1;
   }
 
   .BuilderOnboarding-description {
@@ -209,19 +212,20 @@ $cBackgroundColor: #2E3C43;
   }
 
   .BuilderOnboarding-pad4 {
-    @include transition(right, 0, ease-in-out, 0);
     right: 0;
     width: $sWidgetsPadWidth - 13;
+    transition: right 0 ease-in-out 0;
     background: $cBackgroundColor;
   }
 
   .BuilderOnboarding-contentWrapper {
-    @include flex(0 0 416px);
+    flex: 0 0 416px;
 
-    @media (max-width: $sViewport-xl) {
-      @include flex(0 0 392px);
+    @media (max-width: $sMedia-xl) {
+      flex: 0 0 392px;
     }
   }
+
   .BuilderOnboarding-pad5 {
     right: 0;
   }
@@ -235,29 +239,28 @@ $cBackgroundColor: #2E3C43;
   .BuilderOnboarding-pad {
     display: none;
   }
+
   .BuilderOnboarding-pad4 {
     position: relative;
     width: $sWidgetsPadWidth;
     background: none;
   }
+
   .BuilderOnboarding-description {
     width: auto;
   }
+
   .BuilderOnboarding-pad5 {
     right: 0;
   }
 }
 
-.BuilderOnboarding-forgetLabel {
-  cursor: pointer;
-}
-
 .BuilderOnboarding-shadow {
-  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
   position: absolute;
+  z-index: 1;
   right: 0;
   bottom: 0;
   width: $sWidgetsPadWidth - 13;
   height: 60px;
-  z-index: 1;
+  background-image: linear-gradient(to bottom, rgba(#FFF, 0), #FFF);
 }

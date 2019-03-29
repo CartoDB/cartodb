@@ -1,67 +1,77 @@
 
-  /*
+/*
    * Modal object for CartoDB
    * - Normal window, confimation window,...
    */
 
-  @import "compass/css3/border-radius";
-  @import "compass/css3/box-shadow";
-  @import "../old_elements/elements-sprite";
+@import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
+@import "../old_elements/elements-sprite";
 
-  .mamufas {
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(black,0.5);
-    z-index:50;
+.mamufas {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(black, 0.5);
 
-    section.modal {
-      position:relative;
-      width:600px;
-      margin: 200px auto 0 auto;
-      background:white;
-      @include border-radius(4px);
-      @include box-shadow(rgba(black,0.15) 0 0 0 4px);
+  section.modal {
+    position: relative;
+    width: 600px;
+    margin: 200px auto 0;
+    border-radius: 4px;
+    background: WHITE;
+    box-shadow: rgba(black, 0.15) 0 0 0 4px;
 
-      a.close {
-        position:absolute;
-        top:-15px;
-        right:-15px;
-        width:30px;
-        height:15px;
-        padding:7px 0 8px;
-        background:white;
-        @include box-shadow(rgba(black,0.15) 0 0 0 4px);
-        @include border-radius(50px);
-        line-height:14px;
-        text-align:center;
-        z-index:5;
-        &:focus, &:hover {
-          outline:none;
-          color:black;
-          text-decoration:none;
-        }
+    a.close {
+      position: absolute;
+      z-index: 5;
+      top: -15px;
+      right: -15px;
+      width: 30px;
+      height: 15px;
+      padding: 7px 0 8px;
+      border-radius: 50px;
+      background: WHITE;
+      box-shadow: rgba(black, 0.15) 0 0 0 4px;
+      line-height: 14px;
+      text-align: center;
+
+      &:focus,
+      &:hover {
+        outline: none;
+        color: BLACK;
+        text-decoration: none;
       }
+    }
 
-      // Create something new (table, row,...)
-      &.creation {
-        div.foot {
-          padding-top:0;
-          border:none;
+    // Create something new (table, row,...)
+    &.creation {
+      div.foot {
+        padding-top: 0;
+        border: none;
 
-          .privacy {
-            position:relative;
-            top:13px;
+        .privacy {
+          position: relative;
+          top: 13px;
 
-            .switch { margin: 0 10px 0 0; }
-            label { cursor: pointer; color:#999999; }
-
+          .switch {
+            margin: 0 10px 0 0;
           }
 
-          a.cancel { position:relative; top: 15px; }
+          label {
+            color: #999;
+            cursor: pointer;
+          }
+        }
+
+        a.cancel {
+          position: relative;
+          top: 15px;
         }
       }
     }
   }
+}

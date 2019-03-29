@@ -6,4 +6,10 @@ class Admin::AdminController < ApplicationController
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = 'Mon, 01 Jan 1990 00:00:00 GMT'
   end
+
+  def valid_password_confirmation
+    unless current_user.valid_password_confirmation(params[:password_confirmation])
+      raise Carto::PasswordConfirmationError.new
+    end
+  end
 end

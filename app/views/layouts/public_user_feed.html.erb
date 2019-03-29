@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%= favicon_link_tag "/favicons/favicon.ico" %>
+    <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
     <meta name="keywords" content="<%= @name %>, datasets, maps, data visualization, spatial data, geospatial, carto">
@@ -15,9 +15,19 @@
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>" />
 
-    <%= stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed' %>
+    <% if @has_new_dashboard %>
+      <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new', 'user_feed_new' %>
+    <% else %>
+      <%= editor_stylesheet_link_tag 'cartodb', 'deep_insights', 'common', 'public_dashboard', 'user_feed' %>
+    <% end %>
+
+    <% if @needs_gmaps_lib %>
+      <%= insert_google_maps(@gmaps_query_string) %>
+    <% end %>
+    <%= insert_google_tag_manager('embeds') %>
   </head>
   <body class="PublicBody PublicBody--grey">
+    <%= insert_google_tag_manager_no_script('embeds') %>
     <%= render 'admin/shared/public_header' %>
     <div class="FavMap FavMap--tall is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="Spinner FavMap-spinner js-spinner"></div>
@@ -42,21 +52,28 @@
       var avatar_url= '<%= @avatar_url %>';
 
       var favMapViewAttrs = {
+        fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>,
         el: '#<%= fav_map_target_id %>',
         <% if @most_viewed_vis_map %>
           createVis: {
-            url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            <% if @has_new_dashboard %>
+              vizJson: <%= safe_js_object named_map_vizjson3(@most_viewed_vis_map).to_json %>,
+            <% else %>
+              url: '<%= vis_json_url(@most_viewed_vis_map.id, self, (@most_viewed_vis_map.user)) %>',
+            <% end %>
             opts: {
               no_cdn: <%= Rails.env.production? ? 'false' : 'true' %>
             }
           }
-        <% else %>
-          fallbackBaselayer: <%= raw @default_fallback_basemap.to_json %>
         <% end %>
       };
       </script>
 
-    <%= javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+    <% if @has_new_dashboard %>
+      <%= javascript_include_tag 'common', 'common_vendor', 'user_feed_new' %>
+    <% else %>
+      <%= editor_javascript_include_tag 'cdb.js', 'templates', 'user_feed_deps', 'user_feed' %>
+    <% end %>
     <%= yield :js %>
     <%= insert_google_analytics('embeds', true) %>
     <%= insert_hubspot() %>

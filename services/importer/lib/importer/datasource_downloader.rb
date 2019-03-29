@@ -124,10 +124,13 @@ module CartoDB
       end
 
       def store_retrieved_data(filename, resource_data, available_quota_in_bytes)
-        # Skip storing if no data came in
-        return if resource_data.empty?
-
-        data = StringIO.new(resource_data)
+        if resource_data.is_a?(StringIO)
+          return if resource_data.size.zero?
+          data = resource_data
+        else
+          return if resource_data.empty?
+          data = StringIO.new(resource_data)
+        end
         name = filename
 
         raise_if_over_storage_quota(requested_quota: data.size,

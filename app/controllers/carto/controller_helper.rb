@@ -1,44 +1,7 @@
 require_dependency 'carto/uuidhelper'
+require_dependency 'carto/errors'
 
 module Carto
-  class CartoError < StandardError
-    attr_reader :message, :status, :user_message
-
-    def initialize(message, status, user_message = message)
-      @message = message
-      @status = status
-      @user_message = user_message
-    end
-
-    def self.with_full_messages(active_record_exception)
-      new(active_record_exception.record.errors.full_messages.join(', '))
-    end
-  end
-
-  class UUIDParameterFormatError < CartoError
-    def initialize(parameter:, value:, status: 400)
-      super("Parameter not UUID format. Parameter: #{parameter}. Value: #{value}", status)
-    end
-  end
-
-  class UnauthorizedError < CartoError
-    def initialize(message = "You don't have permission to access that resource", status = 403)
-      super(message, status)
-    end
-  end
-
-  class LoadError < CartoError
-    def initialize(message, status = 404)
-      super(message, status)
-    end
-  end
-
-  class UnprocesableEntityError < CartoError
-    def initialize(message, status = 422)
-      super(message, status)
-    end
-  end
-
   module ControllerHelper
     include Carto::UUIDHelper
 
@@ -54,10 +17,33 @@ module Carto
     def rescue_from_carto_error(error)
       message = error.message
       status = error.status
+      errors_cause = error.errors_cause
 
       respond_to do |format|
         format.html { render text: message, status: status }
-        format.json { render json: { errors: message }, status: status }
+        format.json { render json: { errors: message, errors_cause: errors_cause }, status: status }
+      end
+    end
+
+    def rescue_from_protected_visualization_load_error(error)
+      message = error.message
+      status = error.status
+
+      respond_to do |format|
+        format.html { render text: message, status: status }
+        format.json {
+          errors_cause = error.errors_cause
+
+          visualization = error.visualization
+          visualization_info = {
+            privacy: visualization.privacy,
+            user: {
+              google_maps_query_string: visualization.user.google_maps_query_string
+            }
+          }
+          render json: { errors: message, errors_cause: errors_cause, visualization: visualization_info },
+                 status: status
+        }
       end
     end
 
@@ -77,6 +63,13 @@ module Carto
     def rescue_from_record_not_found
       render_jsonp({ errors: 'Record not found' }, 404)
     end
+
+    def rescue_from_central_error
+      CartoDB::Logger.error(exception: e,
+                            message: 'Error while updating data in Central',
+                            user: @user)
+      render_jsonp "Error while updating data in Central", 500
+    end
   end
 
   module DefaultRescueFroms
@@ -85,6 +78,7 @@ module Carto
       rescue_from CartoError, with: :rescue_from_carto_error
       rescue_from ActiveRecord::RecordNotFound, with: :rescue_from_record_not_found
       rescue_from ActiveRecord::RecordInvalid, with: :rescue_from_validation_error
+      rescue_from CartoDB::CentralCommunicationFailure, with: :rescue_from_central_error
     end
   end
 end

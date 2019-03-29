@@ -14,7 +14,7 @@ module CartoDB
       NEW_LAYER_TYPE_OPTION = ['-nlt', 'PROMOTE_TO_MULTI'].freeze
       APPEND_MODE_OPTION    = '-append'.freeze
 
-      DEFAULT_BINARY = 'which ogr2ogr2.1'
+      DEFAULT_BINARY = 'which ogr2ogr'.freeze
 
       LATITUDE_POSSIBLE_NAMES   = %w{ latitude lat latitudedecimal
         latitud lati decimallatitude decimallat point_latitude }
@@ -38,8 +38,9 @@ module CartoDB
       def set_default_properties
         self.append_mode = false
         self.overwrite = false
-        self.ogr2ogr2_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
+        self.ogr2ogr_binary = options.fetch(:ogr2ogr_binary, DEFAULT_BINARY)
         self.csv_guessing = options.fetch(:ogr2ogr_csv_guessing, false)
+        self.memory_limit = options.fetch(:ogr2ogr_memory_limit, Process::RLIM_INFINITY)
         self.quoted_fields_guessing = options.fetch(:quoted_fields_guessing, true)
         self.encoding = options.fetch(:encoding, ENCODING)
         self.shape_encoding = ''
@@ -71,7 +72,7 @@ module CartoDB
       end
 
       def executable_path
-        `#{ogr2ogr2_binary}`.strip
+        `#{ogr2ogr_binary}`.strip
       end
 
       def command
@@ -84,7 +85,10 @@ module CartoDB
 
       def run(use_append_mode=false)
         @append_mode = use_append_mode
-        stdout, stderr, status  = Open3.capture3(environment, *command)
+        open3_options = {
+          rlimit_as: memory_limit
+        }
+        stdout, stderr, status  = Open3.capture3(environment, *command, open3_options)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
         self
@@ -92,6 +96,10 @@ module CartoDB
 
       def generic_error?
         command_output =~ /ERROR 1:/i || command_output =~ /ERROR:/i
+      end
+
+      def geometry_validity_error?
+        command_output =~ /Invalid number of points in LinearRing/i
       end
 
       def encoding_error?
@@ -114,13 +122,21 @@ module CartoDB
         command_output =~ /tables can have at most 1600 columns/i
       end
 
+      def missing_srs?
+        exit_code == 256 && command_output =~ /Use -s_srs to set one/i
+      end
+
       def unsupported_format?
         exit_code == 256 && command_output =~ /Unable to open(.*)with the following drivers/i
       end
 
       def file_too_big?
         (exit_code == 256 && command_output =~ /calloc failed/i) ||
-        (exit_code == 35072 && command_output =~ /Killed/i)
+          (exit_code == 256 && command_output =~ /out of memory/i) ||
+          (exit_code == 134) ||
+          (exit_code == 139) ||
+          (exit_code == 35072 && command_output =~ /Killed/i) ||
+          (exit_code == 32512 && command_output =~ /Cannot allocate memory/i)
       end
 
       def statement_timeout?
@@ -136,13 +152,13 @@ module CartoDB
       end
 
       attr_accessor :append_mode, :filepath, :csv_guessing, :overwrite, :encoding, :shape_encoding,
-                    :shape_coordinate_system
+                    :shape_coordinate_system, :memory_limit
       attr_reader   :exit_code, :command_output
 
       private
 
       attr_writer   :exit_code, :command_output
-      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr2_binary, :quoted_fields_guessing
+      attr_accessor :pg_options, :options, :table_name, :layer, :ogr2ogr_binary, :quoted_fields_guessing
 
       def is_csv?
         !(filepath =~ /\.csv$/i).nil?

@@ -56,7 +56,7 @@ describe Carto::Api::TablesController do
       get_json api_v1_tables_show_url(params.merge(id: table.id)) do |response|
         response.status.should == 200
         expect(response.body[:dependent_visualizations]).not_to be_empty
-        expect(response.body[:dependent_visualizations][0]['id']).to eq visualization.id
+        expect(response.body[:dependent_visualizations][0][:id]).to eq visualization.id
       end
     end
 

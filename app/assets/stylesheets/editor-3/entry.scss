@@ -3,13 +3,14 @@
 
 @import '../cartoassets/entry';
 @import '../colorpicker/bootstrap-colorpicker/bootstrap-colorpicker';
-
+@import 'vars';
 @import 'fill/fill';
 @import 'fill/input-color-category';
 @import 'fill/ramps';
 @import 'analysis-animations';
 @import 'assets';
 @import 'block-list';
+@import 'breadcrumbs';
 @import 'cards';
 @import 'carousel';
 @import 'codemirror-hints';
@@ -34,7 +35,6 @@
 @import 'infobox';
 @import 'infowindow';
 @import 'inline-editor';
-@import 'layer-selector';
 @import 'layers-list';
 @import 'legend-list-form';
 @import 'list';
@@ -51,6 +51,7 @@
 @import 'privacy-dropdown';
 @import 'privacy-toggler';
 @import 'progress-bar';
+@import 'radio-list';
 @import 'scroll-view';
 @import 'share';
 @import 'slider';
@@ -60,5 +61,6 @@
 @import 'table';
 @import 'tag';
 @import 'tipsy-tooltip';
-@import 'vars';
 @import 'widget-list';
+@import 'range-slider';
+@import 'data-observatory-form';

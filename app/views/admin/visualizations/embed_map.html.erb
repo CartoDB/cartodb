@@ -32,18 +32,12 @@
     <div class="cartodb-text">
       Map created by
       <% username = @visualization.user.name_or_username %>
-      <a class="user" href="<%= CartoDB.url(self, 'public_user_feed_home', {}, @visualization.user) %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
+      <a class="user" href="<%= CartoDB.url(self, 'public_user_feed_home', user: @visualization.user) %>?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=<%= @visualization.user.username %>" target="_blank">
         <% if !@visualization.user.avatar_url.blank? %>
           <img src="<%= @visualization.user.avatar_url %>" width="16" height="16" alt="<%= username %>" title="<%= username %>" />
         <% end %>
         <span class="username"><%= username %></span>
       </a>
-
-      <a href="#like" class="like js-like">
-        <span class="icon"></span>
-        <span class="counter"><% if (@visualization.to_vizjson[:likes] > 2) %><%= @visualization.to_vizjson[:likes] %><% end %></span>
-      </a>
-
     </div>
   <% end %>
 <% end %>

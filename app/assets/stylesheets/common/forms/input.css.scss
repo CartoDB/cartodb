@@ -6,22 +6,24 @@
 // -------------------------------------------------------------------------------------------------------------------
 
 .Input {
-  border: 1px solid $cForms-border;
   height: $sForms-elementHeight;
-  color: $cTypography-paragraphs;
-  border-radius: $sForms-borderRadius;
   padding: 0 $sMargin-elementInline;
+  border: 1px solid $cForms-border;
+  border-radius: $sForms-borderRadius;
+  color: $cTypography-paragraphs;
 
-  ::-webkit-input-placeholder { color: $cTypography-help;  }
-  :-moz-placeholder { color: $cTypography-help;  }
-  ::-moz-placeholder {  color: $cTypography-help;  }
-  :-ms-input-placeholder {  color: $cTypography-help;  }
+  ::-webkit-input-placeholder { color: $cTypography-help; }
+  :-moz-placeholder { color: $cTypography-help; }
+  ::-moz-placeholder { color: $cTypography-help; }
+  :-ms-input-placeholder { color: $cTypography-help; }
 }
+
 .Input--slim {
   height: $sMargin-group;
-  padding-left: 10px;
   padding-right: 10px;
+  padding-left: 10px;
 }
+
 .Input.is-loading {
   background: image-url("layout/loader_transparent.gif") no-repeat 10px 50%;
 }

@@ -1,3 +1,5 @@
+
+<% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
 <div class="Header CDB-Text" id="header">
   <div class="u-inner Header-inner">
     <div class="Header-navigation">
@@ -14,14 +16,16 @@
             <% if current_user.has_organization? %>
               <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large"><p class="Header-navigationBreadcrumbParagraph"><%= current_user.organization.name %></p> /</li>
             <% end %>
-            <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large">
-              <% if params[:controller] != "admin/visualizations" %>
-                <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', {}, current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
-              <% else %>
-                <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
-              <% end %>
-            </li>
-            <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown CDB-Text CDB-Size-large"></li>
+            <% if breadcrumb %>
+              <li class="Header-navigationBreadcrumbItem CDB-Text CDB-Size-large">
+                <% if params[:controller] != "admin/visualizations" %>
+                  <p class="Header-navigationBreadcrumbParagraph"><%= link_to current_user.name_or_username, CartoDB.url(self, 'dashboard', user: current_user), :class => "Header-navigationBreadcrumbLink" %></p> /
+                <% else %>
+                  <p class="Header-navigationBreadcrumbParagraph"><%= current_user.name_or_username %></p> /
+                <% end %>
+              </li>
+              <li class="Header-navigationBreadcrumbItem js-breadcrumb-dropdown CDB-Text CDB-Size-large"></li>
+            <% end %>
           </ul>
         </li>
       </ul>
@@ -33,14 +37,14 @@
             <a target="_blank" href="https://carto.com/learn/guides" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Guides</a>
           </li>
           <li class="Header-settingsItem">
-            <a target="_blank" href="https://carto.com/docs" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Documentation</a>
-          </li>
-          <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
-            <a href="#/notifications" class="UserNotifications">
-              <i class="UserNotifications-Icon CDB-IconFont CDB-IconFont-Alert"></i>
-            </a>
+            <a target="_blank" href="https://carto.com/developers" class="CDB-Text is-semibold Header-settingsLink Header-settingsLink--dashboard">Developers</a>
           </li>
         <% end %>
+        <li class="Header-settingsItem Header-settingsItemNotifications js-user-notifications">
+          <button class="UserNotifications">
+            <i class="UserNotifications-Icon CDB-IconFont CDB-IconFont-Alert"></i>
+          </button>
+        </li>
         <li class="Header-settingsItem Header-settingsItem--avatar">
           <button class="UserAvatar js-settings-dropdown">
             <img src="<%= current_user.avatar %>" class='UserAvatar-img UserAvatar-img--medium' />

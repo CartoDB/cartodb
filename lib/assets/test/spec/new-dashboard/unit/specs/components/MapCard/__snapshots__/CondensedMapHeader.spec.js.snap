@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CondensedMapHeader.vue should render correct contents 1`] = `
+<div class="map-list-row">
+  <div class="viz-column--main-info">
+    <div class="cell cell--start"></div>
+    <div class="cell cell--main"><span class="text is-small is-txtSoftGrey element-sort">
+        MapListHeader.name
+      </span></div>
+  </div>
+  <div class="viz-column--extra-info">
+    <div class="viz-column--status">
+      <div class="cell cell--large"><span class="text is-small is-txtSoftGrey is-active element-sort">
+          MapListHeader.lastModified
+        </span></div>
+      <div class="cell cell--large u-txt-right u-p0"><span class="text is-small is-txtSoftGrey element-sort">
+          MapListHeader.views
+        </span></div>
+    </div>
+    <div class="viz-column--share">
+      <div class="cell cell--small"><span class="text is-small is-txtSoftGrey element-sort">
+          MapListHeader.privacy
+        </span></div>
+      <div class="cell cell--end"></div>
+    </div>
+  </div>
+</div>
+`;

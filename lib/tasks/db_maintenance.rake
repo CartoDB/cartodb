@@ -204,7 +204,6 @@ namespace :cartodb do
       }, threads, thread_sleep, database_host)
     end
 
-
     ########################
     # LOAD CARTODB FUNCTIONS
     ########################
@@ -248,8 +247,6 @@ namespace :cartodb do
 
     desc 'Upgrade cartodb postgresql extension'
     task :upgrade_postgres_extension, [:database_host, :version, :sleep, :statement_timeout] => :environment do |task_name, args|
-      raise "Sample usage: rake cartodb:db:upgrade_postgres_extension['127.0.0.1','0.5.2']" if args[:database_host].blank? or args[:version].blank?
-
       # Send this as string, not as number
       extension_version = args[:version]
       database_host = args[:database_host]
@@ -257,14 +254,17 @@ namespace :cartodb do
       statement_timeout = args[:statement_timeout].blank? ? 180000 : args[:statement_timeout] # 3 min by default
 
       puts "Upgrading cartodb extension with following config:"
-      puts "extension_version: #{extension_version}"
-      puts "database_host: #{database_host}"
+      puts "extension_version: #{extension_version || 'LATEST'}"
+      puts "database_host: #{database_host || 'ALL'}"
       puts "sleep: #{sleep}"
       puts "statement_timeout: #{statement_timeout}"
 
-      count = ::User.where(database_host: database_host).count
+      query = User
+      query = query.where(database_host: database_host) if database_host
 
-      ::User.where(database_host: database_host).order(Sequel.asc(:created_at)).each_with_index do |user, i|
+      count = query.count
+
+      query.order(Sequel.asc(:created_at)).each_with_index do |user, i|
         begin
           # We grant 2 x statement_timeout, by default 6 min
           Timeout::timeout(statement_timeout/1000 * 2) do
@@ -747,23 +747,19 @@ namespace :cartodb do
       page_size = args[:page_size].blank? ? 999999 : args[:page_size].to_i
       page = args[:page].blank? ? 1 : args[:page].to_i
 
-      require_relative '../../app/models/visualization/collection'
-
       progress_each =  (page_size > 10) ? (page_size / 10).ceil : 1
-      collection = CartoDB::Visualization::Collection.new
 
       begin
-        items = collection.fetch(page: page, per_page: page_size)
+        items = Carto::VisualizationQueryBuilder.new.build_paged(page, page_size)
 
         count = items.count
         puts "\n>Running :create_default_vis_permissions for page #{page} (#{count} vis)" if count > 0
-        items.each_with_index { |vis, i|
-          puts ">Processed: #{i}/#{count} - page #{page}" if i % progress_each == 0
+        items.each do |vis|
           if vis.permission_id.nil?
             begin
               raise 'No owner' if vis.user.nil?
               # Just saving will trigger the permission creation
-              vis.send(:do_store, false)
+              vis.save!
               puts "OK #{vis.id}"
             rescue => e
               owner_id = vis.user.nil? ? 'nil' : vis.user.id
@@ -772,7 +768,7 @@ namespace :cartodb do
               log(message, :create_default_vis_permissions.to_s)
             end
           end
-        }
+        end
         page += 1
       end while count > 0
 
@@ -1169,7 +1165,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Organization.where(name: args[:organization_name]).all : Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.setup_owner_permissions
+          owner.db_service.grant_admin_permissions
         rescue => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end
@@ -1385,6 +1381,46 @@ namespace :cartodb do
           end
         rescue => e
           puts "Error trying to give DO quota to #{u.username}: #{e.message}"
+        end
+      end
+    end
+
+    desc 'Fix analysis table the_geom type'
+    task fix_analysis_the_geom_type: [:environment] do
+      total_users = User.count
+      current = 0
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        puts "User #{current += 1} / #{total_users}"
+        next if user.organization && user.organization.owner != user # Filter out admin not owner users
+        begin
+          user.in_database do |db|
+            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns WHERE f_table_name LIKE 'analysis%' AND type = 'MULTIPOLYGON'").map { |r| { schema: r[:f_table_schema], table: r[:f_table_name] } }.each do |entry|
+              db.execute("UPDATE \"#{entry[:schema]}\".\"#{entry[:table]}\" SET the_geom = ST_Multi(the_geom) where ST_GeometryType(the_geom) = 'ST_Polygon'")
+            end
+          end
+        rescue => e
+          puts "Error processing user #{user.username}: #{e.inspect}"
+        end
+      end
+    end
+
+    desc 'Fix analysis table the_geom type for batch geocoding bug (dataservices-api#538)'
+    task fix_batch_geocoding_the_geom_type: [:environment] do
+      total_users = User.count
+      current = 0
+      User.where.use_cursor(rows_per_fetch: 100).each do |user|
+        puts "User #{current += 1} / #{total_users}"
+        next if user.organization && user.organization.owner != user # Filter out admin not owner users
+        begin
+          user.in_database(as: :superuser) do |db|
+            db.fetch("SELECT DISTINCT f_table_schema, f_table_name FROM geometry_columns " \
+                     "WHERE f_table_name LIKE 'analysis_1ea6dec9f3_%' AND type = 'MULTIPOLYGON'").each do |entry|
+              db.execute("ALTER TABLE \"#{entry[:f_table_schema]}\".\"#{entry[:f_table_name]}\" " \
+                         "ALTER COLUMN the_geom TYPE geometry(Point, 4326)")
+            end
+          end
+        rescue StandardError => e
+          puts "Error processing user #{user.username}: #{e.inspect}"
         end
       end
     end

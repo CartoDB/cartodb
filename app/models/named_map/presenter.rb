@@ -34,7 +34,7 @@ module CartoDB
       end
 
       # Prepare a PORO (Hash object) for easy JSONification
-      # @see https://github.com/CartoDB/cartodb.js/blob/privacy-maps/doc/vizjson_format.md
+      # @see https://github.com/CartoDB/carto.js/blob/privacy-maps/doc/vizjson_format.md
       # @throws NamedMapsPresenterError
       def to_poro
         if @visualization.layers(:cartodb).size == 0

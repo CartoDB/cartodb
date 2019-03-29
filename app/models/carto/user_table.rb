@@ -13,11 +13,9 @@ module Carto
       PRIVACY_LINK => 'link'
     }.freeze
 
-    def self.column_defaults
-      # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
-      # so the `before_validation` hook sets an appropriate privacy based on the table owner
-      super.merge("privacy" => nil)
-    end
+    # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
+    # so the `before_validation` hook sets an appropriate privacy based on the table owner
+    attribute 'privacy', Type::Integer.new, default: nil
 
     # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
     # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour
@@ -116,6 +114,10 @@ module Carto
       affected_visualizations.select { |v| v.dependent_on?(self) }
     end
 
+    def affected_visualizations
+      layers.map(&:visualization).uniq.compact
+    end
+
     def name_for_user(other_user)
       is_owner?(other_user) ? name : fully_qualified_name
     end
@@ -204,10 +206,15 @@ module Carto
       automatic_geocodings.first
     end
 
+    def is_owner?(user)
+      return false unless user
+      user_id == user.id
+    end
+
     private
 
     def default_privacy_value
-      user.try(:private_tables_enabled) ? PRIVACY_PRIVATE : PRIVACY_PUBLIC
+      user.try(:default_table_privacy)
     end
 
     def set_default_table_privacy
@@ -216,15 +223,6 @@ module Carto
 
     def fully_qualified_name
       "\"#{user.database_schema}\".#{name}"
-    end
-
-    def is_owner?(user)
-      return false unless user
-      user_id == user.id
-    end
-
-    def affected_visualizations
-      layers.map(&:visualization).uniq.compact
     end
 
     def visualization_readable_by?(user)

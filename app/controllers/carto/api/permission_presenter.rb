@@ -21,7 +21,9 @@ module Carto
 
         owner = @presenter_cache.get_poro(@permission.owner) do
           Carto::Api::UserPresenter.new(@permission.owner,
-                                        fetch_groups: fetch_user_groups, current_viewer: current_viewer)
+                                        fetch_groups: fetch_user_groups,
+                                        current_viewer: current_viewer,
+                                        fetch_profile: false)
         end
 
         {
@@ -31,13 +33,18 @@ module Carto
             id:       @permission.visualization.id,
             type:     'vis'
           },
-          acl:        @permission.acl.map do |entry|
-            {
-              type:   entry[:type],
-              entity: entity_decoration(entry),
-              access: entry[:access]
-            }
-          end,
+          acl:        @permission.acl.map { |entry|
+            entity = entity_decoration(entry)
+            if entity.blank?
+              nil
+            else
+              {
+                type:   entry[:type],
+                entity: entity,
+                access: entry[:access]
+              }
+            end
+          }.reject(&:nil?),
           created_at: @permission.created_at,
           updated_at: @permission.updated_at
         }

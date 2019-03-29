@@ -110,7 +110,9 @@ module CartoDB
         calls = []
         matching_months_date = date_from.beginning_of_month
         while matching_months_date <= date_to
-          calls = calls.concat $users_metadata.zscan(redis_key, 0, match: "#{matching_months_date.strftime('%Y%m')}*")
+          $users_metadata.zscan_each(redis_key, match: "#{matching_months_date.strftime('%Y%m')}*") do |key|
+            calls.push(key)
+          end
           matching_months_date += 1.month
         end
 

@@ -1,21 +1,20 @@
 language: node_js
-node_js:
-  - "6.9.2"
-
-before_install:
-  - git submodule update --init --recursive
-
-install:
-  - npm install
-
-before_script:
-  - npm install -g npm@3.10.9
-  - npm install -g grunt-cli
-
-script:
-  - grunt test
-
+dist: trusty
+addons:
+  chrome: stable
 notifications:
   email:
     on_success: never
     on_failure: change
+
+jobs:
+  include:
+    - node_js:
+        - "10"
+      before_install:
+        - git submodule update --init --recursive
+        - git fetch origin master:refs/remotes/origin/master --depth=1
+      install:
+        - npm ci # clean install
+      script:
+        - npm run ci # run tests

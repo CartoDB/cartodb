@@ -24,7 +24,7 @@ module Carto
     ].freeze
 
     BUILDER_COMPATIBLE_TYPES = ['search', 'layer_selector', 'share', 'fullscreen', 'loader', 'logo', 'zoom'].freeze
-    scope :builder_incompatible, where("type NOT IN ('#{BUILDER_COMPATIBLE_TYPES.join("','")}')")
+    scope :builder_incompatible, -> { where("type NOT IN ('#{BUILDER_COMPATIBLE_TYPES.join("','")}')") }
 
     def hide
       options['display'] = false
@@ -67,9 +67,9 @@ module Carto
     end
 
     def invalidate_cache
-      CartoDB::Visualization::Member.new(id: visualization_id).fetch.invalidate_cache
-    rescue KeyError
-      # This happens during creation, as the overlays are created before the visualization
+      # Using `send` to avoid making it public. A future refactor should make this call unnecessary
+      # Visualization might not exist during creation, as the overlays are created before the visualization
+      visualization.try(:invalidate_after_commit)
     end
   end
 end

@@ -7,6 +7,15 @@ RSpec.configure do |c|
   c.include Helpers
 end
 describe CartoDB::DataMover::ExportJob do
+  def stub_api_keys
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_org_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_org_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_api_key_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:create_user_oauth_app_user_roles)
+    CartoDB::DataMover::ImportJob.any_instance.stubs(:grant_user_oauth_app_user_roles)
+  end
+
   before :each do
     bypass_named_maps
     @tmp_path = Dir.mktmpdir("mover-test") + '/'
@@ -35,6 +44,10 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   describe "a migrated user" do
+    before(:each) do
+      stub_api_keys
+    end
+
     subject do
       create_tables(first_user)
       first_user.save
@@ -98,7 +111,7 @@ describe CartoDB::DataMover::ExportJob do
   it "should move a user from an organization to its own account" do
     org = create_user_mover_test_organization
     user = create_user(
-      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
     org.reload
     create_tables(user)
@@ -118,45 +131,46 @@ describe CartoDB::DataMover::ExportJob do
   it "should move a whole organization" do
     port = find_available_port
     run_test_server(port)
-    Cartodb.config[:org_metadata_api]['port'] = port
-    Cartodb.config[:org_metadata_api]['host'] = '127.0.0.1'
 
-    org = create_user_mover_test_organization
-    user = create_user(
-      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
-    )
-    user.save
-    org.reload
+    test_config = Cartodb.get_config(:org_metadata_api).merge('host' => '127.0.0.1', 'port' => port)
+    Cartodb.with_config(org_metadata_api: test_config) do
+      org = create_user_mover_test_organization
+      user = create_user(
+        quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
+      )
+      user.save
+      org.reload
 
-    create_tables(org.owner)
-    share_tables(org.owner, user)
-    share_tables(user, org.owner)
-    create_tables(user)
+      create_tables(org.owner)
+      share_tables(org.owner, user)
+      share_tables(user, org.owner)
+      create_tables(user)
 
-    carto_org = Carto::Organization.find(org.id)
-    group_1 = carto_org.create_group(String.random(5))
-    group_2 = carto_org.create_group(String.random(5))
+      carto_org = Carto::Organization.find(org.id)
+      group_1 = carto_org.create_group(String.random(5))
+      group_2 = carto_org.create_group(String.random(5))
 
-    group_1.add_user(org.owner.username)
-    group_2.add_user(org.owner.username)
-    group_1.add_user(user.username)
-    group_2.add_user(user.username)
+      group_1.add_user(org.owner.username)
+      group_2.add_user(org.owner.username)
+      group_1.add_user(user.username)
+      group_2.add_user(user.username)
 
-    share_group_tables(org.owner, group_1)
-    share_group_tables(user, group_2)
+      share_group_tables(org.owner, group_1)
+      share_group_tables(user, group_2)
 
-    CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path, split_user_schemas: false)
-    CartoDB::UserModule::DBService.terminate_database_connections(org.owner.database_name, org.owner.database_host)
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
-    CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
+      CartoDB::DataMover::ExportJob.new(organization_name: org.name, path: @tmp_path, split_user_schemas: false)
+      CartoDB::UserModule::DBService.terminate_database_connections(org.owner.database_name, org.owner.database_host)
+      CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :rollback, drop_database: true, drop_roles: true).run!
+      CartoDB::DataMover::ImportJob.new(file: @tmp_path + "org_#{org.id}.json", mode: :import, host: '127.0.0.2').run!
 
-    moved_user = ::User.find(username: user.username)
-    moved_user.reload
-    moved_user.database_host.should eq '127.0.0.2'
-    Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
-    check_tables(moved_user)
-    moved_user.in_database['SELECT * FROM cdb_tablemetadata']
-    moved_user.organization_id.should_not eq nil
+      moved_user = ::User.find(username: user.username)
+      moved_user.reload
+      moved_user.database_host.should eq '127.0.0.2'
+      Carto::GhostTablesManager.new(moved_user.id).link_ghost_tables_synchronously
+      check_tables(moved_user)
+      moved_user.in_database['SELECT * FROM cdb_tablemetadata']
+      moved_user.organization_id.should_not eq nil
+    end
 
     @server_thread.terminate
   end
@@ -165,7 +179,7 @@ describe CartoDB::DataMover::ExportJob do
 
     org = create_user_mover_test_organization
     user = create_user(
-      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org
+      quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
     user.save
     org.reload
@@ -191,6 +205,7 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   it "should not touch an user metadata nor update its oids when update_metadata is not set" do
+    stub_api_keys
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 50, private_tables_enabled: true, sync_tables_enabled: true
     )

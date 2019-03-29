@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MapBulkActions.vue should render all bulk actions 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.changePrivacy
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.duplicate
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.lock
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.unlock
+  </button><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.maps.delete
+  </button></section>
+`;
+
+exports[`MapBulkActions.vue should render all multiple actions for all selected "Deselect all", "Lock" and "Delete" actions 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.lock
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.maps.delete
+  </button></section>
+`;
+
+exports[`MapBulkActions.vue should render all multiple actions: "Select all", "Deselect all", "Lock", "Delete" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.lock
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.maps.delete
+  </button></section>
+`;
+
+exports[`MapBulkActions.vue should render all single actions: "Select all", "Create map", "Change privacy", "Duplicate", "Lock", "Delete" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.changePrivacy
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.duplicate
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.lock
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost is-txtAlert">
+    BulkActions.maps.delete
+  </button></section>
+`;
+
+exports[`MapBulkActions.vue should render multiple locked action: "Unlock" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAll
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.unlock
+  </button>
+  <!---->
+</section>
+`;
+
+exports[`MapBulkActions.vue should render single locked action: "Unlock" 1`] = `
+<section class="bulk-actions"><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.selectAll
+  </button><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.deselectAll
+  </button>
+  <!----><button class="bulk-actions__button button button--ghost">
+    BulkActions.maps.unlock
+  </button>
+  <!---->
+</section>
+`;

@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_record/connection_adapters/postgresql/oid/json'
 require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
@@ -36,9 +37,11 @@ module Carto
     def tables_from_query(query)
       query.present? ? tables_from_names(affected_table_names(query), user) : []
     rescue => e
-      # INFO: this covers changes that CartoDB can't track.
+      # INFO: this covers changes that CartoDB can't track, so we must handle it gracefully.
       # For example, if layer SQL contains wrong SQL (uses a table that doesn't exist, or uses an invalid operator).
-      CartoDB::Logger.debug(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
+      # This warning level is checked in tests to ensure that embed view does not need user DB connection,
+      # so we need to keep it (or change the tests accordingly)
+      CartoDB::Logger.warning(message: 'Could not retrieve tables from query', exception: e, user: user, layer: self)
       []
     end
 
@@ -57,6 +60,10 @@ module Carto
     include LayerTableDependencies
     include Carto::QueryRewriter
 
+    attribute :options, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :infowindow, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :tooltip, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
     serialize :tooltip, CartoJsonSerializer
@@ -70,11 +77,8 @@ module Carto
     has_many :layers_user_tables, dependent: :destroy
     has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
 
-    has_many :widgets, class_name: Carto::Widget, order: '"order"'
-    has_many :legends,
-             class_name: Carto::Legend,
-             dependent: :destroy,
-             order: :created_at
+    has_many :widgets, -> { order(:order) }, class_name: Carto::Widget
+    has_many :legends, -> { order(:created_at) }, class_name: Carto::Legend, dependent: :destroy
 
     has_many :layer_node_styles
 
@@ -102,7 +106,7 @@ module Carto
       maps.reload if persisted?
 
       return unless order.nil?
-      max_order = parent.layers.reload.map(&:order).compact.max || -1
+      max_order = parent.layers.map(&:order).compact.max || -1
       self.order = max_order + 1
       save if persisted?
     end
@@ -110,7 +114,6 @@ module Carto
     # Sequel model compatibility (for TableBlender)
     # TODO: Remove this after `::UserTable` deletion, and inline into TableBlender
     def add_map(map)
-      CartoDB::Logger.debug(message: 'Adding map to Carto::Layer with legacy method')
       map.layers << self
     end
 
@@ -197,7 +200,7 @@ module Carto
     end
 
     def supports_labels_layer?
-      basemap? && options["labels"] && options["labels"]["url"]
+      basemap? && options["labels"] && options["labels"]["urlTemplate"]
     end
 
     def map
@@ -290,6 +293,9 @@ module Carto
     end
 
     def after_added_to_map(map)
+      # This avoids unnecessary operations for in-memory logic. Example: Mapcap recreation. See #12473.
+      return unless map.persisted?
+
       set_default_order(map)
       register_table_dependencies
     end

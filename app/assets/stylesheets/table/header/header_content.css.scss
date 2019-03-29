@@ -1,253 +1,264 @@
 
 
-  /**
+/**
    * Table header content styles
    *
    *  - It contents the styles of the table/vis header
    *    (description, title, tags, options, ...)
    */
 
-  @import "compass/css3/inline-block";
-  @import "compass/css3/border-radius";
-  @import "compass/css3/images";
-  @import "compass/css3/opacity";
-  @import "../../old_common/mixins";
-  @import "../../old_common/vars";
-  @import "../../old_common/common-sprite";
-  @import "../../table/table-sprite";
+@import "compass/css3/inline-block";
+@import "compass/css3/border-radius";
+@import "compass/css3/images";
+@import "../../old_common/mixins";
+@import "../../old_common/vars";
+@import "../../old_common/common-sprite";
+@import "../../table/table-sprite";
 
-  $text-shadow-color: rgba(black,0.25);
+$text-shadow-color: rgba(black, 0.25);
 
+.header_content {
+  div.left {
+    position: relative;
+    z-index: 10;
+    width: 65%;
+    height: auto;
+    margin-left: 17px;
 
-  .header_content {
+    // Back button
+    a.back {
+      display: inline-block;
+      width: 14px;
+      height: 13px;
+      margin: 0;
+      opacity: 0.5;
+      vertical-align: top;
 
-    div.left {
-      position:relative;
-      width:65%;
-      height:auto;
-      margin-left:17px;
-      z-index: 10;
+      @include table-sprite(back);
+      @include text-indent();
 
-      // Back button
-      a.back {
-        @include inline-block();
-        width:14px;
-        height:13px;
-        margin:0;
-        @include table-sprite(back);
-        @include text-indent();
-        @include opacity(.5);
+      &:focus,
+      &:hover {
+        outline: none;
 
-        &:focus,&:hover {
-          outline:none;
-          @include opacity(1);
+        opacity: 1;
+      }
+    }
+
+    // Vis type icon
+    span.type {
+      display: inline-block;
+      width: 23px;
+      height: 18px;
+      margin: 2px 0 0 12px;
+      text-indent: -9999px;
+      vertical-align: top;
+      vertical-align: middle;
+      &.table { @include table-sprite(vis_type, $offset-y:0); }
+      &.derived { @include table-sprite(vis_type, $offset-y:-18); }
+    }
+
+    // Visualization title
+    h1 {
+      position: relative;
+      margin: 0;
+
+      a {
+        &.title {
+          display: block;
+          width: auto;
+          max-width: 440px;
+          height: auto;
+          margin: 0 0 1px 8px;
+          padding: 0;
+          background: none;
+          color: white;
+          font: 500 1.313em $title-fonts2;
+          line-height: normal;
+          text-indent: 0;
+          text-shadow: 0 1px $text-shadow-color;
+          text-transform: none;
+          white-space: nowrap;
+
+          @include text-overflow();
+
+          &.disabled { opacity: 1; }
+        }
+
+        &.logo {
+          margin: 1px 0 0 24px;
         }
       }
+    }
 
-      // Vis type icon
-      span.type {
-        @include inline-block();
-        vertical-align: middle;
-        width:23px;
-        height:18px;
-        margin:2px 0 0 12px;
-        text-indent:-9999px;
-        &.table { @include table-sprite(vis_type, $offset-y:0); }
-        &.derived { @include table-sprite(vis_type, $offset-y:-18) }
+    // Public vis title
+    h2 {
+      width: auto;
+      height: auto;
+      margin: 0 0 0 10px;
+      padding: 0;
+      color: white;
+      font: 500 20px $title-fonts2;
+      letter-spacing: 0;
+      line-height: normal;
+      text-shadow: 0 1px $text-shadow-color;
+
+      &::before {
+        content: '|';
+        margin-right: 10px;
+        color: rgba(white, 0.25);
+        font-weight: 300 !important;
+        text-shadow: none;
       }
+    }
 
-      // Visualization title
-      h1 {
-        position:relative;
-        margin:0;
+    // Clear view button type
+    a.button_header {
+
+      display: inline-block;
+      margin: 3px 0 0 10px;
+      vertical-align: top;
+      &.clearview { display: none; }
+    }
+
+    // Metadata
+    div.metadata {
+      display: block;
+      width: 200px;
+      margin: 0 0 0 11px;
+
+      p {
+        display: inline-block;
+        width: auto;
+        padding-left: 15px;
+        color: rgba(#FFF, 0.5);
+        font-size: 0.938em;
+        font-style: italic;
+        font-weight: 300;
+        vertical-align: top;
+
+        &.public { margin-left: 116px; }
+
+        em { font-style: italic; }
+
+        .link { text-decoration: underline; }
 
         a {
-          &.title {
-            display:block;
-            max-width:440px;
-            width:auto;
-            height:auto;
-            margin:0 0 1px 8px;
-            padding:0;
-            font:500 1.313em $title-fonts2;
-            color:white;
-            @include text-overflow();
-            white-space:nowrap;
-            text-shadow:0 1px $text-shadow-color;
-            background:none;
-            text-indent:0;
-            line-height:normal;
-            text-transform: none;
-
-            &.disabled {@include opacity(1)}
-          }
-          &.logo {
-            margin:1px 0 0 24px;
-          }
-        }
-      }
-
-      // Public vis title
-      h2 {
-        width:auto;
-        height:auto;
-        margin:0 0 0 10px;
-        padding:0;
-        font:500 20px $title-fonts2;
-        color:white;
-        text-shadow:0 1px $text-shadow-color;
-        letter-spacing:0;
-        line-height:normal;
-
-        &:before {
-          content:'|';
-          margin-right:10px;
-          font-weight:300!important;
-          text-shadow:none;
-          color: rgba(white, 0.25);
-        }
-      }
-
-      // Clear view button type
-      a.button_header {
-        margin:3px 0 0 10px;
-        @include inline-block();
-        &.clearview {display:none;}
-      }
-
-      // Metadata
-      div.metadata {
-        display:block;
-        margin: 0 0 0 11px;
-        width: 200px;
-
-        p {
-          @include inline-block();
-          width:auto;
-          font-size: 0.938em;
-          font-weight:300;
-          color: rgba(255, 255, 255, 0.5);
-          font-style: italic;
-          padding-left:15px;
-
-          &.public { margin-left:116px }
-
-          em { font-style: italic; }
-
-          .link { text-decoration: underline; }
-
-          a {
-            font-style:normal;
-            font-weight:300;
-            color: rgba(255, 255, 255, 0.5);
-            &:hover { cursor:pointer; color:rgba(255, 255, 255, 1); }
-            &.disabled {@include opacity(1)}
-          }
-        }
-      }
-    }
-
-    // Actions list
-    ul.actions {
-      @include display-flex();
-      @include justify-content(flex-start, start);
-      @include align-items(center, center);
-      height:28px;
-      margin:0;
-
-      li { margin:0; }
-
-      .privacy {
-
-        margin-left: 11px;
-
-        &.public             i { background: rgba(#D0DDA5, .9) sprite( $table-sprites, lock_open,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.link_protected     i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
-        &.password_protected i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_key,    $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.organization       i { background: rgba(#F7CB9E, .9) sprite( $table-sprites, lock_user,   $offset-x: 5px, $offset-y: 4px) no-repeat; }
-        &.private            i { background: rgba(#F2ACAC, .9) sprite( $table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
-
-        &.public:hover            i { background-color: rgba(#D0DDA5, 1); }
-        &.link_protected:hover    i { background-color: rgba(#F7D0A8, 1); }
-        &.password_protected:hoveri { background-color: rgba(#F7D0A8, 1); }
-        &.organization:hover      i { background-color: rgba(#F7D0A8, 1); }
-        &.private:hover           i { background-color: rgba(#F2ACAC, 1); }
-
-        i {
-          @include inline-block();
-          margin: 0;
-          height: 20px;
-          background: rgba(#EEE, .8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
-          @include simple-transition(all, 150ms);
-          @include border-radius(3px);
-
-          &.disabled {
-            @include opacity(0.5);
-            &:hover { cursor:default }
-          }
-        }
-
-      }
-    }
-
-    // Options menu
-    ul.options {
-      position:absolute;
-      top:0;
-      right: 0;
-      width:auto;
-      margin:5px 35px 0 0;
-
-      li {
-        position:relative;
-        padding:0;
-        margin:0;
-
-        a.share {
-          line-height:20px;
-          padding: 0 20px;
-          text-shadow: none;
-          color: #fff;
-          @include box-shadow(none);
-          border-radius: 30px;
-          border: 2px solid #fff;
-          background:none;
-
-          span {
-            padding: 1px 0;
-            @include inline-block();
-            color: #fff;
-            font-size: 12px;
-          }
+          color: rgba(#FFF, 0.5);
+          font-style: normal;
+          font-weight: 300;
 
           &:hover {
-            span { text-decoration: underline; }
+            color: rgba(#FFF, 1);
+            cursor: pointer;
           }
-
+          &.disabled { opacity: 1; }
         }
-
-        &.dropdown { padding-right: 12px; }
-
-        &:after {
-          position:absolute;
-          content:'';
-          top:0px;
-          right:0;
-          margin:0;
-          width: 1px;
-          height: 16px;
-        }
-
-        &:last-child {
-          margin-left: 15px;
-          &:after { display:none; }
-        }
-
-        a {
-          display: block;
-          font-weight:300;
-        }
-
       }
     }
   }
+
+  // Actions list
+  ul.actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 28px;
+    margin: 0;
+
+    li { margin: 0; }
+
+    .privacy {
+
+      margin-left: 11px;
+
+      &.public i { background: rgba(#D0DDA5, 0.9) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+      &.link_protected i { background: rgba(#F7CB9E, 0.9) sprite($table-sprites, lock_open_2, $offset-x: 5px, $offset-y: 4px) no-repeat; } // lock_open_2 (so the transition between open locks work)
+      &.password_protected i { background: rgba(#F7CB9E, 0.9) sprite($table-sprites, lock_key, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+      &.organization i { background: rgba(#F7CB9E, 0.9) sprite($table-sprites, lock_user, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+      &.private i { background: rgba(#F2ACAC, 0.9) sprite($table-sprites, lock_closed, $offset-x: 5px, $offset-y: 4px) no-repeat; }
+
+      &.public:hover i { background-color: rgba(#D0DDA5, 1); }
+      &.link_protected:hover i { background-color: rgba(#F7D0A8, 1); }
+      &.password_protected:hover i { background-color: rgba(#F7D0A8, 1); }
+      &.organization:hover i { background-color: rgba(#F7D0A8, 1); }
+      &.private:hover i { background-color: rgba(#F2ACAC, 1); }
+
+      i {
+        display: inline-block;
+        height: 20px;
+        margin: 0;
+        transition: all 150ms ease-in;
+        border-radius: 3px;
+        background: rgba(#EEE, 0.8) sprite($table-sprites, lock_open, $offset-x: 5px, $offset-y: 4px) no-repeat;
+        vertical-align: top;
+
+        &.disabled {
+          opacity: 0.5;
+          &:hover { cursor: default; }
+        }
+      }
+    }
+  }
+
+  // Options menu
+  ul.options {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: auto;
+    margin: 5px 35px 0 0;
+
+    li {
+      position: relative;
+      margin: 0;
+      padding: 0;
+
+      a.share {
+        padding: 0 20px;
+        border: 2px solid #FFF;
+        border-radius: 30px;
+        background: none;
+        box-shadow: none;
+        color: #FFF;
+        line-height: 20px;
+        text-shadow: none;
+
+        span {
+
+          display: inline-block;
+          padding: 1px 0;
+          color: #FFF;
+          font-size: 12px;
+          vertical-align: top;
+        }
+
+        &:hover {
+          span { text-decoration: underline; }
+        }
+      }
+
+      &.dropdown { padding-right: 12px; }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 1px;
+        height: 16px;
+        margin: 0;
+      }
+
+      &:last-child {
+        margin-left: 15px;
+        &::after { display: none; }
+      }
+
+      a {
+        display: block;
+        font-weight: 300;
+      }
+    }
+  }
+}

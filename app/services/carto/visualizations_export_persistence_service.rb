@@ -29,7 +29,7 @@ module Carto
         visualization.permission = Carto::Permission.new(owner: user, owner_username: user.username)
 
         map = visualization.map
-        map.user = user
+        map.user = user if map
 
         visualization.analyses.each do |analysis|
           analysis.user_id = user.id
@@ -37,16 +37,31 @@ module Carto
 
         sync = visualization.synchronization
         if sync
-          sync.id = random_uuid
+          sync.id = random_uuid unless sync.id && full_restore
           sync.user = user
-          sync.log.user_id = user.id
+          sync.log.user_id = user.id if sync.log
         end
 
-        user_table = visualization.map.user_table
+        user_table = visualization.map.user_table if map
         if user_table
           user_table.user = user
           user_table.service.register_table_only = true
           raise 'Cannot import a dataset without physical table' unless user_table.service.real_table_exists?
+
+          data_import = user_table.data_import
+          if data_import
+            existing_data_import = Carto::DataImport.where(id: data_import.id).first
+            user_table.data_import = existing_data_import if existing_data_import
+            data_import.synchronization_id = sync.id if sync
+            data_import.user_id = user.id
+          end
+        end
+
+        unless full_restore
+          visualization.mapcaps.clear
+          visualization.created_at = DateTime.now
+          visualization.updated_at = DateTime.now
+          visualization.locked = false
         end
 
         unless visualization.save
@@ -73,16 +88,24 @@ module Carto
           layer.save if changed
         end
 
-        map.data_layers.each(&:register_table_dependencies)
+        if map
+          map.data_layers.each(&:register_table_dependencies)
 
-        new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
-        new_user_layers.map(&:dup).map { |l| user.layers << l }
+          new_user_layers = map.base_layers.select(&:custom?).select { |l| !contains_equivalent_base_layer?(user.layers, l) }
+          new_user_layers.map(&:dup).map { |l| user.layers << l }
+          data_import = map.user_table.try(:data_import)
+          if data_import
+            data_import.table_id = map.user_table.id
+            data_import.save!
+            data_import.external_data_imports.each do |edi|
+              edi.synchronization_id = sync.id if sync
+              edi.save!
+            end
+          end
+        end
       end
 
-      # Propagate changes (named maps, default permissions and so on)
-      visualization_member = CartoDB::Visualization::Member.new(id: visualization.id).fetch
-      visualization_member.store
-
+      visualization.save!
       visualization
     end
 
@@ -114,25 +137,34 @@ module Carto
     end
 
     def apply_user_limits(user, visualization)
-      visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC unless user.private_maps_enabled
-      # Since password is not exported we must fallback to private
-      if visualization.privacy == Carto::Visualization::PRIVACY_PROTECTED
+      can_be_private = visualization.derived? ? user.private_maps_enabled : user.private_tables_enabled
+      unless can_be_private
+        visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+        visualization.user_table.privacy = Carto::UserTable::PRIVACY_PUBLIC if visualization.canonical?
+      end
+      # If password is not exported we must fallback to private
+      if visualization.password_protected? && !visualization.has_password?
         visualization.privacy = Carto::Visualization::PRIVACY_PRIVATE
       end
 
       layers = []
       data_layer_count = 0
-      visualization.map.layers.each do |layer|
-        if layer.data_layer?
-          if data_layer_count < user.max_layers
+
+      if visualization.map
+        visualization.map.layers.each do |layer|
+          if layer.data_layer?
+            if data_layer_count < user.max_layers
+              layers.push(layer)
+              data_layer_count += 1
+            end
+          else
             layers.push(layer)
-            data_layer_count += 1
           end
-        else
-          layers.push(layer)
         end
+        visualization.map.layers.clear
+        visualization.map.layers_maps.clear
+        layers.each { |l| visualization.map.layers << l }
       end
-      visualization.map.layers = layers
     end
   end
 end

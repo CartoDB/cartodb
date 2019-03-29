@@ -1,5 +1,5 @@
 
-<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', {}, current_user) : CartoDB.url(self, 'update_organization_user', {id: @user.username}, current_user)), :html => {:class => 'Form js-organizationUserForm CDB-Text'} do |f| %>
+<%= form_for @user, url: (@user.new? ? CartoDB.url(self, 'create_organization_user', user: current_user) : CartoDB.url(self, 'update_organization_user', params: { id: @user.username }, user: current_user)), :html => {:class => 'Form js-organizationUserForm CDB-Text'} do |f| %>
 
   <%= f.hidden_field :private_tables_enabled %>
   <%= hidden_field_tag :show_account_settings_flash, true %>
@@ -130,6 +130,26 @@
     </div>
   <% end %>
 
+  <% mfa_configured = @user.multifactor_authentication_configured? %>
+  <div class="FormAccount-row">
+    <div class="FormAccount-rowLabel">
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
+        Multi-factor authentication
+      </label>
+    </div>
+    <div class="FormAccount-rowData">
+      <div class="Toggler">
+        <%= f.check_box :mfa, id: "mfa", checked: mfa_configured %>
+        <%= label_tag(:mfa, '') %>
+      </div>
+      <div class="FormAccount-rowInfo u-lspace-23">
+        <p class="CDB-Text CDB-Size-small u-altTextColor">
+          If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <div class="user-quotas" style="display: none">
     <div class="FormAccount-title">
       <p class="FormAccount-titleText">User quotas</p>
@@ -141,7 +161,7 @@
       <div class="OrganizationUser-quota js-userQuota">
         <div class="FormAccount-rowData FormAccount-rowData--med OrganizationUser-quotaProgress js-userQuotaSlider">
           <div class="UISlider UserQuotaDropdown-slider js-slider progress-bar overflow-visible">
-          <% available_quota_for_user = @organization.unassigned_quota + current_user.quota_in_bytes %>
+          <% available_quota_for_user = @organization.unassigned_quota + @user.quota_in_bytes %>
             <% assignedPer = ((@user.quota_in_bytes.to_f * 100) / available_quota_for_user) %>
             <% if !@user.new? %>
               <% usedPer = ((@user.db_size_in_bytes.to_f * 100) / available_quota_for_user) %>
@@ -254,12 +274,12 @@
   <% if !@user.new? && current_user.organization_owner? && @user.engine_enabled? -%>
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User API key</label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">User master API key</label>
       </div>
       <div class="FormAccount-rowData">
         <%= f.text_field :api_key, :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled", :readonly => true %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <button class="CDB-Text CDB-Size-medium Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button">Regenerate API key</button>
+          <button class="CDB-Text CDB-Size-medium Button--link js-regenerateOrgUserApiKey" data-username="<%= @user.username %>" data-current_username="<%= current_user.username %>" type="button">Regenerate all API keys</button>
         </div>
       </div>
     </div>
@@ -268,14 +288,14 @@
   <% if @user.new? -%>
     <% if @organization.remaining_seats > 0 || @organization.remaining_viewer_seats > 0 %>
       <div class="FormAccount-footer u-justifyEnd">
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer">
         <p class="FormAccount-rowInfoText FormAccount-rowInfoText--maxWidth">You can't create new users because you've run out of seats. <a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.</p>
-        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled">
+        <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Create user</span>
         </button>
       </div>
@@ -283,17 +303,17 @@
   <% elsif @user.editable_by?(current_user) %>
     <% if @user != current_user %>
       <div class="FormAccount-footer">
-        <button href="<%= CartoDB.url(self, 'delete_organization_user', {id: @user.username}, current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
+        <button href="<%= CartoDB.url(self, 'delete_organization_user', params: { id: @user.username }, user: current_user) %>" type="button" class="CDB-Button CDB-Button--error js-deleteAccount">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete user</span>
         </button>
 
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button type="submit" class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>
     <% else %>
       <div class="FormAccount-footer u-justifyEnd">
-        <button type="submit" class="CDB-Button CDB-Button--primary">
+        <button class="CDB-Button CDB-Button--primary js-save">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save changes</span>
         </button>
       </div>

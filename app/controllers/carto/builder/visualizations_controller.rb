@@ -33,7 +33,7 @@ module Carto
         @layers_data = @visualization.layers.map do |l|
           Carto::Api::LayerPresenter.new(l, with_style_properties: true).to_poro(migrate_builder_infowindows: true)
         end
-        @vizjson = generate_anonymous_map_vizjson3(@visualization, vector: false)
+        @vizjson = generate_anonymous_map_vizjson3(@visualization)
         @state = @visualization.state.json
         @analyses_data = @visualization.analyses.map { |a| Carto::Api::AnalysisPresenter.new(a).to_poro }
         @basemaps = current_viewer.basemaps
@@ -60,7 +60,8 @@ module Carto
 
       def redirect_to_editor_if_forced
         if !current_user.builder_enabled? || @visualization.open_in_editor?
-          redirect_to CartoDB.url(self, 'public_visualizations_show_map', { id: params[:id] }, current_user)
+          redirect_to CartoDB.url(self, 'public_visualizations_show_map', params: { id: params[:id] },
+                                                                          user: current_user)
         end
       end
 
@@ -87,7 +88,8 @@ module Carto
       end
 
       def unauthorized
-        redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: request.params[:id])
+        redirect_to CartoDB.url(self, 'builder_visualization_public_embed',
+                                params: { visualization_id: request.params[:id] })
       end
 
       def track_builder_visit

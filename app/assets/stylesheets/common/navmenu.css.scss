@@ -1,5 +1,4 @@
 
-@import '../variables/mixins';
 @import '../variables/colors';
 @import '../variables/sizes';
 
@@ -8,37 +7,45 @@
 
 .Navmenu {
   position: relative;
-  border-bottom: 1px solid $cStructure-mainLine;
   overflow: hidden;
+  border-bottom: 1px solid $cStructure-mainLine;
 }
+
 .Navmenu.Navmenu--white {
   background: $cStructure-mainBkg;
 }
+
 .Navmenu.Navmenu--top {
   position: absolute;
   width: 100%;
 }
+
 .Navmenu.is-fixed {
   position: fixed;
+  z-index: 100;
   top: 0;
   width: 100%;
-  z-index: 100;
 }
+
 .Navmenu.Navmenu--borderless {
   border-bottom: none;
 }
+
 .Navmenu.Navmenu--borderless .Navmenu-item {
   position: relative;
 }
+
 .Navmenu.Navmenu--borderless .Navmenu-link {
   display: inline-block;
   line-height: 80px;
 }
+
 .Navmenu-link.is-selected {
   color: $cTypography-linkSelected;
   font-weight: bold;
 
-  &:before {
+  &::before {
+    content: '';
     position: absolute;
     right: 0;
     bottom: 0;
@@ -46,8 +53,8 @@
     width: 100%;
     height: 1px;
     background: #1181FB;
-    content: '';
   }
+
   &:hover {
     text-decoration: none;
     cursor: default;
@@ -58,47 +65,54 @@
   display: inline-block;
   height: 81px;
 }
-.Navmenu-list:before {
+
+.Navmenu-list::before {
+  content: '';
   display: inline-block;
   height: 100%;
-  content: '';
   vertical-align: middle;
 }
+
 .Navmenu-list.Navmenu-list--owner {
   float: left;
 }
+
 .Navmenu-list.Navmenu-list--avatar {
   margin-right: $sMargin-section;
 }
+
 .Navmenu-item {
   margin-right: $sMargin-section;
 }
+
 .Navmenu-subItem {
   margin-left: $sMargin-group;
 }
+
 .Navmenu-item.Navmenu-item:last-child {
   margin-right: 0;
 }
+
 .Navmenu-item.Navmenu-item--buttons {
   position: relative;
   top: 3px;
 }
-.Navmenu-item.Navmenu-item--like {
-  position: relative;
-  top: 2px;
-}
+
 .Navmenu-item.Navmenu-item--withsep {
   position: relative;
 }
+
 .Navmenu-subItem.Navmenu-subItem:first-child {
   margin-left: 0;
 }
+
 .Navmenu-item,
 .Navmenu-subItem {
   display: inline-block;
   text-transform: uppercase;
   vertical-align: middle;
 }
+
 .Navmenu-rarrow {
   position: relative;
   top: -1px;
@@ -109,15 +123,17 @@
   color: $cNavmenu-arrow;
   font-size: 6px;
 }
+
 .Navmenu-separator {
   position: absolute;
+  z-index: 0;
   top: 80px;
   left: 0;
   width: 100%;
   height: 1px;
   background-color: $cStructure-softLine;
-  z-index: 0;
 }
+
 .Navmenu-sep {
   display: inline-block;
   position: absolute;
@@ -128,22 +144,26 @@
   margin-left: -20px;
   background-color: $cNavmenu-sep;
 }
+
 .Navmenu-link {
   transition: all 0.3s;
   color: $cTypography-linkSecondary;
 }
+
 .Navmenu-link:hover {
   color: $cTypography-linkSecondaryHover;
   text-decoration: none;
 }
+
 .Navmenu-link.Navmenu-link--owner {
-  float: left;
-  text-overflow: ellipsis;
-  max-width: 150px;
   display: inline-block;
-  white-space: nowrap;
+  max-width: 150px;
+  float: left;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
 .Navmenu-link--action,
 .Navmenu-item--action {
   color: #0090D7;
@@ -152,22 +172,27 @@
     color: #007FBD;
   }
 }
+
 .Navmenu-icon {
   transition: all 0.2s;
   color: #BEC5C9;
   font-size: $sFontSize-largest;
 }
+
 .Navmenu-icon:hover {
-  color: #AAAAAA;
+  color: #AAA;
 }
+
 .Navmenu-icon.Navmenu-icon--twitter {
   position: relative;
   top: -2px;
   font-size: 22px;
 }
+
 .Navmenu-hireLink:hover {
-  color: #FFFFFF;
+  color: #FFF;
 }
+
 .Navmenu-editLink {
   display: none;
   width: auto;
@@ -184,60 +209,73 @@
   &.Navmenu-editLink--create,
   &.Navmenu-editLink--edit {
     border-color: #0090D7;
-    color: #FFFFFF;
+    color: #FFF;
   }
 }
+
 .Navmenu-editLink.Navmenu-editLink--edit {
   margin-left: $sMargin-section;
   border-color: #0090D7;
-  color: #FFFFFF;
+  color: #FFF;
 }
+
 .Navmenu-editLink.Navmenu-editLink--oneclick {
   margin-left: 0;
 }
+
 .Navmenu-editLink.Navmenu-editLink--more {
+  box-sizing: border-box;
   width: 100%;
   margin-top: 20px;
   padding: 0 16px;
   border-radius: 28px;
-  box-sizing: border-box;
 }
+
 .Navmenu-editLink.Navmenu-editLink--more:hover {
   border-color: $cNavButton-active;
   color: $cNavButton-active;
 }
+
 .Navmenu-editLink:hover {
   text-decoration: none;
 }
+
 .Navmenu-editLink.is-active {
   display: inline-block;
 }
+
 .Navmenu-share {
   display: inline-block;
   vertical-align: middle;
 }
+
 .Navmenu-shareLink {
   display: none;
   position: relative;
   top: 2px;
   margin-right: $sMargin-elementInline;
 }
+
 .Navmenu-shareList {
   display: inline-block;
   transition: all 0.2s;
 }
+
 .Navmenu-closeLink {
   position: relative;
   top: -2px;
 }
+
 .Navmenu-actionIcon {
   margin-right: 5px;
   font-size: 10px;
 }
+
 .Navmenu-tableIcon {
   position: relative;
   top: -2px;
 }
+
 div.cartodb-timeslider {
   margin-bottom: 0;
 }
@@ -246,24 +284,29 @@ div.cartodb-timeslider {
   .Navmenu-shareLink {
     display: inline-block;
   }
+
   .Navmenu-shareList {
     display: block;
     position: absolute;
     right: 10px;
     height: 81px;
     margin-top: 0;
-    background: #FFFFFF;
+    background: #FFF;
   }
+
   .Navmenu-shareList.is-active {
     width: 200%;
     margin-top: -81px;
   }
+
   .Navmenu-sep {
     top: 0;
   }
+
   .Navmenu-item.Navmenu-item.last-child {
     margin-right: 0;
   }
+
   .Navmenu-editLink {
     display: block;
   }

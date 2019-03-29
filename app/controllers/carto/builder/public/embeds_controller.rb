@@ -21,13 +21,20 @@ module Carto
                       :load_google_maps_qs, only: [:show, :show_protected]
 
         skip_before_filter :builder_users_only # This is supposed to be public even in beta
+        skip_before_filter :verify_authenticity_token, only: [:show_protected]
 
         layout false
 
         def show
+          @viz_owner_base_url = @visualization.user.public_url
+
           @layers_data = visualization_for_presentation.layers.map do |l|
             Carto::Api::LayerPresenter.new(l).to_embed_poro
           end
+
+          response.headers['X-Cache-Channel'] = "#{@visualization.varnish_key}:vizjson"
+          response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@visualization.surrogate_key}"
+          response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
 
           render 'show', layout: 'application_public_visualization_layout'
         end
@@ -64,11 +71,8 @@ module Carto
         end
 
         def load_vizjson
-          options = {}
-          if @visualization.user.has_feature_flag?('vector_vs_raster')
-            options[:vector] = nil
-          end
-          @vizjson = generate_named_map_vizjson3(visualization_for_presentation, options)
+          vis = visualization_for_presentation
+          @vizjson = generate_named_map_vizjson3(vis)
         end
 
         def load_state
@@ -107,7 +111,7 @@ module Carto
 
         def redirect_to_old_embed_if_v2
           if @visualization.version != 3
-            redirect_to CartoDB.url(self, 'public_visualizations_embed_map', id: @visualization.id)
+            redirect_to CartoDB.url(self, 'public_visualizations_embed_map', params: { id: @visualization.id })
           end
         end
       end

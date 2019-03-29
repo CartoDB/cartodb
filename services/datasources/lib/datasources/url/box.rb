@@ -230,10 +230,10 @@ module CartoDB
           end
 
           def ensure_id(item)
-            return item if item.class == String || item.class == Fixnum || item.nil?
+            return item if item.class == String || item.class == Integer || item.nil?
             return item.id if item.respond_to?(:id)
             return item['id'] if item.class == Hash
-            raise "Expecting an id of class String or Fixnum, or object that responds to :id"
+            raise "Expecting an id of class String or Integer, or object that responds to :id"
           end
 
           def get(uri, options = {})
@@ -374,7 +374,7 @@ module CartoDB
           self.filter = filter
 
           # Box doesn't have a way to "retrieve everything" but it supports whitespaces for multiple search terms
-          result = client.search(SUPPORTED_EXTENSIONS.join(' '),
+          result = client.search(supported_extensions.join(' '),
                                  scope: nil,
                                  file_extensions: nil,
                                  created_at_range: nil,

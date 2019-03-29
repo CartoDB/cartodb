@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require_dependency 'carto/db/connection'
 
 module Carto
   class UserService
@@ -15,6 +16,8 @@ module Carto
 
     # Only returns owned tables (not shared ones)
     def table_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_CANONICAL)
@@ -23,6 +26,8 @@ module Carto
     end
 
     def owned_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_user_id(@user.id)
                                       .with_type(Carto::Visualization::TYPE_DERIVED)
@@ -31,6 +36,8 @@ module Carto
     end
 
     def visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.new
                                       .with_owned_by_or_shared_with_user_id(@user.id)
                                       .build
@@ -38,12 +45,16 @@ module Carto
     end
 
     def public_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_public_visualizations(@user)
                                       .build
                                       .count
     end
 
     def all_visualization_count
+      return 0 unless @user.id
+
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
         .build
         .count
@@ -74,8 +85,12 @@ module Carto
         user_data_size_function = cartodb_extension_version_pre_mu? ?
           "CDB_UserDataSize()" :
           "CDB_UserDataSize('#{@user.database_schema}')"
-        in_database(as: :superuser).execute("SELECT cartodb.#{user_data_size_function}")
-                                   .first['cdb_userdatasize'].to_i
+        in_database(as: :superuser) do |user_database|
+          user_database.transaction do
+            user_database.execute(%{SET LOCAL lock_timeout = '1s'})
+            user_database.execute(%{SELECT cartodb.#{user_data_size_function}}).first['cdb_userdatasize'].to_i
+          end
+        end
       rescue => e
         attempts += 1
         begin
@@ -127,7 +142,11 @@ module Carto
       @user.database_schema != CartoDB::DEFAULT_DB_SCHEMA ? "cartodb_publicuser_#{@user.id}" : CartoDB::PUBLIC_DB_USER
     end
 
-    private
+    def organization_member_group_role_member_name
+      @user.in_database.execute(
+        "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
+      ).first['org_member_role']
+    end
 
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
     def cartodb_extension_semver(extension_version)
@@ -147,97 +166,17 @@ module Carto
       @user.crypted_password + database_username
     end
 
-    def in_database(options = {}, &block)
-      if options[:statement_timeout]
-        in_database.execute(%Q{ SET statement_timeout TO #{options[:statement_timeout]} })
-      end
-
-      configuration = get_db_configuration_for(options[:as])
-
-      connection = $pool.fetch(configuration) do
-        get_database(options, configuration)
-      end
-
-      if block_given?
-        yield(connection)
-      else
-        connection
-      end
-    ensure
-      if options[:statement_timeout]
-        in_database.execute(%Q{ SET statement_timeout TO DEFAULT })
-      end
-    end
-
-    # NOTE: Must not live inside another model as AR internally uses model name as key for its internal connection cache
-    # and establish_connection would override the model's connection
-    def get_database(options, configuration)
-      resolver = ActiveRecord::Base::ConnectionSpecification::Resolver.new(
-          configuration, get_connection_name(options[:as])
-        )
-      conn = ActiveRecord::Base.connection_handler.establish_connection(
-          get_connection_name(options[:as]), resolver.spec
-        ).connection
-
-      unless options[:as] == :cluster_admin
-        conn.execute(%Q{ SET search_path TO #{@user.db_service.build_search_path} })
-      end
-      conn
-    end
-
-    def get_connection_name(kind = :user_model)
-      kind.to_s
-    end
-
-    def connection(options = {})
-    configuration = get_db_configuration_for(options[:as])
-
-    $pool.fetch(configuration) do
-      get_database(options, configuration)
-    end
-  end
-
-    def get_db_configuration_for(user_type = nil)
-      logger = (Rails.env.development? || Rails.env.test? ? ::Rails.logger : nil)
-
-      # TODO: proper AR config when migration is complete
-      base_config = ::SequelRails.configuration.environment_for(Rails.env)
-      config = {
-        orm:      'ar',
-        adapter:  "postgresql",
-        logger:   logger,
-        host:     @user.database_host,
-        username: base_config['username'],
-        password: base_config['password'],
-        database: @user.database_name,
-        port:     base_config['port'],
-        encoding: base_config['encoding'].nil? ? 'unicode' : base_config['encoding']
-      }
-
-      case user_type
-        when :superuser
-          config    # Nothing needed, default
-        when :cluster_admin
-          config.merge({
-              database: 'postgres'
-            })
-        when :public_user
-          config.merge({
-              username: CartoDB::PUBLIC_DB_USER,
-              password: CartoDB::PUBLIC_DB_USER_PASSWORD
-            })
-        when :public_db_user
-          config.merge({
-              username: database_public_username,
-              password: CartoDB::PUBLIC_DB_USER_PASSWORD
-            })
+    def in_database(options = {})
+      options[:username] = @user.database_username
+      options[:password] = @user.database_password
+      options[:user_schema] = @user.database_schema
+      Carto::Db::Connection.connect(@user.database_host, @user.database_name, options) do |_, connection|
+        if block_given?
+          yield(connection)
         else
-          config.merge({
-              username: database_username,
-              password: database_password,
-            })
+          connection
+        end
       end
     end
-
   end
 end

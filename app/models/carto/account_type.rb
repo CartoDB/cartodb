@@ -1,29 +1,12 @@
 # encoding: utf-8
 
 module Carto
-  class AccountType
+  class AccountType < ActiveRecord::Base
 
-    FREE = 'FREE'.freeze
-    BASIC = 'BASIC'.freeze
-    PRO = 'PRO'.freeze
-
-    # Old plans
-    MAGELLAN = 'MAGELLAN'.freeze
-
-    NO_SOFT_GEOCODING_PLANS = 'ACADEMIC|ACADEMY|INTERNAL|FREE|AMBASSADOR|PARTNER|MAGELLAN|ENTERPRISE|ORGANIZATION'.freeze
-
-    NO_SOFT_GEOCODING_PLANS_REGEXP = /(#{NO_SOFT_GEOCODING_PLANS})/i
-
-    def pay_users
-      ::User.where("upper(account_type) != '#{FREE}'").count
-    end
+    belongs_to :rate_limit, dependent: :destroy
 
     def soft_geocoding_limit?(user)
-      if user[:soft_geocoding_limit].nil?
-        !(user.account_type.nil? || user.account_type =~ NO_SOFT_GEOCODING_PLANS_REGEXP)
-      else
-        user[:soft_geocoding_limit]
-      end
+      !!user[:soft_geocoding_limit]
     end
 
     def soft_here_isolines_limit?(user)

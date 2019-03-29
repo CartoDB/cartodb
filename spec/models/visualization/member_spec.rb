@@ -674,62 +674,6 @@ describe Visualization::Member do
     delete_user_data(@user)
   end
 
-  describe '#likes' do
-    it 'should properly relate likes to a visualization' do
-      user_id = UUIDTools::UUID.timestamp_create.to_s
-      user_mock = mock
-      user_mock.stubs(:id).returns(user_id)
-
-      user_id_2 = UUIDTools::UUID.timestamp_create.to_s
-      user_id_3 = UUIDTools::UUID.timestamp_create.to_s
-      user_id_4 = UUIDTools::UUID.timestamp_create.to_s
-
-      member = Visualization::Member.new(random_attributes_for_vis_member({user_id: user_id}))
-      member.store.fetch
-
-      member.likes.count.should eq 0
-
-      member.liked_by?(user_id_2).should eq false
-
-      member.add_like_from(user_id_2)
-      member.likes.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
-
-      member.liked_by?(user_id_2).should eq true
-      member.liked_by?(user_id_3).should eq false
-
-      expect {
-        member.add_like_from(user_id_2)
-      }.to raise_error AlreadyLikedError
-
-      member.add_like_from(user_id_3)
-      member.likes.count.should eq 2
-      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
-
-      member.liked_by?(user_id_2).should eq true
-      member.liked_by?(user_id_3).should eq true
-
-      member.remove_like_from(user_id_3)
-
-      member.likes.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_3 }.count.should eq 0
-      member.likes.select.select { |like| like.actor == user_id_2 }.count.should eq 1
-      member.likes.select.select { |like| like.actor == user_id_4 }.count.should eq 0
-
-      member.liked_by?(user_id_2).should eq true
-      member.liked_by?(user_id_3).should eq false
-
-      member.remove_like_from(user_id_2)
-      member.likes.count.should eq 0
-
-      member.remove_like_from(user_id_2)
-
-    end
-  end
-
   it 'checks that slides can have a parent_id' do
     Visualization::Member.any_instance.stubs(:supports_private_maps?).returns(true)
 
@@ -1308,7 +1252,6 @@ describe Visualization::Member do
     end
   end
   describe 'remote member' do
-
     before(:all) do
       @user = create_user
       @name = "example_name"
@@ -1336,15 +1279,5 @@ describe Visualization::Member do
       remote_member.attributions.should eq @attributions
       remote_member.display_name.should eq @display_name
     end
-
-    it 'should update a remote member' do
-      remote_member = CartoDB::Visualization::Member.remote_member(
-        @name, @user_id, @privacy, @description, @tags, @license, @source, @attributions, @display_name
-      )
-      remote_member.update_remote_data(@privacy, "Another description", @tags, @license, @source, @attributions, @display_name)
-      remote_member.store
-      remote_member.description.should eq "Another description"
-    end
-
   end
 end

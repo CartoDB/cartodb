@@ -68,6 +68,10 @@ module Carto
           account_creator.with_soft_mapzen_routing_limit(create_params[:soft_mapzen_routing_limit])
         end
 
+        if create_params[:force_password_change] == true
+          account_creator.with_force_password_change
+        end
+
         unless account_creator.valid_creation?(current_viewer)
           render_jsonp(account_creator.validation_errors.full_messages, 410)
           return
@@ -126,8 +130,8 @@ module Carto
 
         force_destroy = params[:force].present?
 
-        unless @user.can_delete || force_destroy
-          error_message = "Can't delete @user. #{'Has shared entities' if @user.has_shared_entities?}"
+        if !force_destroy && @user.has_shared_entities?
+          error_message = "Can't delete @user. 'Has shared entities"
           render_jsonp(error_message, 410 ) and return
         end
 
@@ -162,18 +166,12 @@ module Carto
       # TODO: Use native strong params when in Rails 4+
       def create_params
         @create_params ||=
-          permit(COMMON_MUTABLE_ATTRIBUTES + [:username])
+          permit(COMMON_MUTABLE_ATTRIBUTES + [:username, :force_password_change])
       end
 
       # TODO: Use native strong params when in Rails 4+
       def update_params
         @update_params ||= permit(COMMON_MUTABLE_ATTRIBUTES)
-      end
-
-      def ensure_edit_permissions
-        unless @user.editable_by?(current_viewer)
-          render_jsonp({ errors: ['You do not have permissions to edit that user'] }, 401)
-        end
       end
     end
   end

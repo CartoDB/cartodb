@@ -9,11 +9,13 @@ require 'securerandom'
 
 require_relative 'config'
 require_relative 'utils'
+require_relative 'legacy_functions'
 
 module CartoDB
   module DataMover
     class ImportJob
       include CartoDB::DataMover::Utils
+      include CartoDB::DataMover::LegacyFunctions
       attr_reader :logger
 
       def initialize(options)
@@ -22,8 +24,6 @@ module CartoDB
         @config = CartoDB::DataMover::Config.config
         @logger = @options[:logger] || default_logger
         @@importjob_logger = @options[:import_job_logger]
-
-        @user_import_jobs = Array.new
 
         @start = Time.now
         @logger.debug "Starting import job with options: #{@options}"
@@ -51,6 +51,8 @@ module CartoDB
                         status:       nil,
                         trace:        nil
                        }
+
+        @target_dbname = target_dbname
       end
 
       def run!
@@ -61,9 +63,31 @@ module CartoDB
         end
       end
 
-      def organization_import?
-        @pack_config['organization'] != nil
+      def rollback!
+        close_all_database_connections
+        if @pack_config['organization']
+          rollback_org
+        else
+          rollback_user
+        end
       end
+
+      def terminate_connections
+        @user_conn && @user_conn.close
+        @user_conn = nil
+
+        @superuser_user_conn && @superuser_user_conn.close
+        @superuser_user_conn = nil
+
+        @superuser_conn && @superuser_conn.close
+        @superuser_conn = nil
+      end
+
+      def db_exists?
+        superuser_pg_conn.query("select 1 from pg_database where datname = '#{@target_dbname}'").count > 0
+      end
+
+      private
 
       def process_user
         @target_username = @pack_config['user']['username']
@@ -71,8 +95,7 @@ module CartoDB
         @import_log[:id] = @pack_config['user']['username']
         @target_port = ENV['USER_DB_PORT'] || @config[:dbport]
 
-        if @options[:target_org] == nil
-          @target_dbname = user_database(@target_userid)
+        if org_import?
           @target_dbuser = database_username(@target_userid)
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = nil
@@ -82,15 +105,13 @@ module CartoDB
           @target_schema = @pack_config['user']['database_schema']
           @target_org_id = organization_data['id']
 
-          if @pack_config['user']['id'] == organization_data['owner_id']
+          if owner?(organization_data)
             # If the user being imported into an org is the owner of the org, we make the import as it were a single-user
-            @target_dbname = user_database(@target_userid)
             @target_is_owner = true
           else
             # We fill the missing configuration data for the owner
             organization_owner_data = get_user_info(organization_data['owner_id'])
             @target_dbhost = @options[:host] || organization_owner_data['database_host']
-            @target_dbname = organization_owner_data['database_name']
             @target_is_owner = false
           end
         end
@@ -143,7 +164,7 @@ module CartoDB
           create_user(@target_dbuser)
           create_org_role(@target_dbname) # Create org role for the original org
           create_org_owner_role(@target_dbname)
-          if !@options[:target_org].nil?
+          if org_import?
             grant_user_org_role(@target_dbuser, @target_dbname)
           end
 
@@ -155,19 +176,25 @@ module CartoDB
           @pack_config['roles'].each do |user, roles|
             roles.each { |role| grant_user_role(user, role) }
           end
-
           begin
             if @target_org_id && @target_is_owner && File.exists?("#{@path}org_#{@target_org_id}.dump")
               create_db(@target_dbname, true)
+              create_org_oauth_app_user_roles(@target_org_id)
+              create_org_api_key_roles(@target_org_id)
               import_pgdump("org_#{@target_org_id}.dump")
+              grant_org_oauth_app_user_roles(@target_org_id)
+              grant_org_api_key_roles(@target_org_id)
             elsif File.exists? "#{@path}user_#{@target_userid}.dump"
               create_db(@target_dbname, true)
+              create_user_oauth_app_user_roles(@target_userid)
+              create_user_api_key_roles(@target_userid)
               import_pgdump("user_#{@target_userid}.dump")
+              grant_user_oauth_app_user_roles(@target_userid)
+              grant_user_api_key_roles(@target_userid)
             elsif File.exists? "#{@path}#{@target_username}.schema.sql"
               create_db(@target_dbname, false)
               run_file_restore_schema("#{@target_username}.schema.sql")
             end
-
           rescue => e
             begin
               remove_user_mover_banner(@pack_config['user']['id'])
@@ -216,7 +243,6 @@ module CartoDB
           grant_user_org_role(database_username(user['id']), user['database_name'])
         end
 
-
         org_user_ids = @pack_config['users'].map{|u| u['id']}
         # We set the owner to be imported first (if schemas are not split, this will also import the whole org database)
         org_user_ids = org_user_ids.insert(0, org_user_ids.delete(@owner_id))
@@ -230,7 +256,6 @@ module CartoDB
                             logger: @logger, data: @options[:data], metadata: @options[:metadata],
                             update_metadata: @options[:update_metadata])
           i.run!
-          @user_import_jobs << i
         end
       rescue => e
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
@@ -252,7 +277,9 @@ module CartoDB
                         mode: :rollback,
                         host: @target_dbhost,
                         target_org: @pack_config['organization']['name'],
-                        logger: @logger, metadata: @options[:metadata], data: false).run!
+                        logger: @logger,
+                        metadata: @options[:metadata],
+                        data: false).run!
         end
         rollback_metadata("org_#{@organization_id}_metadata_undo.sql") if @options[:metadata]
         if @options[:data]
@@ -266,7 +293,7 @@ module CartoDB
       end
 
       def drop_role(role)
-        superuser_pg_conn.query("DROP ROLE \"#{role}\"")
+        superuser_pg_conn.query("DROP ROLE IF EXISTS \"#{role}\"")
       end
 
       def get_org_info(orgname)
@@ -289,10 +316,12 @@ module CartoDB
         superuser_pg_conn.query("ALTER DATABASE #{superuser_pg_conn.quote_ident(db)} SET statement_timeout = #{timeout}")
       end
 
-      def terminate_connections
-        @user_conn = nil
-        @superuser_user_conn = nil
-        @superuser_conn = nil
+      def close_all_database_connections(database_name = @target_dbname)
+        superuser_pg_conn.query("SELECT pg_terminate_backend(pg_stat_activity.pid)
+                                  FROM pg_stat_activity
+                                WHERE pg_stat_activity.datname = '#{database_name}'
+                                AND pid <> pg_backend_pid();")
+        terminate_connections
       end
 
       def user_pg_conn
@@ -320,7 +349,8 @@ module CartoDB
       end
 
       def drop_database(db_name)
-        superuser_pg_conn.query("DROP DATABASE \"#{db_name}\"")
+        close_all_database_connections(db_name)
+        superuser_pg_conn.query("DROP DATABASE IF EXISTS \"#{db_name}\"")
       end
 
       def clean_oids(user_id, user_schema)
@@ -360,12 +390,14 @@ module CartoDB
       end
 
       def run_file_restore_postgres(file, sections = nil)
-        command = "#{pg_restore_bin_path} -e --verbose -j4 --disable-triggers -Fc #{@path}#{file} #{conn_string(
+        file_path = "#{@path}#{file}"
+        command = "#{pg_restore_bin_path(file_path)} -e --verbose -j4 --disable-triggers -Fc #{file_path} #{conn_string(
           @config[:dbuser],
           @target_dbhost,
           @config[:user_dbport],
           @target_dbname)}"
         command += " --section=#{sections}" if sections
+        command += " --use-list=\"#{@toc_file}\""
         run_command(command)
       end
 
@@ -397,12 +429,34 @@ module CartoDB
         run_file_metadata_postgres(file)
       end
 
+      def clean_toc_file(file)
+        tmp = Tempfile.new("extract_#{@target_username}.txt")
+        File.open(file, 'r').each do |l|
+          tmp << l unless remove_line?(l)
+        end
+
+        tmp.close
+        FileUtils.mv(tmp.path, file)
+      ensure
+        tmp.delete
+      end
+
+      def toc_file(file)
+        toc_file = "#{@path}user_#{@target_username}.list"
+        command = "pg_restore -l #{file} --file='#{toc_file}'"
+        run_command(command)
+        clean_toc_file(toc_file)
+        toc_file
+      end
+
       # It would be a good idea to "disable" the invalidation trigger during the load
       # This way, the restore will be much faster and won't also cause a big overhead
       # in the old database while the process is ongoing
       # Disabling it may be hard. Maybe it's easier to just exclude it in the export.
       def import_pgdump(dump)
         @logger.info("Importing dump from #{dump} using pg_restore..")
+        @toc_file = toc_file("#{@path}#{dump}")
+
         run_file_restore_postgres(dump, 'pre-data')
         run_file_restore_postgres(dump, 'data')
         run_file_restore_postgres(dump, 'post-data')
@@ -418,6 +472,53 @@ module CartoDB
         rescue PG::Error => e
           @logger.info "Target Postgres role already exists: #{e.inspect}"
         end
+      end
+
+      def create_org_api_key_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u| create_user_api_key_roles(u.id) }
+      end
+
+      def create_user_api_key_roles(user_id)
+        Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
+          begin
+            k.role_creation_queries.each { |q| superuser_user_pg_conn.query(q) }
+          rescue PG::Error => e
+            # Ignore role already exists errors
+            throw e unless e.message =~ /already exists/
+          end
+        end
+      end
+
+      def grant_org_api_key_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u| grant_user_api_key_roles(u.id) }
+      end
+
+      def grant_user_api_key_roles(user_id)
+        Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
+          k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
+        end
+      end
+
+      def create_org_oauth_app_user_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u| create_user_oauth_app_user_roles(u.id) }
+      end
+
+      def create_user_oauth_app_user_roles(user_id)
+        Carto::User.find(user_id).oauth_app_users.each(&:create_dataset_role)
+      rescue Carto::OauthProvider::Errors::ServerError => e
+        # Ignore managed oauth_app_user errors
+        CartoDB::Logger.error(message: 'Error creating oauth app user role', exception: e)
+      end
+
+      def grant_org_oauth_app_user_roles(org_id)
+        Carto::Organization.find(org_id).users.each { |u| grant_user_oauth_app_user_roles(u.id) }
+      end
+
+      def grant_user_oauth_app_user_roles(user_id)
+        Carto::User.find(user_id).oauth_app_users.each(&:grant_dataset_role_privileges)
+      rescue Carto::OauthProvider::Errors::InvalidScope => e
+        # Ignore managed oauth_app_user errors
+        CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
       end
 
       def org_role_name(database_name)
@@ -592,23 +693,8 @@ module CartoDB
         end
       end
 
-      def update_metadata_org(target_dbhost)
-        @user_import_jobs.each do |instance|
-          instance.update_metadata_user(target_dbhost)
-        end
-      end
-
-      def update_metadata(target_dbhost = @target_dbhost)
-        if organization_import?
-          update_metadata_org(target_dbhost)
-        else
-          update_metadata_user(target_dbhost)
-        end
-      end
-
-
       def importjob_logger
-        @@importjob_logger ||= ::Logger.new("#{Rails.root}/log/datamover.log")
+        @@importjob_logger ||= CartoDB.unformatted_logger("#{Rails.root}/log/datamover.log")
       end
 
       def log_error(e)
@@ -627,8 +713,37 @@ module CartoDB
         importjob_logger.info(@import_log.to_json)
       end
 
-      def pg_restore_bin_path
-        Cartodb.get_config(:user_migrator, 'pg_restore_bin_path') || 'pg_restore'
+      def pg_restore_bin_path(dump)
+        get_pg_restore_bin_path(superuser_pg_conn, dump)
+      end
+
+      def target_dbname
+        return @pack_config['users'][0]['database_name'] if @pack_config['organization']
+
+        @target_userid = @pack_config['user']['id']
+        if org_import?
+          user_database(@target_userid)
+        else
+          organization_data = get_org_info(@options[:target_org])
+          if owner?(organization_data)
+            user_database(@target_userid)
+          else
+            organization_owner_data = get_user_info(organization_data['owner_id'])
+            organization_owner_data['database_name']
+          end
+        end
+      end
+
+      def owner?(organization_data)
+        @pack_config['user']['id'] == organization_data['owner_id']
+      end
+
+      def org_import?
+        @options[:target_org] == nil
+      end
+
+      def organization_import?
+        @pack_config['organization'] != nil
       end
     end
   end

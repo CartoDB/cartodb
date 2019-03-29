@@ -29,6 +29,8 @@ module Carto
         bbox_parameter = params.fetch(:bbox,nil)
         privacy = params.fetch(:privacy,nil)
         only_with_display_name = params[:only_with_display_name] == 'true'
+        with_dependent_visualizations = params[:with_dependent_visualizations].to_i
+        only_published = params[:only_published] == 'true'
 
         vqb = VisualizationQueryBuilder.new
                                        .with_prefetch_user
@@ -48,11 +50,11 @@ module Carto
           vqb.with_display_name
         end
 
-        if current_user
-          if only_liked
-            vqb.with_liked_by_user_id(current_user.id)
-          end
+        vqb.with_published if only_published
 
+        if current_user
+          vqb.with_current_user_id(current_user.id)
+          vqb.with_liked_by_user_id(current_user.id) if only_liked
           case shared
           when FILTER_SHARED_YES
             vqb.with_owned_by_or_shared_with_user_id(current_user.id)
@@ -63,9 +65,7 @@ module Carto
                 .with_user_id_not(current_user.id)
           end
 
-          if exclude_raster
-            vqb.without_raster
-          end
+          vqb.without_raster if exclude_raster
 
           if locked == 'true'
             vqb.with_locked(true)
@@ -78,9 +78,9 @@ module Carto
             vqb.without_imported_remote_visualizations
           end
 
-          if !privacy.nil?
-            vqb.with_privacy(privacy)
-          end
+          vqb.with_privacy(privacy) unless privacy.nil?
+
+          vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
 
         else
           # TODO: ok, this looks like business logic, refactor
@@ -99,13 +99,12 @@ module Carto
       def presenter_options_from_hash(params)
         options = {}
         options[:show_stats] = false if params[:show_stats].to_s == 'false'
-        options[:show_likes] = false if params[:show_likes].to_s == 'false'
-        options[:show_liked] = false if params[:show_liked].to_s == 'false'
         options[:show_table] = false if params[:show_table].to_s == 'false'
         options[:show_permission] = false if params[:show_permission].to_s == 'false'
         options[:show_uses_builder_features] = false if params[:show_uses_builder_features].to_s == 'false'
         options[:show_synchronization] = false if params[:show_synchronization].to_s == 'false'
         options[:show_table_size_and_row_count] = false if params[:show_table_size_and_row_count].to_s == 'false'
+        options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
         options
       end
 

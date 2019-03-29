@@ -12,8 +12,8 @@ export default {
   name: 'CodeBlock',
   data () {
     return {
-      codemirror: null,
-    }
+      codemirror: null
+    };
   },
   mounted () {
     this.initialize();

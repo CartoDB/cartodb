@@ -11,6 +11,7 @@ Development
   * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
   * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
   * Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+* Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails

@@ -82,14 +82,6 @@ module CartoDB
         @tracker || lambda { |state| state }
       end
 
-      def georeference
-        georeferencer = Georeferencer.new(@job.db, @job.table_name, {}, 'cdb_importer', @job)
-
-        job.log 'Georeferencing...'
-        georeferencer.run
-        job.log 'Georeferenced'
-      end
-
       def visualizations
         # This method is needed to make the interface of ConnectorRunner compatible with Runner
         []

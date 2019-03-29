@@ -10,8 +10,16 @@ import 'codemirror/theme/material.css';
 
 export default {
   name: 'CodeBlock',
+  data () {
+    return {
+      codemirror: null,
+    }
+  },
   mounted () {
     this.initialize();
+  },
+  beforeDestroy () {
+    this.destroy();
   },
   props: {
     code: {
@@ -20,7 +28,16 @@ export default {
   },
   methods: {
     initialize () {
-      CodeMirror.fromTextArea(this.$refs.code, defaultOptions);
+      this.codemirror = CodeMirror.fromTextArea(this.$refs.code, defaultOptions);
+    },
+    destroy () {
+      const codemirrorElement = this.codemirror.doc.cm.getWrapperElement();
+      codemirrorElement.remove && codemirrorElement.remove();
+    }
+  },
+  watch: {
+    code () {
+      this.codemirror.setValue(this.code);
     }
   }
 };

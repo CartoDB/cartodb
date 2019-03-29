@@ -17,7 +17,13 @@
   &:hover {
     background: $primary-color--dark;
   }
+
+  & + .button {
+    margin-left: 1em;
+  }
 }
+
+
 
 a {
   &.button:hover {

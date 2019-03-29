@@ -6,8 +6,8 @@
 
 <script>
 
-import Wizard from 'new-dashboard/components/Wizard.vue';
-import WizardStep from 'new-dashboard/components/WizardStep.vue';
+import Wizard from 'new-dashboard/components/Wizard/Wizard.vue';
+import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
 
 export default {
   name: 'TestWizard',

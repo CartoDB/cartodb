@@ -7,7 +7,7 @@
           v-for="(stepName, index) in stepNames" :key="stepName">
           <a href="">
             <span class="breadcrumbs__checkpoint" :class="[isCurrentStep (currentStep, index) ? 'current' : '']">
-              <span class="breadcrumbs__text">{{ index + 1 }} - {{ stepName }}</span>
+              <span class="breadcrumbs__text">{{ stepName }}</span>
             </span>
           </a>
         </li>

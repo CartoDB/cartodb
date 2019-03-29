@@ -30,7 +30,7 @@
           :title="'Step 5'"
           :subTitle="'Step 5 Subtitle'"
           :stepNum="5"></WizardStep>
-        <Footer :currentStep="step"  @goToStep="goToStep"></Footer>
+        <Footer :stepNames="stepNames" :currentStep="step"  @goToStep="goToStep"></Footer>
       </div>
     </Modal>
   </div>
@@ -60,9 +60,9 @@ export default {
     return {
       step: 1,
       stepNames: [
+        'Intro',
         'Load CARTO VL',
-        'Define container',
-        'Create the map',
+        'Create map',
         'Add data layer',
         'Download'
       ],

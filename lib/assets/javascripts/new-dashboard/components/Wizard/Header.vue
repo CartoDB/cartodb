@@ -41,7 +41,6 @@ $timeline__border-transition: 0.25s;
 $bullet__transition: 0.25s;
 $bullet__border-color: #D3E6FA;
 
-
 .header {
   display: flex;
   flex-direction: column;

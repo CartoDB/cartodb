@@ -20,10 +20,10 @@ export default {
   },
   methods: {
     initialize () {
-       CodeMirror.fromTextArea(this.$refs.code, defaultOptions);
+      CodeMirror.fromTextArea(this.$refs.code, defaultOptions);
     }
   }
-}
+};
 
 const defaultOptions = {
   mode: 'javascript',

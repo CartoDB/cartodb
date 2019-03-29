@@ -70,7 +70,8 @@ module Carto
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',
-          password: params[:password]
+          password: params[:password],
+          with_dependent_visualizations: params[:with_dependent_visualizations].to_i || 0
         )
 
         render_jsonp(::JSON.dump(presenter.to_poro))

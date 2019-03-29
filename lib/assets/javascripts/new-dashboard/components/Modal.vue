@@ -28,8 +28,10 @@ export default {
   methods: {
     open () {
       this.$modal.show(this.name);
+      document.body.classList.add('u-overflow-hidden');
     },
     close () {
+      document.body.classList.remove('u-overflow-hidden');
       this.$modal.hide(this.name);
       this.$emit('closeModal');
     }

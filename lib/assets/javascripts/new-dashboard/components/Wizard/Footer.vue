@@ -1,8 +1,8 @@
 <template>
   <div class="footer">
     <div class="container u-flex u-flex__justify--end">
-      <button class="button button--outline" v-if="showPrevButton" @click="prev">&#60; Prev</button>
-      <button class="button is-primary" v-if="showNextButton" @click="next">Next &#62;</button>
+      <button class="button button--ghost" v-if="showPrevButton" @click="prev">Back</button>
+      <button class="button is-primary" v-if="showNextButton" @click="next">Next: {{ this.stepNames[this.currentStep]}}</button>
     </div>
   </div>
 </template>
@@ -15,6 +15,7 @@ export default {
       type: Number,
       default: 5
     },
+    stepNames: Array,
     currentStep: Number
   },
   computed: {

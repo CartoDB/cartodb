@@ -34,6 +34,7 @@ Development
 - Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
 - Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
 - Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
+- Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
 
 
 4.26.0 (2019-03-11)

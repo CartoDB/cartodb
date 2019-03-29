@@ -38,15 +38,16 @@ export default {
 $timeline__border-width: 1px;
 $timeline__border-color: #DDD;
 $timeline__border-transition: 0.25s;
-$bullet__transition: 0.25s;
+$bullet__transition: 0.12s;
 $bullet__border-color: #D3E6FA;
+$transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 
 .header {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2.5em 0 0.5em;
+  padding-top: 2.406em;
   background: $white;
 }
 
@@ -62,7 +63,7 @@ $bullet__border-color: #D3E6FA;
   &__item {
     position: relative;
     width: 100%;
-    height: 50px;
+    height: 46px;
 
     &:not(:last-child) {
       border-top: $timeline__border-width solid $primary-color;
@@ -80,7 +81,7 @@ $bullet__border-color: #D3E6FA;
       top: -$timeline__border-width;
       right: 0;
       width: 0%;
-      transition: width $timeline__border-transition ease;
+      transition: width $timeline__border-transition $transition__timing-function;
       border-top: $timeline__border-width solid $timeline__border-color;
     }
 
@@ -92,7 +93,7 @@ $bullet__border-color: #D3E6FA;
         top: -$timeline__border-width;
         right: 0;
         width: 100%;
-        transition: width $timeline__border-transition ease;
+        transition: width $timeline__border-transition $transition__timing-function;
         border-top: $timeline__border-width solid $timeline__border-color;
       }
 
@@ -126,6 +127,10 @@ $bullet__border-color: #D3E6FA;
         height: 7px;
         background: $timeline__border-color;
       }
+
+      & ~ .breadcrumbs__item .breadcrumbs__text {
+        color: $text-secondary-color;
+      }
     }
   }
 
@@ -133,7 +138,7 @@ $bullet__border-color: #D3E6FA;
     position: absolute;
     top: 30px;
     transform: translateX(-50%);
-    color: $text-secondary-color;
+    color: $text-color;
     font-size: 0.75em;
     white-space: nowrap;
   }
@@ -146,17 +151,17 @@ $bullet__border-color: #D3E6FA;
     left: -4px;
     width: 7px;
     height: 7px;
-    transition: all $bullet__transition ease;
+    transition: all $bullet__transition $transition__timing-function;
     border-radius: 50%;
     background: $primary-color;
 
     &.current {
-      transition: all $bullet__transition ease;
+      transition: all $bullet__transition $transition__timing-function;
       transition-delay: $timeline__border-transition;
       box-shadow: 0 0 0 6px $bullet__border-color;
 
       .breadcrumbs__text {
-        transition: all $bullet__transition ease;
+        transition: all $bullet__transition $transition__timing-function;
         color: $text-color;
         font-weight: 600;
       }

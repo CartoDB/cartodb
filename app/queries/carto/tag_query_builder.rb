@@ -13,9 +13,20 @@ class Carto::TagQueryBuilder
     "remote" => :data_library
   }.freeze
 
-  def initialize(user_id)
-    @user_id = user_id
+  def initialize
     @types = DEFAULT_TYPES
+  end
+
+  def with_owned_by_user_id(user_id)
+    @owner_id = user_id
+    @user_id = nil
+    self
+  end
+
+  def with_owned_by_or_shared_with_user_id(user_id)
+    @user_id = user_id
+    @owner_id = nil
+    self
   end
 
   def with_types(types)
@@ -26,78 +37,67 @@ class Carto::TagQueryBuilder
   def with_search_pattern(pattern)
     return self unless pattern.present?
     clean_pattern = escape_characters_from_pattern(pattern)
-    @pattern = clean_pattern.downcase.split(' ').map { |word| "%#{word}%" }
+    @pattern = clean_pattern.split(' ').map { |word| "%#{word}%" }
     self
   end
 
-  def escape_characters_from_pattern(pattern)
-    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
+  def build
+    build_base_visualization_query
+      .select(select_sql)
+      .where('array_length(tags, 1) > 0')
+      .group('tag')
+      .order('total DESC')
   end
 
   def build_paged(page, per_page)
-    limit = per_page.to_i
     offset = (page.to_i - 1) * per_page.to_i
-    sql_array = [select_sql, @user_id, @types, limit, offset, @pattern].compact
-    query = ActiveRecord::Base.send(:sanitize_sql_array, sql_array)
-    p query
-
-    connection = ActiveRecord::Base.connection
-    result = connection.exec_query(query)
-
+    limit = per_page.to_i
+    query = filter_query(query: build, offset: offset, limit: limit)
+    result = run_query(query)
     format_response(result)
   end
 
   def total_count
-    query = ActiveRecord::Base.send(:sanitize_sql_array, [count_sql, @user_id, @types, @pattern].compact)
-
-    connection = ActiveRecord::Base.connection
-    result = connection.exec_query(query)
-
-    result.cast_values.first
+    query = filter_query(query: build, count: true)
+    result = run_query(query)
+    result.first["count"].to_i
   end
 
   private
 
+  def build_base_visualization_query
+    query = Carto::VisualizationQueryBuilder.new
+    query.with_user_id(@owner_id) if @owner_id
+    query.with_owned_by_or_shared_with_user_id(@user_id) if @user_id
+    query.with_types(@types) if @types
+    query.build
+  end
+
   def select_sql
-    %{
-      SELECT *
-      FROM (
-        SELECT LOWER(unnest(tags)) AS tag, #{count_by_type_sql}
-        FROM visualizations
-        WHERE user_id = ?
-        AND type IN (?)
-        GROUP BY tag
-        ORDER BY COUNT(*) DESC
-        LIMIT ?
-        OFFSET ?
-      ) AS tags
-      #{search_filter}
+    "lower(unnest(tags)) AS tag, #{counts_sql}, count(*) as total"
+  end
+
+  def counts_sql
+    @types.map { |type|
+      "sum(CASE type WHEN '#{type}' THEN 1 ELSE 0 END) AS #{type}_count"
+    }.join(', ')
+  end
+
+  def filter_query(query:, count: false, limit: nil, offset: nil)
+    select_clause = count ? "COUNT(tag)" : "*"
+    where_clause = "WHERE tag ILIKE ANY (array[?])" if @pattern
+    limit_clause = "LIMIT ?" if limit
+    offset_clause = "OFFSET ?" if offset
+    filter_sql =  %{
+      SELECT #{select_clause} FROM (#{query.to_sql}) AS tags #{where_clause} #{limit_clause} #{offset_clause}
     }.squish
+
+    ActiveRecord::Base.send(:sanitize_sql_array, [filter_sql, @pattern, limit, offset].compact)
   end
 
-  def count_by_type_sql
-    queries = @types.map do |type|
-      count_query = "count(*) FILTER(WHERE type = ?) AS #{type}_count"
-      ActiveRecord::Base.send(:sanitize_sql_array, [count_query, type])
-    end
-    queries.join(",")
-  end
-
-  def search_filter
-    "WHERE tag ilike any (array[?])" if @pattern
-  end
-
-  def count_sql
-    %{
-      SELECT COUNT(DISTINCT(tag))
-      FROM (
-        SELECT LOWER(unnest(tags)) AS tag
-        FROM visualizations
-        WHERE user_id = ?
-        AND type IN (?)
-      ) AS tags
-      #{search_filter}
-    }.squish
+  def run_query(query)
+    connection = ActiveRecord::Base.connection
+    connection.exec_query(query)
   end
 
   def format_response(result)
@@ -107,6 +107,10 @@ class Carto::TagQueryBuilder
       }.inject(:merge)
       { tag: row['tag'] }.merge(types_count)
     end
+  end
+
+  def escape_characters_from_pattern(pattern)
+    pattern.chars.map { |c| PATTERN_ESCAPE_CHARS.include?(c) ? "\\" + c : c }.join
   end
 
 end

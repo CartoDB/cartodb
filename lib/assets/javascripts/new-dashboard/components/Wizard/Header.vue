@@ -35,15 +35,19 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-$timeline__border-width: 4px;
+$timeline__border-width: 1px;
+$timeline__border-color: #DDD;
+$timeline__border-transition: 0.25s;
+$bullet__transition: 0.25s;
+$bullet__border-color: #D3E6FA;
+
 
 .header {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4em 0 2em;
-  border-bottom: 1px solid $grey;
+  padding: 2.5em 0 0.5em;
   background: $white;
 }
 
@@ -62,7 +66,7 @@ $timeline__border-width: 4px;
     height: 50px;
 
     &:not(:last-child) {
-      border-top: $timeline__border-width solid $primary-color--soft;
+      border-top: $timeline__border-width solid $primary-color;
     }
 
     &:last-child {
@@ -70,15 +74,46 @@ $timeline__border-width: 4px;
       border-top: $timeline__border-width solid transparent;
     }
 
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -$timeline__border-width;
+      right: 0;
+      width: 0%;
+      transition: width $timeline__border-transition ease;
+      border-top: $timeline__border-width solid $timeline__border-color;
+    }
+
     &.current {
-      border-color: $grey;
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: -$timeline__border-width;
+        right: 0;
+        width: 100%;
+        transition: width $timeline__border-transition ease;
+        border-top: $timeline__border-width solid $timeline__border-color;
+      }
 
       &:last-child {
         border-color: transparent;
       }
 
       & ~ .breadcrumbs__item {
-        border-color: $grey;
+        border-color: $timeline__border-color;
+
+        &::after {
+          content: '';
+          display: block;
+          position: absolute;
+          top: -$timeline__border-width;
+          right: 0;
+          width: 100%;
+          transition: none;
+          border-top: $timeline__border-width solid $timeline__border-color;
+        }
 
         &:last-child {
           border-color: transparent;
@@ -86,12 +121,11 @@ $timeline__border-width: 4px;
       }
 
       & ~ .breadcrumbs__item .breadcrumbs__checkpoint {
-        top: -10px;
-        left: -10px;
-        width: 16px;
-        height: 16px;
-        border: $timeline__border-width solid $grey;
-        background: $white;
+        top: -4px;
+        left: -4px;
+        width: 7px;
+        height: 7px;
+        background: $timeline__border-color;
       }
     }
   }
@@ -108,23 +142,24 @@ $timeline__border-width: 4px;
   &__checkpoint {
     display: block;
     position: absolute;
-    top: -9px;
-    left: -9px;
-    width: 14px;
-    height: 14px;
+    z-index: 1;
+    top: -4px;
+    left: -4px;
+    width: 7px;
+    height: 7px;
+    transition: all $bullet__transition ease;
     border-radius: 50%;
-    background: $primary-color--soft;
+    background: $primary-color;
 
     &.current {
-      top: -6px;
-      left: -6px;
-      width: 8px;
-      height: 8px;
-      background: $primary-color;
-      box-shadow: 0 0 0 12px rgba($primary-color, 0.2);
+      transition: all $bullet__transition ease;
+      transition-delay: $timeline__border-transition;
+      box-shadow: 0 0 0 6px $bullet__border-color;
 
       .breadcrumbs__text {
-        color: $primary-color;
+        transition: all $bullet__transition ease;
+        color: $text-color;
+        font-weight: 600;
       }
     }
   }

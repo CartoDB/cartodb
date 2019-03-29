@@ -93,6 +93,6 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  background-color: $softblue;
+  background-color: #F9F9F9;
 }
 </style>

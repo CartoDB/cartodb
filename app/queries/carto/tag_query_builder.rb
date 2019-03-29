@@ -34,7 +34,7 @@ class Carto::TagQueryBuilder
     self
   end
 
-  def with_search_pattern(pattern)
+  def with_partial_match(pattern)
     return self unless pattern.present?
     clean_pattern = escape_characters_from_pattern(pattern)
     @pattern = clean_pattern.split(' ').map { |word| "%#{word}%" }

@@ -163,7 +163,7 @@ describe Carto::TagQueryBuilder do
       it 'finds tags with the exact word' do
         expected_result = [{ tag: "tag2", datasets: 1, maps: 0, data_library: 0 }]
 
-        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_search_pattern('tag2')
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag2')
         result = builder.build_paged(1, 10)
 
         result.should =~ expected_result
@@ -175,7 +175,7 @@ describe Carto::TagQueryBuilder do
           { tag: "tag2", datasets: 1, maps: 0, data_library: 0 }
         ]
 
-        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_search_pattern('tag')
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag')
         result = builder.build_paged(1, 10)
 
         result.should =~ expected_result
@@ -187,7 +187,7 @@ describe Carto::TagQueryBuilder do
           { tag: "several words", datasets: 0, maps: 1, data_library: 0 }
         ]
 
-        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_search_pattern('tag2 not-found word')
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag2 not-found word')
         result = builder.build_paged(1, 10)
         result.should =~ expected_result
       end
@@ -195,7 +195,7 @@ describe Carto::TagQueryBuilder do
       it 'is not case sensitive' do
         expected_result = [{ tag: "tag1", datasets: 2, maps: 0, data_library: 0 }]
 
-        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_search_pattern('TAG1')
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('TAG1')
         result = builder.build_paged(1, 10)
 
         result.should =~ expected_result
@@ -205,7 +205,7 @@ describe Carto::TagQueryBuilder do
         FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["50%"])
         expected_result = [{ tag: "50%", datasets: 1, maps: 0, data_library: 0 }]
 
-        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_search_pattern('%')
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('%')
         result = builder.build_paged(1, 10)
 
         result.should =~ expected_result

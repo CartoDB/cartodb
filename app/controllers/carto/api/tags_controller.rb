@@ -28,7 +28,7 @@ module Carto
       def tag_query_builder
         query_builder = Carto::TagQueryBuilder.new
                                               .with_types(@types)
-                                              .with_search_pattern(@pattern)
+                                              .with_partial_match(@pattern)
 
         return query_builder.with_owned_by_or_shared_with_user_id(current_viewer.id) if @include_shared
         query_builder.with_owned_by_user_id(current_viewer.id)

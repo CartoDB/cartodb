@@ -59,7 +59,7 @@ describe Carto::Api::TagsController do
         { tag: "owned-tag", maps: 1, datasets: 0 },
         { tag: "shared-tag", maps: 0, datasets: 1 }
       ]
-      shared_params = @params.merge(shared: "yes")
+      shared_params = @params.merge(include_shared: "true")
 
       get_json api_v3_users_tags_url(shared_params), @headers do |response|
         expect(response.status).to eq(200)

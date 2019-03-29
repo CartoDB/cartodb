@@ -14,7 +14,6 @@ module Carto
       rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error
 
       DEFAULT_TAGS_PER_PAGE = 6
-      FILTER_SHARED_YES = 'yes'.freeze
 
       def index
         query_builder = tag_query_builder
@@ -39,7 +38,7 @@ module Carto
         @page, @per_page = page_per_page_params(default_per_page: DEFAULT_TAGS_PER_PAGE)
 
         @pattern = params[:q]
-        @include_shared = params[:shared] == FILTER_SHARED_YES
+        @include_shared = params[:include_shared] == 'true'
 
         @types = params.fetch(:types, "").split(',')
         if (@types - Carto::Visualization::VALID_TYPES).present?

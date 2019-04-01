@@ -66,7 +66,7 @@
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--large u-txt-right u-p0">
+        <div class="cell cell--large u-txt-right u-p--0 ">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>

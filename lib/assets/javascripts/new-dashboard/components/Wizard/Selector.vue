@@ -16,8 +16,8 @@ export default {
     text: String,
     tags: {
       type: Array,
-      default() {
-        return []
+      default () {
+        return [];
       }
     },
     iconModifier: {

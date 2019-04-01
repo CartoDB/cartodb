@@ -53,6 +53,10 @@ import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
+import props from '../shared/props';
+import data from '../shared/data';
+import methods from '../shared/methods';
+
 export default {
   name: 'WizardCARTOVL',
   components: {
@@ -63,14 +67,11 @@ export default {
     Modal
   },
   props: {
-    maxSteps: {
-      type: Number,
-      default: 5
-    }
+    ...props
   },
   data () {
     return {
-      step: 1,
+      ...data(),
       stepNames: [
         'Intro',
         'Setup',
@@ -78,26 +79,11 @@ export default {
         'Read dataset',
         'Display map',
         'Download'
-      ],
-      isModalOpen: false
+      ]
     };
   },
   methods: {
-    goToStep (stepNum) {
-      this.step = stepNum;
-    },
-    isCurrentStep (stepNum) {
-      return this.step === stepNum;
-    },
-    openModal () {
-      console.log('openModal');
-      this.isModalOpen = true;
-    },
-    closeModal () {
-      this.isModalOpen = false;
-      this.step = 1;
-      this.$emit('closeModal');
-    }
+    ...methods
   }
 };
 </script>

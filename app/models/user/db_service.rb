@@ -917,13 +917,7 @@ module CartoDB
 
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
-
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name))
           # Simulate a controlled environment drop cascade contained to only functions
           failed_sqls = []
           recursivity_level = 0
@@ -953,12 +947,7 @@ module CartoDB
 
           # And now aggregate functions
           failed_sqls = []
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name, aggregated: true))
           drop_function_sqls.each do |sql_sentence|
             begin
               database.run(sql_sentence[:sql])
@@ -986,6 +975,23 @@ module CartoDB
             raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
           end
         end
+      end
+
+      def get_drop_functions_sql(database, schema_name, aggregated: false)
+        pg_version = database.fetch("select current_setting('server_version_num') as version").first[:version].to_i
+
+        if pg_version >= 110000
+          agg_join_clause = "pg_proc.prokind #{aggregated ? ' = ' : ' <> '} 'a'"
+        else
+          agg_join_clause = "pg_proc.proisagg = #{aggregated ? 'TRUE' : 'FALSE'}"
+        end
+
+        drop_type = aggregated ? 'AGGREGATE' : 'FUNCTION'
+
+        %{SELECT 'DROP #{drop_type} "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
+         AS sql
+         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND #{agg_join_clause} )
+         WHERE ns.nspname = '#{schema_name}'}
       end
 
       # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish

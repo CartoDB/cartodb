@@ -3,6 +3,7 @@
     <div class="container u-flex u-flex__justify--end">
       <button class="button button--ghost" v-if="showPrevButton" @click="prev">Back</button>
       <button class="button is-primary" v-if="showNextButton" @click="next">Next: {{ this.stepNames[this.currentStep]}}</button>
+      <button class="button is-primary" v-if="!showNextButton" @click="closeModal">Go to dashboard</button>
     </div>
   </div>
 </template>
@@ -11,14 +12,13 @@
 export default {
   name: 'Footer',
   props: {
-    maxSteps: {
-      type: Number,
-      default: 5
-    },
     stepNames: Array,
     currentStep: Number
   },
   computed: {
+    maxSteps() {
+      return this.stepNames.length;
+    },
     showNextButton () {
       return this.currentStep < this.maxSteps;
     },
@@ -32,6 +32,9 @@ export default {
     },
     next () {
       this.$emit('goToStep', this.currentStep + 1);
+    },
+    closeModal() {
+      this.$emit('closeModal');
     }
   }
 };

@@ -1,11 +1,11 @@
 <template>
   <div>
     <div @click="openModal">
-      <WizardSelector
+      <Selector
         :title="'Develop an interactive map'"
         :text="'Build impresive map visualizations to enrich your website and apps.'"
         :tags="['JavaScript', 'CARTO VL']"
-        :iconModifier="'map'"></WizardSelector>
+        :iconModifier="'map'"></Selector>
     </div>
     <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import WizardSelector from 'new-dashboard/components/Wizard/WizardSelector.vue';
+import Selector from 'new-dashboard/components/Wizard/Selector.vue';
 import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
 import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
@@ -56,7 +56,7 @@ import Modal from 'new-dashboard/components/Modal.vue';
 export default {
   name: 'WizardCARTOVL',
   components: {
-    WizardSelector,
+    Selector,
     WizardStep,
     Header,
     Footer,

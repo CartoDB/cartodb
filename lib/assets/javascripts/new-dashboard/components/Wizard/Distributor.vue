@@ -32,7 +32,7 @@ export default {
     WizardCARTOframes,
     Modal
   },
-    data () {
+  data () {
     return {
       isModalOpen: false
     };
@@ -45,7 +45,7 @@ export default {
       this.isModalOpen = false;
     }
   }
-}
+};
 </script>
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
@@ -68,5 +68,4 @@ export default {
   margin-right: 36px;
   padding: 0;
 }
-
 </style>

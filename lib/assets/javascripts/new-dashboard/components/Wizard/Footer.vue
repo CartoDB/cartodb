@@ -16,7 +16,7 @@ export default {
     currentStep: Number
   },
   computed: {
-    maxSteps() {
+    maxSteps () {
       return this.stepNames.length;
     },
     showNextButton () {
@@ -33,7 +33,7 @@ export default {
     next () {
       this.$emit('goToStep', this.currentStep + 1);
     },
-    closeModal() {
+    closeModal () {
       this.$emit('closeModal');
     }
   }

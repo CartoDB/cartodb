@@ -16,7 +16,9 @@ export default {
     text: String,
     tags: {
       type: Array,
-      default: []
+      default() {
+        return []
+      }
     },
     iconModifier: {
       type: String,
@@ -24,11 +26,11 @@ export default {
     }
   },
   computed: {
-    iconClass() {
+    iconClass () {
       return (this.iconModifier ? `selector__title-icon selector__title-icon--${this.iconModifier}` : '');
     }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

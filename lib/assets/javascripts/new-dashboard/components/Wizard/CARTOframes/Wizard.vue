@@ -1,11 +1,11 @@
 <template>
   <div>
     <div @click="openModal">
-      <WizardSelector
+      <Selector
         :title="'Integrate a spatial analysis in your notebook'"
         :text="'Improve your analysis adding powers to your scripts.'"
         :tags="['Python', 'Jupyter', 'CARTOframes']"
-        :iconModifier="'notebook'"></WizardSelector>
+        :iconModifier="'notebook'"></Selector>
     </div>
     <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import WizardSelector from 'new-dashboard/components/Wizard/WizardSelector.vue';
+import Selector from 'new-dashboard/components/Wizard/Selector.vue';
 import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
 import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
@@ -56,7 +56,7 @@ import Modal from 'new-dashboard/components/Modal.vue';
 export default {
   name: 'WizardCARTOVL',
   components: {
-    WizardSelector,
+    Selector,
     WizardStep,
     Header,
     Footer,

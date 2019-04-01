@@ -14,12 +14,14 @@ class Admin::SearchPreviewController < Admin::AdminController
   VALID_TYPES = Carto::Visualization::VALID_TYPES + ["tag"]
 
   def index
-    searcher_params = { user: current_viewer, context: self, pattern: @pattern, types: @types }
+    searcher_params = { user: current_viewer, pattern: @pattern, types: @types, limit: @limit }
     searcher = Carto::DashboardPreviewSearcher.new(searcher_params)
-    result = searcher.search(limit: @limit)
-    total_count = searcher.total_count
+    result = searcher.search
 
-    render json: { result: result, total_count: total_count }
+    presenter_params = { dashboard_search_result: result, limit: @limit, current_viewer: current_viewer, context: self }
+    presentation = Admin::SearchPreviewPresenter.new(presenter_params).to_poro
+
+    render json: presentation
   end
 
   private

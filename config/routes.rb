@@ -132,6 +132,7 @@ CartoDB::Application.routes.draw do
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search_preview/:q'       => 'search_preview#index', as: :search_preview
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/tag/:q'           => 'visualizations#index', as: :tag_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
@@ -269,9 +270,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/locked/search/:q/:page'         => 'visualizations#index', as: :maps_locked_search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
-
-    # Tags
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
 
     # Private dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard

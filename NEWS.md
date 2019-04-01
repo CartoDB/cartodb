@@ -12,6 +12,7 @@ Development
   - New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
   - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
 - Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
+- Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails

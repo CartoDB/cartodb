@@ -5,12 +5,14 @@ class Admin::SearchPreviewController < Admin::AdminController
 
   ssl_required
 
+  before_filter :login_required
   before_filter :load_parameters
 
   rescue_from StandardError, with: :rescue_from_standard_error
   rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error
 
   DEFAULT_LIMIT = 4
+  DEFAULT_TYPES = "derived,table,remote,tag".freeze
   VALID_TYPES = Carto::Visualization::VALID_TYPES + ["tag"]
 
   def index
@@ -27,10 +29,10 @@ class Admin::SearchPreviewController < Admin::AdminController
   private
 
   def load_parameters
-    @limit = (params[:limit] || DEFAULT_LIMIT).to_i
+    @limit = params.fetch(:limit, DEFAULT_LIMIT).to_i
     @pattern = params[:q]
 
-    @types = params.fetch(:types, "").split(',')
+    @types = params.fetch(:types, DEFAULT_TYPES).split(',')
     if (@types - VALID_TYPES).present?
       raise Carto::ParamCombinationInvalidError.new(:types, VALID_TYPES)
     end

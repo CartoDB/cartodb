@@ -66,12 +66,12 @@ describe Carto::DashboardPreviewSearcher do
     end
 
     it 'includes results from tags, maps and datasets' do
-      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, pattern: "traffic contamin", limit: 5)
+      searcher = Carto::DashboardPreviewSearcher.new(user: @carto_user1, pattern: "on", limit: 5)
       result = searcher.search
 
       result.tags.should eql ["contamination"]
-      result.visualizations.should =~ [@map_spain, @table_us]
-      result.total_count.should eql 3
+      result.visualizations.should =~ [@table_us]
+      result.total_count.should eql 2
     end
 
   end

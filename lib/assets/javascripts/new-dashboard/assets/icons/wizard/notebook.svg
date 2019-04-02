@@ -1,28 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="36px" height="40px" viewBox="0 0 36 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 53.2 (72643) - https://sketchapp.com -->
-    <title>contact-book-1</title>
-    <desc>Created with Sketch.</desc>
-    <g id="UI-Final" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="03-Distributor-Option-B" transform="translate(-600.000000, -236.000000)">
-            <g id="Options" transform="translate(250.000000, 136.000000)">
-                <g id="Data" transform="translate(320.000000, 72.000000)">
-                    <g id="contact-book-1" transform="translate(24.000000, 24.000000)">
-                        <g id="Frame_-_24px">
-                            <rect id="Rectangle" x="0" y="0" width="48" height="48"></rect>
-                        </g>
-                        <g id="Line_Icons" transform="translate(6.000000, 4.000000)">
-                            <g id="Group">
-                                <path d="M32.002,0 L8.002,0 C5.796,0 4.002,1.792 4.002,4 L4.002,8 L0.002,8 L0.002,12 L4.002,12 L4.002,18 L0.002,18 L0.002,22 L4.002,22 L4.002,28 L0.002,28 L0.002,32 L4.002,32 L4.002,36 C4.002,38.206 5.796,40 8.002,40 L32.002,40 C34.208,40 36.002,38.206 36.002,36 L36.002,4 C36.002,1.792 34.208,0 32.002,0 Z M8.002,36 L8.002,32 L10.002,32 L10.002,28 L8.002,28 L8.002,22 L10.002,22 L10.002,18 L8.002,18 L8.002,12 L10.002,12 L10.002,8 L8.002,8 L8.002,4 L32.002,4 L32.004,36 L8.002,36 Z" id="Shape" fill="#036FE2" fill-rule="nonzero"></path>
-                                <g id="Group-2" transform="translate(16.000000, 13.000000)">
-                                    <path d="M0.0429643819,4.18780237 C-0.290110963,5.71135747 1.31340361,8.91551972 4.8535081,13.8002891 C8.63768753,9.05798804 10.3675063,5.85382579 10.0429644,4.18780237 C9.55615152,1.68876725 7.62274204,0 5.03217097,0 C2.4415999,4.32520333e-16 0.542577399,1.90246973 0.0429643819,4.18780237 Z" id="Path-2" fill="#036FE2"></path>
-                                    <circle id="Oval" fill="#FFFFFF" cx="5" cy="4.5" r="1.5"></circle>
-                                </g>
-                            </g>
-                        </g>
-                    </g>
-                </g>
-            </g>
-        </g>
+<svg width="36" height="40" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd">
+    <path d="M-6-4h48v48H-6z"/>
+    <path d="M32.002 0h-24c-2.206 0-4 1.792-4 4v4h-4v4h4v6h-4v4h4v6h-4v4h4v4c0 2.206 1.794 4 4 4h24c2.206 0 4-1.794 4-4V4c0-2.208-1.794-4-4-4zm-24 36v-4h2v-4h-2v-6h2v-4h-2v-6h2V8h-2V4h24l.002 32H8.002z" fill="#036FE2" fill-rule="nonzero"/>
+    <g transform="translate(16 13)">
+      <path d="M.043 4.188C-.29 5.71 1.313 8.916 4.853 13.8c3.785-4.742 5.515-7.946 5.19-9.612C9.556 1.688 7.623 0 5.033 0 2.441 0 .542 1.902.042 4.188z" fill="#036FE2"/>
+      <circle fill="#FFF" cx="5" cy="4.5" r="1.5"/>
     </g>
+  </g>
 </svg>

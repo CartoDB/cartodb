@@ -1,6 +1,6 @@
 <template>
   <div>
-    <modal name="wizard" :adaptive="true" width="100%" height="100%">
+    <modal :name="name" :adaptive="true" width="100%" height="100%" :scrollable="true">
       <button class="modal__button modal__button--close" @click="close()" aria-label="Close"></button>
       <slot />
     </modal>

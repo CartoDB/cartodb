@@ -3,6 +3,7 @@
     <div class="container welcome-compact__content">
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
+        <WizardDistributor></WizardDistributor>
         <CreateButton class="button--ghost" visualizationType="map" :disabled="isViewer">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
         <CreateButton class="button--ghost" visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
       </div>
@@ -16,11 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import WizardDistributor from 'new-dashboard/components/Wizard/Distributor.vue';
 
 export default {
   name: 'WelcomeCompact',
   components: {
-    CreateButton
+    CreateButton,
+    WizardDistributor
   },
   props: {
     name: String

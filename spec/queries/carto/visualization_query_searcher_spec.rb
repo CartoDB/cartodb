@@ -8,7 +8,8 @@ describe Carto::VisualizationQuerySearcher do
     FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New York polution',
                                                description: 'Polution by traffic and industry')
     Delorean.jump(1.day)
-    FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New industries in York')
+    FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'New industries in York',
+                                               tags: ["traffic"])
     Delorean.jump(1.day)
     FactoryGirl.create(:derived_visualization, user_id: @user.id, name: 'Madrid traffic and polution')
     Delorean.back_to_the_present
@@ -29,10 +30,10 @@ describe Carto::VisualizationQuerySearcher do
       expect(result.size).to eql 0
     end
 
-    it 'finds words in title and description' do
+    it 'finds words in title, description and tag' do
       result = @searcher.search('traffic')
 
-      expect(result.size).to eql 2
+      expect(result.size).to eql 3
     end
 
     it 'finds singular and plural words with a singular one' do
@@ -50,7 +51,7 @@ describe Carto::VisualizationQuerySearcher do
     it 'allows to search with several words not consecutive' do
       result = @searcher.search('New York traffic')
 
-      expect(result.size).to eql 1
+      expect(result.size).to eql 2
     end
   end
 
@@ -69,12 +70,13 @@ describe Carto::VisualizationQuerySearcher do
   end
 
   context 'ordering' do
-    it 'ranks better matches in title than description' do
+    it 'ranks matches by type: title > tag > description' do
       result = @searcher.search('traffic')
 
-      expect(result.size).to eql 2
+      expect(result.size).to eql 3
       expect(result.first.name).to eql 'Madrid traffic and polution'
-      expect(result.second.name).to eql 'New York polution'
+      expect(result.second.name).to eql 'New industries in York'
+      expect(result.third.name).to eql 'New York polution'
     end
 
     it 'ranks better matches with word repetition' do

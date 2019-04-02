@@ -66,9 +66,7 @@ export default {
     Footer,
     Modal
   },
-  props: {
-    ...props
-  },
+  props,
   data () {
     return {
       ...data(),
@@ -82,9 +80,7 @@ export default {
       ]
     };
   },
-  methods: {
-    ...methods
-  }
+  methods
 };
 </script>
 <style scoped lang="scss">

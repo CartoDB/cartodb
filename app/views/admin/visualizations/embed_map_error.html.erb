@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Embed error | CARTO</title>
+    <title><%= t('admin.visual.embed_error.title') %></title>
     <%= editor_stylesheet_link_tag 'password_protected.css' %>
     <%= insert_google_tag_manager('embeds') %>
   </head>
@@ -28,7 +28,7 @@
           </svg>
         </div>
 
-        <p class='CDB-Text CDB-Size-large'><% t('admin.visual.embed_error.private') %></p>
+        <p class='CDB-Text CDB-Size-large'><%= t('admin.visual.embed_error.private') %></p>
       </div>
     </div>
 

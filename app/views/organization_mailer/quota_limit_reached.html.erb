@@ -1,15 +1,15 @@
-<%- message = "<p style='margin-bottom: 0; font-size: 24px; color: #ffffff;'><strong><% t('org_mailer.quota.title') %></strong></p>" %>
+<%- message = "<p style='margin-bottom: 0; font-size: 24px; color: #ffffff;'><strong><%= t('org_mailer.quota.title') %></strong></p>" %>
 
 <%= render partial: 'mailer_modules/negative_message', locals: { message: message } %>
 
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p><% t('org_mailer.quota.hey') %></p>
-    <p><% t('org_mailer.quota.growing') %></p>
-    <p><% t('org_mailer.quota.reminder') %></p>
-    <p><% t('org_mailer.quota.upgrade') %><a href="<%= @link %>" style="color: #1181FB;"><% t('org_mailer.quota.contact') %></a>.</p>
-    <p><% t('org_mailer.quota.meantime') %><%= t('org_mailer.quota.link') %></p>
-    <p><% t('org_mailer.quota.thanks') %></p>
+    <p><%= t('org_mailer.quota.hey') %></p>
+    <p><%= t('org_mailer.quota.growing') %></p>
+    <p><%= t('org_mailer.quota.reminder') %></p>
+    <p><%= t('org_mailer.quota.upgrade') %><a href="<%= @link %>" style="color: #1181FB;"><%= t('org_mailer.quota.contact') %></a>.</p>
+    <p><%= t('org_mailer.quota.meantime') %><%= t('org_mailer.quota.link') %></p>
+    <p><%= t('org_mailer.quota.thanks') %></p>
     </p>
   </td>
 </tr>

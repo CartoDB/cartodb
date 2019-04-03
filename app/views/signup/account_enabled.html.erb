@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @user.username %><% t('signup.account.enabled') %><% end %>
+<% content_for :title do %><%= @user.username %><%= t('signup.account.enabled') %><% end %>
 
 <div class="Sessions CDB-Text">
   <div class="Sessions-content">
@@ -12,8 +12,8 @@
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m"><% t('signup.account.active') %></h1>
-            <p class="Sessions-description"><% t('signup.account.goto') %><%= link_to "your dashboard", @destination_url %><% t('signup.account.enjoy') %></p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('signup.account.active') %></h1>
+            <p class="Sessions-description"><%= t('signup.account.goto') %><%= link_to "your dashboard", @destination_url %><%= t('signup.account.enjoy') %></p>
           </div>
         </div>
       </div>

@@ -1,24 +1,24 @@
 <% light = local_assigns.fetch(:light, false) %>
 <% footer_margin = local_assigns.fetch(:footer_margin, true) %>
-<div class="CDB-Text CDB-FontSize-medium <%= 'u-tSpace-xl' if footer_margin %><% t('admin.shared.footer.footer') %><%= 'Footer--light' if light %>">
+<div class="CDB-Text CDB-FontSize-medium <%= 'u-tSpace-xl' if footer_margin %><%= t('admin.shared.footer.footer') %><%= 'Footer--light' if light %>">
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.guides') %></li>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.developers') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.guides') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.developers') %></li>
       <% end %>
       <% unless cartodb_onpremise_version.blank? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.version', version: cartodb_onpremise_version) %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.version', version: cartodb_onpremise_version) %></li>
       <% end %>
     </ul>
 
     <ul class="Footer-list Footer-list--secondary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.support') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.support') %></li>
       <% else %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.onpremise') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.onpremise') %></li>
       <% end %>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><% t('admin.shared.footer.contact') %></li>
+      <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.contact') %></li>
     </ul>
   </div>
 </div>

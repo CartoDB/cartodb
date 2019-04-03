@@ -2,7 +2,7 @@
 
 <%= content_for(:title) do %><%= @vizjson[:title].nil? ? t('carto.builder.public.embeds.show.untitled') : @vizjson[:title] %><% end %>
 
-<%= content_for(:description) do %><%= @vizjson[:description] ? "#{@vizjson[:description].strip_tags}. " : "" %><% t('carto.builder.public.embeds.show.created') %><%= @vizjson[:user][:fullname] %><% t('carto.builder.public.embeds.show.in_carto') %><% end %>
+<%= content_for(:description) do %><%= @vizjson[:description] ? "#{@vizjson[:description].strip_tags}. " : "" %><%= t('carto.builder.public.embeds.show.created') %><%= @vizjson[:user][:fullname] %><%= t('carto.builder.public.embeds.show.in_carto') %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
 

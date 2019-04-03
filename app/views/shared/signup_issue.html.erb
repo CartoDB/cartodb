@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @signup_source %><% t('shared.sign_issue.issue') %><% end %>
+<% content_for :title do %><%= @signup_source %><%= t('shared.sign_issue.issue') %><% end %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
@@ -26,15 +26,15 @@
                 <% end %>
                 </ul>
               </p>
-              <p class="Sessions-description Sessions-description--small"><% t('shared.sign_issue.please') %><% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
-                <% t('shared.sign_issue.contact') %><%= @organization.name %><% if @organization.owner %></a><% end %><% t('shared.sign_issue.process') %></p>
+              <p class="Sessions-description Sessions-description--small"><%= t('shared.sign_issue.please') %><% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
+                <%= t('shared.sign_issue.contact') %><%= @organization.name %><% if @organization.owner %></a><% end %><%= t('shared.sign_issue.process') %></p>
             </div>
           <% else %>
             <div class="js-info">
               <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>
-              <p class="Sessions-description"><% t('shared.sign_issue.admin') %><%= @organization.name %>
+              <p class="Sessions-description"><%= t('shared.sign_issue.admin') %><%= @organization.name %>
               <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) <% end %>
-              <% t('shared.sign_issue.process') %></p>
+              <%= t('shared.sign_issue.process') %></p>
             </div>
           <% end %>
         </div>

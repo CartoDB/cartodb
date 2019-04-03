@@ -349,6 +349,7 @@ cs:
         attributions: "Carto <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
         logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
       embed_error:
+        title: 'Zapouzdřená chyba | CARTO'
         private: 'Vypadá to, že tato mapa byla nastavená jakou soukromá nebo již neexistuje'
       embed_pwd:
         protected: 'Chráněné zakotvení' ## nevím jak líp embed přeložit, můžeme to změnit

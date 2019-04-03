@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @organization ? @organization.name : 'User' %><% t('shared.signup.sign') %><% end %>
+<% content_for :title do %><%= @organization ? @organization.name : 'User' %><%= t('shared.signup.sign') %><% end %>
 
 <% content_for :js do %>
   <%= javascript_include_tag 'common', 'common_vendor', 'confirmation' %>
@@ -27,8 +27,8 @@
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m"><% t('shared.signup.account') %></h1>
-            <p class="Sessions-description"><% t('shared.signup.time') %></p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('shared.signup.account') %></h1>
+            <p class="Sessions-description"><%= t('shared.signup.time') %></p>
           </div>
         </div>
       </div>

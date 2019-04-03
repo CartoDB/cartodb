@@ -17,14 +17,14 @@
           <li><h1><%= link_to @visualization.name, "#/change-title", :class => "title" %></h1></li>
         </ul>
         <div class="metadata">
-          <p><a href="#/edit-metadata"><% t('admin.shared.vis_head.edit') %></a></p>
+          <p><a href="#/edit-metadata"><%= t('admin.shared.vis_head.edit') %></a></p>
         </div>
       </div>
       
       <div class="right">
         <ul class="options">
           <li><%= link_to "Edit", "#/options", :class => "dropdown options" %></li>
-          <li><a class="rounded share" href="#/visualize"><span><% t('admin.shared.vis_head.visual') %></span></a></li>
+          <li><a class="rounded share" href="#/visualize"><span><%= t('admin.shared.vis_head.visual') %></span></a></li>
         </ul>
       </div>
     </div>

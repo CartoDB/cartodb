@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset='utf-8' />
-    <title><%= yield :page_title -%><% t('carto_name') %></title>
+    <title><%= yield :page_title -%><%= t('carto_name') %></title>
     <%= favicon_link_tag "favicons/favicon.ico" %>
     <% if current_user.builder_enabled? %>
       <%= stylesheet_link_tag 'common_new.css', :media => 'all' %>

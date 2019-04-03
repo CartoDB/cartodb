@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title><% t('carto.builder.public.embeds.protected.map') %></title>
+    <title><%= t('carto.builder.public.embeds.protected.map') %></title>
     <%= editor_stylesheet_link_tag 'password_protected.css' %>
   </head>
 
@@ -16,7 +16,7 @@
           </a>
         </div>
 
-        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'><% t('carto.builder.public.embeds.protected.passwd') %></p>
+        <p class='CDB-Text CDB-Size-large is-light u-whiteTextColor u-bSpace--xl'><%= t('carto.builder.public.embeds.protected.passwd') %></p>
 
         <div class='PublicPage-form'>
           <%= form_tag "embed_protected?#{request.query_string}", method: :post do %>
@@ -34,7 +34,7 @@
           <% end %>
         </div>
 
-        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'><% t('carto.builder.public.embeds.protected.contact') %></p>
+        <p class='CDB-Text CDB-Size-medium is-light u-hintTextColor u-tSpace-xl'><%= t('carto.builder.public.embeds.protected.contact') %></p>
       </div>
     </div>
   </body>

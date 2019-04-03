@@ -344,6 +344,7 @@ en:
         attributions: "CARTO <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
         logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
       embed_error:
+        title: 'Embed error | CARTO'
         private: 'Looks like this map is set as private or no longer exists'
       embed_pwd:
         protected: 'Protected embed'

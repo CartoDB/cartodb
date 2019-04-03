@@ -3,8 +3,8 @@
 <footer id="Footer" class="CDB-Text CDB-FontSize-medium Footer <%= 'Footer--light' if light %> Footer--public u-pr">
   <div class="Footer-inner Footer-inner--public">
     <div class="u-inner">
-      <p class="PublicTitle PublicTitle--feature"><% t('admin.shared.pub_footer.subscribe') %></p>
-      <h3 class="Title Title--sectionMedium u-vspace--20"><% t('admin.shared.pub_footer.keepup') %></h3>
+      <p class="PublicTitle PublicTitle--feature"><%= t('admin.shared.pub_footer.subscribe') %></p>
+      <h3 class="Title Title--sectionMedium u-vspace--20"><%= t('admin.shared.pub_footer.keepup') %></h3>
 
       <div class="Grid u-vspace-l">
         <ul class="Grid-inner">
@@ -67,7 +67,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://carto.com/builder/"><% t('builder') %></a></dd>
+          </i><a class="Footer-link" href="https://carto.com/builder/"><%= t('builder') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -81,7 +81,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://carto.com/engine/"><% t('engine') %></a></dd>
+          </i><a class="Footer-link" href="https://carto.com/engine/"><%= t('engine') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -95,7 +95,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://carto.com/mobile/"><% t('mobile') %></a></dd>
+          </i><a class="Footer-link" href="https://carto.com/mobile/"><%= t('mobile') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -109,7 +109,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://carto.com/location-data-services/"><% t('admin.shared.pub_footer.location') %></a></dd>
+          </i><a class="Footer-link" href="https://carto.com/location-data-services/"><%= t('admin.shared.pub_footer.location') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -123,7 +123,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://carto.com/data-observatory/"><% t('admin.shared.pub_footer.observ') %></a></dd>
+          </i><a class="Footer-link" href="https://carto.com/data-observatory/"><%= t('admin.shared.pub_footer.observ') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -137,7 +137,7 @@
                 </g>
               </g>
             </svg>
-          </i><a class="Footer-link" href="https://github.com/CartoDB/cartodb"><% t('admin.shared.pub_footer.source') %></a></dd>
+          </i><a class="Footer-link" href="https://github.com/CartoDB/cartodb"><%= t('admin.shared.pub_footer.source') %></a></dd>
           <dd class="Footer-item Footer-item--mobile"><i class="FooterIcon FooterIcon--mobile Footer-arrow">
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg width="6px" height="10px" viewBox="0 0 272 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -159,83 +159,83 @@
         <ul class="Grid-inner Grid-inner--shortpadding">
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('product') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/builder/"><% t('builder') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/engine/"><% t('engine') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/mobile/"><% t('mobile') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/location-data-services/"><% t('admin.shared.pub_footer.location') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/data-observatory/"><% t('admin.shared.pub_footer.observ') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://github.com/CartoDB/cartodb"><% t('admin.shared.pub_footer.source') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/pricing/" class="Footer-link"><% t('pricing') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('product') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/builder/"><%= t('builder') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/engine/"><%= t('engine') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/mobile/"><%= t('mobile') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/location-data-services/"><%= t('admin.shared.pub_footer.location') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/data-observatory/"><%= t('admin.shared.pub_footer.observ') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://github.com/CartoDB/cartodb"><%= t('admin.shared.pub_footer.source') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/pricing/" class="Footer-link"><%= t('pricing') %></a></dd>
             </dl>
           </li>
 
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('solutions') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/banking-and-finance/"><% t('admin.shared.pub_footer.banking') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/business-intelligence-and-analytics/"><% t('admin.shared.pub_footer.bi') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/government/"><% t('admin.shared.pub_footer.government') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/real-estate/"><% t('admin.shared.pub_footer.real') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/web-mobile/"><% t('admin.shared.pub_footer.web') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/journalism/"><% t('admin.shared.pub_footer.journal') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/natural-resources/"><% t('admin.shared.pub_footer.natural') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/earth-observation-and-space/"><% t('admin.shared.pub_footer.earth') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/non-profits/"><% t('admin.shared.pub_footer.noprofit') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/education-and-research/"><% t('admin.shared.pub_footer.education') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('solutions') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/banking-and-finance/"><%= t('admin.shared.pub_footer.banking') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/business-intelligence-and-analytics/"><%= t('admin.shared.pub_footer.bi') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/government/"><%= t('admin.shared.pub_footer.government') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/real-estate/"><%= t('admin.shared.pub_footer.real') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/web-mobile/"><%= t('admin.shared.pub_footer.web') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/journalism/"><%= t('admin.shared.pub_footer.journal') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/natural-resources/"><%= t('admin.shared.pub_footer.natural') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/earth-observation-and-space/"><%= t('admin.shared.pub_footer.earth') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/non-profits/"><%= t('admin.shared.pub_footer.noprofit') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/solutions/education-and-research/"><%= t('admin.shared.pub_footer.education') %></a></dd>
             </dl>
           </li>
 
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('admin.shared.pub_footer.connectors') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/dropbox/"><% t('admin.shared.pub_footer.dropbox') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/google-drive/"><% t('admin.shared.pub_footer.google') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/twitter-maps/"><% t('admin.shared.pub_footer.twitter') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/mailchimp/"><% t('admin.shared.pub_footer.mailchimp') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/excel-data/"><% t('admin.shared.pub_footer.excel') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/arcgis/"><% t('admin.shared.pub_footer.arcgis') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/satellite-imagery/"><% t('admin.shared.pub_footer.satellite') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/qlik/"><% t('admin.shared.pub_footer.qlik') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/splunk/"><% t('admin.shared.pub_footer.splunk') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/alteryx/"><% t('admin.shared.pub_footer.alteryx') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('admin.shared.pub_footer.connectors') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/dropbox/"><%= t('admin.shared.pub_footer.dropbox') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/google-drive/"><%= t('admin.shared.pub_footer.google') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/twitter-maps/"><%= t('admin.shared.pub_footer.twitter') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/mailchimp/"><%= t('admin.shared.pub_footer.mailchimp') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/excel-data/"><%= t('admin.shared.pub_footer.excel') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/arcgis/"><%= t('admin.shared.pub_footer.arcgis') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/satellite-imagery/"><%= t('admin.shared.pub_footer.satellite') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/qlik/"><%= t('admin.shared.pub_footer.qlik') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/splunk/"><%= t('admin.shared.pub_footer.splunk') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/connectors/alteryx/"><%= t('admin.shared.pub_footer.alteryx') %></a></dd>
             </dl>
           </li>
 
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('admin.shared.pub_footer.discover') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/gallery/"><% t('admin.shared.pub_footer.map_gallery') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/explore"><% t('admin.shared.pub_footer.explore') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/ambassadors/"><% t('admin.shared.pub_footer.ambassadors') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('admin.shared.pub_footer.discover') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/gallery/"><%= t('admin.shared.pub_footer.map_gallery') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/explore"><%= t('admin.shared.pub_footer.explore') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/ambassadors/"><%= t('admin.shared.pub_footer.ambassadors') %></a></dd>
             </dl>
           </li>
 
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('admin.shared.pub_footer.learn') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/learn/guides"><% t('admin.shared.pub_footer.guides') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/developers"><% t('admin.shared.pub_footer.developers') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/academy"><% t('admin.shared.pub_footer.academy') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/resources/"><% t('admin.shared.pub_footer.resources') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/webinars/"><% t('admin.shared.pub_footer.webinars') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/blog"><% t('blog') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('admin.shared.pub_footer.learn') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/learn/guides"><%= t('admin.shared.pub_footer.guides') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/developers"><%= t('admin.shared.pub_footer.developers') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/academy"><%= t('admin.shared.pub_footer.academy') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/resources/"><%= t('admin.shared.pub_footer.resources') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/webinars/"><%= t('admin.shared.pub_footer.webinars') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/blog"><%= t('blog') %></a></dd>
             </dl>
           </li>
 
           <li class="Grid-cell Grid-cell--col2 Grid-cell--col4--tablet Grid-cell--col6--mobile Footer-column">
             <dl>
-              <dt class="Footer-title u-vspace-xs"><% t('admin.shared.pub_footer.about') %></dt>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/team/"><% t('admin.shared.pub_footer.team') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/jobs/"><% t('admin.shared.pub_footer.jobs') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/press/"><% t('admin.shared.pub_footer.press') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/partners/"><% t('admin.shared.pub_footer.partners') %></a></dd>
+              <dt class="Footer-title u-vspace-xs"><%= t('admin.shared.pub_footer.about') %></dt>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/team/"><%= t('admin.shared.pub_footer.team') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/jobs/"><%= t('admin.shared.pub_footer.jobs') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/press/"><%= t('admin.shared.pub_footer.press') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/partners/"><%= t('admin.shared.pub_footer.partners') %></a></dd>
               <dd class="Footer-item"><%= t('admin.shared.pub_footer.attr') %></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/contributing/"><% t('admin.shared.pub_footer.contrib') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="mailto:sales@carto.com"><% t('admin.shared.pub_footer.contact') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/request-live-demo/"><% t('admin.shared.pub_footer.demo') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/terms/"><% t('admin.shared.pub_footer.terms') %></a></dd>
-              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/legal/"><% t('admin.shared.pub_footer.legal') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/contributing/"><%= t('admin.shared.pub_footer.contrib') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="mailto:sales@carto.com"><%= t('admin.shared.pub_footer.contact') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/request-live-demo/"><%= t('admin.shared.pub_footer.demo') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/terms/"><%= t('admin.shared.pub_footer.terms') %></a></dd>
+              <dd class="Footer-item"><a class="Footer-link" href="https://carto.com/legal/"><%= t('admin.shared.pub_footer.legal') %></a></dd>
             </dl>
           </li>
         </ul>

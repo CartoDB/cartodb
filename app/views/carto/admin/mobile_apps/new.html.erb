@@ -1,5 +1,5 @@
 <% content_for(:page_title) do %>
-  <% t('carto.admin.mobile.new.new_mobile') %>
+  <%= t('carto.admin.mobile.new.new_mobile') %>
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
@@ -32,7 +32,7 @@
             </li>
             <li class="Filters-typeItem">
               <div class="FormAccount-title">
-                <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('carto.admin.mobile.new.new_app') %></p>
+                <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('carto.admin.mobile.new.new_app') %></p>
               </div>
             </li>
           </ul>

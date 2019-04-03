@@ -5,7 +5,7 @@
 
   <div class="FormAccount-row js-iconSelector">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('carto.admin.mobile.form.icon') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('carto.admin.mobile.form.icon') %></label>
     </div>
     <div class="FormAccount-rowData FormAccount-avatar">
       <div class="FormAccount-avatarPreview">
@@ -14,7 +14,7 @@
       <div class="FormAccount-avatar--input">
         <%= f.file_field :icon_url, :class => "FormAccount-fileAvatar js-fileIcon", :value => "Change image", :required => "true" %>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller"><% t('carto.admin.mobile.form.recommended') %></p>
+          <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller"><%= t('carto.admin.mobile.form.recommended') %></p>
         </div>
       </div>
     </div>
@@ -22,7 +22,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('name') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('name') %></label>
     </div>
     <div class="FormAccount-rowData">
       <%= f.text_field :name, :placeholder => "Application name", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med", :required => "true" %>
@@ -31,7 +31,7 @@
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('description') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('description') %></label>
     </div>
     <div class="FormAccount-rowData">
       <%= f.text_area :description, :placeholder => "Application description", :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" %>
@@ -43,7 +43,7 @@
 
    <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('platform') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('platform') %></label>
     </div>
 
     <div class="FormAccount-rowData">
@@ -85,7 +85,7 @@
 
    <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('carto.admin.mobile.form.type') %></label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('carto.admin.mobile.form.type') %></label>
     </div>
     <%- app_types = @mobile_app.data(current_user, fetch_app_types: true)[:app_types] %>
     <%- if @mobile_app.persisted? %>
@@ -129,14 +129,14 @@
 
   <%- if @mobile_app.persisted? %>
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><% t('carto.admin.mobile.form.license') %></p>
+      <p class="FormAccount-titleText"><%= t('carto.admin.mobile.form.license') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('carto.admin.mobile.form.api') %></label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('carto.admin.mobile.form.api') %></label>
       </div>
       <div class="FormAccount-rowData">
         <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-textarea--longHeight no-resize FormAccount-input FormAccount-input--totalwidth" readonly><%= @mobile_app.license_key %></textarea>
@@ -144,7 +144,7 @@
     </div>
 
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><% t('carto.admin.mobile.form.quota') %></p>
+      <p class="FormAccount-titleText"><%= t('carto.admin.mobile.form.quota') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
@@ -154,7 +154,7 @@
         <div class="ProgressBar">
           <span class="ProgressBar-bar <%= progress_bar_range(progress_bar_width) %>" style="width: <%= progress_bar_width %>%"></span>
         </div>
-        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><% t('carto.admin.mobile.form.monthly') %></div>
+        <div class="ProgressBar-legend"><%= number_with_delimiter(@mobile_app.monthly_users, delimiter: ",") %><%= t('carto.admin.mobile.form.monthly') %></div>
       </div>
     </div>
 
@@ -162,18 +162,18 @@
 
   <%- if @mobile_app.persisted? %>
     <div class="FormAccount-title">
-      <p class="FormAccount-titleText"><% t('carto.admin.mobile.form.delete') %></p>
+      <p class="FormAccount-titleText"><%= t('carto.admin.mobile.form.delete') %></p>
     </div>
 
     <span class="FormAccount-separator"></span>
 
     <div class="FormAccount-row FormAccount-row--wideMarginBottom">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><% t('carto.admin.mobile.form.sure') %></label>
+        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('carto.admin.mobile.form.sure') %></label>
       </div>
       <div class="FormAccount-row">
         <div class="FormAccount-rowData">
-          <span class="CDB-Size-medium FormAccount-button--deleteAccount js-deleteMobileApp"><% t('carto.admin.mobile.form.this') %></span>
+          <span class="CDB-Size-medium FormAccount-button--deleteAccount js-deleteMobileApp"><%= t('carto.admin.mobile.form.this') %></span>
         </div>
       </div>
     </div>

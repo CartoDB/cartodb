@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @user.username %><% t('signup.resend.valid') %><% end %>
+<% content_for :title do %><%= @user.username %><%= t('signup.resend.valid') %><% end %>
 
 <div class="Sessions CDB-Text">
   <div class="Sessions-content">
@@ -12,8 +12,8 @@
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m"><% t('signup.resend.new') %></h1>
-            <p class="Sessions-description"><% t('signup.resend.sent') %></p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('signup.resend.new') %></h1>
+            <p class="Sessions-description"><%= t('signup.resend.sent') %></p>
           </div>
         </div>
       </div>

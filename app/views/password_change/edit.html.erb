@@ -1,4 +1,4 @@
-<% content_for :title do %><% t('password_change.edit.reset') %><% end %>
+<% content_for :title do %><%= t('password_change.edit.reset') %><% end %>
 
 <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 
@@ -65,7 +65,7 @@
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><% t('password_change.edit.noaccount') %><%= link_to t('password_change.edit.signup'), t('signup_url') %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><%= t('password_change.edit.noaccount') %><%= link_to t('password_change.edit.signup'), t('signup_url') %></p>
         </div>
       </div>
     </footer>

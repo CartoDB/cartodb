@@ -1,6 +1,6 @@
 <% if @tags.size > 0 %>
   <ul class="tags">
-    <li><strong><% t('admin.pages.shared.tags.browse') %></strong></li>
+    <li><strong><%= t('admin.pages.shared.tags.browse') %></strong></li>
 
     <% @tags.last(10).reverse.each_with_index do |tag, i| %>
       <li<%= " class='#{i == 0 ? "first" : "last" }'" if i == 0 || i == @tags.size - 1 %>>

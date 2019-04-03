@@ -6,7 +6,7 @@
           <%= render_organization_avatar %>
         </div>
         <% if !Cartodb.config[:cartodb_com_hosted].present? && @organization.present? %>
-          <div class="Navbar-text"><% t('admin.shared.sess_head.not_part') %><%= @organization.name %>?<% t('admin.shared.sess_head.goto') %><a class="Navbar-textLink" href="https://carto.com">carto.com</a></div>
+          <div class="Navbar-text"><%= t('admin.shared.sess_head.not_part') %><%= @organization.name %>?<%= t('admin.shared.sess_head.goto') %><a class="Navbar-textLink" href="https://carto.com">carto.com</a></div>
         <% end %>
       </div>
     </nav>

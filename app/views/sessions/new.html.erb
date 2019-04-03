@@ -59,7 +59,7 @@
               <% end %>
               <% if @oauth_configs.any? %>
                 <div class="Sessions-field Sessions-oauthHeader">
-                  <p><% t('sessions.new.or_login_with') %></p>
+                  <p><%= t('sessions.new.or_login_with') %></p>
                 </div>
                 <div class="Sessions-field Sessions-oauthContainer">
                   <% @oauth_configs.each do |config| %>
@@ -70,11 +70,11 @@
 
               <% if @user_login_url %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  <% t('sessions.new.not_member') %><%= @organization.name %><% t('sessions.new.org') %><a href="<%= @user_login_url %>"><% t('sessions.new.general') %>
+                  <%= t('sessions.new.not_member') %><%= @organization.name %><%= t('sessions.new.org') %><a href="<%= @user_login_url %>"><%= t('sessions.new.general') %>
                 </p>
               <% elsif @organization.try(:auth_username_password_enabled) %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  <% t('sessions.new.use_email') %>
+                  <%= t('sessions.new.use_email') %>
                 </p>
               <% end %>
             </div>
@@ -92,7 +92,7 @@
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><% t('sessions.new.dont_have_account') %><%= link_to t('sessions.new.signup'), organization_signup_url.present? ? organization_signup_url : t('signup_url') %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><%= t('sessions.new.dont_have_account') %><%= link_to t('sessions.new.signup'), organization_signup_url.present? ? organization_signup_url : t('signup_url') %></p>
         </div>
       </div>
     </footer>

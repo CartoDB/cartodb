@@ -1,17 +1,17 @@
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p><% t('user.new.invited') %><strong><%= @organization.name_to_display %></strong><% t('user.new.login') %>(<%= @user.username %>)<% t('user.new.passwd') %><%= @user_needs_password ? t('user.new.provided') : t('user.new.entered') %><%= t('user.new.soon') unless @enable_account_link.nil? %>.</p>
+    <p><%= t('user.new.invited') %><strong><%= @organization.name_to_display %></strong><%= t('user.new.login') %>(<%= @user.username %>)<%= t('user.new.passwd') %><%= @user_needs_password ? t('user.new.provided') : t('user.new.entered') %><%= t('user.new.soon') unless @enable_account_link.nil? %>.</p>
     <% unless Cartodb.get_config(:mailer, 'template', 'avoid_carto_links') %>
-      <p><% t('user.new.resources') %></p>
+      <p><%= t('user.new.resources') %></p>
       <ul>
-        <li><a href="https://carto.com/developers/"><% t('user.new.devcenter') %></a><% t('user.new.guides') %></li>
-        <li><a href="https://carto.com/resources/"><% t('user.new.rescenter') %></a><% t('user.new.case') %></li>
-        <li><% t('user.new.videos') %><a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced"><% t('user.new.analysis') %></a>, <a href="https://vimeo.com/173658241/dd37f7ea8c"><% t('user.new.widgets') %></a>, <a href="https://vimeo.com/173658333/21259b1d37"><% t('user.new.publishing') %></a></li>
+        <li><a href="https://carto.com/developers/"><%= t('user.new.devcenter') %></a><%= t('user.new.guides') %></li>
+        <li><a href="https://carto.com/resources/"><%= t('user.new.rescenter') %></a><%= t('user.new.case') %></li>
+        <li><%= t('user.new.videos') %><a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced"><%= t('user.new.analysis') %></a>, <a href="https://vimeo.com/173658241/dd37f7ea8c"><%= t('user.new.widgets') %></a>, <a href="https://vimeo.com/173658333/21259b1d37"><%= t('user.new.publishing') %></a></li>
       </ul>
     <% end %>
 
     <% if @user_needs_password %>
-      <p><% t('user.new.contact') %><strong><%= @owner.email %></strong>.</p>
+      <p><%= t('user.new.contact') %><strong><%= @owner.email %></strong>.</p>
     <% end %>
   </td>
 </tr>

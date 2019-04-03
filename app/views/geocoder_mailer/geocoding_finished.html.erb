@@ -1,4 +1,4 @@
-<%- message = "<p><% t('geocoder.finished.msg1') %><strong>#{@geocoded_rows}</strong><% t('geocoder.finished.msg2') %><strong>#{@processable_rows}</strong><% t('geocoder.finished.msg3') %><strong>#{@table_name}</strong>.</p>" %>
+<%- message = "<p><%= t('geocoder.finished.msg1') %><strong>#{@geocoded_rows}</strong><%= t('geocoder.finished.msg2') %><strong>#{@processable_rows}</strong><%= t('geocoder.finished.msg3') %><strong>#{@table_name}</strong>.</p>" %>
 
 <% if @geocoding_failed || !@all_rows_geocoded %>
   <%= render partial: 'mailer_modules/warning_message', locals: { message: message } %>
@@ -9,7 +9,7 @@
 <% if @geocoding_failed || !@all_rows_geocoded %>
   <tr>
     <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-      <p><% t('geocoder.finished.errors') %><% t('geocoder.finished.try_again') %></p>
+      <p><%= t('geocoder.finished.errors') %><%= t('geocoder.finished.try_again') %></p>
     </td>
   </tr>
 <% end %>

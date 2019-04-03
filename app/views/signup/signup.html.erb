@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @organization.name %><% t('signup.signup.sign') %><% end %>
+<% content_for :title do %><%= @organization.name %><%= t('signup.signup.sign') %><% end %>
 
 <% content_for :js do %>
   <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
@@ -21,12 +21,12 @@
               <% provider = CGI.parse(URI.parse(params[:after]).query)['provider'].first %>
               <% if provider.present? %>
                 <% if provider == "data.gov" %>
-                  <p class="Sessions-description"><% t('signup.signup.datagov') %></p>
+                  <p class="Sessions-description"><%= t('signup.signup.datagov') %></p>
                 <% else %>
-                  <p class="Sessions-description"><% t('signup.signup.provider1') %><%= provider %><% t('signup.signup.provider2') %></p>
+                  <p class="Sessions-description"><%= t('signup.signup.provider1') %><%= provider %><%= t('signup.signup.provider2') %></p>
                 <% end %>
               <% else %>
-                <p class="Sessions-description"><% t('signup.signup.dataset') %></p>
+                <p class="Sessions-description"><%= t('signup.signup.dataset') %></p>
               <% end %>
             <% end %>
 
@@ -94,7 +94,7 @@
             <% end %>
 
             <% if @organization.auth_username_password_enabled %>
-              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description"><% t('signup.signup.org') %></p>
+              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description"><%= t('signup.signup.org') %></p>
             <% end %>
           </div>
         </div>
@@ -118,7 +118,7 @@
           <% end %>
         </p>
 
-        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center"><% t('signup.signup.clicking') %><%= link_to 'terms and conditions', terms_path %><% t('signup.signup.service') %><%= link_to 'privacy policy', privacy_path %></p>
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center"><%= t('signup.signup.clicking') %><%= link_to 'terms and conditions', terms_path %><%= t('signup.signup.service') %><%= link_to 'privacy policy', privacy_path %></p>
       </div>
     </div>
   </footer>

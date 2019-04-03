@@ -20,7 +20,7 @@
         <% if "#{params[:controller]}_#{params[:action]}" == "carto/admin/mobile_apps_index" %>
           <ul class="Filters-group">
             <a href="<%= CartoDB.url(self, 'new_mobile_app', user: current_user) %>" class="CDB-Button CDB-Button--primary">
-              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><% t('admin.shared.api_keys.new_app') %></span>
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= t('admin.shared.api_keys.new_app') %></span>
             </a>
           </ul>
         <% end %>
@@ -31,7 +31,7 @@
 <% else %>
 
   <div class="FormAccount-title">
-    <p class="FormAccount-titleText"><% t('admin.shared.api_keys.private') %></p>
+    <p class="FormAccount-titleText"><%= t('admin.shared.api_keys.private') %></p>
     <span class="Filters-separator"></span>
   </div>
 

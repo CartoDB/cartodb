@@ -1,4 +1,4 @@
-<% content_for :title do %><% t('home.app_diag.diag') %><% end %>
+<% content_for :title do %><%= t('home.app_diag.diag') %><% end %>
 
 <%= content_for(:css) do %>
     <style>
@@ -49,10 +49,10 @@
     </style>
 <% end %>
 
-<h1><% t('home.app_diag.diag') %></h1>
+<h1><%= t('home.app_diag.diag') %></h1>
 
-<p><% t('home.app_diag.dependencies') %></p>
-<p><% t('home.app_diag.problem') %><a href="https://groups.google.com/forum/#!forum/cartodb"><% t('home.app_diag.google') %></a><% t('home.app_diag.include') %></p>
+<p><%= t('home.app_diag.dependencies') %></p>
+<p><%= t('home.app_diag.problem') %><a href="https://groups.google.com/forum/#!forum/cartodb"><%= t('home.app_diag.google') %></a><%= t('home.app_diag.include') %></p>
 
 <dl>
   <% @diagnosis.each { |d| %>

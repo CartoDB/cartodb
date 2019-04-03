@@ -2,30 +2,30 @@
   <div>
     <div @click="openModal">
       <Selector
-        :title="'Create a web map from your browser'"
-        :text="'Uncover insights from your location data with our online drag and drop tool.'"
-        :tags="['Online', 'Builder']"
+        :title="$t('wizards.builder.title')"
+        :text="$t('wizards.builder.subtitle')"
+        :tags="$t('wizards.builder.tags')"
         :iconModifier="'window'"></Selector>
     </div>
     <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <WizardStep
+        <Step
           v-if="isCurrentStep(1)"
           :stepNum="1">
-        </WizardStep>
-        <WizardStep
+        </Step>
+        <Step
           v-if="isCurrentStep(2)"
-          :stepNum="2"></WizardStep>
-        <WizardStep
+          :stepNum="2"></Step>
+        <Step
           v-if="isCurrentStep(3)"
-          :stepNum="3"></WizardStep>
-        <WizardStep
+          :stepNum="3"></Step>
+        <Step
           v-if="isCurrentStep(4)"
-          :stepNum="4"></WizardStep>
-        <WizardStep
+          :stepNum="4"></Step>
+        <Step
           v-if="isCurrentStep(5)"
-          :stepNum="5"></WizardStep>
+          :stepNum="5"></Step>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -38,7 +38,7 @@
 
 <script>
 import Selector from 'new-dashboard/components/Wizard/Selector.vue';
-import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
+import Step from 'new-dashboard/components/Wizard/Step.vue';
 import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
@@ -51,7 +51,7 @@ export default {
   name: 'WizardCARTOVL',
   components: {
     Selector,
-    WizardStep,
+    Step,
     Header,
     Footer,
     Modal

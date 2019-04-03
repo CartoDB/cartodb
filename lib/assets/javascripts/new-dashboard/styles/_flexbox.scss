@@ -22,6 +22,10 @@ $align: (
   display: flex;
 }
 
+.u-inlineflex {
+  display: inline-flex;
+}
+
 @each $name, $property in $direction {
   .u-flex__direction--#{$name} {
     flex-direction: #{$property} !important;

@@ -318,5 +318,50 @@
     "groups": "{groupname} | {n} groups",
     "users": "{username} | {n} users",
     "and": "and"
+  },
+  "wizards": {
+    "cartovl": {
+      "step1": {
+        "text1": "The CARTO platfomr provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a JAvascript library to build beautiful interactive web maps",
+        "text2": "In this quick guide you will learn how to load the libarry in your project, crete a map with one of our basemaps, and add a data layer."
+      },
+      "step2": {
+        "summary": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features",
+        "howto": {
+          "instruction1":"Create an HTML file in your favourite IDE.",
+          "instruction2":"Add the following script code to the &lthead&gt element."
+          },
+        "extras": {
+          "resource1": "Use your favourite Integrated Development Environments (IDE) but if you want a suggestion the favourite ones for the CARTO team are <a href=''>Visual Studio Code</a>, <a href=''>Sublime</a>, and <a href=''>Textmate</a>.",
+          "resource2": "CARTO VL is our more advanced rendering library and it’s constantly adding new features. You can learn what cool stuff did we add lately in our <a href=''>Product Updates</a> blog."
+        }
+      },
+      "step3": {
+        "summary": "Define the &ltdiv&gt element that will contain the map",
+        "howto": {
+          "instruction1":"Include in the &ltbody&gt of your HTML file a &ltdiv&gt element to contain the map. The map, layers, and controls will be displayed in this element",
+          "instruction2":"Paste the following CSS code in the bottom of the &lthead&gt element to define some basic styles for the map."
+
+        }
+      },
+      "step4": {
+        "summary": "Create a MapboxGL map to render a basemap",
+        "howto": {
+          "instruction1":"Copy and paste this script below your &ltdiv&gt container to load the map."
+        },
+        "extras": {
+          "resource1": "Each basemap is designed to highlight different data. CARTO offers a variety of unique high quality basemaps like Darkmatter, Positron, and Voyager; and easily allows to include any other basemap you want to use. <a href=''>Learn more about basemaps.</a>"
+        }
+      },
+      "step5": {
+        "summary": "Connect to a test CARTO account an add a data layer to your map",
+        "howto": {
+          "instruction1":"Connect to a CARTO account by specifiying the username and API key you want to use. In this case, we're using a test account and the default key",
+          "instruction2":"Now that CARTO VL has access to the account you can crate a basic layer to the map that displays the loaded data."
+          },
+        "extras": {
+          "resource1": "If you want to learn more about how to add your own data to the map you can always visit the <a href=''>data injection section</a>, at the <a href=''>Developer Center</a>."        }
+      }
+    }
   }
 }

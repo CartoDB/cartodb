@@ -1,10 +1,6 @@
 <template>
-  <div class="wizard-step container">
-    <h1 class="title is-body is-semibold">{{title}}</h1>
-    <h2 class="text is-caption">{{subTitle}}</h2>
-    <div>
-      <slot></slot>
-    </div>
+  <div class="container u-mt--64 u-mb--80">
+    <slot></slot>
   </div>
 </template>
 
@@ -20,8 +16,11 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.wizard-step {
-  width: 100%;
-}
+// .wizard-step {
+//   width: 100%;
+//   height: 100%;
+//   padding-top: 64px;
+//   overflow-x: scroll;
+// }
 
 </style>

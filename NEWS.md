@@ -41,6 +41,8 @@ Development
 - Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
 - Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
 - Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+- Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
+- Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 
 4.26.0 (2019-03-11)
 -------------------

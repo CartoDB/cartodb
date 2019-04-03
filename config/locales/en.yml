@@ -38,9 +38,7 @@ en:
       login: 'Log in'
       or_login_with: 'OR LOG IN WITH:'
       dont_have_account: "Don't have an account yet?"
-      not_member: "Not a member of the "
-      org: " organization? Try the "
-      general: " general login</a> instead."
+      not_member: 'Not a member of the %{org_name} organization? Try the <a href="%{login_url}">general login</a> instead.'
       use_email: "Please, remember to use an email address belonging to this organization to login to your account."
       forgot: 'Forgot?'
       signup: 'Sign up here'
@@ -49,6 +47,7 @@ en:
       auth_error: ' authentication error'
       validate_account: 'You must validate your email account'
       check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
+      resend_valid: "If you didn't receive your validation email, click <a href=\"%{validation_url}\">here</a> and a new email will be sent directly to you."
       resent_valid_part1: "If you didn't receive your validation email, click <a href="
       resent_valid_part2: '>here</a> and a new email will be sent directly to you.'
     multifact:

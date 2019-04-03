@@ -70,7 +70,7 @@
 
               <% if @user_login_url %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  <%= t('sessions.new.not_member') %><%= @organization.name %><%= t('sessions.new.org') %><a href="<%= @user_login_url %>"><%= t('sessions.new.general') %>
+                  <%= raw t('sessions.new.not_member', org_name: @organization.name, login_url: @user_login_url) %>
                 </p>
               <% elsif @organization.try(:auth_username_password_enabled) %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">

@@ -14,7 +14,7 @@
               <p class="Sessions-description"><%= t('sessions.account_error.check_email') %></p>
 
             <% if @user %>
-              <p class="Sessions-description"><%= t('sessions.account_error.resent_valid_part1') %>"<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>"<% t('sessions.account_error.resent_valid_part2') %></p>
+              <p class="Sessions-description"><%= raw t('sessions.account_error.resend_valid', validation_url: CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id)) %></p>
             <% end %>
           </div>
         </div>

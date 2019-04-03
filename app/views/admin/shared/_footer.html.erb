@@ -4,8 +4,8 @@
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.guides') %></li>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.developers') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= raw t('admin.shared.footer.guides') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= raw t('admin.shared.footer.developers') %></li>
       <% end %>
       <% unless cartodb_onpremise_version.blank? %>
         <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.version', version: cartodb_onpremise_version) %></li>
@@ -14,11 +14,11 @@
 
     <ul class="Footer-list Footer-list--secondary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.support') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= raw t('admin.shared.footer.support') %></li>
       <% else %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.onpremise') %></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= raw t('admin.shared.footer.onpremise') %></li>
       <% end %>
-      <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= t('admin.shared.footer.contact') %></li>
+      <li class="Footer-listItem CDB-Text CDB-Size-medium"><%= raw t('admin.shared.footer.contact') %></li>
     </ul>
   </div>
 </div>

@@ -43,9 +43,7 @@ cs:
       login: 'Přihlásit se'
       or_login_with: 'NEBO PŘIHLÁSIT SE POMOCÍ'
       dont_have_account: "Nemáte ještě zřízený účet?"
-      not_member: "Nejste členem organiyace "
-      org: " ? Zkuste se místo toho přihlásit "
-      general: " obecným účtem</a>."
+      not_member: 'Nejste členem organizace %{org_name}? Zkuste se místo toho přihlásit <a href="%{login_url}">obecným účtem</a>.'
       use_email: "Pamatujte prosím, že k přihlášení do vašeho účtu se musíte přihlásit e-mailem patřícím k dané organizaci."
       forgot: 'Nepamatujete si heslo?'
       signup: 'Registrace'
@@ -54,8 +52,7 @@ cs:
       auth_error: ' chyba přihlášení'
       validate_account: 'Musíte potvrdit Váš e-mailový účet.'
       check_email: 'Prosím zkontrolujte Vaší e-mailovou schárnku a klikněte na tlačítko "Aktivovat Váš účet" v úvítacím mailu.'
-      resent_valid_part1: "Pokud jste neobdrželi Váš registrační mail, klikněte <a href="
-      resent_valid_part2: '>zde</a> a nový email bude automaticky odeslán.'
+      resend_valid: "Pokud jste neobdrželi Váš registrační mail, klikněte <a href=\"%{validation_url}\">zde</a> a nový email bude automaticky odeslán."
     multifact:
       use_google: 'K naskenování QR kódu použijte aplikaci Google Authenticator.'
       qr_problem: 'Pokud máte problém s QR kódem,'
@@ -247,7 +244,7 @@ cs:
         no_public: "%{name} ještě nemá žádné veřejné %{item_type}"
         maybe: 'Ale možná má nějaké zajímavé %{item_type}'
       org_subhead:
-        profile: 'Organizační profil'
+        profile: 'Profil organizace'
         settings: 'Nastavení oprávnění'
         users: ' uživatelé'
         groups: 'Skupiny'

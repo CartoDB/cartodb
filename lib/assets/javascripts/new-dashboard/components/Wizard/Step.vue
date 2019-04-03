@@ -1,5 +1,5 @@
 <template>
-  <div class="container u-flex__grow--1 u-mt--64 u-mb--80">
+  <div class="container u-flex__grow--1 u-mt--64 u-mb--80 u-p--0">
     <slot></slot>
   </div>
 </template>
@@ -15,5 +15,9 @@ export default {
 </script>
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
+
+.container {
+  width: 100%;
+}
 
 </style>

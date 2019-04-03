@@ -2,39 +2,39 @@
   <div>
     <div @click="openModal">
       <Selector
-        :title="'Develop an interactive map'"
-        :text="'Build impresive map visualizations to enrich your website and apps.'"
-        :tags="['JavaScript', 'CARTO VL']"
+        :title="$t('wizards.cartovl.title')"
+        :text="$t('wizards.cartovl.subtitle')"
+        :tags="$t('wizards.cartovl.tags')"
         :iconModifier="'map'"></Selector>
     </div>
     <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <WizardStep
+        <Step
           v-if="isCurrentStep(1)"
           :stepNum="1">
           <Step1></Step1>
-        </WizardStep>
-        <WizardStep
+        </Step>
+        <Step
           v-if="isCurrentStep(2)"
           :stepNum="2">
           <Step2></Step2>
-        </WizardStep>
-        <WizardStep
+        </Step>
+        <Step
           v-if="isCurrentStep(3)"
           :stepNum="3">
           <Step3></Step3>
-        </WizardStep>
-        <WizardStep
+        </Step>
+        <Step
           v-if="isCurrentStep(4)"
           :stepNum="4">
           <Step4></Step4>
-        </WizardStep>
-        <WizardStep
+        </Step>
+        <Step
           v-if="isCurrentStep(5)"
           :stepNum="5">
           <Step5></Step5>
-        </WizardStep>
+        </Step>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -47,7 +47,7 @@
 
 <script>
 import Selector from 'new-dashboard/components/Wizard/Selector.vue';
-import WizardStep from 'new-dashboard/components/Wizard/WizardStep.vue';
+import Step from 'new-dashboard/components/Wizard/Step.vue';
 import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
@@ -67,7 +67,7 @@ export default {
   name: 'WizardCARTOVL',
   components: {
     Selector,
-    WizardStep,
+    Step,
     Header,
     Footer,
     Modal,

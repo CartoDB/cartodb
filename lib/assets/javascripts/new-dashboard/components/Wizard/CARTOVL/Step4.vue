@@ -1,37 +1,31 @@
 <template>
   <div class="u-width--100">
   <div class="u-width--100">
-    <WizardSectionTitle :title="'Summary'">
+    <SectionTitle :title="'Summary'">
       <template slot="icon">
           <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
       </template>
-    </WizardSectionTitle>
+    </SectionTitle>
     <p v-html="$t(`wizards.cartovl.step4.summary`)" class="text is-body u-mb--64"></p>
 
-    <WizardSectionTitle :title="'How To'">
+    <SectionTitle :title="'How To'">
       <template slot="icon">
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
-    </WizardSectionTitle>
+    </SectionTitle>
     <p v-html="$t(`wizards.cartovl.step4.howto.instruction1`)" class="text is-caption u-mb--16"></p>
     <CodeBlock :code="codeBlock1"></CodeBlock>
 
-    <WizardSectionTitle :title="'Extras'" class="u-mt--64">
+    <SectionTitle :title="'Extras'" class="u-mt--64">
       <template slot="icon">
           <img svg-inline src="../../../assets/icons/wizards/extras.svg"/>
       </template>
-    </WizardSectionTitle>
+    </SectionTitle>
     <p v-html="$t(`wizards.cartovl.step4.extras.resource1`)" class="text is-caption u-mb--16"></p>
     <div class="u-flex u-flex__justify--between u-mb--16 u-mb--64">
-      <div>
-        Card Voyager
-      </div>
-      <div>
-        Card Positron
-      </div>
-      <div>
-        Card Darkmatter
-      </div>
+      <img src="../../../assets/images/wizards/voyager@2x.png" width="306" height="140" alt="Voyager basemap sample"/>
+      <img src="../../../assets/images/wizards/positron@2x.png" width="306" height="140" alt="Positron basemap sample"/>
+      <img src="../../../assets/images/wizards/darkmatter@2x.png" width="306" height="140" alt="Darkmatter basemap sample"/>
     </div>
   </div>
   </div>
@@ -39,13 +33,13 @@
 
 <script>
 import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
-import WizardSectionTitle from 'new-dashboard/components/Wizard/WizardSectionTitle.vue';
+import SectionTitle from 'new-dashboard/components/Wizard/SectionTitle.vue';
 
 export default {
   name: 'Step4',
   components: {
     CodeBlock,
-    WizardSectionTitle
+    SectionTitle
   },
   data () {
     return {

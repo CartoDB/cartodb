@@ -321,15 +321,21 @@
   },
   "wizards": {
     "cartovl": {
+      "title": "Develop an interactive custom web map",
+      "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",
+      "tags": {
+        "tag01": "JavaScript",
+        "tag02": "CARTO VL"
+      },
       "step1": {
-        "text1": "The CARTO platfomr provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a Javascript library to build beautiful interactive web maps",
+        "text1": "The CARTO platform provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a Javascript library to build beautiful interactive web maps",
         "text2": "In this quick guide you will learn how to load the libarry in your project, crete a map with one of our basemaps, and add a data layer."
       },
       "step2": {
         "summary": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features",
         "howto": {
           "instruction1":"Create an HTML file in your favourite IDE.",
-          "instruction2":"Add the following script code to the &lthead&gt element."
+          "instruction2":"Add the following script code to the <code>&lthead&gt</code> element."
           },
         "extras": {
           "resource1": "Use your favourite Integrated Development Environments (IDE) but if you want a suggestion the favourite ones for the CARTO team are <a href=''>Visual Studio Code</a>, <a href=''>Sublime</a>, and <a href=''>Textmate</a>.",
@@ -337,20 +343,20 @@
         }
       },
       "step3": {
-        "summary": "Define the &ltdiv&gt element that will contain the map",
+        "summary": "Define the <code>&ltdiv&gt</code> element that will contain the map",
         "howto": {
-          "instruction1":"Include in the &ltbody&gt of your HTML file a &ltdiv&gt element to contain the map. The map, layers, and controls will be displayed in this element",
-          "instruction2":"Paste the following CSS code in the bottom of the &lthead&gt element to define some basic styles for the map."
+          "instruction1":"Include in the <code>&ltbody&gt</code> of your HTML file a <code>&ltdiv&gt</code> element to contain the map. The map, layers, and controls will be displayed in this element",
+          "instruction2":"Paste the following CSS code in the bottom of the <code>&lthead&gt</code> element to define some basic styles for the map."
 
         }
       },
       "step4": {
         "summary": "Create a MapboxGL map to render a basemap",
         "howto": {
-          "instruction1":"Copy and paste this script below your &ltdiv&gt container to load the map."
+          "instruction1":"Copy and paste this script below your <code>&ltdiv&gt</code> container to load the map:"
         },
         "extras": {
-          "resource1": "Each basemap is designed to highlight different data. CARTO offers a variety of unique high quality basemaps like Darkmatter, Positron, and Voyager; and easily allows to include any other basemap you want to use. <a href=''>Learn more about basemaps.</a>"
+          "resource1": "Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
         }
       },
       "step5": {
@@ -362,6 +368,23 @@
         "extras": {
           "resource1": "If you want to learn more about how to add your own data to the map you can always visit the <a href=''>data injection section</a>, at the <a href=''>Developer Center</a>."        }
       }
+    },
+    "cartoframes" : {
+      "title": "Add spatial data to your data science workflow",
+      "subtitle": "Integrate spatial data into your data science models using our Python library.",
+      "tags": {
+        "tag01": "Jupyter",
+        "tag02": "CARTOframes"
+      }
+    },
+    "builder" : {
+      "title": "Create a web map from your browser",
+      "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
+      "tags": {
+        "tag01": "Online",
+        "tag02": "Builder"
+      }
     }
+
   }
 }

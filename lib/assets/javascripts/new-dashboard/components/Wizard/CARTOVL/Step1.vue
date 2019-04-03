@@ -5,6 +5,7 @@
           <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
       </template>
     </WizardSectionTitle>
+    <InjectableIframe :content="map" width="940" height="416"></InjectableIframe>
     <p v-html="$t(`wizards.cartovl.step1.text1`)" class="text is-caption u-mb--16 u-mt--24"></p>
     <p v-html="$t(`wizards.cartovl.step1.text2`)" class="text is-caption u-mb--64"></p>
   </div>
@@ -13,16 +14,20 @@
 <script>
 import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
 import WizardSectionTitle from 'new-dashboard/components/Wizard/WizardSectionTitle.vue';
+import InjectableIframe from 'new-dashboard/components/InjectableIframe';
+import map from 'raw-loader!new-dashboard/assets/maps/cartovl.html';
+
 
 export default {
   name: 'Step1',
   components: {
     CodeBlock,
+    InjectableIframe,
     WizardSectionTitle
   },
   data () {
     return {
-      codeBlock1
+      map
     };
   }
 };

@@ -32,7 +32,7 @@ export default {
   name: 'Step5',
   components: {
     CodeBlock,
-    WizardSectionTitle,
+    WizardSectionTitle
   },
   data () {
     return {

@@ -322,7 +322,7 @@
   "wizards": {
     "cartovl": {
       "step1": {
-        "text1": "The CARTO platfomr provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a JAvascript library to build beautiful interactive web maps",
+        "text1": "The CARTO platfomr provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a Javascript library to build beautiful interactive web maps",
         "text2": "In this quick guide you will learn how to load the libarry in your project, crete a map with one of our basemaps, and add a data layer."
       },
       "step2": {

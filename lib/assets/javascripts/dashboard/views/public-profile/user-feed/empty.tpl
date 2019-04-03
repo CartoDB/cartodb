@@ -2,5 +2,5 @@
   <div class="LayoutIcon">
     <i class="CDB-IconFont CDB-IconFont-map"></i>
   </div>
-  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-tSpace--m"><%- name %> doesn't have any public data yet</h3>
+  <h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-tSpace--m"><%= _t('dashboard.views.public_profile.user_feed.no_public_data', {name: name}) %></h3>
 </div>

@@ -24,7 +24,7 @@
         <a href="<%- datasetUrl %>" title="<%- title %>" class="u-ellipsis CDB-Text CDB-Size-large u-mainTextColor"><%- title %></a>
       <% } %>
       <% if (showPermissionIndicator) { %>
-        <span class="CDB-Text DatasetsList-itemTitlePermission PermissionIndicator">READ</span>
+        <span class="CDB-Text DatasetsList-itemTitlePermission PermissionIndicator"><%= _t('dashboard.views.dashboard.list_view.read') %></span>
       <% } %>
     </h3>
     <div class="DatasetsList-itemDescription js-item-description"></div>

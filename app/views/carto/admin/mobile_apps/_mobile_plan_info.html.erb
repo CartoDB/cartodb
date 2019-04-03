@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <a href="<%= current_user.upgrade_url(request.protocol) %>" class="CDB-Text CDB-Size-small is-semibold CDB-Button CDB-Button--secondary u-upperCase">Expand quota</a>
+  <a href="<%= current_user.upgrade_url(request.protocol) %>" class="CDB-Text CDB-Size-small is-semibold CDB-Button CDB-Button--secondary u-upperCase"><%= t('carto.admin.mobile.mobile.expand') %></a>
 </div>
 
 <div class="ProgressBars">
@@ -22,7 +22,7 @@
       <div class="ProgressBar">
         <span class="ProgressBar-bar <%= progress_bar_range(open_users_bar_width) %>" style="width:<%= open_users_bar_width %>%"></span>
       </div>
-      <div class="ProgressBar-legend"><%= number_with_delimiter(@open_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_open_users, delimiter: ",") %> monthly open users</div>
+      <div class="ProgressBar-legend"><%= number_with_delimiter(@open_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_open_users, delimiter: ",") %><%= t('carto.admin.mobile.mobile.open') %></div>
     </div>
   <% end %>
 
@@ -32,7 +32,7 @@
       <div class="ProgressBar">
         <span class="ProgressBar-bar <%= progress_bar_range(private_users_bar_width) %>" style="width:<%= private_users_bar_width %>%"></span>
       </div>
-      <div class="ProgressBar-legend"><%= number_with_delimiter(@private_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_private_users, delimiter: ",") %> monthly private users</div>
+      <div class="ProgressBar-legend"><%= number_with_delimiter(@private_monthly_users, delimiter: ",") %>/<%= number_with_delimiter(max_private_users, delimiter: ",") %><%= t('carto.admin.mobile.mobile.private') %></div>
     </div>
   <% end %>
 </div>

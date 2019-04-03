@@ -1,73 +1,73 @@
 <div class="FormAccount-title">
-  <p class="FormAccount-titleText">LDAP Configuration</p>
+  <p class="FormAccount-titleText"><%= t('admin.orgs.ldap.config') %></p>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Host</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.host') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.host %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Port</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.port') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.port %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Encryption</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.encryption') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.encryption %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Certificate file (if any)</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.certif') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.ca_file %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">SSL Version</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.ssl') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.ssl_version %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Connection user</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.conn_user') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.connection_user %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Connection password</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.conn_pwd') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.connection_password %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User Id. field</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.id_fld') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.user_id_field %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Username field</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.name_fld') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.username_field %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User email field</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.eml_fld') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.email_field %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Domain bases</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.domain') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.domain_bases %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Additional search filter</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.search') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.additional_search_filter %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">User object class</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.usr_cls') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.user_object_class %></div>
 </div>
 
 <div class="FormAccount-row">
-  <div class="FormAccount-rowLabel"><label class="FormAccount-label">Group object class</label></div>
+  <div class="FormAccount-rowLabel"><label class="FormAccount-label"><%= t('admin.orgs.ldap.grp_cls') %></label></div>
   <div class="FormAccount-rowData"><%= @ldap_configuration.group_object_class %></div>
 </div>

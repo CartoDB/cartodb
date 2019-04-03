@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Populated places | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Most/less populated places</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Filter the 20 most/less populated places in the world.</p>
+          <div class="separator"></div>
+          <div id="controls">
+            <ul class="actions">
+              <li onclick="setAll()">
+                <input type="radio" name="style" value="01" id="all" checked="">
+                <label for="all">ALL Places<label>
+              </li>
+              <li onclick="setMostPopulated(20)">
+                <input type="radio" name="style" value="02" id="most">
+                <label for="most">Most populated places</label>
+              </li>
+              <li onclick="setLessPopulated(20)">
+                <input type="radio" name="style" value="03" id="less">
+                <label for="less">Less populated places</label>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const map = L.map('map').setView([30, 0], 3);
+      map.scrollWheelZoom.disable();
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+      `);
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-fill: #EE4D5A;
+          marker-width: 7;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      client.getLeafletLayer().addTo(map);
+
+      function setAll() {
+        populatedPlacesSource.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+        `);
+
+        populatedPlacesStyle.setContent(`
+          #layer {
+            marker-fill: #EE4D5A;
+            marker-width: 7;
+            marker-line-color: #FFFFFF;
+          }
+        `);
+      }
+
+      function setMostPopulated(limit) {
+        populatedPlacesSource.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            ORDER BY pop_max DESC LIMIT ${limit}
+        `);
+
+        populatedPlacesStyle.setContent(`
+          #layer {
+            marker-fill: #68B69E;
+            marker-width: 12;
+            marker-line-color: #FFFFFF;
+            text-name: [name];
+            text-face-name: 'Open Sans Regular';
+            text-size: 12;
+            text-dy: -10;
+          }
+        `);
+      }
+
+      function setLessPopulated(limit) {
+        populatedPlacesSource.setQuery(`
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            ORDER BY pop_max ASC LIMIT ${limit}
+        `);
+
+        populatedPlacesStyle.setContent(`
+          #layer {
+            marker-fill: #F15743;
+            marker-width: 12;
+            marker-line-color: #FFFFFF;
+            text-name: [name];
+            text-face-name: 'Open Sans Regular';
+            text-size: 12;
+            text-dy: -10;
+          }
+        `);
+      }
+    </script>
+  </body>
+</html>

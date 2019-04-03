@@ -744,7 +744,7 @@ class User < Sequel::Model
   end
 
   def get_connection(options = {}, configuration)
-  connection = $pool.fetch(configuration) do
+    connection = $pool.fetch(configuration) do
       db = get_database(options, configuration)
       db.extension(:connection_validator)
       db.pool.connection_validation_timeout = configuration.fetch('conn_validator_timeout', -1)

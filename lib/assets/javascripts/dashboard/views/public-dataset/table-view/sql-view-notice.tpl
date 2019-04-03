@@ -4,9 +4,9 @@
       <% if (warnMsg) { %>
         <%- warnMsg %> ·
       <% } %>
-      <a href="#/export-query" class="export_query">create dataset from query</a> or <a href="#/clear-view" class="clearview">clear view</a>
+      <%= _t('dashboard.views.public_dataset.table_view.dataset_from') %>
     <% } else { %>
-      No resulting rows for this query, <a href="#/clear-view" class="clearview">clear this sql view</a>
+      <%= _t('dashboard.views.public_dataset.table_view.clear') %>
     <% } %>
   </p>
 </div>

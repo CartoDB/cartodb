@@ -4,8 +4,8 @@
       <img class="UserAvatar-img UserAvatar-img--small" src="<%- avatarUrl %>" title="<%- userName %>" alt="<%- userName %>" />
     </span>
     <nav class="BreadcrumbsDropdown-options">
-      <a href="<%- mapsUrl %>" class="BreadcrumbsDropdown-optionsItem <%- isMaps && !isDeepInsights && !isLocked ? 'is-selected' : '' %>">Your maps</a>
-      <a href="<%- datasetsUrl %>" class="BreadcrumbsDropdown-optionsItem has-margin <%- isDatasets && !isLocked ? 'is-selected' : '' %>">Your datasets</a>
+      <a href="<%- mapsUrl %>" class="BreadcrumbsDropdown-optionsItem <%- isMaps && !isDeepInsights && !isLocked ? 'is-selected' : '' %>"><%= _t('dashboard.components.dashboard-header.breadcrumbs.dropdown.maps') %></a>
+      <a href="<%- datasetsUrl %>" class="BreadcrumbsDropdown-optionsItem has-margin <%- isDatasets && !isLocked ? 'is-selected' : '' %>"><%= _t('dashboard.components.dashboard-header.breadcrumbs.dropdown.datasets') %></a>
     </nav>
   </li>
   <li class="BreadcrumbsDropdown-listItem is-dark u-flex">
@@ -13,8 +13,8 @@
       <i class="CDB-IconFont CDB-IconFont-lock"></i>
     </span>
     <nav class="BreadcrumbsDropdown-options">
-      <a href="<%- lockedMapsUrl %>" class="BreadcrumbsDropdown-optionsItem <%- isMaps && isLocked ? 'is-selected' : '' %>">Your locked maps</a>
-      <a href="<%- lockedDatasetsUrl %>" class="BreadcrumbsDropdown-optionsItem has-margin <%- isDatasets && isLocked ? 'is-selected' : '' %>">Your locked datasets</a>
+      <a href="<%- lockedMapsUrl %>" class="BreadcrumbsDropdown-optionsItem <%- isMaps && isLocked ? 'is-selected' : '' %>"><%= _t('dashboard.components.dashboard-header.breadcrumbs.dropdown.lck_maps') %></a>
+      <a href="<%- lockedDatasetsUrl %>" class="BreadcrumbsDropdown-optionsItem has-margin <%- isDatasets && isLocked ? 'is-selected' : '' %>"><%= _t('dashboard.components.dashboard-header.breadcrumbs.dropdown.lck_datasets') %></a>
     </nav>
   </li>
 </ul>

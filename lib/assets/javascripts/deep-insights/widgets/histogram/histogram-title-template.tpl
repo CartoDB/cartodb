@@ -9,7 +9,7 @@
         <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
       </button>
     <% } %>
-    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="More options">
+    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="<%= _t('deep_insights.widgets.tooltip') %>">
       <div class="CDB-Shape-threePoints is-blue is-small">
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>

@@ -1,0 +1,312 @@
+
+/*
+ * Lovely help functions
+ */
+
+@import "compass/css3/box-sizing";
+@import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
+@import "compass/css3/transition";
+
+@mixin text-indent() {
+  text-indent:-9999px;
+  line-height:0px;
+  font-size:0px;
+  text-transform:uppercase;
+}
+
+@mixin text-overflow() {
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+@mixin user-select($val) {
+  -webkit-touch-callout: $val;
+  -webkit-user-select: $val;
+  -khtml-user-select: $val;
+  -moz-user-select: $val;
+  -ms-user-select: $val;
+  user-select: $val;
+}
+
+/////////////////
+// FLEX MIXINS //
+/////////////////
+
+@mixin display-flex() {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+
+@mixin flex($values) {
+  -webkit-box-flex: $values;
+  -moz-box-flex:  $values;
+  -webkit-flex:  $values;
+  -ms-flex:  $values;
+  flex:  $values;
+}
+
+@mixin cross-browser($attr, $value) {
+  -webkit-#{$attr}: $value;
+  -moz-#{$attr}: $value;
+  -ms-#{$attr}: $value;
+  #{$attr}: $value;
+}
+
+@mixin justify-content($value, $ie-value) {
+  -webkit-justify-content: $value;
+  -moz-justify-content: $value;
+  -ms-justify-content: $value;
+  justify-content: $value;
+  // Hello IE10
+  -ms-flex-pack: $ie-value;
+}
+
+@mixin align-items($value, $ie-value) {
+  -webkit-align-items: $value;
+  -moz-align-items: $value;
+  -ms-align-items: $value;
+  align-items: $value;
+  // Hello IE10
+  -ms-flex-align: $ie-value;
+}
+
+/////////////////////
+// END FLEX MIXINS //
+/////////////////////
+
+@mixin progress-background($rgba) {
+  background-image: -webkit-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: -moz-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: -ms-linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+  background-image: linear-gradient(-45deg,$rgba 25%,transparent 25%,transparent 50%,$rgba 50%,$rgba 75%,transparent 75%,transparent);
+}
+
+@mixin dark-glow($opacity) {
+  -moz-box-shadow:0px 0px 6px 1px rgba(0, 0, 0, $opacity); /* Firefox v3.5+ */
+  -webkit-box-shadow:0px 0px 6px 1px rgba(0,0,0, $opacity); /* Safari v3.0+ and by Chrome v0.2+ */
+  box-shadow:0px 0px 6px 1px rgba(0,0,0, $opacity); /* Firefox v4.0+ , Safari v5.1+ , Chrome v10.0+  and by Opera v10.5+ */
+  -ms-filter:"progid:DXImageTransform.Microsoft.Glow(Color = #33000000 ,Strength = $opacity * 10)";
+  filter:progid:DXImageTransform.Microsoft.Glow(Color = #33000000 ,Strength = $opacity * 10);
+}
+
+@mixin glow($opacity, $size:6px, $glow: 1px) {
+  -moz-box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Firefox v3.5+ */
+  -webkit-box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Safari v3.0+ and by Chrome v0.2+ */
+  box-shadow:0 0 $size $glow rgba(255, 255, 255, $opacity); /* Firefox v4.0+ , Safari v5.1+ , Chrome v10.0+  and by Opera v10.5+ */
+}
+
+@mixin size($width, $height:$width) {
+
+  @if $width  != false { width:  $width; }
+  @if $height != false { height: $height; }
+
+}
+
+@mixin position($top, $right, $bottom, $left) {
+
+  position: absolute;
+
+  @if $top    != false { top:    $top; }
+  @if $right  != false { right:  $right; }
+  @if $bottom != false { bottom: $bottom; }
+  @if $left   != false { left:   $left; }
+
+}
+
+@mixin absolute-portrait-center($height) {
+  position:absolute;
+  top:50%;
+  height: $height;
+  margin-top: -1*$height/2;
+}
+
+@mixin absolute-landscape-center($width) {
+  @include absolute-left-center($width);
+}
+
+@mixin absolute-left-center($width) {
+  position:absolute;
+  left:50%;
+  width: $width;
+  margin-left: -1*$width/2;
+}
+
+@mixin absolute-center($width, $height:$width) {
+
+  position:absolute;
+  left:50%;
+  top: 50%;
+
+  margin-left: -1*$width/2;
+  margin-top:  -1*$height/2;
+
+  @if $width  != false { width:  $width; }
+  @if $height != false { height: $height; }
+
+}
+
+@mixin clearfix() {
+  & { *zoom: 1; }
+  &:before, &:after { content: ""; display: table; }
+  &:after { clear: both; }
+}
+
+@mixin simple-transition($property, $duration: 250ms, $easing-method: ease-in) {
+
+  @if not $easing-method { $easing-method: ease-in; }
+  @if not $duration      { $duration: 250ms; }
+
+  @include transition-property($property);
+  @include transition-duration($duration);
+  @include transition-timing-function($easing-method);
+
+}
+
+.shadow-transition {
+  -webkit-transition: -webkit-box-shadow 0.3s ease-out;
+  -moz-transition: -moz-box-shadow 0.3s ease-out;
+  -o-transition: box-shadow 0.3s ease-out;
+}
+
+.no-glow {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.disable-selection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* BASE TEMPLATE FOR BLOCKS: DO NOT CHANGE HERE */
+
+/*
+* How to use it:
+*
+*  HTML:
+*
+*   <div class="my_soon_to_be_cool_element">
+*     <div class="content">(…)</div>
+*   </div>
+*
+*  CSS:
+*
+* .my_soon_to_be_cool_element {
+*
+*   @extend .cdb-block;
+*
+*    // Outer style properties & overwrites go here
+*    (…)
+*
+*   .content {
+*      // Inner style properties & overwrites go here
+*      (…)
+*   }
+*
+* }
+*
+*/
+
+.cdb-block {
+
+  // defaults
+  $INNER_PADDING: 25px;
+  $OUTER_PADDING: 5px;
+  $BORDER_RADIUS: 4px;
+
+  $OUTER_BKG_COLOR: #fff;
+  $INNER_BKG_COLOR: #fff;
+
+  @include box-sizing(border-box);
+  padding: $OUTER_PADDING;
+
+  background: $OUTER_BKG_COLOR;
+
+  @include border-radius($BORDER_RADIUS);
+  @include box-shadow(rgba(0, 0, 0, 0.07) 0 0 4px 3px);
+  h3, p, a, label { letter-spacing:0; }
+
+  &.border {
+    border: 1px solid #CCC;
+  }
+
+  .content  {
+    @include box-sizing(border-box);
+    @include size(100%);
+    padding: $INNER_PADDING;
+
+    background: $INNER_BKG_COLOR;
+  }
+}
+
+.white-gradient-shadow-top {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0.95)), color-stop(100%, rgba(255,255,255,0.04)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.04) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.04) 100%);
+}
+
+.white-gradient-shadow-bottom {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0.04)), color-stop(100%, rgba(255,255,255,0.95)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.95) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0.04) 0%,rgba(255,255,255,0.95) 100%);
+}
+
+.black-gradient-shadow-bottom {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255,255,255,0.04)), color-stop(100%, rgba(0,0,0,0.10)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.10) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.10) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.10) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0.04) 0%,rgba(0,0,0,0.10) 100%);
+}
+
+
+
+
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content; 
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  } 
+}
+
+// animation mixin
+@mixin animation($props) {
+  -webkit-animation: $props;
+  -moz-animation: $props;
+  -ms-animation: $props;
+  -o-animation: $props;
+  animation: $props;
+}
+
+// Transform mixin cross browsers
+@mixin browsers_transform($wk, $fx, $msie) {
+  @if $wk {
+    transform: $wk;
+  }
+  -webkit-transform: $wk;
+  -moz-transform: $fx;
+  -ms-transform: $msie;
+}

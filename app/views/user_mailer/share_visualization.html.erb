@@ -1,5 +1,5 @@
-<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>Map shared with you</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>Your colleague #{@visualization.user.username} has shared a new map called <strong>#{@visualization.name}</strong> with you.</p>" %>
+<%- message = "<p style='font-size: 24px; color: #ffffff;'><strong>t('user.svisual.map')</strong></p><p style='margin-bottom: 0; font-size: 16px; color: #ffffff;'>t('user.svisual.colleague')#{@visualization.user.username}t('user.svisual.shared')<strong>#{@visualization.name}</strong>t('user.svisual.with')</p>" %>
 
 <%= render partial: 'mailer_modules/positive_message', locals: { message: message } %>
 
-<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: 'View your map' } %>
+<%= render partial: 'mailer_modules/link_to_action', locals: { link: @link, link_text: t('user.svisual.view') } %>

@@ -5,19 +5,19 @@
   </div>
   <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">
     <% if (selectedCount > 1) { %>
-    You are about to delete <%- selectedCount %> <%- pluralizedContentType %>.
+    <%= _t('dashboard.views.dashboard.dialogs.delete_items.about_' + contentType, {smart_count: selectedCount}) %>
     <% } else { %>
-    You are about to delete the <%- firstItemName %> <%- pluralizedContentType %>.
+    <%= _t('dashboard.views.dashboard.dialogs.delete_items.about_named_' + contentType, {firstItemName: firstItemName}) %>
     <% } %>
   </h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (affectedVisCount > 0) { %>
-      Doing so will imply changes in <strong><%- affectedVisCount %> affected <%- pluralizedMaps %></strong>.
+      <%= _t('dashboard.views.dashboard.dialogs.delete_items.affected_maps', {smart_count: affectedVisCount}) %>
     <% } %>
-    The deleted <%- pluralizedContentType %> cannot be recovered, be sure before proceeding.
+    <%= _t('dashboard.views.dashboard.dialogs.delete_items.recover_' + contentType, {smart_count: selectedCount}) %>
   </p>
   <% if (isDatasets) { %>
-    <p class="CDB-Text CDB-Size-medium u-altTextColor">We recommend you to export your dataset before deleting it.</p>
+    <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dashboard.views.dashboard.dialogs.delete_items.export') %></p>
   <% } %>
 </div>
 
@@ -57,7 +57,7 @@
 
 <% if (affectedEntitiesCount > 0) { %>
   <div class="Dialog-body Dialog-affectedEntities">
-    <p class="DefaultParagraph CDB-Text CDB-Size u-altTextColor">Some users will lose access to your <%- pluralizedContentType %></p>
+    <p class="DefaultParagraph CDB-Text CDB-Size u-altTextColor"><%= _t('dashboard.views.dashboard.dialogs.delete_items.lost_' + contentType, {smart_count: selectedCount}) %></p>
     <div class="u-flex">
       <% affectedEntitiesSample.forEach(function(user) { %>
         <span class="UserAvatar is-in-list">
@@ -80,10 +80,10 @@
 <div class="Dialog-footer Dialog-footer--simple u-inner">
   <div class="Dialog-footerContent MapsList-footer">
     <button class="CDB-Button CDB-Button--secondary cancel">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.delete_items.cancel') %></span>
     </button>
     <button class="u-lSpace--xl CDB-Button CDB-Button--error ok">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Ok, delete</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.delete_items.delete') %></span>
     </button>
   </div>
 </div>

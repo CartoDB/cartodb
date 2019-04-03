@@ -2,10 +2,10 @@
     <div class="CDB-Text FlashMessage FlashMessage--main">
         <div class="u-inner">
             <div class="FlashMessage FlashMessage-info FlashMessage--main u-flex u-justifySpace u-alignCenter">
-                <p>You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.</p>
+                <p><%= t('admin.shared.trial.period') %></p>
                 <p class="u-flex">
                     <a href="<%= current_user.update_payment_url(request.protocol) %>" class="CDB-Button CDB-Button--secondary CDB-Button--secondary--background CDB-Button--big">
-                        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Add payment method</span>
+                        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%= t('admin.shared.trial.method') %></span>
                     </a>
                 </p>
             </div>

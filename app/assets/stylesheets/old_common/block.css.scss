@@ -1,0 +1,102 @@
+  /*
+   * Generic blocks for CartoDB
+   * - Article, Section, aside, ..
+   */
+
+  @import "compass";
+
+  article {
+    padding:40px 0 50px 0;
+  }
+
+  section.block {
+    background:white;
+    @include border-radius(4px);
+    @include box-shadow(rgba(0,0,0,0.07) 0 0 4px 3px);
+    h3, p, a, label {letter-spacing:0;}
+
+    div.head {
+      position:relative;
+      padding:35px 40px; // Hack for line-height
+      border-bottom:1px solid #E5E5E5;
+      h3 {letter-spacing:-1px;}
+
+      nav {
+        position:absolute;
+        right:40px;
+        top:35px;
+        padding:2px;
+        background:rgba(black,0.05);
+        @include border-radius(4px);
+        letter-spacing:-4px;
+
+        a {
+          padding:10px 8px;
+          @include inline-block();
+          @include border-radius(4px);
+          letter-spacing:0;
+          vertical-align:middle;
+          background:none;
+
+          &.selected {
+            border:1px solid #CCCCCC;
+            background:white;
+            color:#333333;
+            text-decoration:none;
+
+            &:hover {
+              cursor:default;
+            }
+          }
+        }
+      }
+    }
+
+    div.content {
+      padding:40px;
+
+      ul {
+        display:block;
+
+        li {
+          border-bottom:1px solid rgba(#CCCCCC,0.35);
+          &.dark {background:rgba(#F0F0F0,0.5);}
+          &:last-child {border-bottom:none;}
+        }
+      }
+
+      & > p { font-size: 15px }
+    }
+
+    div.foot {
+      padding:35px 40px;
+      border-top:1px solid #E5E5E5;
+      overflow:auto;
+
+      & > .cancel.left { font-size: 15px }
+    }
+
+    // Long section
+    &.long {width:638px;}
+    // Longer section
+    &.longer {width:960px;}
+  }
+
+
+  aside {
+    @include inline-block();
+    width:279px;
+    padding:0 0 0 40px;
+    letter-spacing:0px;
+
+    div.head {
+      display:block;
+      padding:35px 0;
+      border-bottom:1px solid #CCCCCC;
+      h3 {letter-spacing:-1px;}
+    }
+
+    div.content {
+      padding:40px 0;
+    }
+  }

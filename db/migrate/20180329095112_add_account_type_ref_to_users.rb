@@ -51,7 +51,9 @@ migration(
                  sql_query_format,
                  sql_job_create,
                  sql_job_get,
-                 sql_job_delete)
+                 sql_job_delete,
+                 sql_copy_from,
+                 sql_copy_to)
                VALUES
                  ('{2, 2, 1}',
                   '{1, 1, 1}',
@@ -73,7 +75,9 @@ migration(
                   '{1, 1, 1}',
                   '{2, 2, 1}',
                   '{1, 1, 1}',
-                  '{1, 1, 1}')
+                  '{1, 1, 1}',
+                  '{1, 1, 60}',
+                  '{1, 1, 60}')
                RETURNING id)
              INSERT INTO account_types (account_type, rate_limit_id)
                VALUES (missing_accounts[i], (select id from rate_limit));

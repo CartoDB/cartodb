@@ -3,9 +3,9 @@
     <div class="CDB-Shape CDB-Widget-searchLens u-iBlock u-rSpace js-searchIcon">
       <span class="CDB-Shape-magnify is-small is-blue"></span>
     </div>
-    <input type="text" class="CDB-Text CDB-Size-large CDB-Widget-textInput CDB-Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="Search by <%- columnName %>"/>
+    <input type="text" class="CDB-Text CDB-Size-large CDB-Widget-textInput CDB-Widget-searchTextInput js-textInput" value="<%- q %>" placeholder="<%= _t('deep_insights.widgets.placeholder', {columnName: columnName}) %>"/>
     <% if (canShowApply) { %>
-      <button type="button" class="CDB-Text is-semibold u-upperCase CDB-Size-small CDB-Widget-searchApply js-applyLocked u-actionTextColor">apply</button>
+      <button type="button" class="CDB-Text is-semibold u-upperCase CDB-Size-small CDB-Widget-searchApply js-applyLocked u-actionTextColor"><%= _t('deep_insights.widgets.apply') %></button>
     <% } %>
   </form>
 <% } else { %>
@@ -22,7 +22,7 @@
           <i class="CDB-IconFont CDB-IconFont-drop CDB-IconFont--small CDB-IconFont--top"></i>
         </button>
       <% } %>
-      <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="More options">
+      <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="<%= _t('deep_insights.widgets.tooltip') %>">
         <div class="CDB-Shape-threePoints is-blue is-small">
           <div class="CDB-Shape-threePointsItem"></div>
           <div class="CDB-Shape-threePointsItem"></div>

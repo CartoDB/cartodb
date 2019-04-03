@@ -15,6 +15,11 @@ gem 'activerecord-postgresql-adapter'
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
+gem 'i18n-tasks', '~> 0.9.28'
+gem 'rails-i18n', '~> 4.0'
+
+gem 'sequel-rails', '0.9.15'
+
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.7'

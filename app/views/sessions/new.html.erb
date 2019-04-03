@@ -27,7 +27,7 @@
 
                 <% if @organization.nil? || @organization.auth_username_password_enabled %>
                   <div class="Sessions-field">
-                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => "Email or username", placeholder: "email or username", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", autofocus: true %>
+                    <%= text_field_tag :email, CartoDB.extract_subdomain(request), :title => t('email.title'), placeholder: t('email.placeholder'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} topBorderRadius", autofocus: true %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
@@ -35,21 +35,21 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                    <%= password_field_tag :password, "", placeholder: t('password'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>
                     <% end %>
 
                     <div class="Sessions-inputLinkAside">
-                      <%= link_to 'Forgot?', forget_password_url %>
+                      <%= link_to t('sessions.new.forgot'), forget_password_url %>
                     </div>
                   </div>
 
                   <div class="Sessions-field">
                     <p>
                       <button type="submit" class="Sessions-submitButton js-Sessions-button js-Loading">
-                        <span class="js-Loading-text">Log in</span>
+                        <span class="js-Loading-text"><%= t('sessions.new.login') %></span>
                         <%= render :partial => 'shared/loading_animation' %>
                       </button>
                     </p>
@@ -59,7 +59,7 @@
               <% end %>
               <% if @oauth_configs.any? %>
                 <div class="Sessions-field Sessions-oauthHeader">
-                  <p>OR LOG IN WITH:</p>
+                  <p><%= t('sessions.new.or_login_with') %></p>
                 </div>
                 <div class="Sessions-field Sessions-oauthContainer">
                   <% @oauth_configs.each do |config| %>
@@ -70,11 +70,11 @@
 
               <% if @user_login_url %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Not a member of the <%= @organization.name %> organization? Try the <a href="<%= @user_login_url %>"> general login</a> instead.
+                  <%= raw t('sessions.new.not_member', org_name: @organization.name, login_url: @user_login_url) %>
                 </p>
               <% elsif @organization.try(:auth_username_password_enabled) %>
                 <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">
-                  Please, remember to use an email address belonging to this organization to login to your account.
+                  <%= t('sessions.new.use_email') %>
                 </p>
               <% end %>
             </div>
@@ -92,7 +92,7 @@
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', organization_signup_url %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><%= t('sessions.new.dont_have_account') %><%= link_to t('sessions.new.signup'), organization_signup_url.present? ? organization_signup_url : t('signup_url') %></p>
         </div>
       </div>
     </footer>

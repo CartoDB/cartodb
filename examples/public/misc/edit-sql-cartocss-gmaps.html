@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit SQL & CartoCSS | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Edit SQL & CartoCSS</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Edit manually the SQL query and the CartoCSS style.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">This example only uses one style and one layer whose content is changed.</p>
+            <p class="open-sans">Since the style and source objects are the same they won't trigger events. You need to use the promise to handle
+              errors.</p>
+          </section>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">SQL</h2>
+        <textarea id="sql" rows="3">SELECT * FROM ne_10m_populated_places_simple</textarea>
+        <button class="button" onclick="updateSource()">UPDATE SQL</button>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">CartoCSS</h2>
+        <textarea id="cartocss" rows="3">
+  #layer {
+    marker-fill: red;
+  }
+          </textarea>
+        <button class="button-update button" onclick="updateStyle()">UPDATE STYLE</button>
+      </div>
+    </aside>
+
+    <script>
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 30, lng: 0 },
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL(getValue('#sql'));
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      function updateSource() {
+        reset('#sql');
+        populatedPlacesSource.setQuery(getValue('#sql'))
+          .catch(cartoError => {
+            error('#sql', cartoError);
+          });
+      }
+
+      function updateStyle() {
+        reset('#cartocss')
+        populatedPlacesStyle.setContent(getValue('#cartocss'))
+          .catch(cartoError => {
+            error('#cartocss', cartoError);
+          });
+      }
+
+      function getValue(id) {
+        return document.querySelector(id).value
+      }
+
+      function reset(id) {
+        document.querySelector(id).style.background = 'white';
+      }
+
+      function error(id, cartoError) {
+        document.querySelector(id).style.border = '1px solid #E57373';
+        alert(cartoError.message);
+      }
+    </script>
+  </body>
+</html>

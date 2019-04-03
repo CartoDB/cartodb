@@ -5,7 +5,7 @@
 
       <div class="FormAccount-row FormAccount-row--smallMarginBottom">
         <div class="FormAccount-rowLabel">
-          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Notification Description</label>
+          <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.orgs.notif.desc') %></label>
         </div>
         <div class="FormAccount-rowData">
           <%= f.text_area :body, :class => "CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth OrganizationNotifications-textarea js-textarea" %>
@@ -21,7 +21,7 @@
               </svg>
             </span>
 
-            <p class="Md-text CDB-Text CDB-Size-small u-altTextColor">Supported markup</p>
+            <p class="Md-text CDB-Text CDB-Size-small u-altTextColor"><%= t('admin.orgs.notif.sup_markup') %></p>
           </div>
         </div>
         <div class="FormAccount-rowInfo">
@@ -32,7 +32,7 @@
       <div class="OrganizationNotification-submissionRow js-update">
         <div class="FormAccount-rowData">
           <div class="CDB-Text CDB-Size-medium u-rSpace--xl">
-            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Send to:</label>
+            <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= t('admin.orgs.notif.send_to') %></label>
             <% Carto::Notification::RECIPIENTS.each do |recipient| %>
               <input class="CDB-Radio u-lSpace--xl" type="radio" name="carto_notification[recipients]" value="<%= recipient %>" <%= recipient == @notification.recipients ? 'checked' : '' %> required="true">
               <span class="u-iBlock CDB-Radio-face u-lSpace--xl"></span>
@@ -57,7 +57,7 @@
           <p class="FormAccount-titleText">
             Past Notifications
             <span class="FormAccount-subtitleText">
-              (stores up to 12 most recent notifications)
+              <%= t('admin.orgs.notif.store_up_to') %>
             </span>
           </p>
         </div>
@@ -87,7 +87,7 @@
                   </div>
 
                   <div class="NotificationsList-itemMeta CDB-Text CDB-Size-small">
-                    <button class="FormAccount-link NotificationsList-itemLink NotificationsList-itemLink--remove js-remove" data-id="<%= notification.id %>">Remove for all users</button>
+                    <button class="FormAccount-link NotificationsList-itemLink NotificationsList-itemLink--remove js-remove" data-id="<%= notification.id %>"><%= t('admin.orgs.notif.remove') %></button>
                   </div>
                 </div>
               </div>

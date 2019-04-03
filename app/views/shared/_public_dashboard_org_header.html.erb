@@ -10,17 +10,17 @@
     <%= @name %>
     <span class="UserInfo-nameBreadcrumb"> /
       <% if @content_type == 'maps' %>
-        <%= link_to 'Maps', '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
+        <%= link_to t('maps'), '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
       <% else %>
-        <%= link_to 'Datasets', '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
+        <%= link_to t('datasets'), '#', class: "DropdownLink js-breadcrumb-dropdown-target" %>
       <% end %>
       <% content_for(:js) do %>
         <div class="js-breadcrumb-dropdown-content Dropdown BreadcrumbsDropdown BreadcrumbsDropdown--compact" style="display: none;">
           <ul class="CDB-Text BreadcrumbsDropdown-list">
             <li class="BreadcrumbsDropdown-listItem">
               <nav class="BreadcrumbsDropdown-options">
-                <%= link_to 'Maps', @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
-                <%= link_to 'Datasets', @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
+                <%= link_to t('maps'), @maps_url, class: "BreadcrumbsDropdown-optionsItem #{@content_type == 'maps' ? 'is-selected' : ''}" %>
+                <%= link_to t('datasets'), @datasets_url, class: "BreadcrumbsDropdown-optionsItem has-margin #{@content_type == 'maps' ? '' : 'is-selected'}" %>
               </nav>
             </li>
           </ul>

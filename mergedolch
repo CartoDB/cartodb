@@ -1,0 +1,46 @@
+Auto-merging package.json
+Auto-merging package-lock.json
+CONFLICT (content): Merge conflict in package-lock.json
+Auto-merging lib/assets/javascripts/dashboard/views/organization/organization-users/organization-users-view.js
+Auto-merging lib/assets/javascripts/dashboard/views/organization/invite-users/invite-users-form.tpl
+Auto-merging lib/assets/javascripts/dashboard/views/organization/invite-users/invite-users-dialog-view.js
+Auto-merging lib/assets/javascripts/dashboard/profile.js
+Auto-merging lib/assets/javascripts/dashboard/dashboard.js
+CONFLICT (modify/delete): lib/assets/javascripts/dashboard/components/user-notification/user-notification.tpl deleted in HEAD and modified in 9a8c59b5ab7e51d1bb061a37afd202a3c454194a. Version 9a8c59b5ab7e51d1bb061a37afd202a3c454194a of lib/assets/javascripts/dashboard/components/user-notification/user-notification.tpl left in tree.
+Auto-merging lib/assets/javascripts/dashboard/api-keys.js
+Auto-merging lib/assets/javascripts/dashboard/account.js
+Removing lib/assets/javascripts/cdb
+Auto-merging lib/assets/javascripts/builder/editor.js
+Auto-merging lib/assets/javascripts/builder/dataset.js
+Auto-merging gears/carto_gears_api/carto_gears_api.gemspec
+CONFLICT (content): Merge conflict in gears/carto_gears_api/carto_gears_api.gemspec
+Auto-merging app/views/organization_mailer/invitation.html.erb
+CONFLICT (content): Merge conflict in app/views/organization_mailer/invitation.html.erb
+Auto-merging app/views/layouts/application.html.erb
+Auto-merging app/views/admin/users/lockout.html.erb
+Auto-merging app/models/user/db_service.rb
+CONFLICT (content): Merge conflict in app/models/user/db_service.rb
+Auto-merging app/models/user.rb
+Adding app/assets/stylesheets/old_common/video_player.css.scss
+Adding app/assets/stylesheets/old_common/vars.css.scss
+Adding app/assets/stylesheets/old_common/upload.css.scss
+Adding app/assets/stylesheets/old_common/subheader.css.scss
+Adding app/assets/stylesheets/old_common/settings_nav.css.scss
+Adding app/assets/stylesheets/old_common/search.css.scss
+Adding app/assets/stylesheets/old_common/mixins.css.scss
+Adding app/assets/stylesheets/old_common/header.css.scss
+Adding app/assets/stylesheets/old_common/form.css.scss
+Adding app/assets/stylesheets/old_common/form-elements.css.scss
+Adding app/assets/stylesheets/old_common/footer.css.scss
+Adding app/assets/stylesheets/old_common/fonts.css.scss
+Adding app/assets/stylesheets/old_common/core.css.scss
+Adding app/assets/stylesheets/old_common/common-sprite.css.scss
+Adding app/assets/stylesheets/old_common/buttons.css.scss
+Adding app/assets/stylesheets/old_common/block.css.scss
+Adding app/assets/stylesheets/old_common/README.md
+Removing app/assets/stylesheets/old_common
+Auto-merging Gemfile.lock
+CONFLICT (content): Merge conflict in Gemfile.lock
+Auto-merging Gemfile
+CONFLICT (content): Merge conflict in Gemfile
+Automatic merge failed; fix conflicts and then commit the result.

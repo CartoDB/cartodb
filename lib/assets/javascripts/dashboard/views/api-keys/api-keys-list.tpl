@@ -1,8 +1,8 @@
 <section>
   <header class="ApiKeys-title">
-    <h3 class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Your API keys</h3>
+    <h3 class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('dashboard.views.api_keys.api_key_list.your_api') %></h3>
     <button type="submit" class="CDB-Button CDB-Button--primary js-add">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">New API key</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.api_keys.api_key_list.new_api') %></span>
     </button>
   </header>
 
@@ -12,14 +12,14 @@
 <% if (showGoogleApiKeys) { %>
 <section>
   <div class="FormAccount-title">
-    <p class="FormAccount-titleText">Configure API keys from external providers</p>
+    <p class="FormAccount-titleText"><%= _t('dashboard.views.api_keys.api_key_list.configure') %></p>
   </div>
 
   <span class="FormAccount-separator"></span>
 
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
-      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label">Google Maps</label>
+      <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor FormAccount-label"><%= _t('dashboard.views.api_keys.api_key_list.google') %></label>
     </div>
     <div class="FormAccount-rowData">
       <input type="text" value="<%- googleApiKey %>" class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--long is-disabled" readonly />
@@ -27,14 +27,14 @@
     <div class="FormAccount-rowInfo">
       <% if (!isInsideOrg) { %>
         <p class="CDB-Text CDB-Size-small u-altTextColor">
-          This is your Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
+          <%= _t('dashboard.views.api_keys.api_key_list.your_google') %>
         </p>
       <% } else if (isOrgOwner) { %>
         <p class="CDB-Text CDB-Size-small u-altTextColor">
-          This is the <%= organizationName %> Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.
+          <%= _t('dashboard.views.api_keys.api_key_list.google_query', {organizationName: organizationName}) %>
         </p>
       <% } else { %>
-        <p class="CDB-Text CDB-Size-small u-altTextColor">This is the organization Google Maps API key</p>
+        <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('dashboard.views.api_keys.api_key_list.google_api') %></p>
       <% } %>
     </div>
   </div>
@@ -44,6 +44,6 @@
 <footer class="ApiKeys-footer">
   <p class="ApiKeys-footer-text">
     <i class="CDB-IconFont CDB-IconFont-info ApiKeys-footer-icon"></i>
-    <span>Learn more about location app authorization and API key management <a href="https://carto.com/developers/fundamentals/authorization/" target="_blank">here</a></span>
+    <span><%= _t('dashboard.views.api_keys.api_key_list.learn_more') %></span>
   </p>
 </footer>

@@ -1,13 +1,13 @@
 <section class="sessions shadow">
   <div class="content">
-    <h2>Authorization denied</h2>
-    <p class="margin15 light">You have denied the oauth access for <%= @token.client_application.user.username %>. You can change this setting later if you reconsider.</p>
+    <h2><%= t('oauth.failure.denied') %></h2>
+    <p class="margin15 light"><%= t('oauth.failure.msg1') %><%= @token.client_application.user.username %><%= t('oauth.failure.msg2') %></p>
   </div>
   <div class="footer">
-    <p class="center light"><%= link_to "Forgot password?",forget_password_url %> · <%= link_to "Create an account", "https://carto.com/signup" %></p>
+    <p class="center light"><%= link_to t('oauth.failure.forgot'), forget_password_url %> · <%= link_to t('oauth.failure.create'), t('signup_url') %></p>
   </div>
 </section>
 
 <footer class="short">
-  <h1><%= link_to 'CARTO', CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
+  <h1><%= link_to t('carto_name'), CartoDB.path(self, 'root'), :class => "cartodb" %></h1>
 </footer>

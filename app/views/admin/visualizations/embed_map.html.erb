@@ -2,7 +2,7 @@
 
 <%= content_for(:title) do %><%= @visualization.name %><% end %>
 
-<%= content_for(:description) do %><%= @visualization.description.present? ? "#{markdown_html_clean(@visualization.description)}. Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
+<%= content_for(:description) do %><%= @visualization.description.present? ? "#{markdown_html_clean(@visualization.description)}. t('admin.visual.embed_map.map_created')" : "t('admin.visual.embed_map.map_created')" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
@@ -20,12 +20,12 @@
     <div id="map"></div>
 
     <div id="not_supported_dialog" style="display: none">
-      <h2>CARTO</h2>
-      <p>This visualization only works in modern browsers. Upgrade yours and enjoy.</p>
+      <h2><%= t('carto_name') %></h2>
+      <p><%= t('admin.visual.embed_map.upgrade_browser') %></p>
       <ul>
-        <li><a href="http://www.apple.com/safari/" class="safari">Safari</a></li>
-        <li><a href="https://www.google.com/chrome/" class="chrome">Chrome</a></li>
-        <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox">Firefox</a></li>
+        <li><a href="http://www.apple.com/safari/" class="safari"><%= t('safari') %></a></li>
+        <li><a href="https://www.google.com/chrome/" class="chrome"><%= t('chrome') %></a></li>
+        <li class="last"><a href="http://www.mozilla.org/en-US/firefox/all/‎" class="firefox"><%= t('firefox') %></a></li>
       </ul>
     </div>
 

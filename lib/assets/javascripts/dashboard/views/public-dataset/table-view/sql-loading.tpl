@@ -4,5 +4,5 @@
       <circle class="CDB-LoaderIcon-path" cx="25" cy="25" r="20" fill="none"/>
     </svg>
   </div>
-  <h5 class="strong">Loading results</h5>
+  <h5 class="strong"><%= _t('dashboard.views.public_dataset.table_view.loading') %></h5>
 </div>

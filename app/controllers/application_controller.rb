@@ -20,6 +20,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
   before_filter :check_user_state
+  before_filter :set_locale
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header
@@ -29,6 +30,10 @@ class ApplicationController < ActionController::Base
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
   IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(lockout login logout unauthenticated multifactor_authentication).freeze
+
+  def set_locale
+    I18n.locale = params[:language] || I18n.default_locale
+  end
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?

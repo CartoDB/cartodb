@@ -1,0 +1,152 @@
+// Infowindow styles for migrated maps
+// ----------------------------------------------
+
+.cartodb-popup.v2 {
+  position: relative;
+  max-width: 200px;
+  padding: 20px 12px 18px;
+  transform: translateX(15px) translateY(-15px);
+  border-radius: 4px;
+  background: #FFF;
+  font-family: 'Open Sans';
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+
+  &.dark {
+    background: #000;
+
+    h4 {
+      color: #999;
+    }
+
+    p {
+      color: #FFF;
+    }
+
+    .cartodb-popup-tip-container {
+      border-top-color: #000;
+    }
+  }
+}
+.cartodb-popup-close-button {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #FFF;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  z-index: 2;
+}
+.cartodb-popup-content {
+  font-family: 'Open Sans';
+  h4 {
+    margin-top: 12px;
+    color: #636D72;
+    font-size: 10px;
+    font-weight: 300;
+    line-height: 14px;
+    text-transform: uppercase;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+  p {
+    color: #2E3C43;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+}
+.cartodb-popup-tip-container {
+  position: absolute;
+  bottom: -16px;
+  left: 12px;
+  width: 0;
+  height: 0;
+  border-top: 16px solid #FFF;
+  border-right: 16px solid transparent;
+}
+.cartodb-popup.header {
+  .cartodb-popup-header {
+    position: relative;
+    width: auto;
+    height: auto;
+    max-height: 62px;
+    margin: -20px -12px 12px;
+    padding: 17px 12px;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    background: linear-gradient(-90deg, #4F9CD7, #2B68A8);
+    overflow: hidden;
+
+    h1 {
+      width: 100%;
+      margin: 0;
+      color: #FFF;
+      font: bold 21px "Helvetica Neue", "Helvetica", Arial;
+      line-height: 23px;
+      text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+      word-wrap: break-word;
+      text-transform: uppercase;
+    }
+
+    h4 {
+      margin-bottom: 2px;
+      font-size: 80%;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
+
+  /* Color header themes */
+  &.green .cartodb-popup-header {
+    background: linear-gradient(-90deg, #0C9, #00B185);
+
+    h4 {
+      color: #00916D;
+    }
+    .separator {
+      background: #008E6A;
+    }
+  }
+
+  &.blue .cartodb-popup-header {
+    background: linear-gradient(-90deg, #4F9CD7, #2B68A8);
+
+    h4 {
+      color: #1F4C7F;
+    }
+    .separator {
+      background: #225386;
+    }
+  }
+
+  &.yellow .cartodb-popup-header {
+    background: linear-gradient(-90deg, #FFBF0D, #F93);
+
+    h4 {
+      color: #D8832A;
+    }
+    .separator {
+      background: #CC7A29;
+    }
+  }
+
+  &.orange .cartodb-popup-header {
+    background: linear-gradient(-90deg, #FF6825, #F33);
+
+    h4 {
+      color: #CC2929;
+    }
+    .separator {
+      background: #CC2929;
+    }
+  }
+}

@@ -1,13 +1,15 @@
-Hey <strong><%- userName %></strong>, looks like you're about to reach your account limit.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.reaching_limit', {userName: userName}) %>
 <% if (userType === "admin") { %>
-  <a href="mailto:<%- upgradeContactEmail %>">Contact us</a> for upgrading your account.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.contact_us', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>
 <% if (userType === "org") { %>
-  Start thinking about <a href="mailto:<%- upgradeContactEmail %>">contacting your admin</a>.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.contact_admin', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>
 <% if (userType === "regular") { %>
-  Start thinking about <a href="<%- upgradeUrl %>?utm_source=Dashboard_Limits_Nearing&utm_medium=referral&utm_campaign=Upgrade_from_Dashboard&utm_content=upgrading%20your%20plan" class ="underline">upgrading your plan</a>.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.start_thinking') %>
+  <a href="<%- upgradeUrl %>?utm_source=Dashboard_Limits_Nearing&utm_medium=referral&utm_campaign=Upgrade_from_Dashboard&utm_content=upgrading%20your%20plan" class ="underline">
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.upgrade_plan') %></a>.
 <% } %>
 <% if (userType === "internal") { %>
-  Feel free to <a href="mailto:<%- upgradeContactEmail %>">contact us</a> for more resources.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.close_limits.feel_free', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>

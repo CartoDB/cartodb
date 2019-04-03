@@ -2,14 +2,14 @@
 
 <div class="Header-inner Header-title js-Header-title u-inner">
   <div class="Header-innerTitle">
-    <h1 class="Title-small">Data library</h1>
-    <p class="Title Title--l Title--white u-vspace-l">Open resources to help you populate your maps</p>
+    <h1 class="Title-small"><%- _t('dashboard.views.data_library.header.library') %></h1>
+    <p class="Title Title--l Title--white u-vspace-l"><%- _t('dashboard.views.data_library.header.resources') %></p>
   </div>
 </div>
 
 <div class="Header-inner Header-footer is-hidden">
   <div class="CountrySelector js-CountrySelector u-inner">
-    <p class="CountrySelector-text">Filter datasets by country selecting it in this map</p>
+    <p class="CountrySelector-text"><%- _t('dashboard.views.data_library.header.country_flt') %></p>
     <button class="CountrySelector-button js-country"></button>
   </div>
 

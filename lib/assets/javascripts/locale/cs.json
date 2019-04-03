@@ -1,0 +1,3931 @@
+﻿{
+  "common": {
+    "trial_notification": {
+      "views": {
+        "trial_notification": {
+          "message": "Zatím jste nevyčerpal Vaše 30 denní testovací období. Doplňte fakturační údaje pro další používání naší platformy.",
+          "add_payment": "Přidat platební metodu"
+        }
+      }
+    }
+  },
+  "show": {
+    "title": "Editor",
+    "header": {
+      "data_view": "Pohled Data",
+      "map_view": "Pohled Mapa",
+      "back": "Zpět",
+      "edit_metadata": "Editovat metadata...",
+      "edit": "Editovat",
+      "visualize": "VISUALIZE"
+    }
+  },
+  "protected_map": {
+    "title": "Mapa chráněná heslem",
+    "content": {
+      "header": "Tato mapa je chráněná heslem",
+      "placeholder": "Vložte Vaše heslo zde",
+      "tip": "Kontaktujte vlastníka, chcete-li k ní mít přístup.",
+      "error": "Neplatné heslo"
+    }
+  },
+  "forbidden_map": {
+    "title": "Embed chyba"
+  },
+  "helpers": {
+    "static_header_meta_tags": {
+      "map_created_by": "Mapa vytvořena %{author} - CARTO"
+    }
+  },
+  "public_map": {
+    "info": {
+      "more": "více",
+      "more_from": "Více z",
+      "more_info": "Více informací",
+      "updated": "Aktualizování",
+      "views_pluralize": "1 pohled |||| %{smart_count} pohledy"
+    },
+    "datasets": {
+      "title": "Používané datasety",
+      "dataset_pluralize": "1 dataset |||| %{smart_count} datasety"
+    }
+  },
+  "account": {
+    "title": "Váš účet | CARTO",
+    "flash_messages": {
+      "save_changes": {
+        "success": "Vaše změny byly v pořádku uloženy.",
+        "error": "Chyba při aktualizaci detailů účtu."
+      }
+    },
+    "views": {
+      "content": {
+        "form_title": "Upravte Váš rozvrh"
+      },
+      "form": {
+        "username": "Uživatelské jméno",
+        "subdomain_info": "Subdoména nemůže být změněna",
+        "old_password": "Staré heslo",
+        "new_password": "Nové heslo",
+        "confirm_password": "Potvrďte heslo",
+        "account_type": "Typ účtu",
+        "billing_plan": "Účtovací rozvrh",
+        "view_details": "Zobrazit podrobnosti",
+        "connect_external_datasources": "Připojit k externím datovým zdrojům",
+        "save_changes": "Uložit změny",
+        "delete_account": "Smazat účet",
+        "confirm": "Jste si jistý?",
+        "delete_all": "Smazat můj účet a všechna moje data",
+        "email_google": "Váš účet je spojen s Vaším Google účtem.",
+        "errors": {
+          "change_email": "Můžete změnit email, pokud nastavíte heslo."
+        }
+      }
+    }
+  },
+  "profile": {
+    "views": {
+      "content": {
+        "title": "Vaše profilové informace"
+      },
+      "form": {
+        "asterisk": "* Položky označené hvězdičkou jsou vidět na vašem veřejném profilu,",
+        "first_name": "Křestní jméno",
+        "last_name": "Příjmení",
+        "email": "Email",
+        "company_name": "Společnost",
+        "role": "Vaše role",
+        "industry": "Průmysl",
+        "phone": "Telefonní číslo",
+        "user_type": "Typ uživatele",
+        "viewer": "DIVÁK",
+        "read_only": "Přístup pouze ke čtení datasetu a map.",
+        "builder": "TVŮRCE",
+        "become_builder": "Staňte se tvůrcem!",
+        "write_access": "Přístup k zápisu, editaci a vytváření datasetů a map",
+        "name": "Jméno",
+        "info_public_name": "Ostatní uživatelé Vás mohou kontaktovat pomocí Vašeho veřejného jména",
+        "website": "Webová stránka",
+        "location": "Poloha",
+        "description": "Váš popis",
+        "twitter": "Uživatelské jméno pro Twitter",
+        "disqus": "Diskuzní přezdívka",
+        "disqus_placeholder": "Pokud zůstane prázdné, nezobrazí se",
+        "disqus_notified": "Buďte upozorněn na nové komentáře na Vašich stránkách",
+        "jobs": "Pracovní profil",
+        "available_for_hire": "Možné k pronajmutí",
+        "show_banner": "Ukázat banner na Vašem veřejném profilu odkazující na Váš email",
+        "your_url": "Vaše URL",
+        "save": "Ulož změny",
+        "errors": {
+          "email_not_valid": "Neplatný email"
+        }
+      }
+    }
+  },
+  "carto_name": "Carto",
+  "email_enterprise": "enterprise-support@carto.com",
+  "email_support": "support@carto.com",
+  "email_sales": "obchod@carto.com",
+  "guides_link": "https://carto.com/learn/guides",
+  "guides_name": "Průvodci",
+  "dev_link": "https://carto.com/developers",
+  "dev_name": "Vývojáři",
+  "community_link": "http://gis.stackexchange.com/questions/tagged/carto",
+  "feedback": "Dejte nám zpětnou vazbu!",
+  "back": "Zpět",
+  "back-to-dashboard": "Zpět na nástěnku",
+  "map_pl": "mapa |||| mapy |||| map",
+  "dataset_pl": "datová sada |||| datové sady |||| datových sad",
+  "map_nr": "%{smart_count} mapa |||| %{smart_count} mapy %{smart_count} mapy",
+  "dataset_nr": "%{smart_count} datová sada |||| %{smart_count} datové sady |||| %{smart_count} datových sad",
+  "like_pl": "lajk |||| lajky |||| lajků",
+  "view_pl": "pohled |||| pohledy |||| pohledů",
+  "row_pl": "řádek |||| řádky |||| řádků",
+  "edit-map": "Editovat mapu",
+  "map-settings": "Nastavení mapy",
+  "more-options": "Více možností",
+  "change-privacy": "Nastavení soukromí",
+  "sql-applied": "SQL dotaz použit",
+  "data-source": "Zdroj dat",
+  "edit-analysis": "Editovat analýzu",
+  "add-analysis": "Přidat nový analytický uzel",
+  "back-layers": "Zpět na list vrstev",
+  "configuration": "Konfigurace",
+  "choose_image": "Vybrat obrázek",
+  "user": {
+    "you": "Vy"
+  },
+  "months": {
+    "january": "Leden",
+    "february": "Únor",
+    "march": "Březen",
+    "april": "Duben",
+    "may": "Květen",
+    "june": "Červen",
+    "july": "Červenec",
+    "august": "Srpen",
+    "september": "Září",
+    "october": "Říjen",
+    "november": "Listopad",
+    "december": "Prosinec"
+  },
+  "assets": {
+    "maki-icons": {
+      "disclaimer": "<a href='https://github.com/mapbox/maki' target='_blank'>Maki Icons</a>, open source projekt od <a href='http://mapbox.com' target='_blank'>Mapbox</a>"
+    }
+  },
+  "operators": {
+    "count": "COUNT",
+    "sum": "SUM",
+    "avg": "AVG",
+    "min": "MIN",
+    "max": "MAX"
+  },
+  "builder-activated-notification": {
+    "message": "CARTO Builder byl aktivován na Vašem účtu. <a href='https://carto.com/learn/guides' class='onboardingNotification-link'>Naučte se více</a> o tom a dejte nám vědět, co si myslíte nebo<a href='mailto:builder-support@carto.cz' class='onboardingNotification-link'>nás kontaktujte</a>. Veselé mapování!"
+  },
+  "builder-onboarding": {
+    "title": "Vítejte v Builderu,",
+    "description": "Prokoumejte nové a vzrušující analýzy, kterou můžete kombinovat s místními informacemi.",
+    "take-tour": "Zkuste prohlídku",
+    "edit-map": "Upravit Vaší mapi",
+    "toolbar": {
+      "title": "Nástrojová lišta",
+      "description": "Nástrojová lišta umožnuje přístup na nástěnku, editovat mapy a měnit její nastavení."
+    },
+    "configurator": {
+      "title": "Editovací mod",
+      "description": "Spravujte všechny komponenty Vaší mapy: přidávejte vrstvy a widgety, importujte datasety, upravujte analýzy a měnte styly."
+    },
+    "map": {
+      "title": "Mapa",
+      "description": "Vaše mapa reflektuje změny ihned."
+    },
+    "widgets": {
+      "title": "Seznam widgetů",
+      "description": "Widgety, které přidáte, by se ihned měli zobrazit."
+    },
+    "skip": "přeskočit",
+    "next": "další"
+  },
+  "data-onboarding": {
+    "title": "Vítejte v seznamu vrstev",
+    "description": "Analyzujte, stylujte a vyšperkujte Vaše data s pop-up legendou.",
+    "take-tour": "Zkuste prohlídku",
+    "edit-layer": "Editovat vrstvy",
+    "layer-options": {
+      "title": "Možnosti vrstvy",
+      "description": "Layers can be renamed by double-clicking on the layer name, centered by clicking in the crosshair, and exported through their contextual menu."
+    },
+    "data-tab": {
+      "title": "Data",
+      "description": "Stylování, přidání analýz, pop-up okna a popisek k vrstvám. K dalšímu průzkum Vašich dat přidejte widgety."
+    },
+    "sql-editor": {
+      "title": "pohled SQL",
+      "description": "Datové vrstvy mohou být editovány a zpracovány užitím SQL pohled ve spodku obrazovky."
+    },
+    "add-geometry": {
+      "title": "Přidat geometrie a přepnout na pohled dataset.",
+      "description": "Můžete přepínat mezi mapou a pohledem data. V pohledu mapa můžete přidávat body, čáry a mnohoúhelníky.",
+      "edit-layer": "Editovat vrstvy"
+    },
+    "exit": "Ukončit prohlídku",
+    "next": "Další"
+  },
+  "analysis-onboarding": {
+    "title": "Umění analýzy",
+    "description": "Vytvořte replikovatelné workflows pro analýzu a představení Vašich dat. Analýzy udělají z Vašich map aplikace s místními informacemi.",
+    "description-list": {
+      "item1": "Různé analýzu mohou být spřaženy",
+      "item2": "Analýzy jsou dynamické. Když se data změní, analýza se obnoví.",
+      "item3": "Originální data nejsou modifikována.",
+      "item4": "Některé dotazy a výpočty analýzy mohou vyústit sSome analysis queries add calculated results to sloupci ve Vašem datasetu."
+    },
+    "done": "Dobře",
+    "add-analysis": "Přidej analýzu"
+  },
+  "style-onboarding": {
+    "title": "Nastylujte tuto mapu!",
+    "description": "Použijte agregační stylování na mapách a nastavte možnosti geometrií prvků nebo hodnotou ve sloupci.",
+    "aggregation": {
+      "title": "Jak si přejete agregovat Vaše data?",
+      "description": "Mapové typy jsou nazvány \"Agregovací\". Přidej Kroucení, Tepelná mapa a další agregační styly k datům."
+    },
+    "style": {
+      "title": "Udělejte to hezké!",
+      "description": "Použijte tyto možnosti na k nastylovaní dat hezkými.Use these options to style your data in beautiful ways. Například, můžete vytvořit tematickou mapu nahrazení možnosti FILL hodnotou.",
+      "short-description": "Použijte tyto možnosti na k nastylovaní dat hezkými."
+    },
+    "cartocss": {
+      "title": "Oblékněte to s CARTOCSS",
+      "description": "Další styly dat použitím pohledu CARTOCSS ve spodní části obrazovky."
+    },
+    "take-tour": "Zkuste prohlídku",
+    "style-layer": "Stylování vrstev",
+    "exit": "Ukočnit prohlídku",
+    "next": "Další"
+  },
+  "analyses-onboarding": {
+    "placeholders": {
+      "layer-name": "NAME OF THE LAYER",
+      "clusters": "CLUSTERS",
+      "method": "METHOD",
+      "percentage": "PERCENTAGE"
+    },
+    "done": "Dobře",
+    "finished": "je dokončeno.",
+    "style-analysis": "Nastylovat tuto analýzu",
+    "read-more": "Čtěte více v dokumentaci",
+    "learn-more": "Naučte se víc",
+    "no-new-columns": "Žadné nové sloupce nebyly vytvořeny.",
+    "geometries-updated": "Geometrie ve Vaší tabulce byly aktualizovány",
+    "new-column-added": "Nový sloupec byl přidán do Vašeho datasetu.",
+    "new-columns-created": "Nové sloupce byly vytvořeny jako nový dataset.",
+    "new-column-included": "A new column has been included with your original data.",
+    "new-columns-included": "Nové sloupce by vloženy s Vašimi orginiálními daty.",
+    "new-columns-included-based-on-input": "Nové sloupce byly vloženy s Vašimi originálními data založeny na sloupcí zvolenými pro vstup.",
+    "sampling": {
+      "title": "Podvzorek Procenta řádků",
+      "description": "Vzorek Vašich origniální dat byl náhodně vybrán, aby dal průměrný počet řádků z Vašeho datasetu."
+    },
+    "merge": {
+      "title": "Přidej sloupce z druhého datasetu",
+      "description": "Tato analýza předvádí sloupcový JOIN za účelem dostat sloupce z dvou rozdílných tabulek."
+    },
+    "intersection": {
+      "title": "Zadej body mnohoúhelník",
+      "description": "Tato analýza předvádí prostorové vložení, návrat pouze těch řádků z cílové vrstvy, které se protínají s geometrií základní vrstvy.",
+      "source-cartodb-id": "Toto číslo reprezentuje id základní geometrie."
+    },
+    "area-of-influence": {
+      "title": "Vytvořte Cestovní nebo Vzdálenostní sloupce",
+      "description": "Vytvořte Cestovní nebo Vzdálenostní sloupce vytvářejí mnohoúhelníky na základě parametrů zadaných uživatelem.",
+      "the-geom": "Tento sloupec byl aktualizován, aby ukazoval Cestovní nebo Vzdálenostní sloupec na požádání."
+    },
+    "aggregate-intersection": {
+      "title": "Protínání a Agregace",
+      "description": "Tato operace vykoná prostorové protnutí a agregaci geometrických hodnot z cílové vrstvty, které se protnou s hodnotami základní vrstvy.",
+      "count-vals-density": "Tento sloupec je přidán, jestli COUNT je vybrána jako agregační operace.",
+      "extra-column": "Tento sloupec je přidán, jestliže %{operation_type} je vybrán sloupcem %{column_name}."
+    },
+    "filter": {
+      "title": "Filtrování Sloupcovou hodnotou",
+      "description": "Filtrování Sloupcovou hodnotou umožňuje rychle zúžit celková data na, která se zobrazí na mapě nebo vstupu analýzového uzlu."
+    },
+    "filter-by-node-column": {
+      "title": "Linkuj druhou vrstvu",
+      "description": "Linkuj druhou vrstvu Vám umožňuje filtrovat data na Vaší vrstvě přenášením filtrů v cílové vrstvě. Nyní pokud vložíte widget filtr k prvnímu uzlu, výsledky v druhém uzlu budou také filtrovány."
+    },
+    "spatial-markov-trend": {
+      "title": "Trendy a Nestálost",
+      "trend": "Normalizovaný trend pro každou geometrii.",
+      "trend_up": "Pravděpodobnost, že se hodnota geometrie přesune do vyšší třídy.",
+      "trend_down": "Pravděpodobnost, že se hodnota geometrie přesune do nižší třídy.",
+      "volatility": "A hodnota potenciálu pro geometrie k získání hodnot z ostatních tříd.",
+      "description": "Trendy a nestálost jsou počítány na základě časové linie vstupů dat. Trendy počítané z bohatší historie jsou přesnější. Sloupce pro časové vstupy by měly být rovnoměrně rozděleny (např., celý týden/měsíc/rok zvlášť)."
+    },
+    "moran": {
+      "title": "Najít bludné balvany a svazky",
+      "description": "Najít bludné balvany a svazky najde místa ve Vašich datech, kde jsou svazky vysokých či nízkých hodnot stejně dobře jako místa, která jsou nepodobná blízkým.",
+      "quads": "Klasifikace geometrie analýzy.",
+      "significance": "Statistická významnost klasifikace geometrie z jednoho ze čtyř kvadrantích typů.",
+      "moran": "Místní statistika vypočítaná Moranovou analýzou pro každou geometrii/hodnotu v datasetu.",
+      "vals": "Hodnoty užité v analýze. Pokud je vložen jmenovatel, toto je 'standardizovaná' míra (vystředěná na průměr, upravená standartdní odchylkou)."
+    },
+    "kmeans": {
+      "title": "Spočítej svazky bodů",
+      "cluster-no": "Číselný identifikátor pro každý svazek ve Vašem datasetu. Hodnoty začínají od jedné a jdou do %{clusters} svazků, které jste požadoval. (nebo maximum řáde pokud méně).",
+      "description": "Svazkovaní budů používá algoritmus K-means k vypočtení a předifnování počtu svaků z Vašich dat.."
+    },
+    "data-observatory-measure": {
+      "title": "Obohaťte z Data observatoře",
+      "custom-column": "Tento sloupec obsahuje data z Data observatoře.",
+      "description": "Data observatoř obohatí výsledek geometrie umístění a požadované měření."
+    },
+    "data-observatory-multiple-measures": {
+      "title": "Obohaťte z Data observatoře",
+      "custom-columns": "Tyto sloupce obsahují data z Data observatoře.",
+      "description": "Rozšíření Data observatoře je výsledek geometrie místa a požadovaného měření."
+    },
+    "connect-with-lines": {
+      "title": "Vytvořte čáru z bodů",
+      "description": "Vytvořete čáru z bodů použitím jednotlivých bodů, hotnot ve sloupi nebo druhou vrstvou.",
+      "the-geom": "Tento sloupec byl aktualizován na čáru s ohledem na vybranou metodu.",
+      "line-sequential": "Tato analýza vytváří čáry spojením všech bodů v datasetu v určeném pořadí.",
+      "line-source-to-target": "Spojení výchozí bodu s cílovým na základě sdíleného atributu.",
+      "line-to-single-point": "Spojí souřadnice sloupců výšky a délky do geometrie (`the_geom`) ve Vašem datasetu."
+    },
+    "group-points": {
+      "title": "Vyvtořte mnohoúhelník z bodů",
+      "the-geom": "Tento sloupec byl převeden na mnohoúhelník obklopující základní body.",
+      "category": "Toto bude kategorie nad kterou budou mnohoúhelníky počítány.",
+      "description": "Shluknout body do mnohoúhelníku pro vytvoření nových mnohoúhelníků."
+    },
+    "georeference": {
+      "title": "Geokód",
+      "the-geom": "Tento sloupec, který ukládá geografické informace ve Vašem datasetu, byl aktualizování s ohledem na hranice nebo místa specifikovaného na vstupu.",
+      "description": "Geokódování dat je služba, která poskytuje informace z mnoha zdrojů k získání geografických informací s přiřazenou výškou/délkou sloupců, městkými jmény, poštovními čísly, admanistrativními hranicemi, IP adresami či uličními adresami."
+    },
+    "centroid": {
+      "title": "Vytvoř geometrický střed",
+      "description": "Geometrický střed je počítán ze všech, skupin, či jednotlivých geometrií. Použtím volitelný parametrů Kategorizuj, Váha a Operace, můžete měnit jak je počítáno a které infomace bude výsledek obsahovat.",
+      "the-geom": "Body reprezentují geometrický středy Vaší základní vrstvy.",
+      "aggregated-value": "Schová agregované hodnoty pro každý geometrický střed.",
+      "non-aggregated-value": "Obsahuje počet zvažovaných charakteristik pro každý geometrický střed.",
+      "category": "Uložit hodnotu kategorie pro každý geometrický střed ze základní vrstvy."
+    },
+    "closest": {
+      "title": "Najdi nejbližší",
+      "description": "Najde body z druhého datasetu nejblíže geometriím v současné vrstvě.",
+      "source_cdb_id": "Tento sloupec byl vytvořen s id souvisejících bodů základní vrstvy.",
+      "the-geom": "Tetno sloupec byl aktualizován s tabulkou geometrií cílů."
+    }
+  },
+  "timezones": {
+    "international-date-line-west": "International Date Line West",
+    "midway-island-samoa": "Midway Island, Samoa",
+    "hawaii": "Hawaii",
+    "alaska": "Alaska",
+    "pacific-time-us-and-canada-tijuana": "Pacific Time (US and Canada); Tijuana",
+    "mountain-time-us-and-canada": "Mountain Time (US and Canada)",
+    "chihuahua-la-paz-mazatlan": "Chihuahua, La Paz, Mazatlan",
+    "arizona": "Arizona",
+    "central-time-us-and-canada": "Central Time (US and Canada)",
+    "saskatchewan": "Saskatchewan",
+    "guadalajara-mexico-city-monterrey": "Guadalajara, Mexico City, Monterrey",
+    "central-america": "Central America",
+    "eastern-time-us-and-canada": "Eastern Time (US and Canada)",
+    "indiana-east": "Indiana (East)",
+    "bogota-lima-quito": "Bogota, Lima, Quito",
+    "atlantic-time-canada": "Atlantic Time (Canada)",
+    "caracas-la-paz": "Caracas, La Paz",
+    "santiago": "Santiago",
+    "newfoundland-and-labrador": "Newfoundland and Labrador",
+    "brasilia": "Brasilia",
+    "buenos-aires-georgetown": "Buenos Aires, Georgetown",
+    "greenland": "Greenland",
+    "mid-atlantic": "Mid-Atlantic",
+    "azores": "Azores",
+    "cape-verde-islands": "Cape Verde Islands",
+    "gmt-dublin-edinburgh-lisbon-london": "Dublin, Edinburgh, Lisbon, London",
+    "casablanca-monrovia": "Casablanca, Monrovia",
+    "canary-islands": "Canary Islands",
+    "belgrade-bratislava-budapest-ljubljana-prague": "Belgrade, Bratislava, Budapest, Ljubljana, Praha",
+    "sarajevo-skopje-warsaw-zagreb": "Sarajevo, Skopje, Warsaw, Zagreb",
+    "brussels-copenhagen-madrid-paris": "Brussels, Copenhagen, Madrid, Paris",
+    "amsterdam-berlin-bern-rome-stockholm-vienna": "Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+    "west-central-africa": "West Central Africa",
+    "bucharest": "Bucharest",
+    "cairo": "Cairo",
+    "helsinki-kiev-riga-sofia-tallinn-vilnius": "Helsinki, Kiev, Riga, Sofia, Tallinn, Vilnius",
+    "athens-istanbul-minsk": "Athens, Istanbul, Minsk",
+    "jerusalem": "Jerusalem",
+    "harare-pretoria": "Harare, Pretoria",
+    "moscow-st-petersburg-volgograd": "Moscow, St. Petersburg, Volgograd",
+    "kuwait-riyadh": "Kuwait, Riyadh",
+    "nairobi": "Nairobi",
+    "baghdad": "Baghdad",
+    "tehran": "Tehran",
+    "abu-dhabi-muscat": "Abu Dhabi, Muscat",
+    "baku-tbilisi-yerevan": "Baku, Tbilisi, Yerevan",
+    "kabul": "Kabul",
+    "ekaterinburg": "Ekaterinburg",
+    "islamabad-karachi-tashkent": "Islamabad, Karachi, Tashkent",
+    "chennai-kolkata-mumbai-new-delhi": "Chennai, Kolkata, Mumbai, New Delhi",
+    "kathmandu": "Kathmandu",
+    "astana-dhaka": "Astana, Dhaka",
+    "sri-jayawardenepura": "Sri Jayawardenepura",
+    "almaty-novosibirsk": "Almaty, Novosibirsk",
+    "yangon-rangoon": "Yangon Rangoon",
+    "bangkok-hanoi-jakarta": "Bangkok, Hanoi, Jakarta",
+    "krasnoyarsk": "Krasnoyarsk",
+    "beijing-chongqing-hong-kong-sar-urumqi": "Beijing, Chongqing, Hong Kong SAR, Urumqi",
+    "kuala-lumpur-singapore": "Kuala Lumpur, Singapore",
+    "taipei": "Taipei",
+    "perth": "Perth",
+    "irkutsk-ulaanbaatar": "Irkutsk, Ulaanbaatar",
+    "seoul": "Seoul",
+    "osaka-sapporo-tokyo": "Osaka, Sapporo, Tokyo",
+    "yakutsk": "Yakutsk",
+    "darwin": "Darwin",
+    "adelaide": "Adelaide",
+    "canberra-melbourne-sydney": "Canberra, Melbourne, Sydney",
+    "brisbane": "Brisbane",
+    "hobart": "Hobart",
+    "vladivostok": "Vladivostok",
+    "guam-port-moresby": "Guam, Port Moresby",
+    "magadan-solomon-islands-new-caledonia": "Magadan, Solomon Islands, New Caledonia",
+    "fiji-islands-kamchatka-marshall-islands": "Fiji Islands, Kamchatka, Marshall Islands",
+    "auckland-wellington": "Auckland, Wellington",
+    "nuku-alofa": "Nuku'alofa"
+  },
+  "analyses": {
+    "data-observatory-multiple-measures": {
+      "title": "Obohaťte z Data observatoře",
+      "short-title": "Data observatoř"
+    },
+    "connect-with-lines": {
+      "title": "Vytvoř čáru z bodů",
+      "short-title": "Vyvtoř čáru"
+    },
+    "georeference": {
+      "title": "Geokód",
+      "short-title": "Geokód"
+    },
+    "data-observatory-measure": {
+      "title": "Obohaťte z Data observatoře",
+      "short-title": "Data observatoř",
+      "age-and-gender": "Věk a pohlaví",
+      "boundaries": "Hranice",
+      "education": "Vzdělání",
+      "employment": "Zaměstnání",
+      "families": "Rodiny",
+      "housing": "Bydlení",
+      "income": "Příjem",
+      "language": "Jazyk",
+      "migration": "Migrace",
+      "nationality": "Národnost",
+      "population-segments": "Části populace",
+      "race-and-ethnicity": "Rasa a etnická příslušnost",
+      "religion": "Náboženství",
+      "transportation": "Přeprava",
+      "filters": {
+        "label": "Filtry",
+        "applied": {
+          "single": "1 filtr použit",
+          "multiple": "%{filters} filtrů použito"
+        }
+      },
+      "area": "na čtverečný km",
+      "count": {
+        "suggested": "Doporučená měření",
+        "search": "%{items} výsledků"
+      },
+      "search-by-name": "Hledej podle jména...",
+      "errors": {
+        "max-items": "Maximum položek dosaženo",
+        "measurement-required": "Měření je požadováno",
+        "measurement-twice": "Dvě nebo více měření jsou si rovna",
+        "column-name-mismatch": "Segment jména a sloupec jména nejsou stejná",
+        "invalid-selection": "Neplatný výběr DO",
+        "mandatory-region": "Kraj je povinný"
+      }
+    },
+    "merge": {
+      "title": "Přidej sloupce z druhého datasetu",
+      "short-title": "Přidej sloupce"
+    },
+    "filter-by-node-column": {
+      "title": "Linkuj druhou vrstvu",
+      "short-title": "Linkuj vrstvu"
+    },
+    "centroid": {
+      "title": "Vytvoř geometrický střed",
+      "short-title": "Geometrický střed"
+    },
+    "group-points": {
+      "title": "Vytvoř mnohoúhelník z bodů",
+      "short-title": "Vytvoř mnohoúhelník"
+    },
+    "convex-hull": {
+      "title": "Vytvoř mnohoúhelníky z bodů",
+      "short-title": "Vytvoř mnohoúhelníky"
+    },
+    "concave-hull": {
+      "title": "Concave Hull",
+      "short-title": "Vytvoř mnohoúhelníky"
+    },
+    "bounding-box": {
+      "title": "Hraniční obdélník",
+      "short-title": "Hraniční obdélník"
+    },
+    "bounding-circle": {
+      "title": "Hraniční kruh",
+      "short-title": "Hraniční kruh"
+    },
+    "area-of-influence": {
+      "title": "Vytvořte Cestovní nebo Vzdálenostní sloupce",
+      "short-title": "sloupce"
+    },
+    "filter-intersection": {
+      "title": "Vyber body v mnohoúhelníku",
+      "short-title": "Vyber body"
+    },
+    "aggregate-intersection": {
+      "title": "Průnik a agregace",
+      "short-title": "Průník"
+    },
+    "filter": {
+      "title": "Filtruj podle hodnoty sloupce",
+      "short-title": "Filtruj hodnoty"
+    },
+    "sampling": {
+      "title": "Podvzorek Procenta řádků",
+      "short-title": "Podvzorek"
+    },
+    "kmeans": {
+      "title": "Spočítej svazky bodů",
+      "short-title": "Svazky"
+    },
+    "moran-cluster": {
+      "title": "Najít bludné balvany a svazky",
+      "short-title": "Bludné balvany"
+    },
+    "spatial-markov-trend": {
+      "title": "Trendy a Nestálost",
+      "short-title": "Trendy"
+    },
+    "find-nearest": {
+      "title": "Najdi nejbližší",
+      "short-title": "Nejbližší"
+    },
+    "source": "Zdroj",
+    "routing": {
+      "short-title": "Routing"
+    },
+    "deprecated-sql-function": {
+      "title": "SQL funkce",
+      "short-title": "SQL funkce"
+    }
+  },
+  "analysis-category": {
+    "all": "Všechny",
+    "analyze-predict": "Ananalyzuj a předpověz",
+    "create-clean": "Vytvoř čistý",
+    "data-transformation": "Převeď"
+  },
+  "form-components": {
+    "editors": {
+      "radio": {
+        "true": "Pravda",
+        "false": "Lež",
+        "null": "Prázdný"
+      },
+      "style": {
+        "select-by-column": "Vybráno sloupcem"
+      },
+      "fill": {
+        "customize": "Uživatelské barevné schéma",
+        "quantification": {
+          "title": "Kvantifikace",
+          "methods": {
+            "jenks": "Jenksova metoda",
+            "equal": "Rovnostní interval",
+            "headtails": "Ruby/líce",
+            "quantiles": "Kvantily",
+            "category": "Kategorie"
+          }
+        },
+        "bins": "Kyblíky",
+        "input-color": {
+          "solid": "Plná",
+          "value": "Hodnotou",
+          "img": "Obrázek",
+          "select-color": "Nastav barvu"
+        },
+        "input-number": {
+          "fixed": "Stále",
+          "solid": "Plná",
+          "by-value": "Hodnotou"
+        },
+        "input-ramp": {
+          "buckets": "kyblík |||| kyblíky"
+        },
+        "input-qualitative-ramps": {
+          "null": "prázdný",
+          "others": "Ostatní"
+        },
+        "image": {
+          "recently-title": "Nejpoužívanější",
+          "none": "Žádny",
+          "show-all": "Ukaž celou sbírku"
+        },
+        "error": "Stala se chyba"
+      },
+      "slide": {
+        "no-values": "Žádné hodnoty"
+      }
+    }
+  },
+  "data": {
+    "import-model": {
+      "error-title": "Stala se chyba",
+      "error-starting-import": "Naneštěstí, stala se chyba při startu importu"
+    },
+    "upload-model": {
+      "invalid-import": "Neplatný import",
+      "one-file": "Naneštěstí, pouze jeden sobour je povolen uploadovat.",
+      "file-defined": "Jméno souboru by mělo být určeno",
+      "file-extension": "Naneštěstí, tato přípona souboru není povolena",
+      "file-size": "Naneštěstí, velikost souboru je větší než zbývající prostor",
+      "visualization-id": "ID vzdálené vizualizace nebylo specifikováno",
+      "remote-file-size": "Naneštěstí, veliko vzdáleného datasetu je větší než zbývající prostor",
+      "url-invalid": "Naneštěstí, poskytnuté URL není platné",
+      "error-happened": "Stala se chyba",
+      "connection-error": "Naneštěstí, stala se chyba připojení",
+      "twitter-dates-invalid": "Twitteré údaje nejsou platné",
+      "twitter-dates-empty": "Twitterové údaje jsou prázdné",
+      "twitter-categories-invalid": "Twitteré kategorie nejsou platné",
+      "twitter-data": "Twitterá data jsou prázná",
+      "dataset-copy-undefined": "Kopie datasetu není definována",
+      "query-undefined": "Dotaz není povolen"
+    },
+    "analysis-definition-node-model": {
+      "validation": {
+        "missing-required": "Požadováno",
+        "invalid-source": "Neplatný zdroj",
+        "invalid-value": "Neplatná hodnota",
+        "invalid-enum": "Neplatná hodnota, mustí být nějaká z %{expectedValues}"
+      }
+    }
+  },
+  "components": {
+    "geocoding": {
+      "geocoding-error-details": {
+        "close": "zavřít",
+        "description": "Nastal problém s geokódováním Vašich dat",
+        "title": "Chyba geokódování",
+        "try-again": "Prosím, zkuste znovu, a pokud problémy přetrvají, <a href='mailto:support@carto.com?subject=Chyba geokodovani id:%{id}'>kontaktujte nás</a> s Vaším uživatelským jménem a následujícím kódem:",
+        "view-dataset": "Prohlédnout dataset"
+      },
+      "geocoding-success-detail": {
+        "amount-charged": "<strong>$%{price}</strong> bude přidáno k Vašemu účtu",
+        "credits-consumed": "Spotřeboval jste veškeré kredity v průběhu tohoto zúčtovacího období, cena je $%{price} / 1,000 extra kreditů.",
+        "description": "Úspěšně geokódováno <%- realRowsFormatted %> <%- geometryType %> z <%- processableRowsFormatted %>. |||| Úspěšně geokódováno <%- realRowsFormatted %> <%- geometryType %> z <%- processableRowsFormatted %>.",
+        "explanation": "Řádky, které nejsou geokódovány mají ve svém sloupci neplatné hodnout nebo neexistují v našich datech. Zkuste geokódovat znova a zaškrtněte 'nahradit všechny hodnoty'.",
+        "no-extra-charge": "Žádné extra poplatky.",
+        "remainingQuotaFormatted": "Stále máte %{remainingQuotaFormatted} kreditů volných pro tento měsíc.",
+        "title": "Data geokódována",
+        "try-again": "Neúspěšné řádky nebudou odečteny z Vaši kvóty, takže zkuste se podívat ještě jednou a zkuste to znovu.",
+        "view-dataset": "prohlédnout dataset"
+      },
+      "geocoding-no-result-details": {
+        "close": "zavřít",
+        "description": "Tyto řádky obsahují prázdné hodnoty nebo možná nevíme, co tyto hodnoty znamenají. Podívejte se a zkuste to znovu.",
+        "title": "Žádné řádky nebyly geokódovány",
+        "view-dataset": " prohlédnout dataset"
+      }
+    },
+    "background-importer": {
+      "background-importer-item": {
+        "completed": "hotovo",
+        "error-connecting": "<span class='u-errorTextColor'>Chyba připojování</span> %{name}",
+        "warnings": "Nějaká varování se vyskytla pro %{name} ",
+        "from": "z",
+        "show": "ukaž"
+      },
+      "warnings-details": {
+        "continue-btn": "Pokračuj",
+        "find-connected-datasets": "Všechny připojené datasety můžete najít v sekci Datasety.",
+        "no-more-datasets": "Ne více než %{maxTablesPerImport} datasetů může být importováno z jednoho souboru.",
+        "unable-to-import-datasets": "Nebylo možno importovat všechny datasety v souboru"
+      },
+      "partial-import-details": {
+        "find-connected-datasets": "Všechny připojené datasety můžete najít v sekci Datasety.",
+        "continue-btn": "Pokračuj",
+        "too-many-datasets": "POZNÁMKA: Nahraný soubor obsahuje příliš mnoho datasetů. Ne více než %{maxTablesPerImport} datasetů může být importováno z jednoho souboru.",
+        "unable-to-import-as-layers": "Nebylo možno přidat všechny importované datasety jako vrstvy",
+        "upgrade-your-account": "<a href='https://carto.com/pricelist/'>Upgradujte Váš účet </a> k přidání více než %{userMaxLayers} vrstev do Vaší mapy."
+      },
+      "connector-warning-details": {
+        "continue-btn": "Pokračuj",
+        "too-many-rows": "Dosáhli jste maximálního počtu.",
+        "unable-to-import-all-rows": "Pro import do databáze je povolen maximalní počet řádků %{maxRowsPerConnectorImport}. Některá Vaše data nemusela být importována."
+      },
+      "error-details": {
+        "check-errors": "Zkontroluj chyby",
+        "check-url": "Zkontrolujte, že Vámi zadaný URL je v pořádku",
+        "close": "zavřít",
+        "dont-panic": "Nepanikařte, tady jsou nějaké informace, které snad pomohou",
+        "remote-server-code": "Vzdálený server vrátil <span class='ErrorDetails-itemTextStrong'>%{httpResponseCode}</span> kód.",
+        "send-us-the-error-code": "Přetrvávající chyba? Prosím <a href='mailto:support@carto.com'>pošlete nám</a> Vaše uživatelské jméno a následující kód",
+        "unknown-error": "Stala se neznámá chyba"
+      },
+      "upgrade-errors": {
+        "8001": {
+          "description": "Odeberte některé Vaše datasety, abyste získal více místa nebo upgradujte Váš účet",
+          "info": "Ponechte si Vaše data a získejte větší kvótu navýšením Vašeho plánu",
+          "title": "Kvóta došla"
+        },
+        "8005": {
+          "description": "Odeberte jakokoukoliv vrstvu nebo upgradujte Váš účet",
+          "info": "Ponechte si Vaše mapy a získejte větší kvótu navýšením Vašeho plánu",
+          "title": "Dosáhl jste limitu vrstev"
+        },
+        "upgrade": "Upgradujte"
+      },
+      "twitter-import-details": {
+        "new-type-created": "Vytvořili jsme nový dataset obsahující celkově %{datasetTotalRowsFormatted}<br/>tweetujte%{tweetPlural} s Vašimi vyhledávácími výrazy",
+        "credit-left": "Stále máte %{availableTweetsFormatted} kreditů volných toto zúčtovací období.",
+        "credits-left": "Stále máte %{availableTweetsFormatted} kreditů volných toto zúčtovací období.",
+        "no-more-credits": "Spotřeboval jste všechny kredity v průběhu tohoto zúčtovacího období (cena je CZK%{blockPriceFormatted}/%{blockSizeFormatted} za extra kredity).",
+        "twitter-import-title": "Váš Twitterový dataset je vytvořen",
+        "tweet-cost": {
+          "free": "Žádný extra poplatek nebyl účtován",
+          "paid": "CZK%{tweetsCostFormatted} bude připsán na Váš účet"
+        },
+        "errors": {
+          "no-results": "Váš vyhledávací dotaz byl korektní, ale nevrátil žádné hodnoty, \n prosím zkuste s odlišnými parametry než ho spustíte znovu"
+        }
+      },
+      "background-geocoding-item": {
+        "geocoded": "%{realRowsFormatted}/%{processableRowsFormatted} řádků geokódováno… |||| %{realRowsFormatted}/%{processableRowsFormatted} řádků geokódováno…",
+        "geocoded-by-lat-lng": "Geokódováno šířkou a délkou",
+        "geocoding": "Geokóduji %{tableName} dataset…",
+        "show": "ukázat",
+        "rows-geocoded": {
+          "without-dataset": "%{realRowsFormatted} řádku geokódováno |||| %{realRowsFormatted} řádku geokódováno",
+          "in-dataset": "%{realRowsFormatted} řádku geokódováno v %{tableName} dataset|||| %{realRowsFormatted} řádku geokódováno v %{tableName} datasetu"
+        },
+        "errors": {
+          "no-rows-geocoded": {
+            "without-dataset": "Žádné řádky nebyly geokódovány",
+            "in-dataset": "Žádné řádky nebyly geokódovány v %{tableName} datasetu"
+          },
+          "geocoding-layer": "Ach! Stala se chyba při geokódování %{tableName} vrstvy"
+        }
+      },
+      "background-import-limit": {
+        "hurry": " Spěcháte? <a href='%{upgradeUrl}'>Upgradujte Váš účet</a> k importování více souborů ve stejný čas.",
+        "one-file": "Naneštěstí, můžete importovat jenom %{importQuota} souborů  ve stejnou dobu."
+      },
+      "free-trial": "Získejte %{days} denní zkušební verzi",
+      "connecting": "Připojování",
+      "dataset": "dataset",
+      "geocoding": "Geokódování",
+      "working": "Pracuji..."
+    },
+    "likes-pluralize": "lajk |||| lajky |||| lajků",
+    "custom-list": {
+      "placeholder": "Hledej podle %{typeLabel}",
+      "no-items": "Nejsou zde žádné %{typeLabel} položky",
+      "no-results": "Žádný %{typeLabel} výsledek nenalezen s '%{query}'",
+      "add-custom-result": "Vložit uživatelskou hodnotu"
+    },
+    "datepicker": {
+      "dates-placeholder": "Vyberte svá data",
+      "get-last": "Získej poslední",
+      "hour": "hodina",
+      "min": "minuta",
+      "from": "z",
+      "to": "do",
+      "or": "nebo",
+      "days-pluralize": "1 den |||| %{smart_count} dny",
+      "weeks-pluralize": "1 týden |||| %{smart_count} týdny",
+      "hours-pluralize": "hodina tydně |||| %{smart_count} hodin týdně",
+      "gmt-convertion": "Datum bude převedeno na GMT +0",
+      "invalid-date": "Neplatné datum"
+    },
+    "taglist": {
+      "none": "Žádné značky",
+      "placeholder": "Přidej značku"
+    },
+    "pagination-search": {
+      "filter": {
+        "search": "Hledat",
+        "placeholder": "Hledat podle uživatelského jména nebo emailu"
+      },
+      "loading": {
+        "title": "Nahrávám..."
+      },
+      "error": {
+        "title": "Chyba",
+        "desc": "Ach, stala se chyba."
+      },
+      "no-results": {
+        "title": "Oh! Žádné výsledky",
+        "desc": "Naneštěstí nemůeme najít nic s těmito parametry"
+      }
+    },
+    "modals": {
+      "editor-vis-warning": {
+        "title": "Hodláte otevřít editor map v novém Builderu.",
+        "explanation": "Builder nabízí jednouduché a intuitivní táhni a pusť funkcionality k analýze a zobrazení Vašich dat.",
+        "question": "Otevření Vaší mapy v Builderu může způsobit ztrátu jakýkoliv nepodporovaných vlastností. Jste si jistí, že chcete pokračovat?",
+        "go-back": "Ne, zpět na nástěnku",
+        "open": "Ano, otevřít v Builderu",
+        "duplicate": "vytvořit kopii a otevřít v Builderu",
+        "opening-title": "Otevírání %{name} v Builderu"
+      },
+      "add-basemap": {
+        "modal-title": "Přidej uživatelskou základní mapu",
+        "modal-desc": "Vyberte z těchto skvělých zdrojů",
+        "adding-basemap": "Přidávání nové základní mapy",
+        "add-basemap-error": "Nelze přidat základní mapu",
+        "add-btn": "Přidat základní mapu",
+        "cancel-btn": "Zrušit",
+        "validating": "Ověřování…",
+        "saving": "Ukládání vrstvy…",
+        "fetching": "Nahrávání vrstev…",
+        "get-layers": "Získat vrstvy",
+        "xyz": {
+          "insert": "Vložte XYZ URL",
+          "enter": "Vložte URL",
+          "not-valid": "Vložte platný XYZ URL",
+          "eg": "Např.",
+          "tms": "TMS",
+          "couldnt-validate": "Toto nemůžeme ověřit. Pokud jste si jistí, že to obsahuje data, klikněte na \"přidej základní mapu\""
+        },
+        "mapbox": {
+          "insert": "Přidej základní mapu stylu Mapbox",
+          "enter": "Mapbox URL",
+          "error": "Chyba při obdržená Vaší základní mapy. Prosím, zkontrolujte Mapbox URL.",
+          "invalid": "Toto URL není platné."
+        },
+        "wms": {
+          "insert": "Vložte WMS/WMTS URL",
+          "invalid": "URL je neplatné nebo obsahuje nepodporované zobrazení",
+          "see-docs": "Prohlížet dokumenty",
+          "oh-no": "Oh! Žádné výsledky",
+          "unfortunately": "Naneštěstí nemůžeme najít žádné vrstvy, které vyhovují zadaným vyhledávacím podmínkám.",
+          "tables-pluralize": "tabulka |||| tabulky",
+          "placeholder": "%{layersFoundCount} %{layersFoundCountPluralize} nalezeno, %{layersAvailableCount} %{layersAvailableCountPluralize} použitelných"
+        },
+        "tilejson": {
+          "insert": "Vložte TileJSON URL",
+          "invalid": "Neplatný URL."
+        },
+        "nasa": {
+          "select": "Vyberte datum, z kterého chcete světovou NASA základní mapu",
+          "day": "Den",
+          "night": "Noc",
+          "cant-select": "Nemůžete vybrat datum v nočním módu"
+        }
+      },
+      "create-dialog": {
+        "creating-map": "Vytváření mapy"
+      },
+      "export-data": {
+        "title": "Exportovat data",
+        "desc": "Vyberte preferovaný formát",
+        "no-geometry": "Ke stažení jakéhokoliv geoprostorového formátu jako SHP, KML nebo GeoJSON nezapomeňte vybrat the_geom ve Vašem dotazu.",
+        "loading": {
+          "geometry": "Kontrola geometrií...",
+          "preparing": "Příprava obsahu..."
+        },
+        "errors": {
+          "title": "Stala se chyba",
+          "geometry-error": "Nemůžeme číst data geometrií",
+          "unknown": "Stala se chyba"
+        },
+        "cancel": "Zrušit",
+        "download": "Stáhnout"
+      },
+      "maps-metadata": {
+        "modal-title": "Metadata mapy",
+        "modal-desc": "Upravit vlastnosti mapy",
+        "back-btn": "Zpět",
+        "save-btn": "Uložit",
+        "cancel-btn": "Zrušit",
+        "form": {
+          "name": "Jméno mapy",
+          "name-placeholder": "Napište Vaše jméno sem",
+          "description": "Popis",
+          "description-placeholder": "Zde vložte Váš popis",
+          "tags": "Značky",
+          "markdown": "Podpora Markdown"
+        },
+        "validation": {
+          "error": {
+            "name": "Jméno nemůže být prázdné"
+          }
+        },
+        "error": {
+          "title": "Nemůžeme uložit Vaše data",
+          "subtitle": "Nastala chyba při pokusu o uložení Vašich dat: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Ukládám Vaše data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> pro mapu %{name} <span class='CDB-Text is-semibold'>byla uložena</span>."
+      },
+      "dataset-metadata": {
+        "modal-title": "Metadata datasetu",
+        "modal-desc": "Upravit vlastnosti datasetu",
+        "back-btn": "Zpět",
+        "save-btn": "Uložit",
+        "cancel-btn": "Zrušit",
+        "form": {
+          "name": "Jméno datasetu",
+          "name-placeholder": "Napište Vaše jméno sem",
+          "description": "Popis",
+          "description-placeholder": "Zde vložte Váš popis",
+          "attributions": "Přívlastky",
+          "attributions-placeholder": "Zde vložte přívlastky",
+          "tags": "Značky",
+          "source": "Zdroj",
+          "source-placeholder": "Vložte zdroj dat",
+          "license": "Licence",
+          "markdown": "Podpora Markdown"
+        },
+        "validation": {
+          "error": {
+            "name": "Jméno nemůže být prázdné"
+          }
+        },
+        "error": {
+          "title": "Nemůžeme uložit Vaše data",
+          "subtitle": "Nastala chyba při pokusu o uložená Vašich dat: <span class='CDB-Text is-semibold'>%{error}</span>"
+        },
+        "loading": "Ukládám Vaše data...",
+        "success": "<span class='CDB-Text is-semibold'>Metadata</span> datasetu %{name} <span class='CDB-Text is-semibold'>byla uložena</span>."
+      },
+      "publish": {
+        "done-btn": "Hotovo",
+        "update-btn": "Aktualizovat",
+        "publish-btn": "Publikovat",
+        "publishing-btn": "Publikování",
+        "updating-btn": "Aktualizuji",
+        "menu": {
+          "share": "Sdílejte s kolegy",
+          "publish": "publikuj"
+        },
+        "privacy": {
+          "privacy": "soukromí",
+          "cta": {
+            "title": "Chcete nějaké soukromí?",
+            "desc-trial": "Omrkněte naše plány se 14 denní zkušební verzí.",
+            "desc-notrial": "Upgradujte Váš účet!"
+          },
+          "public": {
+            "type": "PUBLIC",
+            "title": "Veřejný",
+            "body": "Kdokoliv může vidět Vaši tabulku a stáhnout si jí"
+          },
+          "link": {
+            "type": "LINK",
+            "title": "Publikovat s odkazem",
+            "body": "Pouze lidé se sdíleným odkazem mohou vidět data"
+          },
+          "password": {
+            "type": "PASSWORD",
+            "title": "Publikovat s heslem",
+            "body": "Nastavte heslo a sdílejte pouze s vybranými lidmi",
+            "placeholder": "Napište Vaše heslo"
+          },
+          "private": {
+            "type": "PUBLIC",
+            "title": "Soukromý",
+            "body": "Nikdo nemůže přistupovat k tomuto datasetu"
+          },
+          "error": {
+            "title": "Nemůžeme uložit Vaše data",
+            "subtitle": "Nastala interní chyba při pokusu o uložení Vašich dat. Doporučujeme zkusit to znovu."
+          },
+          "upgrade": {
+            "title": "Zajímáte se o sdílení s Vaší organizací?",
+            "desc": "%{contact} k vyzkoušení jednoho z našich Enterprise plánů",
+            "contact": "Kontaktujte nás",
+            "mail": "shop@carto.com"
+          },
+          "loading": "Ukládám Vaše data..."
+        },
+        "share": {
+          "published": "Publikováno %{when}",
+          "unpublished": "Nikdy nepublikováno.",
+          "last-published": "Naposledy aktualizováno %{date}",
+          "unpublished-header": "Klikněte na Publikovat ke sdílení Vaší mapy na webu",
+          "unpublished-subheader": "Od okamžiku, kdy kliknete na Publikovat, budete potřebovat používat toto okno k aktualizaci Vašich změn na veřejené verzi.",
+          "upgradeLabel": "Upgradovat",
+          "upgradeLink": "https://gemoovara.cz/pricing/#pricing-standard",
+          "upgrade": "%{upgradeLink} ke sdílení s Vašimi kolegy?",
+          "private": "PRIVATE",
+          "get-link": {
+            "title": "Získat odkaz",
+            "body": "Pošlete Vašim přátelům, spolupracovníkům nebo přidejte na Vaše sociální sítě",
+            "link": "",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Vaše mapa je %{private} Změňte typ soukromí k získání odkazu"
+            }
+          },
+          "embed": {
+            "title": "Zakotvi to",
+            "body": "Vložte Vaší mapu na Váš blog, webovou stránku nebo aplikaci.",
+            "link": "Získejte jednouduché URL.",
+            "copy": "COPY",
+            "select": "SELECT",
+            "private": {
+              "body": "Vaše mapa je %{private} Změňte typ soukromí k získání ukotvené mapy"
+            }
+          },
+          "cartodbjs": {
+            "title": "CARTO.js",
+            "body": "Přidejte Vaší mapu do Vaší aplikace přidáním tohoto URL.",
+            "link": "Přečtěte si víc.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "mobile-sdk": {
+            "title": "CARTO mobilní SDK",
+            "body": "Přidejte Vaší mapu do Vaší nativní mobilní aplikace použitím tohoto řádku ködu.",
+            "link": "Přečtěte si víc.",
+            "copy": "COPY",
+            "select": "SELECT"
+          },
+          "error": {
+            "title": "Nemůžeme uložit Vaše data",
+            "subtitle": "Nastala interní chyba při pokusu o uložení Vašich dat. Doporučujeme zkusit to znovu."
+          },
+          "loading": "Ukládám Vaše data...",
+          "organization": {
+            "title": "Výchozí nastavení pro Vaší organizaci",
+            "desc": "Nový uživatelé budou mít tato oprávnění"
+          },
+          "role": {
+            "viewer": "Divák",
+            "builder": "Tvůrce"
+          },
+          "tooltip": {
+            "group": "Přístup zděděn ze skupiny %{name}",
+            "org": "Přístup zděděn z organizace"
+          },
+          "toggle": {
+            "read": "Číst",
+            "write": "Zapisovat"
+          },
+          "add-people": "Přidat osobu"
+        }
+      },
+      "assets-picker": {
+        "browse": "Prohlížet",
+        "delete-image": "Smazat obrázek",
+        "delete-images": "Smazat obrázky",
+        "deselect-all": "Smazat vše",
+        "drag-and-drop": "Táhni a pusť Váš soubor",
+        "error-desc": "Prosím, vraťte se zpět a zkuste to znovu. Pokud problém přetrvá, kontaktujte nás na <a href='mailto:support@carto.com'>support@carto.com</a>",
+        "go-back": "Zpět",
+        "incorrect-url": "Chyba. URL nevypadá správně.",
+        "loading": "Nahrávání…",
+        "or": "nebo",
+        "select-all": "Vybrat vše",
+        "submit": "potvrdit",
+        "upload-desc": "Vložte URL nebo vyberte soubor jako je JPG, GIF, PNG, SVG",
+        "upload-file-url": "Nahrát soubor nebo URL"
+      },
+      "add-asset": {
+        "icons": "Icony",
+        "modal-desc": "nebo jenom použijte náš krásný výběr",
+        "modal-title": "Vyberte obrázek ukazatele",
+        "set-image": "Vybrat obrázek",
+        "upload-file": "Nahrát soubor",
+        "upload-asset": "Nahrát asset",
+        "upload-image": "Nahrát Váš obrázek",
+        "your-uploads": "Vaše nahrané soubory",
+        "organization-uploads": "Nahrané soubory organizace"
+      },
+      "add-analysis": {
+        "modal-title": "Přidat novou analýzu",
+        "modal-desc": "Vyberte analalýzu, kterou chcete přidat",
+        "loading-title": "Načítám možnosti",
+        "add-btn": "Přidej analýzu",
+        "disabled-option-desc": "Geometrie Vaši vrstvy jsou %{simpleGeometryType} a tato analýza potřebuje %{requiredInputGeometries}.",
+        "geometry-types": {
+          "point": "body",
+          "point,polygon": "body nebo nebo mnohoúhelníky",
+          "polygon,point": "body nebo nebo mnohoúhelníky"
+        },
+        "unknown-geometry-type": "neznamý",
+        "more-info": "Více informací",
+        "option-types": {
+          "connect-with-lines": {
+            "title": "Vytvoř čáru z bodů",
+            "desc": "Vytvořte čáru pomocí jednotlivých bodů, hodnotou ve sloupci nebo druhou vrstvou."
+          },
+          "group-points": {
+            "title": "Vytvoř mnohoúhelník z bodů",
+            "desc": "Vytvoř mnohoúhelník z bodů užitím konvexních a konkávních křivek, neohraničených kruhů či obdélníků."
+          },
+          "aggregate-intersection": {
+            "title": "Protnutí a Agregace",
+            "desc": "Najděte překrývající se geometrie z druhé vrstvy a agregujte hodnoty na současné vrstvě."
+          },
+          "area-of-influence": {
+            "title": "Vytvořte Cestovní nebo Vzdálenostní sloupce",
+            "desc": "Použijte čas přepravování nebo vzdálenost k vytvoření sloupců okolo bodu či mnohoúhelníku."
+          },
+          "georeference": {
+            "title": "Geokód",
+            "desc": "Použijte místní adresu, jména měst nebo jiný popis lokace k vytovření geometrického bodu."
+          },
+          "filter-intersection": {
+            "title": "Vyberat body v mnohoúhelníku",
+            "desc": "Vyberte body z druhého datasetu, které se protínají v současné vrstvě mnohoúhelníku."
+          },
+          "filter": {
+            "title": "Filtruj pomocí hodnoty ve sloupci",
+            "desc": "Ponechte či zrušte řádky s vybranou hodnotou sloupce."
+          },
+          "merge": {
+            "title": "Přidej sloupce z druhého datasetu",
+            "desc": "Připojí druhý dataset ke stávající vrstvě použitím sdílené hodnoty sloupce."
+          }, 
+       	  "moran-cluster": {
+            "title": "Najít bludné balvany a svazky",
+            "desc": "Použití Moranovy analýzy k výberu geometrií které jsou prostorově nahromaděny či přiléhají k bludným balvanům.",
+            "high-low": "Vysoký-Nízký (HL)",
+            "high-high": "Vysoký-Vysoký (HH)",
+            "low-high": "Nízký-Vysoký (LH)",
+            "low-low": "Nízký-Nízký (LL)"
+          },
+          "kmeans": {
+            "title": "Spočítej svazky bodů",
+            "desc": "Navyšuje cluster_no sloupec prostorově oddělených bodů do určeného počtu skupin."
+          },
+          "centroid": {
+            "title": "Vytvořit geometrický střed",
+            "desc": "Vytvoří geometrický střed uskupen všemi řádky dle kategorií z aktuální vrstvy."
+          },
+          "filter-by-node-column": {
+            "title": "Připoj druhou vrstvu",
+            "desc": "Použije sdílený sloupec ke slinkování vrstev, tak že widget druhé vrstvy filtruje obě."
+          },
+          "sampling": {
+            "title": "Podvzorek Procenta řádků",
+            "desc": "Podvzorek řádků datasetu založený na udaných procentech."
+          },
+          "spatial-markov-trend": {
+            "title": "Trendy a nestálost",
+            "desc": "Předpověď pravděpodobnostních trendů ze sekvence dat napříč sloupci použitím Markovova řetězců"
+          },
+          "data-observatory-measure": {
+            "title": "Obohaťte z Data observatoře",
+            "desc": "Přidá nové sloupce s kontextovými daty jako demografické a ekonomické ukazatele."
+          },
+          "deprecated-sql-function": {
+            "title": "SQL funkce",
+            "desc": "Spusťte Vaši uživatelskou SQL funkci"
+          }
+        }
+      },
+      "add-widgets": {
+        "modal-title": "Přidat nové widgety",
+        "modal-desc": "Vyberte které widgety chcte přidat",
+        "continue-btn": "Pokračuj",
+        "loading-title": "Načítám sloupce",
+        "tab-pane": {
+          "histogram-label": "Histogram",
+          "category-label": "Kategorie",
+          "formula-label": "Vzorec",
+          "time-series-label": "Časové řady"
+        },
+        "percentage-in-top-cats": "% v top 10 kategoriích",
+        "time-series-no-option-title": "žádný",
+        "time-series-no-option-desc": "Tato možnost neumožní zobrazení Vašeho widgetu s časovou řadou"
+      },
+      "add-layer": {
+        "modal-title": "Přidej novou vrstvu",
+        "modal-desc": "Vyber existující dataset nebo připoj nový",
+        "navigation": {
+          "search": "Hledat",
+          "search-placeholder": "podle jména, popisu nebo :tagu",
+          "connect-dataset": "Připojit dataset",
+          "shared-with-you": "Sdílený s Vámi",
+          "data-library": "Knihovna dat",
+          "create-empty-map": "Vytvořit prázdnou mapu",
+          "create-empty-dataset": "Vytvořit prázdný dataset",
+          "create-empty-addLayer": "Přidat prázdnou vrstvu",
+          "your-datasets": "Vaše datasety"
+        },
+        "create-loading-title": "Vytvářím prázdný dataset...",
+        "adding-new-layer": "Přidávám novou vrstvu...",
+        "add-layer-error": "Nelze přidat novou vrstvu",
+        "imports": {
+          "ask-for-demo": "požádejte o demo",
+          "contact-us": "Kontaktujte nás",
+          "connector": "přípojku",
+          "demo-email-title": "Mám zájem o %{name} přípojku",
+          "demo-email-desc": "Dobrý den, zajímám se o testování %{name} přípojky. Prosím, kontaktujte mě k naplánování ukázky této funkcionality.",
+          "tab-options-error": {
+            "no-key": "%{name} klíč není specifikován a panel nemůže být povolen",
+            "not-allowed": "%{name} datový zdroj není přístupný pro Váš plán. Prosím upgradujte.",
+            "limits-reached": "Dosáhli jste limitu pro Váš účet. Prosím upgradujte.",
+            "no-credits": "Vyčerpali jste všechny dostupné %{name} kredity pro tento měsíc z Vašeho účtu."
+          },
+          "member-pluralize": "člen |||| členů",
+          "item-pluralize": "položka |||| položky",
+          "form-import": {
+            "browse": "Prohlížet",
+            "drag-and-drop": "Táhni & pusť Váš soubor",
+            "error-desc": "Chyba. Váš URL nevypadá správně.",
+            "format": "Formát",
+            "or": "nebo",
+            "title": "Vložte URL",
+            "desc": "Vložte URL a začněte importovat",
+            "submit": "potvrdit"
+          },
+          "header-import": {
+            "import-url": "Importovat Vaše data z %{brand} URL",
+            "file-selected": "Soubor vybrán",
+            "paste-url": "Vložte URL %{fileEnabled} ",
+            "select-a-file": "nebo vyberte soubor jako je CSV, XLS, ZIP, KML, GPX, GPKG, FGDB, VFK,",
+            "see-all-formats": "ukaž všechny formáty",
+            "sync-enabled": "Udržovat synchronizované se zdrojem",
+            "sync-disabled": "Možnosti synchronizace nejsou přístupné",
+            "type-selected": "%{brand} vybráno",
+            "type-import": "%{brand} import",
+            "upload-file-url": "Nahrajte soubor nebo URL |||| Nahrajte URL"
+          },
+          "service-import": {
+            "and": "a",
+            "account-connected": "Účet připojen",
+            "connect-with": "Připojit s %{title}",
+            "choose": "Vybrat",
+            "connect": "Připojit",
+            "found-in": "%{size} %{pluralize} nalezeno v %{title}",
+            "item-selected": "Položka vybrána",
+            "many-more-formats": "mnohem více formátů",
+            "no-results-title": "Och! Nejsou žádné výsledky",
+            "no-results-desc": "Nenašli jsme žádný platný soubor na Vašem účtu",
+            "state-idle-login": "Přihlaste se k Vašemu účtu a vyberte položku.",
+            "state-error": "Omlouváme se, ale nejsme schopni se připojit k Vašemu %{title} účtu. Ujistěte se, že nemáte zapnuté blokování pop-up oken na této stránce.",
+            "state-token": "Kontroluji token.",
+            "state-oauth": "Požaduji oAuth.",
+            "state-retrieving": "Seznam Vašich %{title} souborů bude zobrazen v okamžiku.",
+            "state-selected-sync": "Můžete vybrat, kdy synchronizovat soubor.",
+            "state-selected-instagram": "Mapa obsahující všechna Vaše geokódovací fotografie bude vytvořena",
+            "state-selected-no-sync": "Možnosti synchronizace nejsou povoleny.",
+            "supported": "podporováno",
+            "try-again": "Zkuste znovu"
+          },
+          "selected-state": {
+            "sync-my-data": "Synchronizuj má data",
+            "never": "Nikdy",
+            "every-hour": "Každou hodinu",
+            "every-day": "Každý den",
+            "every-week": "Každý týden",
+            "every-month": "Každý měsíc",
+            "free-trial": "%{days} denní zkušební verze zdarma",
+            "more-features": "více funkcí",
+            "upgrade-desc": "Upgradujte Váš účet k získání synchronizačních možností a %{features}",
+            "upgrade": "Upgradujte"
+          },
+          "twitter": {
+            "category": "Kategorie",
+            "credits-consumed": "Za Twitterové kredity spotřebované toto zúčtovací období - %{extraTweets} bude účtováno",
+            "credits-left": "%{per}% z Vašeho %{remainingFormatted} Twitterových zbývajících kreditů",
+            "credits-no-limit": "Bez omezení - %{extraTweets} bude účtováno",
+            "extra-tweets": "extra tweety",
+            "fallback-title": "Povolit %{brand} konektor",
+            "fallback-desc": "%{brand} konektor umožňuje Vaší mapě sledovat datovou aktivitu spojenou s Vaší značkou, událostí nebo jiným termínem, který Vás bude zajímat.",
+            "from-to": "Od / komu",
+            "terms-desc": "Vložte až 4 vyhledávací cíle použítím políček kategorií.",
+            "terms-placeholder": "Vložte cíle oddělená čárkami",
+            "title": "Twitterové trendy",
+            "twitter-gmt": "Čas je v GMT+0",
+            "use": "Použij",
+            "your-gmt": "Jste v GMT"
+          },
+          "arcgis": {
+            "fallback-desc": "Povolit %{brand} konektoru na Vašem účtu připoejní Vašich %{brand} dat ke CARTO a udržovat synchronizované se zdrojem.",
+            "input-placeholder": "Vložte tabulku URL Vaší %{brand} zde",
+            "url-desc": "K obnovení patřičné vrstvy, přidejte index vrstvy na konec URL",
+            "import-data": "Importujte Vaše data z instance %{brand}",
+            "sync-options": "Synchronizační možnosti dostupné pouze pro vrstvu"
+          },
+          "instagram": {
+            "fallback-desc": "Povolit %{brand} konektoru mapování Vašich fotografií nebo videí na Vašem účtu CARTO."
+          },
+          "box": {
+            "fallback-desc": "Povolit %{brand} konektoru mapování Vašich souborů  nebo udržování dat synchronizovaných s Box daty."
+          },
+          "mailchimp": {
+            "campaign-selected": "%{brand} kampaň vybrána",
+            "fallback-desc": "Povolit %{brand} konektoru na Vašem účtu mapovat Vaše uživatelské seznamy z %{brand} nebo udržování Vašich CARTO map synchronizovaných s Vašimi %{brand} daty.",
+            "map-campaign": "Mapujte Vaši %{brand} kampaň",
+            "state-idle": "Připojte Váš %{brand} účet k jakékoliv z Vašich kampaní.",
+            "state-error": "Omlouváme se, nastala chyba při připojování k Vašemu  %{brand} účtu. Pro případ, že by to pomohlo, ujistěte se, zda jsou pop-up okna povolena pro tuto stránku.",
+            "state-token": "Kontroluji %{brand} token.",
+            "state-oauth": "Požadování oAuth.",
+            "state-retrieving": "Seznam Vašich %{brand} kampaní bude zobrazen v okamžiku.",
+            "state-selected": "Kampaň vybrána."
+          },
+          "salesforce": {
+            "fallback-desc": "Kontaktujte nás a zjistěte víc o ingraci %{brand}",
+            "input-placeholder": "Vložte URL Vaší %{brand} zde"
+          }
+        },
+        "datasets": {
+          "item": {
+            "sync-failed": "Synchronizace selhala, poslední pokus byl",
+            "syncing": "Synchrnoziji",
+            "synced": "Synchronizováno",
+            "read": "čti",
+            "from": "z",
+            "by": "od",
+            "no-description": "Bez popisu",
+            "rows-pluralize": "řádek |||| řádky",
+            "tags-more": "a %{tagsCount} více",
+            "no-tags": "Žádné značky"
+          },
+          "loading": "Nahrávání",
+          "searching": "Hledání",
+          "error": {
+            "title": "Och! Stala se chyba při nahrávání Vašich datasetů",
+            "desc": "Pokud problém přetrvá, kontaktujte nás na"
+          },
+          "no-datasets": {
+            "title": "Zatím jste nepřipojil žádný dataset",
+            "desc": "Můžete %{connectDataset} nebo %{search} naší datovou knihovnu",
+            "connect-datasets": "připojit datasety",
+            "search": "prohledat"
+          },
+          "no-results": {
+            "desc": "Žádné výsledky na této stránce",
+            "found": "nalezeny",
+            "there-are-no": "Zde nejsou žádné",
+            "no-fun": "Žádné %{type}, žádná legrace"
+          }
+        },
+        "footer": {
+          "guessing-desc": "Nechte Carto automaticky odhadnout datové typy a obsah k importu.",
+          "deprecated-connector": "Neschválený konektor.",
+          "twitter-contact-support": "Prosím <a href='mailto:support@carto.com'>kontaktujte podporu</a> pro více informací.",
+          "twitter-how-to-historical": "Abyste se dostali k historickým datům (starší 30 dní) potřebujete",
+          "contact-team": "kontaktovat náš tým.",
+          "privacy-upgrade": "Nemůžete změnit zabezpečení Vašeho nového datasetu. Kliknětě zde pro upgrade Vašeho účtu.",
+          "privacy-change": "Váš nový dataset bude %{privacy}",
+          "privacy-click": "Klikněte pro změnu na %{nextPrivacy}",
+          "privacy-change-banned": "Nemůžete změnit zabezpečení Vašeho nového datasetu. Kliknětě zde pro upgrade Vašeho účtu.",
+          "add-layer": "Přidat vrstvu"
+        }
+      },
+      "edit-feature": {
+        "confirmation": {
+          "title": "Tato geometrie je příliš velká k editování z webu",
+          "desc": "Úpravy této geometrie mohou způsobit zamrznutí Vašeho prohlížeče a můžete přijít o svou práci. Doporučujeme editovat skrze API.",
+          "cancel": "Zrušit",
+          "continue": "Ok, pokračuj"
+        },
+        "delete": {
+          "title": "Jste si jist smazáním funkcionality",
+          "desc": "Jste si jist, že jí chcete smazat?",
+          "cancel": "Zrušit",
+          "confirm": "Ok, smazej to"
+        }
+      },
+      "privacy-warning": {
+        "title": {
+          "visualization": {
+            "PUBLIC": "Hodláte publikovat vizualizaci k veřejnému prohlížení",
+            "LINK": "Hodláte tuto vizualizaci zpřístupnit každému s odkazem",
+            "PASSWORD": "Hodláte tuto vizualizaci zpřístupnit každému s heslem"
+          },
+          "dataset": {
+            "PUBLIC": "Hodláte zveřejnit tento dataset na Vašem veřejném profilu",
+            "LINK": "Hodláte tento dataset zpřístupnit každému s odkazem"
+          }
+        },
+        "description": {
+          "PUBLIC": "Jakákoliv osobní data, která jste použil k vytvoření budou taktéž veřejně viditelná.",
+          "LINK": "Jakákoliv osobní data, která jste použil k vytvoření budou taktéž veřejně viditelná každému s odkazem.",
+          "PASSWORD": "Jakákoliv osobní data, která jste použil k vytvoření budou taktéž veřejně viditelná každému s heslem."
+        },
+        "cancel": "Zrušit",
+        "confirm": "Ok, změň zabezpečení"
+      },
+      "password-confirmation": {
+        "modal-title": "Prosím, potvrďte Vaše heslo.",
+        "modal-description": "\"Hej, hou! Pojďme na to!\"",
+        "form": {
+          "password-label": "Heslo"
+        },
+        "actions": {
+          "confirm": "Potvrdit",
+          "cancel": "Zrušit"
+        }
+      }
+    },
+    "error": {
+      "default-title": "Och, někde nastal problém",
+      "default-desc": "Načtěte stránku znovu. Pokud problém přetrvá, kontaktujte nás na <a href='mailto:support@carto.com'>support@carto.com</a>"
+    },
+    "backbone-forms": {
+      "select": {
+        "placeholder": "Vyberte  %{keyAttr}",
+        "disabled-placeholder": "Povolit %{keyAttr}",
+        "loading": "Načítání...",
+        "empty": "Žádné hodnoty",
+        "selected": "%{count} vybráno",
+        "all": "Vše",
+        "none": "Nic",
+        "error": "Získávání chyb %{type}"
+      },
+      "operators": {
+        "count-message": "Pokud vyberete 'COUNT', všechny sloupce jsou vybrány"
+      },
+      "column-type-error": "Sloupec musí být %{columnType}",
+      "interval-error": "Hodnota musí být mezi %{minValue} a %{maxValue}",
+      "copy-button": "Kopírovat",
+      "lazy-select": {
+        "search": "Vyhledávání...",
+        "error":  "Získávání chyb%{type}",
+        "type": "položek",
+        "empty": "Žadné výsledky pro %{type} sloupce."
+      },
+      "data-observatory": {
+        "dropdown": {
+          "measurement": {
+            "search": "Vyhledávání ...",
+            "type": "rozměry"
+          },
+          "filter": {
+            "header": "Setřiď rozměry podle",
+            "type": "filtry",
+            "item-label": "filtr",
+            "filters": {
+              "label": "Filtry",
+              "applied": {
+                "single": "1 fitr použit",
+                "multiple": "%{filters} filtrů použito"
+              }
+            }
+          },
+          "error": " Získávání chyb %{type}"
+        }
+      }
+    },
+    "codemirror": {
+      "no-errors": "Žádné chyby",
+      "docs": "Dokumenty",
+      "syntax-error": "Chyba syntaxe",
+      "line": "Řádek"
+    },
+    "undo-redo": {
+      "clear": "Vyčisti",
+      "apply": "Použij",
+      "undo": "Zpět",
+      "redo": "Znovu"
+    },
+    "table": {
+      "columns": {
+        "change-type": {
+          "confirm": "ok, změň to",
+          "cancel": "Zrušit",
+          "desc": "Mapy používající tento sloupec budou dotčeny a nepřevoditelná data budou ztracena. Jste si jist?",
+          "error": "Stala se chyba při změně sloupce %{columnName}: %{error}",
+          "loading": "Měním sloupec %{columnName}...",
+          "title": "Sloupec %{columnName} bude změněn na %{newType}",
+          "success": "Sloupec %{columnName} změněn na %{newType}"
+        },
+        "create": {
+          "loading": "Přidávání nového sloupce...",
+          "error": "Chyba při přidávání nového sloupce: %{error}",
+          "success": "Sloupec %{columnName} přidán"
+        },
+        "destroy": {
+          "cancel": "Zrušit",
+          "confirm": "Ok, smazej to",
+          "desc": "Mapy používající tento sloupec budou dotčeny. Jste si jist, že ho chcete smazat?",
+          "error": "Chyba mazání sloupce %{columnName}: %{error}",
+          "loading": "Odebírání Vašeho sloupce %{columnName}...",
+          "success": "Sloupec %{columnName} odebrán",
+          "title": "Hodláte smazat sloupec %{columnName} "
+        },
+        "rename": {
+          "cancel": "Zrušit",
+          "confirm": "Ok, přejmenuj to",
+          "desc": "Mapy používající tento sloupec budou dotčeny. Jste si jist, že ho chcete přejmenovat?",
+          "error": "Chyba přejmenovávání sloupce %{columnName} na %{newName}: %{error}",
+          "loading": "Přejmenovávání sloupce %{columnName} na %{newName}...",
+          "success": "Sloupec %{columnName} přejmenován na %{newName}",
+          "title": "Hodláte přejmenovat sloupec %{columnName} na %{newName}"
+        },
+        "options": {
+          "order": "Pořadí",
+          "rename": "Přejmenuj sloupec",
+          "change": "Změň typ dat",
+          "create": "Přidej nový sloupec",
+          "delete": "Smazat tento sloupec..."
+        },
+        "types": {
+          "boolean": "Boolean",
+          "date": "Datum",
+          "number": "Číslo",
+          "string": "Řetězec"
+        }
+      },
+      "rows": {
+        "loading": {
+          "title": "Načítám řádky..."
+        },
+        "error": {
+          "title": "Stala se chyba...",
+          "desc": "Nebylo možné získat žádné výsledky, zkontrolujte použitý dotaz"
+        },
+        "result": {
+          "no-page-title": "Och! Pardón",
+          "no-page-desc": "Tato stránka %{page} neobsahuje žádné výsledky...",
+          "no-results-title": "Zde nejsou žádná data",
+          "no-results-desc": "",
+          "no-results-button": ""
+        },
+        "options": {
+          "copy": "Zkopíruj hodnotu buňky",
+          "create": "Přidej nový řádek",
+          "edit": "Upravit tuto buňku",
+          "delete": "Smazat tento řádek..."
+        },
+        "create": {
+          "loading": "Přídávám nový řádek...",
+          "error": "Chyba při přidávání nového řádku: %{error}",
+          "success": "Nový řádek přidán"
+        },
+        "edit": {
+          "loading": "Upravuji %{attribute} s cartodb_id %{cartodbId}...",
+          "error": "Chyba úpravy %{attribute} s cartodb_id %{cartodbId}: %{error}",
+          "success": "Upraveno %{attribute} s cartodb_id %{cartodbId}"
+        },
+        "destroy": {
+          "cancel": "Zrušit",
+          "confirm": "Ok, smazat",
+          "desc": "Jste si jist, že to chcete smazat",
+          "error": "Chyba při mazání řádku s cartodb_id %{cartodb_id}: %{error}",
+          "loading": "Odebírání řádku s cartodb_id %{cartodb_id}...",
+          "success": "Řádek s cartodb_id %{cartodb_id} smazán",
+          "title": "Hodláte smazat řádek s cartodb_id %{cartodb_id}"
+        },
+        "paginator": {
+          "error": "Stala se chyba při stránkování: %{error}",
+          "to": "do"
+        }
+      }
+    }
+  },
+  "dataset": {
+    "sql": "SQL",
+    "data": "Metadata",
+    "updated": "Aktualizováno před %{ago}",
+    "read": "Čti",
+    "options": {
+      "add-row": "Přidej řádek",
+      "add-column": "Přidej sloupec",
+      "export": "Exportovat"
+    },
+    "preview-map": {
+      "preview": "náhled",
+      "back": "zpět"
+    },
+    "create-map": {
+      "title": "Vytvoř mapu",
+      "loading": "Vytvářím mapu z %{tableName}",
+      "error": "Stala se chyba při vytváření mapy"
+    },
+    "delete": {
+      "option": "Smazat dataset...",
+      "cancel": "Zrušit",
+      "confirm": "Ok, smazej to",
+      "desc": "Smazaný dataset nemůže být obnoven, buďte si jistí před smazáním. Doporučujeme exportovat dataset před smazáním.",
+      "error": "Chyba při mazání %{tableName}: %{error}",
+      "loading": "Mazání Vašeho datasetu %{tableName}...",
+      "title": "Hodláte smazat %{tableName} dataset",
+      "affected-vis-count": "%{smart_count} mapa dotčena |||| %{smart_count} map dotčeno",
+      "affected-vis-count-extended": "%{affectedVisCount} map dotčeno, nekteré z nich jsou",
+      "affected-entities-count": "%{smart_count} uživatel ztratí přístup |||| %{smart_count} uživatelé ztratí přístup",
+      "affected-entities-count-extended": "%{affectedEntitiesCount} uživatelé ztratí přístup, někteří z nich jsou",
+      "whole-organization-affected": "Všichni uživatelé Vaší organizace budou dotčeni"
+    },
+    "metadata": {
+      "option": "Upravit metadata",
+      "error": "Stala se chyba při úpravě metada datasetu %{name}",
+      "loading": "Upravuji metadata datasetu %{name}..."
+    },
+    "duplicate": {
+      "option": "Duplikovat dataset",
+      "query": "použitý dotaz",
+      "customOption": "Vytvořit dataset z dotazu",
+      "error": "Stala se chyba při duplikaci %{name}",
+      "loading": "Duplikuji Váš dataset %{name}..."
+    },
+    "lock": {
+      "option": "Zamknout dataset",
+      "error": "Stala se chyba při zamykání datasetu %{tableName}",
+      "loading": "Zamykám Váš dataset %{tableName}..."
+    },
+    "rename": {
+      "option": "Přejmenuj dataset",
+      "cancel": "Zrušit",
+      "confirm": "Ok, přejmenuj to.",
+      "desc": "Pokud přistupujete k datasetu skrze API, nezapoňte poté změnit nové jméno ve Vašem API volání.",
+      "error": "Chyba při přejmenování %{tableName}: %{error}",
+      "loading": "Přejmenovávám Váš dataset %{tableName}...",
+      "success": "Dataset %{tableName} přejmenován",
+      "title": "Přejmenování %{tableName} se dotkne Vašich API volání, map, analýz, ..."
+    },
+    "sync": {
+      "in-a-moment": "v několika okamžicích",
+      "synced": "Synchronizováno %{ranAt}",
+      "syncing": "Synchronizuji",
+      "loading": "Synchronizuji dataset %{tableName}",
+      "sync-failed": "Synchronizace se nezdařila",
+      "next": "Příští bude %{runAt}",
+      "error-code": "Kód chyby %{errorCode}",
+      "sync-now": "Synchronizuj nyní",
+      "view-options": "Zobraz možnosti",
+      "disabled": "Manuální synchronizace bude povolena za %{gap} minut po poslední synchronizaci",
+      "title": "Možnosti synchronizace datasetu",
+      "desc": "Váš dataset he synchronizován se %{service} souborem: <br/>%{url}",
+      "label": "Synchronizuj moje data",
+      "error": "Stala se chyba při nastavování intervalu",
+      "confirm": "Uložit",
+      "cancel": "Zrušit"
+    },
+    "unlock": {
+      "cancel": "zpátky na nástěnku",
+      "confirm": "Ok, odemkni to",
+      "desc": "To znamená, že je potřeba to odemknout před děláním čehokoliv. Jste si jistý?",
+      "error": "Chyba odemykání %{tableName}: %{error}",
+      "loading": "Odemykání Vašeho datasetu %{tableName}...",
+      "success": "Dataset %{tableName} odemčen",
+      "title": "Váš dataset %{tableName} je zamčen."
+    },
+    "privacy": {
+      "info": "Nemůžete měnit zabezpečení tohoto datasetu. Kontaktujte vlastníka <b>%{name}</b>"
+    }
+  },
+  "editor": {
+    "map": "mapa",
+    "map_name": "%{name} mapa",
+    "published": "Publikováno %{when}",
+    "unpublished": "Nepublikovaná mapa",
+    "map_pluralize": "%{smart_count} map |||| %{smart_count} map",
+    "button_publish": "Publikovat",
+    "unpublished-changes": "Nepublikované změny",
+    "error-query": {
+      "body": "Chyba nalezena ve Vašem SQL dotazu. %{action} před pokračováním.",
+      "label": "Opravte je"
+    },
+    "messages": {
+      "common": {
+        "cancel": "Zrušit"
+      },
+      "deleting-analysis": {
+        "title": "Smazat vhnízděné analýzy",
+        "body": "Vybrané analýzy mají jednu nebo více vhnízděných analýz, které budou odstraněný pokdu bude tato analýza smazána. Pokračovat?",
+        "delete": "Smazat",
+        "cancel": "Zrušit"
+      },
+      "layer-hidden": {
+        "title": "Vrstvá schována",
+        "body": "Tato vrstva je schována. Změny nebudou ukázány dokud jí neučiníte viditelnou.",
+        "show": "Zobrazit"
+      },
+      "generic-error": {
+        "title": "Některé dlaždice nejsou zobrazeny",
+        "body": "Pokud problémy přetrvají, zkontrolujte dokumentaci nebo nás kontaktujte."
+      },
+      "interactivity": {
+        "title": "Chyba interaktivity",
+        "body": "Vypadá to, že jste překročil limity Vašeho účtu a interaktivita Vaší mapy může být dotčena.",
+        "try_to": " Zkuste:",
+        "cta": {
+          "label": "Ugradovat účet",
+          "url": "https://carto.com/pricing/"
+        }
+      },
+      "limit": {
+        "title": "Některé dlaždice nemusí být zobrazeny správně",
+        "body": "Vypadá to, že jste překročil limity Vašeho účtu při vykreslování dlaždic.",
+        "try_to": " Zkuste:",
+        "cta": {
+          "label": "Upgradovat účet",
+          "url": "https://carto.com/pricing/"
+        }
+      }
+    },
+    "settings": {
+      "menu-tab-pane-labels": {
+        "preview": "Náhled",
+        "snapshots": "Záběry"
+      },
+      "preview": {
+        "mode": {
+          "title": "Mód"
+        },
+        "options": {
+          "title": "Možnosti mapy",
+          "subtitle": "Komponenty které jsou zobrazeny na mapě",
+          "description": {
+            "title": "Komponenty",
+            "subtitle": "Změntě prvky mapy"
+          },
+          "elements": {
+            "search": "Vyhledávací rámeček",
+            "zoom": "Ovládání změny velikosti",
+            "fullscreen": "Celoobrazovkový režim",
+            "scrollwheel": "Ovládání změny velikosti kolečkem myši",
+            "layer_selector": "Výběr vrstev",
+            "logo": "Logo CARTO",
+            "widgets": "Sloupec widgetů",
+            "legends": "Legenda",
+            "dashboard_menu": "Zobrazit nástrojový řádek"
+          }
+        }
+      }
+    },
+    "maps": {
+      "options": {
+        "duplicate": "Duplikovat",
+        "edit-metadata": "Upravit metadata",
+        "export-image": "Exportovat obrázek",
+        "export-map": "Stáhnout mapu",
+        "remove": "Smazat mapu",
+        "rename": "Přejmenovat"
+      },
+      "duplicate": {
+        "error": "Stala se chyba při duplikaci %{name}",
+        "loading": "Duplikuji Vaší mapu %{name}..."
+      },
+      "delete": {
+        "confirm": "Ok, smazej to",
+        "cancel": "Zrušit",
+        "desc": "Smazaná mapa nemůže být obnovena, ujistěte se před pokračováním.",
+        "title": "Hodláte smazat mapu %{name}",
+        "error": "Chyba při mazání mapy %{name}: %{error}",
+        "loading": "Odebírání mapy %{name}...",
+        "success": "Mapa %{name} smazána"
+      },
+      "export-image": {
+        "title": "Exportovat jako obrázek",
+        "export": "Exportovat",
+        "generating": "Generuji",
+        "disclaimer": {
+          "title": "Upozornění",
+          "body": "Legendy a widgety nebudou exportovány jakou části obrázku"
+        },
+        "download": "Stáhnout",
+        "errors": {
+          "try-again": "Prosím, zkuste znovu. Pokud problém přetrvá, kontaktujte podporu",
+          "error-attribution": "Chyba vytváření generating kompetencí.",
+          "error-basemap": "Chyba při nahrávání základní mapy.",
+          "error-image": "Chyba při generování obrázku."
+        }
+      },
+      "export": {
+        "confirmation": {
+          "confirm": "Stáhnout",
+          "cancel": "Zrušit",
+          "desc": "Tato mapa a připojená data budou uložena jako .cartodb soubor",
+          "title": "Stáhnout \"%{name}\""
+        },
+        "download": {
+          "confirm": "Stáhnout",
+          "tip": "Tip: Povolte pop-up okna CARTO ve Vašem prohlížeči.",
+          "desc": "Klikněte Stáhnout k uložení .cartodb souboru.",
+          "title": "Připraven stáhnout"
+        },
+        "error": {
+          "title": "Chyba se stále při exportování Vaší mapy",
+          "desc": "Prosím, zkuste to znovu. Pokud problém přetrvá, prosím kontaktujte podporu"
+        }
+      },
+      "rename": {
+        "loading": "Přejmenovávání mapy...",
+        "success": "Mapa přejmenována na %{name}",
+        "error": "Chyba při přejmenování mapy %{name}: %{error}"
+      }
+    },
+    "tab-pane": {
+      "layers": {
+        "title-label": "Vrstvy (%{count}/%{maxCount})"
+      },
+      "elements": {
+        "title-label": "Prvky"
+      },
+      "widgets": {
+        "title-label": "Widgety"
+      }
+    },
+    "elements": {
+      "message": "Naneštěstí, mapové překrývání není zatím dostupné, ale bude velmi brzy. Zůsťaňte nalazeni!"
+    },
+    "layers": {
+      "add-layer": {
+        "label": "Přidat novou vrstvu",
+        "tooltip": "Přidat novou vrstvu na Vaší mapu"
+      },
+      "breadcrumb": {
+        "layer-options": "Možnosti vrstvy",
+        "basemap-options": "Možnosti základní mapy"
+      },
+      "warnings": {
+        "no-data": {
+          "message": "Žádná data nejsou dostupná.",
+          "action-message": "Nejsou žádné výsledku kombinace použité analýzy na Vaše data. Zkuste ji upravit!"
+        },
+        "geocode": {
+          "message": "Ve Vašich datech nejsou žádné geometrie.",
+          "action-message": "Použij geokódovací analýzu nebo manuálně doplně geometrická data k zobrazení na Vaší mapě."
+        }
+      },
+      "errors": {
+        "broken-node": "Rozbitý uzel",
+        "non-existent-node": "Vrstva ukazuje na neexistující uzel %{nodeId}"
+      },
+      "options": {
+        "rename": "Přejmenovat",
+        "delete": "Smazat vrstvu",
+        "delete-and-reload": "Smazat vrstvu a znovunačíst mapu",
+        "collapse": "Zhroucení",
+        "expand": "Rozšíření",
+        "export": "Exportovat data",
+        "hide": "Schovat vrstvu",
+        "show": "Ukázat vrstvu",
+        "edit": "Upravit vrstvu",
+        "center-map": "Vystředit mapu podle vrstvy"
+      },
+      "drag-n-drop-analysis": {
+        "upgrade-max-layers-err": "%{a_start}Upgradujte Váš účet %{a_end} k přidání více než %{userMaxLayers} vrstev na Vaší mapu."
+      },
+      "rename": {
+        "loading": "Přejmenovávám vrstvu...",
+        "success": "Vrstva přejmenována na %{name}",
+        "error": "<span class='u-errorTextColor'>Chyba při přejmenování vrstvy</span> %{name}: %{error}"
+      },
+      "moveTorqueLayer": {
+        "loading": "Přesouvám točitou vrstvu na první místo...",
+        "success": "Vrstva přesunuta",
+        "error": "Chyba při přesouvání vrstvy..."
+      },
+      "delete": {
+        "confirm": "Ok, smazej to",
+        "cancel": "Zrušit",
+        "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerVisName}</span> bude dotčena, jste si jistý smazáním?",
+        "title": "Hodláte smazat vrstvu %{layerName}",
+        "error": "<span class='u-errorTextColor'>Chyba při mazání vrstvy %{name}</span>: %{error}",
+        "loading": "Odebírám vrstvu %{name}",
+        "success": "Vrstva %{name} odebrána v pořádku.",
+        "widgets": "jeden widget |||| %{smart_count} widgety",
+        "analyses": "jedna analýza |||| %{smart_count} analýzy",
+        "layers": "jedna vrstva |||| %{smart_count} vrstev",
+        "affected-items": "Smazáním této vrstvy budou dotčeny",
+        "and": "a",
+        "link-to-export": "Před smazáním vrstvy můžete <a href='#' data-event='exportMapAction'>exportovat jako soubor .cartodb/a>"
+      },
+      "layer": {
+        "animated": "Animovaná",
+        "heatmap": "Tepelná mapa",
+        "analysis": "Ananlýzy",
+        "add-analysis": "Přidej analýzu",
+        "analyses-count": "%{smart_count} Analýza |||| %{smart_count} Analýzy",
+        "widgets-count": "%{smart_count} Widget |||| %{smart_count} Widgety",
+        "add-layer": "Přidej vrstvu",
+        "empty-layer": "Prázdná vrstva",
+        "geocode-text": "K zobrazení dat na této mapě geokódujte Vaší vrstvu.",
+        "geocode": "Geokódování",
+        "geocode-tooltip": "K zobrazení dat na této mapě geokódujte Vaší vrstvu ."
+      },
+      "basemap": {
+        "remove-baselayer": "Odebrat základní vrstvu",
+        "custom-basemap": "Vlastní základní mapa",
+        "title-label": "Základní mapa",
+        "by": "od",
+        "category": {
+          "title-label": "Zdroj",
+          "select-category": "Vyber zdroj"
+        },
+        "style": {
+          "title-label": "Styl",
+          "select-style": "Vybrat style",
+          "color": "Barva"
+        },
+        "saving": {
+          "loading": "Ukládám novou základní mapu...",
+          "error": "Chyba ukládání nové základní mapy.",
+          "success": "Základní mapa úspěšně uložena."
+        }
+      },
+      "labels": {
+        "title-label": "Popisky"
+      },
+      "color": {
+        "title-label": "Barva"
+      },
+      "image": {
+        "title-label": "Obrázek"
+      },
+      "gmaps": {
+        "title-label": "Google Mapy"
+      },
+      "menu-tab-pane-labels": {
+        "data": "Data",
+        "analyses": "Analýza",
+        "style": "Styl",
+        "popups": "Pop-upy",
+        "legends": "Legenda"
+      },
+      "infowindow-menu-tab-pane-labels": {
+        "click": "Kliknout",
+        "hover": "Ukotvit"
+      },
+      "analysis-form": {
+        "admin-region": "Správní území",
+        "aggregate": "Agregace",
+        "aggregate-by-help": "Vypočte agregované hodnoty pro každý geometrický střed",
+        "aggregate-column": "Agregovat sloupec",
+        "all-to-all": "Všechno všem",
+        "allow-holes": "Povolit díry",
+        "append": "Připojit",
+        "append-help": "Zůstaňte u svého datového zdroje a připojte odpovídající řádky z Vašeho cíle.",
+        "apply-btn": "Použít",
+        "asc": "ASC",
+        "base-data": "Základní data",
+        "bicycle": "Jízdní kola",
+        "boundaries": "Hranice",
+        "bounding-box": "Ohraničení obdélníkem",
+        "bounding-circle": "Ohraničení kruhem",
+        "by": "",
+        "by-bike": "Na motorce",
+        "by-car": "Autem",
+        "by-walk": "Pěšky",
+        "cancel-btn": "Zrušit",
+        "car": "Auto",
+        "categorize-by": "Kategorizuj",
+        "categorize-by-help": "Pokud toto vyberete, bude nalezen geometrický střed pro každou z kategorií",
+        "category-column": "Sloupec kategorií",
+        "choose-similar-columns": "Vyberte podobný sloupec k jejich porovnání",
+        "centroid-desc": "Skupina nebo váha Vašeho geometrického středu",
+        "city": "Město",
+        "clusters-num": "Bloky",
+        "closeness": "Blízkost",
+        "column": "Sloupec",
+        "concave-hull": "Konkávní křivka",
+        "confirm-analysis": "Potvrdit",
+        "convex-hull": "Konvexní křivka",
+        "country": "Stát",
+        "data-observatory-measurement-area": "Stát",
+        "data-observatory-measurement-column": "Nové jméno sloupce",
+        "data-observatory-measurement-column-help": "Přidá nový sloupec do Vaší vrstvy k uložení výsledku",
+        "data-observatory-measurement-desc": "obohaťte svá data",
+        "data-observatory-measurement-measurement": "Výměra",
+        "data-observatory-measurement-refine": "Vyberte výměru",
+        "data-observatory-measurement-segments": "Části",
+        "data-observatory": {
+          "list": {
+            "add": "Přidej novou výměru"
+          },
+          "header": {
+            "title": "Vyber kraj",
+            "description": "Kraj musí sedět Vašemu geometrickému umístění"
+          },
+          "parameters": {
+            "title": "Select measurements",
+            "description": "Contextual data to augment your layer"
+          },
+          "source": {
+            "label": "Základní vrstva"
+          },
+          "region": {
+            "label": "Kraje",
+            "error": "Chyba při získávání krajů.",
+            "placeholder": "Vyberte kraj",
+            "search-placeholder": "Vyhledávat podle kraje"
+          },
+          "measurements": {
+            "label": "Výměra",
+            "placeholder": "Vyberte výměru"
+          },
+          "normalize": {
+            "label": "Normalizovat",
+            "placeholder": "Vyberte metriku",
+            "disabled-placeholder": "Umožnit normalizaci"
+          },
+          "timespan": {
+            "label": "Časová značka",
+            "placeholder": "Vyberte časovou značku"
+          },
+          "boundaries": {
+            "label": "Hranice"
+          }
+        },
+        "data-type": "Typ dat",
+        "define-columns": "Definuje sloupce k nalezení podobností s",
+        "define-how-connect-points": "Definuje jak propojit Vaše body",
+        "define-two-layers": "Definuje dvě vrstvy",
+        "delete-btn": "Smazat",
+        "deprecated-sql-function": {
+          "choose-function": "Vyberte funkci ke spuštění nad tímto uzlem",
+          "choose-function-small": "Vyberte funkci",
+          "define-params": "definujte své parametry níže",
+          "function": "funkce",
+          "input": "vstup",
+          "params": "Parametry Vaší funkce",
+          "target": "cílový uzel",
+          "title": "SQL funkce"
+        },
+        "desc": "POPIS",
+        "direction": "Směr",
+        "disabled-by-config": "Tento ty analýzy není povolen",
+        "dissolved": "Rozpuštěný",
+        "dissolved-help": "Kombinuje úseky mnohoúhelníků, které mají stejné oblasti",
+        "distance": "Vzdálenost",
+        "enter-latitude": "Vlože výšku",
+        "enter-longitude": "Enter délku",
+        "enable-normalize": "Použít normalizaci",
+        "filter": "Filtr",
+        "filter-aggregate": "Agregovat Vaše výsledky",
+        "filter-column": "Cílový sloupec",
+        "geometry-from": "Geometrie z",
+        "georeference": {
+          "description": "Geoḱódojte k získání místních souřadnic",
+          "postal-code-help": "Vyberte sloupec s PSČ",
+          "admin-region-help": "Vyberte sloupec s názvy krajů",
+          "admin-region-extended-help": "Určete administrativní celek nebo vyberte sloupec se jmény krajů",
+          "admin-region": "Administrativní celky",
+          "city-help": "Vyberte sloupec se jmény měst",
+          "city-extended-help": "Určete město nebo vyberte sloupec se jmény měst",
+          "city": "Města",
+          "country-help": "Vyberte sloupec s názvy států",
+          "country-extended-help": "Určete stát nebo vyberte sloupec s názvy států",
+          "country": "Státy",
+          "enter-city-name": "Nebo vložte název města",
+          "enter-country-name": "Nebo vložte název státu",
+          "enter-region-name": "Nebo vložte název kraje",
+          "enter-state-name": "Nebo vložte název státu",
+          "ip-address-column": "IP adresa",
+          "ip-address-help": "Vyberte sloupec s IP adresami",
+          "ip-address": "IP Adresy",
+          "long-lat": "Výška a délka",
+          "postal-code": "PSČ",
+          "select-a-country": "Vyberte sloupec statů",
+          "select-admin": "Vyberte sloupec krajů",
+          "select-city": "Vyberte sloupec měst",
+          "select-country": "Vyberte sloupec statů",
+          "select-ip": " Vyberte sloupec IP",
+          "select-latitude": "Vyberte sloupec výšky",
+          "select-longitude": "Vyberte sloupec délky",
+          "select-postal-code": "Vyberte sloupec PSČ ",
+          "select-state": "Vyberte sloupec stavu ",
+          "select-street-address": "Vyberte sloupec adresy",
+          "state-help": "Udejte stav nebo vyberte sloupec se názvy stavů",
+          "street-address-column": "Uliční adresa",
+          "street-address-column-help": "Vyberte sloupec s uliční adresou",
+          "street-address-help": "Použijte sloupce nebo prostý text k vyvtvoření Vašeho schémata adresy <a href='https://carto.com/learn/guides/analysis/geocode-street-addresses-into-point-geometries' target='_blank'>Více informací.</a>",
+          "street-address": "Uliční adresy",
+          "advance": "Rozšířený mód",
+          "normal": "Normalní mód"
+        },
+        "group-by": "Seskupit podle",
+        "hide": "Schovat",
+        "input-layer": "Definujte Vaší vstupní vrstvu",
+        "intact": "Nedotčené",
+        "intact-help": "Ponechte všechny úseky mnohoúhelníku jako jednotlivé mnohoúhelníky",
+        "intersect": "Protnutí",
+        "select-your-points": "Vyberte Vaše body",
+        "intersect-help": "Ponechat pouze řádky odpovídající Vašim cílový datům.",
+        "intersect-step-one-desc": "K nalezení překrývajícíh se geometrií",
+        "join-type": "Typ spojení",
+        "keep-data": "Vyberte z každého, která data chcete uchovat",
+        "key-columns": "Vyberte sdílený sloupec",
+        "key-columns-desc": "Sloupce musí obsahovat stejný typ dat",
+        "kilometers": "km",
+        "latitude": "Výška",
+        "line-sequential": "Souvislá",
+        "line-source-to-target": "Ke zdroji",
+        "line-to-single-point": "Do bodu",
+        "link-layer": "Link na sloupec",
+        "link-layer-desc": "Widget této vrstvy bude slinkován s oběmi",
+        "linked-layer": "Cílová vrstva",
+        "loading": "Nahrávání...",
+        "longitude": "Délka",
+        "markov-desc": "Jeden pro každé časové periody",
+        "max-or-equal": "Maximum nebo rovno",
+        "max": "Maximum",
+        "measure-by": "Vyměřit podle",
+        "merge-step-one-title": "Vyberte cíl ke spojení",
+        "meters": "m",
+        "method": "Metoda",
+        "miles": "mil",
+        "min-or-equal": "Minimum nebo rovno",
+        "min": "Minimum",
+        "mode": "Mód",
+        "moran-desc": "Najdi hodnoty prostorových bloků a bludných balvanů",
+        "more-info": "Informace",
+        "find-nearest": {
+          "categorized": "Podle skupin",
+          "categorized-help": "Vypočte výsledek pro kažodu kategorii z vybraného sloupce",
+          "max-results": "maximum výsledků",
+          "modal-desc": "Vyberte body z druhého datasetu nejbližší geometriím v v současné vrstvě.",
+          "modal-title": "Najdi nejbližší",
+          "workflow-title": "Najdi nejbližší"
+        },
+        "neighbors": "Sousedící",
+        "neighbors-help": "Určí místní sousedící jako tyto nejbližší sousedící",
+        "no": "Ne",
+        "normalize": "Normalizovat",
+        "normalize-help": "Sloupec k normalizaci cílového sloupce",
+        "should-match": "Typy sloupců by měly odpovídat",
+        "numerator": "Cílový sloupec",
+        "numerator-help": "Výměra prostorové autokorelace tohoto sloupce",
+        "operation": "Operace",
+        "order": "Seřadi",
+        "order-by": "Seřadit podle",
+        "order-results": "Seřaďte Vaše výsledky",
+        "output-data": "Definujte výstupní data",
+        "parameters": "Definujte Vaše parametry",
+        "parameters-description": "Vylaďte Vaší analýzu",
+        "permutations": "Permutace",
+        "placeholder-text": "Analýza umožňuje vytvořit reprodukovatelné pracovní postupy pro analyzování a vysvětlení Vašich dat.",
+        "add-analysis": {
+          "label": "Přidej novou analýzu",
+          "tooltip": "Přidejte nový uzel k Vašemu pracovnímu postupu analýzy"
+        },
+        "edit-analysis-tooltip": "Upravit analýzu",
+        "points_source": "Zdroj bodu",
+        "polygons_source": "Zdroj mnohoúhleníku",
+        "postal-code": "PSČ",
+        "quota": {
+          "title": "potvrďte Vaši analýzu",
+          "loading": "Zjišťuji Vaši kvótu..",
+          "credits-left-body": "Toto může přivodit extra cenu. Kredity navíc budou účtovány v CZK%{blockPrice}/%{blockSize}.",
+          "credits-left-message": "%{smart_count} kreditu volné |||| %{smart_count} volných kreditů",
+          "enough-quota": "Využijte přibližně  %{credits} z Vašich kreditů",
+          "hard-limit-not-enough-quota": "Omlouváme se, ale současná kvóta je nedostatečná k obohacení Vašich dat. Řádky budou nastavený na nulovou hodnotu a analýza nebude hotova. Prosím %{contact} nás k rozšířením Vaší kvóty pro tuto funkci.",
+          "soft-limit-enough-quota": "Omlouváme se, ale současná kvóta je nedostatečná k obohacení Vašich dat. Budete potřebovat odhadem %{credits} extra kreditů. Extra kredity budou účtovány v CZK $%{blockPrice}/%{blockSize}.",
+          "no-quota-assigned-body": "K získání přístupu k %{analysis} funkcím, %{contact}.",
+          "no-credits-body": "Spotřeboval jste všechny kredity v průběhu tohoto zúčtovacího období. %{contact} k získání dalších.",
+          "no-credits-message": "Žádné volné kredity",
+          "contact-message": {
+            "no-credits": {
+              "regular": "Kontaktujte nás",
+              "organization": "Kontaktujte administrátora Vaší organizace"
+            },
+            "no-quota-assigned": {
+              "regular": "kontaktujte náš tým",
+              "organization": "kontaktujte administrátora Vaší organizace"
+            }
+          },
+          "emails": {
+            "support": "support@carto.com",
+            "saas": "sales@carto.com"
+          },
+          "quota-error-title": "Chyba",
+          "quota-fetch-error": "Stala se chyba při zjišťování Vaší kvóty: %{error}.",
+          "quota-dataservice-down": "API datových služeb nedostupné.",
+          "cancel": "Zrušit",
+          "confirm": "potvrdit",
+          "analysis-type": {
+            "routing": "Routování",
+            "trade-area": "Obchodní prostor",
+            "georeference-street-address": "Geokódovat uliční adresy",
+            "georeference-cities": "Geokódovat města",
+            "data-observatory-measure": "Obohaťte z data observatoře"
+          }
+        },
+        "public_transport": "Veřejná doprava",
+        "radius": "Vzdálenost",
+        "reference-layer-pluralize": "Určete Vaší referenční vrstvu |||| Určete Vaše referenční vrstvy",
+        "results": "Výsledky",
+        "right": "Vpravo",
+        "sampling": "Vzorkování",
+        "sampling-desc": "Vyberte vzorek z dat",
+        "sampling-rate": "Procent z dat ",
+        "search-by-column-name": "Vyhledat podle jména sloupce",
+        "second-geom-required": "Tato analýza vyžaduje sloupec s druhou geometrií",
+        "select-column": "Vyberte sloupec",
+        "select-type-placeholder": "Vyberte typ",
+        "select-columns": "Vyberte sloupce",
+        "select-data-source": "Vyberte zdroj dat",
+        "select-layer": "Vyberte vrstvu",
+        "select-second-source": "Vyberte druhý zdroj dat ke spojení",
+        "select-type": "Vyberte typ dat",
+        "select-value": "Vyberte hodnotu",
+        "setup-analysis": "Nastavte analýzu",
+        "show": "Ukázat",
+        "significance": "Významnost",
+        "significance-help": "Filtruje bludné balvany a bloky podle jejich významnosti. Menší čísla jsou více významná.",
+        "source-col": "Základní sl.",
+        "source-column": "Základní sloupec",
+        "spatial-markov-trend-desc": "Jeden z každého časového útoku",
+        "spatial-markov-trend-time-columns": "Základní sloupec",
+        "spatial-markov-trend-time-columns-help": "Každý sloupec by měl obsahovat hodnoty pro časový úsek",
+        "sampling-form-model": {
+          "help": "% z dat k ukázání"
+        },
+        "state": "Stav",
+        "target": "Cíl",
+        "target-layer": "Cílová vrstva",
+        "base-layer": "Základní vrstva",
+        "target-col": "Cílový sl.",
+        "target-column": "Cílový sloupec",
+        "target-data": "Cílová data",
+        "target-percent": "Cílová procenta",
+        "target-percent-help": "vypadat jako Konvexní křivka",
+        "target-layer-dataset": "Cíl může být vrstva nebo dataset",
+        "time": "Čas",
+        "time-seconds": "Čas (sekundy)",
+        "to-closest": "K nejbližšímu",
+        "top-range": "Maximální rozsah",
+        "to-filter-by": "Filtrováno podle",
+        "tracts": "Koleje",
+        "tracts-help": "Počet AOI událostí Number of AOIs rovnoměrně rozloženy mezi nulou a dosahem.",
+        "tune-analysis": "Vylaďte Vaší analýzu",
+        "tune-centroid": "Vylaďte Váš geometrický střed",
+        "tune-clusters": "Vylaďte Váše bloky",
+        "units": "Jednotky",
+        "type": "Typ",
+        "value": "Hodnota",
+        "value-aggregation": "Agregace hodnoty",
+        "value-aggregation-desc": "Agreguje požadované hodnoty v mnohoúhelník(y)",
+        "value-aggregation-centroids": "Agreguje požadované hodnoty v geometrický střed(y)",
+        "valid-type": "Tento druh dat není platný pro tento typ.",
+        "walk": "Chůzí",
+        "weight": "Váha",
+        "weight-column": "Sloupec váhy",
+        "weight-type": "Typ váhy",
+        "weighted-by": "Váženo podle",
+        "weighted-by-help": "Váhový přídavek určený hodnotou pro každý bod",
+        "workflow": "Váš průběh práce",
+        "write-min-or-equal-value": "Zapiš minimum nebo stejnou hodnotu",
+        "write-max-or-equal-value": "Zapiš maximum nebo stejnou hodnotu",
+        "write-min-value": "Zapiš minimální hodnotu",
+        "write-max-value": "Zapiš maximální hodnotu",
+        "yes": "Yes"
+      },
+      "infowindow": {
+        "select-fields": "Vyber pole",
+        "no-fields": "Nevybrali jste žádná pole, která můžou být zobrazena ve vyskakovacím okně.",
+        "placeholder-interactivity-text": "Vyskakovací okna nejsou povolena, interaktivita není povolena pro tuto vrstvu.",
+        "placeholder-columns-text": "Vyskakovací okna nejsou povolena, protože není přístupný žádný sloupec pro tuto vrstvu.",
+        "style": {
+          "title-label": "Styl",
+          "select-style": "Vyber styl",
+          "size": {
+            "label": "Velikost okna",
+            "help": "Změnit šířku vyskakovacího okna"
+          },
+          "header-color": "Barva hlavičky",
+          "none": "Žádná",
+          "custom": "Vlastní",
+          "infowindow_light": "Světlý",
+          "infowindow_dark": "Tmavý",
+          "infowindow_color": "Barva",
+          "infowindow_header_with_image": "Obrázek"
+        },
+        "tooltips": {
+          "none": "Žádný pop-up použit",
+          "infowindow_light": "Světlý pop-up",
+          "infowindow_dark": "Tmavý pop-up",
+          "infowindow_color": "Pop-up s barevnou hlavičkou",
+          "infowindow_header_with_image": "Pop-up s obrázkovou hlavičkou"
+        },
+        "items": {
+          "title-label": "Ukaž položky",
+          "description": "Přidej položky",
+          "help": "Změň textové pole"
+        }
+      },
+      "tooltip": {
+        "style": {
+          "none": "Žádný",
+          "custom": "Vlastní",
+          "tooltip_light": "Světlý",
+          "tooltip_dark": "Tmavý"
+        },
+        "items": {
+          "title-label": "Ukaž položky",
+          "description": "Přidej položky"
+        }
+      },
+      "filter-options": {
+        "top": "Nahoře",
+        "bottom": "Dole",
+        "between": "Mezi",
+        "is-equal-to": "Rovná se",
+        "is-greater-than": "Větší než",
+        "is-greater-or-equal-than": "Větší nebo rovno",
+        "is-less-than": "Méně než",
+        "is-less-or-equal-than": "Méně nebo rovno než"
+      },
+      "notifier": {
+        "center-map": {
+          "loading": "Vypočítávám souřadnice...",
+          "success": "Mapa centrována",
+          "error": "Chyba centrování mapy"
+        }
+      },
+      "georeference": {
+        "georeference-button": "Geokódovat",
+        "visualize": "Vrstva nemá žádnou geometrii"
+      },
+      "max-layers-infowindow": {
+        "title": "Dosáhli jstem maximálního počtu vrstev.",
+        "pricing": "https://carto.com/pricing/",
+        "custom": {
+          "body": "Váš účet nepodporuje víc než %{maxLayers} vrstev.",
+          "contact": "Kontaktujte nás",
+          "contact-url": "https://carto.com/contact/"
+        },
+        "regular": {
+          "body": "Upgradujte Váš účet k přidání více než %{maxLayers} vrstev k Vaší mapě.",
+          "upgrade": "Upgradujte Váš účet"
+        },
+        "org": {
+          "body": "Zvyšte limit vrstev kontaktováním administrátora účtu.",
+          "upgrade": "Kontaktovat administrátora"
+        },
+        "org-admin": {
+          "body": "Zvyšte limit pro Vaší ogranizaci kontaktováním podpory CARTO.",
+          "upgrade": "Kontaktujte podporu"
+        }
+      }
+    },
+    "data": {
+      "no-geometry-data": {
+        "message": "Tato vrstva je prázdná. Přidejte data k započetí práce.",
+        "action-message": "Klikněte na modré tlačítko vpravo dole k přidání bodů (%{pointIcon}), čar (%{lineIcon}) nebo mnohoúhelníků (%{polygonIcon})."
+      },
+      "stats": {
+        "add-widget": "Přidej jako widget",
+        "edit": "Upravit",
+        "top-cat": "% v top 10 kat.",
+        "trues": "% true",
+        "null": "% null",
+        "feature-count": "počet funkcionalit",
+        "geometry-fallback": "funkcionality",
+        "help": "Upravit widget"
+      },
+      "data-toggle": {
+        "values": "VALUES",
+        "cartocss": "SQL",
+        "tooltip": "Přepnout na SQL pohled"
+      },
+      "code-mirror": {
+        "tip": "Zmáčkněte CMD + S k použití Vašeho dotazu. CTRL + Mezerník k automatickému doplnění."
+      },
+      "notifier": {
+        "sql-alter-loading": "Upravuji tabulku...",
+        "sql-alter-error": "Chyba v SQL dotazu.",
+        "sql-alter-success": "Úprava použita",
+        "sql-applying": "Dotazuji...",
+        "sql-error": "Chyba v SQL dotazu",
+        "sql-success": "SQL dotaz použit."
+      },
+      "messages": {
+        "sql-readonly": {
+          "title": "SQL - pouze pro čtení",
+          "body": "Právě jste použil analýzu pro tuto vrstvu. SQL je nyní pouze pro čtení.",
+          "accept": "CLOSE"
+        },
+        "empty-data": {
+          "title": "ŽÁDNÁ DATA NEJSOU DOSTUPNÁ",
+          "body": "Nejsou žádná data k dispozici k zobrazení."
+        }
+      }
+    },
+    "infowindow": {
+      "apply": "APPLY",
+      "html-toggle": {
+        "values": "VALUES",
+        "html": "HTML",
+        "tooltip": "Přepnout do HTML pohledu"
+      },
+      "code-mirror": {
+        "save": "Zmáčkněte CMD + S k použítí Vašeho html.",
+        "sanitize": "Použij {{{column}}} to znormalizování hodnot.",
+        "errors": {
+          "empty": "Šablona nemůže být prázdná."
+        }
+      },
+      "messages": {
+        "custom-html-applied": {
+          "title": "POUŽITO VLASTNÍ HTML",
+          "body": "Právě jste použili vlastní html v HTML editoru. Nyní můžete pokračovat nebo vyčistit všechna uživatelská HTML.",
+          "accept": "Vyčistit uživatelská HMTL."
+        }
+      }
+    },
+    "export-image": {
+      "invalid-dimension": "Neplatný rozměr, max %{limit}x%{limit}px",
+      "properties": {
+        "width": "šířka",
+        "height": "výška",
+        "size": "Velikost",
+        "size-subtitle": "Manuálně vložte velikost obrázku",
+        "format": "Formát",
+        "format-subtitle": "Vyberte bezztrátotový (PNG) nebo ztrátový (JPG) formát",
+        "options": "Možnosti",
+        "options-subtitle": "Nastavte možnosti zobrazení"
+      }
+    },
+    "legend": {
+      "no-geometry-data": "Nejsou zde žádné geometrie ve Vašich datech k přidání popisku.",
+      "data-toggle": {
+        "values": "VALUES",
+        "html": "HTML",
+        "tooltip": "Přepnout do HTML pohledu"
+      },
+      "code-mirror": {
+        "save": "Zmáčkněte CMD + S k použítí Vašeho html.",
+        "errors": {
+          "empty": "Šablona nemůže být prázdná."
+        },
+        "pre-html": "<!-- vložte Váš vlastní html kód pod tuto čáru -->",
+        "post-html": "<!-- vložte Váš vlastní html kód nad tuto čáru -->"
+      },
+      "menu-tab-pane-labels": {
+        "color": "barva",
+        "size": "velikost",
+        "size-disabled": "Nastylujte Vaší vrstvu hodnotou k umož použití tohoto typu popisku"
+      },
+      "messages": {
+        "custom-legend": {
+          "title": "VLASTNÍ POPISEK POUŽIT",
+          "body": "Právě jste použili vlastní html v HTML editoru. Nyní můžete pokračovat nebo vyčistit všechna uživatelská HTML.",
+          "accept": "Vyčistit uživatelská HMTL."
+        },
+        "legends-disabled": {
+          "title": "POPISEK NEPOVOLEN",
+          "body": "Nastavení popisků není aktivní. Změny se neprojeví, dokud nepovolíte popisky.",
+          "show": "ENABLE"
+        }
+      },
+      "tooltips": {
+        "style": {
+          "none": "Žádný popisek nepoužit",
+          "bubble": "Popisek Bublina",
+          "category": "Popisek Kategorie",
+          "torque": "Kroutící se popisek",
+          "choropleth": "Popisek Choropleth",
+          "custom_choropleth": "Vlastní popisek Choropleth",
+          "custom": "Vlastní popisek"
+        },
+        "item": {
+          "fill": "Změnit barvu položky",
+          "title": "Změnit text položky",
+          "remove": "Odebrat položky"
+        }
+      },
+      "types": {
+        "none": "žádný",
+        "category": "kategorie",
+        "gradient": "gradient",
+        "bubble": "bublina",
+        "custom": "vlastní"
+      },
+      "legend-form": {
+        "type": {
+          "title": "Vyber styl"
+        },
+        "properties": {
+          "title": "Vytvářím Váš popisek",
+          "subtitle": "Přidat položky"
+        },
+        "add": "Přidat položku",
+        "title": {
+          "label": "Název",
+          "help": "Změňte název popisku"
+        },
+        "fill": "Vyplnit",
+        "by-size": "Podle velikosti",
+        "by-color": "Podle barvy",
+        "untitled": "Bez názvu",
+        "others": "Ostatní",
+        "prefix": "Prefix",
+        "suffix": "Suffix",
+        "left-label": "Levý popisek",
+        "right-label": "Pravý popisek",
+        "top-label": "Vrchní popisek",
+        "bottom-label": "Spodní popisek",
+        "custom-label-placeholder": "Potlačit dynamickou hodnotu"
+      },
+      "pixel-title": "Množství"
+    },
+    "style": {
+      "types": {
+        "none": "-",
+        "simple": "body",
+        "hexabins": "šestiúhelníkový",
+        "squares": "čtvercový",
+        "regions": "Správní celky",
+        "heatmap": "tepelná mapa",
+        "animation": "animovaný"
+      },
+      "style-form": {
+        "type": {
+          "title-label": "Agregace"
+        },
+        "aggregation": {
+          "title-label": "Možnosti agregace",
+          "desc": "Konfigurujte jak agregace fungují",
+          "tooltips": {
+            "none": "-",
+            "simple": "Podle bodů",
+            "hexabins": "Podle šestiúhelníků",
+            "squares": "Podle čtverců",
+            "regions": "Podle správních celků",
+            "heatmap": "Tepelná mapa",
+            "animation": "Animovaný"
+          }
+        },
+        "properties": {
+          "title-label-point": "Styl",
+          "title-label-line": "Styl čar",
+          "title-label-polygon": "Styl mnohoúhelníků",
+          "georeference": "Geokódování",
+          "desc": "Změňte zobrazení"
+        },
+        "unanimatable": {
+          "desc": "Žádný číselný sloupec či sloupec s časovým údajem nenalezen ve Vašich datech.",
+          "body": "Můžete změnit typ Vašich sloupců v %{link}.",
+          "label": "pohled tabulka"
+        }
+      },
+      "code-mirror": {
+        "save": "Zmáčkněte CMD + S k použítí Vašich stylů."
+      },
+      "style-toggle": {
+        "values": "VALUES",
+        "cartocss": "CARTOCSS",
+        "tooltip": "Přepne do pohledu CARTOCSS"
+      },
+      "messages": {
+        "fetched": "Schéma připojeno, vyberte styl",
+        "fetching": "Schéma je připojováno, až to bude hotové, budou Vám k dispozici rozdílné styly",
+        "unavailable": "Nastala chyba při získávání schématu, zkuste načíst znovu",
+        "none": "Váš styl byl vyresetován, zvolte nový stul pro Vaší vrstvu nebo se vraťte zpět na předchozí styl.",
+        "cartocss-applied": {
+          "title": "CARTCSS POUŽITO",
+          "body": "Právě jste použili stylování pomocí CARTOCSS. Nyní můžete pokračovat nebo vyčistit všechny styly.",
+          "clear": "VYČISTIT"
+        },
+        "torque-exists": {
+          "title": "TOČITÁ VRSTVA",
+          "body": "Ve výběru už je točitá vrstva. Pokud budete pokračovat, tato vrstva používej výchozí styl.",
+          "continue": "POKRAČOVAT"
+        }
+      },
+      "tooltips": {
+        "blending": "Barva vrstvy a módy Alpha Blendingu",
+        "line": "čára",
+        "polygon": "mnohoúhelník",
+        "simple": "bod",
+        "squares": "čtverec",
+        "hexabins": "šestiúhelník",
+        "regions": "kraj",
+        "animation": "bod",
+        "heatmap": "tepelná mapa",
+        "fill": {
+          "size": "Změň %{type} velikosti",
+          "color": "Změň %{type} barvy",
+          "color-heatmap": "Změň barevné schéma tepelné mapy",
+          "image": "Změň %{type} obrázku",
+          "fixed-tab": "Pevné barvy pro každý %{type}",
+          "by-value-tab": "Odlišit každého %{type} barvu přívlastkem k vytvoření kategorie nebo třízené %{type} mapy"
+        },
+        "size": {
+          "fixed-tab": "Pevná velikost pro každý %{type}",
+          "by-value-tab": " Odlišit každého %{type} velikost číselným přívlastkem k vytvořené třízené %{type} map"
+        },
+        "stroke": {
+          "size": "Změň tloušťku obrysu pro %{type}",
+          "color": "Změň barvu obrysu pro %{type}"
+        }
+      },
+      "components": {
+        "size": "Velikost",
+        "color": "Barva",
+        "fillColor": {
+          "label": "Barva",
+          "point": "Bod",
+          "line": "Čára",
+          "polygon": "Mnohoúhelník"
+        },
+        "stroke": {
+          "label": "Obrys",
+          "fetching": "Načítám schéma uzlu...",
+          "unavailable": "Chyba při získávání schémata uzlu",
+          "error": "Stala se chyba při získávání schémata uzlu..."
+        },
+        "stroke-color": {
+          "label": "Barva obrysu"
+        },
+        "stroke-size": {
+          "label": "Tloušťka obrysu"
+        },
+        "point-size": {
+          "label": "Velikost bodu"
+        },
+        "blending": {
+          "label": "Promíchávání",
+          "options": {
+            "none": "žádné",
+            "darken": "tmavnutí",
+            "lighten": "zesvětlení",
+            "lighter": "světlejší",
+            "color-dodge": "barva-vyhnutí se",
+            "color-burn": "barva-hoření",
+            "multiply": "násobit",
+            "screen": "obrazovka",
+            "overlay": "překrytí",
+            "src-over": "zdroj přes",
+            "source-over": "zdroj přes",
+            "xor": "xor"
+          }
+        },
+        "type": {
+          "label": "Typ",
+          "options": {
+            "heatmap": "Tepelná mapa",
+            "points": "Body"
+          }
+        },
+        "aggregation-fill": "Barva",
+        "aggregation-value": {
+          "label": "Operace",
+          "help": "Změňte operaci"
+        },
+        "aggregation-size": {
+          "label": "Velikost",
+          "label-help": "V pixelech",
+          "help": "Změňte %{type} velikosti"
+        },
+        "aggregation-dataset": {
+          "label": "Administrativní úroveň",
+          "help": "Seskupí body podle hranic mnohoúhelníku zalaženým na administrativních úrovních"
+        },
+        "labels-enabled": {
+          "label": "labels",
+          "not-with-animated": "Nedostupné s animacemi"
+        },
+        "labels-attribute": {
+          "label": "sloupec",
+          "placeholder": "Vyber sloupec",
+          "fetching": "Načítám schéma uzlu...",
+          "unavailable": "Chyba při načtení schémata uzlu",
+          "error": "Stala se chyba při připojování schémata uzlu...",
+          "help": "Sloupec z Vašeho datasetu bude použit pro štítky"
+        },
+        "labels-font": "font",
+        "labels-offset": "offset",
+        "labels-fill-size": "velikost písma",
+        "labels-fill-color": "barva písma",
+        "labels-overlap": {
+          "label": "překrytí",
+          "options": {
+            "true": "Ano",
+            "false": "Ne"
+          }
+        },
+        "labels-halo-size": "velikost aureoly",
+        "labels-halo-color": "barva aureolyu",
+        "labels-placement": {
+          "label": "umístění",
+          "options": {
+            "point": "bod",
+            "line": "čára",
+            "vertex": "bod v prostoru",
+            "interior": "interiér"
+          }
+        },
+        "animated-enabled": {
+          "label": "animovaný",
+          "already-one-torque": "Už máte točivou vrstvu na Vaší mapě",
+          "not-with-labels": "Nepřístupné se štítky"
+        },
+        "animated-attribute": {
+          "label": "sloupec",
+          "placeholder": "Vyberte sloupec",
+          "fetching": "Načítám schéma uzlu...",
+          "unavailable": "Chyba při načtení schémata uzlu",
+          "error": "Stala se chyba při připojování schémata uzlu...",
+          "help": "Sloupec z Vašeho datasetu bude řídit animace"
+        },
+        "animated-overlap": {
+          "label": "překrytí",
+          "options": {
+            "true": "Hromadit",
+            "false": "Žádný"
+          }
+        },
+        "animated-trails": {
+          "label": "stopy",
+          "help": "Určuje jak je pixel vykreslován v rámci"
+        },
+        "animated-resolution": {
+          "label": "rozlišení",
+          "help": "Definuje ines the šířku a výšku každé kroutící buňky, v pixelech."
+        },
+        "animated-steps": {
+          "label": "kroky",
+          "help": "Počet animovaných kroků/rámců ve Vaší animaci"
+        },
+        "animated-duration": {
+          "label": "délka",
+          "help": "Délka trvání animace, v sekundách."
+        }
+      }
+    },
+    "widgets": {
+      "add-widget": {
+        "label": "Přidej nový widget",
+        "tooltip": "Přidejte nový widget na Vaší mapu"
+      },
+      "breadcrumb": {
+        "widget-options": "Monžnosti widgetu"
+      },
+      "no-geometry-data": "Váš dataset postrádá geometrická data, není možné přidat widget.",
+      "options": {
+        "remove": "Smazat...",
+        "rename": "Přejmenovat",
+        "edit": "Upravit"
+      },
+      "delete": {
+        "confirm": "Ok, smazej to",
+        "cancel": "Zrušit",
+        "desc": "Widget nemůže být obnoven, ujistěte se před pokračováním.",
+        "title": "Hodláte smazat widget %{name}",
+        "error": "Chyba při mazání widgetu %{name}: %{error}",
+        "loading": "Odebírání widgetu %{name}...",
+        "success": "Widget %{name} smazán"
+      },
+      "widgets-view": {
+        "add_widget": "Přidat widget"
+      },
+      "widgets-types": {
+        "histogram": "Histogram",
+        "category": "Kategorie",
+        "formula": "Vzorec",
+        "time-series": "Časové řady"
+      },
+      "widgets-form": {
+        "placeholder-text": "Zatím jste nepřidali žádný widget. Přidejte widget k prozkoumávání nových věcí.",
+        "type": {
+          "title-label": "Typ",
+          "description": "Zvolte typ widgetu",
+          "category": "Kategorie",
+          "formula": "Vzorec",
+          "histogram": "Histogram",
+          "time_series": "Časové řady"
+        },
+        "data": {
+          "columns-unavailable": "Žádné sloupce k dispozici",
+          "aggregation": "Agregace",
+          "aggregation_column": "Agregační sloupec",
+          "bins": "Kyblíky",
+          "column": "Sloupe",
+          "timezone": "Časové pásmo",
+          "description": "Nastavte Vaše hodnoty",
+          "end": "Konec",
+          "loading": "nahrávání...",
+          "operation": "Operace",
+          "prefix": "Prefix",
+          "start": "Start",
+          "suffix": "Suffix",
+          "title": "Popisek",
+          "title-label": "Data",
+          "value": "Value",
+          "aggregate-by": "agregovaná",
+          "operation-column": "operační sloupec",
+          "search-by-bucket": "Vybráno kyblíkem",
+          "select-bucket": "Vybrat kyblík"
+        },
+        "style": {
+          "custom-disabled": "Pokod použijete agregovaný styl, automatický styl bude zablokovaný",
+          "custom-colors": "Uživatelské barvy",
+          "custom-help": "Uživatelské barvy: barvy použity, pokud je Autostyle (upustit ikonu) platné",
+          "define": "Definujte jak má Váš widget i interagovat s Vašimi daty",
+          "description": "Popis",
+          "fill": "Barva",
+          "no": "Ne",
+          "sync_on_bbox_change": "Dynamický",
+          "sync_on_data_change": "Nefiltrováno",
+          "title-label": "Chování",
+          "yes": "Ano"
+        }
+      }
+    },
+    "context-switcher": {
+      "map": "Mapa",
+      "data": "Data"
+    },
+    "edit-feature": {
+      "features": {
+        "point": "bod",
+        "line": "čára",
+        "polygon": "mnohoúhelník"
+      },
+      "loading-state": "Požaduji data funkce...",
+      "error-state": "Stala se chyba při požadování dat funkce",
+      "overlay-text": "Kliknětě na mapu ke kreslení Vaší %{featureType}",
+      "add": "Přidej",
+      "save": "Uložit",
+      "attributes": "Atributy",
+      "attributes-columns": "Změňte názvy sloupců a typ přehledu tabulky",
+      "cancel": "Zrušit",
+      "geometry": "Geometrie",
+      "geometry-edit": "Můžete to také změnit na mapě",
+      "geometry-disabled": "Není přístupné pro skyté vrstvy a pouze pro čtení",
+      "out-of-bounds-lng": "Délka je mimo rozsah [-180, 180]",
+      "out-of-bounds-lat": "Výška je mimo rozsah [-90, 90]",
+      "valid-lng": "Musí být platná délka",
+      "valid-lat": "Musí být platná výška",
+      "valid": "Pouze čísla jsou povolena",
+      "delete": "Smazat %{featureType}",
+      "edit": "Upravit %{featureType}",
+      "analysis": "vrstvy s uzlem analýzy",
+      "custom-sql": "vrstvy s uživatelským SQL",
+      "aggregated": "vrstvy a agregací",
+      "sync": "vrstvy pouze pro čtení",
+      "disabled": "Funkce úpravy je vypnuta pro %{disabledLayerType}. K editaci dat, exportujte tuto vrstvu a importujte jako novou.",
+      "add-point": "Přidat bod",
+      "add-line": "Přidat čáru",
+      "add-polygon": "Přidat mnohoúhelník"
+    }
+  },
+  "notifications": {
+    "vis": {
+      "failed": {
+        "title": "Tato mapa nemůže být vykreslena",
+        "body": "Prosím obnovte stránku a kontaktujte nás, pokud chyba přetrvá"
+      }
+    },
+    "analysis": {
+      "waiting": "Analýza %{nodeId} zařazena do fronty...",
+      "running": "Analýza %{nodeId} běží...",
+      "completed": "Analýza %{nodeId} hotova",
+      "failed": "Analýza %{nodeId} neúspěšná",
+      "removed": "Analýza %{nodeId} smazána",
+      "contact": {
+        "label": "nás kontaktujte",
+        "mail": "support@carto.com"
+      },
+      "sample": "vzorek",
+      "errors": {
+        "timeout": "Vaše analýza trvala příliš dlouho. Zkuste %{sample} Vašich dat nebo %{contact} pro další asistenci",
+        "without-geom-webmercator": "Sloupec \"the_geom_webmercator\" neexistuje",
+        "without-cartodb-id": "Sloupec \"cartodb_id\" neexistuje"
+      }
+    },
+    "widgets": {
+      "add_pluralize": "Widget úspěšně přidán |||| Widgety úspěšně přidány",
+      "replace": "Widgety úspěšně přemístěny",
+      "replace_pluralize": "Widget úspěšně přemístěn |||| Widgety úspěšně přemístěny",
+      "delete_pluralize": "Widget v pořádku smazán |||| Widgety v pořádku smazány",
+      "error": {
+        "title": "Chyba přidávání widgetu:",
+        "body": "%{body} %{error}"
+      },
+      "loading": "Přidávání widgetu…",
+      "loading_pluralize": "Přidávání widgetu… |||| Přidávání widgetů...",
+      "updating": "Aktualizuji widget…",
+      "updating_pluralize": "Aktualizuji widget… |||| Aktualizuji widgety...",
+      "restoring": "Obnovuji widgety…",
+      "restored": "Widgety obnoveny"
+    },
+    "layer": {
+      "error": "Chyba vrstvy: %{error}",
+      "added": "Vrstva úspěšně přidána"
+    },
+    "cartocss": {
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Chyba v CARTOCSS stylech:"
+      },
+      "success": "CARTOCSS použit"
+    },
+    "sql": {
+      "alter-loading": "Upravuji tabulku…",
+      "alter-success": "Úprava použita",
+      "applying": "Používám dotaz…",
+      "429": {
+        "body": "Překročil jste limity platformy. Prosím %{link} ke zjištění více detailů",
+        "link": "kontaktujte nás",
+        "href": "mailto:support@carto.com"
+      },
+      "unknown": {
+        "body": "Chyba v SQL dotazu"
+      },
+      "error": {
+        "body": "%{body} %{error}",
+        "title": "Chyba v SQL dotazu:"
+      },
+      "success": "SQL dotaz položen"
+    },
+    "edit-feature": {
+      "edit": {
+        "loading": "Požaduji data geometrie...",
+        "error": "Stala se chyba při požadavku dat geometrie"
+      },
+      "error": {
+        "body": "%{body} %{error}"
+      },
+      "destroy": {
+        "loading": "Mazání geometrie…",
+        "error": "Chyba mazání geometrie",
+        "success": "Geometrie v pořádku smazána"
+      },
+      "save": {
+        "loading": "Ukládám geometrie…",
+        "error": "Chyba ukládání geometrie",
+        "success": "Geometrie úspěšně uložena"
+      },
+      "adding": "Přidávám geometrie…"
+    }
+  },
+  "cartodb": {
+    "common": {
+      "back_poll": {
+        "views": {
+          "header_title": {
+            "connecting": "Připojuji datovou sadu...",
+            "geocoding": "Geokóduji datovou sadu...",
+            "analyzing": "Analyzuji datovou sadu...",
+            "working": "Pracuji..."
+          }
+        }
+      },
+      "views": {
+        "avatar_selector_view": {
+          "avatar": "Avatar",
+          "org_logo": "Logo organizace",
+          "err_load": "Při nahrávání avataru nastala chyba. Ověřte výšku a velikost obrázku (maximálně 1MB)",
+          "rec_size": "Doporučená velikost obrázku je 128x128 pixlů"
+        },
+        "create": {
+          "listing": {
+            "search": "Vyhledávání",
+            "placeholder": "podle jména, popisu nebo :tagu",
+            "connect_data": "Připojit datovou sady",
+            "your_data": "Vaše datové sady",
+            "shared": "Vámi sdíleno",
+            "data_lib": "Datová knihovna"
+          },
+          "loading": {
+            "create_new": "Vytvářím novou %{model_type}",
+            "dataset": "datovou sadu",
+            "map": "mapu",
+            "creating_map": "Vytvářím mapu",
+            "connecting": "Připojuji ${import_name} (${total_length}/${sel_length})"
+          }
+        },
+        "dashboard_header": {
+          "notifications": {
+            "templates": {
+              "no_notif": "Nemáte žádná upozornění :)"
+            }
+          },
+          "user_support_template": {
+            "enterprise": "<a href=\"mailto:enterprise-support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Podpora</a>",
+            "support": "<a href=\"mailto:support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Podpora</a>",
+            "forum": "<a href=\"http://gis.stackexchange.com/questions/tagged/carto\" class=\"Header-navigationLink u-hideOnMobile\">Podpora</a>"
+          }
+        },
+        "footer_static": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Průvodci</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Vývojáři</a>",
+          "version": "Verze: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Podpora</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Podpora</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Kontakt</a>"
+        },
+        "icon_selector_view": {
+          "app_icon": "Ikona aplikace",
+          "no_icon": "Žádná ikona",
+          "err_upload": "Při nahrávání ikony nastala chyba. Ověřte výšku a velikost obrázku (maximálně 1MB)",
+          "rec_size": "Doporučená velikost obrázku je 128x128 pixlů"
+        },
+        "pages_subheader": {
+          "profile": "Profil",
+          "account": "Účet",
+          "api_keys": "API klíče",
+          "billing": "Platby",
+          "org_settings": "Nastavení organizace",
+          "support": "Konatktujte podporu",
+          "admin": "Kontaktujte vašeho administrátora",
+          "vip": "Kontaktujte vaši VIP podporu",
+          "issues": "Máte potíže?"
+        },
+        "public_common": {
+          "dashboard": "Vaše nástěnka",
+          "profile": "Váš veřejný profil",
+          "account": "Nastavení účtu",
+          "logout": "Odhlásit se"
+        },
+        "support_banner": {
+          "dedicated_support": "Jako platící uživatel máte nárok na podporu.",
+          "become_builder": "Pokud se chcete stát builder, kontaktujte <a href=\"mailto:%{orgDisplayEmail}\">administrátora organizace</a>.",
+          "contact_org_admin": "Pro podporu kontaktujte vašeho <a href=\"mailto:%{orgDisplayEmail}\">administrátora organizace</a>.",
+          "outstanding": "Jste členem CARTO, zasloužíte zvláštní podpopru.",
+          "contact_community": "S technickými dotazy se obraťte na komunitní fórum.",
+          "create_maps": "Budete schopný vytvářet vlastní mapy!",
+          "info_on_community": "Pamatujte, že mnoho informací je na našem <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">komunitním fóru</a>.",
+          "internal": "Sdílejte své vědomosti na našem <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">komunitním fóru</a>.",
+          "problem": "Pokud zaznamenáte jakékoli problémy se službami Carto, <a href=\"mailto:support@carto.com\">kontaktujte nás</a>.",
+          "contact_support": "Kontaktujte podporu",
+          "contact_admin": "Kontaktujte administrátora",
+          "contact_us": "Kontaktujte nás",
+          "community": "Komunitní podpora"
+        }
+      }
+    },
+    "dashboard": {
+      "header": {
+        "breadcrumb": {
+          "data": "Datové sady",
+          "lck_data": "Zamčené datové sady",
+          "maps": "Mapy",
+          "lck_maps": "Zamčené mapy"
+        }
+      },
+      "views": {
+        "content_no_data": {
+          "no_data_yet": "Zatím nemáte připojenu žádnou datovou sadu",
+          "can_connect": "Můžete <button class=\"Button--link js-connect\">připojit datovou sadu</button> nebo <strong>prohledat</strong> naši datovou knihovnu."
+        },
+        "content_no_results": {
+          "no_results": "Na této stránce nejsou žádné výsledky",
+          "no_liked": "Zatím jste nepřipojil žádnou %{type}",
+          "zero_found": "Nalezeno 0 %{tag} || q %{type}",
+          "there_are_no": "Nejsou žádné ",
+          "back_to_first": "Zpět na vaši <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">první stránku</a>",
+          "back_to": "Zpět na vaši ",
+          "no_fun": "Nejsou %{type}, není zábava",
+          "fill_this": "Tuto část vyplňte kliknutím na srdce Carto %{type} publikovaného na webu nebo profilu uživatele"
+        },
+        "filters": {
+          "shared": "Vámi sdíleno",
+          "liked": "Líbilo se",
+          "data_lib": "Knihovna dat",
+          "new_map": "Nová mapa",
+          "new_dataset": "Nová datová sada",
+          "selected": " vybráno",
+          "yours": "vaše",
+          "select_all": "Vybrat vše ",
+          "deselect_all": "Odznačit vše ",
+          "connect_data": "Připojit datovou sadu",
+          "duplicate_data": "Duplikovat datovou sadu",
+          "create_map": "Vytvořit mapu",
+          "max_map_layers": "Maximum mapových vrstev vybráno (%{maxLayersByMap} maximum)",
+          "change_privacy": "Změnit sdílení...",
+          "duplicate_map": "Duplikovat mapu",
+          "delete": "Smazat ",
+          "your": "váš"
+        },
+        "onboarding": {
+          "hello": "Zdravíme, ",
+          "welcome": "Vítejte v Carto!",
+          "drag_your_data": "K vytvoření první mapy přetáhněte soubor s daty do nástěnky.",
+          "new_map": "Nová mapa"
+        }
+      }
+    },
+    "explore": {
+      "title": "Prozkoumávání",
+      "maps_data": "Mapy a datové sady",
+      "datasets": "Datové sady",
+      "maps": "Mapy",
+      "activity": "Nedávná aktivita",
+      "view_more": "Ukaž více"
+    },
+    "public": {
+      "views": {
+        "public_footer": {
+          "product": "Product",
+          "builder": "<a class=\"Footer-link\" href=\"https://carto.com/builder/\">Builder</a>",
+          "engine": "<a class=\"Footer-link\" href=\"https://carto.com/engine/\">Engine</a>",
+          "mobile": "<a class=\"Footer-link\" href=\"https://carto.com/mobile/\">Mobile</a>",
+          "location_services": "<a class=\"Footer-link\" href=\"https://carto.com/location-data-services/\">Location Data Services</a>",
+          "data_observatory": "<a class=\"Footer-link\" href=\"https://carto.com/data-observatory/\">Data Observatory</a>",
+          "source_code": "<a class=\"Footer-link\" href=\"https://github.com/CartoDB/cartodb\">Source Code</a>",
+          "pricing": "<a class=\"Footer-link\" href=\"https://carto.com/pricing/\" class=\"Footer-link\">Pricing</a>",
+          "solutions": "Solutions",
+          "banking": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/banking-and-finance/\">Banking & Finance</a>",
+          "analytics": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/business-intelligence-and-analytics/\">BI & Analytics</a>",
+          "government": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/government/\">Government</a>",
+          "estate": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/real-estate/\">Real Estate</a>",
+          "web": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/web-mobile/\">Web Development</a>",
+          "journal": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/journalism/\">Journalism</a>",
+          "nature": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/natural-resources/\">Natural Resources</a>",
+          "earth": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/earth-observation-and-space/\">Earth Observation</a>",
+          "non_profit": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/non-profits/\">Non-profits</a>",
+          "education": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/education-and-research/\">Education</a>",
+          "connectors": "Connectors",
+          "dropbox": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/dropbox/\">Dropbox</a>",
+          "google": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/google-drive/\">Google Drive</a>",
+          "twitter": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/twitter-maps/\">Twitter Maps</a>",
+          "mailchimp": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/mailchimp/\">MailChimp</a>",
+          "excel": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/excel-data/\">Excel Data</a>",
+          "arcgis": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/arcgis/\">ArcGIS™</a>",
+          "satellite": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/satellite-imagery/\">Satellite Imagery</a>",
+          "qlik": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/qlik/\">Qlik</a>",
+          "splunk": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/splunk/\">Splunk</a>",
+          "alteryx": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/alteryx/\">Alteryx</a>",
+          "discover": "Discover",
+          "gallery": "<a class=\"Footer-link\" href=\"https://carto.com/gallery/\">Map Gallery</a>",
+          "explore": "<a class=\"Footer-link\" href=\"https://carto.com/explore\">Explore</a>",
+          "ambassadors": "<a class=\"Footer-link\" href=\"https://carto.com/ambassadors/\">Ambassadors</a>",
+          "learn": "Learn",
+          "guides": "<a class=\"Footer-link\" href=\"https://carto.com/learn/guides\">Guides</a>",
+          "developers": "<a class=\"Footer-link\" href=\"https://carto.com/developers\">Developers</a>",
+          "academy": "<a class=\"Footer-link\" href=\"https://carto.com/academy\">The Map Academy</a>",
+          "resources": "<a class=\"Footer-link\" href=\"https://carto.com/resources/\">Resources Center</a>",
+          "webinars": "<a class=\"Footer-link\" href=\"https://carto.com/webinars/\">Webinars</a>",
+          "blog": "<a class=\"Footer-link\" href=\"https://carto.com/blog\">Blog</a>",
+          "about": "About us",
+          "team": "<a class=\"Footer-link\" href=\"https://carto.com/team/\">Team</a>",
+          "jobs": "<a class=\"Footer-link\" href=\"https://carto.com/jobs/\">Jobs</a>",
+          "press": "<a class=\"Footer-link\" href=\"https://carto.com/press/\">Press</a>",
+          "partners": "<a class=\"Footer-link\" href=\"https://carto.com/partners/\">Partners</a>",
+          "attributions": "<a class=\"Footer-link\" href=\"https://carto.com/attributions\">Attributions</a>",
+          "contributions": "<a class=\"Footer-link\" href=\"https://carto.com/contributing/\">Contributions</a>",
+          "contact": "<a class=\"Footer-link\" href=\"mailto:sales@carto.com\">Contact us</a>",
+          "demo": "<a class=\"Footer-link\" href=\"https://carto.com/request-live-demo/\">Request a Live Demo</a>",
+          "terms": "<a class=\"Footer-link\" href=\"https://carto.com/terms/\">Terms of Service</a>",
+          "legal": "<a class=\"Footer-link\" href=\"https://carto.com/legal/\">Legal</a>"
+        }
+      }
+    },
+    "table": {
+      "default_layers": {
+        "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> přispěvatel © <a href=\"https://carto.com/attributions\">Carto</a>",
+        "attr_stamen": "Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, under <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a>. Data by <a href=\"http://openstreetmap.org\">OpenStreetMap</a>, under <a href=\"http://www.openstreetmap.org/copyright\">ODbL</a>."
+      }
+    }
+  },
+  "cdb": {
+    "src": {
+      "core": {
+        "config": {
+          "attributions": "© <a href=\"https://carto.com/attributions\" target=\"_blank\">Carto</a>",
+          "logo_link": "http://www.carto.com"
+        }
+      }
+    }
+  },
+  "dashboard": {
+    "components": {
+      "avatar_selector": {
+        "avatar_selector": {
+          "avatar": "Avatar*",
+          "org_logo": "Logo organizace",
+          "err_load": "Při nahrávání avataru nastala chyba. Ověřte výšku a velikost obrázku (maximálně 1MB)",
+          "rec_size": "Doporučená velikost obrázku je 128x128 pixlů"
+        }
+      },
+      "dashboard-header": {
+        "breadcrumbs": {
+          "dropdown": {
+            "maps": "Vaše mapy",
+            "datasets": "Vaše datové sady",
+            "lck_maps": "Vaše zamčené mapy",
+            "lck_datasets": "Vaše zamčené datové sady"
+          }
+        },
+        "settings-dropdown": {
+          "viewer": "VIEWER",
+          "become": "Staňte se Builder",
+          "builder": "BUILDER",
+          "of": " z ",
+          "used": " použito",
+          "upgrade": "Upgradujte",
+          "pub_profile": "Zobrazit váš veřejný profil",
+          "account": "Váš účet",
+          "org": "Vaše organizace",
+          "api_keys": "Vaše API klíče",
+          "close": "Odhlásit se"
+        },
+        "user-support": {
+          "support": "Podpora"
+        },
+        "notifications": {
+          "templates": {
+            "close_limits": {
+              "reaching_limit": "Počkejte <strong>%{userName}</strong>, vypadá to, že se blížíte k vyčerpání vašich limitů.",
+              "contact_us": "Pokud chcete povýšit váš účet, <a href=\"mailto:%{upgradeContactEmail}\">kontaktujte nás</a>.",
+              "contact_admin": "Přemýšlejte o <a href=\"mailto:%{upgradeContactEmail}\">kontaktování vašeho administrátora</a>.",
+              "start_thinking": "Přemýšlejte o ",
+              "upgrade_plan": "povýšení vašeho plánu",
+              "feel_free": "Pokud potřebujete více zdrojů, bez obav <a href=\"mailto:%{upgradeContactEmail}\">nás kontaktujte</a>."
+            },
+            "dropdown_content": {
+              "no_notif": "Nemáte žádná upozornění :)"
+            },
+            "limits_exceeded": {
+              "over_limits": "Počkejte <strong>%{userName}</strong>, přesáhl jste limit na disku.",
+              "contact_us": "Pokud chcete povýšit váš účet, <a href=\"mailto:%{upgradeContactEmail}\">kontaktujte nás</a>.",
+              "contact_admin": "Přemýšlejte o <a href=\"mailto:%{upgradeContactEmail}\">kontaktování vašeho administrátora</a>.",
+              "start_thinking": "Přemýšlejte o ",
+              "upgrade_plan": "povýšení vašeho plánu",
+              "feel_free": "Pokud potřebujete více zdrojů, bez obav <a href=\"mailto:%{upgradeContactEmail}\">nás kontaktujte</a>."
+            },
+            "trial_ends_soon": {
+              "reminder": "Připomínáme, že váš zkušební <strong>%{accountType}</strong> účet končí příští %{trialEnd}. Veselé mapování!"
+            },
+            "try_trial": {
+              "start_14": "Začněte váš čtrnáctidenní zkušební účet na Carto.",
+              "start_now": "Začněte hned"
+            },
+            "upgraded_message": {
+              "welcome": "Vítejte ve vašem novém <strong>%{accountType}</strong> účtu na Carto. Teď vás máme ještě radši, než před tím ;)"
+            }
+          }
+        }
+      },
+      "delete_account": {
+        "delete_account": {
+          "about_delete": "Pokoušíte se zrušit váš účet",
+          "remember": "Pozor! Pokud zrušíte účet, není už cesty zpět.",
+          "are_you_sure": "Všechny mapy a všechna vaše práce bude ztracena. Přejete si pokračovat?",
+          "provide_password": "V každém případě musíte zadat vaše heslo.",
+          "your_password": "Vaše heslo",
+          "cancel": "Storno",
+          "delete_account": "Ano, zrušte můj účet"
+        }
+      },
+      "editable_fields": {
+        "editable_description": {
+          "add_desc": "Přidejte popis...",
+          "no_desc": "Žádný popis"
+        },
+        "editable_tags": {
+          "and_3_more": "a %{tagsCount} další",
+          "add_tags": "Přidej štítky...",
+          "no_tags": "Žádné štítky"
+        }
+      },
+      "fail": {
+        "error": "Oj! Nastala chyba",
+        "contact": "Pokud problém přetrvá, kontaktujte nás na <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+      },
+      "footer":
+      {
+        "footer": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Průvodci</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Vývojáři</a>",
+          "version": "Verze: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Podpora</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Podpora</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Kontakt</a>"
+        }
+      },
+      "icon_selector": {
+        "icon_selector": {
+          "app_icon": "Ikona aplikace",
+          "no_icon": "Žádná ikona",
+          "err_upload": "Při nahrávání ikony nastala chyba. Ověřte výšku a velikost obrázku (maximálně 1MB)",
+          "rec_size": "Doporučená velikost obrázku je 128x128 pixlů"
+        }
+      },
+      "mamufas_import": {
+        "mamufas_import_dialog": {
+          "drag_and_drop": "Přetáhněte vaše data do tohoto okna",
+          "drop_to_connect": "Pro připojení nového datasetu pusťte soubor zde.",
+          "files_supported": "Podporovány jsou soubory typu CSV, GPX, XLS a řada dalších"
+        }
+      },
+      "maps_item": {
+        "maps_item": {
+          "read": "PRO ČTENÍ",
+          "by": "od"
+        }
+      },
+      "mapviews_graph": {
+        "mapviews_graph_view": {
+          "mapview_count": "%{smart_count} mapview |||| %{smart_count} mapviews",
+          "today": " dnes",
+          "on": " v "
+        }
+      },
+      "navbar": {
+        "user_settings": {
+          "maps": "Mapy",
+          "datasets": "Datové sady",
+          "your_dashboard": "Vaše nástěnka",
+          "your_profile": "Váš veřejný profil",
+          "account": "Nastavení účtu",
+          "close": "Odhlásit se"
+        }
+      },
+      "paged_search": {
+        "paged_search": {
+          "search": " Hledání",
+          "placeholder": "Hledání podle uživatele nebo e-mailu"
+        },
+        "paged_search_view": {
+          "no_results": "Oj! Žádné výsledky",
+          "nothing_found": "Naneštěstí nemůžeme se těmito prametry najít nic",
+          "searching": "Hledám"
+        }
+      },
+      "pages_subheader": {
+        "pages_subheader": {
+          "used_of_avail": "%{usedDataStr} z %{availableDataStr}",
+          "profile": "Profil",
+          "account": "Účet",
+          "api_keys": "API klíče",
+          "billing": "Platby",
+          "org_settings": "Nastavení organizace",
+          "issues": "Nastaly problémy?",
+          "cont_support": "Kontaktujte podporu",
+          "cont_admin": "Kontaktujte vašeho administrátora",
+          "cont_vip": "Kontaktujte VIP podporu"
+        }
+      },
+      "service_item": {
+        "service_item": {
+          "connecting": "Připojuji se...",
+          "connect": "Připojeno",
+          "error": "Oj! Nastala chyba, prosím <button type=\"button\" class=\"FormAccount-link js-disconnect\">zkuste to znovu</button> nebo <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">nás kontaktuje</a> pokud problémy přetrvají",
+          "disconneting": "Odpojuji se...",
+          "disconnet": "Odpojeno",
+          "disable_popup": "Nastala chyba, že váš prohlížeč má povolené pop-upy a zkuste to znovu, nebo <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">nás kontaktuje</a> pokud problémy přetrvají"
+        }
+      },
+      "support_view": {
+        "support_banner": {
+          "dedicated_support": "Jako platící zákazník máte nárok na podporu.",
+          "become_builder": "Pokud se chcete stát builder, kontaktujte <a href=\"mailto:%{orgDisplayEmail}\">administrátora organizace</a>.",
+          "contact_org_admin": "Pro podporu kontaktujte <a href=\"mailto:%{orgDisplayEmail}\">administrátora organizace</a>.",
+          "outstanding": "Jste členem Carto, zasloužíte zvláštní podpopru.",
+          "contact_community": "S technickými dotazy se obraťte na komunitní fórum.",
+          "create_maps": "Budete schopný vytvářet vlastní mapy!",
+          "info_on_community": "Pamatujte, že mnoho informací je na našem <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">komunitním fóru</a>.",
+          "internal": "Sdílejte své vědomosti na našem <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">komunitním fóru</a>.",
+          "problem": "Pokud zaznamenáte jakékoli problémy se službami Carto, <a href=\"mailto:support@eomorava.cz\">kontaktujte nás</a>.",
+          "contact_support": "Kontaktujte podporu",
+          "contact_admin": "Kontaktujte administrátora",
+          "contact_us": "Kontaktujte nás",
+          "community": "Komunitní podpora"
+        }
+      },
+      "table_grants": {
+        "table_grants": {
+          "datasets": "Datové sady",
+          "placeholder": "Hledání podle jména"
+        },
+        "table_grants_view": {
+          "zero_data": "nalezeno 0 datových sad",
+          "no_data": "Žádné datové sady"
+        }
+      },
+      "upgrade_messages": {
+        "limit_reached": "Překročil jste vaše limity.",
+        "limit_reaching": "Blížíte se k vaším limitům.",
+        "upgrade": "Povyšte svůj účet a zvýšíte vaši kvótu.",
+        "free_trial": "Zdarma zkušebních 14 dnů",
+        "upgrade_plan": "povyšte svůj plán",
+        "contact_sales": "Kontaktujte prodejce"
+      }
+    },
+    "confirmation": {
+      "confirm_info": {
+        "account_ready": "Váš účet je připraven",
+        "problem": "Nastal problém",
+        "account_created": "Váš účet se vytváří",
+        "redir_dashboard": "Za chvíli butede přesměrován na vaši nástěnku...",
+        "redir_login": "Za chvíli butede přesměrován na přihlašovací stránku...",
+        "check_email": "Zkontrolujte email a aktivujte váš účet.",
+        "problem_contact": "Litujeme, ale při vytváření vašeho účtu nastal problém. <% if (!customHosted) { %>Prosím, <a href=\"mailto:support@carto.com?subject=User creation error: <%- userCreationId %>\">kontaktujte nás</a><% } %>.",
+        "take_time": "Bude to chvíli trvat, jenom pár vteřin."
+      }
+    },
+    "data": {
+      "table": {
+        "row_added": "Řádek přidán v pořádku",
+        "row_adding": "Přidání nového řádku",
+        "updated": "Geometrická tabulka uložena"
+      }
+    },
+    "profile": {
+      "your_profile": "Váš profil | "
+    },
+    "views": {
+      "account": {
+        "serv_disc_dlg": {
+          "serv_disc_dlg": {
+            "disconnect": "Odpojit váš %{title} účet",
+            "revoke": "Zrušit přístup do Carto",
+            "sure": "Jste si jistý, že chcete přístup Carto do vašeho %{title} účtu?",
+            "revoke_auto": "Nemůžeme automaticky zrušit přístup do vašeho %{title} účtu.",
+            "security": "For your own security, we are unable to disconnect your %{title} account from CARTO. You can revoke access yourself by manually editing your %{title} authorized applications.",
+            "goto": "přejdi na %{title}",
+            "cancel": "storno",
+            "revoke2": "Zrušit přístup"
+          }
+        }
+      },
+      "api_keys": {
+        "alert_delete_key": {
+          "about_del": "Chystáte se smazat váš API klíč",
+          "sure": "Všechny aplikace s tímto klíčem přestanou fungovat. Opravdu chcete pokračovat?",
+          "cancel": "Storno",
+          "delete": "Smazat API klíč"
+        },
+        "alert_regen_key": {
+          "about_regen": "Chystáte se přegenerovat váš API klíč",
+          "sure": "Všechny aplikace používající tento klíč budou muset být upraveny. Opravdu chcete pokračovat?",
+          "cancel": "Storno",
+          "regen": "Přegenerovat API klíč"
+        },
+        "api_key_form": {
+          "configure": "Konfigurace vašeho klíče",
+          "details": "Detaily vašeho API klíče",
+          "permissions": "Po vygenerování už není možné měnit povolení ke klíči",
+          "save": "Uložit změny"
+        },
+        "api_key_form_view": {
+          "name": "Jméno",
+          "name_place": "Jméno vašeho API klíče",
+          "token": "API klíč",
+          "apis": "API",
+          "input_sql": "SQL",
+          "input_maps": "MAPY",
+          "required": "Pole Jméno, Typ a Datová sada jsou vyžadovaná"
+        },
+        "api_key_list": {
+          "your_api": "Vaše API klíče",
+          "new_api": "Nový API klíč",
+          "configure": "Konfigurace API klíčů od externích poskytovatelů",
+          "google": "Mapy Google",
+          "your_google": "Toto je váš dotaz pro Google Mapy, pokud ho chcete změnit, kontaktujte <a href=\"mailto:support@carto.com\">support@carto.com</a>.",
+          "google_query": "Toto je dotaz organizace %{organizationName} pro Google Mapy, pokud ho chcete změnit, kontaktujte <a href=\"mailto:support@carto.com\">support@carto.com</a>.",
+          "google_api": "Toto je API klíč pro mapy Google vaší organizace",
+          "learn_more": "<a href=\"https://carto.com/developers/fundamentals/authorization/\" target=\"_blank\">Zde</a> se dozvíte víc o autorizaci a správě API klíčů",
+          "regen": "Přegenerovat",
+          "delete": "Smazat"
+        }
+      },
+      "dashboard": {
+        "content_controller": {
+          "content_footer": {
+            "show_lock_maps": "Ukázat %{smart_count} vaši zamčenou mapu |||| Ukázat %{smart_count} vaše zamčené mapy |||| Ukázat %{smart_count} vašich zamčených map",
+            "show_lock_datasets": "Ukázat %{smart_count} vaši zamčenou datovou sadu |||| Ukázat %{smart_count} vaše zamčené datové sady |||| Ukázat %{smart_count} vašich zamčených datových sad",
+            "show_unlock_maps": "Ukázat %{smart_count} vaši nezamčenou mapu |||| Ukázat %{smart_count} vaše nezamčené mapy |||| Ukázat %{smart_count} vašich nezamčených map",
+            "show_unlock_datasets": "Ukázat %{smart_count} vaši nezamčenou datovou sadu |||| Ukázat %{smart_count} vaše nezamčené datové sady |||| Ukázat %{smart_count} vašich nezamčených datových sad"
+          },
+          "loading_library_view": {
+            "title": "Vaše datová knihovna se připravuje",
+            "desc": "Počkejte prosím, než nahrajeme seznam datových sad do vaší datové knihovny."
+          },
+          "templates": {
+            "content_error": {
+              "error": "Oj! Nastala chyba",
+              "contact": "Zkuste zobrazit <a class=\"ContentResult-urlLink js-link\" href=\"%{defaultUrl}\">vaše %{type}</a> nebo pokud problém přetrvá, kontaktujte bás na <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+            },
+            "content_no_data": {
+              "no_data_yet": "Zatím nemáte připojenu žádnou datovou sadu",
+              "can_connect": "Můžete <button class=\"Button--link js-connect\">připojit datovou sadu</button> nebo <strong>prohledat</strong> naši datovou knihovnu."
+            },
+            "content_no_results": {
+              "no_results": "Na této stránce nejsou žádné výsledky",
+              "no_liked_maps": "Zatím jste nelajkovali žádnou mapu",
+              "no_liked_datasets": "Zatím jste nelajkovali žádnou datovou sadu",
+              "zero_found_maps": "Nalezeno 0 %{tag} || q map",
+              "zero_found_datasets": "Nalezeno 0 %{tag} || q datových sad",
+              "there_are_no_shared_maps": "Nemáte žádné sdílené mapy",
+              "there_are_no_locked_maps": "Nemáte žádné zamčené mapy",
+              "there_are_no_maps": "Nemáte žádné mapy",
+              "there_are_no_shared_datasets": "Nemáte žádné sdílené datové sady",
+              "there_are_no_locked_datasets": "Nemáte žádné zamčené datové sady",
+              "there_are_no_datasets": "Nemáte žádné datové sady",
+              "back_to_first": "Zpět na vaši <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">první stránku</a>",
+              "back_to_maps": "Zpět na vaše <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> mapy</a>",
+              "back_to_datasets": "Zpět na vaše <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> datové sady</a>",
+              "no_fun_maps": "Nejsou mapy, není zábava",
+              "no_fun_datasets": "Nejsou datové sady, není zábava",
+              "fill_this_maps": "Tuto část vyplňte kliknutím na srdce Carto v mapě publikované na webu nebo profilu uživatele",
+              "fill_this_datasets": "Tuto část vyplňte kliknutím na srdce Carto v datové sadě publikované na webu nebo profilu uživatele"
+            }
+          }
+        },
+        "create_map_model": {
+          "untitled_map": "Mapa bez názvu"
+        },
+        "dialogs": {
+          "change_lock": {
+            "about_maps": "Chystáte se %{lockOrUnlockStr} %{smart_count} mapu. |||| Chystáte se %{lockOrUnlockStr} %{smart_count} mapy. |||| Chystáte se %{lockOrUnlockStr} %{smart_count} map.",
+            "about_datasets": "Chystáte se %{lockOrUnlockStr} %{smart_count} datovou sady. |||| Chystáte se %{lockOrUnlockStr} %{smart_count} datové sady. |||| Chystáte se %{lockOrUnlockStr} %{smart_count} datových sad.",
+            "unlock_maps": "Odemčením se tato mapa opět objeví na nástěnce. |||| Odemčením se tyto %{smart_count} mapy opět objeví na nástěnce. |||| Odemčením se těchto %{smart_count} map opět objeví na nástěnce.",
+            "unlock_datasets": "Odemčením se tato datová sada opět objeví na nástěnce. |||| Odemčením se tyto %{smart_count} datové sady opět objeví na nástěnce. |||| Odemčením se těchto %{smart_count} datových sad opět objeví na nástěnce.",
+            "lock_maps": "Zamčením zmizí tato mapa z nástěnky. |||| Zamčením zmizí těchto %{smart_count} map z nástěnky",
+            "lock_datasets": "Zamčením zmizí tato datová sada z nástěnky. |||| Zamčením zmizí těchto %{smart_count} datových sad z nástěnky",
+            "reveal": " Znovu zobrazit ji můžete z menu v záhlaví nebo z dolního odkazu. |||| Znovu zobrazit je můžete z menu v záhlaví nebo z dolního odkazu.",
+            "cancel": "storno",
+            "ok": "Ok, ",
+            "locking_maps": "Zamykání %{smart_count} mapy… |||| Zamykání %{smart_count} map…",
+            "locking_datasets": "Zamykání %{smart_count} datové sady… |||| Zamykání %{smart_count} datových sad…",
+            "unlocking_maps": "Odemykání %{smart_count} mapy… |||| Odemykání %{smart_count} map…",
+            "unlocking_datasets": "Odemykání %{smart_count} datové sady… |||| Odemykání %{smart_count} datových sad…",
+            "failed_lock": "Nepodařilo se zamknout všechny položky",
+            "failed_unlock": "Nepodařilo se odemknout všechny položky",
+            "lock": "zamknout",
+            "unlock": "odemknout"
+          },
+          "change_privacy": {
+            "privacy": " soukromí",
+            "protect_map": "I když věříme v sílu otevřených dat, můžete vaši mapu taky chránit.",
+            "protect_dataset": "I když věříme v sílu otevřených dat, můžete vaši datovou sadu taky chránit.",
+            "placeholder": "Zde napište heslo",
+            "advantage": "Pro přístup ke všem možnostem soukromí byste měl povýčit váš plán",
+            "trial": "14-ti denní zkouška zdarma",
+            "upgrade": "povýšit",
+            "shared_with_org": "Sdíleno s celou vaší organizací",
+            "shared_with": "Sdíleno s %{smart_count} osobou. |||| Sdíleno se %{smart_count} lidmi.",
+            "open_sharing": "Otevřít nastavení sdílení",
+            "team_work": "Týmová práce je vždy lepší. <a href=\"#\" class=\"js-share\">Sdílejte se svými kolegy</a>",
+            "cancel": "Storno",
+            "save": "Uložit nastavení",
+            "option": "Možnost nemůže být zároveň označená a nepřístupná",
+            "public_desc": "Kdokoli to může najít a zobrazit.",
+            "link_desc": "Kdokoli, kdo má link, to může zobrazit. Heslo není potřeba.",
+            "passwd_desc": "Kdokoli s heslem to může zobrazit.",
+            "private_desc": "Jenom vy k tomu máte přístup."
+          },
+          "create_dialog": {
+            "add_datasets": "Přidat datové sady",
+            "select_datasets": "Vyberte vaše datové sady",
+            "click_import": " Jakmile kliknete na jednu z těchto položek, bude naimportována do vašeho účtu.",
+            "data_selected": "vybrána %{smart_count} datová sada |||| vybrány %{smart_count} datové sady |||| vybráno %{smart_count} datových sad",
+            "max_layers": "Dosáhli jste maxima vrstev pro novou mapu (%{maxSelectedDatasets} je maximum)",
+            "upgrade": "povýšit",
+            "create_map": "vytvořit mapu",
+            "start_template": "Nový v Carto? Začněte jsdnou z našich <a href=\"#/templates\" class=\"js-templates\">šablon</a>.",
+            "connect": "připojit datovou sadu"
+          },
+          "delete_items": {
+            "about_map": "Chystáte se smazat %{smart_count} mapu. |||| Chystáte se smazat %{smart_count} mapy. |||| Chystáte se smazat %{smart_count} map.",
+            "about_dataset": "Chystáte se smazat %{smart_count} datovou sadu. |||| Chystáte se smazat %{smart_count} datové sady. |||| Chystáte se smazat %{smart_count} datových sad.",
+            "about_named_map": "Chystáte se smazat mapu %{firstItemName}.",
+            "about_named_dataset": "Chystáte se smazat datovou sadu %{firstItemName}.",
+            "affected_maps": "Tento krok se projeví i v <strong>%{smart_count} mapě</strong>. |||| Tento krok se projeví i v <strong>%{smart_count} mapách</strong>.",
+            "recover_map": "Smazaná mapa nemůže být obnovena, zvažte to dobře. |||| Smazané mapy nemohou být obnoveny, zvažte to dobře.",
+            "recover_dataset": "Smazaná datová sada nemůže být obnovena, zvažte to dobře. |||| Smazané datové sady nemohou být obnoveny, zvažte to dobře.",
+            "export": "Doporučujeme vám vyexportovat datovou sadu, dříve než ji vymažete.",
+            "lost_map": "Někteří uživatelé přijdou o přístup do vaší mapy |||| Někteří uživatelé přijdou o přístup do vašich map",
+            "lost_datase": "Někteří uživatelé přijdou o přístup do vaší datové sady |||| Někteří uživatelé přijdou o přístup do vašich datových sad",
+            "cancel": "Storno",
+            "delete": "Ok, smazat"
+          },
+          "duplicate_vis": {
+            "duplicating": "Duplikovat mapu",
+            "error": "Je nám líto, něco se nepovedlo a my nevíme proč."
+          },
+          "share": {
+            "cancel": "storno",
+            "save": "Uložit změny",
+            "privacy": " soukromí",
+            "sel_colleagues": "Vyberte ze seznamu kolegy, kterým chcete dát přístup"
+          }
+        },
+        "filters": {
+          "search": "Vyhledávání",
+          "zero_map": "Mapy",
+          "zero_dataset": "Datové sady",
+          "zero_dashboard": "Dashboard",
+          "number_map": "<strong>%{smart_count}</strong> Mapa |||| <strong>%{smart_count}</strong> Mapy |||| <strong>%{smart_count}</strong> Map",
+          "number_dataset": "<strong>%{smart_count}</strong> Datová sada |||| <strong>%{smart_count}</strong> Datové sady |||| <strong>%{smart_count}</strong> Datových sad",
+          "number_dashboard": "Dashboard",
+          "shared": "Vámi sdíleno",
+          "liked": "Líbilo se",
+          "data_lib": "Knihovna dat",
+          "new_map": "Nová mapa",
+          "new_dataset": "Nová datová sada",
+          "new_dashboard": "Dashboard",
+          "selected": " vybráno",
+          "selected_map": "Vybrána %{smart_count} mapa |||| Vybrány %{smart_count} mapy |||| Vybrán %{smart_count} map",
+          "selected_dataset": "Vybrána %{smart_count} datová sada |||| Vybrány %{smart_count} datové sady |||| Vybráno %{smart_count} datových sad",
+          "yours": "vaše",
+          "select_all": "Vybrat vše ",
+          "deselect_all": "Odznačit vše ",
+          "connect_data": "Připojit datovou sadu",
+          "duplicate_data": "Duplikovat datovou sadu",
+          "create_map": "Vytvořit mapu",
+          "max_map_layers": "Maximum mapových vrstev vybráno (%{maxLayersByMap} maximum)",
+          "change_privacy": "Změnit sdílení...",
+          "duplicate_map": "Duplikovat mapu",
+          "lock_map": "Zamknout mapu |||| Zamknout mapy",
+          "lock_dataset": "Zamknout datovou sadu |||| Zamknout datové sady",
+          "lock_dashboard": "Dashboard",
+          "unlock_map": "Odemknout mapu |||| Odemknout mapy",
+          "unlock_dataset": "Odemknout datovou sadu |||| Odemknout datové sady",
+          "unlock_dashboard": "Dashboard",
+          "delete_your_map": "Smazat vaši mapu |||| Smazat vaše mapy",
+          "delete_your_dataset": "Smazat vaši datovou sadu |||| Smazat vaše datové sady",
+          "delete_your_dashboard": "Dashboard",
+          "delete_map": "Smazat mapu |||| Smazat mapy",
+          "delete_dataset": "Smazat datovou sadu |||| Smazat datové sady",
+          "delete_dashboard": "Dashboard",
+          "placeholder": "podle jména, popisu nebo :tagu"
+        },
+        "header_view_model": {
+          "locked_maps": "Zamčené mapy",
+          "locked_datasets": "Zamčené datové sady",
+          "insight": "Hluboký vhled",
+          "title_maps": "Mapy",
+          "title_datasets": "Datové sady"
+        },
+        "imports": {
+          "show": "UKAŽ",
+          "completed": " hotovo!",
+          "warnings": "Vyskytla se nějaká varování pro ",
+          "from": " od "
+        },
+        "list_view": {
+          "read": "ČTENÍ",
+          "learn": "Zjistěte více",
+          "and_more": "a %{smart_count} další |||| a %{smart_count} další |||| a %{smart_count} dalších",
+          "no_tags": "Žádné štítky"
+        },
+        "map_templates": {
+          "merge": "Slučte vaši datovou sadu s jinou, již existující.",
+          "style": "Vytvořte styl založený na hodnotách sloupečku."
+        },
+        "onboarding": {
+          "hello": "Zdravíme, ",
+          "welcome": "Vítejte v Carto!",
+          "drag_your_data": "K vytvoření první mapy přetáhněte soubor s daty do nástěnky.",
+          "new_map": "Nová mapa"
+        },
+        "sync_dataset": {
+          "check_sync": "Zjišťuji synchronizaci",
+          "saving": "Ukládám…"
+        }
+      },
+      "data_library": {
+        "content": {
+          "error_templ": "Oj! Nastala chyba",
+          "contact": "Pokud problém přetrvá, kontaktujte nás na <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>.",
+          "searching": "Hledání",
+          "loading": "Načítání",
+          "view_more": "Zobratit více",
+          "no_results": "Oj! Žádné výsledky",
+          "try_again": "Vaše vyhledávání bylo v pořádku, ale bez výsledků. Zkuste příště nastavit jiné parametry"
+        },
+        "filters": {
+          "placeholder": "podle jména",
+          "all_categ": "Všechny kategorie",
+          "administrative": "Administrativní oblasti",
+          "cultural": "Kulturní",
+          "physical": "Fyzické",
+          "historic": "Historické",
+          "building": "Půdorysy budov",
+          "census": "Sčítání lidu"
+        },
+        "header": {
+          "library": "Knihovna dat",
+          "resources": "Otevřené zdroje, které vám pomohou naplnit vaše mapy",
+          "country_flt": "Vyberte v mapě zemi, podle které chcete filtrovat"
+        }
+      },
+      "mobile_maps": {
+        "about_del": "Chystáte se smazat vaši aplikaci",
+        "remember": "Pokud ji smažete, již se nedá vrátit",
+        "cancel": "Storno",
+        "delete": "Smazat aplikaci"
+      },
+      "organization": {
+        "about_del_org": "Chystáte se smazat vaši organizaci.",
+        "all_removed": "Smažete tuto organizaci i všechny její uživatele (včetně tohoto účtu)",
+        "no_recover": "a už nebude možné tyto informace vrátit (včetně tabulek a dat) po té, co to smažete.",
+        "provide_passwd": "Pokud si přejete pokračovat, zadejte prosím heslo:",
+        "your_passwd": "Vaše heslo",
+        "cancel": "Storno",
+        "delete_org": "Ano, vymažte organizaci",
+        "about_del_usr": "Chystáte se smazat účet %{username}.",
+        "all_lost": "Tímto budou smazány také všechny mapy a datové sady náležející uživateli %{username}, ovšem zvláštní kredity budou přiřazeny všim uživatelům.",
+        "type_passwd": "Napiště prosím vaše heslo.",
+        "delete_usr": "Ano, smazat účet %{username}",
+        "you_and_org": "Vy a všichni uživatelé dané organizace",
+        "the_user": "Uživatel",
+        "you": "Vy",
+        "api": "API klíče",
+        "oauth": "OAuth kredit",
+        "about_regen_all": "Chystáte se přegenerovat %{type} pro všechny uživatele vaší organizace",
+        "about_regen_user": "Chystáte se přegenerovat %{type} pro tohoto uživatele z organizace",
+        "about_regen_your": "Chystáte se přegenerovat vaše %{type}",
+        "update_api": "%{scope} bude potřebovat upravit všechny aplikace pro nové API klíče. Jste si jistý, že chcete pokračovat?",
+        "update_oauth": "%{scope} bude potřebovat upravit všechny OAuth klíče v aplikacích, kde používáte Carto. Jste si jistý?",
+        "regen": "Přegenerovat %{type}",
+        "adding_usr_grp": "Přidávám uživatele do skupiny",
+        "add_usr_grp": "Přidat uživatele do této skupiny",
+        "share_in_grp": "Když sdílíte datovou sadu nebo mapu se skupinou, všichni členové této skupiny dostanou stejná oprávnění.",
+        "add_usr": "Přidat uživatele",
+        "grp_placeholder": "Zadejte jméno skupiny",
+        "create_grp": "Vytvořit skupinu",
+        "creating_grp": "Vytváření skupiny",
+        "grp_create_flash": "Z neznámého důvodu se vytvoření skupiny nezdařilo, zkuste to prosím znovu",
+        "grp_name": "Jméno skupiny",
+        "delete_grp": "Smazat tuto skupinu",
+        "save_grp": "Uložit změny",
+        "grp_update_flash": "Z neznámého důvodu se editace skupiny nezdařila, zkuste to prosím znovu",
+        "remove_from_grp": "Odebrat ze skupiny",
+        "removing_usr": "Odebírám uživatelů",
+        "add_users": "Přidat uživatele",
+        "adding_users": "Přidávám uživatele",
+        "settings": "Nastavení",
+        "create_new_group": "Vytvořit novou skupinu",
+        "user_pl": "%{smart_count} Uživatel |||| %{smart_count} Uživatelé |||| %{smart_count} Uživatelů",
+        "no_grps_yet": "Zatím jste nevytvořil žádnou skupinu",
+        "grp_advantage": "Skupiny mohou představovat jednotlivé týmy ve vaší organizaci.",
+        "getting_usrs": "Načítám uživatele",
+        "shared_map": "%{smart_count} sdílená mapa |||| %{smart_count} sdílené mapy |||| %{smart_count} sdílených map",
+        "shared_dataset": "%{smart_count} sdílená datová sada |||| %{smart_count} sdílené datové sady |||| %{smart_count} sdílených datových sad",
+        "icon_picker": {
+          "icons": "Ikony",
+          "view_all": "Ukázat všechny ikony",
+          "use_as_markers": "Tyto ikony mohou být použity jako značky.",
+          "sel_all": "Vybrat vše",
+          "desel_all": "Odznačit vše",
+          "del_icons": "Mazání ikon...",
+          "upload_icons": "Nahrát ikony organizace",
+          "org_icons": "Ikony organizace",
+          "deleting_icons": "Mažete %{smart_count} ikonu z vaší organizace. |||| Mažete %{smart_count} ikony z vaší organizace. |||| Mažete %{smart_count} ikon z vaší organizace.",
+          "once_deleted": "Smazané ikony nemohou být obnoveny. ",
+          "maps_affected": "Mapy, které používají tuto ikonu, mohou být nepříznivě ovlivněny. |||| Mapy, které používají tyto ikony, mohou být nepříznivě ovlivněny.",
+          "be_sure": "Než budete pokračovat, rozmyslete si to dobře.",
+          "delete": "Ok, smazat",
+          "uploading": "Nahrávám ikony...",
+          "delete_pl": "Smazat ikonu... |||| Smazat ikony...",
+          "deleting": "Mažu ikony..."
+        },
+        "invite_users": {
+          "invite": "Pozvěte uživatele do vaší organizace",
+          "become_part": "Nový uživatel se stane členem vaší organizace na Carto.",
+          "sending": "Posílám pozvánky...",
+          "error": "Pardón, něco se pokazilo.",
+          "enable_sign": "Pokud chcete pozvat uživatele, musíte povoli zapisovací stránku vaší organizace.",
+          "enable": "Povolit zapsání se",
+          "enabled_success": "Úspěšně jste povolili zapisovací stránku!",
+          "users_email": "Emaily uživatelů",
+          "separate": "Oddělte emaily čárkou",
+          "email_used": "Tento email je ve vaší organizaci již použit",
+          "no_viewers": "Nemůžete poslat pozvánku k prohlížeči, protože nemáte žádná prohlížecí místa",
+          "read_only": "Uživatel typu \"prohlížeč\" má přístup pouze pro čtení, nemůže zapisovat, nahrávat data a vytvářet mapy",
+          "invite_users": "Pozvat uživatele"
+        },
+        "org_notif": {
+          "about_remove": "Chystáte se smazat oznámení",
+          "sure": "Opravdu ho chcete smazat?",
+          "cancel": "Storno",
+          "ok": "Ok, zmažte to",
+          "sending": "Posílám",
+          "send": "Posláno"
+        },
+        "org_users": {
+          "create": "Vytvořit uživatele",
+          "invite": "Pozvat uživatele",
+          "owner": "VLASTNÍK",
+          "admin": "SPRÁVCE",
+          "viewer": "PROHLÍŽEČ",
+          "builder": "TVŮRCE",
+          "search": "Hledání",
+          "placeholder": "Hledání podle uživatelského jména nebo emailu",
+          "seats": "Tvůrce (%{assigned_seats}/%{seats}) - Prohlížeč (%{assigned_viewer_seats}/%{viewer_seats})",
+          "add_usr": "Přidat uživatele",
+          "near_limit": "Blížíte se k limitu vašich míst. Zvašte <a href=\"%{upgradeUrl}\">povýšení vašeho účtu</a>.",
+          "contact": "<a href=\"mailto:sales@carto.com\">Kontaktujte nás</a>, pokud máte nějaké dotazy.",
+          "upgrade": "Povýšit účet",
+          "no_user_found": "Je nám líto, nenašli jsme žádného uživatele s těmito parametry",
+          "getting_users": "Načítám uživatele..."
+        }
+      },
+      "profile": {
+        "success": "Vaše změny byly v pořádku uloženy.",
+        "error": "Uložení profilu se nezdařilo, zkuste to prosím znovu."
+      },
+      "public_dataset": {
+        "col_deleted": "Váš sloupeček byl smazán",
+        "col_deleting": "Mažu váš sloupeček",
+        "col_added": "Váš sloupeček byl přidán",
+        "col_adding": "Přidávám nový sloupeček",
+        "col_renaming": "přejmenovávám sloupeček",
+        "col_renamed": "Sloupeček byl přejmenován",
+        "col_changing": "Měním typ sloupečku",
+        "col_changed": "Typ sloupečku byl změněn",
+        "tbl_loading": "načítám tabulku",
+        "tbl_loaded": "načteno",
+        "view_datasets": "Zobrazit vaši datovou sadu",
+        "view_maps": "Zobrazit vaši mapu",
+        "close": "Odhlásit se",
+        "dialogs": {
+          "query": "Dotaz na tuto tabulku",
+          "sql_api": "Použitím <a href=\"https://docs.carto.com/cartodb-platform/sql-api.html\" target=\"_blank\">Carto SQL API</a> můžete provést libovolný SQL dotaz bu%dto do vaší nebo i cizí tabulky.",
+          "close": "Zavřít",
+          "export": "Exportovat datovou sadu",
+          "sel_format": "Vyberte požadovaný formát.",
+          "sel_the_geom": "Nezapomeňte vybrat sloupeček the_geom ve vašem dotazu, abyste mohli stáhnout libovolný geoprostorový formát, jako SHP, KML nebo GeoJSON.",
+          "match_rows": "<strong class=\"Checkbox-strong\">Sjednotit řádky s mapou.</strong> Tato volba zmenší velikost dat.",
+          "cancel": "Storno",
+          "preparing": "Připravujeme váš download. Může to chvíli trvat, podle velikosti dat.",
+          "checking": "Prověřuji georeferencování…"
+        },
+        "map_view": {
+          "match": "Sjednotit řádky s mapou."
+        },
+        "public_header": {
+          "guides": "<a href='https://carto.com/learn/guides' class='guides'>Průvodci</a>",
+          "signup": "<a class='signup' href='https://carto.com/signup'>Zápis</a>",
+          "login": "<a href='https://carto.com/login' class='border login'>Přihlášení</a>"
+        },
+        "public_table": {
+          "data_empty": "Datová sada je prázdná",
+          "owner": "Pokud jste majitel této datové sady, tak se přihlašte a přidejte požadované řádky.",
+          "otherwise": "Pokud ne, tak tady nemáte co dělat."
+        },
+        "table_view": {
+          "no_result": "Žádné výsledky z tohoto dotazu",
+          "try_again": "Zkuste jiný dotaz, nebo jen <a href=\"#\" class=\"clearview\">vymažte tento pohled</a>",
+          "loading": "Načítám výsledky",
+          "dataset_from": "<a href=\"#/export-query\" class=\"export_query\">vytvořte z dotazu datovou sadu</a> nebo <a href=\"#/clear-view\" class=\"clearview\">vymažte pohled</a>",
+          "clear": "Žádný řádek ve výsledku tohoto dotazu, <a href=\"#/clear-view\" class=\"clearview\">vymažte tento SQL pohled</a>",
+          "scroll_down": "Posuňte dolů a pak nahoru",
+          "scroll_up": "Posuňte nahoru a pak dolů",
+          "pagination": "To spustí načtení dalších řádků.",
+          "loading_rows": "Načítám další řádky...",
+          "moment": "Jenom pár vteřin.",
+          "saving": "Ukládám vaše změny",
+          "saved": "Úspěšně uloženo",
+          "error": "Oj, při ukládání vašich změn nastala chyba.",
+          "row_deleting": "Mažu řádek",
+          "row_deleted": "Úspěšně smazáno"
+        }
+      },
+      "public_profile": {
+        "load_title": "Načítám vizualizaci",
+        "user_feed": {
+          "no_public_data": "%{name} zatím nemá žádná veřejná data",
+          "view_more": "Ukaž více",
+          "error": {
+            "retrieve_maps": "Nemůžeme dostat mapu :(",
+            "reload": "Načtěte stránku znovu. Pokud problém přetrvá, kontaktujte nás na <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+          }
+        }
+      }
+    }
+  },
+  "deep_insights": {
+    "widgets": {
+      "refresh": "OBNOVIT",
+      "no_results": "Žádné výsledky",
+      "no_match": "Váš dotaz \"%{query}\" se neshodoval<br/>s žádnou hodnotou.",
+      "try_again": "Zkuste hledat znovu.",
+      "selected": " vybráno",
+      "unlock": "odemknout",
+      "no_selected": "Není nic vybráno",
+      "lock": "zamknout",
+      "all": "vše",
+      "srch_categ": "hledat v %{smart_count} kategorii |||| hledat v %{smart_count} kategoriích",
+      "cancel": "storno",
+      "found": "nalezeno",
+      "null_rows": " prázdných řádků",
+      "of_total": "z celkového",
+      "placeholder": "Hledat podle %{columnName}",
+      "apply": "provést",
+      "tooltip": "Více možností",
+      "edit": "Upravit",
+      "delete": "Smazat...",
+      "null_rows_2": "prázdných řádků",
+      "null_rows_3": "PRÁZDNÝCH ŘÁDKŮ",
+      "min": "MIN",
+      "avg": "AVG",
+      "max": "MAX",
+      "zoom": "přiblížit",
+      "clear": "vyčistit",
+      "to": "do",
+      "clear2": "Vyčistit",
+      "sel_from": "Vybráno z"
+    }
+  }
+}

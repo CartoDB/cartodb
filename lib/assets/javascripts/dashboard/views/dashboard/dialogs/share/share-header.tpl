@@ -6,6 +6,6 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont CDB-IconFont-unlock"></i>
   </div>
-  <p class="Dialog-headerTitle u-ellipsLongText"><%- name %> privacy</p>
-  <p class="Dialog-headerText">Select your colleagues you want to give access in the list below</p>
+  <p class="Dialog-headerTitle u-ellipsLongText"><%- name %><%= _t('dashboard.views.dashboard.dialogs.share.privacy') %></p>
+  <p class="Dialog-headerText"><%= _t('dashboard.views.dashboard.dialogs.share.sel_colleagues') %></p>
 </div>

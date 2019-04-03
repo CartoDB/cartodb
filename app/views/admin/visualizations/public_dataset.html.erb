@@ -2,7 +2,7 @@
 
 <%= content_for(:page_title) do %><%= @table.name.gsub(/_/," ") %><% end %>
 
-<%= content_for(:description) do %><%= @table.description ? "#{@table.description}. Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO" %><% end %>
+<%= content_for(:description) do %><%= @table.description ? "#{@table.description}. t('admin.visual.embed_map.map_created')" : "t('admin.visual.embed_map.map_created')" %><% end %>
 
 <%= content_for(:twitter_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 560, 300) %><% end %>
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
@@ -220,7 +220,7 @@
     <% if @total_visualizations.count > 0 %>
       <div class="u-inner">
         <div class="PublicMap-block with-padding">
-          <h3 class="PublicMap-secondaryTitle">Maps using this dataset</h3>
+          <h3 class="PublicMap-secondaryTitle"><%= t('admin.visual.public_data.maps') %></h3>
         </div>
       </div>
 

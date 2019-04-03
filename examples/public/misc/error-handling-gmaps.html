@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Error handling | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Error handling</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Handle common errors in maps.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">In this example we handle the client error while calling the `addLayer` funciton.</p>
+            <p class="open-sans">See `refreshLayer` function in the source code for an example on how to handle Promise errors.</p>
+          </section>
+          <div id="controls">
+            <div id="info">
+              <p class="mt-16 open-sans"></p>
+            </div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">DATASET</h2>
+        <textarea id="dataset-value" rows=2></textarea>
+        <button id="dataset-button" class="button" onclick="updateDataset()">SET WRONG DATASET</button>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">STYLE</h2>
+        <textarea id="style-value" rows="3"></textarea>
+        <button id="style-button" class="button" onclick="updateStyle()">UPDATE STYLE</button>
+      </div>
+    </aside>
+
+    <script>
+      // Setting up a Google Maps Map
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 50, lng: 15 },
+        zoom: 4,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      // State
+      const state = {
+        isDatasetValid: true,
+        isStyleValid: true,
+        errorMessage: '',
+        updating: false
+      };
+
+      // Datasets
+      const validDataset = 'ne_10m_populated_places_simple';
+      const wrongDataset = 'wrong_dataset';
+
+      // Style
+      const validStyle = '#layer { marker-fill: red; }';
+      const wrongStyle = '#layer { marker-fill: wrong-color; }';
+
+      let source = new carto.source.Dataset(validDataset);
+      let style = new carto.style.CartoCSS(validStyle);
+      let layer = new carto.layer.Layer(source, style);
+
+      // Adding the layers to the map
+      client.addLayer(layer);
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      updateUI();
+
+      function refreshLayer(layer) {
+        client.addLayer(layer)
+          .then(function () {
+            state.errorMessage = '';
+            state.updating = false;
+            updateUI();
+          })
+          .catch(function (error) {
+            state.errorMessage = error.message;
+            state.updating = false;
+            updateUI();
+          });
+      }
+
+      function updateDataset() {
+        client.removeLayer(layer);
+
+        state.isDatasetValid = !state.isDatasetValid;
+        state.updating = true;
+
+        const dataset = state.isDatasetValid
+          ? validDataset
+          : wrongDataset;
+
+        updateUI();
+
+        source = new carto.source.Dataset(dataset);
+        layer = new carto.layer.Layer(source, style);
+        refreshLayer(layer);
+      }
+
+      function updateStyle() {
+        client.removeLayer(layer);
+
+        state.isStyleValid = !state.isStyleValid;
+        state.updating = true;
+
+        const styleContent = state.isStyleValid
+          ? validStyle
+          : wrongStyle;
+
+        updateUI();
+
+        style = new carto.style.CartoCSS(styleContent);
+        layer = new carto.layer.Layer(source, style);
+        refreshLayer(layer);
+      }
+
+      function updateUI() {
+        const datasetValueEl = document.getElementById('dataset-value');
+        const styleValueEl = document.getElementById('style-value');
+        const datasetButtonEl = document.getElementById('dataset-button');
+        const styleButtonEl = document.getElementById('style-button');
+        const panelEl = document.querySelector('#info p');
+
+        datasetValueEl.value = state.isDatasetValid
+          ? validDataset
+          : wrongDataset;
+
+        styleValueEl.value = state.isStyleValid
+          ? validStyle
+          : wrongStyle;
+
+        datasetButtonEl.textContent = state.isDatasetValid
+          ? 'Set wrong dataset'
+          : 'Revert to a valid dataset';
+
+        styleButtonEl.textContent = state.isStyleValid
+          ? 'Set wrong style'
+          : 'Revert to a valid style';
+
+        panelEl.textContent = state.updating
+          ? 'Updating...'
+          : state.errorMessage
+            ? state.errorMessage
+            : 'Everything OK';
+
+        if (state.updating) {
+          panelEl.classList.remove('bg-red');
+          panelEl.classList.remove('bg-white');
+          panelEl.classList.add('bg-orange');
+          panelEl.classList.add('p-8');
+          panelEl.classList.add('text-white');
+        } else if (state.errorMessage) {
+          panelEl.classList.add('bg-red');
+          panelEl.classList.remove('bg-white');
+          panelEl.classList.remove('bg-orange');
+          panelEl.classList.add('p-8');
+          panelEl.classList.add('text-white');
+        } else {
+          panelEl.classList.add('bg-white');
+          panelEl.classList.remove('bg-red');
+          panelEl.classList.remove('bg-orange');
+          panelEl.classList.remove('p-8');
+          panelEl.classList.remove('text-white');
+        }
+      }
+    </script>
+  </body>
+</html>

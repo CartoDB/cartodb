@@ -2,9 +2,9 @@
   <div class="FormAccount-rowLabel">
     <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
       <% if (inputName == "user[avatar_url]") { %>
-        Avatar*
+        <%= _t('dashboard.components.avatar_selector.avatar_selector.avatar') %>
       <% } else if (inputName == "organization[avatar_url]") { %>
-        Organization logo
+        <%= _t('dashboard.components.avatar_selector.avatar_selector.org_logo') %>
       <% } %>
     </label>
   </div>
@@ -33,13 +33,13 @@
         </div>
       <% } %>
     </div>
-    <input class="js-fileAvatar" type="file" value="Choose image" accept="<%- avatarAcceptedExtensions %>" />
+    <input class="js-fileAvatar" type="file" value=<%= _t('choose_image') %> accept="<%- avatarAcceptedExtensions %>" />
     <input class="js-inputAvatar" id="user_avatar_url" name="<%- inputName %>" type="hidden" value="<%- avatarURL %>" />
     <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
       <% if (state === "error") { %>
-        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error FormAccount-rowInfoText--maxWidth">There was an error uploading your avatar. Check the height and size (max 1MB) of the image</p>
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--error FormAccount-rowInfoText--maxWidth"><%= _t('dashboard.components.avatar_selector.avatar_selector.err_load') %></p>
       <% } else { %>
-        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller">Recommended images should be 128x128 pixels of size</p>
+        <p class="FormAccount-rowInfoText FormAccount-rowInfoText--smaller"><%= _t('dashboard.components.avatar_selector.avatar_selector.rec_size') %></p>
       <% } %>
     </div>
   </div>

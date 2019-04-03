@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Legends | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Legends</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create dynamic legends.</p>
+          <div class="separator"></div>
+          <div id="controls">
+            <ul>
+              <li onclick="setAllCities()">
+                <input type="radio" name="data" checked id="all">
+                <label for="all">ALL cities</label>
+              </li>
+              <li onclick="setEuropeanCities()">
+                <input type="radio" name="data" id="europe">
+                <label for="europe">European cities</label>
+              </li>
+              <li onclick="setSpanishCities()">
+                <input type="radio" name="data" id="spain">
+                <label for="spain">Spanish cities</label>
+              </li>
+            </ul>
+            <div class="separator"></div>
+            <ul>
+              <li onchange="invertColors()">
+                <input type="checkbox" name="data" id="invertColors">
+                <label for="invertColors">Invert colors</label>
+              </li>
+            </ul>
+          </div>
+
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+
+      <div class="box legend">
+        <h2 class="h2">World cities</h2>
+        <ul class="category open-sans">
+          <li id="capital"></li>
+          <li id="normal"></li>
+        </ul>
+        <h2 class="h2">Inhabitants</h2>
+        <ul id="legend-population">
+          <li class="size open-sans">
+            <div id="min"></div>
+            <div id="max"></div>
+          </li>
+          <li class="avg open-sans"></li>
+        </ul>
+      </div>
+    </aside>
+
+    <script>
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 30, lng: 0 },
+        zoom: 3,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const populatedPlacesSource = new carto.source.SQL('SELECT * FROM ne_10m_populated_places_simple');
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: ramp([pop_max], range(2, 12), quantiles(5));
+          marker-fill: ramp([adm0cap], (#EE4D5A, #68B69E), (0, 1), "=", category);
+          marker-fill-opacity: 0.6;
+          marker-allow-overlap: true;
+          marker-line-width: 1;
+          marker-line-color: #000;
+          marker-line-opacity: 0.2;
+        }
+      `);
+      const populatedPlacesLayer = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle);
+
+      client.addLayer(populatedPlacesLayer);
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      populatedPlacesLayer.on('metadataChanged', function (event) {
+        event.styles.forEach(function (styleMetadata) {
+          switch (styleMetadata.getProperty()) {
+            case 'marker-width':
+              renderLegendSize(styleMetadata);
+              break;
+            case 'marker-fill':
+              renderLegendCapital(styleMetadata);
+              break;
+          }
+        });
+      });
+
+      function renderLegendSize(metadata) {
+        document.getElementById('min').innerHTML = `
+          <div class="circle circle-outline" style="width:8px; height:8px;"></div> <p>${metadata.getMin()}</p>
+        `;
+
+        document.getElementById('max').innerHTML = `
+          <div class="circle circle-outline" style="width:24px; height:24px;"></div> <p>${metadata.getMax()}</p>
+        `;
+
+        document.querySelector('.legend .avg').innerHTML = `
+          <p><b>Average: </b> ${metadata.getAverage().toFixed(2)}</p>
+        `;
+      }
+
+      function renderLegendCapital(metadata) {
+        const categories = metadata.getCategories();
+
+        for (category of categories) {
+          switch (category.name) {
+            case 0:
+              document.getElementById('normal').innerHTML = `
+                <div class="circle" style="background:${category.value}"></div> Normal
+              `;
+              break;
+            case 1:
+              document.getElementById('capital').innerHTML = `
+                <div class="circle" style="background:${category.value}"></div> Capital
+              `;
+              break;
+          }
+        }
+      }
+
+      function setAllCities() {
+        populatedPlacesSource.setQuery('SELECT * FROM ne_10m_populated_places_simple');
+      }
+
+      function setEuropeanCities() {
+        populatedPlacesSource.setQuery(`
+            SELECT *
+              FROM ne_10m_populated_places_simple
+              WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+          `);
+      }
+
+      function setSpanishCities() {
+        populatedPlacesSource.setQuery(`
+            SELECT *
+              FROM ne_10m_populated_places_simple
+              WHERE adm0name = \'Spain\'
+          `);
+      }
+
+      function invertColors() {
+        const invert = document.getElementById('invertColors').checked;
+        const colors = invert ? '(#68B69E, #EE4D5A)' : '(#EE4D5A, #68B69E)';
+        const content = `
+          #layer {
+            marker-width: ramp([pop_max], range(2, 12), quantiles(5));
+            marker-fill: ramp([adm0cap], ${colors}, (0, 1), "=", category);
+            marker-fill-opacity: 0.6;
+            marker-allow-overlap: true;
+            marker-line-width: 1;
+            marker-line-color: #000;
+            marker-line-opacity: 0.2;
+          }
+        `;
+        populatedPlacesStyle.setContent(content);
+      }
+    </script>
+  </body>
+</html>

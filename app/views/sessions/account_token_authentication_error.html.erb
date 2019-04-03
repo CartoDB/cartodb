@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @user ? @user.username : 'User ' %> authentication error<% end %>
+<% content_for :title do %><%= @user ? @user.username : t('sessions.account_error.user') t('sessions.account_error.auth_error') end %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
@@ -10,11 +10,11 @@
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">You must validate your email account</h1>
-              <p class="Sessions-description">Please check your email inbox and click the "Activate your account" button in the welcome mail.</p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('sessions.account_error.validate_account') %></h1>
+              <p class="Sessions-description"><%= t('sessions.account_error.check_email') %></p>
 
             <% if @user %>
-              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', params: { :user_id => @user.id }) %>">here</a> and a new email will be sent directly to you.</p>
+              <p class="Sessions-description"><%= raw t('sessions.account_error.resend_valid', validation_url: CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id)) %></p>
             <% end %>
           </div>
         </div>

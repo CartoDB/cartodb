@@ -8,36 +8,42 @@
   </div>
   <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">
     <% if (page > 1 && totalItems === 0 && totalEntries > 0) { %>
-      There are no results in this page
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_results') %>
     <% } %>
 
     <% if (liked && totalEntries === 0 ) { %>
-      You haven't liked any <%- type %> yet
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_liked_' + type) %>
     <% } %>
 
     <% if (isSearching && totalItems === 0 && totalEntries === 0) { %>
-      0 <%- tag || q %> <%- type %> found
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.zero_found_' + type, {tag: tag}) %>
     <% } %>
 
     <% if (page === 1 && !isSearching && !liked && totalItems === 0 && totalEntries === 0) { %>
-      There are no <%- shared === "only" ? 'shared' : '' %> <%- locked ? 'locked' : '' %> <%- type %>
+      <% if (shared === "only") { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_shared_' + type) %>
+      <% } else if (locked) { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_locked_' + type) %>
+      <% } else if (locked) { %>
+        <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.there_are_no_' + type) %>
+      <% } %>
     <% } %>
   </h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
     <% if (page > 1 || totalItems === 0 && totalEntries > 0) { %>
-      Back to your <a class="ContentResult-urlLink" href="<%- defaultUrl %>">first page</a>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.back_to_first') %>
     <% } %>
 
     <% if (isSearching && totalItems === 0 && totalEntries === 0) { %>
-      Back to your <a class="ContentResult-urlLink" href="<%- defaultUrl %>"><%- type %></a>
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.back_to_' + type, {defaultUrl: defaultUrl}) %>
     <% } %>
 
     <% if (!liked && !isSearching && totalItems === 0 && totalEntries === 0) { %>
-      No <%- type %>, no fun
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.no_fun_' + type) %>
     <% } %>
 
     <% if (liked && totalEntries === 0 ) { %>
-      Fill this section up by clicking the heart on CARTO <%- type %> published on the web or on user profile pages
+      <%= _t('dashboard.views.dashboard.content_controller.templates.content_no_results.fill_this_' + type) %>
     <% } %>
   </p>
 </div>

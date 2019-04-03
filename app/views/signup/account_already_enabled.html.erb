@@ -1,4 +1,4 @@
-<% content_for :title do %>Account already enabled<% end %>
+<% content_for :title do %><%= t('signup.already.enabled') %><% end %>
 
 <div class="Sessions CDB-Text">
   <div class="Sessions-content">
@@ -7,13 +7,13 @@
         <div class="Sessions-center Sessions--centered">
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
-              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
             </picture>
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">Your account is already active</h1>
-            <p class="Sessions-description"><a href="/login">Login</a> and start enjoying your CARTO account.</p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('signup.already.active') %></h1>
+            <p class="Sessions-description"><a href="/login"><%= t('signup.already.login') %></a><%= t('signup.already.enjoy') %></p>
           </div>
         </div>
       </div>

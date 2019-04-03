@@ -1,1 +1,2 @@
-Welcome to your brand new <strong><%- accountType %></strong> CARTO. Now we love you even more than before ;)
+<%= _t('dashboard.components.dashboard-header.notifications.templates.upgraded_message.welcome', {accountType: accountType}) %>
+

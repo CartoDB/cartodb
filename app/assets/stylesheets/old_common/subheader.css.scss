@@ -1,0 +1,304 @@
+/*
+ * Subheader styles
+ */
+
+
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
+@import "compass/css3/images";
+@import "./common-sprite";
+@import "./mixins";
+@import "./vars";
+
+.tipsy.feed {
+  line-height: 120%;
+}
+
+.tipsy.stats.tipsy-s {
+  line-height: 120%;
+}
+
+.mapviews_tooltip {
+  position: absolute;
+  text-align: center;
+  background:#333;
+  color:#fff;
+  padding: 5px;
+  font: 10px sans-serif;
+  @include border-radius(2px);
+  pointer-events: none;
+  z-index:20;
+
+  .tip {
+    position:absolute;
+    left:10px;
+    bottom:0px;
+
+    &:before{
+      content:'';
+      display:block;
+      width:0;
+      height:0;
+      position:absolute;
+
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 4px solid #333;
+      margin: auto;
+    }
+  }
+}
+
+
+div.subheader {
+  position:relative;
+  @include inline-block();
+  width:100%;
+  margin-top: -134px;
+  margin-bottom: 15px;
+  padding:0;
+  @include transform-style("linear");
+  @include transition-property("all");
+  @include transition-duration(500ms);
+  z-index:2;
+
+  // If there is NO tables, this section is active
+  &.active {
+    margin-top:0;
+    margin-bottom: 0px;
+  }
+
+  section.stats {
+    position:relative;
+    @include inline-block();
+    @include size(100%, 132px);
+    margin:0;
+    background:#fff;
+    border-bottom:1px solid #CDCDCD;
+    @include box-shadow(0 4px 3px 0 rgba(0,0,0,0.07));
+
+    z-index: 1000;
+
+    ul {
+      clear:both;
+      overflow:hidden;
+
+      li {
+        display:block;
+        float:left;
+        @include size(233px, 62px);
+        padding:35px;
+        border-left: 1px solid #E5E5E5;
+
+        &.tables {
+          width:254px;
+          padding-left:0;
+          border:none;
+        }
+
+        &.badge {
+          position:relative;
+          top: -5px;
+          width:93px;
+          padding-right:0;
+          border:none;
+
+          i {
+            display: block;
+            margin: 4px 0 0 0;
+            @include size(93px, 74px);
+            @include common-sprite(badge_default);
+
+            &.free      { @include common-sprite(badge_free_server); }
+            &.magellan  { @include common-sprite(badge_magellan); }
+            &.john_snow { @include common-sprite(badge_john_snow); }
+            &.mercator  { @include common-sprite(badge_mercator); }
+            &.coronelli { @include common-sprite(badge_coronelli); }
+            &.dedicated { @include common-sprite(badge_dedicated_server); }
+            &.internal  { @include common-sprite(badge_internal); }
+
+            &.enterprise {
+              @include display-flex();
+              @include justify-content(center, center);
+              @include align-items(center, center);
+
+              @include size(83px, 74px);
+              padding:0 5px;
+              margin-top:-5px;
+              @include common-sprite(badge_enterprise);
+              font:normal 11px $text-fonts2;
+              text-transform: uppercase;
+              text-align:center;
+              color: #BBBBBB;
+            }
+
+            &.coronelli, &.dedicated, &.enterprise { top: -15px; }
+          }
+        }
+
+        .info {
+          position:relative;
+          @include inline-block();
+          top: -2px;
+          width:16px;
+          line-height:16px;
+          margin-left:2px;
+          @include border-radius(40px);
+          color:#fff;
+          background:#ddd;
+          font-size: 11px;
+          text-align: center;
+          cursor: help;
+
+          &:hover {
+            text-decoration:none;
+            background:#ccc;
+          }
+        }
+
+        
+        .stats {
+          height:36px;
+          // Make over stats
+          &:hover { cursor:pointer }
+        }
+
+        .progress {
+          display:block;
+          height:36px;
+          background:#E7E7E7; //IE
+          @include background(linear-gradient(#E5E5E5,#E9E9E9));
+          @include border-radius(3px);
+
+          span {
+            position:relative;
+            @include inline-block();
+            width:0;
+            min-width:5px;
+            max-width:100%;
+            height:36px;
+            @include border-radius(3px);
+            background:#85ACDC;
+            @include background(linear-gradient(#85ACDC,#5990CE));
+            @include transform-style("linear");
+            @include transition-property("width");
+            @include transition-duration(500ms);
+
+            &.green {
+              background:rgba(green,0.55);
+              @include transform-style("linear");
+              @include transition-property("background");
+              @include transition-duration(500ms);
+            }
+
+            &.boom {
+              background:#FF5255;
+              @include background(linear-gradient(#FF5255,#CB2828));
+              @include transform-style("linear");
+              @include transition-property("background");
+              @include transition-duration(500ms);
+            }
+
+            &.danger {
+              background:#F8B85C;
+              @include background(linear-gradient(#F8B85C,#F49000));
+              @include transform-style("linear");
+              @include transition-property("background");
+              @include transition-duration(500ms);
+            }
+
+            &:after {
+              position:absolute;
+              content:' ';
+              width:100%;
+              height:100%;
+              top:0;
+              left:0;
+              @include border-radius(3px);
+              background:rgba(255,255,255,0.05);
+              @include background(linear-gradient(left,rgba(255,255,255,0.35), rgba(255,255,255,0)));
+            }
+          }
+
+          &.unlimited span {
+            &.green {
+              background: -moz-linear-gradient(#94BE42, #7FA938) repeat scroll 0 0 transparent;
+            }
+          }
+        }
+
+        p {
+          margin:10px 0 0 0;
+          font-size:13px;
+          font-weight:300;
+          color:#666666;
+          @include transform-style("linear");
+          @include transition-property("all");
+          @include transition-duration(500ms);
+
+          strong { font-weight:500 }
+        }
+      }
+    }
+  }
+
+  section.welcome { display:none; }
+
+  section.warning {
+    margin: 0 0 0 0;
+    z-index:0;
+
+    background:rgba(#FFE599, .35);
+
+    @include transform-style("linear");
+    @include transition-property("all");
+    @include transition-duration(500ms);
+
+    ul li {
+
+      display:none;
+
+      padding:25px 0;
+      border-bottom:1px solid rgba(#CCCCCC,0.5);
+      line-height: 18px;
+
+      .inner { position:relative; }
+      .inner p { width: 1000px; color: #000; font-size: 15px; line-height: 18px; }
+
+      &.try_trial,
+      &.upgraded {
+        background: #DCF0C0;
+      }
+
+      &.try_trial {
+        .button { right: 20px}
+      }
+
+      .dark { color: #666666; }
+
+      a.close {
+        right: 0px;
+        @include absolute-portrait-center(13px);
+        @include size(13px);
+        @include common-sprite(close_grey);
+        @include text-indent();
+
+        &:hover {@include common-sprite(close_grey, $offset-y: -13px);}
+        &:active {@include common-sprite(close_grey, $offset-y: -26px);}
+      }
+
+      a.upgrade,
+      a.trial {
+        position:absolute;
+        right:0;
+        top:-3px;
+        padding:4px 13px;
+        text-align:center;
+        font-weight:400;
+        font-size:13px;
+      }
+
+    }
+
+  }
+}

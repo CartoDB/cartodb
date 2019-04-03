@@ -24,7 +24,7 @@
         <% } %>
         <li class="Filters-typeItem">
           <a href="<%- editUrl %>" class="CDB-Text CDB-Size-medium u-mainTextColor Filters-typeLink <%- editUrl.isCurrent ? 'is-selected' : '' %>">
-            Settings
+            <%= _t('dashboard.views.organization.settings') %>
           </a>
         </li>
       </ul>

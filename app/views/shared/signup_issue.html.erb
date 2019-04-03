@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @signup_source %> signup issue<% end %>
+<% content_for :title do %><%= @signup_source %><%= t('shared.sign_issue.issue') %><% end %>
 
 <div class="CDB-Text <%= @organization.present? ? 'Sessions' : 'Sessions-navy' %>" style="<%= @organization.present? ? background : '' %>">
   <div class="Sessions-content">
@@ -8,9 +8,9 @@
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
               <% if @organization.present? %>
-                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
               <% else %>
-                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo.svg", :alt => t('carto_name')) %>
               <% end %>
             </picture>
           </div>
@@ -26,15 +26,15 @@
                 <% end %>
                 </ul>
               </p>
-              <p class="Sessions-description Sessions-description--small">Please, <% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
-                contact the administrator of <%= @organization.name %><% if @organization.owner %></a><% end %> to begin your signup process.</p>
+              <p class="Sessions-description Sessions-description--small"><%= t('shared.sign_issue.please') %><% if @organization.owner %><a href="mailto:<%= @organization.owner.email %>"><% end %>
+                <%= t('shared.sign_issue.contact') %><%= @organization.name %><% if @organization.owner %></a><% end %><%= t('shared.sign_issue.process') %></p>
             </div>
           <% else %>
             <div class="js-info">
               <h1 class="Sessions-title u-tspace-m">Service temporarily unavailable</h1>
-              <p class="Sessions-description">Please, contact the administrator of <%= @organization.name %>
+              <p class="Sessions-description"><%= t('shared.sign_issue.admin') %><%= @organization.name %>
               <% if @organization.owner %> (<a href="mailto:<%= @organization.owner.email %>"><%= @organization.owner.email %></a>) <% end %>
-              to begin your signup process.</p>
+              <%= t('shared.sign_issue.process') %></p>
             </div>
           <% end %>
         </div>

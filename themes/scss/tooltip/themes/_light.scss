@@ -1,0 +1,11 @@
+// Light tooltip styles
+// ----------------------------------------------
+
+.CDB-Tooltip--isLight {
+  &.CDB-Tooltip {
+    background: #FFF;
+  }
+  .CDB-Tooltip-listTitle {
+    color: #636D72;
+  }
+}

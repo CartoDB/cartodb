@@ -1,0 +1,268 @@
+{
+  "type": "FeatureCollection",
+  "query": [
+    "plaza",
+    "de",
+    "barcelos"
+  ],
+  "features": [
+    {
+      "id": "poi.10895640694945210",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.6666666666666666,
+      "properties": {
+        "landmark": true,
+        "tel": "07524 914990",
+        "category": "cafe, coffee, restaurant, tea, tea house",
+        "address": "Ravensburger Straße 8"
+      },
+      "text": "Plaza",
+      "place_name": "Plaza, Ravensburger Straße 8, Bad Waldsee, Baden-Württemberg 88339, Germany",
+      "center": [
+        9.754478,
+        47.920347
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.754478,
+          47.920347
+        ]
+      },
+      "context": [
+        {
+          "id": "postcode.11130053318616830",
+          "text": "88339"
+        },
+        {
+          "id": "place.11130053318505290",
+          "wikidata": "Q515423",
+          "text": "Bad Waldsee"
+        },
+        {
+          "id": "region.3495",
+          "short_code": "DE-BW",
+          "wikidata": "Q985",
+          "text": "Baden-Württemberg"
+        },
+        {
+          "id": "country.3135",
+          "short_code": "de",
+          "wikidata": "Q183",
+          "text": "Germany"
+        }
+      ]
+    },
+    {
+      "id": "poi.13433334923344580",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.6666666666666666,
+      "properties": {
+        "landmark": true,
+        "tel": "06403 74200",
+        "category": "rail station, train station",
+        "address": "Alte Heerstraße 27",
+        "maki": "rail"
+      },
+      "text": "Platz",
+      "place_name": "Platz, Alte Heerstraße 27, Bodolz, Bayern 88131, Germany",
+      "center": [
+        9.667166,
+        47.567462
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.667166,
+          47.567462
+        ]
+      },
+      "context": [
+        {
+          "id": "locality.13257312967514310",
+          "wikidata": "Q11696975",
+          "text": "Enzisweiler"
+        },
+        {
+          "id": "postcode.7704245689115710",
+          "text": "88131"
+        },
+        {
+          "id": "place.11779142489218390",
+          "wikidata": "Q552427",
+          "text": "Bodolz"
+        },
+        {
+          "id": "region.3186",
+          "short_code": "DE-BY",
+          "wikidata": "Q980",
+          "text": "Bayern"
+        },
+        {
+          "id": "country.3135",
+          "short_code": "de",
+          "wikidata": "Q183",
+          "text": "Germany"
+        }
+      ]
+    },
+    {
+      "id": "poi.11479188654945210",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.6666666666666666,
+      "properties": {
+        "landmark": true,
+        "tel": "0921 5160544",
+        "category": "restaurant",
+        "address": "Kirchgasse 24",
+        "maki": "restaurant"
+      },
+      "text": "Plaza",
+      "place_name": "Plaza, Kirchgasse 24, Bayreuth, Bayern 95444, Germany",
+      "center": [
+        11.57395,
+        49.94327
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.57395,
+          49.94327
+        ]
+      },
+      "context": [
+        {
+          "id": "postcode.14977288459298330",
+          "text": "95444"
+        },
+        {
+          "id": "place.14796666081196300",
+          "wikidata": "Q3923",
+          "text": "Bayreuth"
+        },
+        {
+          "id": "region.3186",
+          "short_code": "DE-BY",
+          "wikidata": "Q980",
+          "text": "Bayern"
+        },
+        {
+          "id": "country.3135",
+          "short_code": "de",
+          "wikidata": "Q183",
+          "text": "Germany"
+        }
+      ]
+    },
+    {
+      "id": "poi.9477875054945210",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.3333333333333333,
+      "properties": {
+        "landmark": true,
+        "tel": "0226 344 306",
+        "category": "restaurant",
+        "maki": "restaurant"
+      },
+      "text": "Plaza",
+      "place_name": "Plaza, Beringe, Limburg 5986, Netherlands",
+      "center": [
+        5.947389,
+        51.337527
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.947389,
+          51.337527
+        ]
+      },
+      "context": [
+        {
+          "id": "postcode.6633279068411020",
+          "text": "5986"
+        },
+        {
+          "id": "place.6017505065203911",
+          "wikidata": "Q1878867",
+          "text": "Beringe"
+        },
+        {
+          "id": "region.213188",
+          "short_code": "NL-LI",
+          "wikidata": "Q1093",
+          "text": "Limburg"
+        },
+        {
+          "id": "country.3101",
+          "short_code": "nl",
+          "wikidata": "Q55",
+          "text": "Netherlands"
+        }
+      ]
+    },
+    {
+      "id": "poi.6170918672945210",
+      "type": "Feature",
+      "place_type": [
+        "poi"
+      ],
+      "relevance": 0.3333333333333333,
+      "properties": {
+        "landmark": true,
+        "tel": "0382 559413",
+        "category": "hotel, lodging, motel",
+        "address": "Via Togliatti 39"
+      },
+      "text": "Plaza",
+      "place_name": "Plaza, Via Togliatti 39, San Martino Siccomario, Pavia 27028, Italy",
+      "center": [
+        9.130854,
+        45.159336
+      ],
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.130854,
+          45.159336
+        ]
+      },
+      "context": [
+        {
+          "id": "postcode.12821918527764180",
+          "text": "27028"
+        },
+        {
+          "id": "place.12821918528623280",
+          "wikidata": "Q41026",
+          "text": "San Martino Siccomario"
+        },
+        {
+          "id": "region.3790",
+          "short_code": "IT-PV",
+          "wikidata": "Q16231",
+          "text": "Pavia"
+        },
+        {
+          "id": "country.333",
+          "short_code": "it",
+          "wikidata": "Q38",
+          "text": "Italy"
+        }
+      ]
+    }
+  ],
+  "attribution": "NOTICE: © 2017 Mapbox and its suppliers. All rights reserved. Use of this data is subject to the Mapbox Terms of Service (https://www.mapbox.com/about/maps/). This response and the information it contains may not be retained."
+}

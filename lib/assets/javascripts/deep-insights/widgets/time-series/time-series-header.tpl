@@ -9,7 +9,7 @@
           <p class="CDB-Text CDB-Size-small CDB-Chart-staticTipText"><%= start %></p>
         </div>
 
-        <p class="CDB-Text CDB-Size-small is-semibold u-upperCase u-iBlock u-rSpace">to</p>
+        <p class="CDB-Text CDB-Size-small is-semibold u-upperCase u-iBlock u-rSpace"><%= _t('deep_insights.widgets.to') %></p>
 
         <div class="CDB-Chart-staticTip u-iBlock">
           <p class="CDB-Text CDB-Size-small CDB-Chart-staticTipText"><%= end %></p>
@@ -18,9 +18,9 @@
     <% } %>
 
     <% if (showClearButton) { %>
-      <button class="CDB-Text CDB-Size-small is-semibold u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear">Clear</button>
+      <button class="CDB-Text CDB-Size-small is-semibold u-upperCase u-actionTextColor CDB-Widget-filterButton js-clear"><%= _t('deep_insights.widgets.clear2') %></button>
     <% } %>
-    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="More options">
+    <button class="CDB-Shape CDB-Widget-actions js-actions u-lSpace" data-tooltip="<%= _t('deep_insights.widgets.tooltip') %>">
       <div class="CDB-Shape-threePoints is-blue is-small">
         <div class="CDB-Shape-threePointsItem"></div>
         <div class="CDB-Shape-threePointsItem"></div>

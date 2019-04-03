@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guide | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/%VERSION%/carto.min.js"></script>
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <style>
+      * { margin:0; padding:0; }
+      html { box-sizing:border-box; height:100%; }
+      body { background:#f2f6f9; height:100%; font-family:"Open sans", Helvetica, Arial, sans-serif; }
+      #container { display:flex; width:100%; height:100%; }
+      #map { flex:1; margin:10px; }
+      #widgets { width:300px; margin:10px 10px 10px 0; }
+      .widget { background:white; padding:10px; margin-bottom:10px; }
+      .widget h1 { font-size:1.2em; }
+      .widget-formula .result { font-size:2em; }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="map"></div>
+      <div id="widgets">
+        <div id="countriesWidget" class="widget">
+          <h1>European countries</h1>
+          <select class="js-countries">
+            <option value="">All</option>
+          </select>
+        </div>
+        <div id="avgPopulationWidget" class="widget widget-formula">
+          <h1>Average population</h1>
+          <p><span class="js-average-population result">xxx</span> inhabitants</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      const map = L.map('map').setView([50, 15], 4);
+
+      // Adding Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      // Adding Voyager Labels
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        zIndex: 10
+      }).addTo(map);
+
+      var client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+      const europeanCountriesDataset = new carto.source.Dataset(`
+        ne_adm0_europe
+      `);
+      const europeanCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+        polygon-fill: #162945;
+          polygon-opacity: 0.5;
+          ::outline {
+            line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 0.5;
+          }
+        }
+      `);
+      const europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
+
+      const populatedPlacesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+          WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+      `);
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 8;
+          marker-fill: #FF583E;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+          marker-line-opacity: 1;
+          marker-type: ellipse;
+          marker-allow-overlap: false;
+        }
+      `);
+      const populatedPlaces = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
+        featureOverColumns: ['name']
+      });
+
+      client.addLayers([europeanCountries, populatedPlaces]);
+
+      client.getLeafletLayer().addTo(map);
+
+
+      const popup = L.popup({ closeButton: false });
+      populatedPlaces.on(carto.layer.events.FEATURE_OVER, featureEvent => {
+        popup.setLatLng(featureEvent.latLng);
+        if (!popup.isOpen()) {
+          popup.setContent(featureEvent.data.name);
+          popup.openOn(map);
+        }
+      });
+
+      populatedPlaces.on(carto.layer.events.FEATURE_OUT, featureEvent => {
+        popup.removeFrom(map);
+      });
+
+      const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
+        operation: carto.operation.AVG
+      });
+
+      averagePopulation.on('dataChanged', data => {
+        refreshAveragePopulationWidget(data.result);
+      });
+
+      function refreshAveragePopulationWidget(avgPopulation) {
+        const widgetDom = document.querySelector('#avgPopulationWidget');
+        const averagePopulationDom = widgetDom.querySelector('.js-average-population');
+        averagePopulationDom.innerText = Math.floor(avgPopulation);
+      }
+
+      client.addDataview(averagePopulation);
+
+
+      const countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
+        limit: 100
+      });
+
+
+      countriesDataview.on('dataChanged', data => {
+        const countryNames = data.categories.map(category => category.name).sort();
+        refreshCountriesWidget(countryNames);
+      });
+
+      function refreshCountriesWidget(adminNames) {
+        const widgetDom = document.querySelector('#countriesWidget');
+        const countriesDom = widgetDom.querySelector('.js-countries');
+
+        countriesDom.onchange = event => {
+          const admin = event.target.value;
+          highlightCountry(admin);
+          filterPopulatedPlacesByCountry(admin);
+        };
+
+        // Fill in the list of countries
+        adminNames.forEach(admin => {
+          const option = document.createElement('option');
+          option.innerHTML = admin;
+          option.value = admin;
+          countriesDom.appendChild(option);
+        });
+      }
+
+      function highlightCountry(admin) {
+        let cartoCSS = `
+          #layer {
+            polygon-fill: #162945;
+            polygon-opacity: 0.5;
+            ::outline {
+              line-width: 1;
+              line-color: #FFFFFF;
+              line-opacity: 0.5;
+            }
+          }
+        `;
+        if (admin) {
+          cartoCSS = `
+            ${cartoCSS}
+            #layer[admin!='${admin}'] {
+              polygon-fill: #CDCDCD;
+            }
+          `;
+        }
+        europeanCountriesStyle.setContent(cartoCSS);
+      }
+
+      function filterPopulatedPlacesByCountry(admin) {
+        let query = `
+          SELECT *
+            FROM ne_10m_populated_places_simple
+            WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+        `;
+        if (admin) {
+          query = `
+            SELECT *
+              FROM ne_10m_populated_places_simple
+              WHERE adm0name='${admin}'
+          `;
+        }
+        populatedPlacesSource.setQuery(query);
+      }
+
+      client.addDataview(countriesDataview);
+    </script>
+  </body>
+</html>

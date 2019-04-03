@@ -4,13 +4,13 @@
       <div class="UpgradeElement-info">
         <p class="UpgradeElement-infoText u-ellipsLongText CDB-Text">
           <% if (quotaPer <= 0) { %>
-            You have reached your limits.
+            <%= _t('dashboard.components.upgrade_messages.limit_reached') %>
           <% } else { %>
-            You're reaching your account limits.
+            <%= _t('dashboard.components.upgrade_messages.limit_reaching') %>
           <% } %>
 
           <% if (upgradeableWithoutContactingSales) { %>
-            Upgrade your account to boost your quota.
+            <%= _t('dashboard.components.upgrade_messages.upgrade') %>
           <% } %>
         </p>
       </div>
@@ -18,16 +18,16 @@
         <% if (showTrial) { %>
           <div class="UpgradeElement-trial">
             <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-            <p class="UpgradeElement-trialText u-ellipsLongText CDB-Text">14 days Free trial</p>
+            <p class="UpgradeElement-trialText u-ellipsLongText CDB-Text"><%= _t('dashboard.components.upgrade_messages.free_trial') %></p>
           </div>
         <% } %>
         <% if (upgradeableWithoutContactingSales) { %>
           <a href="<%- upgradeUrl %>" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton CDB-Text">
-            <span>upgrade your plan</span>
+            <span><%= _t('dashboard.components.upgrade_messages.upgrade_plan') %></span>
           </a>
         <% } else { %>
-          <a href="mailto:sales@carto.com" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton CDB-Text">
-            <span>Contact Sales</span>
+          <a href="mailto:<%= _t('email_sales') %>" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton CDB-Text">
+            <span><%= _t('dashboard.components.upgrade_messages.contact_sales') %></span>
           </a>
         <% } %>
       </div>

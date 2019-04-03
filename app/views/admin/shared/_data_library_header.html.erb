@@ -12,23 +12,23 @@
 
         <% unless cartodb_com_hosted? %>
           <li class="Header-navigationItem js-user-tour u-hideOnTablet">
-            <a href="https://carto.com/builder/" class="Header-navigationLink">Builder</a>
+            <a href="https://carto.com/builder/" class="Header-navigationLink"><%= t('builder') %></a>
           </li>
 
           <li class="Header-navigationItem js-user-tour u-hideOnTablet">
-            <a href="https://carto.com/engine/" class="Header-navigationLink">Engine</a>
+            <a href="https://carto.com/engine/" class="Header-navigationLink"><%= t('engine') %></a>
           </li>
 
           <li class="Header-navigationItem js-user-industries u-hideOnTablet">
-            <a href="#/industries" class="Header-navigationLink js-dropdown-target">Solutions <i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
+            <a href="#/industries" class="Header-navigationLink js-dropdown-target"><%= t('admin.shared.data_lib.solutions') %><i class="Header-darrow CDB-IconFont CDB-IconFont-caretDown"></i></a>
           </li>
 
           <li class="Header-navigationItem u-hideOnTablet">
-            <a href="https://carto.com/pricing/" class="Header-navigationLink">Pricing</a>
+            <a href="https://carto.com/pricing/" class="Header-navigationLink"><%= t('pricing') %></a>
           </li>
 
           <li class="Header-navigationItem u-hideOnTablet">
-            <a href="https://carto.com/blog/" class="Header-navigationLink">Blog</a>
+            <a href="https://carto.com/blog/" class="Header-navigationLink"><%= t('blog') %></a>
           </li>
         <% end %>
       </ul>
@@ -43,7 +43,7 @@
         <% unless cartodb_com_hosted? %>
           <li class="Header-settingsItem">
             <a href="https://carto.com/signup" class="PublicButton PublicButton--sMedium PublicButton--cWhite is-hover PublicButton--public">
-              <span>Sign up</span>
+              <span><%= t('admin.shared.data_lib.signup') %></span>
             </a>
           </li>
         <% end %>

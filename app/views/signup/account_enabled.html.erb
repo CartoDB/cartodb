@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @user.username %> account enabled<% end %>
+<% content_for :title do %><%= @user.username %><%= t('signup.account.enabled') %><% end %>
 
 <div class="Sessions CDB-Text">
   <div class="Sessions-content">
@@ -7,13 +7,13 @@
         <div class="Sessions-center Sessions--centered">
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
-              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
             </picture>
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">Your account is active!</h1>
-            <p class="Sessions-description">Go to <%= link_to "your dashboard", @destination_url %> and start enjoying your CARTO account.</p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('signup.account.active') %></h1>
+            <p class="Sessions-description"><%= t('signup.account.goto') %><%= link_to "your dashboard", @destination_url %><%= t('signup.account.enjoy') %></p>
           </div>
         </div>
       </div>

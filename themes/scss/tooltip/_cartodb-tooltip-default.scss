@@ -1,0 +1,82 @@
+// Tooltip styles
+// ----------------------------------------------
+
+.CDB-Tooltip-wrapper {
+  display: none;
+  position: absolute;
+  z-index: 1; // makes tooltips visible with Google Maps
+  min-width: 120px;
+  max-width: 180px;
+  border-radius: 4px;
+  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  &.CDB-Tooltip-wrapper--topLeft {
+    border-top-left-radius: 0;
+  }
+  &.CDB-Tooltip-wrapper--topRight {
+    border-top-right-radius: 0;
+  }
+  &.CDB-Tooltip-wrapper--bottomLeft {
+    border-bottom-left-radius: 0;
+  }
+  &.CDB-Tooltip-wrapper--bottomRight {
+    border-bottom-right-radius: 0;
+  }
+}
+
+/* fix migration old tooltips */
+.CDB-Tooltip-wrapper .cartodb-tooltip-content-wrapper {
+  padding: 20px 24px;
+  background: #FFF;
+  font-family: 'Open Sans';
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
+  z-index: 50;
+  &.dark {
+    background: #2E3C43;
+    color: #FFF;
+    h4 {
+      color: rgba(#FFF, 0.64);
+    }
+  }
+  h4 {
+    margin-top: 8px;
+    color: #636D72;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 15px;
+    text-transform: uppercase;
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+  p {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+  }
+}
+
+.CDB-Tooltip {
+  padding: 20px 24px;
+  font-family: 'Open Sans';
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
+  z-index: 50;
+}
+.CDB-Tooltip-listItem {
+  margin-top: 8px;
+  &:first-child {
+    margin-top: 0;
+  }
+}
+.CDB-Tooltip-listTitle {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+.CDB-Tooltip-listText {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}

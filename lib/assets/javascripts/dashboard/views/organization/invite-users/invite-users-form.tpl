@@ -3,15 +3,15 @@
 <form class="Form InviteUsers-formContent js-invitesForm">
   <div class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
-      <label class="Form-label">Users email</label>
+      <label class="Form-label"><%= _t('dashboard.views.organization.invite_users.users_email') %></label>
     </div>
     <div class="Form-rowData Form-rowData--longer">
-      <div class="Form-tags js-tags" data-title="Separate emails by commas">
+      <div class="Form-tags js-tags" data-title="<%= _t('dashboard.views.organization.invite_users.separate') %>">
         <ul class="Form-tagsList js-tagsList"></ul>
       </div>
     </div>
     <div class="Form-rowInfo">
-      <p class="Form-rowInfoText Form-rowInfoText--error Form-rowInfoText--multipleLines js-emailError">That email is already used in this organization</p>
+      <p class="Form-rowInfoText Form-rowInfoText--error Form-rowInfoText--multipleLines js-emailError"><%= _t('dashboard.views.organization.invite_users.email_used') %></p>
     </div>
   </div>
 
@@ -31,11 +31,11 @@
     </div>
     <div class="Form-rowData Form-rowData--longer InviteUsers-userType">
       <div class="Toggler js-toggler InviteUsers-userTypeToggler <% if (!viewerEnabled) { %>is-disabled<% } %>"
-             <% if (!viewerEnabled) { %>title="You can't send viewer invitations because you don't have viewer seats"<% } %>>
+             <% if (!viewerEnabled) { %>title="<%= _t('dashboard.views.organization.invite_users.no_viewers') %>"<% } %>>
         <input type="checkbox" id="InviteUsers-userType" name="viewer" class="js-input" <% if (!viewerEnabled) { %>disabled="disabled"<% } %>/>
         <label for="InviteUsers-userType"></label>
       </div>
-      <div class="Form-label">Viewer users can only read, not write, data and maps</div>
+      <div class="Form-label"><%= _t('dashboard.views.organization.invite_users.read_only') %></div>
     </div>
   </div>
 
@@ -43,7 +43,7 @@
     <div class="Dialog-footer InviteUsers-formFooter">
       <div><%/* placeholder for flex layout */%></div>
       <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit">
-        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Invite users</span>
+        <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.organization.invite_users.invite_users') %></span>
       </button>
     </div>
   </div>

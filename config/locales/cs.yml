@@ -1,0 +1,633 @@
+﻿# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+cs:
+  email:
+    title: 'E-mail nebo uživatelské jméno'
+    placeholder: 'E-mail nebo uživatelské jméno'
+  password: 'heslo'
+  carto_name: 'CARTO'
+  maps: 'mapy'
+  datasets: 'datasety'
+  builder: 'Builder'   		#???
+  engine: 'Engine'
+  mobile: 'mobilní aplikace' #ověřit
+  product: 'Produkt'
+  pricing: 'Cenová politika'    
+  solutions: 'Řešení'
+  blog: 'Blog'
+  safari: 'Safari'
+  chrome: 'Chrome'
+  firefox: 'Firefox'
+  name: 'Jméno'
+  description: 'Popis'
+  platform: 'Platforma'
+  here: 'zde'
+  signup_url: 'https://carto.com/signup'
+  day:
+    one: 'den'
+    few: 'dny'
+    other: 'dnů'
+  map:
+    zero: 'mapy'
+    one: 'mapa'
+    few: 'mapy'
+    other: 'map'
+  dataset:
+    zero: 'datové sady'
+    one: 'datová sada'
+    few: 'datové sady'
+    other: 'datových sad'
+  sessions:
+    new:
+      login: 'Přihlásit se'
+      or_login_with: 'NEBO PŘIHLÁSIT SE POMOCÍ'
+      dont_have_account: "Nemáte ještě zřízený účet?"
+      not_member: 'Nejste členem organizace %{org_name}? Zkuste se místo toho přihlásit <a href="%{login_url}">obecným účtem</a>.'
+      use_email: "Pamatujte prosím, že k přihlášení do vašeho účtu se musíte přihlásit e-mailem patřícím k dané organizaci."
+      forgot: 'Nepamatujete si heslo?'
+      signup: 'Registrace'
+    account_error:
+      user: 'Uživatel '
+      auth_error: ' chyba přihlášení'
+      validate_account: 'Musíte potvrdit Váš e-mailový účet.'
+      check_email: 'Prosím zkontrolujte Vaší e-mailovou schárnku a klikněte na tlačítko "Aktivovat Váš účet" v úvítacím mailu.'
+      resend_valid: "Pokud jste neobdrželi Váš registrační mail, klikněte <a href=\"%{validation_url}\">zde</a> a nový email bude automaticky odeslán."
+    multifact:
+      use_google: 'K naskenování QR kódu použijte aplikaci Google Authenticator.'
+      qr_problem: 'Pokud máte problém s QR kódem,'
+      try_manual: 'zkuste zadat kód ručně'
+      scan_qr: 'Pokud máte nějaký problém, můžete naskenovat QR kód.'
+      try_qr: 'Zkuste s QR kódem'
+      verify: 'Ověřte'
+      conf_issues: 'Pokud máte s konfigurací nějaké problémy, můžete '
+      skip: 'tento krok přeskočit'
+  admin:
+    client_apps:
+      api_key:
+        your_api_keys: 'Vaše API klíče |'
+      api_keys_cta:
+        unlock: 'Uvolněte potenciál Vaši aplikací'
+        create: 'Vytvářejte řešení použitím různých doplňků a API.'
+        engine: 'Engine'
+        free: 'Zdarma pro osobní a nekomerční užití'
+        discover: 'Prozkoumej'
+        incloud: 'V cloudu nebo na vlastních strojích'
+        enterprise: 'Přístup k enterprise BI konektorům'
+        fullapi: 'Přístup k plnému API'
+        payseat: 'Platby dle počtu vývojářů'
+      api_keys_form:
+        your_api: 'Váš API klíč'
+        no_api_key: 'Žádný API klíč'
+        request_new: 'Požadavek na nový API klíč'
+        example_write: 'Příklad zápisu'
+        example_read: 'Příklad soukromého čtetní' #Example read private ???
+        config_api: 'Konfigurovat API klíče od externích dodavatelů'
+        google_maps: 'Google Mapy'
+        google_maps_query: 'Toto je váš dotazový Google řetězec, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
+        google_maps_query_org_1: 'Toto je '
+        google_maps_query_org_2: ' dotazový Google řetězec, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
+        google_maps_org_api: 'Toto je Google Mapy API klíč organizace'
+        learn_more: 'Naučte se víc o autorizační místní aplikaci a správě API klíčů '
+      oauth:
+        your_oauth: 'Vaše OAuth doklady |'
+        approve: 'Potvrďte aplikaci, aby vykonávala akce svým jménem beze sdílení Vašeho hesla'
+        consumer_key: 'Zákaznický klíč'
+        learn_more: 'Zjistěte více o '
+        using_oauth: 'použití oauth v Cartu'
+        here: 'zde'
+        consumer_secret: 'Zákazníkově tajemství' ## tohle chci ještě vidět
+        request_token: 'Požadavku na URL token' ## tohle chci ještě vidět
+        access_token: 'Přístupu k URL tokenu' ## tohle chci ještě vidět
+        learn_more: 'Naučte se víc o autorizační místní aplikaci a správě API klíčů '
+        gen_keys: 'Generovat nové klíče'
+        author_link: 'https://carto.com/developers/fundamentals/authorization/'
+    orgs:
+      auth:
+        white_eml: 'Whitelist emailových domén'
+        valid_domains: 'Pouze platné domény, wildcar (*) jsou akceptovány (např. *.carto.com)'
+        if_empty: 'Pokud zůstané prázdné, stránky a přihlášení a registraci zůstanou zablokovány'
+        usr_pwd: 'Uživatelské jméno / heslo'
+        login_email: 'Dovolte uživatelům registrovat se pomocí jejich uživatelského jména a emailového potvrzení'
+        login_google: 'Dovolte uživatelům registrovat se pomocí jejich Google účtu'
+        login_github: 'Dovolte uživatelům registrovat se pomocí jejich GitHub účtu'
+        strong_pwd: 'Silná hesla'
+        pwd_cond: 'Heslo musí obsahovat 8 znaků v kombinaci písmen, čísel a/nebo speciálních znaků.'
+        pwd_exp: 'Platnost hesla'
+        unlimited: 'Neomezená'
+        save: 'Ulož změny'
+      ldap:
+        config: 'LDAP konfigurace'
+        host: 'Host'
+        port: 'Port'
+        encryption: 'Šifrování'
+        certif: 'Soubor s certifikátem (pokud je)'
+        ssl: 'SSL verze'
+        conn_user: 'Uživatelské připojení' ## tohle chci ještě vidět
+        conn_pwd: 'Heslo připojení'
+        id_fld: 'Pole uživatelské ID'
+        name_fld: 'Pole Uživatelské jméno'
+        eml_fld: 'Pole Email uživatele'
+        domain: 'Doménové základny' ## tohle chci ještě vidět ???, fakt nevím co jsou domain bases
+        search: 'Přídavný filtr vyhledávání'
+        usr_cls: 'User object class' ## to když přeložím, tak nevím jestli bude jasný co to je, kdyžtak to pak přeleštíme
+        grp_cls: 'Group object class'
+      notif:
+        desc: 'Popis upozornění'
+        sup_markup: 'Podporovaní značkování'
+        send_to: 'Poslat:'
+        store_up_to: '(uchovává až 12 nejpoužívanějších upozornění)'
+        remove: 'Odebrat všechny uživatele'
+      settings:
+        img_size: 'Doporučená velikost obrázku je 128x128 pixelů.'
+        display_name: 'Zobrazené jméno'
+        check_your: 'Zkountrolujte Vaší '
+        public_page: 'veřejnou stránku'
+        website: 'Webobou stránku'
+        twitter_name: 'Uživatelské jméno Twitteru'
+        disqus_name: 'Diskuzní přezdívka'
+        be_notif: 'Buďtě upozorněn na nové komentáře na Vašich stránkách'
+        int_eml: 'Email interné podpory'
+        eml_support: 'Email, který použijete při podpoře Vašich uživatelů'
+        def_quota: 'Výchozí kvóta nového uživatele'
+        set_quota: 'Nastavte (v MB) kvótu pro nové uživatele Vaší organizace'
+        usr_keys: 'API key uživatelů'
+        regen_keys: 'Znovuvygenerovat všechny API klíče'
+        involv_keys: 'Toto zahrnuje všechny API klíče uživatelů organizace'
+        config_keys: 'Konfigurovat API klíče od externích poskytovatelů'
+        google_query: 'Dotazový řetězec Google Map'
+        this_is: 'Toto je '
+        google_change_q: ' dotazový řetězec Google Map. Kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
+        google_key: 'Google Map soukromý klíč'
+        google_change_k: ' soukromý klíč Google Map, kontaktujte <a href="mailto:support@carto.com">support@carto.com</a> ke změně.'
+        save: 'Uložit změny'
+        del_org: 'Smazat organizaci'
+        sure: 'Jste si jistý?'
+        del_org_data: 'Smazat organizaci včetně všech uživatelů a uživatelských dat.'
+    org_users:
+      form:
+        user_once: "Jakmile vyberete uživatelské jméno, nebudete moci jej změnit."
+        invalid_eml: 'Neplatný email'
+        choose_eml: 'Doporučujeme použí email z Vaší organizace.'
+        new_pwd: 'Nové heslo'
+        pwd_conf: 'Potvrďte heslo'
+        user_type: 'Typ uživatele'
+        builder: 'Tvůrce '
+        build: 'Vytvářet a číst'
+        viewer: 'Divák '
+        org_owner_const: 'Vlastník organizace nemůže být pouze divák.'
+        org_admin_const: 'Administrátoři ogranizace mohou být pouze tvůrčí uživatelé.'
+        no_viewers: "Nemáte aktivovaná divácká místa. " ### Případně diváka můžeme změnit
+        contact_support: '<a href="mailto:enterprise-support@carto.com">Kontaktujte podporu</a> pro více informací.'
+        only_read: 'Pouze ke čtení'
+        can_manage_usrs: 'Uživatal má povolení spravovat uživatele a skupiny a zasílat oznámení'
+        assign_admin: 'Pouze vlastník organizace může přiřadit administrátorská práva'
+        used: 'Používáno uživatelem'
+        assigned: 'Přiřazeno uživateli'
+        total: 'Celkem'
+        upgrade: 'rozšiřte Váš účet</a> pokud je třeba.'
+        ex_geocoding: "Uživatel má povoleno překročit organizační geocoding kvótu" ## tady bych očekoval ty geocofing, isoline, Mapzen atp. Páč o tom nemám šajn
+        no_extra_quota: "Nemůžete použít extra kvótu. Kontaktujte podporu pro více informací"
+        ex_isolines: "Uživatelé mají povoleno překročit organizační isoline kvótu stanovenou od tohoto poskytovatele"
+        ex_routing: "Uživatelé mají povoleno překročit organizační routing kvótu od posktyovatele Mapzen"
+        ex_twitter: "Uživatelé mají povoleno překročit organizační Twitter příspěvky"
+        master_key: 'Uživatelský master API klíč'
+        regen_keys: 'Znovuvygenerovat všechny API klíče'
+        no_seats: "Nemůžete vytvářet nové uživatele, protože Vám došla divácká místa. "
+        del_usr: 'Smazat uživatele'
+        save: 'Uložit změny'
+        username: 'Uživatelské jméno'
+        nameinvalid: 'Uživatelské jméno je neplatné'
+        email: 'e-mail'
+        admin: 'Administrátor'
+        multi_auth: 'Více-faktorové ověřování'
+        change_multi_warn: 'Pokud změníte více-faktorové ověřování, tak bude dostupné jen pro tohoto uživatele. V tom případě bude uživatel odhlášen a přesměrován na přihlašovací stránku.'
+        ext_here_iso: 'Navíc vrstevince Here'
+        ext_route_api: 'Navíc volání Routing API'
+        ext_tweets: 'Navíc tweety'
+        ext_geocoding: 'Geokódování navíc'
+        new_pwd_conf: 'Potvrďte nové heslo'
+        user_quotas: 'Uživatelské kvóty'
+        create_user: 'Vytvořit uživatele'
+      new:
+        user: 'Nový uživatel'
+    pages:
+      shared:
+        tags:
+          browse: 'Prohlížet podle tagu' ##Procházet?
+      pub_data:
+        data_by: 'CARTO · Datasety podle '
+      pub_maps:
+        maps_by: 'CARTO · Mapy podle '
+      usr_feed:
+        pub_feed: ' veřejný profil'
+        member_since: 'Členem od '
+    shared:
+      api_keys:
+        new_app: 'Nová aplikace'
+        private: 'Nejjednodušší cesta k Vašim soukromým datům'
+      data_lib:
+        solutions: 'Řešení '
+        signup: 'Zaregistrovat se'
+      footer:
+        footer: ' Zápatí '
+        guides: '<a href="https://carto.com/learn/guides/">Průvodci</a>'
+        developers: '<a href="https://carto.com/developers">Vývojáři</a>'
+        version: 'Verze: %{version}'
+        support: '<a href="mailto:support@carto.com">Podpora</a>'
+        onpremise: '<a href="mailto:onpremise-support@carto.com">Podpora</a>'
+        contact: '<a href="mailto:contact@carto.com">Kontakt</a>'
+      nores:
+        no_items: "%{name} nemá na této stránce žádné položky"
+        try_instead: 'Zkuste místo toho %{link}'
+        first_page: 'první stránku'
+        no_public: "%{name} ještě nemá žádné veřejné %{item_type}"
+        maybe: 'Ale možná má nějaké zajímavé %{item_type}'
+      org_subhead:
+        profile: 'Profil organizace'
+        settings: 'Nastavení oprávnění'
+        users: ' uživatelé'
+        groups: 'Skupiny'
+        notif: 'Oznámení'
+        billing: 'Účtování'
+      pages_subhead:
+        profile: 'Profil'
+        account: 'Účet'
+        api_keys: 'API klíče'
+        billing: 'Účtování'
+        settings: 'Nastavení organizace'
+        support: 'Kontaktovat podporu'
+        admin: 'Kontaktovat Vašeho ogranizačního administrátora'
+        vip: 'Kontaktovat Vaší VIP podporu'
+        issues: 'Máte potíže?'
+      pub_footer: #### tady nevím co všechno tam necháme, takže přeskakuji než vyleštím kód
+        subscribe: 'Přihlásit k odběru'
+        keepup: 'Držte krok s novinkami CARTO'
+        location: 'Umístění datových službe'
+        observ: 'Data dispečink'
+        source: 'Zdrojový kód'
+        banking: 'Bankovnictví a finance'
+        bi: 'BI & Analytics' #### tady nevím co všechno tam necháme, takže přeskakuji než vyleštím kód
+        government: 'Government'
+        real: 'Real Estate'
+        web: 'Web Development'
+        journal: 'Journalism'
+        natural: 'Natural Resources'
+        earth: 'Earth Observation'
+        noprofit: 'Non-profits'
+        education: 'Education'
+        connectors: 'Connectors'
+        dropbox: 'Dropbox'
+        google: 'Google Drive'
+        twitter: 'Twitter Maps'
+        mailchimp: 'MailChimp'
+        excel: 'Excel Data'
+        arcgis: 'ArcGIS™'
+        satellite: 'Satellite Imagery'
+        qlik: 'Qlik'
+        splunk: 'Splunk'
+        alteryx: 'Alteryx'
+        discover: 'Discover'
+        map_gallery: 'Map Gallery'
+        explore: 'Explore'
+        ambassadors: 'Ambassadors'
+        learn: 'Learn'
+        guides: 'Guides'
+        developers: 'Developers'
+        academy: 'The Map Academy'
+        resources: 'Resources Center'
+        webinars: 'Webinars'
+        about: 'About us'
+        team: 'Team'
+        jobs: 'Jobs'
+        press: 'Press'
+        partners: 'Partners'
+        attr: '<a class="Footer-link" href="https://carto.com/attributions">Attributions</a>'
+        contrib: 'Contributions'
+        contact: 'Contact us'
+        demo: 'Request a Live Demo'
+        terms: 'Terms of Service'
+        legal: 'Legal'
+      pub_head:
+        solutions: 'Řešení '
+        login: 'Přihlásit se'
+        signup: 'Registrace'
+      sess_head:
+        not_part: 'Není částí '
+        goto: ' Jdi na '
+      trial:
+        period: "Zatím jste nevyčerpal Vaší 30 denní testovací lhůtu. Přidejte informace k vyúčtování a nádále používejte naší platformu." ## Tady asi možná bude třeba měnit
+        method: 'Přidat platební metodu'
+      vis_head:
+        edit: 'Editovate metadata…'
+        visual: 'VIZUALIZOVAT'
+    users:
+      lockout:
+        welcome: 'Vítejte zpět,'
+        end_trial: "Vyčerpali jste Vaší 30 denní testovací lhůtu."
+        upgrade: "By upgrading, you'll be able to continue using CARTO. Our Professional plan is a great fit for occasional use, and our Enterprise plans offer access to the Data Observatory, private sharing, custom connectors, and business-strength data services." ## přeložímu bude-li třeba zamykat účty.
+        preserve_1: 'Your account and data will be preserved for '
+        preserve_2: ', so that upon upgrade you will regain access to the data and maps.'
+        student: "If you're a student or an ambassador, remember you can also qualify for our "
+        community: 'Community Program'
+        preserve_3: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
+        contact: 'CONTACT SALES'
+        payment: 'ADD PAYMENT METHOD'
+        delete: 'DELETE ACCOUNT'
+    visual:
+      public:
+        old_public:
+          create: 'Vytvořte své vlastní mapy'
+          terms: 'Podmínky použití'
+          privacy: 'Zásady bezpečnosti'
+      embed_map:
+        map_created: 'Mapa vytvořená uživatelem #{@name}'
+        upgrade_browser: 'Tato vizualizace funguje pouze v moderních prohlížečích. Upgradujte Váš a užívejte.'
+        attributions: "Carto <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
+        logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
+      embed_error:
+        title: 'Zapouzdřená chyba | CARTO'
+        private: 'Vypadá to, že tato mapa byla nastavená jakou soukromá nebo již neexistuje'
+      embed_pwd:
+        protected: 'Chráněné zakotvení' ## nevím jak líp embed přeložit, můžeme to změnit
+        passwd: 'Toto zakotvení je chráněno heslem'
+      public_data:
+        maps: 'Mapa používá tento dataset'
+      public_map:
+        datasets: 'Používané datasety'
+        more: 'Více z '
+      public_pwd:
+        protected: 'Chráněné mapy'
+        passwd: 'Tyto mapy jsou chráněné heslem'
+  carto:
+    admin:
+      mobile:
+        form:
+          icon: 'Ikona aplikace'
+          recommended: 'Doporučená velikost obrázku je 128x128 pixelů.'
+          type: 'Typ aplikace'
+          license: 'Licenční klíč'
+          api: 'Váš API klíč'
+          quota: 'Kvóta aplikace'
+          monthly: ' měsíčně uživatelů'
+          delete: 'Smazat aplikaci'
+          sure: 'Jste si jistý?'
+          this: 'Smazat tuto aplikaci'
+        mobile:
+          expand: 'Rozšíření kvóty'
+          open: ' měsíčně otevřených uživatelů' ##omrknout
+          private: ' měsíčně soukromých uživatelů'
+        new:
+          new_mobile: 'Nová mobilní aplikace |'
+          new_app: 'Nová aplikace'
+        no_mobile:
+          no_app: 'Zatím jste nepřidal žádnou aplikaci.'
+          learn: 'Zjistěte více o síle našeho mobilního SDK ' ##taky doufám, že se nebudeme prezentovat jako tvůrce nějakého SDK!
+    builder:
+      public:
+        embeds:
+          show:
+            untitled: 'Nepojmenovaná mapa'
+            created: 'Mapa vytvořená '
+            in_carto: ' v CARTO'
+          protected:
+            map: 'Mapa chráněná heslem — CARTO'
+            passwd: 'Tato mapa je chráněna heslem'
+            contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
+    oauth:
+      consent:
+        title: 'CARTO · OAuth ověření'
+  datalib:
+    index:
+      datalib: 'CARTO · Datová knihovna'
+      incorporate: 'CARTO umožňuje vizualizovat velké datové sady.'
+      keywords: 'location intelligence, dataset, big data, location services'
+      information: 'Z Vašich nahraných dat můžete pomocí jediného kliknutí přistupovat k datovým souborům, které obsahují širokou škálu informací.'
+      disparate: 'Z Vaší nástěnky můžete přistupovat ke spoustě datasetů z Knihovny. Máme data pro Vaše rozličné potřeby.'
+      aggregated: "Dali jsme dohromady mnoho zdrojů dat, abychom Vám umožnili prohlížet a odhalovat datasety, které sedí právě Vám."
+      seamless: 'Díky otevřeným datům můžete začít bezproblémově mapovat svět kolem Vás.'
+  explore:
+    index:
+      explore: 'CARTO &mdash; Prozkoumat'
+      discover: 'Prozkoumávejte skrze mapy, data vizualizace a datasety. Všechna velká data na jedno kliknutí.'
+  geocoder:
+    finished:
+      msg1: "Uspěšně geokódováno "
+      msg2: ' zbývá ještě ' ## nutno omrknout to počítání i geokódování
+      msg3: ' bodů z '
+      errors: "Negeokódované řádky mohou obsahovat neplatné hodnoty v jejich sloupcích nebo nexistující odkazy mimo naše data. "
+      try_again: 'Zkuste zaškrtnout "Přepsat všechny hodnoty" checkbox pro ty řádky, které chcete geokódovat znovu.'
+  home:
+    app_diag:
+      diag: 'GEMORAVA Diagnostika'
+      dependencies: 'Tato stránka zobrazuje informace o Vaší instalaci CARTO a dalších závislostech. Pokud jakákoliv kontrola zobrazí chybu, prosím zkontrolujte instrukce a nainstalujte podporované verze.'
+      problem: 'Pokud máte nějaké problémy s instalací CARTO, napište na '
+      google: 'CARTO Google Group'
+      include: ' včetně této informace.'
+  import:
+    data:
+      msg1: 'Váš dataset '
+      msg2: ' byl úspěšně importován'
+      error: 'Objevila se chyba při importu datasetu '
+      out: ' z ' #zase omrknout počty
+      imported: ' bylo úspěšně importováno.'
+  layouts:
+    keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
+    app_passwd:
+      title: ' | CARTO'
+      contact: 'Kontaktujte vlastníka, chcete-li k ní mít přístup.'
+    explore:
+      keywords: 'carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets'
+      map_moment: 'Náhodná mapa'
+    frontend:
+      desc: 'Vytvářejte dynamické mapy, analyzujte a vytvářejte místní geoaplikace z Vašech dat pomocí síly PostGISu.'
+    front_layout:
+      title: 'CARTO | Přihlášení'
+  mailer:
+    footer:
+      msg: 'CARTO · Made in ???' # No, nevím jak s tím tvářením se, že to není carto.
+  oauth:
+    author:
+      msg1: ' se chce připojit do Vaší CARTO databáze. To znamená, že '
+      msg2: ' bude moci modifikovat, vytvářet a mazat pole z Vaší databáze.'
+      authorize: 'Potvrdit přístup'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
+    failure:
+      denied: 'Přístup odepřen'
+      msg1: 'Zamítl jste oauth přístup pro '
+      msg2: '. Toto nastavení můžete změnit později.'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
+    success:
+      accept: 'Přístup povolen'
+      msg: 'Povolil jste požadavek'
+      forgot: 'Zapomenuté heslo?'
+      create: 'Vytvořit účet'
+  org_mailer:
+    invite:
+      hello: 'Ahoj a vítejte!'
+      join: 'Připojte se k '
+      org: ' ogranizaci v CARTO. Jen '
+      create: 'vytvořte Váš účet'
+      carto: 'CARTO je ??? CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.' #??? zde ještě bude dobré něco doplnit
+      resources: 'Zde jsou nějaké zdroje:' #ověřit
+      helpcenter: 'Centrum pomoci'
+      faqs: ': FAQ, průvodce a tutoriály.'
+      devcenter: 'Developerské centrum'
+      guides: ': Dokumentace pro vývojáře.'
+      rescenter: 'Centrum zdrojů'
+      case: ': Případové studie, webináře and další.'
+      videos: 'Tréninková Builder videa: '
+      analysis: 'Analýza'
+      widgets: 'Widgety'
+      publishing: 'Publikování'
+      message: 'Níže je personalizovaná zpráva Vašeho adminstrátorského účtu:'
+    quota:
+      title: 'Překročil jste kvótu!'
+      hey: 'Vítej zde,'
+      growing: "Vypadá to, že Váš tým se rychle rozrůstá a došlo Vám místo."
+      reminder: 'Toto je přátelské upomenutí, že Vaše organizace <strong>překročila kvótu</strong>. Můžete upgradovat Váš účet či si pořídit více místa k prokračování s kapacitou, kterou potřebujete.'
+      upgrade: 'Upgrade Vašeho účtu je skutečně jednoduchý, stačí '
+      contact: 'kontaktovat jednoho z našich obchodníků.'
+      meantime: "V mezičase se můžete podívat na několik báječných věcí, na kterých pracujeme "
+      thanks: 'Díky a šťastné mapování'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
+    seat:
+      title: 'Žádná další divácká místa!'
+      hey: 'Vítej zde,'
+      growing: "Vypadá to, že Váš tým se rychle rozrůstá a došlo Vám místo."
+      reminder: 'Toto je přátelské upomenutí, že Vaše organizace už <strong>nemá žádná volná</strong> divácká místa. Můžete si pořídit více míst k prokračování s kapacitou, kterou potřebujete.'
+      obtain: 'Získat více míst je vážně jednoduché: stačí '
+      contact: 'kontaktovat jednoho z našich obchodníků.'
+      meantime: "V mezičase se můžete podívat na několik báječných věcí, na kterých pracujeme "
+      thanks: 'Díky a šťastné mapování'
+      getmore: 'Získat další místa'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
+  password_change:
+    edit:
+      reset: 'Resetovat heslo'
+      current: 'Vepište současné heslo'
+      new: 'Vaše nové heslo'
+      retype: 'kontrola hesla'
+      noaccount: "Nemáte ještě účet? "
+      signup: 'Registrace'
+  password_reset:
+    form:
+      title: 'Resetovat heslo'
+    changed:
+      title: 'Heslo změněno'
+      success: 'Vaše heslo bylo úspěšně změněno'
+    edit:
+      password: 'Heslo'
+      retype: 'Přepište heslo'
+      save: 'Uložit'
+    message:
+      signin: 'Přihlásit se'
+      homepage: 'Zpět na domovskou stránku'
+    new:
+      title: 'Váš e-mail'
+      placeholder: 'Váš e-mail'
+      instructions: 'Poslat instrukce'
+    sent:
+      title: 'Heslo odesláno'
+      email_sent: 'Poslali jsme vám e-mail'
+      desc: 'V něm jsou instrukce, jak vstoupit na váš účet a heslo (případně) změnit.'
+  shared:
+    signup:
+      sign: ' zaregistrovat se'
+      account: 'Váš účet se vytváří'
+      time: 'Potrvá to nějaký čas, snad pár sekund.'
+    sign_issue:
+      issue: ' potíže s registrací'
+      please: 'Prosím, '
+      contact: 'kontaktujte administrátora '
+      process: ' k registraci.'
+      admin: 'Prosím, kontaktujte administrátora '
+  signup:
+    already:
+      enabled: 'Účet již aktivován'
+      active: 'Váš učet je již aktivován'
+      login: 'Přihlášte se'
+      enjoy: ' a užívejte Váš CARTO účet.'
+    account:
+      enabled: ' účet aktivován'
+      active: 'Váš účet je aktivní!'
+      goto: 'Jďete na '
+      enjoy: ' a užívejte Váš CARTO účet.'
+    resend:
+      valid: ' kontrola emailem' ### zjistit jestli je to dobře
+      new: 'Nový potvrzující email odeslán'
+      sent: 'Právě jsme Vám odeslali nový potvrzující email, prosím zkontrolujte Vaši doručenou poštu.'
+    signup:
+      sign: ' zaregistrovat se'
+      datagov: 'Převést tento dataset z Data.gov na nádhernou mapu ve vteřině.'
+      provider1: 'Převést tento dataset z '
+      provider2: ' na nádhernou mapu ve vteřině.'
+      dataset: 'Převést tento dataset na nádhernou mapu ve vteřině.'
+      email: 'email'
+      passwd: 'Heslo'
+      org: 'Prosíme, použijte email náležející této organizaci.' ###tohle a násl. Řádky překontrolovat
+      clicking: 'Zaškrtnutím "sign up" příjmáte '
+      service: ' služeb a '
+      username: 'Uživatelské jméno'
+  sync:
+    max:
+      automatic: 'Automatická synchronizace Vašich datasetů '
+      maximum: " dosáhla maximálního možného počtu synchronizačních pokusů a stále neúspěšně."
+      continue: "Pokud chcete nadále pokračovat, přihlašte se do Vašeho účtu a manuálně aktivujte synchronizaci kliknutím na “Sync now”" ##opět kontrola třebná
+      info: 'Pro více informací o chybovém hlášení a možné řešení, '
+      click: 'klikněte zde.'
+  user:
+    new:
+      invited: 'Byl jste pozván do CARTO jako část'
+      login: ' organization. Prosím přihlašte se na Vaši nástěku Vaším ogranizačním uživatelksým jménem '
+      passwd: ' a heslem '
+      provided: 'které Vám dal poskytovatel.'
+      entered: 'vložili jste'
+      soon: ' jakmile aktivujete Váš účet'
+      resources: 'Zde jsou nějaké zdroje:' #ověřit
+      devcenter: 'Developerské centerum'
+      guides: ': Průvodce, FAQ a tutoriály'
+      rescenter: 'Centrum zdrojů'
+      case: ': Případové studie a nápady pro inspiraci'
+      videos: 'Tréninková Builder videa: '
+      analysis: 'Analýza'
+      widgets: 'Widgety'
+      publishing: 'Publikování'
+      contact: 'Pokud jste neobrdželi Vaše heslo, kontaktujte administrátora na '
+      goto: 'Přejít na nástěnku' ## omrknout přeložení toho Dashboardu tady
+      activate: 'Aktivujte Váš účet'
+    stable:
+      dataset: 'Dataset sdílený s Vámi'
+      colleague: 'Váš kolega '
+      shared: ' nasdílel nový dataset s názvem '
+      with: ' s Vámi.'
+      view: 'Prohlédnout dataset'
+    svisual:
+      map: 'Mapa sdílená s Vámi.'
+      colleague: 'Váš kolega '
+      shared: ' nasdílel novou mapu s názvem '
+      with: ' s Vámi.'
+      view: 'Prohlédnout mapu'
+    ltable:
+      like: ' líbí se dataset '
+      view: 'Vidělo dataset.'
+    trending:
+      your: ' Váš '
+      received: ' získal více než '
+      map: ' zobrazení map'
+      view: 'Prohlédnout mapu'
+    utable:
+      colleague: 'Váš kolega '
+      stopped: ' přestal sdílet dataset '
+      with: ' s Vámi, tak zmizí z Vaši datasetů a map, které používáte.'
+    uvisual:
+      colleague: 'Váš kolega '
+      stopped: ' přestal sdílet mapu '
+      with: ' s Vámi, tak zmizní z nástěnky.'
+  controllers:
+    admin:
+      org_users:
+        create_success: 'Nový uživatel úspěšně vytvořen'
+        save_success: 'Změny byly v pořádku uloženy.'

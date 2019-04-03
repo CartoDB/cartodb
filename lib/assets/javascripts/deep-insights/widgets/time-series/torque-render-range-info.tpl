@@ -1,5 +1,5 @@
 <p class="CDB-Text CDB-Size-large u-iBlock">
-  Selected from
+  <%= _t('deep_insights.widgets.sel_from') %>
 </p>
 <p class="CDB-Text CDB-Size-large u-secondaryTextColor u-iBlock">
   <%- timeFormatter(startDate) %>

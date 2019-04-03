@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @user.username %> email validation<% end %>
+<% content_for :title do %><%= @user.username %><%= t('signup.resend.valid') %><% end %>
 
 <div class="Sessions CDB-Text">
   <div class="Sessions-content">
@@ -7,13 +7,13 @@
         <div class="Sessions-center Sessions--centered">
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
-              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+              <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
             </picture>
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">New validation email sent</h1>
-            <p class="Sessions-description">We have just sent a new account validation email, please check your inbox.</p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('signup.resend.new') %></h1>
+            <p class="Sessions-description"><%= t('signup.resend.sent') %></p>
           </div>
         </div>
       </div>

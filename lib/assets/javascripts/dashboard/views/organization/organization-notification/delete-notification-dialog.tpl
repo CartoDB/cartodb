@@ -11,18 +11,18 @@
         <input name="authenticity_token" type="hidden" value="<%- authenticityToken %>" />
         <input name="_method" type="hidden" value="delete" />
 
-        <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl">You are about to remove a notification</h2>
-        <p class="CDB-Text CDB-Size-large u-altTextColor">Are you sure you want to remove it?</p>
+        <h2 class=" CDB-Text CDB-Size-huge is-light u-bSpace--xl"><%= _t('dashboard.views.organization.org_notif.about_remove') %></h2>
+        <p class="CDB-Text CDB-Size-large u-altTextColor"><%= _t('dashboard.views.organization.org_notif.sure') %></p>
 
         <ul class="Modal-listActions u-flex u-alignCenter">
           <li class="Modal-listActionsitem">
             <button class="CDB-Button CDB-Button--secondary CDB-Button--big js-cancel">
-              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Cancel</span>
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%= _t('dashboard.views.organization.org_notif.cancel') %></span>
             </button>
           </li>
           <li class="Modal-listActionsitem">
             <button class="CDB-Button CDB-Button--primary CDB-Button--big js-submit">
-              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase">Ok, remove it</span>
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-upperCase"><%= _t('dashboard.views.organization.org_notif.ok') %></span>
             </button>
           </li>
         </ul>

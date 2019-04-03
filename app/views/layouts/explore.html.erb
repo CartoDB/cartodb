@@ -4,7 +4,7 @@
     <%= favicon_link_tag "favicons/favicon.ico" %>
     <title><%= yield :title %></title>
     <meta name="description" content="<%= yield :description %>">
-    <meta name="keywords" content="carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets">
+    <meta name="keywords" content="<%= t('layouts.explore.keywords') %>">
     <meta name="author" content="<%= @name %>">
     <meta charset='utf-8' />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -23,7 +23,7 @@
     <div class="FavMap FavMap--tall FavMap--highShadow is-pre-loading" id="<%= fav_map_target_id = 'fav-map-container' %>">
       <div class="FavMapTitle is-hidden js-favMapTitle">
         <div class="FavMapTitle-inner">
-          <h3 class="FavMapTitle-sectionTitle js-sectionTitle">Map of the moment</h3>
+          <h3 class="FavMapTitle-sectionTitle js-sectionTitle"><%= t('layouts.explore.map_moment') %></h3>
           <h1 class="FavMapTitle-mapTitle"><a href="#" class="FavMapTitle-mapTitleLink js-mapTitle"></a></h1>
         </div>
       </div>

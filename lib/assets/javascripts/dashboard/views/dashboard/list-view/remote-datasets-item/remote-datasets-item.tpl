@@ -34,11 +34,11 @@
             <a class="CDB-Tag CDB-Text CDB-Size-small is-semibold u-upperCase js-tag-link" href="<%- router.currentUrl({ search: ':'+ tags[i], library: false, page: 1 }) %>"><%- tags[i] %></a><% if (i !== (l-1)) { %>,<% } %>
           <% } %>
           <% if (tagsCount > maxTagsToShow) { %>
-            and <%- tagsCount - maxTagsToShow %> more
+            <%= _t('dashboard.views.dashboard.list_view.and_more', {smart_count: tagsCount - maxTagsToShow}) %>
           <% } %>
         </div>
       <% } else { %>
-        <span class="DefaultDescription CDB-Text CDB-Size-small u-altTextColor u-ellipsis">No tags</span>
+        <span class="DefaultDescription CDB-Text CDB-Size-small u-altTextColor u-ellipsis"><%= _t('dashboard.views.dashboard.list_view.no_tags') %></span>
       <% } %>
     </div>
   </div>

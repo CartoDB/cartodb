@@ -6,33 +6,33 @@
         <% if current_user.organization_owner? %>
           <li class="Filters-typeItem">
             <a href="<%= current_user_url('organization_settings') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_settings" %>">
-              Organization profile
+              <%= t('admin.shared.org_subhead.profile') %>
             </a>
           </li>
           <li class="Filters-typeItem">
             <a href="<%= current_user_url('organization_auth') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_auth" %>">
-              Auth settings
+              <%= t('admin.shared.org_subhead.settings') %>
             </a>
           </li>
         <% end %>
         <li class="Filters-typeItem">
           <a href="<%= current_user_url('organization_users') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_show" %>">
-            <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %> users
+            <%= current_user.organization.users.count %>/<%= current_user.organization.total_seats %><%= t('admin.shared.org_subhead.users') %>
           </a>
         </li>
         <li class="Filters-typeItem">
           <a href="<%= current_user_url('organization_groups') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_groups" %>">
-            Groups
+            <%= t('admin.shared.org_subhead.groups') %>
           </a>
         </li>
         <li class="Filters-typeItem">
           <a href="<%= current_user_url('organization_notifications_admin') %>" class="Filters-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/organizations_notifications" || "#{params[:controller]}_#{params[:action]}" == "admin/organizations_new_notification" %>">
-            Notifications
+            <%= t('admin.shared.org_subhead.notif') %>
           </a>
         </li>
         <% if show_billing  %>
           <li class="Filters-typeItem">
-            <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
+            <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink"><%= t('admin.shared.org_subhead.billing') %></a>
           </li>
         <% end %>
       </ul>

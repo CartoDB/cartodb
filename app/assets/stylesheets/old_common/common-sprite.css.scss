@@ -1,0 +1,63 @@
+/*
+ * Image sprite for common module
+ */
+
+@import "compass/utilities/sprites/base";
+ 
+// General Sprite Defaults
+// You can override them before you import this file.
+$common-sprite-base-class: ".common-sprite" !default;
+$common-sprite-dimensions: false !default;
+
+$common-sprites: sprite-map("sprites/common/*.png",
+  $position:                              0%,
+  $spacing:                               0,
+  $repeat:                                no-repeat,
+  $readonly-spacing:                      0,
+  $common-badge_default-spacing:          20px,
+  $common-badge_free_server-spacing:      20px,
+  $common-badge_magellan-spacing:         20px,
+  $common-badge_john_snow-spacing:        20px,
+  $common-badge_coronelli-spacing:        20px,
+  $common-badge_dedicated_server-spacing: 20px,
+  $common-badge_mercator-spacing:         20px,
+  $common-plus_big-spacing:               11px,
+  $common-file_type-spacing:              10px,
+  $common-question_mark-spacing:          30px,
+  $common-videoplayer_toggle-spacing:     30px
+);
+
+// $common-question_mark-spacing:          20px
+ 
+// All sprites should extend this class
+// The common-sprite mixin will do so for you.
+#{$common-sprite-base-class} {
+  background: $common-sprites no-repeat;
+}
+ 
+// Use this to set the dimensions of an element
+// based on the size of the original image.
+@mixin common-sprite-dimensions($name) {
+  @include sprite-dimensions($common-sprites, $name)
+}
+ 
+// Move the background position to display the sprite.
+@mixin common-sprite-position($name, $offset-x: 0, $offset-y: 0) {
+  @include sprite-position($common-sprites, $name, $offset-x, $offset-y)
+}
+ 
+// Extends the sprite base class and set the background position for the desired sprite.
+// It will also apply the image dimensions if $dimensions is true.
+@mixin common-sprite($name, $dimensions: $common-sprite-dimensions, $offset-x: 0, $offset-y: 0) {
+  @extend #{$common-sprite-base-class};
+  @include sprite($common-sprites, $name, $dimensions, $offset-x, $offset-y)
+}
+ 
+@mixin common-sprites($sprite-names, $dimensions: $common-sprite-dimensions, $prefix: sprite-map-name($common-sprites)) {
+  @include sprites($common-sprites, $sprite-names, $common-sprite-base-class, $dimensions, $prefix)
+}
+ 
+// Generates a class for each sprited image.
+@mixin all-common-sprites($dimensions: $common-sprite-dimensions, $prefix: sprite-map-name($common-sprites)) {
+  @include common-sprites(favorite important photos readonly symbolic-link system unreadable, $dimensions, $prefix);
+}

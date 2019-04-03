@@ -1,4 +1,4 @@
-<% content_for :title do %>Reset your password<% end %>
+<% content_for :title do %><%= t('password_change.edit.reset') %><% end %>
 
 <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
 
@@ -22,7 +22,7 @@
               <%= f.hidden_field :username %>
               <div class="Sessions-fieldsGorup">
                 <div class="Sessions-field">
-                  <%= password_field_tag :old_password, "", placeholder: "Type your current password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :old_password, "", placeholder: t('password_change.edit.current'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @old_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @old_password_error %>">!</div>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password, "", placeholder: "Type your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :password, "", placeholder: t('password_change.edit.new'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @new_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="Sessions-field">
-                  <%= password_field_tag :password_confirmation, "", placeholder: "Retype your new password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                  <%= password_field_tag :password_confirmation, "", placeholder: t('password_change.edit.retype'), class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                   <% if @new_password_error %>
                     <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @new_password_error %>">!</div>
@@ -65,7 +65,7 @@
     <footer class="Sessions-footer">
       <div class="u-inner">
         <div class="Sessions-notloggedin is-active">
-          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor">Don't have an account yet? <%= link_to 'Sign up here', "https://carto.com/signup" %></p>
+          <p class="Sessions-text Sessions-text--footer u-txt-center u-altTextColor"><%= t('password_change.edit.noaccount') %><%= link_to t('password_change.edit.signup'), t('signup_url') %></p>
         </div>
       </div>
     </footer>

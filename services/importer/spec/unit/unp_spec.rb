@@ -75,6 +75,17 @@ describe Unp do
       FileUtils.rm_rf(unp.temporary_directory)
     end
 
+    it 'extracts the contents of a VFK file' do
+      zipfile   = zipfile_factory(filename: 'katastr.zip')
+      unp       = Unp.new
+
+      unp.run(zipfile)
+      Dir.entries(unp.temporary_directory).should include('katastr.vfk')
+      unp.source_files.length.should eq 2
+      unp.source_files.map(&:layer).should eq ["pts", "lns"]
+      FileUtils.rm_rf(unp.temporary_directory)
+    end
+
     it 'extracts the contents of a FGDB file' do
       zipfile   = file_factory(filename: 'filegeodatabase.zip')
       unp       = Unp.new
@@ -236,6 +247,7 @@ describe Unp do
       unp.supported?('foo.gpkg').should eq true
       unp.supported?('foo.gdb').should eq true
       unp.supported?('foo.fgdb').should eq true
+      unp.supported?('foo.vfk').should eq true
     end
   end
 

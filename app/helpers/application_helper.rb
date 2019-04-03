@@ -161,6 +161,10 @@ module ApplicationHelper
     super *sources_with_path('stylesheets', sources)
   end
 
+  def image_tag(source, options={})
+    super "/#{frontend_version}/images/#{source}", options
+  end
+
   def image_path(source, editor = false)
     if editor
       super "/editor/#{editor_assets_version}/images/#{source}"

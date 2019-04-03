@@ -1,0 +1,535 @@
+// Map overlays styles
+// ----------------------------------------------
+
+$buttonColor: #636D72;
+
+.CDB-OverlayContainer {
+  display: flex;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  align-items: center;
+  z-index: 11;
+  pointer-events: none;
+
+  > * {
+    pointer-events: all;
+  }
+}
+
+// zoom overlay
+.CDB-Overlay {
+  display: flex;
+  align-items: center;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background: #FFF;
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  z-index: 20000;
+}
+
+.CDB-Zoom {
+  order: 1;
+  margin-right: 8px;
+}
+
+.CDB-Zoom-action {
+  position: relative;
+  width: 32px;
+  height: 100%;
+  background: #FFF;
+  color: $buttonColor;
+  text-align: center;
+  text-decoration: none;
+  z-index: 10;
+
+  &:hover {
+    background: rgba($cBlue, 0.08);
+    cursor: pointer;
+  }
+
+  &.is-disabled {
+    cursor: initial;
+    opacity: 0.2;
+  }
+
+  &:last-child {
+    border-left: 1px solid #EEE;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  &:first-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+}
+
+.CDB-Zoom-action--out::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 11px;
+  height: 1px;
+  margin-left: -5px;
+  background: $buttonColor;
+  content: '';
+}
+
+.CDB-Zoom-action--in {
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 11px;
+    height: 1px;
+    margin-left: -5px;
+    background: $buttonColor;
+    content: '';
+  }
+
+  &::after {
+    position: absolute;
+    top: 11px;
+    left: 50%;
+    width: 1px;
+    height: 11px;
+    background: $buttonColor;
+    content: '';
+  }
+}
+.CDB-Zoom-info {
+  display: none;
+  width: 32px;
+  border-left: 1px solid #EEE;
+  color: #979EA1;
+  font-family: 'Open Sans';
+  font-size: $sFontSize-small;
+  line-height: 32px;
+  text-align: center;
+}
+
+// loader search
+.CDB-Search {
+  order: 2;
+  height: 32px;
+  margin-right: 8px;
+
+  .CDB-Shape-magnify {
+    width: 32px;
+    height: 32px;
+
+    &::before {
+      top: 11px;
+      left: 10px;
+      border-color: #636D72;
+    }
+
+    &::after {
+      bottom: 10px;
+      left: 17px;
+      background: #636D72;
+    }
+
+    .is-small::after {
+      left: 17px;
+    }
+  }
+}
+
+.CDB-Search-inner {
+  @include transition(width, 100ms ease-in);
+  display: flex;
+  width: 32px;
+  height: 100%;
+  overflow: hidden;
+
+  &.is-active {
+    width: 152px;
+
+    &:hover {
+      background: transparent;
+    }
+
+    .CDB-Search-text {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+.CDB-Search-actionButton {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  color: $buttonColor;
+
+  &:hover {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background: rgba($cBlue, 0.08);
+  }
+}
+.CDB-Search-text {
+  width: 100px;
+  padding: 0 0 0 8px;
+  transition: all 150ms ease-in;
+  border: 0;
+  border-left: 1px solid #F8F8F8;
+  background: none;
+  font: 12px/16px 'Open Sans';
+  opacity: 0;
+  visibility: hidden;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+//FullScreen overlay
+.CDB-Fullscreen {
+  order: 4;
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  cursor: pointer;
+
+  .CDB-Shape-Arrow::after,
+  .CDB-Shape-Arrow::before {
+    background: #636D72;
+  }
+
+  .CDB-Shape-Arrow.is-down {
+    top: 8px;
+    left: 12px;
+  }
+  .CDB-Shape-Arrow.is-up {
+    top: 8px;
+    left: 20px;
+  }
+  .CDB-Fullscreen-link {
+    width: 100%;
+    height: 100%;
+  }
+}
+.CDB-Logo {
+  @include transform(translateX(-50%));
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: auto;
+  height: auto;
+  z-index: 10;
+}
+
+/* Legends */
+
+$maxLegendContainerHeight: 300px;
+
+.CDB-LayerLegends {
+  margin-top: 0;
+
+  &:not(:empty) + &:not(:empty) {
+    margin-top: 12px;
+  }
+}
+
+.CDB-Legends-canvas {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 240px;
+  height: auto;
+  max-height: calc(100vh - 120px);
+  border-radius: 4px;
+  background: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.24);
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 20000;
+}
+.CDB-Legends-canvasInner {
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  max-height: calc(100vh - 120px);
+  padding: 24px 24px 0;
+  border-radius: $baseSize / 2;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.CDB-Legends-canvasShadow {
+  display: none;
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 60px;
+  z-index: 1;
+  pointer-events: none;
+}
+.CDB-Legends-canvasShadow--top {
+  @include background-gradient(#FFF, rgba(255, 255, 255, 0));
+  top: 0;
+  border-top-left-radius: $baseSize / 2;
+  border-top-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow--bottom {
+  @include background-gradient(rgba(255, 255, 255, 0), #FFF);
+  bottom: 0;
+  border-bottom-left-radius: $baseSize / 2;
+  border-bottom-right-radius: $baseSize / 2;
+}
+.CDB-Legends-canvasShadow.is-visible {
+  display: block;
+  z-index: 2;
+}
+.CDB-Legends-canvas .ps-scrollbar-y-rail {
+  z-index: 3;
+}
+.CDB-Legends-canvas .ps-scrollbar-x-rail {
+  z-index: 3;
+}
+
+.CDB-Legend-item {
+  height: 100%;
+}
+
+.CDB-Legend-item div.cartodb-legend {
+  position: static;
+  padding: 0;
+  border: 0;
+  box-shadow: 0 0 0;
+}
+
+.CDB-Legend-item.is-disabled {
+  @include css3-prefix(filter, grayscale(100%));
+  opacity: 0.4;
+}
+
+.Bubble-list {
+  width: 100%;
+  height: 100px;
+}
+
+.Bubble-item {
+  position: absolute;
+  width: 100%;
+  height: 100px;
+}
+
+.Bubble-container {
+  position: relative;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100px;
+  margin: 16px 0 10px;
+}
+
+.Bubble-circle {
+  @include opacity(0.5);
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
+}
+
+.Bubble-itemCircle {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(-50%, 0, 0);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  background: #F8AB17;
+  box-shadow: -1px 0 2px 0 rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.Bubble-label {
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 50px);
+
+  &::after {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(#000, 0.08);
+    content: '';
+    z-index: -1;
+  }
+}
+
+.Bubble-list--custom::before,
+.Bubble-item--custom::before {
+  visibility: hidden;
+}
+
+.Bubble-numbersItem {
+  display: inline-block;
+  padding-right: 5px;
+  transform: translate3d(0, -50%, 0);
+  background: rgba(#FFF, 0.8);
+}
+
+.Bubble-average {
+  @include transform(translateY(50%));
+  display: block;
+  position: absolute;
+  right: 102px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.Bubble-average::after {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: -54px;
+  width: 51px;
+  height: 1px;
+  border-top: 1px dotted rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
+}
+.Bubble-average::before {
+  display: block;
+  position: absolute;
+  top: calc(50% - 1px);
+  right: -54px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  content: '';
+  z-index: 10;
+}
+.Bubble-average--custom::after {
+  display: none;
+}
+
+.Legend-choropleth {
+  position: relative;
+  height: $baseSize;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  border-radius: $halfBaseSize;
+
+  &.no-average {
+    margin-bottom: 4px;
+  }
+}
+.Legend-choropleth::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: $halfBaseSize;
+  content: '';
+}
+.Legend-choroplethAverageText {
+  position: absolute;
+  left: -10px;
+  white-space: nowrap;
+}
+.Legend-choroplethAverage {
+  position: absolute;
+  bottom: -7px;
+}
+.Legend-choroplethAverage::after {
+  display: block;
+  position: absolute;
+  top: -14px;
+  width: 1px;
+  height: 12px;
+  margin-left: 50%;
+  border-left: 1px dotted rgba(#000, 0.4);
+  content: '';
+}
+.Legend-exponential {
+  font-size: 80%;
+}
+
+.Legend-categoryListItem {
+  margin-bottom: 4px;
+}
+.Legend-categoryListItem:last-child {
+  margin-bottom: 0;
+}
+.Legend-categoryCircle {
+  position: relative;
+  min-width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  margin-left: 2px;
+  border-radius: 50%;
+}
+.Legend-categoryCircle::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+  content: '';
+}
+.Legend-categoryIcon {
+  display: block;
+  position: relative;
+  min-width: 12px;
+  height: 12px;
+}
+.Legend-categoryTitle {
+  max-width: 90%;
+  margin-left: 8px;
+}
+.Legend-placeholder {
+  position: relative;
+  margin: 0 -24px;
+}
+.Legend-loading {
+  display: none;
+}
+.CDB-Legend-item.is-loading .Legend-loading {
+  display: block;
+}
+.Legend-placeholderInner {
+  padding: 12px 24px 0;
+}
+.Legend-fillImageAsset {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-3px) translateY(-3px) scale(0.66667); // scale original 18px SVG image => 12px
+  vertical-align: bottom;
+}
+
+@media (max-width: 599px) {
+  .CDB-Legends-canvas {
+    display: none !important;
+  }
+  .CDB-Zoom-info,
+  .CDB-Fullscreen {
+    display: none;
+  }
+}
+
+@media (max-width: 425px) {
+  .CDB-Logo {
+    right: 0;
+    left: initial;
+    transform: initial;
+  }
+}

@@ -93,6 +93,7 @@
         "title": "Your profile information"
       },
       "form": {
+        "asterisk": "* Fields marked with an asterisk are visible on your public profile,",
         "first_name": "First name",
         "last_name": "Last name",
         "email": "Email",
@@ -126,9 +127,25 @@
       }
     }
   },
+  "carto_name": "CARTO",
+  "email_enterprise": "enterprise-support@carto.com",
+  "email_support": "support@carto.com",
+  "email_sales": "sales@carto.com",
+  "guides_link": "https://carto.com/learn/guides",
+  "guides_name": "Guides",
+  "dev_link": "https://carto.com/developers",
+  "dev_name": "Developers",
+  "community_link": "http://gis.stackexchange.com/questions/tagged/carto",
   "feedback": "Give us feedback!",
   "back": "Back",
   "back-to-dashboard": "Back to the dashboard",
+  "map_pl": "map |||| maps",
+  "dataset_pl": "dataset |||| datasets",
+  "map_nr": "%{smart_count} map |||| %{smart_count} maps",
+  "dataset_nr": "%{smart_count} dataset |||| %{smart_count} datasets",
+  "like_pl": "like |||| likes",
+  "view_pl": "view |||| views",
+  "row_pl": "row |||| rows",
   "edit-map": "Edit map",
   "map-settings": "Map options",
   "more-options": "More options",
@@ -138,6 +155,8 @@
   "edit-analysis": "Edit analysis",
   "add-analysis": "Add new analysis node",
   "back-layers": "Back to the Layers list",
+  "configuration": "Configuration",
+  "choose_image": "Choose image",
   "user": {
     "you": "You"
   },
@@ -293,7 +312,7 @@
       "title": "Intersect and Aggregate",
       "description": "This operation performs a spatial intersection and aggregates the geometry values from the target layer that intersect with the geometry of the base layer.",
       "count-vals-density": "This column is added if COUNT was chosen as the aggregation operation.",
-      "extra-column": "This column is added if {operation_type} is chosen with column {column_name}."
+      "extra-column": "This column is added if %{operation_type} is chosen with column %{column_name}."
     },
     "filter": {
       "title": "Filter by Column Value",
@@ -697,6 +716,7 @@
       "background-importer-item": {
         "completed": "completed",
         "error-connecting": "<span class='u-errorTextColor'>Error connecting</span> %{name}",
+        "warnings": "Some warnings were produced for %{name} ",
         "from": "from",
         "show": "show"
       },
@@ -1883,9 +1903,9 @@
         "cancel": "Cancel",
         "desc": "<span class='CDB-Text u-mainTextColor is-semibold'>%{layerVisName}</span> will be affected, are you sure you want to delete it?",
         "title": "You are about to delete the layer %{layerName}",
-        "error": "<span class='u-errorTextColor'>Error deleting layer</span>: %{error}",
-        "loading": "Removing layer…",
-        "success": "Layer deleted correctly.",
+        "error": "<span class='u-errorTextColor'>Error deleting layer %{name}</span>: %{error}",
+        "loading": "Removing layer %{name}…",
+        "success": "Layer %{name} deleted correctly.",
         "widgets": "one widget |||| %{smart_count} widgets",
         "analyses": "one analysis |||| %{smart_count} analyses",
         "layers": "one layer |||| %{smart_count} layers",
@@ -2952,6 +2972,969 @@
         "success": "Geometry successfully saved"
       },
       "adding": "Adding geometry…"
+    }
+  },
+  "cartodb": {
+    "common": {
+      "back_poll": {
+        "views": {
+          "header_title": {
+            "connecting": "Connecting dataset...",
+            "geocoding": "Geocoding dataset...",
+            "analyzing": "Analyzing dataset...",
+            "working": "Working..."
+          }
+        }
+      },
+      "views": {
+        "avatar_selector_view": {
+          "avatar": "Avatar",
+          "org_logo": "Organization logo",
+          "err_load": "There was an error uploading your avatar. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        },
+        "create": {
+          "listing": {
+            "search": "Search",
+            "placeholder": "by name, description or :tag",
+            "connect_data": "Connect dataset",
+            "your_data": "Your datasets",
+            "shared": "Shared with you",
+            "data_lib": "Data library"
+          },
+          "loading": {
+            "create_new": "Creating new %{model_type}",
+            "dataset": "dataset",
+            "map": "map",
+            "creating_map": "Creating map",
+            "connecting": "Connecting ${import_name} (${total_length}/${sel_length})"
+          }
+        },
+        "dashboard_header": {
+          "notifications": {
+            "templates": {
+              "no_notif": "There are no notifications :)"
+            }
+          },
+          "user_support_template": {
+            "enterprise": "<a href=\"mailto:enterprise-support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>",
+            "support": "<a href=\"mailto:support@carto.com\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>",
+            "forum": "<a href=\"http://gis.stackexchange.com/questions/tagged/carto\" class=\"Header-navigationLink u-hideOnMobile\">Support</a>"
+          }
+        },
+        "footer_static": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Guides</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Developers</a>",
+          "version": "Version: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Support</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Support</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Contact</a>"
+        },
+        "icon_selector_view": {
+          "app_icon": "App icon",
+          "no_icon": "No icon",
+          "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        },
+        "pages_subheader": {
+          "profile": "Profile",
+          "account": "Account",
+          "api_keys": "API keys",
+          "billing": "Billing",
+          "org_settings": "Organization settings",
+          "support": "Contact support",
+          "admin": "Contact your org. admin",
+          "vip": "Contact your VIP support",
+          "issues": "Having issues?"
+        },
+        "public_common": {
+          "dashboard": "Your dashboard",
+          "profile": "Your public profile",
+          "account": "Account settings",
+          "logout": "Close session"
+        },
+        "support_banner": {
+          "dedicated_support": "As a paying customer, you have access to our dedicated support.",
+          "become_builder": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> to become a builder.",
+          "contact_org_admin": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> for support.",
+          "outstanding": "You are part of CARTO, you deserve outstanding support.",
+          "contact_community": "For all technical questions, contact our community support forum.",
+          "create_maps": "You will be able to create your own maps!",
+          "info_on_community": "Remember that there is a lot of information in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "internal": "Don't forget to share your knowledge in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "problem": "If you experience any problems with the CARTO service, feel free to <a href=\"mailto:support@carto.com\">contact us</a>.",
+          "contact_support": "Contact support",
+          "contact_admin": "Contact administrator",
+          "contact_us": "Contact us",
+          "community": "Community support"
+        }
+      }
+    },
+    "dashboard": {
+      "header": {
+        "breadcrumb": {
+          "data": "Datasets",
+          "lck_data": "Locked datasets",
+          "maps": "Maps",
+          "lck_maps": "Locked maps"
+        }
+      },
+      "views": {
+        "content_no_data": {
+          "no_data_yet": "You have not connected any datasets yet",
+          "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
+        },
+        "content_no_results": {
+          "no_results": "There are no results in this page",
+          "no_liked": "You haven't liked any %{type} yet",
+          "zero_found": "0 %{tag} || q %{type} found",
+          "there_are_no": "There are no ",
+          "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
+          "back_to": "Back to your ",
+          "no_fun": "No %{type}, no fun",
+          "fill_this": "Fill this section up by clicking the heart on CARTO %{type} published on the web or on user profile pages"
+        },
+        "filters": {
+          "shared": "Shared with you",
+          "liked": "Liked",
+          "data_lib": "Data library",
+          "new_map": "New Map",
+          "new_dataset": "New dataset",
+          "selected": " selected",
+          "yours": "yours",
+          "select_all": "Select all ",
+          "deselect_all": "Deselect all ",
+          "connect_data": "Connect dataset",
+          "duplicate_data": "Duplicate dataset",
+          "create_map": "Create map",
+          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
+          "change_privacy": "Change privacy...",
+          "duplicate_map": "Duplicate map",
+          "delete": "Delete ",
+          "your": "your"
+        },
+        "onboarding": {
+          "hello": "Hello, ",
+          "welcome": "Welcome to CARTO!",
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map.",
+          "new_map": "New map"
+        }
+      }
+    },
+    "explore": {
+      "title": "Exploring",
+      "maps_data": "Maps and datasets",
+      "datasets": "Datasets",
+      "maps": "Maps",
+      "activity": "Recent activity by",
+      "view_more": "View more"
+    },
+    "public": {
+      "views": {
+        "public_footer": {
+          "product": "Product",
+          "builder": "<a class=\"Footer-link\" href=\"https://carto.com/builder/\">Builder</a>",
+          "engine": "<a class=\"Footer-link\" href=\"https://carto.com/engine/\">Engine</a>",
+          "mobile": "<a class=\"Footer-link\" href=\"https://carto.com/mobile/\">Mobile</a>",
+          "location_services": "<a class=\"Footer-link\" href=\"https://carto.com/location-data-services/\">Location Data Services</a>",
+          "data_observatory": "<a class=\"Footer-link\" href=\"https://carto.com/data-observatory/\">Data Observatory</a>",
+          "source_code": "<a class=\"Footer-link\" href=\"https://github.com/CartoDB/cartodb\">Source Code</a>",
+          "pricing": "<a class=\"Footer-link\" href=\"https://carto.com/pricing/\" class=\"Footer-link\">Pricing</a>",
+          "solutions": "Solutions",
+          "banking": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/banking-and-finance/\">Banking & Finance</a>",
+          "analytics": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/business-intelligence-and-analytics/\">BI & Analytics</a>",
+          "government": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/government/\">Government</a>",
+          "estate": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/real-estate/\">Real Estate</a>",
+          "web": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/web-mobile/\">Web Development</a>",
+          "journal": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/journalism/\">Journalism</a>",
+          "nature": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/natural-resources/\">Natural Resources</a>",
+          "earth": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/earth-observation-and-space/\">Earth Observation</a>",
+          "non_profit": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/non-profits/\">Non-profits</a>",
+          "education": "<a class=\"Footer-link\" href=\"https://carto.com/solutions/education-and-research/\">Education</a>",
+          "connectors": "Connectors",
+          "dropbox": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/dropbox/\">Dropbox</a>",
+          "google": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/google-drive/\">Google Drive</a>",
+          "twitter": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/twitter-maps/\">Twitter Maps</a>",
+          "mailchimp": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/mailchimp/\">MailChimp</a>",
+          "excel": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/excel-data/\">Excel Data</a>",
+          "arcgis": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/arcgis/\">ArcGIS™</a>",
+          "satellite": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/satellite-imagery/\">Satellite Imagery</a>",
+          "qlik": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/qlik/\">Qlik</a>",
+          "splunk": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/splunk/\">Splunk</a>",
+          "alteryx": "<a class=\"Footer-link\" href=\"https://carto.com/connectors/alteryx/\">Alteryx</a>",
+          "discover": "Discover",
+          "gallery": "<a class=\"Footer-link\" href=\"https://carto.com/gallery/\">Map Gallery</a>",
+          "explore": "<a class=\"Footer-link\" href=\"https://carto.com/explore\">Explore</a>",
+          "ambassadors": "<a class=\"Footer-link\" href=\"https://carto.com/ambassadors/\">Ambassadors</a>",
+          "learn": "Learn",
+          "guides": "<a class=\"Footer-link\" href=\"https://carto.com/learn/guides\">Guides</a>",
+          "developers": "<a class=\"Footer-link\" href=\"https://carto.com/developers\">Developers</a>",
+          "academy": "<a class=\"Footer-link\" href=\"https://carto.com/academy\">The Map Academy</a>",
+          "resources": "<a class=\"Footer-link\" href=\"https://carto.com/resources/\">Resources Center</a>",
+          "webinars": "<a class=\"Footer-link\" href=\"https://carto.com/webinars/\">Webinars</a>",
+          "blog": "<a class=\"Footer-link\" href=\"https://carto.com/blog\">Blog</a>",
+          "about": "About us",
+          "team": "<a class=\"Footer-link\" href=\"https://carto.com/team/\">Team</a>",
+          "jobs": "<a class=\"Footer-link\" href=\"https://carto.com/jobs/\">Jobs</a>",
+          "press": "<a class=\"Footer-link\" href=\"https://carto.com/press/\">Press</a>",
+          "partners": "<a class=\"Footer-link\" href=\"https://carto.com/partners/\">Partners</a>",
+          "attributions": "<a class=\"Footer-link\" href=\"https://carto.com/attributions\">Attributions</a>",
+          "contributions": "<a class=\"Footer-link\" href=\"https://carto.com/contributing/\">Contributions</a>",
+          "contact": "<a class=\"Footer-link\" href=\"mailto:sales@carto.com\">Contact us</a>",
+          "demo": "<a class=\"Footer-link\" href=\"https://carto.com/request-live-demo/\">Request a Live Demo</a>",
+          "terms": "<a class=\"Footer-link\" href=\"https://carto.com/terms/\">Terms of Service</a>",
+          "legal": "<a class=\"Footer-link\" href=\"https://carto.com/legal/\">Legal</a>"
+        }
+      }
+    },
+    "table": {
+      "default_layers": {
+        "attribution": "© <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors © <a href=\"https://carto.com/attributions\">CARTO</a>",
+        "attr_stamen": "Map tiles by <a href=\"http://stamen.com\">Stamen Design</a>, under <a href=\"http://creativecommons.org/licenses/by/3.0\">CC BY 3.0</a>. Data by <a href=\"http://openstreetmap.org\">OpenStreetMap</a>, under <a href=\"http://www.openstreetmap.org/copyright\">ODbL</a>."
+      }
+    }
+  },
+  "cdb": {
+    "src": {
+      "core": {
+        "config": {
+          "attributions": "© <a href=\"https://carto.com/attributions\" target=\"_blank\">CARTO</a>",
+          "logo_link": "http://www.carto.com"
+        }
+      }
+    }
+  },
+  "dashboard": {
+    "components": {
+      "avatar_selector": {
+        "avatar_selector": {
+          "avatar": "Avatar*",
+          "org_logo": "Organization logo",
+          "err_load": "There was an error uploading your avatar. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        }
+      },
+      "dashboard-header": {
+        "breadcrumbs": {
+          "dropdown": {
+            "maps": "Your maps",
+            "datasets": "Your datasets",
+            "lck_maps": "Your locked maps",
+            "lck_datasets": "Your locked datasets"
+          }
+        },
+        "settings-dropdown": {
+          "viewer": "VIEWER",
+          "become": "Become a Builder",
+          "builder": "BUILDER",
+          "of": " of ",
+          "used": " used",
+          "upgrade": "Upgrade",
+          "pub_profile": "View your public profile",
+          "account": "Your account",
+          "org": "Your organization",
+          "api_keys": "Your API keys",
+          "close": "Close session"
+        },
+        "user-support": {
+          "support": "Support"
+        },
+        "notifications": {
+          "templates": {
+            "close_limits": {
+              "reaching_limit": "Hey <strong>%{userName}</strong>, looks like you're about to reach your account limit.",
+              "contact_us": "<a href=\"mailto:%{upgradeContactEmail}\">Contact us</a> for upgrading your account.",
+              "contact_admin": "Start thinking about <a href=\"mailto:%{upgradeContactEmail}\">contacting your admin</a>.",
+              "start_thinking": "Start thinking about ",
+              "upgrade_plan": "upgrading your plan",
+              "feel_free": "Feel free to <a href=\"mailto:%{upgradeContactEmail}\">contact us</a> for more resources."
+            },
+            "dropdown_content": {
+              "no_notif": "There are no notifications :)"
+            },
+            "limits_exceeded": {
+              "over_limits": "Hey <strong>%{userName}</strong>, you're over your disk limits.",
+              "contact_us": "<a href=\"mailto:%{upgradeContactEmail}\">Contact us</a> for upgrading your account.",
+              "contact_admin": "Start thinking about <a href=\"mailto:%{upgradeContactEmail}\">contacting your admin</a>.",
+              "start_thinking": "Start thinking about ",
+              "upgrade_plan": "upgrading your plan",
+              "feel_free": "Feel free to <a href=\"mailto:%{upgradeContactEmail}\">contact us</a> for more resources."
+            },
+            "trial_ends_soon": {
+              "reminder": "Just a reminder, your <strong>%{accountType}</strong> trial will finish the next %{trialEnd}. Happy mapping!"
+            },
+            "try_trial": {
+              "start_14": "Start your 14-day trial to experience the full CARTO.",
+              "start_now": "Start now"
+            },
+            "upgraded_message": {
+              "welcome": "Welcome to your brand new <strong>%{accountType}</strong> CARTO. Now we love you even more than before ;)"
+            }
+          }
+        }
+      },
+      "delete_account": {
+        "delete_account": {
+          "about_delete": "You are about to delete your account.",
+          "remember": "Remember, once you delete your account there is no going back.",
+          "are_you_sure": "All your maps, data and work will be lost. Are you sure you want to proceed?",
+          "provide_password": "In any case, you need to type your password.",
+          "your_password": "Your password",
+          "cancel": "Cancel",
+          "delete_account": "Yes, delete my account"
+        }
+      },
+      "editable_fields": {
+        "editable_description": {
+          "add_desc": "Add description...",
+          "no_desc": "No description"
+        },
+        "editable_tags": {
+          "and_3_more": "and %{tagsCount} more",
+          "add_tags": "Add tags...",
+          "no_tags": "No tags"
+        }
+      },
+      "fail": {
+        "error": "Oouch! There has been an error",
+        "contact": "If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+      },
+      "footer":
+      {
+        "footer": {
+          "guides": "<a href=\"https://carto.com/learn/guides/\">Guides</a>",
+          "developers": "<a href=\"https://carto.com/developers\">Developers</a>",
+          "version": "Version: %{onpremiseVersion}",
+          "onpremise": "<a href=\"mailto:onpremise-support@carto.com\">Support</a>",
+          "support": "<a href=\"mailto:support@carto.com\">Support</a>",
+          "contact": "<a href=\"mailto:contact@carto.com\">Contact</a>"
+        }
+      },
+      "icon_selector": {
+        "icon_selector": {
+          "app_icon": "App icon",
+          "no_icon": "No icon",
+          "err_upload": "There was an error uploading the icon. Check the height and size (max 1MB) of the image",
+          "rec_size": "Recommended images should be 128x128 pixels of size"
+        }
+      },
+      "mamufas_import": {
+        "mamufas_import_dialog": {
+          "drag_and_drop": "Drag and drop your data to this window",
+          "drop_to_connect": "Drop your file to connect a new dataset.",
+          "files_supported": "Files like CSV, GPX, XLS and many more are supported"
+        }
+      },
+      "maps_item": {
+        "maps_item": {
+          "read": "READ",
+          "by": "by"
+        }
+      },
+      "mapviews_graph": {
+        "mapviews_graph_view": {
+          "mapview_count": "%{smart_count} mapview |||| %{smart_count} mapviews",
+          "today": " today",
+          "on": " on "
+        }
+      },
+      "navbar": {
+        "user_settings": {
+          "maps": "Maps",
+          "datasets": "Datasets",
+          "your_dashboard": "Your dashboard",
+          "your_profile": "Your public profile",
+          "account": "Account settings",
+          "close": "Close session"
+        }
+      },
+      "paged_search": {
+        "paged_search": {
+          "search": " Search",
+          "placeholder": "Search by username or email"
+        },
+        "paged_search_view": {
+          "no_results": "Oh! No results",
+          "nothing_found": "Unfortunately we could not find anything with these parameters",
+          "searching": "Searching"
+        }
+      },
+      "pages_subheader": {
+        "pages_subheader": {
+          "used_of_avail": "%{usedDataStr} of %{availableDataStr}",
+          "profile": "Profile",
+          "account": "Account",
+          "api_keys": "API keys",
+          "billing": "Billing",
+          "org_settings": "Organization settings",
+          "issues": "Having issues?",
+          "cont_support": "Contact support",
+          "cont_admin": "Contact your org. admin",
+          "cont_vip": "Contact your VIP support"
+        }
+      },
+      "service_item": {
+        "service_item": {
+          "connecting": "Connecting...",
+          "connect": "Connect",
+          "error": "Ooops! There was an error, please <button type=\"button\" class=\"FormAccount-link js-disconnect\">try it again</button> or <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">contact us</a> if the problem persists",
+          "disconneting": "Disconnecting...",
+          "disconnet": "Disconnect",
+          "disable_popup": "There was an error, please be sure your pop-up blocker is disabled and try again or <a class=\"FormAccount-link\" href=\"mailto:support@carto.com\">contact us</a> if the problem persists"
+        }
+      },
+      "support_view": {
+        "support_banner": {
+          "dedicated_support": "As a paying customer, you have access to our dedicated support.",
+          "become_builder": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> to become a builder.",
+          "contact_org_admin": "Contact the <a href=\"mailto:%{orgDisplayEmail}\">organization administrator</a> for support.",
+          "outstanding": "You are part of CARTO, you deserve outstanding support.",
+          "contact_community": "For all technical questions, contact our community support forum.",
+          "create_maps": "You will be able to create your own maps!",
+          "info_on_community": "Remember that there is a lot of information in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "internal": "Don't forget to share your knowledge in our <a href=\"http://gis.stackexchange.com/questions/tagged/carto\" target=\"_blank\">community forums</a>.",
+          "problem": "If you experience any problems with the CARTO service, feel free to <a href=\"mailto:support@carto.com\">contact us</a>.",
+          "contact_support": "Contact support",
+          "contact_admin": "Contact administrator",
+          "contact_us": "Contact us",
+          "community": "Community support"
+        }
+      },
+      "table_grants": {
+        "table_grants": {
+          "datasets": "Datasets",
+          "placeholder": "Search by name"
+        },
+        "table_grants_view": {
+          "zero_data": "0 datasets found",
+          "no_data": "There are no datasets"
+        }
+      },
+      "upgrade_messages": {
+        "limit_reached": "You have reached your limits.",
+        "limit_reaching": "You're reaching your account limits.",
+        "upgrade": "Upgrade your account to boost your quota.",
+        "free_trial": "14 days Free trial",
+        "upgrade_plan": "upgrade your plan",
+        "contact_sales": "Contact Sales"
+      }
+    },
+    "confirmation": {
+      "confirm_info": {
+        "account_ready": "Your account is ready",
+        "problem": "Oops! There was a problem",
+        "account_created": "Your account is being created",
+        "redir_dashboard": "You will be redirected to your dashboard in a moment...",
+        "redir_login": "You will be redirected to the login page in a moment...",
+        "check_email": "Check your email inbox and validate your email.",
+        "problem_contact": "Unfortunately there was a problem creating your account. <% if (!customHosted) { %>Please, <a href=\"mailto:support@carto.com?subject=User creation error: <%- userCreationId %>\">contact us</a><% } %>.",
+        "take_time": "It will take us some time, just a few seconds."
+      }
+    },
+    "data": {
+      "table": {
+        "row_added": "Row added correctly",
+        "row_adding": "Adding a new row",
+        "updated": "Table geometry updated"
+      }
+    },
+    "profile": {
+      "your_profile": "Your profile | "
+    },
+    "views": {
+      "account": {
+        "serv_disc_dlg": {
+          "serv_disc_dlg": {
+            "disconnect": "Disconnect your %{title} account",
+            "revoke": "Revoke the access to CARTO",
+            "sure": "Are you sure you want to revoke the CARTO access to your %{title} account?",
+            "revoke_auto": "We cant revoke the access for your %{title} account automatically.",
+            "security": "For your own security, we are unable to disconnect your %{title} account from CARTO. You can revoke access yourself by manually editing your %{title} authorized applications.",
+            "goto": "go to %{title}",
+            "cancel": "cancel",
+            "revoke2": "Revoke access"
+          }
+        }
+      },
+      "api_keys": {
+        "alert_delete_key": {
+          "about_del": "You are about to delete your API key",
+          "sure": "All deployed apps with this API key will stop working. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "delete": "Delete API key"
+        },
+        "alert_regen_key": {
+          "about_regen": "You are about to regenerate your API key",
+          "sure": "You will need to update all deployed apps with the new API key. Are you sure you want to continue?",
+          "cancel": "Cancel",
+          "regen": "Regenerate API key"
+        },
+        "api_key_form": {
+          "configure": "Configure your key",
+          "details": "Your API key details",
+          "permissions": "Changes to the key permissions are not possible once key is generated",
+          "save": "Save changes"
+        },
+        "api_key_form_view": {
+          "name": "Name",
+          "name_place": "Your API key name",
+          "token": "API Key",
+          "apis": "APIs",
+          "input_sql": "SQL",
+          "input_maps": "MAPS",
+          "required": "Name, Type and Datasets fields are required"
+        },
+        "api_key_list": {
+          "your_api": "Your API keys",
+          "new_api": "New API key",
+          "configure": "Configure API keys from external providers",
+          "google": "Google Maps",
+          "your_google": "This is your Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
+          "google_query": "This is the %{organizationName} Google Maps query string, contact with <a href=\"mailto:support@carto.com\">support@carto.com</a> to change it.",
+          "google_api": "This is the organization Google Maps API key",
+          "learn_more": "Learn more about location app authorization and API key management <a href=\"https://carto.com/developers/fundamentals/authorization/\" target=\"_blank\">here</a>",
+          "regen": "Regenerate",
+          "delete": "Delete"
+        }
+      },
+      "dashboard": {
+        "content_controller": {
+          "content_footer": {
+            "show_lock_maps": "Show your %{smart_count} locked map |||| Show your %{smart_count} locked maps",
+            "show_lock_datasets": "Show your %{smart_count} locked map |||| Show your %{smart_count} locked maps",
+            "show_unlock_maps": "Show your %{smart_count} non-locked map |||| Show your %{smart_count} non-locked maps",
+            "show_unlock_datasets": "Show your %{smart_count} non-locked map |||| Show your %{smart_count} non-locked maps"
+          },
+          "loading_library_view": {
+            "title": "Your Data library is being stocked up",
+            "desc": "Please wait while we load the list of Datasets in the Data library for you."
+          },
+          "templates": {
+            "content_error": {
+              "error": "Oouch! There has been an error",
+              "contact": "Try viewing <a class=\"ContentResult-urlLink js-link\" href=\"%{defaultUrl}\">your %{type}</a> or if the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+            },
+            "content_no_data": {
+              "no_data_yet": "You have not connected any datasets yet",
+              "can_connect": "You can <button class=\"Button--link js-connect\">connect datasets</button> or <strong>search</strong> our data library."
+            },
+            "content_no_results": {
+              "no_results": "There are no results in this page",
+              "no_liked_maps": "You haven't liked any map yet",
+              "no_liked_datasets": "You haven't liked any dataset yet",
+              "zero_found_maps": "0 %{tag} || q maps found",
+              "zero_found_datasets": "0 %{tag} || q datasets found",
+              "there_are_no_shared_maps": "There are no shared maps",
+              "there_are_no_locked_maps": "There are no locked maps",
+              "there_are_no_maps": "There are no maps",
+              "there_are_no_shared_datasets": "There are no shared datasets",
+              "there_are_no_locked_datasets": "There are no locked datasets",
+              "there_are_no_datasets": "There are no datasets",
+              "back_to_first": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\">first page</a>",
+              "back_to_maps": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> maps</a>",
+              "back_to_datasets": "Back to your <a class=\"ContentResult-urlLink\" href=\"%{defaultUrl}\"> datasets</a>",
+              "no_fun_maps": "No maps, no fun",
+              "no_fun_datasets": "No datasets, no fun",
+              "fill_this_maps": "Fill this section up by clicking the heart on CARTO maps published on the web or on user profile pages",
+              "fill_this_datasets": "Fill this section up by clicking the heart on CARTO datasets published on the web or on user profile pages"
+            }
+          }
+        },
+        "create_map_model": {
+          "untitled_map": "Untitled Map"
+        },
+        "dialogs": {
+          "change_lock": {
+            "about_maps": "You are about to %{lockOrUnlockStr} %{smart_count} map. |||| You are about to %{lockOrUnlockStr} %{smart_count} maps.",
+            "about_datasets": "You are about to %{lockOrUnlockStr} %{smart_count} dataset. |||| You are about to %{lockOrUnlockStr} %{smart_count} datasets.",
+            "unlock_maps": "Unlocking this map will show it on the dashboard again. |||| Unlocking these %{smart_count} maps will show them on the dashboard again.",
+            "unlock_datasets": "Unlocking this dataset will show it on the dashboard again. |||| Unlocking these %{smart_count} datasets will show them on the dashboard again.",
+            "lock_maps": "Locking this map will hide it from the dashboard. |||| Locking these %{smart_count} maps will hide them from the dashboard.",
+            "lock_datasets": "Locking this dataset will hide it from the dashboard. |||| Locking these %{smart_count} datasets will hide them from the dashboard.",
+            "reveal": " Reveal it using the header menu or the bottom link. |||| Reveal them using the header menu or the bottom link.",
+            "cancel": "cancel",
+            "ok": "Ok, ",
+            "locking_maps": "Locking %{smart_count} map… |||| Locking %{smart_count} maps…",
+            "locking_datasets": "Locking %{smart_count} dataset… |||| Locking %{smart_count} datasets…",
+            "unlocking_maps": "Unlocking %{smart_count} map… |||| Unlocking %{smart_count} maps…",
+            "unlocking_datasets": "Unlocking %{smart_count} dataset… |||| Unlocking %{smart_count} datasets…",
+            "failed_lock": "Failed to lock all items",
+            "failed_unlock": "Failed to unlock all items",
+            "lock": "lock",
+            "unlock": "unlock"
+          },
+          "change_privacy": {
+            "privacy": " privacy",
+            "protect_map": "Although we believe in the power of open data, you can also protect your map.",
+            "protect_dataset": "Although we believe in the power of open data, you can also protect your dataset.",
+            "placeholder": "Type your password here",
+            "advantage": "To get advantage of all the privacy options you should upgrade your plan",
+            "trial": "14 days Free trial",
+            "upgrade": "upgrade",
+            "shared_with_org": "Shared with your whole organization.",
+            "shared_with": "Shared with %{smart_count} person. |||| Shared with %{smart_count} people.",
+            "open_sharing": "Open sharing settings",
+            "team_work": "Team work is always better. <a href=\"#\" class=\"js-share\">Share it with your colleagues</a>",
+            "cancel": "Cancel",
+            "save": "Save settings",
+            "option": "Option can not be disabled and selected at the same time",
+            "public_desc": "Anyone can find and view.",
+            "link_desc": "Anyone with the link can view, no password needed.",
+            "passwd_desc": "Anyone with the password can view.",
+            "private_desc": "Only you can access."
+          },
+          "create_dialog": {
+            "add_datasets": "Add datasets",
+            "select_datasets": "Select your datasets",
+            "click_import": " Once you click over one of these items it will be imported to your account.",
+            "data_selected": "%{smart_count} dataset selected |||| %{smart_count} datasets selected",
+            "max_layers": "You have reached the max layers for a new map (%{maxSelectedDatasets} max)",
+            "upgrade": "upgrade",
+            "create_map": "create map",
+            "start_template": "New on CARTO? Start with one of <a href=\"#/templates\" class=\"js-templates\">our templates</a>.",
+            "connect": "connect dataset"
+          },
+          "delete_items": {
+            "about_map": "You are about to delete %{smart_count} map. |||| You are about to delete %{smart_count} maps.",
+            "about_dataset": "You are about to delete %{smart_count} dataset. |||| You are about to delete %{smart_count} datasets.",
+            "about_named_map": "You are about to delete the %{firstItemName} map.",
+            "about_named_dataset": "You are about to delete the %{firstItemName} dataset.",
+            "affected_maps": "Doing so will imply changes in <strong>%{smart_count} affected map</strong>. |||| Doing so will imply changes in <strong>%{smart_count} affected maps</strong>.",
+            "recover_map": "The deleted map cannot be recovered, be sure before proceeding. |||| The deleted maps cannot be recovered, be sure before proceeding.",
+            "recover_dataset": "The deleted dataset cannot be recovered, be sure before proceeding. |||| The deleted datasets cannot be recovered, be sure before proceeding.",
+            "export": "We recommend you to export your dataset before deleting it.",
+            "lost_map": "Some users will lose access to your map |||| Some users will lose access to your maps",
+            "lost_datase": "Some users will lose access to your dataset |||| Some users will lose access to your datasets",
+            "cancel": "Cancel",
+            "delete": "Ok, delete"
+          },
+          "duplicate_vis": {
+            "duplicating": "Duplicating your map",
+            "error": "Sorry, something went wrong, but we're not sure why."
+          },
+          "share": {
+            "cancel": "cancel",
+            "save": "Save settings",
+            "privacy": " privacy",
+            "sel_colleagues": "Select your colleagues you want to give access in the list below"
+          }
+        },
+        "filters": {
+          "search": "Search",
+          "zero_map": "Maps",
+          "zero_dataset": "Datasets",
+          "zero_dashboard": "Dashboard",
+          "number_map": "<strong>%{smart_count}</strong> Map |||| <strong>%{smart_count}</strong> Maps",
+          "number_dataset": "<strong>%{smart_count}</strong> Dataset |||| <strong>%{smart_count}</strong> Datasets",
+          "number_dashboard": "Dashboard",
+          "shared": "Shared with you",
+          "liked": "Liked",
+          "data_lib": "Data library",
+          "new_map": "New Map",
+          "new_dataset": "New dataset",
+          "new_dashboard": "Dashboard",
+          "selected_map": "%{smart_count} map selected |||| %{smart_count} maps selected",
+          "selected_dataset": "%{smart_count} dataset selected |||| %{smart_count} datasets selected",
+          "yours": "yours",
+          "select_all": "Select all ",
+          "deselect_all": "Deselect all ",
+          "connect_data": "Connect dataset",
+          "duplicate_data": "Duplicate dataset",
+          "create_map": "Create map",
+          "max_map_layers": "Max map layers selected (%{maxLayersByMap} max)",
+          "change_privacy": "Change privacy...",
+          "duplicate_map": "Duplicate map",
+          "lock_map": "Lock map |||| Lock maps",
+          "lock_dataset": "Lock dataset |||| Lock datasets",
+          "lock_dashboard": "Dashboard",
+          "unlock_map": "Unlock map |||| Unlock maps",
+          "unlock_dataset": "Unlock dataset |||| Unlock datasets",
+          "unlock_dashboard": "Dashboard",
+          "delete_your_map": "Delete your map |||| Delete your maps",
+          "delete_your_dataset": "Delete your dataset |||| Delete your datasets",
+          "delete_your_dashboard": "Dashboard",
+          "delete_map": "Delete map |||| Delete maps",
+          "delete_dataset": "Delete dataset |||| Delete datasets",
+          "delete_dashboard": "Dashboard",
+          "placeholder": "by name, description or :tag"
+        },
+        "header_view_model": {
+          "locked_maps": "Locked maps",
+          "locked_datasets": "Locked datasets",
+          "insight": "Deep insights",
+          "title_maps": "Maps",
+          "title_datasets": "Datasets"
+        },
+        "imports": {
+          "show": "SHOW",
+          "completed": " completed!",
+          "warnings": "Some warnings were produced for ",
+          "from": " from "
+        },
+        "list_view": {
+          "read": "READ",
+          "learn": "Learn more",
+          "and_more": "and %{smart_count} more",
+          "no_tags": "No tags"
+        },
+        "map_templates": {
+          "merge": "Merge your current dataset with another, existing dataset.",
+          "style": "Style your layer based on column values."
+        },
+        "onboarding": {
+          "hello": "Hello, ",
+          "welcome": "Welcome to CARTO!",
+          "drag_your_data": "Drag your data file to your dashboard to connect your dataset and create your first map.",
+          "new_map": "New map"
+        },
+        "sync_dataset": {
+          "check_sync": "Checking synchronization",
+          "saving": "Saving…"
+        }
+      },
+      "data_library": {
+        "content": {
+          "error_templ": "Oouch! There has been an error",
+          "contact": "If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>.",
+          "searching": "Searching",
+          "loading": "Loading",
+          "view_more": "View more",
+          "no_results": "Oh! No results",
+          "try_again": "Your search was correct but returned no results, please try with a different set of parameters before running it again"
+        },
+        "filters": {
+          "placeholder": "by name",
+          "all_categ": "All categories",
+          "administrative": "Administrative regions",
+          "cultural": "Cultural datasets",
+          "physical": "Physical datasets",
+          "historic": "Historic",
+          "building": "Building footprints",
+          "census": "US Census"
+        },
+        "header": {
+          "library": "Data library",
+          "resources": "Open resources to help you populate your maps",
+          "country_flt": "Filter datasets by country selecting it in this map"
+        }
+      },
+      "mobile_maps": {
+        "about_del": "You are about to delete your application",
+        "remember": "Remember, once you delete it there is no going back",
+        "cancel": "Cancel",
+        "delete": "Delete this application"
+      },
+      "organization": {
+        "about_del_org": "You are about to delete your organization.",
+        "all_removed": "You will remove this organization and all its users (including this account)",
+        "no_recover": "and it will not be possible to recover its information (including tables and data) after this deletion.",
+        "provide_passwd": "If you want to proceed, type your password:",
+        "your_passwd": "Your password",
+        "cancel": "Cancel",
+        "delete_org": "Yes, delete the organization",
+        "about_del_usr": "You are about to delete %{username}'s account.",
+        "all_lost": "By deleting this account all %{username}'s maps and datasets will be lost, but extra credits will be reassigned to your user.",
+        "type_passwd": "Type your password, please.",
+        "delete_usr": "Yes, delete %{username} account",
+        "you_and_org": "You and all organization users",
+        "the_user": "The user",
+        "you": "You",
+        "api": "API keys",
+        "oauth": "OAuth credentials",
+        "about_regen_all": "You are about to regenerate the %{type} for all the users of the organization",
+        "about_regen_user": "You are about to regenerate the %{type} for this user of the organization",
+        "about_regen_your": "You are about to regenerate your %{type}",
+        "update_api": "%{scope} will need to update all deployed apps with the new API keys. Are you sure you want to continue?",
+        "update_oauth": "%{scope} will have to update all OAuth keys in apps where you are using CARTO. Are you sure?",
+        "regen": "Regenerate %{type}",
+        "adding_usr_grp": "Adding users to group",
+        "add_usr_grp": "Add users to this group",
+        "share_in_grp": "When sharing a dataset or map with a group all the users within that group will get the same permissions.",
+        "add_usr": "Add users",
+        "grp_placeholder": "Enter a name of group",
+        "create_grp": "Create group",
+        "creating_grp": "Creating group",
+        "grp_create_flash": "Could not create group for some unknown reason, please try again",
+        "grp_name": "Group name",
+        "delete_grp": "Delete this group",
+        "save_grp": "Save changes",
+        "grp_update_flash": "Could not update group for some unknown reason, please try again",
+        "remove_from_grp": "Remove from group",
+        "removing_usr": "Removing users",
+        "add_users": "Add users",
+        "adding_users": "Adding users",
+        "settings": "Settings",
+        "create_new_group": "Create new group",
+        "user_pl": "%{smart_count} User |||| %{smart_count} Users",
+        "no_grps_yet": "You have not created any groups yet",
+        "grp_advantage": "Creating groups enables you to visualize and search for user members assigned to a business group or team in your organization.",
+        "getting_usrs": "Getting users",
+        "shared_map": "%{smart_count} shared map |||| %{smart_count} shared maps",
+        "shared_dataset": "%{smart_count} shared dataset |||| %{smart_count} shared datasets",
+        "icon_picker": {
+          "icons": "Icons",
+          "view_all": "View all icons",
+          "use_as_markers": "These icons can be used as markers.",
+          "sel_all": "Select all",
+          "desel_all": "Deselect all",
+          "del_icons": "Delete icons...",
+          "upload_icons": "Upload organization icons",
+          "org_icons": "Organization icons",
+          "deleting_icons": "You are deleting %{smart_count} icon from your organization. |||| You are deleting %{smart_count} icons from your organization.",
+          "once_deleted": "Once icons are deleted they cannot be recovered. ",
+          "maps_affected": "Any maps within the organization that use this icon will be adversely affected. |||| Any maps within the organization that use these icons will be adversely affected.",
+          "be_sure": "Please be sure before proceeding.",
+          "delete": "Ok, delete",
+          "uploading": "Uploading icons...",
+          "delete_pl": "Delete icon... |||| Delete icons...",
+          "deleting": "Deleting icons..."
+        },
+        "invite_users": {
+          "invite": "Invite users to your Organization",
+          "become_part": "New user will become part of your CARTO organization account.",
+          "sending": "Sending invites...",
+          "error": "Sorry, something went wrong.",
+          "enable_sign": "If you want to invite users you need to enable the sign in page for your organization.",
+          "enable": "Enable sign in",
+          "enabled_success": "You have enabled the sign in page successfully!",
+          "users_email": "Users email",
+          "separate": "Separate emails by commas",
+          "email_used": "That email is already used in this organization",
+          "no_viewers": "You can't send viewer invitations because you don't have viewer seats",
+          "read_only": "Viewer users can only read, not write, data and maps",
+          "invite_users": "Invite users"
+        },
+        "org_notif": {
+          "about_remove": "You are about to remove a notification",
+          "sure": "Are you sure you want to remove it?",
+          "cancel": "Cancel",
+          "ok": "Ok, remove it",
+          "sending": "Sending",
+          "send": "Send"
+        },
+        "org_users": {
+          "create": "Create User",
+          "invite": "Invite User",
+          "owner": "OWNER",
+          "admin": "ADMIN",
+          "viewer": "VIEWER",
+          "builder": "BUILDER",
+          "search": "Search",
+          "placeholder": "Search by username or email",
+          "seats": "Builder (%{assigned_seats}/%{seats}) - Viewer (%{assigned_viewer_seats}/%{viewer_seats})",
+          "add_usr": "Add users",
+          "near_limit": "You are near your seats limit. Consider to <a href=\"%{upgradeUrl}\">upgrade your account</a>.",
+          "contact": "<a href=\"mailto:sales@carto.com\">Contact us</a> if you have any questions.",
+          "upgrade": "Upgrade account",
+          "no_user_found": "Unfortunately we haven't found any user with these parameters",
+          "getting_users": "Getting users..."
+        }
+      },
+      "profile": {
+        "success": "Your changes have been saved correctly.",
+        "error": "Could not save profile, please try again."
+      },
+      "public_dataset": {
+        "col_deleted": "Your column has been deleted",
+        "col_deleting": "Deleting your column",
+        "col_added": "Your column has been added",
+        "col_adding": "Adding new column",
+        "col_renaming": "renaming column",
+        "col_renamed": "Column has been renamed",
+        "col_changing": "Changing column type",
+        "col_changed": "Column type has been changed",
+        "tbl_loading": "loading table",
+        "tbl_loaded": "loaded",
+        "view_datasets": "View your datasets",
+        "view_maps": "View your maps",
+        "close": "Close session",
+        "dialogs": {
+          "query": "Query this table",
+          "sql_api": "Using the <a href=\"https://docs.carto.com/cartodb-platform/sql-api.html\" target=\"_blank\">CARTO SQL API</a> you can perform any SQL query to either yours or other users tables.",
+          "close": "Close",
+          "export": "Export dataset",
+          "sel_format": "Select the preferred file format.",
+          "sel_the_geom": "To download any geospatial format like SHP, KML or GeoJSON don't forget to select the_geom on your query.",
+          "match_rows": "<strong class=\"Checkbox-strong\">Match rows with the map view.</strong> This option reduces file size.",
+          "cancel": "Cancel",
+          "preparing": "We are preparing your download. Depending on the size, it could take some time.",
+          "checking": "Checking georeferences…"
+        },
+        "map_view": {
+          "match": "Match rows with the map view."
+        },
+        "public_header": {
+          "guides": "<a href='https://carto.com/learn/guides' class='guides'>Guides</a>",
+          "signup": "<a class='signup' href='https://carto.com/signup'>Sign up</a>",
+          "login": "<a href='https://carto.com/login' class='border login'>Login</a>"
+        },
+        "public_table": {
+          "data_empty": "This dataset is empty",
+          "owner": "If you are the owner of this dataset remember to login and add your desired rows.",
+          "otherwise": "If not, you can't do anything interesting here."
+        },
+        "table_view": {
+          "no_result": "No results on this query",
+          "try_again": "Try with a different one or just <a href=\"#\" class=\"clearview\">clear this view</a>",
+          "loading": "Loading results",
+          "dataset_from": "<a href=\"#/export-query\" class=\"export_query\">create dataset from query</a> or <a href=\"#/clear-view\" class=\"clearview\">clear view</a>",
+          "clear": "No resulting rows for this query, <a href=\"#/clear-view\" class=\"clearview\">clear this sql view</a>",
+          "scroll_down": "Scroll down and then up",
+          "scroll_up": "Scroll up and then down",
+          "pagination": "It will fire the pagination.",
+          "loading_rows": "Loading more rows...",
+          "moment": "Just a few seconds.",
+          "saving": "Saving your edit",
+          "saved": "Sucessfully saved",
+          "error": "Oops, there has been an error saving your changes.",
+          "row_deleting": "Deleting row",
+          "row_deleted": "Sucessfully deleted"
+        }
+      },
+      "public_profile": {
+        "load_title": "Loading visualizations",
+        "user_feed": {
+          "no_public_data": "%{name} doesn't have any public data yet",
+          "view_more": "View more",
+          "error": {
+            "retrieve_maps": "We couldn't retrieve the maps :(",
+            "reload": "Reload the page again. If the problem persists contact us at <a class=\"js-mail-link\" href=\"mailto:support@carto.com\">support@carto.com</a>."
+          }
+        }
+      }
+    }
+  },
+  "deep_insights": {
+    "widgets": {
+      "refresh": "REFRESH",
+      "no_results": "No results",
+      "no_match": "Your search \"%{query}\" didn't match<br/>with any value.",
+      "try_again": "Try searching again.",
+      "selected": " selected",
+      "unlock": "unlock",
+      "no_selected": "None selected",
+      "lock": "lock",
+      "all": "all",
+      "srch_categ": "search in %{smart_count} category |||| search in %{smart_count} categories",
+      "cancel": "cancel",
+      "found": "found",
+      "null_rows": " null rows",
+      "of_total": "of total",
+      "placeholder": "Search by %{columnName}",
+      "apply": "apply",
+      "tooltip": "More options",
+      "edit": "Edit",
+      "delete": "Delete...",
+      "null_rows_2": "null rows",
+      "null_rows_3": "NULL ROWS",
+      "min": "MIN",
+      "avg": "AVG",
+      "max": "MAX",
+      "zoom": "zoom",
+      "clear": "clear",
+      "to": "to",
+      "clear2": "Clear",
+      "sel_from": "Selected from"
     }
   }
 }

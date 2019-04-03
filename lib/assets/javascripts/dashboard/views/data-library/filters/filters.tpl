@@ -13,7 +13,7 @@
 
     <div class="Filters-typeItem Filters-typeItem--searchField js-search-field">
       <form class="Filters-searchForm js-search-form" action="#">
-        <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- q %>" placeholder="by name" />
+        <input class="Filters-searchInput CDB-Text CDB-Size-medium js-search-input" type="text" value="<%- q %>" placeholder="<%- _t('dashboard.views.data_library.filters.placeholder') %>" />
         <% if (q) { %>
           <div class="CDB-Shape js-clean-search">
             <div class="CDB-Shape-close is-blue is-large"></div>

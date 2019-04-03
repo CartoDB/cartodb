@@ -77,3 +77,6 @@ yarn.lock
 public/static.tar.gz
 compilation-stats.json
 npm-debug.log.*
+resqstart.log
+serverstart.log
+

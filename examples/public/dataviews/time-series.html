@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Time Series widget | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray">
+    <div class="dataview">
+      <ul>
+        <li>
+          <h2 class="h2">Column</h2>
+          <input id="column" type="text" value="date"  class="input_text open-sans"></input>
+        </li>
+        <li>
+          <h2 class="h2">Aggregation</h2>
+          <select id="aggregation"  class="select">
+            <option value="auto">Auto</option>
+            <option value="millennium">Millennium</option>
+            <option value="century">Century</option>
+            <option value="decade">Decade</option>
+            <option value="year">Year</option>
+            <option value="quarter">Quarter</option>
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+            <option value="day">Day</option>
+            <option value="hour">Hour</option>
+            <option value="minute">Minute</option>
+          </select>
+        </li>
+        <li>
+          <h2 class="h2">Offset</h2>
+          <input id="offset" type="number" value="1"  class="input_text open-sans"></input>
+        </li>
+      </ul>
+      <button  class="button open-sans" onclick="applyDataviewChanges()">Apply</button>
+      <pre class="code" id="data"></pre>
+    </div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Time Series widget</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create a widget with the time series dataview.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select different aggregations on the form.</p>
+          </section>
+          <div id="controls">
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const source = new carto.source.Dataset('railroad_data');
+
+      const timeseriesDataview = new carto.dataview.TimeSeries(source, 'date', {
+        aggregation: carto.dataview.timeAggregation.AUTO,
+        offset: 1
+      });
+
+      timeseriesDataview.on('dataChanged', data => {
+        document.getElementById('data').innerHTML = JSON.stringify(data, null, 4);
+      });
+
+      timeseriesDataview.on('error', error => {
+        alert(error.message);
+      });
+
+      client.addDataview(timeseriesDataview);
+
+      function applyDataviewChanges() {
+        const column = document.getElementById('column').value;
+        const aggregation = document.getElementById('aggregation').value;
+        const offset = document.getElementById('offset').value;
+
+        timeseriesDataview.setColumn(column);
+        timeseriesDataview.setAggregation(aggregation);
+        timeseriesDataview.setOffset(parseInt(offset));
+      }
+    </script>
+  </body>
+</html>

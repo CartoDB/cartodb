@@ -10,6 +10,7 @@ require_relative './gpx_splitter'
 require_relative './osm_splitter'
 require_relative './fgdb_splitter'
 require_relative './gpkg_splitter'
+require_relative './vfk_splitter'
 
 module CartoDB
   module Importer2
@@ -19,9 +20,9 @@ module CartoDB
       SUPPORTED_FORMATS     = %w{
         .csv .shp .ods .xls .xlsx .tif .tiff .kml .kmz
         .js .json .tar .gz .tgz .osm .bz2 .geojson .gpkg
-        .gpx .tab .tsv .txt .gdb .fgdb
+        .gpx .tab .tsv .txt .gdb .fgdb .vfk
       }
-      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter].freeze
+      SPLITTERS = [KmlSplitter, OsmSplitter, GpxSplitter, FgdbSplitter, GpkgSplitter, VfkSplitter].freeze
 
       DEFAULT_IMPORTER_TMP_SUBFOLDER = '/tmp/imports/'
 

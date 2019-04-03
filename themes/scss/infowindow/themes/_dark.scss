@@ -1,0 +1,75 @@
+// Dark infowindow styles
+// ----------------------------------------------
+
+$sBg-dark: #2E3C43;
+
+.CDB-infowindow.CDB-infowindow--dark {
+  background: $sBg-dark;
+  color: #FFF;
+  .CDB-infowindow-title {
+    color: #FFF;
+  }
+  .CDB-hook-inner {
+    background: $sBg-dark;
+  }
+  .CDB-hook:before {
+    border-top: 16px solid $sBg-dark;
+  }
+  .CDB-infowindow-mediaTitle {
+    .CDB-infowindow-subtitle {
+      color: #FFF;
+    }
+    .CDB-infowindow-title {
+      color: #FFF;
+    }
+  }
+  .CDB-infowindow-tabs {
+    background: rgba(0, 0, 0, 0.16);
+  }
+  .CDB-infowindow-tabsLinks {
+    color: #3AA9E3;
+    &.is-active {
+      border-bottom: 1px solid #FFF;
+      color: #FFF;
+    }
+  }
+  .CDB-infowindow-navigation {
+    border-top: 1px solid rgba(0, 0, 0, 0.24);
+    color: rgba(255, 255, 255, 0.64);
+  }
+  .CDB-loading-subtitle {
+    background: #282C2F;
+  }
+  .CDB-loading-title {
+    background: #282C2F;
+  }
+  .CDB-loading-bg {
+    opacity: 0.3;
+  }
+  .CDB-infowindow-canvasShadow--top {
+    @include background-gradient($sBg-dark, rgba(255, 255, 255, 0));
+  }
+  .CDB-infowindow-canvasShadow--bottom {
+    @include background-gradient(rgba(255, 255, 255, 0), $sBg-dark);
+  }
+  .CDB-infowindow-list .ps-scrollbar-x-rail {
+    background: linear-gradient(180deg, transparent 50%, #4F5B61 50%) !important;
+    .ps-scrollbar-x {
+      background: #747D82 !important;
+    }
+  }
+  .CDB-infowindow-list .ps-scrollbar-y-rail {
+    background: linear-gradient(90deg, transparent 50%, #4F5B61 50%) !important;
+    .ps-scrollbar-y {
+      background: #747D82 !important;
+    }
+  }
+}
+.CDB-infowindow-headerBg--dark {
+  .CDB-infowindow-subtitle {
+    color: #636D72;
+  }
+  .CDB-infowindow-title {
+    color: #2E3C43;
+  }
+}

@@ -1,8 +1,8 @@
-<%= content_for(:title) do %>CARTO · Data Library<% end %>
+<%= content_for(:title) do %><%= t('datalib.index.datalib') %><% end %>
 
-<%= content_for(:description) do %>Incorporate your data with datasets from CARTO and create insightful visualizations that leverage big data and location intelligence.<% end %>
+<%= content_for(:description) do %><%= t('datalib.index.incorporate') %><% end %>
 
-<%= content_for(:keywords) do %>location intelligence, dataset, big data, location services, CARTO<% end %>
+<%= content_for(:keywords) do %><%= t('datalib.index.keywords') %><% end %>
 
 <div class="CDB-Text DataLibrary">
   <div class="DataLibrary-inner js-data_library">
@@ -19,7 +19,7 @@
         <li class="Grid-cell Grid-cell--col10 Grid-cell--col12--mobile">
           <h2 class="Title Title--m u-vspace-m">The power of open data</h2>
 
-          <p class="DataLibrary-text">From our Data Library or your dashboard you can access through a single click a collection of datasets that contain a wide variety of information. Explore within our data library: World Borders, European Countries, Urban Areas, and Populated Places.</p>
+          <p class="DataLibrary-text"><%= t('datalib.index.information') %></p>
         </li>
       </ul>
     </div>
@@ -32,7 +32,7 @@
           </div>
 
           <h3 class="PublicTitle PublicTitle--feature u-vspace--12">Explore</h3>
-          <p class="Feature-text">From your dashboard access an abundance of datasets from our data library. We have data for your disparate&nbsp;needs.</p>
+          <p class="Feature-text"><%= t('datalib.index.disparate') %></p>
         </li>
 
         <li class="Grid-cell Grid-cell--col4 Grid-cell--col12--mobile u-tspace-xl">
@@ -41,7 +41,7 @@
           </div>
 
           <h3 class="PublicTitle PublicTitle--feature u-vspace--12">Discover</h3>
-          <p class="Feature-text">We’ve aggregated many different data sources to make it easy for you to search and uncover the datasets that are right for&nbsp;you.</p>
+          <p class="Feature-text"><%= t('datalib.index.aggregated') %></p>
         </li>
 
         <li class="Grid-cell Grid-cell--col4 Grid-cell--col12--mobile u-tspace-xl">
@@ -50,7 +50,7 @@
           </div>
 
           <h3 class="PublicTitle PublicTitle--feature u-vspace--12">Use and Enjoy</h3>
-          <p class="Feature-text">With open data you can start mapping the world around you seamlessly and with a few clicks directly from your&nbsp;dashboard.</p>
+          <p class="Feature-text"><%= t('datalib.index.seamless') %></p>
         </li>
       </ul>
     </div>

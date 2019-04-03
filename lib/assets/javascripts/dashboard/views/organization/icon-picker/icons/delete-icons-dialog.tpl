@@ -6,35 +6,22 @@
     <% } %>
   </div>
   <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m u-tSpace-xl">
-    You are deleting
-    <% if (numOfIcons <= 0) { %>
-      icons
-    <% } else if (numOfIcons === 1) { %>
-      1 icon
-    <% } else { %>
-      <%- numOfIcons  %> icons
-    <% } %>
-    from your organization.
+    <%= _t('dashboard.views.organization.icon_picker.deleting_icons', {smart_count: numOfIcons}) %>
   </h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
-    Once icons are deleted they cannot be recovered. Any maps within the organization that use
-    <% if (numOfIcons === 1) { %>
-      this icon
-    <% } else { %>
-      these icons
-    <% } %>
-    will be adversely affected.
+    <%= _t('dashboard.views.organization.icon_picker.once_deleted') %>
+    <%= _t('dashboard.views.organization.icon_picker.maps_affected', {smart_count: numOfIcons}) %>
   </p>
-  <p class="CDB-Text CDB-Size-medium u-altTextColor">Please be sure before proceeding.</p>
+  <p class="CDB-Text CDB-Size-medium u-altTextColor"><%= _t('dashboard.views.organization.icon_picker.be_sure') %></p>
 </div>
 
 <div class="Dialog-footer Dialog-footer--simple u-inner">
   <div class="Dialog-footerContent">
     <button class="CDB-Button CDB-Button--secondary js-cancel">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.organization.cancel') %></span>
     </button>
     <button class="u-lSpace--xl CDB-Button CDB-Button--error js-submit">
-      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Ok, delete</span>
+      <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.organization.icon_picker.delete') %></span>
     </button>
   </div>
 </div>

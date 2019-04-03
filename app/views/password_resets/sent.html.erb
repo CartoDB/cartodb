@@ -1,4 +1,4 @@
-<% content_for :title do %>Password sent<% end %>
-<% title = 'Ok, we have sent you an email' %>
-<% description = 'There you will find the instructions for entering your account and change — if desired — your password.' %>
+<% content_for :title do %><%= t('password_reset.sent.title') %><% end %>
+<% title = t('password_reset.sent.email_sent') %>
+<% description = t('password_reset.sent.desc') %>
 <%= render :partial => 'message', locals: { title: title, description: description } %>

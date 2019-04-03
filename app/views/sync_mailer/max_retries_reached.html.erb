@@ -4,9 +4,9 @@
 
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
-    <p>The automatic synchronization of your dataset <strong><%=@dataset_name %></strong> has reached the maximum number of synchronization attempts and it's still failing to sync.</p>
-    <p>If you'd like to continue trying, log in to your account and manually reactivate synching by clicking “Sync now”</p>
-    <p>For more information about error messages and possible solution, <a href="https://carto.com/developers/import-api/support/import-errors/" target="_blank" style="color: #1181FB;">click here</a>.</p>
+    <p><%= t('sync.max.automatic') %><strong><%=@dataset_name %></strong><%= t('sync.max.maximum') %></p>
+    <p><%= t('sync.max.continue') %></p>
+    <p><%= t('sync.max.info') %><a href="https://carto.com/developers/import-api/support/import-errors/" target="_blank" style="color: #1181FB;"><%= t('sync.max.click') %></a>.</p>
   </td>
 </tr>
 

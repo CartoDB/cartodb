@@ -2,9 +2,9 @@
   <div class="Dialog-headerIcon Dialog-headerIcon--neutral">
     <i class="CDB-IconFont CDB-IconFont-unlock"></i>
   </div>
-  <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m u-tSpace-xl"><%- vis.get('name') %> privacy</h4>
+  <h4 class="CDB-Text CDB-Size-large u-mainTextColor u-bSpace--m u-tSpace-xl"><%- vis.get('name') %><%= _t('dashboard.views.dashboard.dialogs.change_privacy.privacy') %></h4>
   <p class="CDB-Text CDB-Size-medium u-altTextColor">
-    Although we believe in the power of open data, you can also protect your <%- vis.isVisualization() ? 'map' : 'dataset' %>.
+    <%- vis.isVisualization() ? _t('dashboard.views.dashboard.dialogs.change_privacy.protect_map') : _t('dashboard.views.dashboard.dialogs.change_privacy.protect_dataset') %>.
   </p>
 </div>
 <div class="CDB-Text Dialog-body u-inner OptionCards">
@@ -16,9 +16,9 @@
       <h5 class="OptionCard-title OptionCard-title CDB-Text CDB-Size-large"><%- m.get('title') %></h5>
       <% if (m.get('privacy') == 'PASSWORD') { %>
         <% if (m.get('disabled')) { %>
-          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" disabled/>
+          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="<%= _t('dashboard.views.dashboard.dialogs.change_privacy.placeholder') %>" value="<%- password %>" type="password" disabled/>
         <% } else { %>
-          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="Type your password here" value="<%- password %>" type="password" />
+          <input class="js-password-input Input CDB-Text CDB-Size-medium ChangePrivacy-passwordInput u-altTextColor" placeholder="<%= _t('dashboard.views.dashboard.dialogs.change_privacy.placeholder') %>" value="<%- password %>" type="password" />
         <% } %>
       <% } else { %>
       <div class="OptionCard-desc CDB-Text CDB-Size-medium u-altTextColor"><%- m.get('desc') %></div>
@@ -31,17 +31,17 @@
   <div class="CDB-Text Dialog-body u-inner ChangePrivacy-upgradeBanner">
     <div class="UpgradeElement ChangePrivacy-upgradeBannerInner">
       <div class="UpgradeElement-info">
-        <p class="UpgradeElement-infoText u-ellipsLongText">To get advantage of all the privacy options you should upgrade your plan</p>
+        <p class="UpgradeElement-infoText u-ellipsLongText"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.advantage') %></p>
       </div>
       <div class="UpgradeElement-actions">
         <% if (showTrial) { %>
           <div class="UpgradeElement-trial">
             <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-            <p class="UpgradeElement-trialText u-ellipsLongText">14 days Free trial</p>
+            <p class="UpgradeElement-trialText u-ellipsLongText"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.trial') %></p>
           </div>
         <% } %>
         <a href="<%- upgradeUrl %>" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton">
-          <span>upgrade</span>
+          <span><%= _t('dashboard.views.dashboard.dialogs.change_privacy.upgrade') %></span>
         </a>
       </div>
     </div>
@@ -58,11 +58,11 @@
         </div>
         <div class="DefaultParagraph DefaultParagraph--secondary">
           <% if (sharedWithOrganization) { %>
-            Shared with your whole organization.
+            <%= _t('dashboard.views.dashboard.dialogs.change_privacy.shared_with_org') %>
           <% } else { %>
-            Shared with <%- sharedEntitiesCount %> <%- personOrPeopleStr %>.
+            <%= _t('dashboard.views.dashboard.dialogs.change_privacy.shared_with', {smart_count: sharedEntitiesCount}) %>
           <% } %>
-          <a href="#" class="js-share">Open sharing settings</a>
+          <a href="#" class="js-share"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.open_sharing') %></a>
         </div>
       </div>
       <div class="u-flex">
@@ -87,16 +87,16 @@
       <div class="LayoutIcon ChangePrivacy-shareBannerIcon">
         <i class="CDB-IconFont CDB-IconFont-people CDB-IconFont--super"></i>
       </div>
-      <div class="DefaultParagraph DefaultParagraph--secondary CDB-Text CDB-Size-medium">Team work is always better. <a href="#" class="js-share">Share it with your colleagues</a></div>
+      <div class="DefaultParagraph DefaultParagraph--secondary CDB-Text CDB-Size-medium"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.team_work') %></div>
     </div>
   <% } %>
 <% } %>
 
 <div class="CDB-Text Dialog-footer Dialog-footer--simple u-inner ChangePrivacy-startFooter">
   <button class="CDB-Button CDB-Button--secondary cancel">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.cancel') %></span>
   </button>
   <button class="ok u-lSpace--xl CDB-Button CDB-Button--primary <%- saveBtnClassNames %>">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Save settings</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('dashboard.views.dashboard.dialogs.change_privacy.save') %></span>
   </button>
 </div>

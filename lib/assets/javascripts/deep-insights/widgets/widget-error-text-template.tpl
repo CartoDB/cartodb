@@ -8,7 +8,7 @@
 
 <% if (refresh) { %>
   <button class="CDB-Button CDB-Button--secondary CDB-Button--medium u-tSpace-xl js-refresh">
-    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium">REFRESH</span>
+    <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium"><%= _t('deep_insights.widgets.refresh') %></span>
   </button>
 <% }  else { %>
   <%= placeholder %>

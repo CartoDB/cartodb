@@ -1,5 +1,5 @@
 <p class="CDB-Text CDB-Size-medium u-vspace-m">
-  * Fields marked with an asterisk are visible on your public profile,
+  <%= _t('profile.views.form.asterisk') %>
   <% if (isInsideOrg) { %>
     <a href="//<%= organizationName %>.<%= accountHost %>/u/<%= user.username %>/me" target="_blank">
       <%= organizationName %>.<%= accountHost %>/u/<%= user.username %>/me

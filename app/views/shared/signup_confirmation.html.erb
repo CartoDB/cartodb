@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @organization ? @organization.name : 'User' %> sign up<% end %>
+<% content_for :title do %><%= @organization ? @organization.name : 'User' %><%= t('shared.signup.sign') %><% end %>
 
 <% content_for :js do %>
   <%= javascript_include_tag 'common', 'common_vendor', 'confirmation' %>
@@ -19,16 +19,16 @@
           <div class="Sessions-logoContainer">
             <picture class="Navbar-brand">
               <% if @organization.present? %>
-                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
               <% else %>
-                <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+                <%= image_tag("layout/carto-logo.svg", :alt => t('carto_name')) %>
               <% end %>
             </picture>
           </div>
 
           <div class="js-info">
-            <h1 class="Sessions-title u-tspace-m">Your account is being created</h1>
-            <p class="Sessions-description">It will take us some time, just a few seconds.</p>
+            <h1 class="Sessions-title u-tspace-m"><%= t('shared.signup.account') %></h1>
+            <p class="Sessions-description"><%= t('shared.signup.time') %></p>
           </div>
         </div>
       </div>

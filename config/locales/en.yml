@@ -2,8 +2,629 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  user_mailer:
-    ask_for_invitation:
-      subject: 'Thanks for signing up for cartodb beta'
-    invitation_sent:
-      subject: 'Thanks for signing up for cartodb beta'
+  email:
+    title: 'Email or username'
+    placeholder: 'email or username'
+  password: 'password'
+  carto_name: 'CARTO'
+  maps: 'maps'
+  datasets: 'datasets'
+  builder: 'Builder'
+  engine: 'Engine'
+  mobile: 'Mobile'
+  product: 'Product'
+  pricing: 'Pricing'
+  solutions: 'Solutions'
+  blog: 'Blog'
+  safari: 'Safari'
+  chrome: 'Chrome'
+  firefox: 'Firefox'
+  name: 'Name'
+  description: 'Description'
+  platform: 'Platform'
+  here: 'here'
+  signup_url: 'https://carto.com/signup'
+  day:
+    one: 'day'
+    other: 'days'
+  map:
+    one: 'Map'
+    other: 'Maps'
+  dataset:
+    one: 'Dataset'
+    other: 'Datasets'
+  sessions:
+    new:
+      login: 'Log in'
+      or_login_with: 'OR LOG IN WITH:'
+      dont_have_account: "Don't have an account yet?"
+      not_member: 'Not a member of the %{org_name} organization? Try the <a href="%{login_url}">general login</a> instead.'
+      use_email: "Please, remember to use an email address belonging to this organization to login to your account."
+      forgot: 'Forgot?'
+      signup: 'Sign up here'
+    account_error:
+      user: 'User '
+      auth_error: ' authentication error'
+      validate_account: 'You must validate your email account'
+      check_email: 'Please check your email inbox and click the "Activate your account" button in the welcome mail.'
+      resend_valid: "If you didn't receive your validation email, click <a href=\"%{validation_url}\">here</a> and a new email will be sent directly to you."
+      resent_valid_part1: "If you didn't receive your validation email, click <a href="
+      resent_valid_part2: '>here</a> and a new email will be sent directly to you.'
+    multifact:
+      use_google: 'Use Google Authenticator app to scan the QR code.'
+      qr_problem: 'If you have any problem with the QR code, please'
+      try_manual: 'try with a manual code'
+      scan_qr: 'If you have any problem, you can scan the QR code.'
+      try_qr: 'Try with the QR code'
+      verify: 'Verify'
+      conf_issues: 'If you have some issues with the configuration you can '
+      skip: 'skip this step'
+  admin:
+    client_apps:
+      api_key:
+        your_api_keys: 'Your API keys |'
+      api_keys_cta:
+        unlock: 'Unlock the potential in your applications'
+        create: 'Create solutions using different add-ons and APIs.'
+        engine: 'Engine'
+        free: 'Free for internal and non-commercial applications'
+        discover: 'Discover'
+        incloud: 'In the cloud or on-premises'
+        enterprise: 'Access to Enterprise BI connectors'
+        fullapi: 'Full API access'
+        payseat: 'Pay-per-developer seat'
+      api_keys_form:
+        your_api: 'Your API Key'
+        no_api_key: 'No API key'
+        request_new: 'Request a new API key'
+        example_write: 'Example write'
+        example_read: 'Example read private'
+        config_api: 'Configure API keys from external providers'
+        google_maps: 'Google Maps'
+        google_maps_query: 'This is your Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        google_maps_query_org_1: 'This is the '
+        google_maps_query_org_2: ' Google Maps query string, contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        google_maps_org_api: 'This is the organization Google Maps API key'
+        learn_more: 'Learn more about location app authorization and API key management '
+      oauth:
+        your_oauth: 'Your OAuth credentials |'
+        approve: 'Approve applications to act on their behalf without sharing your password'
+        consumer_key: 'Consumer key'
+        learn_more: 'Learn more about '
+        using_oauth: 'using oauth in CARTO'
+        here: 'here'
+        consumer_secret: 'Consumer secret'
+        request_token: 'Request token URL'
+        access_token: 'Access token URL'
+        learn_more: 'Learn more about location app authorization and API key management '
+        gen_keys: 'Generate new keys'
+        author_link: 'https://carto.com/developers/fundamentals/authorization/'
+    orgs:
+      auth:
+        white_eml: 'Whitelisted email domains'
+        valid_domains: 'Only valid domains, wildcard (*) accepted (ex. *.carto.com)'
+        if_empty: 'If empty, login and signup pages will be disabled'
+        usr_pwd: 'Username / password'
+        login_email: 'Allow users to signup with their own username & email submission'
+        login_google: 'Allow users to signup with their own Google domain account'
+        login_github: 'Allow users to signup with their own GitHub account'
+        strong_pwd: 'Strong Passwords'
+        pwd_cond: 'Passwords must contain 8 characters, and require a combination of letters, numbers, and/or special characters.'
+        pwd_exp: 'Password Expiration'
+        unlimited: 'Unlimited'
+        save: 'Save changes'
+      ldap:
+        config: 'LDAP Configuration'
+        host: 'Host'
+        port: 'Port'
+        encryption: 'Encryption'
+        certif: 'Certificate file (if any)'
+        ssl: 'SSL Version'
+        conn_user: 'Connection user'
+        conn_pwd: 'Connection password'
+        id_fld: 'User Id. field'
+        name_fld: 'Username field'
+        eml_fld: 'User email field'
+        domain: 'Domain bases'
+        search: 'Additional search filter'
+        usr_cls: 'User object class'
+        grp_cls: 'Group object class'
+      notif:
+        desc: 'Notification Description'
+        sup_markup: 'Supported markup'
+        send_to: 'Send to:'
+        store_up_to: '(stores up to 12 most recent notifications)'
+        remove: 'Remove for all users'
+      settings:
+        img_size: 'Recommended images should be 128x128 pixels of size'
+        display_name: 'Display name'
+        check_your: 'Check your '
+        public_page: 'public page'
+        website: 'Website'
+        twitter_name: 'Twitter username'
+        disqus_name: 'Disqus shortname'
+        be_notif: 'Be notified by new comments in your pages'
+        int_eml: 'Internal support email'
+        eml_support: 'Email you will use to give support to your users'
+        def_quota: 'Default new user quota'
+        set_quota: 'Set (in MB) the quota of new users in your organization'
+        usr_keys: 'Users API key'
+        regen_keys: 'Regenerate all API keys'
+        involv_keys: 'This involves all your organization users API keys'
+        config_keys: 'Configure API keys from external providers'
+        google_query: 'Google Maps query string'
+        this_is: 'This is the '
+        google_change_q: ' Google Maps query string. Contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        google_key: 'Google Maps private key'
+        google_change_k: ' Google Maps private key contact with <a href="mailto:support@carto.com">support@carto.com</a> to change it.'
+        save: 'Save changes'
+        del_org: 'Delete organization'
+        sure: 'Are you sure?'
+        del_org_data: 'Delete organization, including all users and data'
+    org_users:
+      form:
+        user_once: "Once you choose the username, you won't be able to change it"
+        invalid_eml: 'Email not valid'
+        choose_eml: 'We encourage you to choose an email from your organization'
+        new_pwd: 'New password'
+        pwd_conf: 'Confirm password'
+        user_type: 'User type'
+        builder: 'Builder '
+        build: 'Build and read'
+        viewer: 'Viewer '
+        org_owner_const: 'The organization owner cannot be a viewer user.'
+        org_admin_const: 'Organization admins can only be builder users.'
+        no_viewers: "You don't have viewer seats activated. "
+        contact_support: '<a href="mailto:enterprise-support@carto.com">Contact support</a> for more information.'
+        only_read: 'Only read'
+        can_manage_usrs: 'User has permission to manage users and groups and send notifications'
+        assign_admin: 'Only the organization owner can assign administrator rights'
+        used: 'Used by user'
+        assigned: 'Assigned to user'
+        total: 'Total'
+        upgrade: 'upgrade your account</a> if needed.'
+        ex_geocoding: "User has permission to exceed organization's geocoding quota"
+        no_extra_quota: "You can't enable extra quota. Contact support for more information."
+        ex_isolines: "User has permission to exceed organization's isolines quota from Here provider"
+        ex_routing: "User has permission to exceed organization's routing quota from Mapzen provider"
+        ex_twitter: "User has permission to exceed organization's Twitter credits"
+        master_key: 'User master API key'
+        regen_keys: 'Regenerate all API keys'
+        no_seats: "You can't create new users because you've run out of seats. "
+        del_usr: 'Delete user'
+        save: 'Save changes'
+        username: 'Username'
+        nameinvalid: 'Username not valid'
+        email: 'Email'
+        admin: 'Administrator'
+        multi_auth: 'Multi-factor authentication'
+        change_multi_warn: 'If you change the Multi-factor authentication, it will be available only for this user. When you change the status, the user will be logged out and redirected to the login page.'
+        ext_here_iso: 'Extra Here Isolines'
+        ext_route_api: 'Extra Routing API calls'
+        ext_tweets: 'Extra tweets'
+        ext_geocoding: 'Extra geocoding'
+        new_pwd_conf: 'Confirm new password'
+        user_quotas: 'User quotas'
+        create_user: 'Create user'
+      new:
+        user: 'New user'
+    pages:
+      shared:
+        tags:
+          browse: 'Browse by tag'
+      pub_data:
+        data_by: 'CARTO · Datasets by '
+      pub_maps:
+        maps_by: 'CARTO · Maps by '
+      usr_feed:
+        pub_feed: ' public feed'
+        member_since: 'Member since '
+    shared:
+      api_keys:
+        new_app: 'New application'
+        private: 'The simplest way to access your private data'
+      data_lib:
+        solutions: 'Solutions '
+        signup: 'Sign up'
+      footer:
+        footer: ' Footer '
+        guides: '<a href="https://carto.com/learn/guides/">Guides</a>'
+        developers: '<a href="https://carto.com/developers">Developers</a>'
+        version: 'Version: %{version}'
+        support: '<a href="mailto:support@carto.com">Support</a>'
+        onpremise: '<a href="mailto:onpremise-support@carto.com">Support</a>'
+        contact: '<a href="mailto:contact@carto.com">Contact</a>'
+      nores:
+        no_items: "%{name} doesn't have any items on this page"
+        try_instead: 'Try the %{link} instead'
+        first_page: 'first page'
+        no_public: "%{name} doesn't have any public %{item_type} yet"
+        maybe: 'But maybe they have some very interesting %{item_type}'
+      org_subhead:
+        profile: 'Organization profile'
+        settings: 'Auth settings'
+        users: ' users'
+        groups: 'Groups'
+        notif: 'Notifications'
+        billing: 'Billing'
+      pages_subhead:
+        profile: 'Profile'
+        account: 'Account'
+        api_keys: 'API keys'
+        billing: 'Billing'
+        settings: 'Organization settings'
+        support: 'Contact support'
+        admin: 'Contact your org. admin'
+        vip: 'Contact your VIP support'
+        issues: 'Having issues?'
+      pub_footer:
+        subscribe: 'Subscribe'
+        keepup: 'Keep up with CARTO announcements'
+        location: 'Location Data Services'
+        observ: 'Data Observatory'
+        source: 'Source Code'
+        banking: 'Banking & Finance'
+        bi: 'BI & Analytics'
+        government: 'Government'
+        real: 'Real Estate'
+        web: 'Web Development'
+        journal: 'Journalism'
+        natural: 'Natural Resources'
+        earth: 'Earth Observation'
+        noprofit: 'Non-profits'
+        education: 'Education'
+        connectors: 'Connectors'
+        dropbox: 'Dropbox'
+        google: 'Google Drive'
+        twitter: 'Twitter Maps'
+        mailchimp: 'MailChimp'
+        excel: 'Excel Data'
+        arcgis: 'ArcGIS™'
+        satellite: 'Satellite Imagery'
+        qlik: 'Qlik'
+        splunk: 'Splunk'
+        alteryx: 'Alteryx'
+        discover: 'Discover'
+        map_gallery: 'Map Gallery'
+        explore: 'Explore'
+        ambassadors: 'Ambassadors'
+        learn: 'Learn'
+        guides: 'Guides'
+        developers: 'Developers'
+        academy: 'The Map Academy'
+        resources: 'Resources Center'
+        webinars: 'Webinars'
+        about: 'About us'
+        team: 'Team'
+        jobs: 'Jobs'
+        press: 'Press'
+        partners: 'Partners'
+        attr: '<a class="Footer-link" href="https://carto.com/attributions">Attributions</a>'
+        contrib: 'Contributions'
+        contact: 'Contact us'
+        demo: 'Request a Live Demo'
+        terms: 'Terms of Service'
+        legal: 'Legal'
+      pub_head:
+        solutions: 'Solutions '
+        login: 'Login'
+        signup: 'Sign up'
+      sess_head:
+        not_part: 'Not part of '
+        goto: ' Go to '
+      trial:
+        period: "You're currently under your 30-day Trial Period. Add your billing info to keep using our platform."
+        method: 'Add payment method'
+      vis_head:
+        edit: 'Edit metadata…'
+        visual: 'VISUALIZE'
+    users:
+      lockout:
+        welcome: 'Welcome back,'
+        end_trial: "You've reached the end of your CARTO trial period."
+        upgrade: "By upgrading, you'll be able to continue using CARTO. Our Professional plan is a great fit for occasional use, and our Enterprise plans offer access to the Data Observatory, private sharing, custom connectors, and business-strength data services."
+        preserve_1: 'Your account and data will be preserved for '
+        preserve_2: ', so that upon upgrade you will regain access to the data and maps.'
+        student: "If you're a student or an ambassador, remember you can also qualify for our "
+        community: 'Community Program'
+        preserve_3: 'Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.'
+        contact: 'CONTACT SALES'
+        payment: 'ADD PAYMENT METHOD'
+        delete: 'DELETE ACCOUNT'
+    visual:
+      public:
+        old_public:
+          create: 'Create your own maps'
+          terms: 'Terms of Service'
+          privacy: 'Privacy policy'
+      embed_map:
+        map_created: 'Map created by #{@name} in CARTO'
+        upgrade_browser: 'This visualization only works in modern browsers. Upgrade yours and enjoy.'
+        attributions: "CARTO <a href='https://carto.com/attributions?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Attributions&utm_term=<%= @visualization.user.username %>' target='_blank'>attribution</a>"
+        logo_link: "https://carto.com?utm_source=Footer_Link&utm_medium=referral&utm_campaign=Embed_v1&utm_content=Logo"
+      embed_error:
+        title: 'Embed error | CARTO'
+        private: 'Looks like this map is set as private or no longer exists'
+      embed_pwd:
+        protected: 'Protected embed'
+        passwd: 'This embed is protected with password'
+      public_data:
+        maps: 'Maps using this dataset'
+      public_map:
+        datasets: 'Datasets in use'
+        more: 'More from '
+      public_pwd:
+        protected: 'Protected map'
+        passwd: 'This map is protected with password'
+  carto:
+    admin:
+      mobile:
+        form:
+          icon: 'App icon'
+          recommended: 'Recommended images should be 128x128 pixels of size'
+          type: 'App type'
+          license: 'License key'
+          api: 'Your API Key'
+          quota: 'Application quota'
+          monthly: ' monthly users'
+          delete: 'Delete application'
+          sure: 'Are you sure?'
+          this: 'Delete this application'
+        mobile:
+          expand: 'Expand quota'
+          open: ' monthly open users'
+          private: ' monthly private users'
+        new:
+          new_mobile: 'New mobile application |'
+          new_app: 'New application'
+        no_mobile:
+          no_app: 'You have not added any application yet.'
+          learn: 'Learn more about the power of our mobile SDK '
+    builder:
+      public:
+        embeds:
+          show:
+            untitled: 'Untitled map'
+            created: 'Map created by '
+            in_carto: ' in CARTO'
+          protected:
+            map: 'Protected map — CARTO'
+            passwd: 'This map is protected with password'
+            contact: 'Contact with the owner in case you want access to it.'
+    oauth:
+      consent:
+        title: 'CARTO · OAuth Authentication'
+  datalib:
+    index:
+      datalib: 'CARTO · Data Library'
+      incorporate: 'Incorporate your data with datasets from CARTO and create insightful visualizations that leverage big data and location intelligence.'
+      keywords: 'location intelligence, dataset, big data, location services, CARTO'
+      information: 'From our Data Library or your dashboard you can access through a single click a collection of datasets that contain a wide variety of information. Explore within our data library: World Borders, European Countries, Urban Areas, and Populated Places.'
+      disparate: 'From your dashboard access an abundance of datasets from our data library. We have data for your disparate&nbsp;needs.'
+      aggregated: "We’ve aggregated many different data sources to make it easy for you to search and uncover the datasets that are right for&nbsp;you."
+      seamless: 'With open data you can start mapping the world around you seamlessly and with a few clicks directly from your&nbsp;dashboard.'
+  explore:
+    index:
+      explore: 'CARTO &mdash; Explore'
+      discover: 'Discover insights through maps, data visualizations, and datasets. Everything related to big data and location intelligence is just one click away.'
+  geocoder:
+    finished:
+      msg1: "We've successfully geocoded "
+      msg2: ' out of '
+      msg3: ' points from '
+      errors: "Rows that are not geocoded could have errors on their column values, or just doesn't exist in our data. "
+      try_again: 'To try again set "Override all values" checkbox for those rows you want to geocode try again.'
+  home:
+    app_diag:
+      diag: 'CARTO Diagnosis'
+      dependencies: 'This page displays information about your installation of CARTO and dependencies. If any of the checks displays an error please follow instructions and install supported versions.'
+      problem: 'If you have any problem with your installation please write to '
+      google: 'CARTO Google Group'
+      include: ' including this information.'
+  import:
+    data:
+      msg1: 'Your dataset '
+      msg2: ' was successfully imported'
+      error: 'There was some error while importing your dataset '
+      out: ' out of '
+      imported: ' were successfully imported'
+  layouts:
+    keywords: ', datasets, maps, data visualization, spatial data, geospatial, carto'
+    app_passwd:
+      title: ' | CARTO'
+      contact: 'Contact with the owner in case you want access to it.'
+    explore:
+      keywords: 'carto, maps, data visualization tools, big data, location intelligence, deep insights, datasets'
+      map_moment: 'Map of the moment'
+    frontend:
+      desc: 'Create dynamic maps, analyze and build location-aware and geospatial applications with your data using the power of PostGIS in the cloud.'
+    front_layout:
+      title: 'CARTO | Login'
+  mailer:
+    footer:
+      msg: 'CARTO · Made in Madrid & New York City since 2012'
+  oauth:
+    author:
+      msg1: ' wants to connect to your CARTO database. This means that '
+      msg2: ' will be able to modify, create and delete fields from your database.'
+      authorize: 'Authorize access'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
+    failure:
+      denied: 'Authorization denied'
+      msg1: 'You have denied the oauth access for '
+      msg2: '. You can change this setting later if you reconsider.'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
+    success:
+      accept: 'Authorization accepted'
+      msg: 'You have allowed this request'
+      forgot: 'Forgot password?'
+      create: 'Create an account'
+  org_mailer:
+    invite:
+      hello: 'Hello and welcome!'
+      join: 'Join the '
+      org: ' organization in CARTO. Just '
+      create: 'create your account'
+      carto: 'CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.'
+      resources: 'Here are some resources to get you up and running:'
+      helpcenter: 'Help Center'
+      faqs: ': FAQs, guides and tutorials.'
+      devcenter: 'Developer Center'
+      guides: ': Platform documentation for developers.'
+      rescenter: 'Resource Center'
+      case: ': Case studies, webinars, and more.'
+      videos: 'Builder training videos: '
+      analysis: 'Analysis'
+      widgets: 'Widgets'
+      publishing: 'Publishing'
+      message: 'Below is a personalised message from your account administrator:'
+    quota:
+      title: 'You are over quota!'
+      hey: 'Hey there,'
+      growing: "It looks like your team is growing fast and you’ve run out of space."
+      reminder: 'This is a friendly reminder that your organization <strong>is over quota</strong>. You can upgrade your account and/or purchase more space to continue working at the capacity you need.'
+      upgrade: 'Upgrading your account is really simple just '
+      contact: 'contact one of our account experts'
+      meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
+      thanks: 'Thanks and Happy Mapping'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
+    seat:
+      title: 'No more seats left!'
+      hey: 'Hey there,'
+      growing: "It looks like your team is growing fast and you’ve run out of space."
+      reminder: 'This is a friendly reminder that your organization has <strong>no more seats left</strong>. You can purchase more seats to continue working at the capacity you need.'
+      obtain: 'Obtaning more seats is really simple: just '
+      contact: 'contact one of our account experts'
+      meantime: "In the meantime, take a look at some of the amazing things we’ve been up to at "
+      thanks: 'Thanks and Happy Mapping'
+      getmore: 'Get more seats'
+      link: '<a href="https://carto.com" style="color: #1181FB;">carto.com</a>.'
+  password_change:
+    edit:
+      reset: 'Reset your password'
+      current: 'Type your current password'
+      new: 'Type your new password'
+      retype: 'Retype your new password'
+      noaccount: "Don't have an account yet? "
+      signup: 'Sign up here'
+  password_reset:
+    form:
+      title: 'Reset password'
+    changed:
+      title: 'Password changed'
+      success: 'Your password has been updated successfully'
+    edit:
+      password: 'Password'
+      retype: 'Retype your password'
+      save: 'Save'
+    message:
+      signin: 'Sign in'
+      homepage: 'Go back to the homepage'
+    new:
+      title: 'Your email'
+      placeholder: 'Your email'
+      instructions: 'Send instructions'
+    sent:
+      title: 'Password sent'
+      email_sent: 'Ok, we have sent you an email'
+      desc: 'There you will find the instructions for entering your account and change — if desired — your password.'
+  shared:
+    signup:
+      sign: ' sign up'
+      account: 'Your account is being created'
+      time: 'It will take us some time, just a few seconds.'
+    sign_issue:
+      issue: ' signup issue'
+      please: 'Please, '
+      contact: 'contact the administrator of '
+      process: ' to begin your signup process.'
+      admin: 'Please, contact the administrator of '
+  signup:
+    already:
+      enabled: 'Account already enabled'
+      active: 'Your account is already active'
+      login: 'Login'
+      enjoy: ' and start enjoying your CARTO account.'
+    account:
+      enabled: ' account enabled'
+      active: 'Your account is active!'
+      goto: 'Go to '
+      enjoy: ' and start enjoying your CARTO account.'
+    resend:
+      valid: ' email validation'
+      new: 'New validation email sent'
+      sent: 'We have just sent a new account validation email, please check your inbox.'
+    signup:
+      sign: ' sign up'
+      datagov: 'Transform this dataset from Data.gov into an incredible map in seconds.'
+      provider1: 'Transform this dataset from '
+      provider2: ' into an incredible map in seconds.'
+      dataset: 'Transform this dataset into an incredible map in seconds.'
+      email: 'email'
+      passwd: 'Password'
+      org: 'Please, use an email address belonging to this organization.'
+      clicking: 'By clicking in "sign up" you accept the '
+      service: ' of the service and the '
+      username: 'Username'
+  sync:
+    max:
+      automatic: 'The automatic synchronization of your dataset '
+      maximum: " has reached the maximum number of synchronization attempts and it's still failing to sync."
+      continue: "If you'd like to continue trying, log in to your account and manually reactivate synching by clicking “Sync now”"
+      info: 'For more information about error messages and possible solution, '
+      click: 'click here'
+  user:
+    new:
+      invited: 'You have been invited to CARTO as part of the '
+      login: ' organization. Please login to your dashboard with your organization username '
+      passwd: ' and the password '
+      provided: 'provided by your administrator'
+      entered: 'you entered'
+      soon: ' as soon as you activate your account'
+      resources: 'Here are some resources to get you up and running:'
+      devcenter: 'Developer Center'
+      guides: ': Guides, FAQs and tutorials'
+      rescenter: 'Resource Center'
+      case: ': Case studies and white papers for inspiration'
+      videos: 'Builder training videos: '
+      analysis: 'Analysis'
+      widgets: 'Widgets'
+      publishing: 'Publishing'
+      contact: 'If you have not received your password, contact your administrator at '
+      goto: 'Go to your dashboard'
+      activate: 'Activate your account'
+    stable:
+      dataset: 'Dataset shared with you'
+      colleague: 'Your colleague '
+      shared: ' has shared a new dataset called '
+      with: ' with you.'
+      view: 'View your dataset'
+    svisual:
+      map: 'Map shared with you'
+      colleague: 'Your colleague '
+      shared: ' has shared a new map called '
+      with: ' with you.'
+      view: 'View your map'
+    ltable:
+      like: ' likes your dataset '
+      view: 'View your dataset'
+    trending:
+      your: ' Your '
+      received: ' has received more than '
+      map: ' map views'
+      view: 'View your map'
+    utable:
+      colleague: 'Your colleague '
+      stopped: ' has stopped sharing the dataset '
+      with: ' with you so it may disappear from your dashboard and from the maps where it was being used.'
+    uvisual:
+      colleague: 'Your colleague '
+      stopped: ' has stopped sharing the map '
+      with: ' with you so it may dissapear from your dashboard.'
+  controllers:
+    admin:
+      org_users:
+        create_success: 'New user created successfully'
+        save_success: 'Your changes have been saved correctly.'

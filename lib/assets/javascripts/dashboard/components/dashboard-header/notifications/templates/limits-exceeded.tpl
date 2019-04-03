@@ -1,13 +1,15 @@
-Hey <strong><%- userName %></strong>, you're over your disk limits.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.over_limits', {userName: userName}) %>
 <% if (userType === "admin") { %>
-  <a href="mailto:<%- upgradeContactEmail %>">Contact us</a> for upgrading your account.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.contact_us', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>
 <% if (userType === "org") { %>
-  Start thinking about <a href="mailto:<%- upgradeContactEmail %>">contacting your admin</a>.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.contact_admin', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>
 <% if (userType === "regular") { %>
-  Start thinking about <a href="<%- upgradeUrl %>?utm_source=Dashboard_Limits_Nearing&utm_medium=referral&utm_campaign=Upgrade_from_Dashboard&utm_content=upgrading%20your%20plan" class ="underline">upgrading your plan</a>.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.start_thinking') %>
+  <a href="<%- upgradeUrl %>?utm_source=Dashboard_Limits_Nearing&utm_medium=referral&utm_campaign=Upgrade_from_Dashboard&utm_content=upgrading%20your%20plan" class ="underline">
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.upgrade_plan') %></a>.
 <% } %>
 <% if (userType === "internal") { %>
-  Feel free to <a href="mailto:<%- upgradeContactEmail %>">contact us</a> for more resources.
+  <%= _t('dashboard.components.dashboard-header.notifications.templates.limits_exceeded.feel_free', {upgradeContactEmail: upgradeContactEmail}) %>
 <% } %>

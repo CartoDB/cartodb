@@ -4,7 +4,7 @@
       <span class="CDB-Shape-magnify is-small is-blue"></span>
     </div>
     <span class="u-iBlock u-actionTextColor">
-      search in <%- categoriesCount %> categor<%- categoriesCount === 1 ? 'y' : 'ies' %>
+      <%= _t('deep_insights.widgets.srch_categ', {smart_count: categoriesCount}) %>
     </span>
   </button>
 </div>

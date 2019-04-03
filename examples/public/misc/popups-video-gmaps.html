@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pop-ups with embed video | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <!-- Include Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAORE5iCjgLb4sMcWfmyRJgtP9VwfOrbJM&v=3.32"></script>
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Pop-Ups with embed video</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Create pop-up information windows with embed videos.</p>
+
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+    </aside>
+
+    <script>
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 0, lng: 0 },
+        zoom: 5,
+        fullscreenControl: false,
+        gestureHandling: 'cooperative'
+      });
+      // Hide the map labels and geometry strokes
+      map.set('styles', [{
+        elementType: 'labels',
+        stylers: [{ visibility: 'off' }]
+      }, {
+        elementType: 'geometry.stroke',
+        stylers: [{ visibility: 'off' }]
+      }]);
+
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      const cartoSource = new carto.source.Dataset(`
+        example_video
+      `);
+      const cartoStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 20;
+          marker-fill: #EE4D5A;
+          marker-line-color: #FFFFFF;
+        }
+      `);
+      const cartoLayer = new carto.layer.Layer(cartoSource, cartoStyle, {
+            featureClickColumns: ['youtube_url']
+        });
+
+      client.addLayer(cartoLayer);
+      map.overlayMapTypes.push(client.getGoogleMapsMapType(map));
+
+      const infowindow = new google.maps.InfoWindow();
+
+      function openPopup(featureEvent) {
+        let content = '<div class="widget">';
+
+        if (featureEvent.data.youtube_url) {
+            content += `<iframe width="240" src= ${featureEvent.data.youtube_url} frameborder="0" allowfullscreen></iframe>`
+        }
+
+        content += `</div>`;
+
+        infowindow.setContent(content);
+        infowindow.setPosition(featureEvent.latLng);
+        if (!infowindow.map) {
+          infowindow.open(map);
+        }
+      }
+
+      function closePopup(featureEvent) {
+        infowindow.close();
+      }
+
+
+     cartoLayer.on('featureClicked', openPopup);
+
+
+    </script>
+  </body>
+</html>

@@ -4,9 +4,9 @@
     <img src="<%= organization.avatar_url %>" alt="<%= organization.name %> organization">
   <% else %>
     <% if organization.present? %>
-      <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
+      <%= image_tag("layout/carto-logo-darkblue.svg", :alt => t('carto_name')) %>
     <% else %>
-      <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
+      <%= image_tag("layout/carto-logo.svg", :alt => t('carto_name')) %>
     <% end %>
   <% end %>
 </picture>

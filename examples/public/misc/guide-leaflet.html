@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Guide | CARTO</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:300,400,600" rel="stylesheet">
+    <!-- Include Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet">
+    <!-- Include CARTO.js -->
+    <script src="../../../dist/public/carto.js"></script>
+    <link href="../style.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="map"></div>
+    <aside class="toolbox">
+      <div class="box">
+        <header>
+          <h1>Guide</h1>
+          <button class="github-logo js-source-link"></button>
+        </header>
+        <section>
+          <p class="description open-sans">Full reference guide example.</p>
+          <div class="separator"></div>
+          <section class="usage">
+            <header>USAGE</header>
+            <p class="open-sans">Select a country</p>
+          </section>
+          <div id="controls">
+            <h2 class="h2">European countries</h2>
+            <select class="js-countries">
+              <option value="">All</option>
+            </select>
+            <div id="info"></div>
+          </div>
+        </section>
+        <footer class="js-footer"></footer>
+      </div>
+
+      <div class="box widget">
+        <h2 class="h2">Average population</h2>
+        <p class="result open-sans"><span class="js-average-population">xxx</span> <small>inhabitants</small></p>
+      </div>
+    </aside>
+
+    <script>
+      // 1. Setting up the Leaflet Map
+      // 1.1 Creating the Leaflet Map
+      const map = L.map('map').setView([50, 15], 4);
+      map.scrollWheelZoom.disable();
+
+      // 1.2 Adding basemap and labels layers
+      // Adding Voyager Basemap
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png', {
+        maxZoom: 18
+      }).addTo(map);
+
+      // Adding Voyager Labels
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        zIndex: 10
+      }).addTo(map);
+
+      // 2 Defining a carto.Client
+      const client = new carto.Client({
+        apiKey: 'default_public',
+        username: 'cartojs-test'
+      });
+
+      // 3. Displaying countries and cities on the map
+      // 3.1 Defining the layers
+      // European Countries layer
+      const europeanCountriesDataset = new carto.source.Dataset('ne_adm0_europe');
+      const europeanCountriesStyle = new carto.style.CartoCSS(`
+        #layer {
+        polygon-fill: #826DBA;
+          polygon-opacity: 0.5;
+          ::outline {
+            line-width: 1;
+            line-color: #FFFFFF;
+            line-opacity: 0.5;
+          }
+        }
+      `);
+      const europeanCountries = new carto.layer.Layer(europeanCountriesDataset, europeanCountriesStyle);
+
+      // Europe cities layer
+      const populatedPlacesSource = new carto.source.SQL(`
+        SELECT *
+          FROM ne_10m_populated_places_simple
+          WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)
+      `);
+      const populatedPlacesStyle = new carto.style.CartoCSS(`
+        #layer {
+          marker-width: 7;
+          marker-fill: #EE4D5A;
+          marker-fill-opacity: 0.9;
+          marker-line-width: 0.5;
+          marker-line-color: #FFFFFF;
+          marker-line-opacity: 1;
+          marker-type: ellipse;
+          marker-allow-overlap: false;
+        }
+      `);
+      const populatedPlaces = new carto.layer.Layer(populatedPlacesSource, populatedPlacesStyle, {
+        featureOverColumns: ['name']
+      });
+
+      // 3.2 Adding the layers to the client
+      client.addLayers([europeanCountries, populatedPlaces]);
+
+      // 3.3. Adding the layers to the map
+      client.getLeafletLayer().addTo(map);
+
+      // 4. Setting up tooltips
+      // 4.1 Showing the tooltip when user mouses over a city
+      const popup = L.popup({ closeButton: false });
+      populatedPlaces.on('featureOver', featureEvent => {
+        popup.setLatLng(featureEvent.latLng);
+        if (!popup.isOpen()) {
+          popup.setContent(featureEvent.data.name);
+          popup.openOn(map);
+        }
+      });
+
+      // 4.2 Hiding the tooltip
+      populatedPlaces.on('featureOut', featureEvent => {
+        popup.removeFrom(map);
+      });
+
+      // 5 Creating a formula widget
+      // 5.1 Defining a formula dataview
+      const averagePopulation = new carto.dataview.Formula(populatedPlacesSource, 'pop_max', {
+        operation: carto.operation.AVG
+      });
+
+      // 5.2 Listening to data changes on the dataview
+      averagePopulation.on('dataChanged', data => {
+        refreshAveragePopulationWidget(data.result);
+      });
+
+      function refreshAveragePopulationWidget(avgPopulation) {
+        const widgetDom = document.querySelector('.box.widget');
+        const averagePopulationDom = widgetDom.querySelector('.js-average-population');
+        averagePopulationDom.innerText = Math.floor(avgPopulation);
+      }
+
+      // 5.3 Adding the dataview to the client
+      client.addDataview(averagePopulation);
+
+      // 6 Creating a country selector widget
+      // 6.1 Defining a category dataview
+      const countriesDataview = new carto.dataview.Category(europeanCountriesDataset, 'admin', {
+        limit: 100
+      });
+
+      // 6.2 Listening to data changes on the dataview
+      countriesDataview.on('dataChanged', data => {
+        const countryNames = data.categories.map(category => category.name).sort();
+        refreshCountriesWidget(countryNames);
+      });
+
+      function refreshCountriesWidget(adminNames) {
+        const asideElement = document.querySelector('aside.toolbox');
+        const countriesDom = asideElement.querySelector('.js-countries');
+        countriesDom.onchange = event => {
+          const admin = event.target.value;
+          highlightCountry(admin);
+          filterPopulatedPlacesByCountry(admin);
+        };
+
+        // Fill in the list of countries
+        adminNames.forEach(admin => {
+          const option = document.createElement('option');
+          option.innerHTML = admin;
+          option.value = admin;
+          countriesDom.appendChild(option);
+        });
+      }
+
+      function highlightCountry(admin) {
+        let cartoCSS = `
+          #layer {
+            polygon-fill: #826DBA;
+            polygon-opacity: 0.5;
+            ::outline {
+              line-width: 1;
+              line-color: #FFFFFF;
+              line-opacity: 0.5;
+            }
+          }
+        `;
+        if (admin) {
+          cartoCSS = `
+            ${cartoCSS}
+            #layer[admin!='${admin}'] {
+              polygon-fill: #e5e5e5;
+            }
+          `;
+        }
+        europeanCountriesStyle.setContent(cartoCSS);
+      }
+
+      function filterPopulatedPlacesByCountry(admin) {
+        const query = admin
+          ? `SELECT * FROM ne_10m_populated_places_simple WHERE adm0name='${admin}'`
+          : 'SELECT * FROM ne_10m_populated_places_simple WHERE adm0name IN (SELECT admin FROM ne_adm0_europe)';
+
+        populatedPlacesSource.setQuery(query);
+      }
+
+      // 6.3 Adding the dataview to the client
+      client.addDataview(countriesDataview);
+    </script>
+  </body>
+</html>

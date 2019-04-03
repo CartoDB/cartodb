@@ -1,4 +1,4 @@
-<% content_for :title do %><%= @organization.name %> sign up<% end %>
+<% content_for :title do %><%= @organization.name %><%= t('signup.signup.sign') %><% end %>
 
 <% content_for :js do %>
   <%= javascript_include_tag 'common', 'common_vendor', 'sessions' %>
@@ -21,12 +21,12 @@
               <% provider = CGI.parse(URI.parse(params[:after]).query)['provider'].first %>
               <% if provider.present? %>
                 <% if provider == "data.gov" %>
-                  <p class="Sessions-description">Transform this dataset from Data.gov into an incredible map in seconds.</p>
+                  <p class="Sessions-description"><%= t('signup.signup.datagov') %></p>
                 <% else %>
-                  <p class="Sessions-description">Transform this dataset from <%= provider %> into an incredible map in seconds.</p>
+                  <p class="Sessions-description"><%= t('signup.signup.provider1') %><%= provider %><%= t('signup.signup.provider2') %></p>
                 <% end %>
               <% else %>
-                <p class="Sessions-description">Transform this dataset into an incredible map in seconds.</p>
+                <p class="Sessions-description"><%= t('signup.signup.dataset') %></p>
               <% end %>
             <% end %>
 
@@ -38,14 +38,14 @@
               <div class="Sessions-fieldsGroup">
                 <% if @organization.auth_username_password_enabled || duplicated_username_prompt? %>
                   <div class="Sessions-field">
-                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: 'Username' %>
+                    <%= f.text_field :username, class: "CDB-Size-medium Sessions-input topBorderRadius", placeholder: t('signup.signup.username') %>
                     <% if !@user.errors[:username].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:username] %>">!</div>
                     <% end %>
                   </div>
 
                   <div class="Sessions-field">
-                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: 'email', readonly: params[:invitation_token].present? || duplicated_username_prompt? || @user.google_sign_in %>
+                    <%= f.email_field :email, class: "CDB-Size-medium Sessions-input", placeholder: t('signup.signup.email'), readonly: params[:invitation_token].present? || duplicated_username_prompt? || @user.google_sign_in %>
                     <% if !@user.errors[:email].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:email] %>">!</div>
                     <% end %>
@@ -58,7 +58,7 @@
                   <% end %>
                 <% elsif @organization.auth_username_password_enabled %>
                   <div class="Sessions-field">
-                    <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
+                    <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: t('signup.signup.passwd') %>
                     <% if !@user.errors[:password].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:password] %>">!</div>
                     <% end %>
@@ -94,7 +94,7 @@
             <% end %>
 
             <% if @organization.auth_username_password_enabled %>
-              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description">Please, use an email address belonging to this organization.</p>
+              <p class="CDB-Text CDB-Size-medium u-altTextColor u-tSpace--m u-justifyCenter Sessions-description"><%= t('signup.signup.org') %></p>
             <% end %>
           </div>
         </div>
@@ -118,7 +118,7 @@
           <% end %>
         </p>
 
-        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center">By clicking in "sign up" you accept the <%= link_to 'terms and conditions', terms_path %> of the service and the <%= link_to 'privacy policy', privacy_path %></p>
+        <p class="Sessions-text Sessions-text--footer u-altTextColor u-txt-center"><%= t('signup.signup.clicking') %><%= link_to 'terms and conditions', terms_path %><%= t('signup.signup.service') %><%= link_to 'privacy policy', privacy_path %></p>
       </div>
     </div>
   </footer>

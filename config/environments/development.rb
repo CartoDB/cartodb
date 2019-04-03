@@ -5,12 +5,12 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  # ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 
   # The production environment is meant for finished, "live" apps.
   # Code is not reloaded between requests
-  config.cache_classes = false
+  config.cache_classes = true
 
   # Full error reports are disabled and caching is turned on
   config.consider_all_requests_local       = true
@@ -33,7 +33,7 @@ CartoDB::Application.configure do
   # have no effect here, since we have set the logger explicitly.
   config.logger.level = Logger::DEBUG
 
-  config.log_level = :debug
+  config.log_level = :info
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
@@ -56,7 +56,7 @@ CartoDB::Application.configure do
   # Check your `config/database.yml` has `pool: 50` or higher for `development`.
   # The condition excludes this from resque, since it won't work with it and it doesn't need it.
   # config.threadsafe! unless $rails_rake_task
-  config.eager_load = false
+  config.eager_load = true
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation can not be found)

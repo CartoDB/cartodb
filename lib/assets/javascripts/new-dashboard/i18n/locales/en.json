@@ -367,6 +367,36 @@
           },
         "extras": {
           "resource1": "If you want to learn more about how to add your own data to the map you can always visit the <a href=''>data injection section</a>, at the <a href=''>Developer Center</a>."        }
+      },
+      "step6": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You finished your first map with CARTO VL",
+          "message2": "Got questions? <a href='/assets/unversioned/wizards/cartovl.zip'>Download</a> the full code example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href=''>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Style features by category",
+            "subtitle": "Learn how to change the style of the features by a given column",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-style-by-category"
+          },
+          "card2": {
+            "title": "Add hover popups",
+            "subtitle": "Learn how to display info about a feature when user mouses over it.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-hover"
+          },
+          "card3": {
+            "title": "Animate the features",
+            "subtitle": "Learn how to animate the features of the map by different columns.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-animate-and-color-by-date"
+          }
+        }
       }
     },
     "cartoframes" : {

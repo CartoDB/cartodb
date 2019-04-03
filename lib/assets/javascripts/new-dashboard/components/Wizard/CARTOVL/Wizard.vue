@@ -35,6 +35,11 @@
           :stepNum="5">
           <Step5></Step5>
         </Step>
+        <Step
+          v-if="isCurrentStep(6)"
+          :stepNum="6">
+          <Step6></Step6>
+        </Step>      
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -58,6 +63,7 @@ import Step2 from './Step2.vue';
 import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
+import Step6 from './Step6.vue';
 
 import props from '../shared/props';
 import data from '../shared/data';
@@ -75,7 +81,8 @@ export default {
     Step2,
     Step3,
     Step4,
-    Step5
+    Step5,
+    Step6
   },
   props,
   data () {

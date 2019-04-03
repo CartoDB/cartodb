@@ -58,7 +58,8 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 .breadcrumbs {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1em;
+  max-width: 90%;
+  margin: 0 auto 1em;
 
   &__item {
     position: relative;

@@ -38,21 +38,20 @@ export default {
     return {
       codeBlock1,
       codeBlock2
-    }
+    };
   }
-}
+};
 
 // Code Blocks to be rendered in steps
-const codeBlock1 = 
+const codeBlock1 =
 `carto.setDefaultAuth({
   username: 'cartovl',
   apiKey: 'default_public'
 })`;
 
-const codeBlock2 = 
+const codeBlock2 =
 `const viz= new carto.Viz();
 const source = new carto.source.Dataset('madrid_listings')
 const layer = new carto.Layer('layer', source, viz);
-layer.addTo(map);`
-
+layer.addTo(map);`;
 </script>

@@ -16,11 +16,4 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-// .wizard-step {
-//   width: 100%;
-//   height: 100%;
-//   padding-top: 64px;
-//   overflow-x: scroll;
-// }
-
 </style>

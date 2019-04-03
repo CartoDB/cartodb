@@ -50,11 +50,11 @@ export default {
   data () {
     return {
       codeBlock1
-    }
+    };
   }
-}
+};
 
-const codeBlock1 = 
+const codeBlock1 =
 `<script>
   const map = new mapboxgl.Map({
     container: 'map',
@@ -62,5 +62,5 @@ const codeBlock1 =
     center: [-3.6908, 40.4297],
     zoom: 11
   })
-<\/script>`
+<\/script>`;
 </script>

@@ -33,13 +33,13 @@ export default {
     return {
       codeBlock1,
       codeBlock2
-    }
+    };
   }
-}
+};
 
 const codeBlock1 = `<div id="map"><\/div>`;
 
-const codeBlock2 = 
+const codeBlock2 =
 `<style>
   #map {
     position: absolute;

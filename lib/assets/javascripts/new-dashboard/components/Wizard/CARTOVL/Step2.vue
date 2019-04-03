@@ -43,11 +43,11 @@ export default {
   data () {
     return {
       codeBlock1
-    }
+    };
   }
-}
+};
 
-const codeBlock1 = 
+const codeBlock1 =
   `<!DOCTYPE html>
   <html>
     <head>
@@ -63,5 +63,4 @@ const codeBlock1 =
     <body>
     <\/body>
   <\/html>`;
-
 </script>

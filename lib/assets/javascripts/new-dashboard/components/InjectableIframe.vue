@@ -1,9 +1,8 @@
 <template>
-  <iframe ref="iframe" src="" frameborder="0" height="height" width="width"></iframe>
+  <iframe ref="iframe" src="" frameborder="0" :height="height" :width="width"></iframe>
 </template>
 
 <script>
-
 export default {
   name: 'InjectableIframe',
   mounted () {

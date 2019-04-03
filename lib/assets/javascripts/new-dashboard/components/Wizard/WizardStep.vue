@@ -1,5 +1,5 @@
 <template>
-  <div class="container u-mt--64 u-mb--80">
+  <div class="container u-flex__grow--1 u-mt--64 u-mb--80">
     <slot></slot>
   </div>
 </template>

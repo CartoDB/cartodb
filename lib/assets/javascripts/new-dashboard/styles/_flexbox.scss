@@ -47,3 +47,7 @@ $align: (
     align-items: #{$property} !important;
   }
 }
+
+.u-flex__grow--1 {
+  flex-grow: 1;
+}

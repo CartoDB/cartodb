@@ -319,23 +319,34 @@
     "users": "{username} | {n} users",
     "and": "and"
   },
-  "wizards": {
+  "Wizards": {
+    "Distributor": {
+      "cta": "Get started",
+      "headerTitle": "Getting started",
+      "title": "What do you want to do?"
+    },
     "cartovl": {
       "title": "Develop an interactive custom web map",
       "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",
-      "tags": {
-        "tag01": "JavaScript",
-        "tag02": "CARTO VL"
+      "tags" : ["JavaScript", "CARTO VL"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
       },
       "step1": {
+        "title": "Develop an interactive web map",
         "text1": "The CARTO platform provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a Javascript library to build beautiful interactive web maps",
         "text2": "In this quick guide you will learn how to load the libarry in your project, crete a map with one of our basemaps, and add a data layer."
       },
       "step2": {
-        "summary": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features",
+        "summary": {
+          "text": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features"
+        },
         "howto": {
-          "instruction1":"Create an HTML file in your favourite IDE.",
-          "instruction2":"Add the following script code to the <code>&lthead&gt</code> element."
+          "instruction1":"Create an HTML file in your favourite IDE",
+          "instruction2":"Add the following script code to the <code>&lthead&gt</code> element"
           },
         "extras": {
           "resource1": "Use your favourite Integrated Development Environments (IDE) but if you want a suggestion the favourite ones for the CARTO team are <a href=''>Visual Studio Code</a>, <a href=''>Sublime</a>, and <a href=''>Textmate</a>.",
@@ -402,10 +413,7 @@
     "cartoframes" : {
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
-      "tags": {
-        "tag01": "Python",
-        "tag02": "CARTOframes"
-      },
+      "tags": ["Python", "CARTOframes"],
       "step1": {
         "text1": "CARTOframes is a Phyton library that allows data scientist to integrate spatial analysis in their workflows. It integrates seemingly with <a href=''>Jupyter Notebooks</a> and <a href=''>GeoPandas</a>.",
         "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook."
@@ -485,11 +493,7 @@
     "builder" : {
       "title": "Create a web map from your browser",
       "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
-      "tags": {
-        "tag01": "Online",
-        "tag02": "Builder"
-      }
+      "tags": ["Online", "Builder"]
     }
-
   }
 }

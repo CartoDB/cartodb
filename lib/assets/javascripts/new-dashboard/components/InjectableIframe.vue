@@ -1,12 +1,12 @@
 <template>
-  <iframe ref="iframe" src="" frameborder="0" :height="height" :width="width"></iframe>
+  <iframe ref="iframe" frameborder="0" :height="height" :width="width"></iframe>
 </template>
 
 <script>
 export default {
   name: 'InjectableIframe',
   mounted () {
-    this.initialize();
+    this.setContent();
   },
   props: {
     content: String,
@@ -14,11 +14,16 @@ export default {
     width: String
   },
   methods: {
-    initialize () {
+    setContent () {
       const docIframe = this.$refs.iframe.contentWindow.document;
       docIframe.open();
       docIframe.write(this.content);
       docIframe.close();
+    }
+  },
+  watch: {
+    content () {
+      this.setContent();
     }
   }
 };

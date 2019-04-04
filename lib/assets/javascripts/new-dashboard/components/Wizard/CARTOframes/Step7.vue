@@ -7,33 +7,33 @@
       <p v-html="$t(`wizards.cartoframes.step7.congrats.message2`)" class="text is-caption"></p>
   </div>
   <div class="container u-mt--64 u-pb--80">
-      <SectionTitle :title="'Learn More'">
+      <StepTitle :title="'Learn More'">
         <template slot="icon">
             <img svg-inline src="../../../assets/icons/wizard/learn.svg"/>
         </template>
-      </SectionTitle>
+      </StepTitle>
       <p v-html="$t(`wizards.cartoframes.step5.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
-      <Card :content="$t(`wizards.cartoframes.step7.cards.card1`)" class="u-mb--16">
+      <TutorialCard :content="$t(`wizards.cartoframes.step7.cards.card1`)" class="u-mb--16">
         <img src="../../../assets/images/wizards/basicexample.png" width="240" height="130" alt="Style features by category sample image"/>
-      </Card>
-      <Card :content="$t(`wizards.cartoframes.step7.cards.card2`)" class="u-mb--16">
+      </TutorialCard>
+      <TutorialCard :content="$t(`wizards.cartoframes.step7.cards.card2`)" class="u-mb--16">
         <img src="../../../assets/images/wizards/geopandas.png" width="240" height="130" alt="Add hover popups sample image"/>
-      </Card>
-      <Card :content="$t(`wizards.cartoframes.step7.cards.card3`)">
+      </TutorialCard>
+      <TutorialCard :content="$t(`wizards.cartoframes.step7.cards.card3`)">
         <img src="../../../assets/images/wizards/citibike.png" width="240" height="130" alt="Animate the features sample image"/>
-      </Card>
+      </TutorialCard>
   </div>
 </div>
 </template>
 <script>
-import SectionTitle from 'new-dashboard/components/Wizard/SectionTitle.vue';
-import Card from 'new-dashboard/components/Wizard/Card.vue';
+import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import TutorialCard from 'new-dashboard/components/Wizard/TutorialCard.vue';
 
 export default {
   name: 'Step7',
   components: {
     SectionTitle,
-    Card
+    TutorialCard
   }
 };
 </script>

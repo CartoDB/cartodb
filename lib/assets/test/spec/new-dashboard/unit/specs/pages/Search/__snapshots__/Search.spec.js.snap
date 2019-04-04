@@ -5,24 +5,30 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
-        <!---->
-        <ul class="grid grid-cell">
-          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile is-caption text maps--empty">
-            SearchPage.emptyText.maps
-          </div>
-        </ul>
+      <section class="section section--maps">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="js-grid__head--sticky">
+          <!---->
+          <!---->
+          <ul class="grid-cell grid-cell--col12">
+            <div class="is-caption text maps--empty">
+              SearchPage.emptyText.maps
+            </div>
+          </ul>
+        </div>
         <!---->
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
-        <ul class="grid-cell grid-cell--col12">
-          <div class="is-caption text">
-            SearchPage.emptyText.datasets
-          </div>
-        </ul>
-        <!---->
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="js-grid__head--sticky">
+          <!---->
+          <ul class="grid-cell grid-cell--col12">
+            <div class="is-caption text">
+              SearchPage.emptyText.datasets
+            </div>
+          </ul>
+          <!---->
+        </div>
         <!---->
       </section>
     </div>
@@ -37,54 +43,60 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
       <span class="loading"><img svg-inline="" src="../assets/icons/common/loading.svg" class="loading__svg"></span></span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
-        <ul class="grid grid-cell">
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
-          </li>
-        </ul>
-        <!---->
+      <section class="section section--maps">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="js-grid__head--sticky">
+          <!---->
+          <ul class="grid-cell grid-cell--col12">
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+            <li class="search-item">
+              <mapcardfake-stub condensed="true" class="search-item"></mapcardfake-stub>
+            </li>
+          </ul>
+          <!---->
+        </div>
         <!---->
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
-        <!---->
-        <ul class="grid-cell grid-cell--col12">
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-          <li class="search-item">
-            <datasetcardfake-stub></datasetcardfake-stub>
-          </li>
-        </ul>
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="js-grid__head--sticky">
+          <!---->
+          <!---->
+          <ul class="grid-cell grid-cell--col12">
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+            <li class="search-item">
+              <datasetcardfake-stub></datasetcardfake-stub>
+            </li>
+          </ul>
+        </div>
         <!---->
       </section>
     </div>
@@ -97,32 +109,42 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
   <div class="container grid">
     <div class="full-width">
-      <section class="page-section has-pagination">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.maps</div>
-        <!---->
-        <ul class="grid grid-cell">
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
-          </li>
-          <li class="grid-cell grid-cell--col12 search-item">
-            <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
-          </li>
+      <section class="section section--maps has-pagination">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
+        <div class="js-grid__head--sticky">
+          <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+            <condensedmapheader-stub order="" orderdirection=""></condensedmapheader-stub>
+          </div>
           <!---->
-        </ul>
+          <ul class="grid-cell grid-cell--col12">
+            <li class="search-item">
+              <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
+            </li>
+            <li class="search-item">
+              <mapcard-stub visualization="[object Object]" storeactiontype="search" condensed="true"></mapcard-stub>
+            </li>
+            <!---->
+          </ul>
+        </div>
         <pagination-stub page="1" numpages="2"></pagination-stub>
       </section>
-      <section class="page__section">
-        <div class="section-title grid-cell title is-medium">SearchPage.sections.data</div>
-        <ul class="grid-cell grid-cell--col12">
-          <li class="search-item">
-            <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
-          </li>
-          <li class="search-item">
-            <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
-          </li>
+      <section class="section section--datasets">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.data</div>
+        <div class="js-grid__head--sticky">
+          <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">
+            <datasetlistheader-stub order="" orderdirection=""></datasetlistheader-stub>
+          </div>
+          <ul class="grid-cell grid-cell--col12">
+            <li class="search-item">
+              <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
+            </li>
+            <li class="search-item">
+              <datasetcard-stub dataset="[object Object]" storeactiontype="search"></datasetcard-stub>
+            </li>
+            <!---->
+          </ul>
           <!---->
-        </ul>
-        <!---->
+        </div>
         <pagination-stub page="1" numpages="2" class="pagination-element"></pagination-stub>
       </section>
     </div>

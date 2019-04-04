@@ -2,17 +2,48 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
+  suitable random key by using `bundle exec rake secret`
 
 ### Features
-- None yet
+- Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  - Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  - `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
+  - New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
+  - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+- Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
 
 ### Bug fixes / enhancements
+- Add link to Help Center to invitation emails
 - Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
 - Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
+- Data Library defaults to .gpkg for import
 - Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
 - Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
-- Remove old migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
+- New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
+- Fix initial rate limit setting
+- Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
+  for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
+- Fix `db:create` rake (#14766)
+- Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
+- Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
+- Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
+- Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
+- Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
+- Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
+- Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
+- Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
+- Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
+- Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
+- Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
+- Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
+- Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
+- Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
+- Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
+- Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+- Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
+- Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
+- Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
 
 4.26.0 (2019-03-11)
 -------------------

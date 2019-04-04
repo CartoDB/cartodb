@@ -1,5 +1,5 @@
 <template>
-  <button class="button button--small is-primary" @click="openCreateModal">
+  <button class="button button--small is-primary" @click="openCreateModal" :class="{'u-is-disabled': disabled}">
     <slot />
   </button>
 </template>
@@ -15,6 +15,10 @@ export default {
     visualizationType: {
       type: String,
       default: 'maps'
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

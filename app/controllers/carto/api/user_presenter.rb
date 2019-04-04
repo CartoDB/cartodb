@@ -5,8 +5,6 @@ module Carto
     class UserPresenter
       include AccountTypeHelper
 
-      BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
-
       def initialize(user,
                      fetch_groups: false,
                      current_viewer: nil,
@@ -202,7 +200,6 @@ module Carto
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
           show_upgraded_message: (@user.account_type.downcase != 'free' && @user.upgraded_at && @user.upgraded_at + 15.days > Date.today ? true : false),
-          show_builder_activated_message: @user.created_at < BUILDER_ACTIVATION_DATE,
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,

@@ -9,6 +9,8 @@ $width: 800px;
 .InviteUsers {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .InviteUsers-form {
@@ -31,7 +33,8 @@ $width: 800px;
   align-items: center;
   justify-content: space-between;
   width: $width;
-  background: #F9F9F9;
+  border-top: 1px solid $cStructure-mainLine;
+  background: $cStructure-grayBkg;
 }
 
 .Form-rowData.InviteUsers-userType {
@@ -49,6 +52,7 @@ $width: 800px;
   left: 0;
   width: 100%;
   height: 97px;
+  background-color: $cStructure-grayBkg;
 }
 
 .InviteUsers .Form-rowInfoText--error {

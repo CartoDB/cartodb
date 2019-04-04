@@ -43,7 +43,7 @@ export default {
       return this.$t('HomePage.MapsSection.viewAll');
     },
     showViewAllLink () {
-      return !(this.initialState || this.emptyState || this.isFirst);
+      return !this.isFetchingMaps && this.totalUserEntries;
     }
   },
   methods: {

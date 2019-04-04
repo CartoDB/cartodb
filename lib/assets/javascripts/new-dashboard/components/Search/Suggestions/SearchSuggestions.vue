@@ -98,6 +98,10 @@ export default {
   },
   methods: {
     fetchSuggestions () {
+      if (!this.query) {
+        return;
+      }
+
       this.client.getVisualization('',
         this.queryParameters,
 
@@ -169,8 +173,7 @@ export default {
   width: 100%;
   padding: 16px 16px 16px 38px;
   overflow: hidden;
-  border-bottom: 1px solid $grey;
-  color: $text-color;
+  color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -209,8 +212,7 @@ export default {
 .suggestions--active {
   .suggestions__header {
     background-color: rgba($primary-color, 0.05);
-    color: $primary-color;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 

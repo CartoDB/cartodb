@@ -31,7 +31,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton visualizationType="maps" :disabled="isViewer">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -39,20 +39,22 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <CondensedMapHeader
-        :order="appliedOrder"
-        :orderDirection="appliedOrderDirection"
-        @orderChanged="applyOrder"
-        v-if="shouldShowListHeader">
-      </CondensedMapHeader>
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowListHeader">
+        <CondensedMapHeader
+          :order="appliedOrder"
+          :orderDirection="appliedOrderDirection"
+          @orderChanged="applyOrder"
+          v-if="shouldShowListHeader">
+        </CondensedMapHeader>
+      </div>
 
-      <ul class="grid" v-if="isFetchingMaps">
+      <ul :class="[isCondensed ? 'grid grid-cell' : 'grid']" v-if="isFetchingMaps">
         <li :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" v-for="n in maxVisibleMaps" :key="n">
           <MapCardFake :condensed="isCondensed"></MapCardFake>
         </li>
       </ul>
 
-      <ul :class="[isCondensed ? 'grid grid-column' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
+      <ul :class="[isCondensed ? 'grid grid-column grid-cell' : 'grid']" v-if="!isFetchingMaps && currentEntriesCount > 0">
         <li v-for="map in maps" :class="[isCondensed ? condensedCSSClasses : cardCSSClasses]" :key="map.id">
           <MapCard
             :condensed="isCondensed"
@@ -135,10 +137,6 @@ export default {
       lastCheckedItem: null
     };
   },
-  created: function () {
-    this.$store.dispatch('maps/setResultsPerPage', this.maxVisibleMaps);
-    this.fetchMaps();
-  },
   computed: {
     ...mapState({
       appliedFilter: state => state.maps.filterType,
@@ -167,7 +165,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return (!this.isFirstTimeViewingDashboard || this.hasSharedMaps) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedMaps) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingMaps &&
         !this.currentEntriesCount;
     },
@@ -177,6 +175,10 @@ export default {
       return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })
         : this.$t('MapsPage.emptyCase.default', { path: route.href });
+    },
+    isFirstTimeViewerAfterAction () {
+      // First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
+      return this.isFirstTimeViewingDashboard && this.currentEntriesCount <= 0 && !this.hasFilterApplied('mine');
     },
     hasSharedMaps () {
       return this.totalShared > 0;
@@ -188,7 +190,10 @@ export default {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;
     },
     shouldShowListHeader () {
-      return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+      return this.isCondensed && !this.emptyState && !this.initialState;
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   },
   methods: {
@@ -267,6 +272,10 @@ export default {
   width: 100%;
 }
 
+.grid__head--sticky {
+  top: 64px;
+}
+
 .pagination-element {
   margin-top: 28px;
 }
@@ -292,9 +301,23 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-left: 32px;
+  width: 38px;
+  height: 36px;
+  margin-left: 24px;
+  padding: 9px;
   cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: $softblue;
+  }
+
+  &:active {
+    background-color: $primary-color;
+
+    .svgicon {
+      fill: $white;
+    }
+  }
 }
 </style>

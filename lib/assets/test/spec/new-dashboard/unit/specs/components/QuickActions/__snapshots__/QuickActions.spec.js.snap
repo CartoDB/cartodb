@@ -11,12 +11,12 @@ exports[`QuickActions.vue methods should close dropdown 2`] = `
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Edit info</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Change Privacy</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Manage Tags</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Duplicate map</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Lock Map</a></li>
-      <li><a href="#" class="action text is-caption is-txtAlert">Delete Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Edit info</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Change Privacy</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Manage Tags</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Duplicate map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Lock Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtAlert">Delete Map</a></li>
     </ul>
   </div>
 </div>
@@ -33,12 +33,12 @@ exports[`QuickActions.vue methods should open dropdown and then close it again 1
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Edit info</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Change Privacy</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Manage Tags</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Duplicate map</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Lock Map</a></li>
-      <li><a href="#" class="action text is-caption is-txtAlert">Delete Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Edit info</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Change Privacy</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Manage Tags</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Duplicate map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Lock Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtAlert">Delete Map</a></li>
     </ul>
   </div>
 </div>
@@ -55,12 +55,12 @@ exports[`QuickActions.vue should not render options with shouldBeHidden 1`] = `
   <div class="quick-actions-dropdown is-active">
     <h6 class="quick-actions-title text is-semibold is-xsmall is-txtSoftGrey">QuickActions.title</h6>
     <ul>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Edit info</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Change Privacy</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Manage Tags</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Duplicate map</a></li>
-      <li><a href="#" class="action text is-caption is-txtPrimary">Lock Map</a></li>
-      <li><a href="#" class="action text is-caption is-txtAlert">Delete Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Edit info</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Change Privacy</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Manage Tags</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Duplicate map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtPrimary">Lock Map</a></li>
+      <li class="action__item"><a href="#" class="action__text text is-caption is-txtAlert">Delete Map</a></li>
       <!---->
     </ul>
   </div>

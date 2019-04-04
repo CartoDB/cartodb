@@ -47,7 +47,6 @@ module CartoDB
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
       PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
-      AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'.freeze
 
       VERSION_BUILDER = 3
@@ -438,8 +437,8 @@ module CartoDB
 
       def password=(value)
         if value && value.size > 0
-          @password_salt = generate_salt if @password_salt.nil?
-          @encrypted_password = password_digest(value, @password_salt)
+          @password_salt = ""
+          @encrypted_password = Carto::EncryptionService.new.encrypt(password: value)
           self.dirty = true
         end
       end
@@ -449,7 +448,8 @@ module CartoDB
       end
 
       def password_valid?(password)
-        has_password? && (password_digest(password, @password_salt) == @encrypted_password)
+        Carto::EncryptionService.new.verify(password: password, secure_password: @encrypted_password,
+                                            salt: @password_salt)
       end
 
       def remove_password
@@ -859,14 +859,6 @@ module CartoDB
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
-      end
-
-      def password_digest(password, salt)
-        digest = AUTH_DIGEST
-        10.times do
-          digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-        end
-        digest
       end
 
       def generate_salt

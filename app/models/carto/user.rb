@@ -142,8 +142,8 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
-    self.crypted_password = service.class.password_digest(value, salt)
+    self.salt = ""
+    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value)
   end
 
   def reset_password_rate_limit
@@ -521,7 +521,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && service.class.password_digest(old_password, salt) == crypted_password) ||
+    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -533,24 +533,21 @@ class Carto::User < ActiveRecord::Base
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, service.class.password_digest(value, salt), key)
+    validate_password_not_in_use(value, key)
 
     errors[key].empty?
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    unless different_passwords?(old_password, new_password)
+  def validate_password_not_in_use(new_password = nil, key = :new_password)
+    if password_already_in_use?(new_password)
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
   end
 
-  def different_passwords?(old_password = nil, new_password = nil)
-    return true if new_record? || (@changing_passwords && !old_password)
-    old_password = crypted_password_was unless old_password.present?
-    new_password = crypted_password unless old_password.present? && new_password.present?
-
-    old_password.present? && old_password != new_password
+  def password_already_in_use?(new_password = nil)
+    return false if new_record?
+    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password_was, salt: salt)
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?

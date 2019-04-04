@@ -93,7 +93,7 @@ FactoryGirl.define do
     end
 
     after(:build) do |carto_user|
-      carto_user.crypted_password = carto_user.service.class.password_digest(carto_user.password, carto_user.salt)
+      carto_user.crypted_password = Carto::EncryptionService.new.encrypt(password: carto_user.password)
     end
 
     after(:create) do |carto_user|

@@ -33,8 +33,6 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::VisualizationDependencies
   include Carto::VisualizationBackupService
 
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
-
   TYPE_CANONICAL = 'table'.freeze
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
@@ -342,7 +340,8 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? &&
+      Carto::EncryptionService.new.verify(password: password, secure_password: encrypted_password, salt: password_salt)
   end
 
   def organization?
@@ -609,8 +608,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   def password=(value)
     if value.present?
-      self.password_salt = generate_salt if password_salt.nil?
-      self.encrypted_password = password_digest(value, password_salt)
+      self.password_salt = ""
+      self.encrypted_password = Carto::EncryptionService.new.encrypt(password: value)
     end
   end
 
@@ -718,14 +717,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
   end
 
   def secure_digest(*args)

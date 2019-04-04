@@ -6,8 +6,6 @@ require_dependency 'carto/db/connection'
 module Carto
   class UserService
 
-    AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
-
     def initialize(user_model)
       @user = user_model
     end
@@ -114,14 +112,6 @@ module Carto
       else
         "#{Rails.env}_cartodb_user_#{@user.id}"
       end
-    end
-
-    def self.password_digest(password, salt)
-      digest = AUTH_DIGEST
-      10.times do
-        digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-      end
-      digest
     end
 
     def self.make_token

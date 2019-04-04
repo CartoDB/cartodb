@@ -20,7 +20,7 @@ export default {
   props: {
     content: Object
   }
-}
+};
 </script>
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';

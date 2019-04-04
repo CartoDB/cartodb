@@ -39,7 +39,7 @@
           v-if="isCurrentStep(6)"
           :stepNum="6">
           <Step6></Step6>
-        </Step>      
+        </Step>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"

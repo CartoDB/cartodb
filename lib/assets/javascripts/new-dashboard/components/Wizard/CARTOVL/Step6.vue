@@ -14,7 +14,13 @@
       </SectionTitle>
       <p v-html="$t(`wizards.cartovl.step5.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
       <Card :content="$t(`wizards.cartovl.step6.cards.card1`)">
-        <img src="../../../assets/images/wizards/Bitmap.png" width="306" height="140" alt="Voyager basemap sample"/>
+        <img src="../../../assets/images/wizards/Bitmap.png" width="306" height="140" alt="Style features by category sample image"/>
+      </Card>
+      <Card :content="$t(`wizards.cartovl.step6.cards.card2`)">
+        <img src="../../../assets/images/wizards/Bitmap.png" width="306" height="140" alt="Add hover popups sample image"/>
+      </Card>
+      <Card :content="$t(`wizards.cartovl.step6.cards.card3`)">
+        <img src="../../../assets/images/wizards/Bitmap.png" width="306" height="140" alt="Animate the features sample image"/>
       </Card>
     </div>
   </div>

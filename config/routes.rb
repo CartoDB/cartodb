@@ -44,11 +44,6 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
-  # Explore
-  get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
-  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
-  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
-
   # Data library
   get   '(/user/:user_domain)(/u/:user_domain)/data-library'           => 'data_library#index',     as: :data_library_index
 

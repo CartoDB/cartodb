@@ -5,37 +5,47 @@
         :title="$t('wizards.cartoframes.title')"
         :text="$t('wizards.cartoframes.subtitle')"
         :tags="$t('wizards.cartoframes.tags')"
-        :iconModifier="'notebook'"></Selector>
+        :iconModifier="'map'"></Selector>
     </div>
     <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <Step
           v-if="isCurrentStep(1)"
-          :title="'CARTOframes Step 1 Title'"
-          :subTitle="'CARTOframes Step 1 Subtitle'"
           :stepNum="1">
+          <Step1></Step1>HOLI
         </Step>
         <Step
           v-if="isCurrentStep(2)"
-          :title="'Step 2 Title'"
-          :subTitle="'Step 2 Subtitle'"
-          :stepNum="2"></Step>
+          :stepNum="2">
+          <Step2></Step2>
+        </Step>
         <Step
           v-if="isCurrentStep(3)"
-          :title="'Step 3'"
-          :subTitle="'Step 3 Subtitle'"
-          :stepNum="3"></Step>
+          :stepNum="3">
+          <Step3></Step3>
+        </Step>
         <Step
           v-if="isCurrentStep(4)"
-          :title="'Step 4'"
-          :subTitle="'Step 4 Subtitle'"
-          :stepNum="4"></Step>
+          :stepNum="4">
+          <Step4></Step4>
+        </Step>
         <Step
           v-if="isCurrentStep(5)"
-          :title="'Step 5'"
-          :subTitle="'Step 5 Subtitle'"
-          :stepNum="5"></Step>
+          :stepNum="5">
+          <Step5></Step5>
+        </Step>
+        <Step
+          v-if="isCurrentStep(6)"
+          :stepNum="6">
+          <Step6></Step6>
+        </Step>
+        <Step
+          v-if="isCurrentStep(7)"
+          :stepNum="7"
+          :fullWidth="true">
+          <Step7></Step7>
+        </Step>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -53,18 +63,34 @@ import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
+// Steps
+import Step1 from './Step1.vue';
+import Step2 from './Step2.vue';
+import Step3 from './Step3.vue';
+import Step4 from './Step4.vue';
+import Step5 from './Step5.vue';
+import Step6 from './Step6.vue';
+import Step7 from './Step7.vue';
+
 import props from '../shared/props';
 import data from '../shared/data';
 import methods from '../shared/methods';
 
 export default {
-  name: 'WizardCARTOVL',
+  name: 'WizardCARTOframes',
   components: {
     Selector,
     Step,
     Header,
     Footer,
-    Modal
+    Modal,
+    Step1,
+    Step2,
+    Step3,
+    Step4,
+    Step5,
+    Step6,
+    Step7
   },
   props,
   data () {
@@ -73,9 +99,10 @@ export default {
       stepNames: [
         'Intro',
         'Setup',
-        'List datasets',
+        'Connect to CARTO',
+        'List sample data',
         'Read dataset',
-        'Display map',
+        'Display Map',
         'Download'
       ]
     };

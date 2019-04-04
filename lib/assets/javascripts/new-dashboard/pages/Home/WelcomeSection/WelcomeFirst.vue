@@ -4,18 +4,8 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <CreateButton v-if="!isOrganizationAdmin" visualizationType="map" :disabled="isViewer">
-          {{ $t(`MapsPage.createMap`) }}
-        </CreateButton>
-        <CreateButton v-if="!isOrganizationAdmin" visualizationType="dataset" :disabled="!canCreateDatasets">
-          {{ $t(`DataPage.createDataset`) }}
-        </CreateButton>
-        <a class="button button--small is-primary"
-          :href="`mailto:${organizationMail}`"
-          v-if="isOrganizationUser && !isOrganizationAdmin">
-          {{ $t('HomePage.WelcomeSection.firstTime.contactOrganizationAdmin') }}
-        </a>
-        <a class="button button--small is-primary"
+        <WizardDistributor v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></WizardDistributor>
+        <a class="button"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
           {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
@@ -27,11 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import WizardDistributor from 'new-dashboard/components/Wizard/Distributor.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
-    CreateButton
+    CreateButton,
+    WizardDistributor
   },
   props: {
     name: String,

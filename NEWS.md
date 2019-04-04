@@ -40,6 +40,7 @@ Development
 - Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
 - Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
 - Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+- Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
 
 4.26.0 (2019-03-11)
 -------------------

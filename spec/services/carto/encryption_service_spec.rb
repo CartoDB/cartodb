@@ -53,6 +53,16 @@ describe Carto::EncryptionService do
         result.should be_false
       end
 
+      it "returns false if there is no password" do
+        result = @service.verify(password: nil, secure_password: @argon2)
+        result.should be_false
+      end
+
+      it "returns false if there is no encrypted password" do
+        result = @service.verify(password: @password, secure_password: nil)
+        result.should be_false
+      end
+
       it "verifies passwords encrypted by the service" do
         encrypted = @service.encrypt(password: "wadus")
         result = @service.verify(password: "wadus", secure_password: encrypted)

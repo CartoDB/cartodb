@@ -5,14 +5,14 @@
           <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`wizards.cartoframes.step5.summary`)" class="text is-body u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartoframes.step5.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="'How To'">
       <template slot="icon">
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`wizards.cartoframes.step5.howto.instruction1`)" class="text is-caption u-mb--16 u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartoframes.step5.howto.instruction1`)" class="text is-caption u-mb--16 u-mb--64"></p>
   </div>
 </template>
 <script>
@@ -23,7 +23,7 @@ export default {
   name: 'Step5',
   components: {
     CodeBlock,
-    SectionTitle
+    StepTitle
   }
 };
 </script>

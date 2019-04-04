@@ -5,7 +5,7 @@
           <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`wizards.cartovl.step2.summary`)" class="text is-body u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartovl.step2.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="'How To'">
       <template slot="icon">
@@ -14,15 +14,15 @@
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside">
       <li>
-        <p v-html="$t(`wizards.cartoframes.step2.howto.instruction1`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.cartoframes.step2.howto.instruction1`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
         <CodeBlock :code="codeBlock1"></CodeBlock>
       </li>
       <li>
-        <p v-html="$t(`wizards.cartoframes.step2.howto.instruction2`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.cartoframes.step2.howto.instruction2`)" class="text is-caption u-mb--16 u-inlineflex"></p>
         <CodeBlock :code="codeBlock2"></CodeBlock>
       </li>
       <li>
-        <p v-html="$t(`wizards.cartoframes.step2.howto.instruction3`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.cartoframes.step2.howto.instruction3`)" class="text is-caption u-mb--16 u-inlineflex"></p>
         <CodeBlock :code="codeBlock3"></CodeBlock>
       </li>
     </ul>
@@ -32,7 +32,7 @@
           <img svg-inline src="../../../assets/icons/wizards/extras.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`wizards.cartoframes.step2.extras.resource1`)" class="text is-caption u-mb--16 u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartoframes.step2.extras.resource1`)" class="text is-caption u-mb--16 u-mb--64"></p>
   </div>
 </template>
 

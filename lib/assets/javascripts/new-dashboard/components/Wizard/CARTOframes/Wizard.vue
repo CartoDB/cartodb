@@ -13,7 +13,7 @@
         <Step
           v-if="isCurrentStep(1)"
           :stepNum="1">
-          <Step1></Step1>HOLI
+          <Step1></Step1>
         </Step>
         <Step
           v-if="isCurrentStep(2)"

@@ -323,7 +323,11 @@
     "Distributor": {
       "cta": "Get started",
       "headerTitle": "Getting started",
-      "title": "What do you want to do?"
+      "title": "What do you want to do?",
+      "feedback": {
+        "text": "Looking for a different geospatial workflow?",
+        "link": "Let us know."
+      }
     },
     "cartovl": {
       "title": "Develop an interactive custom web map",

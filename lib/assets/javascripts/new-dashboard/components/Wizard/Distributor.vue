@@ -21,9 +21,9 @@
               <WizardBuilder @closeModal="closeModal"></WizardBuilder>
             </div>
           </div>
-          <p class="grid-cell u-mt--48 is-small">Looking for a different geospatial workflow?
+          <p class="grid-cell u-mt--48 is-small">{{ $t('Wizards.Distributor.feedback.text') }}
             <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank">
-            Let us know.</a>
+            {{ $t('Wizards.Distributor.feedback.link') }}</a>
           </p>
         </div>
       </div>

@@ -403,7 +403,7 @@
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
       "tags": {
-        "tag01": "Jupyter",
+        "tag01": "Python",
         "tag02": "CARTOframes"
       }
     },

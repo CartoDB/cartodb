@@ -10,14 +10,14 @@
 
 <script>
 export default {
-  name: 'WizardSelector',
+  name: 'Selector',
   props: {
     title: String,
     text: String,
     tags: {
-      type: Array,
+      type: Object,
       default () {
-        return [];
+        return {};
       }
     },
     iconModifier: {

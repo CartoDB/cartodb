@@ -37,7 +37,8 @@
         </Step>
         <Step
           v-if="isCurrentStep(6)"
-          :stepNum="6">
+          :stepNum="6"
+          :fullWidth="true">
           <Step6></Step6>
         </Step>
         <Footer

@@ -1,5 +1,5 @@
 <template>
-  <div class="container u-flex__grow--1 u-mt--64 u-mb--80 u-p--0">
+  <div :class="{'container u-mt--64 u-mb--80 u-p--0': !fullWidth}" class="u-flex__grow--1">
     <slot></slot>
   </div>
 </template>
@@ -10,6 +10,10 @@ export default {
   props: {
     title: String,
     subTitle: String,
+    fullWidth: {
+      type: Boolean,
+      default: false
+    }
   }
 }
 </script>
@@ -19,5 +23,4 @@ export default {
 .container {
   width: 100%;
 }
-
 </style>

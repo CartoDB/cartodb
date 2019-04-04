@@ -7,9 +7,8 @@
         <p class="text is-caption u-mb--8">{{content.subtitle}}</p>
       </div>
       <div class="u-flex u-flex__justify--end">
-      <a :href="content.link" class="button button--ghost button--outline">{{content.button}}</a>
+        <a :href="content.link" target="_blank" class="button button--ghost button--outline">{{content.button}}</a>
       </div>
-    </div>
     </div>
   </div>
 </template>

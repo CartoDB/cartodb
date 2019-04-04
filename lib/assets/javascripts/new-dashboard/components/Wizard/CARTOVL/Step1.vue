@@ -17,7 +17,6 @@ import SectionTitle from 'new-dashboard/components/Wizard/SectionTitle.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
 import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartovl.html';
 
-
 export default {
   name: 'Step1',
   components: {
@@ -31,21 +30,4 @@ export default {
     };
   }
 };
-
-const codeBlock1 =
-  `<!DOCTYPE html>
-  <html>
-    <head>
-      <title>CARTO VL Example<\/title>
-      <!-- Load CARTO VL JS -->
-      <script src="https://libs.cartocdn.com/carto-vl/v1.0.0/carto-vl.min.js"><\/script>
-      <!-- Load Mapbox GL -->
-      <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js"><\/script>
-      <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css" rel="stylesheet" \/>
-      <!-- Load CARTO VL Styles -->
-      <link href="https://carto.com/developers/carto-vl/examples/maps/style.css" rel="stylesheet">
-    <\/head>
-    <body>
-    <\/body>
-  <\/html>`;
 </script>

@@ -62,6 +62,7 @@ module CartoDB
       def setup_single_user_schema
         set_user_privileges_at_db
         rebuild_quota_trigger
+        create_ghost_tables_event_trigger
       end
 
       # All methods called inside should allow to be executed multiple times without errors
@@ -77,6 +78,7 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+          create_ghost_tables_event_trigger
         end
 
         if @user.organization_admin?
@@ -592,7 +594,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.25.0'
+          cdb_extension_target_version = '0.26.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1335,6 +1337,23 @@ module CartoDB
         @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
       rescue Sequel::DatabaseError => exception
         raise exception.cause
+      end
+
+      def create_ghost_tables_event_trigger
+        return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        configure_ghost_table_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+      end
+
+      def configure_ghost_table_event_trigger
+        tis_config = Cartodb.config[:invalidation_service]
+        return unless tis_config
+        @user.in_database(as: :superuser)
+             .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
+      end
+
+      def drop_ghost_tables_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
       end
 
       private

@@ -318,5 +318,12 @@
     "groups": "{groupname} | {n} groups",
     "users": "{username} | {n} users",
     "and": "and"
+  },
+  "Wizards" : {
+    "Distributor": {
+      "cta": "Get started",
+      "headerTitle": "Getting started",
+      "title": "What do you want to do?"
+    }
   }
 }

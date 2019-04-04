@@ -631,10 +631,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   private
 
-  def generate_salt
-    secure_digest(Time.now, (1..10).map { rand.to_s })
-  end
-
   def remove_password
     self.password_salt = nil
     self.encrypted_password = nil
@@ -717,10 +713,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
   def has_private_tables?

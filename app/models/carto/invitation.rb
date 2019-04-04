@@ -6,7 +6,6 @@ require_dependency 'carto/user_authenticator'
 
 module Carto
   class Invitation < ActiveRecord::Base
-    include Carto::UserAuthenticator
 
     # Because of an activerecord-postgresql-array bug that makes array
     # insertions unusable we can't set _users_emails mandatory on construction,
@@ -60,14 +59,15 @@ module Carto
     end
 
     def token(email)
-      secure_digest(email, seed)
+      Carto::EncryptionService.new.encrypt(sha_class: Digest::SHA1, password: email, salt: seed)
     end
 
     def use(email, token)
       # reload and used_emails assignment is needed because otherwise
       # activerecord-postgresql-array won't update the invitations
       reload
-      if users_emails.include?(email) && self.token(email) == token
+      if users_emails.include?(email) && verify(token, email)
+      if users_emails.include?(email) && 
         if used_emails.include?(email)
           raise AlreadyUsedInvitationError.new("#{email} has already used the invitation")
         else
@@ -81,6 +81,10 @@ module Carto
     end
 
     private
+
+    def verify(token, email)
+      Carto::EncryptionService.new.verify(password: email, secure_password: token, salt: password_salt)
+    end
 
     def users_emails_not_taken
       return unless users_emails

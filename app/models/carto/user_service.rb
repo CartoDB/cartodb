@@ -115,7 +115,7 @@ module Carto
     end
 
     def self.make_token
-      secure_digest(Time.now, (1..10).map{ rand.to_s })
+      Carto::EncryptionService.new.make_token
     end
 
     def cartodb_extension_version_pre_mu?
@@ -146,10 +146,6 @@ module Carto
     def cartodb_extension_version
       @cartodb_extension_version ||= in_database(:as => :superuser).execute('select cartodb.cdb_version() as v')
                                                                    .first['v']
-    end
-
-    def self.secure_digest(*args)
-      Digest::SHA1.hexdigest(args.flatten.join('--'))
     end
 
     def database_password

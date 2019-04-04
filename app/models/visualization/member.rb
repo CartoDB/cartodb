@@ -459,11 +459,8 @@ module CartoDB
 
       # To be stored with the named map
       def make_auth_token
-        digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-        10.times do
-          digest = secure_digest(digest, TOKEN_DIGEST)
-        end
-        digest
+        Carto::EncryptionService.new.make_token(sha_class: Digest::SHA256,
+                                                digest_key: Carto::EncryptionService::AUTH_TOKEN_DIGEST_KEY)
       end
 
       def get_auth_token
@@ -859,15 +856,6 @@ module CartoDB
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
-      end
-
-      def generate_salt
-        secure_digest(Time.now, (1..10).map{ rand.to_s })
-      end
-
-      def secure_digest(*args)
-        #noinspection RubyArgCount
-        Digest::SHA256.hexdigest(args.flatten.join)
       end
 
       def safe_sequel_delete

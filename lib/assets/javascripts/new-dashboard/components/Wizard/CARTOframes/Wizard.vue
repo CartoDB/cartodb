@@ -2,10 +2,10 @@
   <div>
     <div @click="openModal">
       <Selector
-        :title="$t('wizards.cartoframes.title')"
-        :text="$t('wizards.cartoframes.subtitle')"
-        :tags="$t('wizards.cartoframes.tags')"
-        :iconModifier="'notebook'"></Selector>
+        :title="$t('Wizards.cartoframes.title')"
+        :text="$t('Wizards.cartoframes.subtitle')"
+        :tags="$t('Wizards.cartoframes.tags')"
+        iconModifier="notebook"></Selector>
     </div>
     <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">

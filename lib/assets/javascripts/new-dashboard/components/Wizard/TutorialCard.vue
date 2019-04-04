@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  name: 'Card',
+  name: 'TutorialCard',
   props: {
     content: Object
   }

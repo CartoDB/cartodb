@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: 'WizardSectionTitle',
+  name: 'StepTitle',
   props: {
     title: String
   }

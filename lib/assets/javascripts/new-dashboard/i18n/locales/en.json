@@ -319,11 +319,106 @@
     "users": "{username} | {n} users",
     "and": "and"
   },
-  "Wizards" : {
+  "Wizards": {
     "Distributor": {
       "cta": "Get started",
       "headerTitle": "Getting started",
       "title": "What do you want to do?"
+    },
+    "cartovl": {
+      "title": "Develop an interactive custom web map",
+      "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",
+      "tags" : ["JavaScript", "CARTO VL"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Develop an interactive web map",
+        "text1": "The CARTO platform provides a set of libraries and APIs to develop you own customizable and interactive maps. CARTO VL is a Javascript library to build beautiful interactive web maps",
+        "text2": "In this quick guide you will learn how to load the libarry in your project, crete a map with one of our basemaps, and add a data layer."
+      },
+      "step2": {
+        "summary": {
+          "text": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features"
+        },
+        "howto": {
+          "instruction1":"Create an HTML file in your favourite IDE",
+          "instruction2":"Add the following script code to the <code>&lthead&gt</code> element"
+          },
+        "extras": {
+          "resource1": "Use your favourite Integrated Development Environments (IDE) but if you want a suggestion the favourite ones for the CARTO team are <a href=''>Visual Studio Code</a>, <a href=''>Sublime</a>, and <a href=''>Textmate</a>.",
+          "resource2": "CARTO VL is our more advanced rendering library and it’s constantly adding new features. You can learn what cool stuff did we add lately in our <a href=''>Product Updates</a> blog."
+        }
+      },
+      "step3": {
+        "summary": "Define the <code>&ltdiv&gt</code> element that will contain the map",
+        "howto": {
+          "instruction1":"Include in the <code>&ltbody&gt</code> of your HTML file a <code>&ltdiv&gt</code> element to contain the map. The map, layers, and controls will be displayed in this element",
+          "instruction2":"Paste the following CSS code in the bottom of the <code>&lthead&gt</code> element to define some basic styles for the map."
+
+        }
+      },
+      "step4": {
+        "summary": "Create a MapboxGL map to render a basemap",
+        "howto": {
+          "instruction1":"Copy and paste this script below your <code>&ltdiv&gt</code> container to load the map:"
+        },
+        "extras": {
+          "resource1": "Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
+        }
+      },
+      "step5": {
+        "summary": "Connect to a test CARTO account an add a data layer to your map",
+        "howto": {
+          "instruction1":"Connect to a CARTO account by specifiying the username and API key you want to use. In this case, we're using a test account and the default key",
+          "instruction2":"Now that CARTO VL has access to the account you can crate a basic layer to the map that displays the loaded data."
+          },
+        "extras": {
+          "resource1": "If you want to learn more about how to add your own data to the map you can always visit the <a href=''>data injection section</a>, at the <a href=''>Developer Center</a>."        }
+      },
+      "step6": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You finished your first map with CARTO VL",
+          "message2": "Got questions? <a href='/assets/unversioned/wizards/cartovl.zip'>Download</a> the full code example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href=''>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Style features by category",
+            "subtitle": "Learn how to change the style of the features by a given column",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-style-by-category"
+          },
+          "card2": {
+            "title": "Add hover popups",
+            "subtitle": "Learn how to display info about a feature when user mouses over it.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-hover"
+          },
+          "card3": {
+            "title": "Animate the features",
+            "subtitle": "Learn how to animate the features of the map by different columns.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-animate-and-color-by-date"
+          }
+        }
+      }
+    },
+    "cartoframes" : {
+      "title": "Add spatial data to your data science workflow",
+      "subtitle": "Integrate spatial data into your data science models using our Python library.",
+      "tags": ["Python", "CARTOframes"]
+    },
+    "builder" : {
+      "title": "Create a web map from your browser",
+      "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
+      "tags": ["Online", "Builder"]
     }
   }
 }

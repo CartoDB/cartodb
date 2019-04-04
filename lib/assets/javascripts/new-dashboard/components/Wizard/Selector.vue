@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'WizardSelector',
+  name: 'Selector',
   props: {
     title: String,
     text: String,

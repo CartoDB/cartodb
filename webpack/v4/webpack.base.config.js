@@ -69,6 +69,10 @@ module.exports = {
         from: rootDir('app/assets/images/google-maps-basemap-icons'),
         to: `./unversioned/images/google-maps-basemap-icon`,
         toType: 'dir'
+      }, {
+        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/wizards'),
+        to: `./unversioned/wizards/`,
+        toType: 'dir'
       }
     ]),
 

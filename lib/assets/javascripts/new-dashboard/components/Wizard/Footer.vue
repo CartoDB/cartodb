@@ -45,7 +45,6 @@ export default {
 
 .footer {
   padding: 2em;
-  border-top: 1px solid $grey;
   background: $white;
 }
 </style>

@@ -1,15 +1,15 @@
 <template>
   <div>
-    <button class="button button--ghost" @click="openModal()">Get started</button>
+    <button class="button" :class="[isFirstTimeViewingDashboard ? 'button--cta' : 'button--ghost']" @click="openModal()">{{ $t('Wizards.Distributor.cta') }}</button>
     <Modal :name="'distributor'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="distributor">
         <div class="header">
           <div class="container">
-            Getting started
+            {{ $t('Wizards.Distributor.headerTitle') }}
           </div>
         </div>
         <div class="container u-pt--36">
-          <h1 class="title is-body is-semibold u-mb--40">What do you want to do?</h1>
+          <h1 class="title is-body is-semibold u-mb--40">{{ $t('Wizards.Distributor.title') }}</h1>
           <div class="grid u-flex__justify--between">
             <WizardCARTOVL @closeModal="closeModal"></WizardCARTOVL>
             <WizardCARTOframes @closeModal="closeModal"></WizardCARTOframes>
@@ -32,6 +32,9 @@ export default {
     WizardCARTOframes,
     Modal
   },
+  props: {
+    isFirstTimeViewingDashboard: Boolean
+  },
   data () {
     return {
       isModalOpen: false
@@ -53,6 +56,7 @@ export default {
 .distributor {
   height: 100%;
   background-color: $onboarding__bg-color;
+  color: $text-color;
 }
 
 .header {
@@ -65,7 +69,9 @@ export default {
 }
 
 .button {
-  margin-right: 36px;
-  padding: 0;
+  &.button--ghost {
+    margin-right: 36px;
+    padding: 0;
+  }
 }
 </style>

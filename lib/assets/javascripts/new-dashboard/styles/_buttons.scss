@@ -23,8 +23,6 @@
   }
 }
 
-
-
 a {
   &.button:hover {
     text-decoration: none;
@@ -48,6 +46,19 @@ a {
 
   &:hover {
     background: $softblue;
+  }
+}
+
+.button--cta {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  background: $cta-button__bg-color;
+  color: $text-color;
+  font-size: 16px;
+
+  &:hover,
+  &:focus {
+    background: $cta-button__bg-color--hover;
   }
 }
 

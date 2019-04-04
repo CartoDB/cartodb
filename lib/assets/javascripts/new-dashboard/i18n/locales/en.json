@@ -320,6 +320,11 @@
     "and": "and"
   },
   "Wizards": {
+    "Distributor": {
+      "cta": "Get started",
+      "headerTitle": "Getting started",
+      "title": "What do you want to do?"
+    },
     "cartovl": {
       "title": "Develop an interactive custom web map",
       "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",

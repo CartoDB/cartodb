@@ -2,9 +2,9 @@
   <div>
     <div @click="openModal">
       <Selector
-        :title="$t('wizards.builder.title')"
-        :text="$t('wizards.builder.subtitle')"
-        :tags="$t('wizards.builder.tags')"
+        :title="$t('Wizards.builder.title')"
+        :text="$t('Wizards.builder.subtitle')"
+        :tags="$t('Wizards.builder.tags')"
         :iconModifier="'window'"></Selector>
     </div>
     <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">

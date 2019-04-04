@@ -15,7 +15,7 @@
 import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
 import SectionTitle from 'new-dashboard/components/Wizard/SectionTitle.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
-import map from 'raw-loader!new-dashboard/assets/maps/cartovl.html';
+import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartovl.html';
 
 
 export default {

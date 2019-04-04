@@ -19,17 +19,13 @@ class Admin::SearchPreviewPresenter
 
   def poro_tags
     @dashboard_search_result.tags.map do |tag|
-      {
-        type: "tag",
-        name: tag,
-        url: CartoDB.url(@context, "tag_search", user: @user, params: { q: tag })
-      }
+      Carto::Api::TagPresenter.new(tag, @current_viewer, @context).to_search_preview_poro
     end
   end
 
   def poro_visualizations
     @dashboard_search_result.visualizations.map do |visualization|
-      Carto::Api::VisualizationPresenter.new(visualization, @user, @context).to_search_preview_poro
+      Carto::Api::VisualizationPresenter.new(visualization, @current_viewer, @context).to_search_preview_poro
     end
   end
 end

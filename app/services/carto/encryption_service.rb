@@ -13,14 +13,8 @@ module Carto
     end
 
     def verify(password:, secure_password:, salt: nil)
-      case secure_password
-      when /^\$argon2/
-        Argon2::Password.verify_password(password, secure_password)
-      when /\h{64}$/
-        secure_password == sha_digest(sha_class: Digest::SHA256, args: [salt, password])
-      when /\h{40}$/
-        secure_password == sha_digest(sha_class: Digest::SHA1, args: [salt, password])
-      end
+      return Argon2::Password.verify_password(password, secure_password) if argon2?(secure_password)
+      verify_sha(password, secure_password, salt)
     end
 
     def make_token(sha_class: DEFAULT_SHA_CLASS, digest_key: nil)
@@ -28,7 +22,19 @@ module Carto
       sha_digest(sha_class: sha_class, initial_digest: initial_digest, digest_key: digest_key)
     end
 
+    def argon2?(encryption)
+      encryption =~ /^\$argon2/
+    end
+
     private
+
+    def verify_sha(password, secure_password, salt)
+      case secure_password
+      when /\h{40}$/ then secure_password == sha_digest(sha_class: Digest::SHA1, args: [salt, password])
+      when /\h{64}$/ then secure_password == sha_digest(sha_class: Digest::SHA256, args: [salt, password])
+      else false
+      end
+    end
 
     def sha_digest(sha_class: DEFAULT_SHA_CLASS, initial_digest: nil, digest_key: nil, args: [])
       digest_key ||= default_digest_key(sha_class)

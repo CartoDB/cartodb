@@ -43,11 +43,8 @@ $bullet__border-color: #D3E6FA;
 $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 
 .header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 2.406em;
+  display: block;
+  padding-top: 2.375em;
   background: $white;
 }
 
@@ -59,12 +56,12 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
   display: flex;
   justify-content: space-between;
   max-width: 90%;
-  margin: 0 auto 1em;
+  margin: 0 auto 1.5em;
 
   &__item {
     position: relative;
     width: 100%;
-    height: 46px;
+    height: 36px;
 
     &:not(:last-child) {
       border-top: $timeline__border-width solid $primary-color;
@@ -137,7 +134,7 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 
   &__text {
     position: absolute;
-    top: 30px;
+    top: 24px;
     transform: translateX(-50%);
     color: $text-color;
     font-size: 0.75em;

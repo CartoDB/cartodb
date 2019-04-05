@@ -13,6 +13,7 @@ Development
   - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
 - Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Password encryption with Argon2 [14811](https://github.com/CartoDB/cartodb/pull/14811)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails

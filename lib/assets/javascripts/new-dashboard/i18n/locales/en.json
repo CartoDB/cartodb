@@ -414,6 +414,10 @@
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
       "tags": ["Python", "CARTOframes"],
+      "jupyter": {
+        "in" : "In:",
+        "out": "Out:"
+      },
       "step1": {
         "text1": "CARTOframes is a Phyton library that allows data scientist to integrate spatial analysis in their workflows. It integrates seemingly with <a href=''>Jupyter Notebooks</a> and <a href=''>GeoPandas</a>.",
         "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook."

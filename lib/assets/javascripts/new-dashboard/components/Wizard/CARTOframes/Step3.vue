@@ -13,7 +13,12 @@
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartoframes.step3.howto.instruction1`)" class="text is-caption u-mb--16"></p>
-    <CodeBlock :code="codeBlock1"></CodeBlock>
+
+    <Jupyter>
+      <JupyterBlock :isInput="true">
+        <CodeBlock :code="codeBlock1" :language="'python'" :lineNumbers="false" :theme="'default'"></CodeBlock>
+      </JupyterBlock>
+    </Jupyter>
 
     <StepTitle :title="'Extras'" class="u-mt--64">
       <template slot="icon">
@@ -28,12 +33,16 @@
 <script>
 import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
 import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
+import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
 
 export default {
   name: 'Step3',
   components: {
     CodeBlock,
-    StepTitle
+    StepTitle,
+    Jupyter,
+    JupyterBlock,
   },
   data () {
     return {
@@ -42,8 +51,7 @@ export default {
   }
 };
 
-const codeBlock1 = 
-  `import cartoframes
+const codeBlock1 = `import cartoframes
   from cartoframes import Credentials
 
   creds = Credentials(username='cartoframes', 

@@ -13,17 +13,41 @@
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartoframes.step5.howto.instruction1`)" class="text is-caption u-mb--16 u-mb--64"></p>
+
+    <Jupyter>
+      <JupyterBlock :isInput="true">
+        <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
+      </JupyterBlock>
+      <JupyterBlock :isInput="false">
+        <Table1></Table1>
+      </JupyterBlock>
+    </Jupyter>
   </div>
 </template>
 <script>
 import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
 import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
+import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
+import Table1 from 'new-dashboard/components/Wizard/CARTOframes/Table5_1.vue';
 
 export default {
   name: 'Step5',
   components: {
     CodeBlock,
-    StepTitle
+    StepTitle,
+    Jupyter,
+    JupyterBlock,
+    Table1
+  },
+    data () {
+    return {
+      codeBlock1
+    };
   }
 };
+
+const codeBlock1 =
+  `df = cc.read('brooklyn_poverty')
+   df.head()`;
 </script>

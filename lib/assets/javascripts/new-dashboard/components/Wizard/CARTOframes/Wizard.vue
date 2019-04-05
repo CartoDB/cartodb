@@ -102,7 +102,7 @@ export default {
         'Connect to CARTO',
         'List sample data',
         'Read dataset',
-        'Display Map',
+        'Display map',
         'Download'
       ]
     };

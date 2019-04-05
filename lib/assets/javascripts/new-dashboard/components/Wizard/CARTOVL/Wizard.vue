@@ -8,7 +8,7 @@
         iconModifier="map"></Selector>
     </div>
     <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
-      <div class="wizard">
+      <div ref="wizard" class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <Step
           v-if="isCurrentStep(1)"
@@ -99,7 +99,12 @@ export default {
       ]
     };
   },
-  methods
+  methods,
+  updated () {
+    if (this.$refs.wizard) {
+      this.$refs.wizard.scrollTop = 0
+    }
+  }
 };
 </script>
 <style scoped lang="scss">

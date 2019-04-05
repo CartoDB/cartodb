@@ -9,14 +9,14 @@ let confetti;
 
 export default {
   name: 'Step6',
-  mounted (){
+  mounted () {
     const confettiSettings = {
-      target: "congrats-confetti",
+      target: 'congrats-confetti',
       max: 450,
       size: 0.4,
       animate: true,
-      props:["square"],
-      colors:[
+      props: ['square'],
+      colors: [
         [41, 106, 166],
         [140, 193, 64],
         [219, 44, 111],
@@ -41,7 +41,7 @@ export default {
         [125, 42, 121],
         [252, 236, 38],
         [152, 122, 169]
-        ],
+      ],
       clock: 35,
       rotate: true,
       width: 1280,
@@ -50,7 +50,7 @@ export default {
     confetti = new ConfettiGenerator(confettiSettings);
     confetti.render();
   },
-  beforeDestroy (){
+  beforeDestroy () {
     confetti.clear();
   }
 };

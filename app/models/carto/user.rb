@@ -775,7 +775,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def generate_api_key
-    self.api_key ||= service.class.make_token
+    self.api_key ||= Carto::EncryptionService.new.make_token
   end
 
   def generate_token(column)

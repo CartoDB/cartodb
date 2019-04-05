@@ -19,9 +19,5 @@ module Carto
         throw(:warden, action: :password_locked, retry_after: retry_after)
       end
     end
-
-    def make_token
-      Carto::EncryptionService.new.make_token
-    end
   end
 end

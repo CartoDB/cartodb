@@ -38,7 +38,7 @@ module Carto
                        welcome_text: welcome_text,
                        viewer: viewer)
 
-      invitation.seed = Carto::UserService.make_token
+      invitation.seed = Carto::EncryptionService.new.make_token
       if invitation.save
         invitation.reload
         invitation.users_emails = users_emails

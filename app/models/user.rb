@@ -36,7 +36,6 @@ class User < Sequel::Model
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
   include Carto::EmailCleaner
-  extend Carto::UserAuthenticator
   include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
@@ -282,7 +281,7 @@ class User < Sequel::Model
   def before_create
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
-    self.api_key ||= self.class.make_token
+    self.api_key ||= make_token
   end
 
   def before_save
@@ -404,7 +403,7 @@ class User < Sequel::Model
     # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
-    $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
+    $users_metadata.HSET(key, 'map_key', make_token) if locked?
     db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
@@ -1748,10 +1747,10 @@ class User < Sequel::Model
       :obs_snapshot_block_price, :soft_obs_snapshot_limit, :obs_general_quota,
       :obs_general_block_price, :soft_obs_general_limit
     ])
-    to.invite_token = ::User.make_token
+    to.invite_token = make_token
   end
 
-  def regenerate_api_key(new_api_key = ::User.make_token)
+  def regenerate_api_key(new_api_key = make_token)
     invalidate_varnish_cache
     update api_key: new_api_key
   end
@@ -2034,5 +2033,9 @@ class User < Sequel::Model
 
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
+  end
+
+  def make_token
+    Carto::EncryptionService.new.make_token
   end
 end

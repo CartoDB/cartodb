@@ -114,10 +114,6 @@ module Carto
       end
     end
 
-    def self.make_token
-      Carto::EncryptionService.new.make_token
-    end
-
     def cartodb_extension_version_pre_mu?
       current_version = cartodb_extension_semver(cartodb_extension_version)
       if current_version.size == 3

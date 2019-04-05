@@ -40,7 +40,7 @@ export default {
     JupyterBlock,
     Table1
   },
-    data () {
+  data () {
     return {
       codeBlock1
     };

@@ -181,7 +181,7 @@ class User < Sequel::Model
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
 
-    validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
+    validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation

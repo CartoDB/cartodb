@@ -50,11 +50,11 @@ describe Carto::UserAuthenticator do
       @user.crypted_password = Carto::EncryptionService.new.encrypt(password: @user_password, sha_class: Digest::SHA1,
                                                                     salt: @user.salt)
       @user.save
-      @user.crypted_password.should =~ /\h{40}$/
+      @user.crypted_password.length.should eql 40
 
       authenticate(@user.email, @user_password)
 
-      @user.reload.crypted_password.should =~ /^\$argon2/
+      @user.reload.crypted_password.length.should eql 194
     end
 
     it "does not reencrypt the password if the password is not correct" do
@@ -62,7 +62,7 @@ describe Carto::UserAuthenticator do
                                                                     salt: @user.salt)
       @user.save
       initial_crypted_password = @user.crypted_password
-      initial_crypted_password.should =~ /\h{40}$/
+      initial_crypted_password.length.should eql 40
 
       authenticate(@user.email, "wrong pass")
 
@@ -71,7 +71,7 @@ describe Carto::UserAuthenticator do
 
     it "does not reencrypt the password if it was already with argon2" do
       initial_crypted_password = @user.crypted_password
-      initial_crypted_password.should =~ /^\$argon2/
+      initial_crypted_password.length.should eql 194
 
       authenticate(@user.email, @user_password)
 

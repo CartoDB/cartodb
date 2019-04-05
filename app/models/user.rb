@@ -619,7 +619,7 @@ class User < Sequel::Model
   end
 
   def password_already_in_use?(new_password)
-    return false if new_record?
+    return false if new?
     Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password_was, salt: salt)
   end
 

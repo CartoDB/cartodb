@@ -66,8 +66,7 @@ module Carto
       # reload and used_emails assignment is needed because otherwise
       # activerecord-postgresql-array won't update the invitations
       reload
-      if users_emails.include?(email) && verify(token, email)
-      if users_emails.include?(email) && 
+      if users_emails.include?(email) && verify_token(token, email)
         if used_emails.include?(email)
           raise AlreadyUsedInvitationError.new("#{email} has already used the invitation")
         else
@@ -82,7 +81,7 @@ module Carto
 
     private
 
-    def verify(token, email)
+    def verify_token(token, email)
       Carto::EncryptionService.new.verify(password: email, secure_password: token, salt: password_salt)
     end
 

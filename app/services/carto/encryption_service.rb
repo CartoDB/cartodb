@@ -30,8 +30,8 @@ module Carto
 
     def verify_sha(password, secure_password, salt)
       case secure_password
-      when /\h{40}$/ then secure_password == sha_digest(sha_class: Digest::SHA1, args: [salt, password])
-      when /\h{64}$/ then secure_password == sha_digest(sha_class: Digest::SHA256, args: [salt, password])
+      when /^\h{40}$/ then secure_password == sha_digest(sha_class: Digest::SHA1, args: [salt, password])
+      when /^\h{64}$/ then secure_password == sha_digest(sha_class: Digest::SHA256, args: [salt, password])
       else false
       end
     end

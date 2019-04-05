@@ -48,6 +48,6 @@ export default {
 };
 
 const codeBlock1 =
-  `df = cc.read('brooklyn_poverty')
-   df.head()`;
+`df = cc.read('brooklyn_poverty')
+df.head()`;
 </script>

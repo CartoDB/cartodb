@@ -6,10 +6,7 @@
       </div>
     </div>
 </template>
-
 <script>
-
-
 export default {
   name: 'JupyterBlock',
   props: {
@@ -23,12 +20,11 @@ export default {
       return this.isInput ? 'in' : 'out';
     },
     inputClass () {
-      return `jupyter-${this.inputType}`
+      return `jupyter-${this.inputType}`;
     }
   }
 };
 </script>
-
 <style lang="scss">
 @import 'new-dashboard/styles/variables';
 
@@ -47,20 +43,20 @@ export default {
 
 .jupyter-in {
   .jupyter-title {
-    color: #DA4D24;
+    color: $juypiter__text--in;
   }
 
   .CodeMirror {
     width: 100%;
     padding: 0 4px;
-    border: 1px solid #CFCFCF;
-    background-color: #F7F7F7;
+    border: 1px solid $jupyter__border-color;
+    background-color: $jupyter__fill-color;
   }
 }
 
 .jupyter-out {
   .jupyter-title {
-    color: #2F3F9F;
+    color: $juypiter__text--out;
   }
 
   .CodeMirror {
@@ -70,4 +66,3 @@ export default {
 }
 
 </style>
-

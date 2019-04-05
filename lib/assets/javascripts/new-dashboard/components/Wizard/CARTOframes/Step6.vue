@@ -57,6 +57,6 @@ export default {
 };
 
 const codeBlock1 =
-  `from cartoframes import Layer
-   cc.map(Layer('brooklyn_poverty', color='poverty_per_pop'))`
+`from cartoframes import Layer
+cc.map(Layer('brooklyn_poverty', color='poverty_per_pop'))`;
 </script>

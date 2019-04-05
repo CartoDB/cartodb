@@ -620,7 +620,8 @@ class User < Sequel::Model
 
   def password_already_in_use?(new_password)
     return false if new?
-    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password_was, salt: salt)
+    crypted_password = carto_user.crypted_password_was
+    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password, salt: salt)
   end
 
   def validate_old_password(old_password)

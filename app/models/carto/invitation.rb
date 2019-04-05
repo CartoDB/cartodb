@@ -82,7 +82,7 @@ module Carto
     private
 
     def verify_token(token, email)
-      Carto::EncryptionService.new.verify(password: email, secure_password: token, salt: password_salt)
+      Carto::EncryptionService.new.verify(password: email, secure_password: token, salt: seed)
     end
 
     def users_emails_not_taken

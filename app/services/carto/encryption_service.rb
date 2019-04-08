@@ -11,54 +11,36 @@ module Carto
     DEFAULT_SHA_CLASS = Digest::SHA1
 
     def encrypt(password:, sha_class: nil, salt: nil, secret: nil)
-      return argon2_encrypt(password, secret) unless sha_class
-      sha_digest(sha_class: sha_class, args: [salt, password])
+      return encrypt_argon2(password, secret) unless sha_class
+      encrypt_sha(sha_class: sha_class, args: [salt, password])
     end
 
     def verify(password:, secure_password:, salt: nil, secret: nil)
-      return argon2_verify(password, secure_password, secret) if argon2?(secure_password)
+      return verify_argon2(password, secure_password, secret) if argon2?(secure_password)
       verify_sha(password, secure_password, salt)
     end
 
     def make_token(sha_class: DEFAULT_SHA_CLASS, digest_key: nil)
       initial_digest = [Time.now, (1..10).map { rand.to_s }]
-      sha_digest(sha_class: sha_class, initial_digest: initial_digest, digest_key: digest_key)
-    end
-
-    def argon2?(encryption)
-      encryption =~ /^\h{194}$/
+      encrypt_sha(sha_class: sha_class, initial_digest: initial_digest, digest_key: digest_key)
     end
 
     private
 
-    def argon2_encrypt(password, secret)
+    def argon2?(password)
+      password =~ /^\$argon2/
+    end
+
+    def encrypt_argon2(password, secret)
       argon2 = Argon2::Password.new(secret: secret)
-      argon_hash = argon2.create(password)
-      encode_to_hex(argon_hash)
+      argon2.create(password)
     end
 
-    def argon2_verify(password, secure_password, secret)
-      argon2_hash = decode_hex(secure_password)
-      Argon2::Password.verify_password(password, argon2_hash, secret)
+    def verify_argon2(password, secure_password, secret)
+      Argon2::Password.verify_password(password, secure_password, secret)
     end
 
-    def encode_to_hex(string)
-      string.unpack('H*').first
-    end
-
-    def decode_hex(hex_string)
-      hex_string.scan(/../).map(&:hex).pack('c*')
-    end
-
-    def verify_sha(password, secure_password, salt)
-      case secure_password
-      when /^\h{40}$/ then secure_password == sha_digest(sha_class: Digest::SHA1, args: [salt, password])
-      when /^\h{64}$/ then secure_password == sha_digest(sha_class: Digest::SHA256, args: [salt, password])
-      else false
-      end
-    end
-
-    def sha_digest(sha_class: DEFAULT_SHA_CLASS, initial_digest: nil, digest_key: nil, args: [])
+    def encrypt_sha(sha_class: DEFAULT_SHA_CLASS, initial_digest: nil, digest_key: nil, args: [])
       digest_key ||= DEFAULT_AUTH_DIGEST_KEYS[sha_class]
       digest = initial_digest || digest_key
       args_join = '--' if sha_class == Digest::SHA1
@@ -68,6 +50,14 @@ module Carto
         digest = sha_class.hexdigest(joined_args)
       end
       digest
+    end
+
+    def verify_sha(password, secure_password, salt)
+      case secure_password
+      when /^\h{40}$/ then secure_password == encrypt_sha(sha_class: Digest::SHA1, args: [salt, password])
+      when /^\h{64}$/ then secure_password == encrypt_sha(sha_class: Digest::SHA256, args: [salt, password])
+      else false
+      end
     end
 
   end

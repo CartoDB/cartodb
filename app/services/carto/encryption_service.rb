@@ -29,6 +29,11 @@ module Carto
       encryption =~ /^\$argon2/
     end
 
+    def digest(encryption)
+      return encryption.split('$').last if argon2?(encryption)
+      encryption
+    end
+
     private
 
     def encrypt_argon2(password, secret)

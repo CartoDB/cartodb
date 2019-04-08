@@ -76,6 +76,7 @@ FactoryGirl.define do
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
     salt 'kkkkkkkkk'
+    crypted_password { Carto::EncryptionService.new.encrypt(password: password) }
 
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota nil
@@ -90,10 +91,6 @@ FactoryGirl.define do
     before(:create) do |carto_user|
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       create_account_type_fg(carto_user.account_type)
-    end
-
-    after(:build) do |carto_user|
-      carto_user.crypted_password = Carto::EncryptionService.new.encrypt(password: carto_user.password)
     end
 
     after(:create) do |carto_user|

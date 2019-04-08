@@ -129,8 +129,10 @@ CartoDB::Application.routes.draw do
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
+    # Search preview
+    get '(/user/:user_domain)(/u/:user_domain)/search_preview/:q' => 'search_preview#index', as: :search_preview
+
     # search
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search_preview/:q'       => 'search_preview#index', as: :search_preview
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/tag/:q'           => 'visualizations#index', as: :tag_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page

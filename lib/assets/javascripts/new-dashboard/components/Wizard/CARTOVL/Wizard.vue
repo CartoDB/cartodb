@@ -7,36 +7,42 @@
         :tags="$t('Wizards.cartovl.tags')"
         iconModifier="map"></Selector>
     </div>
-    <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
+    <Modal :name="wizardName" :isOpen="isModalOpen" @closeModal="closeModal">
       <div ref="wizard" class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <Step
           v-if="isCurrentStep(1)"
+          :class="getStepGTMString(1)"
           :stepNum="1">
           <Step1></Step1>
         </Step>
         <Step
           v-if="isCurrentStep(2)"
+          :class="getStepGTMString(2)"
           :stepNum="2">
           <Step2></Step2>
         </Step>
         <Step
           v-if="isCurrentStep(3)"
+          :class="getStepGTMString(3)"
           :stepNum="3">
           <Step3></Step3>
         </Step>
         <Step
           v-if="isCurrentStep(4)"
+          :class="getStepGTMString(4)"
           :stepNum="4">
           <Step4></Step4>
         </Step>
         <Step
           v-if="isCurrentStep(5)"
+          :class="getStepGTMString(5)"
           :stepNum="5">
           <Step5></Step5>
         </Step>
         <Step
           v-if="isCurrentStep(6)"
+          :class="getStepGTMString(6)"
           :stepNum="6"
           :fullWidth="true">
           <Step6></Step6>
@@ -89,6 +95,7 @@ export default {
   data () {
     return {
       ...data(),
+      wizardName: 'onboarding-cartovl',
       stepNames: [
         'Intro',
         'Load CARTO VL',
@@ -115,7 +122,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   background-color: $onboarding__bg-color;
 }
 </style>

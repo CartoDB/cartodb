@@ -7,24 +7,29 @@
         :tags="$t('Wizards.builder.tags')"
         :iconModifier="'window'"></Selector>
     </div>
-    <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
+    <Modal :name="wizardName" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <Step
           v-if="isCurrentStep(1)"
+          :class="getStepGTMString(1)"
           :stepNum="1">
         </Step>
         <Step
           v-if="isCurrentStep(2)"
+          :class="getStepGTMString(2)"
           :stepNum="2"></Step>
         <Step
           v-if="isCurrentStep(3)"
+          :class="getStepGTMString(3)"
           :stepNum="3"></Step>
         <Step
           v-if="isCurrentStep(4)"
+          :class="getStepGTMString(4)"
           :stepNum="4"></Step>
         <Step
           v-if="isCurrentStep(5)"
+          :class="getStepGTMString(5)"
           :stepNum="5"></Step>
         <Footer
           :stepNames="stepNames"
@@ -60,6 +65,7 @@ export default {
   data () {
     return {
       ...data(),
+      wizardName: 'onboarding-builder',
       stepNames: [
         'Intro',
         'Import your data',

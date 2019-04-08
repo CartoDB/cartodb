@@ -61,7 +61,6 @@ WORKING_SPECS_1 = \
 	spec/lib/image_metadata_spec.rb \
 	spec/lib/central_spec.rb \
 	spec/lib/trending_maps_spec.rb \
-	spec/lib/explore_api_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/filename_generator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \

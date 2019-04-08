@@ -1,8 +1,11 @@
 <template>
   <div>
-    <button class="button" :class="[isFirstTimeViewingDashboard ? 'button--cta' : 'button--ghost']" @click="openModal()">{{ $t('Wizards.Distributor.cta') }}</button>
-    <Modal :name="'distributor'" :isOpen="isModalOpen" @closeModal="closeModal">
-      <div class="distributor">
+    <button class="button" :class="[isFirstTimeViewingDashboard ? 'button--cta' : 'button--ghost']" @click="openModal()">
+      {{ $t('Wizards.Distributor.cta') }}
+    </button>
+
+    <Modal name="distributor" :isOpen="isModalOpen" @closeModal="closeModal">
+      <div class="distributor gtm-onboarding">
         <div class="header">
           <div class="container">
             {{ $t('Wizards.Distributor.headerTitle') }}

@@ -309,7 +309,7 @@ export default {
 
       .metadata__icon {
         margin-right: 4px;
-        transform: translate(0, 1px);
+        transform: translate(0, 2px);
       }
 
       li {

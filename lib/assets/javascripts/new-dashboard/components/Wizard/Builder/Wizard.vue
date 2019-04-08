@@ -48,7 +48,7 @@ import data from '../shared/data';
 import methods from '../shared/methods';
 
 export default {
-  name: 'WizardCARTOVL',
+  name: 'WizardBuilder',
   components: {
     Selector,
     Step,
@@ -64,8 +64,7 @@ export default {
         'Intro',
         'Import your data',
         'Explore the dataset',
-        'Create a map',
-        'Publish your map',
+        'Create & publish a map',
         'Final'
       ]
     };

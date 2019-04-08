@@ -54,7 +54,7 @@ describe Carto::UserAuthenticator do
 
       authenticate(@user.email, @user_password)
 
-      @user.reload.crypted_password.length.should eql 194
+      @user.reload.crypted_password.should =~ /^\$argon2/
     end
 
     it "does not reencrypt the password if the password is not correct" do
@@ -71,7 +71,7 @@ describe Carto::UserAuthenticator do
 
     it "does not reencrypt the password if it was already with argon2" do
       initial_crypted_password = @user.crypted_password
-      initial_crypted_password.length.should eql 194
+      initial_crypted_password.should =~ /^\$argon2/
 
       authenticate(@user.email, @user_password)
 

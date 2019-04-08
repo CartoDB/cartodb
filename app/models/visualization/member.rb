@@ -164,7 +164,7 @@ module CartoDB
 
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
-            { encrypted_password: encrypted_password, password_salt: password_salt },
+            { encrypted_password: encrypted_password },
             "password can't be blank")
         end
 

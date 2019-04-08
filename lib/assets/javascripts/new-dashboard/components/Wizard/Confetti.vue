@@ -5,11 +5,11 @@
 <script>
 import 'confetti-js';
 
-let confetti;
-
 export default {
-  name: 'Step6',
+  name: 'Confetti',
   mounted () {
+    const canvasBoundingRect = this.$el.getBoundingClientRect();
+
     const confettiSettings = {
       target: 'congrats-confetti',
       max: 450,
@@ -44,14 +44,16 @@ export default {
       ],
       clock: 35,
       rotate: true,
-      width: 1280,
-      height: 445
+      width: canvasBoundingRect.width,
+      height: canvasBoundingRect.height
     };
-    confetti = new ConfettiGenerator(confettiSettings);
-    confetti.render();
+
+    // confetti-js exports function to global scope 🤦‍♂️
+    this.confetti = new window.ConfettiGenerator(confettiSettings);
+    this.confetti.render();
   },
   beforeDestroy () {
-    confetti.clear();
+    this.confetti.clear();
   }
 };
 </script>

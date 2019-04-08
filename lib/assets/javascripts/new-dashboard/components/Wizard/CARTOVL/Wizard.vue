@@ -102,7 +102,7 @@ export default {
   methods,
   updated () {
     if (this.$refs.wizard) {
-      this.$refs.wizard.scrollTop = 0;
+      this.$refs.wizard.scrollTo({ top: 0, left: 0 });
     }
   }
 };

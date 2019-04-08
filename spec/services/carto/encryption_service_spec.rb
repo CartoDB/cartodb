@@ -69,6 +69,18 @@ describe Carto::EncryptionService do
         result.should be_true
       end
 
+      it "verifies passwords encrypted by the service with a secret" do
+        encrypted = @service.encrypt(password: "wadus", secret: "women")
+        result = @service.verify(password: "wadus", secure_password: encrypted, secret: "women")
+        result.should be_true
+      end
+
+      it "returns false if the secret is wrong" do
+        encrypted = @service.encrypt(password: "wadus", secret: "women")
+        result = @service.verify(password: "wadus", secure_password: encrypted, secret: "men")
+        result.should be_false
+      end
+
       it "verifies user passwords" do
         result = @service.verify(password: @password, secure_password: @user.crypted_password, salt: @user.salt)
         result.should be_true

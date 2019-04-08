@@ -7,13 +7,13 @@ module Carto
 
     DEFAULT_SHA_CLASS = Digest::SHA1
 
-    def encrypt(password:, sha_class: nil, salt: nil)
-      return argon2_encrypt(password) unless sha_class
+    def encrypt(password:, sha_class: nil, salt: nil, secret: nil)
+      return argon2_encrypt(password, secret) unless sha_class
       sha_digest(sha_class: sha_class, args: [salt, password])
     end
 
-    def verify(password:, secure_password:, salt: nil)
-      return argon2_verify(password, secure_password) if argon2?(secure_password)
+    def verify(password:, secure_password:, salt: nil, secret: nil)
+      return argon2_verify(password, secure_password, secret) if argon2?(secure_password)
       verify_sha(password, secure_password, salt)
     end
 
@@ -28,14 +28,15 @@ module Carto
 
     private
 
-    def argon2_encrypt(password)
-      argon_hash = Argon2::Password.create(password)
+    def argon2_encrypt(password, secret)
+      argon2 = Argon2::Password.new(secret: secret)
+      argon_hash = argon2.create(password)
       encode_to_hex(argon_hash)
     end
 
-    def argon2_verify(password, secure_password)
+    def argon2_verify(password, secure_password, secret)
       argon2_hash = decode_hex(secure_password)
-      Argon2::Password.verify_password(password, argon2_hash)
+      Argon2::Password.verify_password(password, argon2_hash, secret)
     end
 
     def encode_to_hex(string)

@@ -39,7 +39,7 @@
 
         <div class="metadata" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+            <img class="metadata__icon" src="../../assets/icons/common/tag.svg" width="14" height="14">
 
             <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
               <li v-for="(tag, index) in visualization.tags" :key="tag">

@@ -76,7 +76,7 @@
         </li>
 
         <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
-          <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
+          <span class="icon"><img class="icon__tags" svg-inline src="../../assets/icons/common/tag.svg"></span>
 
           <ul class="card-tags" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in visualization.tags" :key="tag">
@@ -391,6 +391,15 @@ export default {
     &.icon--sharedBy {
       border-radius: 2px;
       background-size: contain;
+    }
+
+    .icon__tags {
+      width: 16px;
+      height: 16px;
+
+      g {
+        fill: $text-color;
+      }
     }
   }
 }

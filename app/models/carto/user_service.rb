@@ -146,7 +146,7 @@ module Carto
 
     def database_password
       encrypter = Carto::EncryptionService.new
-      encrypter.digest(@user.crypted_password) + database_username
+      encrypter.hex_digest(@user.crypted_password) + database_username
     end
 
     def in_database(options = {})

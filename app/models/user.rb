@@ -691,7 +691,8 @@ class User < Sequel::Model
   end
 
   def database_password
-    crypted_password + database_username
+    encrypter = Carto::EncryptionService.new
+    encrypter.hex_digest(crypted_password) + database_username
   end
 
   def user_database_host

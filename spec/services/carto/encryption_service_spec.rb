@@ -153,17 +153,17 @@ describe Carto::EncryptionService do
     end
   end
 
-  describe "#digest" do
+  describe "#hex_digest" do
     it "returns the same value for SHA1 passwords" do
-      @service.digest(@sha1).should eql @sha1
+      @service.hex_digest(@sha1).should eql @sha1
     end
 
     it "returns the same value for SHA256 passwords" do
-      @service.digest(@sha256).should eql @sha256
+      @service.hex_digest(@sha256).should eql @sha256
     end
 
-    it "returns the last part for Argon2 passwords" do
-      @service.digest(@argon2).should eql "uHSuZsbyIX0ZHe01lsFn/NgBdlroxJUKjdiasKoZSZU"
+    it "returns a SHA1 hash for Argon2 passwords" do
+      @service.hex_digest(@argon2).should eql "f6b9551f0c30c1caa6837ec482729e569bff0cee"
     end
   end
 end

@@ -93,7 +93,7 @@
 <script>
 export default {
   name: 'Table5_1'
-}
+};
 </script>
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';

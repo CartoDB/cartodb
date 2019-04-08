@@ -1,6 +1,7 @@
 <template>
 <div class="congrats">
   <div class="congrats__hero">
+    <Confetti></Confetti>
     <img svg-inline src="../../../assets/icons/wizard/congrats.svg" alt="">
     <h2 class="title is-body u-mb--16 u-mt--24 ">{{ $t(`Wizards.cartoframes.step7.congrats.title`) }}</h2>
       <p v-html="$t(`Wizards.cartoframes.step7.congrats.message1`)" class="text is-caption"></p>
@@ -28,12 +29,14 @@
 <script>
 import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
 import TutorialCard from 'new-dashboard/components/Wizard/TutorialCard.vue';
+import Confetti from 'new-dashboard/components/Wizard/Confetti.vue';
 
 export default {
   name: 'Step7',
   components: {
     StepTitle,
-    TutorialCard
+    TutorialCard,
+    Confetti
   }
 };
 </script>
@@ -45,14 +48,21 @@ export default {
 
   &__hero {
     display: flex;
+    position: relative;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 445px;
-    background-color: #CBE4FF;
-    background-image: url(../../../assets/icons/wizard/confetti.svg);
-    background-repeat: repeat no-repeat;
-    background-position: center -145px;
+    height: $onboarding-congrats__height;
+    background-color: $onboarding-congrats__bg-color;
+  }
+
+  &__hero-content {
+    display: flex;
+    position: relative;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 }
 

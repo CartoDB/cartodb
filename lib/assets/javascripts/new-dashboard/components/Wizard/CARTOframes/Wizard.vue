@@ -100,7 +100,7 @@ export default {
         'Intro',
         'Setup',
         'Connect to CARTO',
-        'List sample data',
+        'List sample datasets',
         'Read dataset',
         'Display map',
         'Download'

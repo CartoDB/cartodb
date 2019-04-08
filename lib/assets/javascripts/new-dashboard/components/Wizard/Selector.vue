@@ -1,6 +1,6 @@
 <template>
-  <div class="selector">
-    <h2 class="title is-body is-medium u-mb--8" :class="iconClass">{{ this.title }}</h2>
+  <div class="selector" tabindex="0">
+    <h3 class="title is-body is-medium u-mb--8" :class="iconClass">{{ this.title }}</h3>
     <p class="is-caption">{{ this.text }}</p>
     <ul class="selector__tags">
       <li class="selector__tags-item title" v-for="tag in tags" :key="tag">{{ tag }}</li>
@@ -70,13 +70,21 @@ export default {
         background-image: url('../../assets/icons/wizard/notebook.svg');
       }
     }
+
+    &--window {
+      &::before {
+        content: '';
+        background-image: url('../../assets/icons/wizard/window.svg');
+      }
+    }
   }
 
   &__tags {
-    margin-top: 74px;
+    margin-top: 66px;
 
     &-item {
       display: inline-block;
+      margin-top: 8px;
       margin-right: 8px;
       padding: 6px 16px;
       border: 1px solid $onboarding-tags__border-color;

@@ -35,7 +35,6 @@ import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
 import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
 import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
 
-
 export default {
   name: 'Step4',
   components: {

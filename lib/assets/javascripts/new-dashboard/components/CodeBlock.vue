@@ -45,7 +45,7 @@ export default {
         lineNumbers: this.lineNumbers,
         theme: this.theme,
         ...defaultOptions
-      }
+      };
       this.codemirror = CodeMirror.fromTextArea(this.$refs.code, allOptions);
     },
     destroy () {

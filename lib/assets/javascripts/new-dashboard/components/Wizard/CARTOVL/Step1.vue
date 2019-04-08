@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100">
+  <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.cartovl.step1.title`)">
       <template slot="icon">
           <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>

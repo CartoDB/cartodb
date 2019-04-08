@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require_relative '../../spec_helper_min'
-require_relative '../../../app/controllers/admin/search_preview_controller'
+require_relative '../../../spec_helper_min'
+require_relative '../../../../app/controllers/carto/api/search_preview_controller'
 require 'support/helpers'
 
 describe Carto::Api::TagsController do
@@ -35,7 +35,7 @@ describe Carto::Api::TagsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      get_json search_preview_url(q: "tag"), @headers do |response|
+      get_json api_v3_search_preview_url(q: "tag"), @headers do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -43,7 +43,7 @@ describe Carto::Api::TagsController do
     it 'raises a 400 error if types parameter is not valid' do
       login_as(@user1, scope: @user1.username)
       params = { q: "tag", types: "table,wrong" }
-      get_json search_preview_url(params), @headers do |response|
+      get_json api_v3_search_preview_url(params), @headers do |response|
         expect(response.status).to eq(400)
         expect(response.body[:errors]).to include("parameter combination")
       end
@@ -56,7 +56,7 @@ describe Carto::Api::TagsController do
       ]
 
       login_as(@user1, scope: @user1.username)
-      get_json search_preview_url(q: "tag", types: "tag"), @headers do |response|
+      get_json api_v3_search_preview_url(q: "tag", types: "tag"), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body[:result]).to eq expected_result
         expect(response.body[:total_count]).to eq 2
@@ -69,7 +69,7 @@ describe Carto::Api::TagsController do
       ]
 
       login_as(@user1, scope: @user1.username)
-      get_json search_preview_url(q: "mapaza", types: "derived"), @headers do |response|
+      get_json api_v3_search_preview_url(q: "mapaza", types: "derived"), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body[:result]).to eq expected_result
         expect(response.body[:total_count]).to eq 1
@@ -83,7 +83,7 @@ describe Carto::Api::TagsController do
       ]
 
       login_as(@user1, scope: @user1.username)
-      get_json search_preview_url(q: "map", types: "derived,tag"), @headers do |response|
+      get_json api_v3_search_preview_url(q: "map", types: "derived,tag"), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body[:result]).to eq expected_result
         expect(response.body[:total_count]).to eq 2

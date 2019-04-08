@@ -1,4 +1,4 @@
-class Admin::SearchPreviewPresenter
+class Carto::Api::SearchPreviewPresenter
 
   def initialize(dashboard_search_result:, limit:, current_viewer:, context:)
     @dashboard_search_result = dashboard_search_result

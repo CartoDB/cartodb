@@ -8,8 +8,7 @@ describe Carto::EncryptionService do
     @user = FactoryGirl.create(:carto_user, password: @password, password_confirmation: @password)
     @salt = "98dffcb748fc487987af5774ec3aab2d106e8578"
     # "location" encrypted with different methods
-    @argon2 = "246172676f6e32696424763d3139246d3d36353533362c743d322c703d3124754a6f78394d6758554f6e627a704d65486b"\
-              "6f72336724646632514e504468446552794d393356496b4d2b6857525176656172784634732f7457386e57624255696b"
+    @argon2 = "$argon2id$v=19$m=65536,t=2,p=1$slA4QxnG7HRZoU8h0om3wQ$uHSuZsbyIX0ZHe01lsFn/NgBdlroxJUKjdiasKoZSZU"
     @sha1 = "e4c2a6d7d41e6170470a9d1d3234bdcbc1b95018"
     @sha256 = "c419d4097e20c71e76f09a5640cd095aba019198c34439b71e63146f15de7c34"
   end
@@ -21,7 +20,8 @@ describe Carto::EncryptionService do
   describe "#encrypt" do
     it "uses Argon2 by default" do
       result = @service.encrypt(password: "wadus")
-      result.should match /\h{194}$/
+      result.should match /^\$argon2/
+      result.length.should eql 97
     end
 
     it "returns a different output each time" do
@@ -67,6 +67,18 @@ describe Carto::EncryptionService do
         encrypted = @service.encrypt(password: "wadus")
         result = @service.verify(password: "wadus", secure_password: encrypted)
         result.should be_true
+      end
+
+      it "verifies passwords encrypted by the service with a secret" do
+        encrypted = @service.encrypt(password: "wadus", secret: "women")
+        result = @service.verify(password: "wadus", secure_password: encrypted, secret: "women")
+        result.should be_true
+      end
+
+      it "returns false if the secret is wrong" do
+        encrypted = @service.encrypt(password: "wadus", secret: "women")
+        result = @service.verify(password: "wadus", secure_password: encrypted, secret: "men")
+        result.should be_false
       end
 
       it "verifies user passwords" do

@@ -51,10 +51,11 @@ export default {
   }
 };
 
-const codeBlock1 = `import cartoframes
-  from cartoframes import Credentials
+const codeBlock1 = 
+`import cartoframes
+from cartoframes import Credentials
 
-  creds = Credentials(username='cartoframes', 
-                      key='default_public')
-  cc = cartoframes.CartoContext(creds=creds)`;
+creds = Credentials(username='cartoframes',
+                    key='default_public')
+cc = cartoframes.CartoContext(creds=creds)`;
 </script>

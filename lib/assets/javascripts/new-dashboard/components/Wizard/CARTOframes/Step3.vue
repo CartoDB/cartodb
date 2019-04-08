@@ -12,7 +12,11 @@
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartoframes.step3.howto.instruction1`)" class="text is-caption u-mb--16"></p>
+    <ul class="u-list__style--decimal u-list__position--inside">
+      <li class="u-mb--16">
+        <p v-html="$t(`Wizards.cartoframes.step3.howto.instruction1`)" class="text is-caption u-inlineflex"></p>
+      </li>
+    </ul>
 
     <Jupyter>
       <JupyterBlock :isInput="true">
@@ -42,7 +46,7 @@ export default {
     CodeBlock,
     StepTitle,
     Jupyter,
-    JupyterBlock,
+    JupyterBlock
   },
   data () {
     return {
@@ -51,7 +55,7 @@ export default {
   }
 };
 
-const codeBlock1 = 
+const codeBlock1 =
 `import cartoframes
 from cartoframes import Credentials
 

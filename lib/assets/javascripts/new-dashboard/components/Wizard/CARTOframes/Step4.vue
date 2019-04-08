@@ -12,7 +12,11 @@
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartoframes.step4.howto.instruction1`)" class="text is-caption u-mb--16"></p>
+    <ul class="u-list__style--decimal u-list__position--inside">
+      <li>
+        <p v-html="$t(`Wizards.cartoframes.step4.howto.instruction1`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+      </li>
+    </ul>
 
     <Jupyter>
       <JupyterBlock :isInput="true">
@@ -48,7 +52,7 @@ export default {
   }
 };
 
-const codeBlock1 = `[table.name for table in cc.tables]`;
+const codeBlock1 = `[table.name for table in cc.tables()]`;
 const codeBlock2 = `['mcdonalds_nyc', 'nyc_census_tracts', 'brooklyn_poverty', 'taxi_50k', 'nat']`;
 </script>
 

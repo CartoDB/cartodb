@@ -12,7 +12,11 @@
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartoframes.step5.howto.instruction1`)" class="text is-caption u-mb--16 u-mb--64"></p>
+    <ul class="u-list__style--decimal u-list__position--inside u-mb--16">
+      <li>
+        <p v-html="$t(`Wizards.cartoframes.step5.howto.instruction1`)" class="text is-caption u-inlineflex"></p>
+      </li>
+    </ul>
 
     <Jupyter>
       <JupyterBlock :isInput="true">

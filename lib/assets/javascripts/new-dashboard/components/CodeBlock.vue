@@ -61,7 +61,8 @@ export default {
 };
 
 const defaultOptions = {
-  readOnly: true
+  readOnly: true,
+  addModeClass: true
 };
 
 </script>

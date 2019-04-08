@@ -39,6 +39,12 @@ export default {
 .jupyter-content {
   width: 100%;
   overflow: scroll;
+
+  .CodeMirror {
+    width: 100%;
+    margin: 0;
+    padding: 0 4px;
+  }
 }
 
 .jupyter-in {
@@ -47,8 +53,6 @@ export default {
   }
 
   .CodeMirror {
-    width: 100%;
-    padding: 0 4px;
     border: 1px solid $jupyter__border-color;
     background-color: $jupyter__fill-color;
   }
@@ -57,11 +61,6 @@ export default {
 .jupyter-out {
   .jupyter-title {
     color: $juypiter__text--out;
-  }
-
-  .CodeMirror {
-    width: 100%;
-    padding: 0 4px;
   }
 }
 

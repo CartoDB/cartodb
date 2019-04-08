@@ -2,12 +2,12 @@
   <div>
     <div @click="openModal">
       <Selector
-        :title="$t('Wizards.cartoframes.title')"
-        :text="$t('Wizards.cartoframes.subtitle')"
-        :tags="$t('Wizards.cartoframes.tags')"
-        iconModifier="notebook"></Selector>
+        :title="$t('Wizards.builder.title')"
+        :text="$t('Wizards.builder.subtitle')"
+        :tags="$t('Wizards.builder.tags')"
+        :iconModifier="'window'"></Selector>
     </div>
-    <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
+    <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <Step
@@ -16,23 +16,15 @@
         </Step>
         <Step
           v-if="isCurrentStep(2)"
-          :title="'Step 2 Title'"
-          :subTitle="'Step 2 Subtitle'"
           :stepNum="2"></Step>
         <Step
           v-if="isCurrentStep(3)"
-          :title="'Step 3'"
-          :subTitle="'Step 3 Subtitle'"
           :stepNum="3"></Step>
         <Step
           v-if="isCurrentStep(4)"
-          :title="'Step 4'"
-          :subTitle="'Step 4 Subtitle'"
           :stepNum="4"></Step>
         <Step
           v-if="isCurrentStep(5)"
-          :title="'Step 5'"
-          :subTitle="'Step 5 Subtitle'"
           :stepNum="5"></Step>
         <Footer
           :stepNames="stepNames"
@@ -56,7 +48,7 @@ import data from '../shared/data';
 import methods from '../shared/methods';
 
 export default {
-  name: 'WizardCARTOVL',
+  name: 'WizardBuilder',
   components: {
     Selector,
     Step,
@@ -70,12 +62,10 @@ export default {
       ...data(),
       stepNames: [
         'Intro',
-        'Setup',
-        'Connect to CARTO',
-        'List datasets',
-        'Read dataset',
-        'Display map',
-        'Download'
+        'Import your data',
+        'Explore the dataset',
+        'Create & publish a map',
+        'Final'
       ]
     };
   },

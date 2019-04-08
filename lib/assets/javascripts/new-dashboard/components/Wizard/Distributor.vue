@@ -9,11 +9,22 @@
           </div>
         </div>
         <div class="container u-pt--36">
-          <h1 class="title is-body is-semibold u-mb--40">{{ $t('Wizards.Distributor.title') }}</h1>
+          <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">{{ $t('Wizards.Distributor.title') }}</h1>
           <div class="grid u-flex__justify--between">
-            <WizardCARTOVL @closeModal="closeModal"></WizardCARTOVL>
-            <WizardCARTOframes @closeModal="closeModal"></WizardCARTOframes>
+            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <WizardCARTOVL @closeModal="closeModal"></WizardCARTOVL>
+            </div>
+            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <WizardCARTOframes @closeModal="closeModal"></WizardCARTOframes>
+            </div>
+            <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+              <WizardBuilder @closeModal="closeModal"></WizardBuilder>
+            </div>
           </div>
+          <p class="grid-cell u-mt--48 is-small">{{ $t('Wizards.Distributor.feedback.text') }}
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank">
+            {{ $t('Wizards.Distributor.feedback.link') }}</a>
+          </p>
         </div>
       </div>
     </Modal>
@@ -24,12 +35,14 @@
 import Modal from 'new-dashboard/components/Modal.vue';
 import WizardCARTOVL from 'new-dashboard/components/Wizard/CARTOVL/Wizard.vue';
 import WizardCARTOframes from 'new-dashboard/components/Wizard/CARTOframes/Wizard.vue';
+import WizardBuilder from 'new-dashboard/components/Wizard/Builder/Wizard.vue';
 
 export default {
   name: 'WizardDistributor',
   components: {
     WizardCARTOVL,
     WizardCARTOframes,
+    WizardBuilder,
     Modal
   },
   props: {

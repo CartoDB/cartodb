@@ -6,11 +6,13 @@ Development
   suitable random key by using `bundle exec rake secret`
 
 ### Features
-* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
-  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
-  * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
-  * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
-  * Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+- Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  - Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  - `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
+  - New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
+  - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+- Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
+- Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -41,6 +43,9 @@ Development
 - Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
 - Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
 - Add dependent visualizations to visualizations method in GET ([#14802](https://github.com/CartoDB/cartodb/pull/14802))
+- Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
+- Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
+- Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
 
 4.26.0 (2019-03-11)
 -------------------

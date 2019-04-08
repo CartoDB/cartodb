@@ -45,6 +45,7 @@ Development
 - Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
 - Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
+- Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
 
 4.26.0 (2019-03-11)
 -------------------

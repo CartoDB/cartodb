@@ -11,8 +11,8 @@ module Carto
     DEFAULT_SHA_CLASS = Digest::SHA1
 
     def encrypt(password:, sha_class: nil, salt: nil, secret: nil)
-      return encrypt_argon2(password, secret) unless sha_class
-      encrypt_sha(sha_class: sha_class, args: [salt, password])
+      return encrypt_sha(sha_class: sha_class, args: [salt, password]) if sha_class
+      encrypt_argon2(password, secret) unless sha_class
     end
 
     def verify(password:, secure_password:, salt: nil, secret: nil)

@@ -88,9 +88,5 @@
 
 </div>
 
-<% if current_user.has_feature_flag?('new-dashboard-feature') %>
-  <%= render 'admin/shared/new_private_footer' %>
-<% else %>
-  <%= render 'admin/shared/footer' %>
-<% end %>
+<%= render 'admin/shared/new_private_footer' %>
 

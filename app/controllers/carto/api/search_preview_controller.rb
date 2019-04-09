@@ -1,6 +1,6 @@
 require_dependency 'carto/controller_helper'
 
-class Admin::SearchPreviewController < Admin::AdminController
+class Carto::Api::SearchPreviewController < ::Api::ApplicationController
   include Carto::ControllerHelper
 
   ssl_required
@@ -21,7 +21,7 @@ class Admin::SearchPreviewController < Admin::AdminController
     result = searcher.search
 
     presenter_params = { dashboard_search_result: result, limit: @limit, current_viewer: current_viewer, context: self }
-    presentation = Admin::SearchPreviewPresenter.new(presenter_params).to_poro
+    presentation = Carto::Api::SearchPreviewPresenter.new(presenter_params).to_poro
 
     render json: presentation
   end

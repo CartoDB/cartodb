@@ -233,8 +233,6 @@ class User < Sequel::Model
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_password_not_in_use(value, key)
-
     errors[key].empty?
   end
 
@@ -598,7 +596,6 @@ class User < Sequel::Model
     # Mark as changing passwords
     @changing_passwords = true
 
-    @old_password = old_password
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
@@ -606,22 +603,17 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
-    return unless validate_password_not_in_use(@new_password)
+    return unless validate_password_not_in_use(old_password, @new_password)
 
     self.password = new_password_value
   end
 
-  def validate_password_not_in_use(new_password = nil, key = :new_password)
-    if password_already_in_use?(new_password)
+  def validate_password_not_in_use(old_password, new_password, key = :new_password)
+    return true if new?
+    if old_password == new_password
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
-  end
-
-  def password_already_in_use?(new_password)
-    return false if new?
-    crypted_password = carto_user.crypted_password_was
-    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password, salt: salt)
   end
 
   def validate_old_password(old_password)

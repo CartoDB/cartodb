@@ -1901,7 +1901,7 @@ describe User do
     @user.valid?.should eq true
     @user.save
 
-    @user.crypted_password.should eq old_crypted_password
+    @user.crypted_password.should_not eql new_crypted_password
 
     last_password_change_date = @user.last_password_change_date
     @user.change_password(@user_password, @user_password, @user_password)

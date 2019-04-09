@@ -350,6 +350,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/tag_query_builder_spec.rb \
 	spec/requests/carto/api/tags_controller_spec.rb \
 	spec/lib/carto/oauth/google/api_spec.rb \
+	spec/services/carto/encryption_service_spec.rb \
 	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	$(NULL)

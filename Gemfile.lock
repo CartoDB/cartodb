@@ -59,6 +59,9 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     analytics-ruby (2.0.13)
     arel (6.0.4)
+    argon2 (2.0.2)
+      ffi (~> 1.9)
+      ffi-compiler (>= 0.1)
     aws-partitions (1.77.0)
     aws-sdk-core (3.19.0)
       aws-partitions (~> 1.0)
@@ -144,6 +147,9 @@ GEM
     faye-websocket (0.4.7)
       eventmachine (>= 0.12.0)
     ffi (1.9.25)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
     gc_tracer (1.5.1)
     get_process_mem (0.2.0)
     gibbon (1.1.4)
@@ -422,6 +428,7 @@ DEPENDENCIES
   activerecord-postgresql-adapter
   addressable (~> 2.5)
   analytics-ruby (~> 2.0.0)
+  argon2 (~> 2.0.2)
   aws-sdk-s3 (~> 1)
   byebug
   capybara (= 1.1.2)

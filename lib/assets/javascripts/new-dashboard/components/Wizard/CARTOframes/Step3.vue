@@ -20,7 +20,7 @@
 
     <Jupyter>
       <JupyterBlock :isInput="true">
-        <CodeBlock :code="codeBlock1" :language="'python'" :lineNumbers="false" :theme="'default'"></CodeBlock>
+        <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
       </JupyterBlock>
     </Jupyter>
 

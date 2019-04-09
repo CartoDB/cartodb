@@ -10,37 +10,15 @@
     <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div ref="wizard" class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <Step
-          v-if="isCurrentStep(1)"
-          :stepNum="1">
-          <Step1></Step1>
-        </Step>
-        <Step
-          v-if="isCurrentStep(2)"
-          :stepNum="2">
-          <Step2></Step2>
-        </Step>
-        <Step
-          v-if="isCurrentStep(3)"
-          :stepNum="3">
-          <Step3></Step3>
-        </Step>
-        <Step
-          v-if="isCurrentStep(4)"
-          :stepNum="4">
-          <Step4></Step4>
-        </Step>
-        <Step
-          v-if="isCurrentStep(5)"
-          :stepNum="5">
-          <Step5></Step5>
-        </Step>
-        <Step
-          v-if="isCurrentStep(6)"
-          :stepNum="6"
-          :fullWidth="true">
-          <Step6></Step6>
-        </Step>
+        <template v-for="step in 7">
+          <Step
+            v-if="isCurrentStep(step)"
+            :stepNum="step"
+            :key="step"
+            :fullWidth="step === stepNames.length">
+            <component :is="`Step${step}`"></component>
+          </Step>
+        </template>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -66,7 +44,6 @@ import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
 import Step6 from './Step6.vue';
 
-import props from '../shared/props';
 import data from '../shared/data';
 import methods from '../shared/methods';
 
@@ -85,7 +62,6 @@ export default {
     Step5,
     Step6
   },
-  props,
   data () {
     return {
       ...data(),

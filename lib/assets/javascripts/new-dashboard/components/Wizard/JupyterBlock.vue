@@ -30,7 +30,7 @@ export default {
 
 .jupyter-title {
   width: 35px;
-  margin-top: 6px;
+  margin-top: 11px;
   font-family: 'Source Code Pro', monospace;
   font-size: 14px;
   text-align: right;

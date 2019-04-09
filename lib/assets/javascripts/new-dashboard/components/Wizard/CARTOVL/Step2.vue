@@ -18,7 +18,7 @@
       </li>
       <li>
         <p v-html="$t(`Wizards.cartovl.step2.howto.instruction2`)" class="text is-caption u-inlineflex"></p>
-        <CodeBlock :code="codeBlock1"></CodeBlock>
+        <CodeBlock :code="codeBlock1" language="htmlmixed"></CodeBlock>
       </li>
     </ul>
 

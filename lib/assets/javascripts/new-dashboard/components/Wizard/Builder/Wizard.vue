@@ -43,7 +43,6 @@ import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
-import props from '../shared/props';
 import data from '../shared/data';
 import methods from '../shared/methods';
 
@@ -56,7 +55,6 @@ export default {
     Footer,
     Modal
   },
-  props,
   data () {
     return {
       ...data(),

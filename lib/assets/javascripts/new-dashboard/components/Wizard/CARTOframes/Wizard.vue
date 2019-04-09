@@ -10,42 +10,15 @@
     <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <Step
-          v-if="isCurrentStep(1)"
-          :stepNum="1">
-          <Step1></Step1>
-        </Step>
-        <Step
-          v-if="isCurrentStep(2)"
-          :stepNum="2">
-          <Step2></Step2>
-        </Step>
-        <Step
-          v-if="isCurrentStep(3)"
-          :stepNum="3">
-          <Step3></Step3>
-        </Step>
-        <Step
-          v-if="isCurrentStep(4)"
-          :stepNum="4">
-          <Step4></Step4>
-        </Step>
-        <Step
-          v-if="isCurrentStep(5)"
-          :stepNum="5">
-          <Step5></Step5>
-        </Step>
-        <Step
-          v-if="isCurrentStep(6)"
-          :stepNum="6">
-          <Step6></Step6>
-        </Step>
-        <Step
-          v-if="isCurrentStep(7)"
-          :stepNum="7"
-          :fullWidth="true">
-          <Step7></Step7>
-        </Step>
+        <template v-for="step in 7">
+          <Step
+            v-if="isCurrentStep(step)"
+            :stepNum="step"
+            :key="step"
+            :fullWidth="step === stepNames.length">
+            <component :is="`Step${step}`"></component>
+          </Step>
+        </template>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -72,7 +45,6 @@ import Step5 from './Step5.vue';
 import Step6 from './Step6.vue';
 import Step7 from './Step7.vue';
 
-import props from '../shared/props';
 import data from '../shared/data';
 import methods from '../shared/methods';
 
@@ -92,7 +64,6 @@ export default {
     Step6,
     Step7
   },
-  props,
   data () {
     return {
       ...data(),

@@ -22,7 +22,7 @@
         <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
       </JupyterBlock>
       <JupyterBlock :isInput="false">
-        <InjectableIframe :content="map" width="940" height="416"></InjectableIframe>
+        <InjectableIframe :content="map" width="100%" height="416"></InjectableIframe>
       </JupyterBlock>
     </Jupyter>
 

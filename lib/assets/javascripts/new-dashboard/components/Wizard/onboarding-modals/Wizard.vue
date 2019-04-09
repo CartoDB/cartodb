@@ -5,7 +5,7 @@
 <script>
 import CartoVLWizard from '../CARTOVL/Wizard';
 import BuilderWizard from '../Builder/Wizard';
-import CARTOframesWizard from '../Cartoframes/Wizard';
+import CARTOframesWizard from '../CARTOframes/Wizard';
 
 export default {
   name: 'Wizard',

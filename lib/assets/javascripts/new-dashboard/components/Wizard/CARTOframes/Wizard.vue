@@ -8,7 +8,7 @@
         iconModifier="notebook"></Selector>
     </div>
     <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
-      <div class="wizard">
+      <div ref="wizard" class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
         <template v-for="step in 7">
           <Step
@@ -78,7 +78,12 @@ export default {
       ]
     };
   },
-  methods
+  methods,
+  updated () {
+    if (this.$refs.wizard) {
+      this.$refs.wizard.scrollTo({ top: 0, left: 0 });
+    }
+  }
 };
 </script>
 <style scoped lang="scss">

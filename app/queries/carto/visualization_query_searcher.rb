@@ -25,7 +25,7 @@ class Carto::VisualizationQuerySearcher
   def tsvector
     %{
       setweight(to_tsvector('english', coalesce("visualizations"."name",'')), 'A') ||
-      setweight(to_tsvector('english', coalesce(array_to_string(visualizations.tags, ', '),'')), 'B') ||
+      setweight(to_tsvector('english', coalesce(array_to_string(visualizations.tags, ''),'')), 'B') ||
       setweight(to_tsvector('english', coalesce("visualizations"."description",'')), 'C')
     }
   end

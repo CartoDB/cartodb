@@ -12,9 +12,7 @@
         <a download :href="content.link" class="button button--ghost button--outline">{{content.button}}</a>
     </div>
   </div>
-  
 </template>
-
 <script>
 export default {
   name: 'DatasetCard_21',

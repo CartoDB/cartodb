@@ -1,24 +1,39 @@
 <template>
-  <div>
-    <button class="button" :class="[isFirstTimeViewingDashboard ? 'button--cta' : 'button--ghost']" @click="openModal()">{{ $t('Wizards.Distributor.cta') }}</button>
-    <Modal :name="'distributor'" :isOpen="isModalOpen" @closeModal="closeModal">
+  <section class="onboarding-welcome">
+    <Modal name="onboarding-welcome" :isOpen="true" @closeModal="closeModal">
       <div class="distributor">
         <div class="header">
           <div class="container">
             {{ $t('Wizards.Distributor.headerTitle') }}
           </div>
         </div>
+
         <div class="container u-pt--36">
           <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">{{ $t('Wizards.Distributor.title') }}</h1>
           <div class="grid u-flex__justify--between">
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-              <WizardCARTOVL @closeModal="closeModal"></WizardCARTOVL>
+              <Selector
+                :title="$t('Wizards.cartovl.title')"
+                :text="$t('Wizards.cartovl.subtitle')"
+                :tags="$t('Wizards.cartovl.tags')"
+                @click.native="openOnboarding('carto-vl')"
+                iconModifier="map"></Selector>
             </div>
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-              <WizardCARTOframes @closeModal="closeModal"></WizardCARTOframes>
+              <Selector
+                :title="$t('Wizards.cartoframes.title')"
+                :text="$t('Wizards.cartoframes.subtitle')"
+                :tags="$t('Wizards.cartoframes.tags')"
+                @click.native="openOnboarding('cartoframes')"
+                iconModifier="notebook"></Selector>
             </div>
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
-              <WizardBuilder @closeModal="closeModal"></WizardBuilder>
+              <Selector
+                :title="$t('Wizards.builder.title')"
+                :text="$t('Wizards.builder.subtitle')"
+                :tags="$t('Wizards.builder.tags')"
+                @click.native="openOnboarding('builder')"
+                iconModifier="window"></Selector>
             </div>
           </div>
           <p class="grid-cell u-mt--48 is-small">{{ $t('Wizards.Distributor.feedback.text') }}
@@ -28,37 +43,36 @@
         </div>
       </div>
     </Modal>
-  </div>
+
+    <router-view name="onboarding" @closeModal="closeModal"/>
+  </section>
 </template>
 
 <script>
+import Selector from 'new-dashboard/components/Wizard/welcome/selector';
 import Modal from 'new-dashboard/components/Modal.vue';
 import WizardCARTOVL from 'new-dashboard/components/Wizard/CARTOVL/Wizard.vue';
 import WizardCARTOframes from 'new-dashboard/components/Wizard/CARTOframes/Wizard.vue';
 import WizardBuilder from 'new-dashboard/components/Wizard/Builder/Wizard.vue';
 
 export default {
-  name: 'WizardDistributor',
+  name: 'OnboardingWelcome',
   components: {
+    Selector,
     WizardCARTOVL,
     WizardCARTOframes,
     WizardBuilder,
     Modal
   },
-  props: {
-    isFirstTimeViewingDashboard: Boolean
-  },
-  data () {
-    return {
-      isModalOpen: false
-    };
-  },
   methods: {
-    openModal () {
-      this.isModalOpen = true;
+    openOnboarding (onboardingId) {
+      this.$router.push({
+        name: 'onboarding-open',
+        params: { onboardingId }
+      });
     },
     closeModal () {
-      this.isModalOpen = false;
+      this.$router.push({ name: 'home' });
     }
   }
 };

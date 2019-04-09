@@ -34,6 +34,7 @@ export default {
       this.$emit('goToStep', this.currentStep + 1);
     },
     closeModal () {
+      debugger;
       this.$emit('closeModal');
     }
   }

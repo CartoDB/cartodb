@@ -281,6 +281,10 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications'     => 'visualizations#index', as: :notifications_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions/'        => 'visualizations#index', as: :solutions
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started'       => 'visualizations#index', as: :get_started
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/builder'  => 'visualizations#index', as: :get_started_builder
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/cartoframes'  => 'visualizations#index', as: :get_started_cartoframes
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/carto-vl'  => 'visualizations#index', as: :get_started_carto_vl
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home

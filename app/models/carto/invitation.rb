@@ -59,7 +59,7 @@ module Carto
     end
 
     def token(email)
-      Carto::EncryptionService.new.encrypt(sha_class: Digest::SHA1, password: email, salt: seed)
+      Carto::EncryptionService.new.encrypt(sha_class: Digest::SHA256, password: email, salt: seed)
     end
 
     def use(email, token)

@@ -62,10 +62,10 @@ describe Carto::VisualizationQuerySearcher do
       expect(result.size).to eql 0
     end
 
-    it 'finds partial text in title and description' do
-      result = @searcher.search('dus')
+    it 'finds partial text in title, tags and description' do
+      result = @searcher.search('ff')
 
-      expect(result.size).to eql 2
+      expect(result.size).to eql 3
     end
   end
 

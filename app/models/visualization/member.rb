@@ -438,7 +438,8 @@ module CartoDB
       def password=(value)
         if value && value.size > 0
           @password_salt = ""
-          @encrypted_password = Carto::EncryptionService.new.encrypt(password: value)
+          @encrypted_password = Carto::EncryptionService.new.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
           self.dirty = true
         end
       end
@@ -449,7 +450,7 @@ module CartoDB
 
       def password_valid?(password)
         Carto::EncryptionService.new.verify(password: password, secure_password: @encrypted_password,
-                                            salt: @password_salt)
+                                            salt: @password_salt, secret: Cartodb.config[:password_secret])
       end
 
       def remove_password

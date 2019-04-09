@@ -13,7 +13,7 @@ module Carto
 
     def valid_password?(candidate, password)
       Carto::EncryptionService.new.verify(password: password, secure_password: candidate.crypted_password,
-                                          salt: candidate.salt)
+                                          salt: candidate.salt, secret: Cartodb.config[:password_secret])
     end
 
     def login_attempt(user)
@@ -26,7 +26,7 @@ module Carto
     def reencrypt_password(candidate, password)
       encrypter = Carto::EncryptionService.new
       return if encrypter.argon2?(candidate.crypted_password)
-      candidate.crypted_password = encrypter.encrypt(password: password)
+      candidate.crypted_password = encrypter.encrypt(password: password, secret: Cartodb.config[:password_secret])
       candidate.salt = ""
       candidate.save
     end

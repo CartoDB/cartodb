@@ -143,7 +143,8 @@ class Carto::User < ActiveRecord::Base
 
     @password = value
     self.salt = ""
-    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value)
+    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value,
+                                                                 secret: Cartodb.config[:password_secret])
   end
 
   def reset_password_rate_limit
@@ -521,7 +522,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt) ||
+    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt,
+                                        secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 

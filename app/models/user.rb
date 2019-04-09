@@ -617,7 +617,8 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
-    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt) ||
+    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt,
+                                        secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -662,7 +663,8 @@ class User < Sequel::Model
 
     @password = value
     self.salt = ""
-    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value)
+    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value,
+                                                                 secret: Cartodb.config[:password_secret])
     set_last_password_change_date
   end
 

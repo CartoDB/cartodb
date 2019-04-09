@@ -76,7 +76,9 @@ FactoryGirl.define do
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
     salt 'kkkkkkkkk'
-    crypted_password { Carto::EncryptionService.new.encrypt(password: password) }
+    crypted_password do 
+      Carto::EncryptionService.new.encrypt(password: password, secret: Cartodb.config[:password_secret])
+    end
 
     api_key '21ee521b8a107ea55d61fd7b485dd93d54c0b9d2'
     table_quota nil

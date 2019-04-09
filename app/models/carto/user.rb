@@ -535,8 +535,23 @@ class Carto::User < ActiveRecord::Base
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
+    validate_password_not_in_use(nil, value, key)
 
     errors[key].empty?
+  end
+
+  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
+    if password_in_use?(old_password, new_password)
+      errors.add(key, 'New password cannot be the same as old password')
+    end
+    errors[key].empty?
+  end
+
+  def password_in_use?(old_password = nil, new_password = nil)
+    return false if new_record?
+    return old_password == new_password if old_password
+    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password_was, salt: salt,
+                                        secret: Cartodb.config[:password_secret])
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?

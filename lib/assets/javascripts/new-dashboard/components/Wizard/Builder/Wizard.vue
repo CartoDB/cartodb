@@ -10,22 +10,15 @@
     <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="wizard">
         <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <Step
-          v-if="isCurrentStep(1)"
-          :stepNum="1">
-        </Step>
-        <Step
-          v-if="isCurrentStep(2)"
-          :stepNum="2"></Step>
-        <Step
-          v-if="isCurrentStep(3)"
-          :stepNum="3"></Step>
-        <Step
-          v-if="isCurrentStep(4)"
-          :stepNum="4"></Step>
-        <Step
-          v-if="isCurrentStep(5)"
-          :stepNum="5"></Step>
+        <template v-for="step in 7">
+          <Step
+            v-if="isCurrentStep(step)"
+            :stepNum="step"
+            :key="step"
+            :fullWidth="step === maxSteps">
+            <component :is="`Step${step}`"></component>
+          </Step>
+        </template>
         <Footer
           :stepNames="stepNames"
           :currentStep="step"
@@ -43,6 +36,13 @@ import Header from 'new-dashboard/components/Wizard/Header.vue';
 import Footer from 'new-dashboard/components/Wizard/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
+// Steps
+import Step1 from './Step1.vue';
+import Step2 from './Step2.vue';
+import Step3 from './Step3.vue';
+import Step4 from './Step4.vue';
+import Step5 from './Step5.vue';
+
 import props from '../shared/props';
 import data from '../shared/data';
 import methods from '../shared/methods';
@@ -54,7 +54,12 @@ export default {
     Step,
     Header,
     Footer,
-    Modal
+    Modal,
+    Step1,
+    Step2,
+    Step3,
+    Step4,
+    Step5
   },
   props,
   data () {

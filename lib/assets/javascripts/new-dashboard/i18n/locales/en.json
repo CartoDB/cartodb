@@ -387,7 +387,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You finished your first map with CARTO VL",
-          "message2": "Got questions? <a href='/assets/unversioned/wizards/cartovl.zip'>Download</a> the full code example."
+          "message2": "Got questions? <a download href='/assets/unversioned/wizards/cartovl.html'>Download</a> the full code example."
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href=''>Developer Center</a>."
@@ -417,7 +417,86 @@
     "cartoframes" : {
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
-      "tags": ["Python", "CARTOframes"]
+      "tags": ["Python", "CARTOframes"],
+      "jupyter": {
+        "in" : "In:",
+        "out": "Out:"
+      },
+      "step1": {
+        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href=''>Jupyter Notebooks</a> and <a href=''>GeoPandas</a>.",
+        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook."
+      },
+      "step2": {
+        "summary": "Install CARTOframes and Jupyter Notebook",
+        "howto": {
+          "instruction1":"Install CARTOframes with pip. Simply type the following in the command line to do a system install",
+          "instruction2":"Install Jupyter Notebook",
+          "instruction3":"Start Jupyter Notebook"
+        },
+        "extras": {
+          "resource1": "There are other ways to install CARTOframes. Read more <a href='https://cartoframes.readthedocs.io/en/v0.8.3/#install-instructions'>here</a>."
+        }
+      },
+      "step3": {
+        "summary": "Import <code>cartoframes</code> package and connect to CARTO account using a username and API key.",
+        "howto": {
+          "instruction1":"Use <code>cartoframes.Credentials</code> to connect to a CARTO account. In this example, we’re using a test account and a test access key."
+        },
+        "extras": {
+          "resource1": "Want to use your own account? Learn about API Authorization <a href='https://carto.com/developers/fundamentals/authorization/'>here</a>."
+        }
+      },
+      "step4": {
+        "summary": "List all of the available sample datasets including the examples <code>example_context</code> account.",
+        "howto": {
+          "instruction1":" List all of the available tables using the <code>example_context</code>:"
+        }
+      },
+      "step5": {
+        "summary": "Read one of the sample datasets into a pandas DataFrame",
+        "howto": {
+          "instruction1":"Read and list the first rows of one of the sample datasets"
+        }
+      },
+      "step6": {
+        "summary": "Visualize a sample dataset as a choropleth map",
+        "howto": {
+          "instruction1":"Import the <code>Layer</code> class to visualize a dataset as an interactive map and pass it as an argument to the map. We can go further by styling by the <code>poverty_per_pop</code> column to visualize based on a numeric value"
+        },
+        "extras": {
+          "resource1": " Interactive maps only display in Jupyter notebooks. Use the <code>interactive=False</code> map option to get a static version."
+        }
+      },
+      "step7": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
+          "message2": "Download the full example <a download href='/assets/unversioned/wizards/cartoframes.ipynb'>here</a>"
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href=''>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Basic example",
+            "subtitle": "Learn more about the basics",
+            "button": "Go to example",
+            "link": "hhttps://github.com/CartoDB/cartoframes/blob/master/examples/Basic%20Usage.ipynb"
+          },
+          "card2": {
+            "title": "CARTOframes with GeoPandas",
+            "subtitle": "Learn how to use CARTOframes with GeoPandas",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Shapely%2C%20Geopandas%2C%20and%20Cartoframes.ipynb"
+          },
+          "card3": {
+            "title": "Using CARTOframes to explore the Citibike system",
+            "subtitle": "Learn how to process data from Citibike, upload it to your account, and create some maps",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Citibike%20Example.ipynb"
+          }
+        }
+      }
     },
     "builder" : {
       "title": "Create a web map from your browser",

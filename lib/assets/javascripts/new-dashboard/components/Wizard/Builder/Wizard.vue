@@ -1,7 +1,7 @@
 <template>
   <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
     <div class="wizard">
-      <Header :stepNames="stepNames" :currentStep="step"></Header>
+      <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
       <Step
         v-if="isCurrentStep(1)"
         :stepNum="1">
@@ -67,7 +67,10 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   background-color: $onboarding__bg-color;
+
+  // Fix for Safari Scrolling with GPU acceleration
+  transform: translate3d(0, 0, 0);
 }
 </style>

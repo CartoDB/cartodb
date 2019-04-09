@@ -1,7 +1,8 @@
 <template>
   <Modal :name="'wizardCARTOframes'" :isOpen="isModalOpen" @closeModal="closeModal">
     <div ref="wizard" class="wizard">
-      <Header :stepNames="stepNames" :currentStep="step"></Header>
+      <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
+
       <template v-for="step in 7">
         <Step
           v-if="isCurrentStep(step)"
@@ -11,6 +12,7 @@
           <component :is="`Step${step}`"></component>
         </Step>
       </template>
+
       <Footer
         :stepNames="stepNames"
         :currentStep="step"
@@ -83,7 +85,10 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   background-color: $onboarding__bg-color;
+
+  // Fix for Safari Scrolling with GPU acceleration
+  transform: translate3d(0, 0, 0);
 }
 </style>

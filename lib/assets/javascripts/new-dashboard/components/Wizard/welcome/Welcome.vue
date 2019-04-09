@@ -44,7 +44,7 @@
       </div>
     </Modal>
 
-    <router-view name="onboarding" @closeModal="closeModal"/>
+    <router-view name="onboarding" />
   </section>
 </template>
 

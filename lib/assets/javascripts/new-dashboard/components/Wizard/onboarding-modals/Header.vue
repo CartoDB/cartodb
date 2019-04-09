@@ -5,7 +5,7 @@
         <li class="breadcrumbs__item"
           :class="[isCurrentStep (currentStep, index) ? 'current' : '']"
           v-for="(stepName, index) in stepNames" :key="stepName">
-          <a href="">
+          <a href="javascript:void 0" @click="goToStep(index)">
             <span class="breadcrumbs__checkpoint" :class="[isCurrentStep (currentStep, index) ? 'current' : '']">
               <span class="breadcrumbs__text">{{ stepName }}</span>
             </span>
@@ -26,6 +26,9 @@ export default {
   methods: {
     isCurrentStep (stepNum, index) {
       return index + 1 === stepNum;
+    },
+    goToStep (stepNumber) {
+      this.$emit('goToStep', stepNumber + 1);
     }
   }
 };

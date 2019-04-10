@@ -1,39 +1,31 @@
 <template>
-  <div>
-    <div @click="openModal">
-      <Selector
-        :title="$t('Wizards.cartovl.title')"
-        :text="$t('Wizards.cartovl.subtitle')"
-        :tags="$t('Wizards.cartovl.tags')"
-        iconModifier="map"></Selector>
+  <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
+    <div ref="wizard" class="wizard">
+      <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
+
+      <template v-for="step in 7">
+        <Step
+          v-if="isCurrentStep(step)"
+          :stepNum="step"
+          :key="step"
+          :fullWidth="step === stepNames.length">
+          <component :is="`Step${step}`"></component>
+        </Step>
+      </template>
+
+      <Footer
+        :stepNames="stepNames"
+        :currentStep="step"
+        @goToStep="goToStep"
+        @closeModal="closeModal"></Footer>
     </div>
-    <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
-      <div ref="wizard" class="wizard">
-        <Header :stepNames="stepNames" :currentStep="step"></Header>
-        <template v-for="step in 7">
-          <Step
-            v-if="isCurrentStep(step)"
-            :stepNum="step"
-            :key="step"
-            :fullWidth="step === stepNames.length">
-            <component :is="`Step${step}`"></component>
-          </Step>
-        </template>
-        <Footer
-          :stepNames="stepNames"
-          :currentStep="step"
-          @goToStep="goToStep"
-          @closeModal="closeModal"></Footer>
-      </div>
-    </Modal>
-  </div>
+  </Modal>
 </template>
 
 <script>
-import Selector from 'new-dashboard/components/Wizard/Selector.vue';
 import Step from 'new-dashboard/components/Wizard/Step.vue';
-import Header from 'new-dashboard/components/Wizard/Header.vue';
-import Footer from 'new-dashboard/components/Wizard/Footer.vue';
+import Header from 'new-dashboard/components/Wizard/onboarding-modals/Header.vue';
+import Footer from 'new-dashboard/components/Wizard/onboarding-modals/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
 // Steps
@@ -50,7 +42,6 @@ import methods from '../shared/methods';
 export default {
   name: 'WizardCARTOVL',
   components: {
-    Selector,
     Step,
     Header,
     Footer,
@@ -91,7 +82,12 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  overflow: scroll;
+  overflow: auto;
   background-color: $onboarding__bg-color;
+
+  // Fix for Safari Scrolling with GPU acceleration
+  /* stylelint-disable */
+  transform: translate3d(0, 0, 0);
+  /* stylelint-enable */
 }
 </style>

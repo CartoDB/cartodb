@@ -4,7 +4,7 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <WizardDistributor v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></WizardDistributor>
+        <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
         <a class="button"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
@@ -17,13 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import WizardDistributor from 'new-dashboard/components/Wizard/Distributor.vue';
+import OnboardingButton from 'new-dashboard/components/Wizard/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
     CreateButton,
-    WizardDistributor
+    OnboardingButton
   },
   props: {
     name: String,

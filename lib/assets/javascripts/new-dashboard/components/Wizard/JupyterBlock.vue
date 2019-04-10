@@ -38,7 +38,7 @@ export default {
 
 .jupyter-content {
   width: 100%;
-  overflow: scroll;
+  overflow: auto;
 
   .CodeMirror {
     width: 100%;

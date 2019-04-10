@@ -12,8 +12,8 @@ export default {
 
     const confettiSettings = {
       target: 'congrats-confetti',
-      max: 450,
-      size: 0.4,
+      max: 250,
+      size: 1,
       animate: true,
       props: ['square'],
       colors: [

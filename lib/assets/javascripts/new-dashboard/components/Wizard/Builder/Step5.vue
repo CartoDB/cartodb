@@ -31,7 +31,7 @@
 <script>
 import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
 import TutorialCard from 'new-dashboard/components/Wizard/TutorialCard.vue';
-import Confetti from 'new-dashboard/components/Wizard/Confetti.vue';
+import Confetti from 'new-dashboard/components/Wizard/onboarding-modals/Confetti.vue';
 
 export default {
   name: 'Step5',

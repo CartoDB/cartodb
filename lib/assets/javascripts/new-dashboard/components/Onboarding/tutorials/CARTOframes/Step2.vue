@@ -5,7 +5,7 @@
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartovl.step2.summary.text`)" class="text is-body u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartoframes.step2.summary.text`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="'How To'">
       <template slot="icon">

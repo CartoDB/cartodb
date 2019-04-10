@@ -20,13 +20,3 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-.button {
-  &.button--ghost {
-    margin-right: 36px;
-    padding: 0;
-  }
-}
-</style>

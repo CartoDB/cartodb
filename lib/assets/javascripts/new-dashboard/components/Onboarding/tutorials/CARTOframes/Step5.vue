@@ -33,7 +33,7 @@ import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
 import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
-import Table1 from 'new-dashboard/components/Onboarding/CARTOframes/Table5_1.vue';
+import Table1 from 'new-dashboard/components/Onboarding/tutorials/CARTOframes/Table5_1.vue';
 
 export default {
   name: 'Step5',

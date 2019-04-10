@@ -15,7 +15,7 @@
     <ul class="u-list__style--decimal u-list__position--inside">
       <li>
         <p v-html="$t(`Wizards.builder.step3.howto.instruction1`)" class="text is-caption u-mt--24 u-inline"></p>
-        <img class="u-width--100 u-mt--16" src="../../../assets/images/onboarding/builder_step3@2x.png" alt="Screenshot dataset preview in builder">
+        <img class="u-width--100 u-mt--16" src="../../../../assets/images/onboarding/builder_step3@2x.png" alt="Screenshot dataset preview in builder">
       </li>
       <li>
         <p v-html="$t(`Wizards.builder.step3.howto.instruction2`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>

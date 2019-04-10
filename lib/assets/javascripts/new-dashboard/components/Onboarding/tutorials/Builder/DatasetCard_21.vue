@@ -1,7 +1,7 @@
 <template>
   <div class="datasetcard u-width--100">
     <div class="u-flex u-flex__align--center">
-      <img class="icon u-hideMobile" svg-inline src="../../../assets/icons/datasets/data-types/dots.svg" alt="Icon for dots type dataset">
+      <img class="icon u-hideMobile" svg-inline src="../../../../assets/icons/datasets/data-types/dots.svg" alt="Icon for dots type dataset">
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis" title="Populated places simple">{{content.title}}</h3>
       </div>

@@ -26,9 +26,9 @@
     </StepTitle>
     <p v-html="$t(`Wizards.cartovl.step4.extras.resource1`)" class="text is-caption u-mb--16"></p>
     <div class="u-flex u-flex__justify--between u-mb--16 u-mb--64">
-      <img src="../../../assets/images/onboarding/voyager@2x.png" width="306" height="140" alt="Voyager basemap sample"/>
-      <img src="../../../assets/images/onboarding/positron@2x.png" width="306" height="140" alt="Positron basemap sample"/>
-      <img src="../../../assets/images/onboarding/darkmatter@2x.png" width="306" height="140" alt="Dark Matter basemap sample"/>
+      <img src="../../../../assets/images/onboarding/voyager@2x.png" width="306" height="140" alt="Voyager basemap sample"/>
+      <img src="../../../../assets/images/onboarding/positron@2x.png" width="306" height="140" alt="Positron basemap sample"/>
+      <img src="../../../../assets/images/onboarding/darkmatter@2x.png" width="306" height="140" alt="Dark Matter basemap sample"/>
     </div>
   </div>
 </template>

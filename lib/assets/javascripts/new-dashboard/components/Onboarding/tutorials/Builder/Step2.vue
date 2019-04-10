@@ -22,7 +22,7 @@
       </li>
       <li>
         <p v-html="$t(`Wizards.builder.step2.howto.instruction3`)" class="text is-caption u-mb--16 u-inlineflex"></p>
-        <img class="u-width--100" src="../../../assets/images/onboarding/builder_step2@2x.png" alt="Screenshot connect dataset modal in builder">
+        <img class="u-width--100" src="../../../../assets/images/onboarding/builder_step2@2x.png" alt="Screenshot connect dataset modal in builder">
       </li>
     </ul>
 

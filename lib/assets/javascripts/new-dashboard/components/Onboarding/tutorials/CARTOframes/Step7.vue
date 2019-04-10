@@ -15,13 +15,13 @@
       </StepTitle>
       <p v-html="$t(`Wizards.cartoframes.step7.extras.resource1`)" class="text is-caption u-mt--16 u-mb--16"></p>
       <TutorialCard :content="$t(`Wizards.cartoframes.step7.cards.card1`)" class="u-mb--16">
-        <img src="../../../assets/images/onboarding/basicexample.png" width="240" height="130" alt="Style features by category sample image"/>
+        <img src="../../../../assets/images/onboarding/basicexample.png" width="240" height="130" alt="Style features by category sample image"/>
       </TutorialCard>
       <TutorialCard :content="$t(`Wizards.cartoframes.step7.cards.card2`)" class="u-mb--16">
-        <img src="../../../assets/images/onboarding/geopandas.png" width="240" height="130" alt="Add hover popups sample image"/>
+        <img src="../../../../assets/images/onboarding/geopandas.png" width="240" height="130" alt="Add hover popups sample image"/>
       </TutorialCard>
       <TutorialCard :content="$t(`Wizards.cartoframes.step7.cards.card3`)">
-        <img src="../../../assets/images/onboarding/citibike.png" width="240" height="130" alt="Animate the features sample image"/>
+        <img src="../../../../assets/images/onboarding/citibike.png" width="240" height="130" alt="Animate the features sample image"/>
       </TutorialCard>
   </div>
 </div>

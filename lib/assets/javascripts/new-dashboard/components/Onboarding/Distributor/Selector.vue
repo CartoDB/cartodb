@@ -60,21 +60,21 @@ export default {
       &::before {
         content: '';
         height: 50px;
-        background-image: url('../../../../assets/icons/onboarding/locationmap.svg');
+        background-image: url('../../../assets/icons/onboarding/locationmap.svg');
       }
     }
 
     &--notebook {
       &::before {
         content: '';
-        background-image: url('../../../../assets/icons/onboarding/notebook.svg');
+        background-image: url('../../../assets/icons/onboarding/notebook.svg');
       }
     }
 
     &--window {
       &::before {
         content: '';
-        background-image: url('../../../../assets/icons/onboarding/window.svg');
+        background-image: url('../../../assets/icons/onboarding/window.svg');
       }
     }
   }

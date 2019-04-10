@@ -86,6 +86,8 @@ export default {
   background-color: $onboarding__bg-color;
 
   // Fix for Safari Scrolling with GPU acceleration
+  /* stylelint-disable */
   transform: translate3d(0, 0, 0);
+  /* stylelint-enable */
 }
 </style>

@@ -2,14 +2,14 @@
   <div class="u-width--100">
     <StepTitle :title="$t(`Wizards.cartovl.sections.summary`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartovl.step5.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="$t(`Wizards.cartovl.sections.howto`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside">
@@ -25,7 +25,7 @@
 
     <StepTitle :title="$t(`Wizards.cartovl.sections.extras`)" class="u-mt--64">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/extras.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartovl.step5.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>

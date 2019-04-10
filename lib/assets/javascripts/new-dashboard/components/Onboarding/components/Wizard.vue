@@ -3,9 +3,9 @@
 </template>
 
 <script>
-import CartoVLWizard from '../CARTOVL/Wizard';
-import BuilderWizard from '../Builder/Wizard';
-import CARTOframesWizard from '../CARTOframes/Wizard';
+import CartoVLWizard from '../tutorials/CARTOVL/Wizard';
+import BuilderWizard from '../tutorials/Builder/Wizard';
+import CARTOframesWizard from '../tutorials/CARTOframes/Wizard';
 
 export default {
   name: 'Wizard',

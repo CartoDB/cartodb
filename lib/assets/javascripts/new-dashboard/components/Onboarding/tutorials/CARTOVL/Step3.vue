@@ -2,14 +2,14 @@
   <div class="u-width--100">
     <StepTitle :title="$t(`Wizards.cartovl.sections.summary`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartovl.step3.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="$t(`Wizards.cartovl.sections.howto`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside">

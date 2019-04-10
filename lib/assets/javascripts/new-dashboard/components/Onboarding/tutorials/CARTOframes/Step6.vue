@@ -2,14 +2,14 @@
   <div class="u-width--100">
     <StepTitle :title="'Summary'">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartoframes.step6.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="'How To'">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside u-mb--16 u-mt--24">
@@ -28,7 +28,7 @@
 
     <StepTitle :title="'Extras'" class="u-mt--64">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/extras.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartoframes.step6.extras.resource1`)" class="text is-caption u-mb--16 u-mb--64"></p>
@@ -41,7 +41,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
 import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
-import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartoframes_step5.html';
+import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartoframes_step5.html';
 
 export default {
   name: 'Step6',

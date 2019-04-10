@@ -2,7 +2,7 @@
   <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.cartovl.step1.title`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <InjectableIframe :content="map" width="940" height="416"></InjectableIframe>
@@ -14,7 +14,7 @@
 <script>
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
-import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartovl.html';
+import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartovl.html';
 
 export default {
   name: 'Step1',

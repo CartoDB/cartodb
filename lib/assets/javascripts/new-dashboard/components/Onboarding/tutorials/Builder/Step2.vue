@@ -2,14 +2,14 @@
   <div class="u-width--100">
     <StepTitle :title="$t(`Wizards.builder.sections.summary`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.builder.step2.summary.text`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="$t(`Wizards.builder.sections.howto`)">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside">
@@ -22,13 +22,13 @@
       </li>
       <li>
         <p v-html="$t(`Wizards.builder.step2.howto.instruction3`)" class="text is-caption u-mb--16 u-inlineflex"></p>
-        <img class="u-width--100" src="../../../assets/images/wizards/builder_step2@2x.png" alt="Screenshot connect dataset modal in builder">
+        <img class="u-width--100" src="../../../assets/images/onboarding/builder_step2@2x.png" alt="Screenshot connect dataset modal in builder">
       </li>
     </ul>
 
     <StepTitle :title="$t(`Wizards.builder.sections.extras`)" class="u-mt--64">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/extras.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.builder.step2.extras.resource1`)" class="text is-caption u-mb--16 u-mb--64"></p>

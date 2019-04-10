@@ -2,7 +2,7 @@
   <div class="u-width--100">
     <StepTitle :title="'Add spatial data to your data science workflow'">
       <template slot="icon">
-          <img svg-inline src="../../../assets/icons/wizards/summary.svg"/>
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <iframe src="https://nbviewer.jupyter.org/github/CartoDB/cartoframes/blob/master/examples/Basic%20Usage.ipynb" frameborder="0" width="100%" height="416"></iframe>

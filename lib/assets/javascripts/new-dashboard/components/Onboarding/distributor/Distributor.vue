@@ -9,7 +9,10 @@
         </div>
 
         <div class="container u-pt--36">
-          <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">{{ $t('Wizards.Distributor.title') }}</h1>
+          <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">
+            {{ $t('Wizards.Distributor.title') }}
+          </h1>
+
           <div class="grid u-flex__justify--between">
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
               <Selector
@@ -19,6 +22,7 @@
                 @click.native="openOnboarding('carto-vl')"
                 iconModifier="map"></Selector>
             </div>
+
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
               <Selector
                 :title="$t('Wizards.cartoframes.title')"
@@ -27,6 +31,7 @@
                 @click.native="openOnboarding('cartoframes')"
                 iconModifier="notebook"></Selector>
             </div>
+
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
               <Selector
                 :title="$t('Wizards.builder.title')"

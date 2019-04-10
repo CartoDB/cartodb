@@ -1,7 +1,8 @@
 <template>
-  <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
+  <Modal name="wizardBuilder" :isOpen="isModalOpen" @closeModal="closeModal">
     <div ref="wizard" class="wizard">
       <Header :stepNames="stepNames" :currentStep="step"  @goToStep="goToStep"></Header>
+
       <template v-for="step in 7">
         <Step
           v-if="isCurrentStep(step)"
@@ -11,6 +12,7 @@
           <component :is="`Step${step}`"></component>
         </Step>
       </template>
+
       <Footer
         :stepNames="stepNames"
         :currentStep="step"
@@ -26,7 +28,6 @@ import Header from 'new-dashboard/components/Onboarding/components/Header.vue';
 import Footer from 'new-dashboard/components/Onboarding/components/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
 
-
 // Steps
 import Step1 from './Step1.vue';
 import Step2 from './Step2.vue';
@@ -34,7 +35,7 @@ import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
 
-import mixin from '../mixin'
+import mixin from '../mixin';
 
 export default {
   name: 'WizardBuilder',

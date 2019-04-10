@@ -1,6 +1,9 @@
 <template>
   <h2 class="title is-body u-mb--24 u-flex u-flex__align--center">
-    <span class="icon icon--large"><slot name="icon"></slot></span>
+    <span class="icon icon--large">
+      <slot name="icon"></slot>
+    </span>
+
     {{title}}
   </h2>
 </template>
@@ -31,5 +34,4 @@ export default {
   width: 24px;
   height: 24px;
 }
-
 </style>

@@ -1,7 +1,11 @@
 <template>
   <div class="selector" tabindex="0">
-    <h3 class="title is-body is-medium u-mb--8" :class="iconClass">{{ this.title }}</h3>
+    <h3 class="title is-body is-medium u-mb--8" :class="iconClass">
+      {{ this.title }}
+    </h3>
+
     <p class="is-caption">{{ this.text }}</p>
+
     <ul class="selector__tags">
       <li class="selector__tags-item title" v-for="tag in tags" :key="tag">{{ tag }}</li>
     </ul>

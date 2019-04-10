@@ -8,8 +8,6 @@
 export default {
   name: 'WizardStep',
   props: {
-    title: String,
-    subTitle: String,
     fullWidth: {
       type: Boolean,
       default: false

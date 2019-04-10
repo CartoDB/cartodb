@@ -329,6 +329,11 @@
         "link": "Let us know."
       }
     },
+    "footer": {
+      "back": "Back",
+      "next": "Next: {nextStep}",
+      "goToDashboard": "Go to dashboard"
+    },
     "cartovl": {
       "title": "Develop an interactive custom web map",
       "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",

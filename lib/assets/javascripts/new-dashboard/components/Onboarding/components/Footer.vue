@@ -1,9 +1,15 @@
 <template>
   <div class="footer">
     <div class="container u-flex u-flex__justify--end">
-      <button class="button button--ghost" v-if="showPrevButton" @click="prev">Back</button>
-      <button class="button is-primary" v-if="showNextButton" @click="next">Next: {{ this.stepNames[this.currentStep]}}</button>
-      <button class="button is-primary" v-if="!showNextButton" @click="goToDashboard">Go to dashboard</button>
+      <button class="button button--ghost" v-if="showPrevButton" @click="prev">
+        {{ $t('Wizards.footer.back') }}
+      </button>
+      <button class="button is-primary" v-if="showNextButton" @click="next">
+        {{ $t('Wizards.footer.next', { nextStep: this.stepNames[this.currentStep] }) }}
+      </button>
+      <button class="button is-primary" v-if="!showNextButton" @click="goToDashboard">
+        {{ $t('Wizards.footer.goToDashboard') }}
+      </button>
     </div>
   </div>
 </template>

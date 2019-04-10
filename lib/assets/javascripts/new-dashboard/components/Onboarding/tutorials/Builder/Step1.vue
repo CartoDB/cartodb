@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 
 export default {
   name: 'Step1',

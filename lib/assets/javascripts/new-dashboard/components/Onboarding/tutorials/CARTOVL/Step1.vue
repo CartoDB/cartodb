@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
 import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartovl.html';
 

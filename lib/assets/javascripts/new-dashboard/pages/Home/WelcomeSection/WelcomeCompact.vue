@@ -17,7 +17,7 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import OnboardingButton from 'new-dashboard/components/Wizard/OnboardingButton.vue';
+import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeCompact',

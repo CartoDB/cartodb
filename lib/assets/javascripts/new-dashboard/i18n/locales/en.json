@@ -346,7 +346,7 @@
       },
       "step2": {
         "summary": {
-          "text": "Create an HTML file where you can load the map visualization library CARTO VL and the Mapbox GL libraries needed to run some of the vector features"
+          "text": "Create an HTML file with this template that loads CARTO VL and Mapbox GL libraries"
         },
         "howto": {
           "instruction1":"Create an HTML file in your favourite IDE",

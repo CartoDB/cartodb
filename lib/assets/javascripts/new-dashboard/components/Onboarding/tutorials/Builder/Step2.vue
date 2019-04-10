@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import DatasetCard from './DatasetCard_21.vue';
 
 export default {

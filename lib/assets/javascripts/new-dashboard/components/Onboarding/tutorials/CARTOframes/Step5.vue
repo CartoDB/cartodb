@@ -29,11 +29,11 @@
   </div>
 </template>
 <script>
-import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
-import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
-import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
-import Table1 from 'new-dashboard/components/Wizard/CARTOframes/Table5_1.vue';
+import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
+import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
+import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
+import Table1 from 'new-dashboard/components/Onboarding/CARTOframes/Table5_1.vue';
 
 export default {
   name: 'Step5',

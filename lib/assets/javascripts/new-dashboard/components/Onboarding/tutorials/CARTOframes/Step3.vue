@@ -35,10 +35,10 @@
 </template>
 
 <script>
-import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
-import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
-import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
+import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
+import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
+import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 
 export default {
   name: 'Step3',

@@ -49,11 +49,11 @@
 </template>
 
 <script>
-import Selector from 'new-dashboard/components/Wizard/welcome/selector';
+import Selector from 'new-dashboard/components/Onboarding/Distributor/Selector';
 import Modal from 'new-dashboard/components/Modal.vue';
-import WizardCARTOVL from 'new-dashboard/components/Wizard/CARTOVL/Wizard.vue';
-import WizardCARTOframes from 'new-dashboard/components/Wizard/CARTOframes/Wizard.vue';
-import WizardBuilder from 'new-dashboard/components/Wizard/Builder/Wizard.vue';
+import WizardCARTOVL from 'new-dashboard/components/Onboarding/tutorials/CARTOVL/Wizard.vue';
+import WizardCARTOframes from 'new-dashboard/components/Onboarding/tutorials/CARTOframes/Wizard.vue';
+import WizardBuilder from 'new-dashboard/components/Onboarding/Builder/tutorials/Wizard.vue';
 
 export default {
   name: 'OnboardingWelcome',

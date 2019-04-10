@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
-import Jupyter from 'new-dashboard/components/Wizard/Jupyter.vue';
-import JupyterBlock from 'new-dashboard/components/Wizard/JupyterBlock.vue';
+import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
+import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
+import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
 import map from 'raw-loader!new-dashboard/assets/resources/wizards/cartoframes_step5.html';
 

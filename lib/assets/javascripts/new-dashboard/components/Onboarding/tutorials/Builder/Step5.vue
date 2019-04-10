@@ -29,9 +29,9 @@
 </div>
 </template>
 <script>
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
-import TutorialCard from 'new-dashboard/components/Wizard/TutorialCard.vue';
-import Confetti from 'new-dashboard/components/Wizard/onboarding-modals/Confetti.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
+import TutorialCard from 'new-dashboard/components/Onboarding/components/TutorialCard.vue';
+import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vue';
 
 export default {
   name: 'Step5',

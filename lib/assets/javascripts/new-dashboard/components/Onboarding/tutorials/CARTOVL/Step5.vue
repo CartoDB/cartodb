@@ -32,8 +32,8 @@
   </div>
 </template>
 <script>
-import CodeBlock from 'new-dashboard/components/CodeBlock.vue';
-import StepTitle from 'new-dashboard/components/Wizard/StepTitle.vue';
+import CodeBlock from 'new-dashboard/components/Code/CodeBlock.vue';
+import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 
 export default {
   name: 'Step5',

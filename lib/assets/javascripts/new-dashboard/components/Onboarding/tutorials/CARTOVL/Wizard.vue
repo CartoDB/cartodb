@@ -1,7 +1,8 @@
 <template>
-  <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
+  <Modal :name="'wizardCARTOVL'" :isOpen="isModalOpen" @closeModal="closeModal">
     <div ref="wizard" class="wizard">
-      <Header :stepNames="stepNames" :currentStep="step"  @goToStep="goToStep"></Header>
+      <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
+
       <template v-for="step in 7">
         <Step
           v-if="isCurrentStep(step)"
@@ -11,6 +12,7 @@
           <component :is="`Step${step}`"></component>
         </Step>
       </template>
+
       <Footer
         :stepNames="stepNames"
         :currentStep="step"
@@ -21,11 +23,10 @@
 </template>
 
 <script>
-import Step from 'new-dashboard/components/Wizard/Step.vue';
-import Header from 'new-dashboard/components/Wizard/onboarding-modals/Header.vue';
-import Footer from 'new-dashboard/components/Wizard/onboarding-modals/Footer.vue';
+import Step from 'new-dashboard/components/Onboarding/components/Step.vue';
+import Header from 'new-dashboard/components/Onboarding/components/Header.vue';
+import Footer from 'new-dashboard/components/Onboarding/components/Footer.vue';
 import Modal from 'new-dashboard/components/Modal.vue';
-
 
 // Steps
 import Step1 from './Step1.vue';
@@ -33,12 +34,12 @@ import Step2 from './Step2.vue';
 import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
+import Step6 from './Step6.vue';
 
-import data from '../shared/data';
-import methods from '../shared/methods';
+import mixin from '../mixin'
 
 export default {
-  name: 'WizardBuilder',
+  name: 'WizardCARTOVL',
   components: {
     Step,
     Header,
@@ -48,25 +49,21 @@ export default {
     Step2,
     Step3,
     Step4,
-    Step5
+    Step5,
+    Step6
   },
+  mixins: [mixin],
   data () {
     return {
-      ...data(),
       stepNames: [
         'Intro',
-        'Import your data',
-        'Explore the dataset',
-        'Create & publish a map',
-        'Final'
+        'Load CARTO VL',
+        'Define container',
+        'Create map',
+        'Add data layer',
+        'Download'
       ]
     };
-  },
-  methods,
-  updated () {
-    if (this.$refs.wizard) {
-      this.$refs.wizard.scrollTo({ top: 0, left: 0 });
-    }
   }
 };
 </script>

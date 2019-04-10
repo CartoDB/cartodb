@@ -1823,6 +1823,17 @@ describe User do
       @new_valid_password = '000123456'
     end
 
+    it "updates crypted_password" do
+      initial_crypted_password = @user.crypted_password
+      @user.change_password(@user_password, @new_valid_password, @new_valid_password)
+      @user.valid?.should eq true
+      @user.save(raise_on_failure: true)
+      @user.crypted_password.should_not eql initial_crypted_password
+
+      @user.change_password(@new_valid_password, @user_password, @user_password)
+      @user.save(raise_on_failure: true)
+    end
+
     it "checks old password" do
       @user.change_password('aaabbb', @new_valid_password, @new_valid_password)
       @user.valid?.should eq false
@@ -1878,16 +1889,6 @@ describe User do
       expect {
         @user.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
-    end
-
-    it "updates crypted_password" do
-      initial_crypted_password = @user.crypted_password
-      @user.change_password(@user_password, @new_valid_password, @new_valid_password)
-      @user.save(raise_on_failure: true)
-      @user.crypted_password.should_not eql initial_crypted_password
-
-      @user.change_password(@new_valid_password, @user_password, @user_password)
-      @user.save(raise_on_failure: true)
     end
 
   end

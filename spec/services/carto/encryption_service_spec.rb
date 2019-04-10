@@ -82,7 +82,8 @@ describe Carto::EncryptionService do
       end
 
       it "verifies user passwords" do
-        result = @service.verify(password: @password, secure_password: @user.crypted_password, salt: @user.salt)
+        result = @service.verify(password: @password, secure_password: @user.crypted_password, salt: @user.salt,
+                                 secret: Cartodb.config[:password_secret])
         result.should be_true
       end
 
@@ -93,7 +94,7 @@ describe Carto::EncryptionService do
         visualization.save!
 
         result = @service.verify(password: @password, secure_password: visualization.encrypted_password,
-                                 salt: visualization.password_salt)
+                                 salt: visualization.password_salt, secret: Cartodb.config[:password_secret])
         result.should be_true
       end
     end

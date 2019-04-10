@@ -21,6 +21,7 @@
                 :tags="$t('Wizards.cartovl.tags')"
                 @click.native="openOnboarding('carto-vl')"
                 iconModifier="map"></Selector>
+              <Warning v-if="!hasEngine"></Warning>
             </div>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
@@ -30,6 +31,7 @@
                 :tags="$t('Wizards.cartoframes.tags')"
                 @click.native="openOnboarding('cartoframes')"
                 iconModifier="notebook"></Selector>
+              <Warning v-if="!hasEngine"></Warning>
             </div>
 
             <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
@@ -55,6 +57,7 @@
 
 <script>
 import Selector from 'new-dashboard/components/Onboarding/distributor/Selector';
+import Warning from 'new-dashboard/components/Onboarding/distributor/Warning';
 import Modal from 'new-dashboard/components/Modal.vue';
 import WizardCARTOVL from 'new-dashboard/components/Onboarding/tutorials/CARTOVL/Wizard.vue';
 import WizardCARTOframes from 'new-dashboard/components/Onboarding/tutorials/CARTOframes/Wizard.vue';
@@ -64,10 +67,16 @@ export default {
   name: 'OnboardingWelcome',
   components: {
     Selector,
+    Warning,
     WizardCARTOVL,
     WizardCARTOframes,
     WizardBuilder,
     Modal
+  },
+  computed: {
+    hasEngine () {
+      return this.$store.getters['user/hasEngine'];
+    }
   },
   methods: {
     openOnboarding (onboardingId) {

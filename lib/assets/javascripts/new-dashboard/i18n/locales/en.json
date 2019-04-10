@@ -327,6 +327,11 @@
       "feedback": {
         "text": "Looking for a different geospatial workflow?",
         "link": "Let us know."
+      },
+      "engineWarning": {
+        "text": "Needs access to API Keys.",
+        "link": "https://carto.com/help/getting-started/get-api-key/#why-do-you-need-this",
+        "linkText": "Learn more"
       }
     },
     "footer": {
@@ -428,15 +433,17 @@
         "out": "Out:"
       },
       "step1": {
-        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href=''>Jupyter Notebooks</a> and <a href=''>GeoPandas</a>.",
-        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook."
+        "summary": "Integrate spatial analysis in your Python scripts",
+        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href='https://jupyter.org/'>Jupyter Notebooks</a> and <a href='http://geopandas.org/'>GeoPandas</a>.",
+        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook.",
+        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers/'>Developer Center</a>."
       },
       "step2": {
         "summary": "Install CARTOframes and Jupyter Notebook",
         "howto": {
-          "instruction1":"Install CARTOframes with pip. Simply type the following in the command line to do a system install",
-          "instruction2":"Install Jupyter Notebook",
-          "instruction3":"Start Jupyter Notebook"
+          "instruction1":"Install CARTOframes with pip. Simply type the following in the command in your terminal.",
+          "instruction2":"Install Jupyter Notebook with pip. Type the following comand in your terminal.",
+          "instruction3":"Start Jupyter Notebook. Type the following command in your terminal."
         },
         "extras": {
           "resource1": "There are other ways to install CARTOframes. Read more <a href='https://cartoframes.readthedocs.io/en/v0.8.3/#install-instructions'>here</a>."
@@ -460,13 +467,13 @@
       "step5": {
         "summary": "Read one of the sample datasets into a pandas DataFrame",
         "howto": {
-          "instruction1":"Read and list the first rows of one of the sample datasets"
+          "instruction1":"Read and list the first rows of one of the sample datasets."
         }
       },
       "step6": {
         "summary": "Visualize a sample dataset as a choropleth map",
         "howto": {
-          "instruction1":"Import the <code>Layer</code> class to visualize a dataset as an interactive map and pass it as an argument to the map. We can go further by styling by the <code>poverty_per_pop</code> column to visualize based on a numeric value"
+          "instruction1":"Import the <code>Layer</code> class to visualize a dataset as an interactive map and pass it as an argument to the map. We can go further by styling by the <code>poverty_per_pop</code> column to visualize based on a numeric value."
         },
         "extras": {
           "resource1": " Interactive maps only display in Jupyter notebooks. Use the <code>interactive=False</code> map option to get a static version."
@@ -479,7 +486,7 @@
           "message2": "Download the full example <a download href='/assets/unversioned/wizards/cartoframes.ipynb'>here</a>"
         },
         "extras": {
-          "resource1":"Learn more with the following examples from our <a href=''>Developer Center</a>."
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/'>Developer Center</a>."
         },
         "cards": {
           "card1": {

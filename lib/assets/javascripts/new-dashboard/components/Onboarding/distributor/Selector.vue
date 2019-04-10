@@ -42,8 +42,10 @@ export default {
 
 .selector {
   max-width: 460px;
+  height: 340px;
   padding: 1.5em;
   border: 1px solid $grey;
+  border-radius: 2px;
   background-color: $white;
   cursor: pointer;
 
@@ -98,5 +100,4 @@ export default {
     }
   }
 }
-
 </style>

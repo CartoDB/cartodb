@@ -1,7 +1,7 @@
 <template>
   <Modal :name="'wizardBuilder'" :isOpen="isModalOpen" @closeModal="closeModal">
     <div ref="wizard" class="wizard">
-      <Header :stepNames="stepNames" :currentStep="step"></Header>
+      <Header :stepNames="stepNames" :currentStep="step"  @goToStep="goToStep"></Header>
       <template v-for="step in 7">
         <Step
           v-if="isCurrentStep(step)"

@@ -4,8 +4,8 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
-        <a class="button"
+        <OnboardingButton :isFirstTimeViewingDashboard="true"></OnboardingButton>
+        <a class="button button--border"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
           {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
@@ -86,7 +86,7 @@ export default {
     justify-content: center;
   }
 
-  .button {
+  .button.button--border {
     border: 1px solid $white;
     background: none;
     color: $white;

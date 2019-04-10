@@ -428,7 +428,7 @@ DEPENDENCIES
   activerecord-postgresql-adapter
   addressable (~> 2.5)
   analytics-ruby (~> 2.0.0)
-  argon2 (~> 2.0.2)
+  argon2 (~> 2.0)
   aws-sdk-s3 (~> 1)
   byebug
   capybara (= 1.1.2)

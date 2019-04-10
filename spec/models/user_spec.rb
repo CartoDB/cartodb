@@ -1821,76 +1821,80 @@ describe User do
   describe "#change_password" do
     before(:all) do
       @new_valid_password = '000123456'
+      @user3 = create_user(password: @user_password)
+    end
+
+    after(:all) do
+      @user3.destroy
     end
 
     it "updates crypted_password" do
-      initial_crypted_password = @user.crypted_password
-      @user.change_password(@user_password, @new_valid_password, @new_valid_password)
-      @user.valid?.should eq true
-      @user.save(raise_on_failure: true)
-      @user.crypted_password.should_not eql initial_crypted_password
+      initial_crypted_password = @user3.crypted_password
+      @user3.change_password(@user_password, @new_valid_password, @new_valid_password)
+      @user3.valid?.should eq true
+      @user3.save(raise_on_failure: true)
+      @user3.crypted_password.should_not eql initial_crypted_password
 
-      @user.change_password(@new_valid_password, @user_password, @user_password)
-      @user.save(raise_on_failure: true)
+      @user3.change_password(@new_valid_password, @user_password, @user_password)
+      @user3.save(raise_on_failure: true)
     end
 
     it "checks old password" do
-      @user.change_password('aaabbb', @new_valid_password, @new_valid_password)
-      @user.valid?.should eq false
-
-      @user.errors.fetch(:old_password).nil?.should eq false
+      @user3.change_password('aaabbb', @new_valid_password, @new_valid_password)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:old_password).nil?.should eq false
       expect {
-        @user.save(raise_on_failure: true)
+        @user3.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/)
     end
 
     it "checks password confirmation" do
-      @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
-      @user.valid?.should eq false
-      @user.errors.fetch(:new_password).nil?.should eq false
+      @user3.change_password(@user_password, 'aaabbb', 'bbbaaa')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
       expect {
-        @user.save(raise_on_failure: true)
+        @user3.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
     end
 
     it "can throw several errors" do
-      @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
-      @user.valid?.should eq false
-      @user.errors.fetch(:old_password).nil?.should eq false
-      @user.errors.fetch(:new_password).nil?.should eq false
+      @user3.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:old_password).nil?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expected_errors = "old_password Old password not valid, new_password doesn't match confirmation"
       expect {
-        @user.save(raise_on_failure: true)
-      }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password doesn't match confirmation")
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, expected_errors)
     end
 
     it "checks minimal length" do
-      @user.change_password(@user_password, 'tiny', 'tiny')
-      @user.valid?.should eq false
-      @user.errors.fetch(:new_password).nil?.should eq false
+      @user3.change_password(@user_password, 'tiny', 'tiny')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
       expect {
-        @user.save(raise_on_failure: true)
+        @user3.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
     end
 
     it "checks maximal length" do
       long_password = 'long' * 20
-      @user.change_password(@user_password, long_password, long_password)
-      @user.valid?.should eq false
-      @user.errors.fetch(:new_password).nil?.should eq false
+      @user3.change_password(@user_password, long_password, long_password)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
       expect {
-        @user.save(raise_on_failure: true)
+        @user3.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
     end
 
     it "checks that the new password is not nil" do
-      @user.change_password(@user_password, nil, nil)
-      @user.valid?.should eq false
-      @user.errors.fetch(:new_password).nil?.should eq false
+      @user3.change_password(@user_password, nil, nil)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
       expect {
-        @user.save(raise_on_failure: true)
+        @user3.save(raise_on_failure: true)
       }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
     end
-
   end
 
   describe "when user is signed up with google sign-in and don't have any password yet" do

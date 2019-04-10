@@ -73,7 +73,8 @@ export default {
     openOnboarding (onboardingId) {
       this.$router.push({
         name: 'onboarding-open',
-        params: { onboardingId }
+        params: { onboardingId },
+        hash: '#step-1'
       });
     },
     closeModal () {

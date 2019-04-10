@@ -40,11 +40,11 @@ $selectedItemPaddingOnSides: $sMargin-element - 1px;
 }
 
 .OrganizationList-user.is-selected {
-  border-color: $cCard-hoverBorder;
-  background-color: $cCard-hoverFill;
+  border-color: $cCard-selectedBorder;
+  background-color: $cCard-selectedFill;
 
   &:hover {
-    border: 1px $cCard-selectedBorder solid;
+    border-color: $cCard-selectedBorder;
     background-color: $cCard-selectedFill;
   }
 }

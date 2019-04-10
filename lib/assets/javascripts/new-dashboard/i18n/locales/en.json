@@ -362,7 +362,6 @@
         "howto": {
           "instruction1":"Include in the <code>&ltbody&gt</code> of your HTML file a <code>&ltdiv&gt</code> element to contain the map. The map, layers, and controls will be displayed in this element",
           "instruction2":"Paste the following CSS code in the bottom of the <code>&lthead&gt</code> element to define some basic styles for the map."
-
         }
       },
       "step4": {
@@ -501,7 +500,93 @@
     "builder" : {
       "title": "Create a web map from your browser",
       "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
-      "tags": ["Online", "Builder"]
+      "tags": ["Online", "Builder"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Build a map with our drag & drop editor",
+        "text1": "Builder is our drag & drop tool to design, build and publish interactive web maps with your location data. Maps can be easily shared or embedded on any website or blog.",
+        "text2": "In this guide, you will learn how to upload a .csv file and create your first dataset, create a simple map, and publish it."
+      },
+      "step2": {
+        "summary": {
+          "text": "Getting your data into CARTO"
+        },
+        "howto": {
+          "instruction1":"Download this&nbsp<a href='https://carto.com/dataset/ne_10m_populated_places_simple'>csv file</a>",
+          "instruction2":"Visit the Data page and click the “New Dataset” button",
+          "instruction3": "In the Connect dataset section click Browse, select the file, and click “Connect dataset”"
+        },
+        "extras": {
+          "resource1": "You can also <a href='https://carto.com/help/working-with-data/quick-data-import/'>import your data</a> by dragging and dropping your files into your dashboard"
+        },
+        "cards": {
+          "dataset1": {
+            "title": "Populated places simple",
+            "rows": "7,322 rows",
+            "size": "2 MB",
+            "button": "Download",
+            "link": ""
+          }
+        }
+      },
+      "step3": {
+        "summary": {
+          "text": "Explore your new dataset and understand the different options"
+        },
+        "howto": {
+          "instruction1":"Navigate through your new dataset. From here, you can add, remove, rename, and change the type of your columns. You can also edit each value and even run SQL queries.",
+          "instruction2":"Click the “Create map” button."
+        }
+      },
+      "step4": {
+        "summary": {
+          "text": "Create a new map with the dataset you just created, publish it and share it"
+        },
+        "howto": {
+          "instruction1":"Double click on the name of the map (Untitled Map) and rename it to “My first map”",
+          "instruction2":"Click on the red privacy button to make your map “Public”",
+          "instruction3": "Click “Publish” to publish your map",
+          "instruction4": "Copy the link or embed code of your map and share it with the world!"
+        },
+        "extras": {
+          "resource1": "You can add more layers to your map by clicking “Add new layer”"
+        }
+      },
+      "step5": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first web map using Builder",
+          "message2": "Download the full example <a href=''>here</a>."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/'>Help Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Understanding map layers in Builder",
+            "subtitle": "Learn how to add data layers to your maps, style them, and more.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/understanding-map-layers-in-builder/"
+          },
+          "card2": {
+            "title": "Customizing Pop-Ups with HTML",
+            "subtitle": "Learn how to setup and customise popups with HTML.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/customizing-pop-ups-with-html/"
+          },
+          "card3": {
+            "title": "Exploring Data with Widgets",
+            "subtitle": "Learn how to add interactive widgets to explore your data.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/exploring-widgets/"
+          }
+        }
+      }
     }
   }
 }

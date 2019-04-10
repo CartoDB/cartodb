@@ -1,10 +1,8 @@
 <template>
-  <div>
-    <modal :name="name" :adaptive="true" width="100%" height="100%" :scrollable="true">
-      <button class="modal__button modal__button--close" @click="close()" aria-label="Close"></button>
-      <slot />
-    </modal>
-  </div>
+  <modal :name="name" width="100%" height="100%" @closed="close">
+    <button class="modal__button modal__button--close" @click="close" aria-label="Close"></button>
+    <slot />
+  </modal>
 </template>
 
 <script>
@@ -14,6 +12,12 @@ export default {
   name: 'Wizard',
   components: {
     VModal
+  },
+  mounted () {
+    this.setup();
+  },
+  beforeDestroy () {
+    this.close();
   },
   props: {
     name: {
@@ -26,6 +30,13 @@ export default {
     }
   },
   methods: {
+    setup () {
+      if (this.isOpen) {
+        this.open();
+      } else {
+        this.close();
+      }
+    },
     open () {
       this.$modal.show(this.name);
       document.body.classList.add('u-overflow-hidden');
@@ -38,11 +49,7 @@ export default {
   },
   watch: {
     isOpen () {
-      if (this.isOpen) {
-        this.open();
-      } else {
-        this.close();
-      }
+      this.setup();
     }
   }
 };

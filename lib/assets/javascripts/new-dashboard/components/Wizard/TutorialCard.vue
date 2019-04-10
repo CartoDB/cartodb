@@ -21,6 +21,7 @@ export default {
   }
 };
 </script>
+
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 

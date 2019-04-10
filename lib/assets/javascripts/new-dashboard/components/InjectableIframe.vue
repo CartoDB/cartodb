@@ -8,6 +8,9 @@ export default {
   mounted () {
     this.setContent();
   },
+  beforeDestroy () {
+    this.destroyiFrame();
+  },
   props: {
     content: String,
     height: String,
@@ -16,9 +19,13 @@ export default {
   methods: {
     setContent () {
       const docIframe = this.$refs.iframe.contentWindow.document;
-      docIframe.open();
+      docIframe.open('text/html', 'replace');
       docIframe.write(this.content);
       docIframe.close();
+    },
+    destroyiFrame () {
+      this.$refs.iframe.contentWindow.location.reload();
+      setTimeout(() => this.$refs.iframe.remove(), 500);
     }
   },
   watch: {

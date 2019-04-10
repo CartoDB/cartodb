@@ -327,6 +327,11 @@
       "feedback": {
         "text": "Looking for a different geospatial workflow?",
         "link": "Let us know."
+      },
+      "engineWarning": {
+        "text": "Needs access to API Keys.",
+        "link": "https://carto.com/help/getting-started/get-api-key/#why-do-you-need-this",
+        "linkText": "Learn more"
       }
     },
     "footer": {

@@ -67,5 +67,6 @@ export default {
   left: 0;
   width: 100%;
   height: $onboarding-congrats__height;
+  pointer-events: none;
 }
 </style>

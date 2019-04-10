@@ -12,10 +12,16 @@
           <img svg-inline src="../../../assets/icons/wizards/howto.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartovl.step3.howto.instruction1`)" class="text is-caption u-mb--16"></p>
-    <CodeBlock :code="codeBlock1"></CodeBlock>
-    <p v-html="$t(`Wizards.cartovl.step3.howto.instruction2`)" class="text is-caption u-mb--16 u-mt--36"></p>
-    <CodeBlock :code="codeBlock2"></CodeBlock>
+    <ul class="u-list__style--decimal u-list__position--inside">
+      <li>
+        <p v-html="$t(`Wizards.cartovl.step3.howto.instruction1`)" class="text is-caption u-inline"></p>
+        <CodeBlock :code="codeBlock1" language="htmlmixed" class="u-mt--16"></CodeBlock>
+      </li>
+      <li class="u-mt--36">
+        <p v-html="$t(`Wizards.cartovl.step3.howto.instruction2`)" class="text is-caption u-inlineflex"></p>
+        <CodeBlock :code="codeBlock2" language="htmlmixed"></CodeBlock>
+      </li>
+    </ul>
   </div>
 </template>
 

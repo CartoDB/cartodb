@@ -5,6 +5,9 @@
 <script>
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/javascript/javascript';
+import 'codemirror/mode/python/python';
+import 'codemirror/mode/shell/shell';
+import 'codemirror/mode/htmlmixed/htmlmixed';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 
@@ -22,13 +25,29 @@ export default {
     this.destroy();
   },
   props: {
-    code: {
-      type: String
+    code: String,
+    language: {
+      type: String,
+      default: 'javascript'
+    },
+    lineNumbers: {
+      type: Boolean,
+      default: true
+    },
+    theme: {
+      type: String,
+      default: 'material'
     }
   },
   methods: {
     initialize () {
-      this.codemirror = CodeMirror.fromTextArea(this.$refs.code, defaultOptions);
+      const allOptions = {
+        mode: this.language,
+        lineNumbers: this.lineNumbers,
+        theme: this.theme,
+        ...defaultOptions
+      };
+      this.codemirror = CodeMirror.fromTextArea(this.$refs.code, allOptions);
     },
     destroy () {
       const codemirrorElement = this.codemirror.doc.cm.getWrapperElement();
@@ -43,10 +62,8 @@ export default {
 };
 
 const defaultOptions = {
-  mode: 'javascript',
-  theme: 'material',
   readOnly: true,
-  lineNumbers: true
+  addModeClass: true
 };
 
 </script>

@@ -15,9 +15,6 @@
     <ul class="u-list__style--decimal u-list__position--inside">
       <li>
         <p v-html="$t(`Wizards.cartovl.step2.howto.instruction1`)" class="text is-caption u-mb--16 u-inlineflex"></p>
-      </li>
-      <li>
-        <p v-html="$t(`Wizards.cartovl.step2.howto.instruction2`)" class="text is-caption u-inlineflex"></p>
         <CodeBlock :code="codeBlock1" language="htmlmixed"></CodeBlock>
       </li>
     </ul>
@@ -52,22 +49,22 @@ export default {
 const codeBlock1 =
 `<html>
   <head>
-    <title>CARTO VL Example<\/title>
+    <title>CARTO VL Example</title>
     <!-- Load CARTO VL JS -->
     <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"><\/script>
     <!-- Load Mapbox GL -->
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js"><\/script>
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css" rel="stylesheet">
-    
+
     <style>
       #map {
         position: absolute;
         width: 100%;
         height: 100%;
       }
-    <\/style>
-  <\/head>
+    </style>
+  </head>
   <body>
-  <\/body>
-<\/html>`;
+  </body>
+</html>`;
 </script>

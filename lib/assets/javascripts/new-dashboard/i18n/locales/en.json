@@ -540,7 +540,7 @@
           "text": "Download and upload a comma-separated values (CSV) file to create your first dataset."
         },
         "howto": {
-          "instruction1":"Download this&nbsp<a href='https://carto.com/dataset/ne_10m_populated_places_simple'>csv file</a>",
+          "instruction1":"Download the following dataset:",
           "instruction2":"Visit the Data page and click the “New Dataset” button",
           "instruction3": "In the Connect dataset section click “Browse”, select the file, and click “Connect dataset”"
         },
@@ -549,11 +549,11 @@
         },
         "cards": {
           "dataset1": {
-            "title": "Populated places simple",
-            "rows": "7,322 rows",
-            "size": "2 MB",
+            "title": "World Ports",
+            "rows": "3,669 rows",
+            "size": "708 kB",
             "button": "Download",
-            "link": ""
+            "link": "https://public.carto.com/api/v2/sql?q=select%20*%20from%20public.world_ports&format=csv"
           }
         }
       },
@@ -579,7 +579,7 @@
           "instruction1": "From the dataset view, click “CREATE MAP” (on the bottom right of your screen).",
           "instruction2": "Your map will be created and you will be redirected to Builder, CARTO’s map editor:",
           "instruction3": "Double click on the name of the map (Untitled Map) and rename it to “My first map”. This will be the name that you will see on your dashboard as well.",
-          "instruction4": "Try to change the style of the features on the map (eg: the color or width of the points) by clicking on the layer name and playing with the styling options."
+          "instruction4": "Change the style of the features on the map (eg: point size, point color, strike size, strike color) by clicking on the layer name and playing with the styling options."
         },
         "extras": {
           "resource1": "Alternatively, you can also create maps directly from your dashboard. You can select one or more datasets from the Data page to create a map with multiple layers, or you can create a map from your Maps page."

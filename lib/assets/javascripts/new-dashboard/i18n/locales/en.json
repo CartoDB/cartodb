@@ -397,7 +397,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first map with CARTO VL!",
-          "message2": "<a download href='/assets/unversioned/wizards/cartovl.html'>Download</a> the full code example."
+          "message2": "<a download href='/assets/unversioned/onboarding/cartovl.html'>Download</a> the full code example."
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/'>Developer Center</a>."
@@ -483,7 +483,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
-          "message2": "Download the full example <a download href='/assets/unversioned/wizards/cartoframes.ipynb'>here</a>"
+          "message2": "Download the full example <a download href='/assets/unversioned/onboarding/cartoframes.ipynb'>here</a>"
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/'>Developer Center</a>."
@@ -527,12 +527,12 @@
       },
       "step2": {
         "summary": {
-          "text": "Getting your data into CARTO"
+          "text": "Download and upload a comma-separated values (CSV) file to create your first dataset."
         },
         "howto": {
           "instruction1":"Download this&nbsp<a href='https://carto.com/dataset/ne_10m_populated_places_simple'>csv file</a>",
           "instruction2":"Visit the Data page and click the “New Dataset” button",
-          "instruction3": "In the Connect dataset section click Browse, select the file, and click “Connect dataset”"
+          "instruction3": "In the Connect dataset section click “Browse”, select the file, and click “Connect dataset”"
         },
         "extras": {
           "resource1": "You can also <a href='https://carto.com/help/working-with-data/quick-data-import/'>import your data</a> by dragging and dropping your files into your dashboard"
@@ -549,32 +549,51 @@
       },
       "step3": {
         "summary": {
-          "text": "Explore your new dataset and understand the different options"
+          "text": "Explore your new dataset and learn how to manipulate it."
         },
         "howto": {
-          "instruction1":"Navigate through your new dataset. From here, you can add, remove, rename, and change the type of your columns. You can also edit each value and even run SQL queries.",
-          "instruction2":"Click the “Create map” button."
+          "instruction1":"Once the upload has finished and the new datasets has been created, you will be redirected to the Dataset view. Here, you can explore your data.",
+          "instruction2":"Double-click on any cell to edit it.",
+          "instruction3":"Click on any of the columns to change the order, rename it, change its data type, remove it, or even add new columns.",
+          "instruction4":"You can also add new rows and export your data in different formats."
+        },
+        "extras": {
+          "resource1": "Use the little switch on the bottom left of the screen to explore your dataset using SQL."
         }
       },
       "step4": {
         "summary": {
-          "text": "Create a new map with the dataset you just created, publish it and share it"
+          "text": "Create a map using your new dataset."
         },
         "howto": {
-          "instruction1":"Double click on the name of the map (Untitled Map) and rename it to “My first map”",
-          "instruction2":"Click on the red privacy button to make your map “Public”",
-          "instruction3": "Click “Publish” to publish your map",
-          "instruction4": "Copy the link or embed code of your map and share it with the world!"
+          "instruction1": "From the dataset view, click “CREATE MAP” (on the bottom right of your screen).",
+          "instruction2": "Your map will be created and you will be redirected to Builder, CARTO’s map editor:",
+          "instruction3": "Double click on the name of the map (Untitled Map) and rename it to “My first map”. This will be the name that you will see on your dashboard as well.",
+          "instruction4": "Try to change the style of the features on the map (eg: the color or width of the points) by clicking on the layer name and playing with the styling options."
         },
         "extras": {
-          "resource1": "You can add more layers to your map by clicking “Add new layer”"
+          "resource1": "Alternatively, you can also create maps directly from your dashboard. You can select one or more datasets from the Data page to create a map with multiple layers, or you can create a map from your Maps page."
         }
       },
       "step5": {
+        "summary": {
+          "text": "Publish and share your map with the world."
+        },
+        "howto": {
+          "instruction1": "Click “Publish” to publish your map.",
+          "instruction2": "Click on the red privacy button to make your map “Public”.",
+          "instruction3": "Click “Publish” to publish this version of your map.",
+          "instruction4": "Your map has now been published and you can use the link or embed code to share your map."
+        },
+        "extras": {
+          "resource1": "Until you re-publish your map again, you can make as many changes as you need to without affecting the published version."
+        }
+      },
+      "step6": {
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first web map using Builder",
-          "message2": "Download the full example <a href=''>here</a>."
+          "message2": "Download the full example <a download href='/assets/unversioned/onboarding/My first map.carto'>here</a>"
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/'>Help Center</a>."

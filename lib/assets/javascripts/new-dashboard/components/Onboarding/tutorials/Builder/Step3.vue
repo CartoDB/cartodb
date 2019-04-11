@@ -20,7 +20,20 @@
       <li>
         <p v-html="$t(`Wizards.builder.step3.howto.instruction2`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
       </li>
+      <li>
+        <p v-html="$t(`Wizards.builder.step3.howto.instruction3`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+      </li>
+      <li>
+        <p v-html="$t(`Wizards.builder.step3.howto.instruction4`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+      </li>
     </ul>
+
+    <StepTitle :title="'Extras'" class="u-mt--64">
+      <template slot="icon">
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
+      </template>
+    </StepTitle>
+    <p v-html="$t(`Wizards.builder.step3.extras.resource1`)" class="text is-caption u-mb--16 u-mb--64"></p>
   </div>
 </template>
 

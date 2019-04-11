@@ -71,7 +71,7 @@ module.exports = {
         toType: 'dir'
       }, {
         from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
-        to: `./unversioned/wizards/`,
+        to: `./unversioned/onboarding/`,
         toType: 'dir'
       }
     ]),

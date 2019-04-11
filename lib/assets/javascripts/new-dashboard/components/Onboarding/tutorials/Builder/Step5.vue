@@ -1,70 +1,48 @@
 <template>
-<div class="congrats">
-  <div class="congrats__hero">
-    <Confetti></Confetti>
-    <div class="congrats__hero-content">
-      <img svg-inline src="../../../../assets/icons/onboarding/congrats.svg" alt="">
-      <h2 class="title is-body u-mb--16 u-mt--24 ">{{ $t(`Wizards.builder.step5.congrats.title`) }}</h2>
-      <p v-html="$t(`Wizards.builder.step5.congrats.message1`)" class="text is-caption"></p>
-      <p v-html="$t(`Wizards.builder.step5.congrats.message2`)" class="text is-caption"></p>
-    </div>
+  <div class="u-width--100">
+    <StepTitle :title="$t(`Wizards.builder.sections.summary`)">
+      <template slot="icon">
+          <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
+      </template>
+    </StepTitle>
+    <p v-html="$t(`Wizards.builder.step5.summary.text`)" class="text is-body u-mb--64"></p>
+
+    <StepTitle :title="$t(`Wizards.builder.sections.howto`)">
+      <template slot="icon">
+          <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
+      </template>
+    </StepTitle>
+    <ul class="u-list__style--decimal u-list__position--inside">
+      <li>
+        <p v-html="$t(`Wizards.builder.step5.howto.instruction1`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+      </li>
+      <li>
+        <p v-html="$t(`Wizards.builder.step5.howto.instruction2`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+      </li>
+      <li>
+        <p v-html="$t(`Wizards.builder.step5.howto.instruction3`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+      </li>
+      <li>
+        <p v-html="$t(`Wizards.builder.step5.howto.instruction4`)" class="text is-caption u-inlineflex"></p>
+      </li>
+    </ul>
+
+    <StepTitle :title="$t(`Wizards.builder.sections.extras`)" class="u-mt--64">
+      <template slot="icon">
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
+      </template>
+    </StepTitle>
+    <p v-html="$t(`Wizards.builder.step5.extras.resource1`)" class="text is-caption"></p>
   </div>
-  <div class="container u-mt--64 u-pb--80">
-    <StepTitle :title="$t(`Wizards.builder.sections.learnmore`)">
-        <template slot="icon">
-            <img svg-inline src="../../../../assets/icons/onboarding/learn.svg"/>
-        </template>
-      </StepTitle>
-      <p v-html="$t(`Wizards.builder.step5.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
-      <TutorialCard :content="$t(`Wizards.builder.step5.cards.card1`)" class="u-mb--16">
-        <img src="../../../../assets/images/onboarding/builder_card1.png" width="240" height="130" alt="Style features by category sample image"/>
-      </TutorialCard>
-      <TutorialCard :content="$t(`Wizards.builder.step5.cards.card2`)" class="u-mb--16">
-        <img src="../../../../assets/images/onboarding/builder_card2.png" width="240" height="130" alt="Add hover popups sample image"/>
-      </TutorialCard>
-      <TutorialCard :content="$t(`Wizards.builder.step5.cards.card3`)">
-        <img src="../../../../assets/images/onboarding/builder_card3.png" width="240" height="130" alt="Animate the features sample image"/>
-      </TutorialCard>
-  </div>
-</div>
 </template>
+
 <script>
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
-import TutorialCard from 'new-dashboard/components/Onboarding/components/TutorialCard.vue';
-import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vue';
 
 export default {
   name: 'Step5',
   components: {
-    StepTitle,
-    TutorialCard,
-    Confetti
+    StepTitle
   }
 };
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-.congrats {
-  background-color: $white;
-
-  &__hero {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: $onboarding-congrats__height;
-    background-color: $onboarding-congrats__bg-color;
-  }
-
-  &__hero-content {
-    display: flex;
-    position: relative;
-    z-index: 1;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-}
-</style>

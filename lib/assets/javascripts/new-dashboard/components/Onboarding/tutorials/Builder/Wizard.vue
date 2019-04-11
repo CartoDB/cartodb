@@ -34,6 +34,7 @@ import Step2 from './Step2.vue';
 import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
+import Step6 from './Step6.vue';
 
 import mixin from '../mixin';
 
@@ -48,7 +49,8 @@ export default {
     Step2,
     Step3,
     Step4,
-    Step5
+    Step5,
+    Step6
   },
   mixins: [mixin],
   data () {
@@ -57,7 +59,8 @@ export default {
         'Intro',
         'Import your data',
         'Explore the dataset',
-        'Create & publish a map',
+        'Create a map',
+        'Publish your map',
         'Final'
       ]
     };

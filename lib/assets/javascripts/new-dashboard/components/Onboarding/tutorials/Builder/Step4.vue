@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100">
+  <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.builder.sections.summary`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
@@ -12,21 +12,21 @@
           <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
-    <ul class="u-list__style--decimal u-list__position--inside">
-      <li>
-        <p v-html="$t(`Wizards.builder.step4.howto.instruction1`)" class="text is-caption u-mt--24 u-inline"></p>
+    <ol class="u-list__style--decimal u-list__position--inside">
+      <li class="u-mt--24">
+        <p v-html="$t(`Wizards.builder.step4.howto.instruction1`)" class="text is-caption u-inline"></p>
       </li>
-      <li>
-        <p v-html="$t(`Wizards.builder.step4.howto.instruction2`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
-        <img class="u-width--100 u-mt--16 u-mb--16" src="../../../../assets/images/onboarding/builder_step4@2x.png" alt="Screenshot map in builder">
+      <li class="u-mt--24">
+        <p v-html="$t(`Wizards.builder.step4.howto.instruction2`)" class="text is-caption u-inline"></p>
+        <img class="u-width--100 u-mt--16" src="../../../../assets/images/onboarding/builder_step4@2x.png" alt="Screenshot map in builder">
       </li>
-      <li class="u-mb--16">
+      <li class="u-mt--24">
         <p v-html="$t(`Wizards.builder.step4.howto.instruction3`)" class="text is-caption u-inline"></p>
       </li>
-      <li>
+      <li class="u-mt--24">
         <p v-html="$t(`Wizards.builder.step4.howto.instruction4`)" class="text is-caption u-inline"></p>
       </li>
-    </ul>
+    </ol>
 
     <StepTitle :title="$t(`Wizards.builder.sections.extras`)" class="u-mt--64">
       <template slot="icon">

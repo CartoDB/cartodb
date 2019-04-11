@@ -13,6 +13,7 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .jupyter {
+  margin: 16px 0;
   padding: 20px 20px 20px 8px;
   background-color: $white;
 }

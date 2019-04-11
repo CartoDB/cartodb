@@ -356,9 +356,7 @@
         "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers'>Developer Center</a>."
       },
       "step2": {
-        "summary": {
-          "text": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries."
-        },
+        "summary": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries.",
         "howto": {
           "instruction1":"Create an HTML file and add the following scripts to your <code>&lt;head&gt;</code> element."
         },
@@ -434,6 +432,12 @@
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
       "tags": ["Python", "CARTOframes"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
       "jupyter": {
         "in" : "In:",
         "out": "Out:"

@@ -4,11 +4,11 @@
     <Confetti></Confetti>
     <img svg-inline src="../../../../assets/icons/onboarding/congrats.svg" alt="">
     <h2 class="title is-body u-mb--16 u-mt--24 ">{{ $t(`Wizards.cartoframes.step7.congrats.title`) }}</h2>
-      <p v-html="$t(`Wizards.cartoframes.step7.congrats.message1`)" class="text is-caption"></p>
-      <p v-html="$t(`Wizards.cartoframes.step7.congrats.message2`)" class="text is-caption"></p>
+    <p v-html="$t(`Wizards.cartoframes.step7.congrats.message1`)" class="text is-caption"></p>
+    <p v-html="$t(`Wizards.cartoframes.step7.congrats.message2`)" class="text is-caption"></p>
   </div>
   <div class="container u-mt--64 u-pb--80">
-      <StepTitle :title="'Learn More'">
+      <StepTitle :title="$t(`Wizards.cartoframes.sections.learnmore`)">
         <template slot="icon">
             <img svg-inline src="../../../../assets/icons/onboarding/learn.svg"/>
         </template>

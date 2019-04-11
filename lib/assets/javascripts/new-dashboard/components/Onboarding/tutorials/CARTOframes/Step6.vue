@@ -1,32 +1,33 @@
 <template>
-  <div class="u-width--100">
-    <StepTitle :title="'Summary'">
+  <div class="u-width--100 u-pr--10 u-pl--10">
+    <StepTitle :title="$t(`Wizards.cartoframes.sections.summary`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
     <p v-html="$t(`Wizards.cartoframes.step6.summary`)" class="text is-body u-mb--64"></p>
 
-    <StepTitle :title="'How To'">
+    <StepTitle :title="$t(`Wizards.cartoframes.sections.howto`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
-    <ul class="u-list__style--decimal u-list__position--inside u-mb--16 u-mt--24">
+    <ol class="u-list__style--decimal u-list__position--inside u-mt--24">
       <li>
         <p v-html="$t(`Wizards.cartoframes.step6.howto.instruction1`)" class="text is-caption u-inline"></p>
+        <Jupyter>
+          <JupyterBlock :isInput="true">
+            <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
+          </JupyterBlock>
+          <JupyterBlock :isInput="false">
+            <InjectableIframe :content="map" width="100%" height="416"></InjectableIframe>
+          </JupyterBlock>
+        </Jupyter>
       </li>
-    </ul>
-    <Jupyter>
-      <JupyterBlock :isInput="true">
-        <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
-      </JupyterBlock>
-      <JupyterBlock :isInput="false">
-        <InjectableIframe :content="map" width="100%" height="416"></InjectableIframe>
-      </JupyterBlock>
-    </Jupyter>
+    </ol>
 
-    <StepTitle :title="'Extras'" class="u-mt--64">
+
+    <StepTitle :title="$t(`Wizards.cartoframes.sections.extras`)" class="u-mt--64">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
       </template>

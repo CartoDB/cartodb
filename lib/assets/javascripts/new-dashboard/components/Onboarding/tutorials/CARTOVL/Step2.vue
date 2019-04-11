@@ -5,19 +5,19 @@
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartovl.step2.summary.text`)" class="text is-body u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartovl.step2.summary`)" class="text is-body u-mb--64"></p>
 
     <StepTitle :title="$t(`Wizards.cartovl.sections.howto`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
-    <ul class="u-list__style--decimal u-list__position--inside">
+    <ol class="u-list__style--decimal u-list__position--inside">
       <li>
         <p v-html="$t(`Wizards.cartovl.step2.howto.instruction1`)" class="text is-caption u-inlineflex"></p>
         <CodeBlock :code="codeBlock1" language="htmlmixed"></CodeBlock>
       </li>
-    </ul>
+    </ol>
 
     <StepTitle :title="$t(`Wizards.cartovl.sections.extras`)" class="u-mt--64">
       <template slot="icon">

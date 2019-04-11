@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100">
+  <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.cartovl.sections.summary`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
@@ -12,12 +12,12 @@
           <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
-    <ul class="u-list__style--decimal u-list__position--inside">
+    <ol class="u-list__style--decimal u-list__position--inside">
       <li>
         <p v-html="$t(`Wizards.cartovl.step6.howto.instruction1`)" class="text is-caption u-inline"></p>
         <CodeBlock :code="codeBlock1"></CodeBlock>
       </li>
-    </ul>
+    </ol>
   </div>
 </template>
 <script>

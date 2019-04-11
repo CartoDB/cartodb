@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100">
+  <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.builder.sections.summary`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
@@ -12,21 +12,21 @@
           <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
       </template>
     </StepTitle>
-    <ul class="u-list__style--decimal u-list__position--inside">
+    <ol class="u-list__style--decimal u-list__position--inside">
       <li>
         <p v-html="$t(`Wizards.builder.step3.howto.instruction1`)" class="text is-caption u-mt--24 u-inline"></p>
         <img class="u-width--100 u-mt--16" src="../../../../assets/images/onboarding/builder_step3@2x.png" alt="Screenshot dataset preview in builder">
       </li>
       <li>
-        <p v-html="$t(`Wizards.builder.step3.howto.instruction2`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.builder.step3.howto.instruction2`)" class="text is-caption u-mb--24 u-mt--24 u-inlineflex"></p>
       </li>
       <li>
-        <p v-html="$t(`Wizards.builder.step3.howto.instruction3`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.builder.step3.howto.instruction3`)" class="text is-caption u-mb--24 u-inlineflex"></p>
       </li>
       <li>
-        <p v-html="$t(`Wizards.builder.step3.howto.instruction4`)" class="text is-caption u-mb--16 u-mt--24 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.builder.step3.howto.instruction4`)" class="text is-caption u-inlineflex"></p>
       </li>
-    </ul>
+    </ol>
 
     <StepTitle :title="'Extras'" class="u-mt--64">
       <template slot="icon">

@@ -35,6 +35,7 @@ import Step3 from './Step3.vue';
 import Step4 from './Step4.vue';
 import Step5 from './Step5.vue';
 import Step6 from './Step6.vue';
+import Step7 from './Step7.vue';
 
 import mixin from '../mixin'
 
@@ -50,7 +51,8 @@ export default {
     Step3,
     Step4,
     Step5,
-    Step6
+    Step6,
+    Step7
   },
   mixins: [mixin],
   data () {
@@ -61,6 +63,7 @@ export default {
         'Define container',
         'Create map',
         'Add data layer',
+        'Style features',
         'Download'
       ]
     };

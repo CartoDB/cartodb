@@ -37,6 +37,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step5',
+  stepName: 'Add data layer',
   components: {
     CodeBlock,
     StepTitle

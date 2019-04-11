@@ -35,6 +35,7 @@ import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vu
 
 export default {
   name: 'Step6',
+  stepName: 'Final',
   components: {
     StepTitle,
     TutorialCard,

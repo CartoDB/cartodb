@@ -37,6 +37,7 @@ import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 
 export default {
   name: 'Step4',
+  stepName: 'Read dataset',
   components: {
     CodeBlock,
     StepTitle,

@@ -24,17 +24,22 @@
       const map = new mapboxgl.Map({
         container: 'map',
         style: carto.basemaps.voyager,
-        center: [-3.6908, 40.4297],
-        zoom: 11
+        center: [0, 30],
+        zoom: 2
       })
 
       carto.setDefaultAuth({
-        username: 'cartovl',
+        username: 'public',
         apiKey: 'default_public'
       })
 
-      const viz = new carto.Viz();
-      const source = new carto.source.Dataset('madrid_listings');
+      const viz = new carto.Viz(`
+        width: 4
+        strokeWidth: 0.5
+        strokeColor: black
+        color: rgb(10,185,107)
+      `);
+      const source = new carto.source.Dataset('world_ports');
       const layer = new carto.Layer('layer', source, viz);
       layer.addTo(map);
     </script>

@@ -55,8 +55,8 @@ const codeBlock1 =
   const map = new mapboxgl.Map({
     container: 'map',
     style: carto.basemaps.voyager,
-    center: [-3.6908, 40.4297],
-    zoom: 11
+    center: [0, 30],
+    zoom: 2
   })
 <\/script>`;
 </script>

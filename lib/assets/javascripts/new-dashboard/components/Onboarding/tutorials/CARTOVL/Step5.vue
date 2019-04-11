@@ -52,13 +52,13 @@ export default {
 // Code Blocks to be rendered in steps
 const codeBlock1 =
 `carto.setDefaultAuth({
-  username: 'cartovl',
+  username: 'public',
   apiKey: 'default_public'
 })`;
 
 const codeBlock2 =
 `const viz= new carto.Viz();
-const source = new carto.source.Dataset('madrid_listings')
+const source = new carto.source.Dataset('world_ports')
 const layer = new carto.Layer('layer', source, viz);
 layer.addTo(map);`;
 </script>

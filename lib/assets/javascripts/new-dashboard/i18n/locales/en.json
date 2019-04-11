@@ -351,19 +351,19 @@
       },
       "step1": {
         "title": "Develop an interactive web map",
-        "text1": "Our platform provides a set of libraries and APIs to develop our own customizable and interactive maps. CARTO VL is a JavaScript library to developer beautiful interactive web maps.",
-        "text2": "In this guide, you will learn how to load the library in your project, create a map with one of our basemaps, and add a data layer.",
+        "text1": "Our platform provides a set of libraries and APIs to develop our own customizable and interactive maps. CARTO VL is a JavaScript library to develop beautiful interactive web maps.",
+        "text2": "In this guide, you will learn how to load the library in your project, create a map with one of CARTO's basemaps, add a data layer, and style it.",
         "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers'>Developer Center</a>."
       },
       "step2": {
         "summary": {
-          "text": "Create an HTML file with this template that loads CARTO VL and Mapbox GL libraries."
+          "text": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries."
         },
         "howto": {
           "instruction1":"Create an HTML file and add the following scripts to your <code>&lt;head&gt;</code> element."
         },
         "extras": {
-          "resource1": "CARTO VL is our more advanced rendering library and it’s constantly adding new features. You can learn what cool stuff did we add lately in our <a href='https://carto.com/blog/categories/product-updates/'>Product Updates</a> blog.",
+          "resource1": "CARTO VL is our more advanced rendering library and new features are constantly being added. You can read about the newest capabilities in our <a href='https://carto.com/blog/categories/product-updates/'>Product Updates</a> blog.",
           "resource2": "You can also <a href='https://www.npmjs.com/package/@carto/carto-vl'>install and load CARTO VL using npm</a>."
         }
       },
@@ -371,33 +371,39 @@
         "summary": "Define the <code>&ltdiv&gt</code> element that will contain your map",
         "howto": {
           "instruction1": "Define the <code>&lt;div&gt;</code> element that will contain the map in the <code>&lt;body&gt;</code> of your file. The map, layers and controls will be displayed in this element:",
-          "instruction2": "Paste the following CSS code in the bottom of the <code>&lt;head&gt;</code> element to define some basic styles for the map:"
+          "instruction2": "Paste the following CSS code in the bottom of the <code>&lt;head&gt;</code> element to define some basic styles for the map container:"
         }
       },
       "step4": {
-        "summary": "Create a MapboxGL map with one of our basemaps.",
+        "summary": "Add a CARTO basemap with the Mapbox GL map constructor",
         "howto": {
-          "instruction1":"Add this script below your <code>&lt;div&gt;</code> container to load the map:"
+          "instruction1":"Add the following script below your <code>&lt;div&gt;</code> container to load CARTO's Voyager basemap centered on the world at zoom level 2:"
         },
         "extras": {
           "resource1": "CARTO VL relies on Mapbox GL to render basemaps. Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
         }
       },
       "step5": {
-        "summary": "Connect to a test CARTO account and add a data layer to your map",
+        "summary": "Connect to a CARTO account and add a data layer to your map",
         "howto": {
-          "instruction1":"Connect to a CARTO account by specifiying the username and API key you want to use. In this case, we're using a test account and a test access key.",
-          "instruction2":"Now that CARTO VL has access to the account you can create and add layers to display any of the datasets on that account and add them to the map."
+          "instruction1":"Connect to a CARTO account by specifying the username and API key you want to use. In this case, we're using a test account and a test access key.",
+          "instruction2":"Now that CARTO VL has access, you can add any of the datasets in that account as a source layer to display on the map."
           },
         "extras": {
           "resource1": "Want to use your own account? Learn about <a href='https://carto.com/developers/fundamentals/authorization/'>API Authorization</a>."
         }
       },
       "step6": {
+        "summary": "Use styling properties to overwrite default symbology.",
+        "howto": {
+          "instruction1":"You can overwrite the default symbology applied to features on the map by adding custom styles inside of the <code>Viz</code> object:"
+        }
+      },
+      "step7": {
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first map with CARTO VL!",
-          "message2": "<a download href='/assets/unversioned/onboarding/cartovl.html'>Download</a> the full code example."
+          "message2": "<a download href='/assets/unversioned/onboarding/cartovl.zip'>Download</a> the full code example."
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/'>Developer Center</a>."

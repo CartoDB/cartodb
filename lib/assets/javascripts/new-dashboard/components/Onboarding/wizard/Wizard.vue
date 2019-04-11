@@ -3,7 +3,6 @@
 </template>
 
 <script>
-
 import { createWizard } from '../wizard/createWizard';
 
 // CARTO VL Wizard

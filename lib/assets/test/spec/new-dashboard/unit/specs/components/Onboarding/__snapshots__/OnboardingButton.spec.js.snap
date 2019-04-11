@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OnboardingButton.vue should render properly 1`] = `
+<button class="button button--ghost">
+  Wizards.Distributor.cta
+</button>
+`;
+
+exports[`OnboardingButton.vue should set button--cta if isFirstTimeViewingDashboard is true 1`] = `
+<button class="button button--cta">
+  Wizards.Distributor.cta
+</button>
+`;

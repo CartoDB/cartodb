@@ -11,7 +11,10 @@
 export default {
   name: 'OnboardingButton',
   props: {
-    isFirstTimeViewingDashboard: Boolean
+    isFirstTimeViewingDashboard: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     openOnboarding () {

@@ -18,6 +18,13 @@
         <CodeBlock :code="codeBlock1"></CodeBlock>
       </li>
     </ol>
+
+    <StepTitle :title="$t(`Wizards.cartovl.sections.extras`)" class="u-mt--64">
+      <template slot="icon">
+          <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
+      </template>
+    </StepTitle>
+    <p v-html="$t(`Wizards.cartovl.step6.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
   </div>
 </template>
 <script>

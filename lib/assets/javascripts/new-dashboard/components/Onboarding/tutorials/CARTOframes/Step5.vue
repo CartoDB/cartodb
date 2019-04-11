@@ -53,6 +53,6 @@ export default {
 };
 
 const codeBlock1 =
-`df = cc.read('brooklyn_poverty')
+`df = cc.read('world_ports')
 df.head()`;
 </script>

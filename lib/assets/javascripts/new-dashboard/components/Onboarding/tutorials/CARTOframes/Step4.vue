@@ -51,5 +51,9 @@ export default {
 };
 
 const codeBlock1 = `[table.name for table in cc.tables()]`;
-const codeBlock2 = `['mcdonalds_nyc', 'nyc_census_tracts', 'brooklyn_poverty', 'taxi_50k', 'nat']`;
+const codeBlock2 =
+`['world_ports',
+ 'foottraffic_atlanta_24h',
+ ...
+ 'stormevents_locations_2014']`;
 </script>

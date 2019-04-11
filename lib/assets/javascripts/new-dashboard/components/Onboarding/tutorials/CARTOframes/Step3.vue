@@ -60,7 +60,7 @@ const codeBlock1 =
 `import cartoframes
 from cartoframes import Credentials
 
-creds = Credentials(username='cartoframes',
+creds = Credentials(username='public',
                     key='default_public')
 cc = cartoframes.CartoContext(creds=creds)`;
 </script>

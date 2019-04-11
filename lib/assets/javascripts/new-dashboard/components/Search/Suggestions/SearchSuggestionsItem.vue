@@ -84,4 +84,10 @@ export default {
     background-image: url('../../../assets/icons/navbar/search/search-data.svg');
   }
 }
+
+.suggestions__item--tag {
+  &::after {
+    background-image: url('../../../assets/icons/navbar/search/search-tags.svg');
+  }
+}
 </style>

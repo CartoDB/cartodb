@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100">
+  <div class="u-width--100 u-pr--10 u-pl--10">
     <StepTitle :title="$t(`Wizards.cartovl.sections.summary`)">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
@@ -14,7 +14,7 @@
     </StepTitle>
     <ul class="u-list__style--decimal u-list__position--inside">
       <li>
-        <p v-html="$t(`Wizards.cartovl.step2.howto.instruction1`)" class="text is-caption u-mb--16 u-inlineflex"></p>
+        <p v-html="$t(`Wizards.cartovl.step2.howto.instruction1`)" class="text is-caption u-inlineflex"></p>
         <CodeBlock :code="codeBlock1" language="htmlmixed"></CodeBlock>
       </li>
     </ul>
@@ -24,8 +24,8 @@
           <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>
       </template>
     </StepTitle>
-    <p v-html="$t(`Wizards.cartovl.step2.extras.resource1`)" class="text is-caption u-mb--16"></p>
-    <p v-html="$t(`Wizards.cartovl.step2.extras.resource2`)" class="text is-caption u-mb--16 u-mb--64"></p>
+    <p v-html="$t(`Wizards.cartovl.step2.extras.resource1`)" class="text is-caption u-mb--24"></p>
+    <p v-html="$t(`Wizards.cartovl.step2.extras.resource2`)" class="text is-caption u-mb--64"></p>
   </div>
 </template>
 

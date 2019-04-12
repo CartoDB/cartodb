@@ -6,12 +6,17 @@ Development
   suitable random key by using `bundle exec rake secret`
 
 ### Features
-* Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
-  * Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
-  * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
-  * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
-  * Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
-* Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
+
+- Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
+  - Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
+  - `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
+  - New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
+  - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+- Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
+- Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
+- Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
+- Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -34,8 +39,19 @@ Development
 - Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
 - Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
 - Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
+- Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
+- Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
+- Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
+- Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
+- Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
+- Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
+- Make drop functions code PG11 compatible ([#14792](https://github.com/CartoDB/cartodb/pull/14792))
+- Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+- Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
+- Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
+- Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
+- Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
 - Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
-
 
 4.26.0 (2019-03-11)
 -------------------

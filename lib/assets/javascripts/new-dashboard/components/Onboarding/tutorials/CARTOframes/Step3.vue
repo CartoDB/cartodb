@@ -43,6 +43,7 @@ import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 
 export default {
   name: 'Step3',
+  stepName: 'Connect to CARTO',
   components: {
     CodeBlock,
     StepTitle,
@@ -60,7 +61,7 @@ const codeBlock1 =
 `import cartoframes
 from cartoframes import Credentials
 
-creds = Credentials(username='cartoframes',
+creds = Credentials(username='public',
                     key='default_public')
 cc = cartoframes.CartoContext(creds=creds)`;
 </script>

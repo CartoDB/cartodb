@@ -46,7 +46,7 @@
 
 .grid__head--sticky {
   position: sticky;
-  z-index: 1;
+  z-index: $z-index__sticky;
   top: 0;
 }
 

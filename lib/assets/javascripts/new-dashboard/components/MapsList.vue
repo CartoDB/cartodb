@@ -165,7 +165,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return (!this.isFirstTimeViewingDashboard || this.hasSharedMaps) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedMaps) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingMaps &&
         !this.currentEntriesCount;
     },
@@ -175,6 +175,10 @@ export default {
       return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })
         : this.$t('MapsPage.emptyCase.default', { path: route.href });
+    },
+    isFirstTimeViewerAfterAction () {
+      // First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
+      return this.isFirstTimeViewingDashboard && this.currentEntriesCount <= 0 && !this.hasFilterApplied('mine');
     },
     hasSharedMaps () {
       return this.totalShared > 0;
@@ -186,7 +190,7 @@ export default {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;
     },
     shouldShowListHeader () {
-      return this.isCondensed && !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+      return this.isCondensed && !this.emptyState && !this.initialState;
     },
     isViewer () {
       return this.$store.getters['user/isViewer'];

@@ -79,7 +79,7 @@ export default {
 
 .quick-actions-dropdown {
   position: absolute;
-  z-index: 2;
+  z-index: $z-index__local-dropdown;
   right: 0;
   width: 260px;
   margin-top: 8px;

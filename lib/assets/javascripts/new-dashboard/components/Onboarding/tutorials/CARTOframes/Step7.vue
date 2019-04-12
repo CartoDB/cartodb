@@ -33,6 +33,7 @@ import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vu
 
 export default {
   name: 'Step7',
+  stepName: 'Download',
   components: {
     StepTitle,
     TutorialCard,

@@ -312,7 +312,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
         </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="metadata">
-        <div class="metadata__element"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="metadata__icon">
+        <div class="metadata__element"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="metadata__icon">
           <!---->
           <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="tag" linkroute="tagSearch"><span class="metadata__tags-count text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
         </div>
@@ -356,7 +356,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
         </h3> <span class="cell__favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="metadata">
-        <div class="metadata__element"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="metadata__icon">
+        <div class="metadata__element"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="metadata__icon">
           <ul class="metadata__tags">
             <li>
               <router-link to="[object Object]" class="text is-small is-txtSoftGrey metadata__tag">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>

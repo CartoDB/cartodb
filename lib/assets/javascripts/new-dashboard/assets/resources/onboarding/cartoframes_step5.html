@@ -1,95 +1,177 @@
 <!DOCTYPE html>
-  <html>
-    <head>
-      <title>Carto</title>
-      <meta name='viewport' content='initial-scale=1.0, user-scalable=no' />
-      <meta http-equiv='content-type' content='text/html; charset=UTF-8' />
-  
-      <style>
-        html,
-        body,
-        #map {
-          height: 100%;
-          margin: 0;
-          padding: 0;
-        }
+<html lang="en">
+<head>
+  <title>CARTO VL + CARTOframes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <!-- Include CARTO VL JS -->
+  <script src="https://libs.cartocdn.com/carto-vl/v1.1.1/carto-vl.min.js"></script>
+  <!-- Include Mapbox GL JS -->
+  <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js"></script>
+  <!-- Include Mapbox GL CSS -->
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css" rel="stylesheet" />
+  <!-- Include Airship for layouts -->
+  <link href="https://libs.cartocdn.com/airship-style/v1.0.3/airship.css" rel="stylesheet">
+  <!-- Include airship components -->
+  <script src="https://libs.cartocdn.com/airship-components/v1.0.3/airship.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="as-app-body as-app">
+  <div class="as-content">
+    <main class="as-main">
+      <div class="as-map-area">
+        <div id="map"></div>
+        <div class="as-map-panels">
+          <div class="as-panel as-panel--right as-panel--top">
+            <div class="as-panel__element" id="legends" style="display: none;">
+            </div>
+          </div> <!-- as-panel -->
+        </div> <!-- as-map-panels -->
+      </div> <!-- as-map-area -->
+    </main> <!-- as-main -->
+  </div> <!-- as-content -->
 
-        #zoom-center {
-          position: absolute;
-          z-index: 100;
-          top: 0;
-          right: 0;
-          width: 240px;
-          padding: 4px;
-          background-color: rgba(255, 255, 255, 0.7);
-        }
-      </style>
-  
-      <link rel='stylesheet' href='https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css' />
-    </head>
-    <body>
-      <div id='zoom-center'>
-        zoom=<span id='zoom'>4</span>,
-        lng=<span id='lon'>No data</span>, lat=<span id='lat'>No data</span>
-      </div>
-      <div id='map'></div>
-      <script src='https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js'></script>
-  
-      <script>
-       const config  = {"user_name": "cartoframes", "maps_api_template": "https://cartoframes.carto.com", "sql_api_template": "https://cartoframes.carto.com", "tiler_protocol": "https", "tiler_domain": "carto.com", "tiler_port": "80", "type": "namedmap", "named_map": {"name": "cartoframes_ver20170406_layers1_time0_baseid2_labels1_zoom0", "params": {"basemap_url": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png", "cartocss_0": "#layer {  polygon-fill: ramp([poverty_per_pop], cartocolor(Mint), quantiles(5), >); polygon-opacity: 0.9; polygon-gamma: 0.5; line-color: #FFF; line-width: 0.5; line-opacity: 0.25; line-comp-op: hard-light;}#layer[poverty_per_pop = null] {  polygon-fill: #ccc;}", "sql_0": "SELECT * FROM brooklyn_poverty", "west": -74.041916, "south": 40.569596, "east": -73.833422, "north": 40.739158}}};
-       const bounds  = [[40.739158, -73.833422], [40.569596, -74.041916]];
-       const options = {"filter": ["mapnik", "torque"], "https": true};
-       var labels_url = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png';
-  
-       const adjustLongitude = (lng) => (
-         lng - ((Math.ceil((lng + 180) / 360) - 1) * 360)
-       );
-       const map = L.map('map', {
-         zoom: 3,
-         center: [0, 0],
-       });
-  
-       if (L.Browser.retina) {
-           var basemap = config.named_map.params.basemap_url.replace('.png', '@2x.png');
-           labels_url = labels_url.replace('.png', '@2x.png');
-       } else {
-           var basemap = config.named_map.params.basemap_url;
-       }
-       L.tileLayer(basemap, {
-           attribution: "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
-       }).addTo(map);
-  
-       const updateMapInfo = () => {
-         $('#zoom').text(map.getZoom());
-         $('#lat').text(map.getCenter().lat.toFixed(4));
-         $('#lon').text(adjustLongitude(map.getCenter().lng).toFixed(4));
-       };
-  
-       cartodb.createLayer(map, config, options)
-              .addTo(map)
-              .done((layer) => {
-                  // add labels layer
-                  if (labels_url) {
-                      var topPane = L.DomUtil.create('div', 'leaflet-top-pane', map.getPanes().mapPane);
-                      var topLayer = new L.tileLayer(labels_url).addTo(map);
-                      topPane.appendChild(topLayer.getContainer());
-                      topLayer.setZIndex(7);
-                   }
-  
-                  // fit map to bounds
-                  if (bounds.length) {
-                    map.fitBounds(bounds);
+  <script>
+    const BASEMAPS = {
+        DarkMatter: carto.basemaps.darkmatter,
+        Voyager: carto.basemaps.voyager,
+        Positron: carto.basemaps.positron
+    };
+    if ("") {
+      mapboxgl.accessToken = "";
+    }
+    // Fetch CARTO basemap if it's there, else try to use other supplied style
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: BASEMAPS['Voyager'] || "Voyager",
+      zoom: 9,
+      dragRotate: false
+    });
+
+    let credentials = {"username": "public", "api_key": "default_public", "base_url": "https://public.carto.com"};
+    carto.setDefaultAuth({
+      username: credentials['username'],
+      apiKey: credentials['api_key'] || 'default_public'
+    });
+    carto.setDefaultConfig({
+        serverURL: credentials['base_url'] || `https://${credentials['user']}.carto.com/`
+    });
+    var sources = [{"is_local": false, "source": "SELECT * FROM world_ports", "legend": null, "styling": "color: #0ab96b\nwidth: 3\nstrokeWidth: 0.5\nstrokeColor: black", "interactivity": null}];
+ 
+    map.fitBounds([[-177.366666667, -77.85], [179.366666667, 78.9166666667]], {animate: false});
+ 
+    sources.forEach((elem, idx) => {
+      let temp_source = null;
+      if (elem.is_local) {
+        let local_json = JSON.parse(elem.source);
+        temp_source = new carto.source.GeoJSON(local_json);
+      } else {
+        temp_source = new carto.source.SQL(elem.source);
+      }
+      const viz = new carto.Viz(elem['styling']);
+      let temp = new carto.Layer(
+          'layer' + idx,
+          temp_source,
+          viz
+      );
+      var last_source = idx === 0 ? 'watername_ocean' : 'layer' + (idx - 1);
+      temp.addTo(map);
+ 
+      // When layer loads, trigger legend event
+      temp.on('loaded', () => {
+          // Request data for legend from the layer viz
+          if (viz.color.getLegendData) {
+              const colorLegend = viz.color.getLegendData();
+              let colorLegendList = '';
+ 
+              // Create list elements for legend
+              colorLegend.data.forEach((legend, index) => {
+                  const color = legend.value;
+                  const keyMin = legend.key[0].toFixed(2);
+                  const keyMax = legend.key[1].toFixed(2);
+                  let bucket = `${keyMin} - ${keyMax}`;
+                  if (keyMin === '-Infinity') {
+                    bucket = `< ${keyMax}`;
+                  } else if (keyMax === 'Infinity') {
+                    bucket = `> ${keyMin}`;
                   }
-  
-                  updateMapInfo();
-                  map.on('move', () => {
-                    updateMapInfo();
-                  });
-              })
-              .error((err) => {
-                console.log('ERROR: ', err);
+                  // Style for legend items
+                  colorLegendList +=
+                          `<li style="color: rgb(${color.r}, ${color.g}, ${color.b}); font-size: 300%;" class="as-list__item"><span style="vertical-align: middle;" class="as-color--type-01 as-body as-font--medium">${bucket}</span></li>\n`;
               });
-      </script>
-  
-    </body>
-  </html>
+ 
+              const legend = `<section class="as-box">
+                  <h1 class="as-subheader">${elem.legend || 'Layer ' + idx}</h1>
+                  <div class="legend as-body">
+                    <ul class="as-list">
+    				${colorLegendList}
+                    </ul>
+                  </div>
+    			</section>`;
+              document.getElementById('legends').style.display = 'block';
+              // Place list items in the content section of the title/legend box
+              document.getElementById('legends').innerHTML += legend;
+          }
+      });
+ 
+      if (elem.interactivity) {
+        let interactivity = new carto.Interactivity(temp);
+        let tempPopup = new mapboxgl.Popup({
+                  closeButton: false,
+                  closeOnClick: false
+                });
+        if (elem.interactivity.event == 'click') {
+          setPopupsClick(tempPopup, interactivity, elem.interactivity.header);
+        } else if (elem.interactivity.event == 'hover') {
+          setPopupsHover(tempPopup, interactivity, elem.interactivity.header);
+        }
+      }
+    });
+    function setPopupsClick(tempPopup, intera, popupHeader) {
+      intera.off('featureHover', (event) => {
+          updatePopup(tempPopup, event, popupHeader)
+      });
+      intera.on('featureClick', (event) => {
+          updatePopup(tempPopup, event, popupHeader, popupHeader)
+      });
+    }
+    function setPopupsHover(tempPopup, intera, popupHeader) {
+      intera.off('featureClick', (event) => {
+          updatePopup(tempPopup, event, popupHeader)
+      });
+      intera.on('featureHover', (event) => {
+          updatePopup(tempPopup, event, popupHeader)
+      });
+    }
+    function updatePopup(layer_popup, event, popupHeader) {
+      if (event.features.length > 0) {
+        const vars = event.features[0].variables;
+        let popupHTML = popupHeader ? `<h1>${popupHeader}</h1>` : ``;
+        Object.keys(vars).forEach((varName) => {
+            popupHTML += `
+                <h3 class="h3">${varName}</h3>
+                <p class="description open-sans">${vars[varName].value}</p>
+            `;
+        });
+        layer_popup.setLngLat([event.coordinates.lng, event.coordinates.lat])
+             .setHTML(`<div>${popupHTML}</div>`);
+        if (!layer_popup.isOpen()) {
+          layer_popup.addTo(map);
+        }
+      } else {
+        layer_popup.remove();
+      }
+    }
+   </script>
+</body>
+</html>

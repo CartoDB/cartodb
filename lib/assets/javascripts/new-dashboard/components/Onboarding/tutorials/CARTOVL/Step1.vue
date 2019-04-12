@@ -21,6 +21,7 @@ import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartovl.ht
 
 export default {
   name: 'Step1',
+  stepName: 'Intro',
   components: {
     InjectableIframe,
     StepTitle

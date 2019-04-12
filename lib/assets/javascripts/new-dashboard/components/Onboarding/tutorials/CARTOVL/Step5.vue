@@ -37,6 +37,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step5',
+  stepName: 'Add data layer',
   components: {
     CodeBlock,
     StepTitle
@@ -57,7 +58,7 @@ const codeBlock1 =
 })`;
 
 const codeBlock2 =
-`const viz= new carto.Viz();
+`const viz = new carto.Viz();
 const source = new carto.source.Dataset('world_ports')
 const layer = new carto.Layer('layer', source, viz);
 layer.addTo(map);`;

@@ -46,6 +46,7 @@ import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartoframe
 
 export default {
   name: 'Step6',
+  stepName: 'Display map',
   components: {
     CodeBlock,
     StepTitle,
@@ -62,6 +63,8 @@ export default {
 };
 
 const codeBlock1 =
-`from cartoframes import Layer
-cc.map(Layer('brooklyn_poverty', color='poverty_per_pop'))`;
+`from cartoframes.contrib import vector
+vector.vmap([
+  vector.Layer('world_ports', strokeWidth=0.5, strokeColor='black', size=3, color='#0ab96b')
+], context=cc)`;
 </script>

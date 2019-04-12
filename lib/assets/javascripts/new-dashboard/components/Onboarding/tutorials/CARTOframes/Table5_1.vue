@@ -3,18 +3,42 @@
     <thead>
       <tr style="text-align: right;">
         <th></th>
-        <th>commuters_16_over_2011_2015</th>
-        <th>geoid</th>
-        <th>pop_determined_poverty_status_2011_2015</th>
-        <th>poverty_count</th>
-        <th>poverty_per_pop</th>
+        <th>anch_depth</th>
+        <th>carbchmoor</th>
+        <th>cargmdmoor</th>
+        <th>cargo_anch</th>
+        <th>cargodepth</th>
+        <th>cargowharf</th>
+        <th>caricemoor</th>
+        <th>chan_depth</th>
+        <th>chart</th>
+        <th>comm_air</th>
+        <th>...</th>
+        <th>serv_steam</th>
+        <th>shelter</th>
+        <th>sscc_cert</th>
         <th>the_geom</th>
-        <th>total_pop_2011_2015</th>
-        <th>total_population</th>
-        <th>walked_to_work_2011_2015_per_pop</th>
+        <th>tide_range</th>
+        <th>tug_assist</th>
+        <th>tugsalvage</th>
+        <th>turn_basin</th>
+        <th>us_rep</th>
+        <th>water</th>
       </tr>
       <tr>
         <th>cartodb_id</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
         <th></th>
         <th></th>
         <th></th>
@@ -28,64 +52,124 @@
     </thead>
     <tbody>
       <tr>
-        <th>2052</th>
-        <td>NaN</td>
-        <td>360479901000</td>
-        <td>NaN</td>
-        <td>NaN</td>
-        <td>NaN</td>
+        <th>31</th>
+        <td>G</td>
         <td>None</td>
-        <td>NaN</td>
-        <td>0</td>
-        <td>NaN</td>
-      </tr>
-      <tr>
-        <th>1606</th>
-        <td>0.0</td>
-        <td>360470702031</td>
-        <td>0.0</td>
-        <td>NaN</td>
-        <td>NaN</td>
-        <td>0106000020E61000000800000001030000000100000013...</td>
-        <td>0.0</td>
-        <td>0</td>
-        <td>NaN</td>
-      </tr>
-      <tr>
-        <th>1572</th>
-        <td>NaN</td>
-        <td>360470666000</td>
-        <td>NaN</td>
-        <td>NaN</td>
-        <td>NaN</td>
         <td>None</td>
-        <td>NaN</td>
+        <td>Y</td>
+        <td>J</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>J</td>
+        <td>97157</td>
+        <td>None</td>
+        <td>...</td>
+        <td>None</td>
+        <td>G</td>
+        <td>None</td>
+        <td>0101000020E610000077777777777F61405555555555D5...</td>
+        <td>9</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>None</td>
+        <td>N</td>
+        <td>Y</td>
+      </tr>
+      <tr>
+        <th>183</th>
+        <td>M</td>
+        <td>None</td>
+        <td>None</td>
+        <td>Y</td>
+        <td>J</td>
+        <td>None</td>
+        <td>None</td>
+        <td>L</td>
+        <td>95103</td>
+        <td>Y</td>
+        <td>...</td>
+        <td>None</td>
+        <td>G</td>
+        <td>None</td>
+        <td>0101000020E61000002222222222A25F402222222222C2...</td>
+        <td>2</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>Y</td>
+      </tr>
+      <tr>
+        <th>222</th>
+        <td>H</td>
+        <td>None</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>A</td>
+        <td>57080</td>
+        <td>None</td>
+        <td>...</td>
+        <td>None</td>
+        <td>P</td>
+        <td>None</td>
+        <td>0101000020E6100000CDCCCCCCCCCCF0BFCDCCCCCCCCCC...</td>
         <td>0</td>
-        <td>NaN</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
       </tr>
       <tr>
-        <th>17</th>
-        <td>5058.0</td>
-        <td>360470534004</td>
-        <td>23191.0</td>
-        <td>377.0</td>
-        <td>0.406394</td>
-        <td>0106000020E6100000010000000103000000010000000B...</td>
-        <td>21451.0</td>
-        <td>928</td>
-        <td>0.018761</td>
+        <th>410</th>
+        <td>A</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>N</td>
+        <td>None</td>
+        <td>None</td>
+        <td>N</td>
+        <td>19402</td>
+        <td>None</td>
+        <td>...</td>
+        <td>None</td>
+        <td>P</td>
+        <td>None</td>
+        <td>0101000020E61000001111111111C964C0DEDDDDDDDDDD...</td>
+        <td>1</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>Y</td>
       </tr>
       <tr>
-        <th>53</th>
-        <td>4230.0</td>
-        <td>360470593001</td>
-        <td>10804.0</td>
-        <td>117.0</td>
-        <td>0.098598</td>
-        <td>0106000020E6100000010000000103000000010000000E...</td>
-        <td>8116.0</td>
-        <td>1185</td>
-        <td>0.031915</td>
+        <th>715</th>
+        <td>G</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>L</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>N</td>
+        <td>54041</td>
+        <td>Y</td>
+        <td>...</td>
+        <td>None</td>
+        <td>G</td>
+        <td>None</td>
+        <td>0101000020E61000002222222222223140ABAAAAAAAA8A...</td>
+        <td>1</td>
+        <td>Y</td>
+        <td>None</td>
+        <td>None</td>
+        <td>None</td>
+        <td>Y</td>
       </tr>
     </tbody>
   </table>

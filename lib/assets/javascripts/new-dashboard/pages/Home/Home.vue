@@ -74,8 +74,22 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.page--welcome {
-  padding: 64px 0 0;
+.page {
+  &--welcome {
+    padding: 64px 0 0;
+  }
+}
+
+.section {
+  position: relative;
+
+  &--maps {
+    z-index: $z-index__stack-context--first;
+  }
+
+  &--datasets {
+    z-index: $z-index__stack-context--second;
+  }
 }
 
 .tags-section {

@@ -62,6 +62,7 @@ module CartoDB
       def setup_single_user_schema
         set_user_privileges_at_db
         rebuild_quota_trigger
+        create_ghost_tables_event_trigger
       end
 
       # All methods called inside should allow to be executed multiple times without errors
@@ -77,6 +78,7 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+          create_ghost_tables_event_trigger
         end
 
         if @user.organization_admin?
@@ -592,7 +594,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.25.0'
+          cdb_extension_target_version = '0.26.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -917,13 +919,7 @@ module CartoDB
 
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
-
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name))
           # Simulate a controlled environment drop cascade contained to only functions
           failed_sqls = []
           recursivity_level = 0
@@ -953,12 +949,7 @@ module CartoDB
 
           # And now aggregate functions
           failed_sqls = []
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name, aggregated: true))
           drop_function_sqls.each do |sql_sentence|
             begin
               database.run(sql_sentence[:sql])
@@ -986,6 +977,23 @@ module CartoDB
             raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
           end
         end
+      end
+
+      def get_drop_functions_sql(database, schema_name, aggregated: false)
+        pg_version = database.fetch("select current_setting('server_version_num') as version").first[:version].to_i
+
+        if pg_version >= 110000
+          agg_join_clause = "pg_proc.prokind #{aggregated ? ' = ' : ' <> '} 'a'"
+        else
+          agg_join_clause = "pg_proc.proisagg = #{aggregated ? 'TRUE' : 'FALSE'}"
+        end
+
+        drop_type = aggregated ? 'AGGREGATE' : 'FUNCTION'
+
+        %{SELECT 'DROP #{drop_type} "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
+         AS sql
+         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND #{agg_join_clause} )
+         WHERE ns.nspname = '#{schema_name}'}
       end
 
       # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
@@ -1335,6 +1343,23 @@ module CartoDB
         @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
       rescue Sequel::DatabaseError => exception
         raise exception.cause
+      end
+
+      def create_ghost_tables_event_trigger
+        return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        configure_ghost_table_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+      end
+
+      def configure_ghost_table_event_trigger
+        tis_config = Cartodb.config[:invalidation_service]
+        return unless tis_config
+        @user.in_database(as: :superuser)
+             .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
+      end
+
+      def drop_ghost_tables_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
       end
 
       private

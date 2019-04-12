@@ -41,6 +41,7 @@ import DatasetCard from './DatasetCard_21.vue';
 
 export default {
   name: 'Step2',
+  stepName: 'Import your data',
   components: {
     StepTitle,
     DatasetCard

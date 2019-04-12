@@ -65,33 +65,6 @@ database | The name of the database to connect to.
 username | User name used to connect to MySQL.
 password | Password of the user account.
 
-#### Syncing Connections
-
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync_tables/)  for your data.
-
-Param | Description
---- | ---
-interval | The number of seconds for the synchronization period. *Note*: Sync interval must be at least 900 (15 minutes).
-
-**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
-
-```javascript
-{
-  "connector": {
-    "provider": "mysql",
-    "connection": {
-      "server":"myserver.com",
-      "database":"mydatabase",
-      "username":"myusername",
-      "password":"mypassword"
-    },
-    "table": "mytable",
-    "encoding": "iso88591"
-  },
-  "interval": 2592000
-}
-```
-
 #### Connect to a Table
 
 In order to connect to an external MySQL database table, the following rules apply:
@@ -199,8 +172,13 @@ The results indicate if the connection was registered successfully, and includes
 
 #### Syncing a Connection
 
-Both tables and queries can be synchronized periodically by using the `interval` parameter, which
-defines the number of seconds for the synchronization period.
+Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
+
+Param | Description
+--- | ---
+interval | The number of seconds for the synchronization period._Sync interval must be at least 900 (15 minutes)._
+
+**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
 ##### Example
 
@@ -219,6 +197,7 @@ curl -v -H "Content-Type: application/json" -d '{
       "password":"mypassword"
     },
     "table": "mytable",
+    "sql_query": "SELECT * FROM remote_table WHERE value = 1",
     "encoding": "iso88591"
   },
   "interval": 2592000
@@ -358,32 +337,6 @@ require | Only SSL connections are possible.
 prefer  | If the server supports it, SSL is used. Otherwise, a non-SSL connection is used.
 disable | SSL will not be be used under any circumstances.
 
-#### Syncing Connections
-
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
-
-Param | Description
---- | ---
-interval | The number of seconds for the synchronization period. _The Sync interval must be at least 900 (15 minutes)._
-
-**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
-
-```javascript
-{
-  "connector": {
-    "provider": "postgres",
-    "connection": {
-      "server":"pgserver.com",
-      "database":"pgdatabase",
-      "username":"pgusername",
-      "password":"pgpassword"
-    },
-    "table": "pgtable"
-  },
-  "interval": 2592000
-}
-```
-
 #### Connect to a Table
 
 In order to connect to an external PostgreSQL database table, the following rules apply:
@@ -487,8 +440,13 @@ The results indicate if the connection was registered successfully, and includes
 
 #### Syncing a Connection
 
-Both tables and queries can be synchronized periodically by using the `interval` parameter, which
-defines the number of seconds for the synchronization period.
+Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
+
+Param | Description
+--- | ---
+interval | The number of seconds for the synchronization period._Sync interval must be at least 900 (15 minutes)._
+
+**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
 ##### Example
 
@@ -506,7 +464,8 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"pgusername",
       "password":"pgpassword"
     },
-    "table": "pgtable"
+    "table": "pgtable",
+    "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
@@ -636,32 +595,6 @@ database | The name of the database to connect to.
 username | User name used to connect to Microsoft SQL Server.
 password | Password of the user account.
 
-#### Syncing Connections
-
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
-
-Param | Description
---- | ---
-interval | The number of seconds for the synchronization period._Sync interval must be at least 900 (15 minutes)._
-
-**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
-
-```javascript
-{
-  "connector": {
-    "provider": "sqlserver",
-    "connection": {
-      "server":"msserver.com",
-      "database":"msdatabase",
-      "username":"msusername",
-      "password":"mspassword"
-    },
-    "table": "mstable"
-  },
-  "interval": 2592000
-}
-```
-
 #### Connect to a Table
 
 In order to connect to an external Microsoft SQL Server database table, the following rules apply:
@@ -765,7 +698,13 @@ The results indicate if the connection was registered successfully, and includes
 
 #### Syncing a Connection
 
-Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period.
+Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
+
+Param | Description
+--- | ---
+interval | The number of seconds for the synchronization period._Sync interval must be at least 900 (15 minutes)._
+
+**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
 ##### Example
 
@@ -783,7 +722,8 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"msusername",
       "password":"mspassword"
     },
-    "table": "mstable"
+    "table": "mstable",
+    "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"
@@ -915,32 +855,6 @@ database | The name of the database to connect to.
 username | User name used to connect to Hive.
 password | Password of the user account.
 
-#### Syncing Connections
-
-If your CARTO plan includes Sync Tables, you can create a sync table from a database connector by applying the `interval` parameter, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
-
-Param | Description
---- | ---
-interval | The number of seconds for the synchronization period. _Sync interval must be at least 900 (15 minutes)._
-
-**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
-
-```javascript
-{
-  "connector": {
-    "provider": "hive",
-    "connection": {
-      "server":"hs2server.com",
-      "database":"hs2database",
-      "username":"hs2username",
-      "password":"hs2password"
-    },
-    "table": "hs2table"
-  },
-  "interval": 2592000
-}
-```
-
 #### Connect to a Table
 
 In order to connect to an external Hive database table, the following rules apply:
@@ -1044,7 +958,13 @@ The results indicate if the connection was registered successfully, and includes
 
 #### Syncing a Connection
 
-Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period.
+Both tables and queries can be synchronized periodically by using the `interval` parameter, which defines the number of seconds for the synchronization period, similar to how you would use other [Sync Tables]({{site.importapi_docs}}/guides/sync-tables/) for your data.
+
+Param | Description
+--- | ---
+interval | The number of seconds for the synchronization period._Sync interval must be at least 900 (15 minutes)._
+
+**Note:** The the `interval` parameter is **not** within the `connector` attributes, it appears as a separate parameter:
 
 ##### Example
 
@@ -1062,7 +982,8 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"hs2username",
       "password":"hs2password"
     },
-    "table": "hs2table"
+    "table": "hs2table",
+    "sql_query": "SELECT * FROM remote_table WHERE value = 1"
   },
   "interval": 2592000
 }' "https://{username}.carto.com/api/v1/synchronizations/?api_key={API_KEY}"

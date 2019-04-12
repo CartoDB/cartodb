@@ -25,6 +25,7 @@
       </li>
       <li class="u-mt--24">
         <p v-html="$t(`Wizards.builder.step4.howto.instruction4`)" class="text is-caption u-inline"></p>
+        <img class="u-width--100 u-mt--16" src="../../../../assets/images/onboarding/builder_step4b@2x.png" alt="Screenshot styled map in builder">
       </li>
     </ol>
 
@@ -42,6 +43,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step4',
+  stepName: 'Create a map',
   components: {
     StepTitle
   }

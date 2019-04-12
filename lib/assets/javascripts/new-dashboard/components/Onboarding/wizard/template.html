@@ -1,4 +1,4 @@
-<Modal :name="name" :isOpen="isModalOpen" @closeModal="closeModal">
+<Modal :name="wizardName" :isOpen="isModalOpen" @closeModal="closeModal">
   <div ref="wizard" class="wizard">
     <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
 

@@ -16,7 +16,7 @@ export default {
   methods: {
     setContent () {
       const docIframe = this.$refs.iframe.contentWindow.document;
-      docIframe.open();
+      docIframe.open('text/html', 'replace');
       docIframe.write(this.content);
       docIframe.close();
     }

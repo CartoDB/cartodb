@@ -70,8 +70,8 @@ module.exports = {
         to: `./unversioned/images/google-maps-basemap-icon`,
         toType: 'dir'
       }, {
-        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/wizards'),
-        to: `./unversioned/wizards/`,
+        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+        to: `./unversioned/onboarding/`,
         toType: 'dir'
       }
     ]),

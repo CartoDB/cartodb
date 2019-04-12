@@ -4,8 +4,8 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <WizardDistributor v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></WizardDistributor>
-        <a class="button"
+        <OnboardingButton :isFirstTimeViewingDashboard="true"></OnboardingButton>
+        <a class="button button--border"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
           {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
@@ -17,13 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
-import WizardDistributor from 'new-dashboard/components/Wizard/Distributor.vue';
+import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
     CreateButton,
-    WizardDistributor
+    OnboardingButton
   },
   props: {
     name: String,
@@ -86,7 +86,7 @@ export default {
     justify-content: center;
   }
 
-  .button {
+  .button.button--border {
     border: 1px solid $white;
     background: none;
     color: $white;

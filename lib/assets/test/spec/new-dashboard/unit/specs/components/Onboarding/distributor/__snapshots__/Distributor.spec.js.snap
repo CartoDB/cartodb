@@ -1,0 +1,73 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Distributor.vue should render engine warning for no engine users 1`] = `
+<section class="onboarding-welcome">
+  <modal-stub name="onboarding-welcome" isopen="true">
+    <div class="distributor">
+      <div class="header">
+        <div class="container">
+          Wizards.Distributor.headerTitle
+        </div>
+      </div>
+      <div class="container u-pt--36">
+        <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">
+          Wizards.Distributor.title
+        </h1>
+        <div class="grid u-flex__justify--between">
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.cartovl.title" text="Wizards.cartovl.subtitle" tags="Wizards.cartovl.tags" iconmodifier="map"></selector-stub>
+            <warning-stub></warning-stub>
+          </div>
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.cartoframes.title" text="Wizards.cartoframes.subtitle" tags="Wizards.cartoframes.tags" iconmodifier="notebook"></selector-stub>
+            <warning-stub></warning-stub>
+          </div>
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.builder.title" text="Wizards.builder.subtitle" tags="Wizards.builder.tags" iconmodifier="window"></selector-stub>
+          </div>
+        </div>
+        <p class="grid-cell u-mt--48 is-small">Wizards.Distributor.feedback.text
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank">
+            Wizards.Distributor.feedback.link</a></p>
+      </div>
+    </div>
+  </modal-stub>
+  <router-view name="onboarding"></router-view>
+</section>
+`;
+
+exports[`Distributor.vue should render properly 1`] = `
+<section class="onboarding-welcome">
+  <modal-stub name="onboarding-welcome" isopen="true">
+    <div class="distributor">
+      <div class="header">
+        <div class="container">
+          Wizards.Distributor.headerTitle
+        </div>
+      </div>
+      <div class="container u-pt--36">
+        <h1 class="u-pr--10 u-pl--10 u-mb--40 title is-body is-semibold">
+          Wizards.Distributor.title
+        </h1>
+        <div class="grid u-flex__justify--between">
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.cartovl.title" text="Wizards.cartovl.subtitle" tags="Wizards.cartovl.tags" iconmodifier="map"></selector-stub>
+            <!---->
+          </div>
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.cartoframes.title" text="Wizards.cartoframes.subtitle" tags="Wizards.cartoframes.tags" iconmodifier="notebook"></selector-stub>
+            <!---->
+          </div>
+          <div class="grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <selector-stub title="Wizards.builder.title" text="Wizards.builder.subtitle" tags="Wizards.builder.tags" iconmodifier="window"></selector-stub>
+          </div>
+        </div>
+        <p class="grid-cell u-mt--48 is-small">Wizards.Distributor.feedback.text
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank">
+            Wizards.Distributor.feedback.link</a></p>
+      </div>
+    </div>
+  </modal-stub>
+  <router-view name="onboarding"></router-view>
+</section>
+`;

@@ -136,7 +136,7 @@
     "billing_period":"2018-11-18",
     "api_key":"0c1b365ec8b1ceca28c7c6b9e990b4a577404a19",
     "layers":[
-  
+
     ],
     "trial_ends_at":null,
     "upgraded_at":null,
@@ -164,7 +164,6 @@
     "notification":null,
     "avatar_url":"/assets/unversioned/images/avatars/avatar_ghost_green.png",
     "feature_flags":[
-      "new-dashboard-feature",
       "new_dashboard",
       "new_public_dashboard",
       "new_public_dashboard_global"
@@ -179,10 +178,10 @@
     "location":null,
     "mfa_configured":false,
     "groups":[
-  
+
     ],
     "organizationNotifications":[
-  
+
     ]
   }
 ]

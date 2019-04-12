@@ -1,7 +1,7 @@
 //colors
 $primary-color: #047AE6;
 $primary-color--soft: #B5D1F2;
-$primary-color--dark: #1074b5;
+$primary-color--dark: #1074B5;
 $premium-color: #F90;
 $white: #FFF;
 $text-color: #2E3C43;
@@ -47,3 +47,14 @@ $onboarding__bg-color: #F9F9F9;
 $onboarding-tags__border-color: #34444C;
 $onboarding-congrats__height: 445px;
 $onboarding-congrats__bg-color: rgba(203, 228, 255, 0.3);
+$z-index__dialog: 1000;
+$z-index__navbar: 5;
+$z-index__subheader: 4;
+$z-index__dropdown: 3;
+$z-index__sticky: 2;
+$z-index__local-dropdown: 1;
+
+// Variables to create different stacking context
+// Used in pages where you have Maps and Dataset Lists
+$z-index__stack-context--first: 2;
+$z-index__stack-context--second: 1;

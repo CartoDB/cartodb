@@ -23,7 +23,6 @@ class Admin::UsersController < Admin::AdminController
     if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
       @payments_url = @user.plan_url(request.protocol)
-      @has_new_dashboard = check_new_dashboard
       render locals: { breadcrumb: false }
     else
       render_404
@@ -34,9 +33,5 @@ class Admin::UsersController < Admin::AdminController
 
   def setup_user
     @user = current_user
-  end
-
-  def check_new_dashboard
-    current_user.builder_enabled? && current_user.has_feature_flag?('new-dashboard-feature')
   end
 end

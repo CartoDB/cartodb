@@ -146,6 +146,14 @@ module Carto
         }
       end
 
+      def to_search_preview_poro
+        {
+          type: @visualization.type,
+          name: @visualization.name,
+          url: url
+        }
+      end
+
       # Ideally this should go at a lower level, as relates to url generation, but at least centralize logic here
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')

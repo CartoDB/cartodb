@@ -35,7 +35,7 @@ export default {
 .dropdown {
   visibility: hidden;
   position: absolute;
-  z-index: 2;
+  z-index: $z-index__dropdown;
   right: 0;
   width: 316px;
   margin-top: 8px;

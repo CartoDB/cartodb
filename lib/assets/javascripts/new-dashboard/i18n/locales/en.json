@@ -556,7 +556,7 @@
             "rows": "3,669 rows",
             "size": "708 kB",
             "button": "Download",
-            "link": "https://public.carto.com/api/v2/sql?q=select%20*%20from%20public.world_ports&format=csv"
+            "link": "https://public.carto.com/api/v2/sql?q=select%20*%20from%20public.world_ports&format=csv&filename=world_ports"
           }
         }
       },

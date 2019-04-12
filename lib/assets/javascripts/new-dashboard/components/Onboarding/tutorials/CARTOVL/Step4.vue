@@ -14,7 +14,7 @@
     </StepTitle>
     <ol class="u-list__style--decimal u-list__position--inside">
       <li>
-        <p v-html="$t(`Wizards.cartovl.step4.howto.instruction1`)" class="text is-caption u-inlineflex"></p>
+        <p v-html="$t(`Wizards.cartovl.step4.howto.instruction1`)" class="text is-caption u-inline"></p>
         <CodeBlock :code="codeBlock1" language="htmlmixed"></CodeBlock>
       </li>
     </ol>

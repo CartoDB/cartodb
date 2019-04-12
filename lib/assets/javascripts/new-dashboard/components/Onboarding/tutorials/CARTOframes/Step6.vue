@@ -46,6 +46,7 @@ import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartoframe
 
 export default {
   name: 'Step6',
+  stepName: 'Display map',
   components: {
     CodeBlock,
     StepTitle,

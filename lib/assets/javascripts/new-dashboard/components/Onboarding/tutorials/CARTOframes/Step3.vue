@@ -43,6 +43,7 @@ import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 
 export default {
   name: 'Step3',
+  stepName: 'Connect to CARTO',
   components: {
     CodeBlock,
     StepTitle,

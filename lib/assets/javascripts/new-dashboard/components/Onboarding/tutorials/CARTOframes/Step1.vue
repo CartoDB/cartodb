@@ -17,6 +17,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step1',
+  stepName: 'Intro',
   components: {
     StepTitle
   }

@@ -38,6 +38,7 @@ import Table1 from 'new-dashboard/components/Onboarding/tutorials/CARTOframes/Ta
 
 export default {
   name: 'Step5',
+  stepName: 'Add data layer',
   components: {
     CodeBlock,
     StepTitle,

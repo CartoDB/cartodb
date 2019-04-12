@@ -42,6 +42,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step5',
+  stepName: 'Publish your map',
   components: {
     StepTitle
   }

@@ -33,6 +33,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 
 export default {
   name: 'Step6',
+  stepName: 'Style features',
   components: {
     CodeBlock,
     StepTitle

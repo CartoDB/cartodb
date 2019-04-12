@@ -1,10 +1,11 @@
-<Modal name="wizardCARTOVL" :isOpen="isModalOpen" @closeModal="closeModal">
+<Modal :name="wizardName" :isOpen="isModalOpen" @closeModal="closeModal">
   <div ref="wizard" class="wizard">
     <Header :stepNames="stepNames" :currentStep="step" @goToStep="goToStep"></Header>
 
     <template v-for="step in totalStepCount">
       <Step
         v-if="isCurrentStep(step)"
+        :class="getStepGTMString(step)"
         :stepNum="step"
         :key="step"
         :fullWidth="step === stepNames.length">

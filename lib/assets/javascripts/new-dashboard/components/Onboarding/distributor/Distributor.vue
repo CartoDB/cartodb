@@ -1,7 +1,7 @@
 <template>
   <section class="onboarding-welcome">
     <Modal name="onboarding-welcome" :isOpen="true" @closeModal="closeModal">
-      <div class="distributor">
+      <div class="distributor gtm-onboarding">
         <div class="header">
           <div class="container">
             {{ $t('Wizards.Distributor.headerTitle') }}

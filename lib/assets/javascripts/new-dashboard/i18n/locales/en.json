@@ -378,7 +378,7 @@
           "instruction1":"Add the following script below your <code>&lt;div&gt;</code> container to load CARTO's Voyager basemap centered on the world at zoom level 2."
         },
         "extras": {
-          "resource1": "CARTO VL relies on <a href='https://docs.mapbox.com/mapbox-gl-js/api/to' target='_blank'>Mapbox GL</a> render basemaps. Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
+          "resource1": "CARTO VL relies on <a href='https://docs.mapbox.com/mapbox-gl-js/api/' target='_blank'>Mapbox GL</a> render basemaps. Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
         }
       },
       "step5": {

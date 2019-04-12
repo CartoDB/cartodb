@@ -1,13 +1,13 @@
 <template>
   <div class="footer">
     <div class="container u-flex u-flex__justify--end">
-      <button class="button button--ghost" v-if="showPrevButton" @click="prev">
+      <button class="button button--ghost js-prev" v-if="showPrevButton" @click="prev">
         {{ $t('Wizards.footer.back') }}
       </button>
-      <button class="button is-primary" v-if="showNextButton" @click="next">
+      <button class="button is-primary js-next" v-if="showNextButton" @click="next">
         {{ $t('Wizards.footer.next', { nextStep: this.stepNames[this.currentStep] }) }}
       </button>
-      <button class="button is-primary" v-if="!showNextButton" @click="goToDashboard">
+      <button class="button is-primary js-goToDashboard" v-if="!showNextButton" @click="goToDashboard">
         {{ $t('Wizards.footer.goToDashboard') }}
       </button>
     </div>
@@ -19,7 +19,10 @@ export default {
   name: 'Footer',
   props: {
     stepNames: Array,
-    currentStep: Number
+    currentStep: {
+      type: Number,
+      default: 1
+    }
   },
   computed: {
     maxSteps () {

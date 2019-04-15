@@ -1,7 +1,7 @@
 <template>
   <div class="warning">
     <span class="text is-small">
-      {{$t(`Wizards.Distributor.engineWarning.text`)}} <a class="warning__link" :href="$t(`Wizards.Distributor.engineWarning.link`)">{{$t(`Wizards.Distributor.engineWarning.linkText`)}}</a>
+      {{$t(`Wizards.Distributor.engineWarning.text`)}} <a target="_blank" class="warning__link" :href="$t(`Wizards.Distributor.engineWarning.link`)">{{$t(`Wizards.Distributor.engineWarning.linkText`)}}</a>
     </span>
   </div>
 </template>

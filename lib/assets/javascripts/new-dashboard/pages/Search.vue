@@ -73,6 +73,37 @@
               :numPages=datasetsNumPages
               @pageChange="page => onPageChange('datasets', page)"></Pagination>
         </section>
+
+        <section class="section section--tags" ref="tags">
+          <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.tags') }}</div>
+            <div class="js-grid__head--sticky">
+              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasTags">
+                <TagListHeader></TagListHeader>
+              </div>
+
+              <ul class="grid-cell grid-cell--col12" v-if="!isFetchingTags">
+                <li v-for="(tag, n) in tags" :key="n" class="search-item">
+                  <CondensedTagCard :tag=tag></CondensedTagCard>
+                </li>
+
+                <div class="is-caption text" v-if="!hasTags">
+                  {{ $t('SearchPage.emptyText.tags') }}
+                </div>
+              </ul>
+
+              <ul class="grid-cell grid-cell--col12" v-if="isFetchingTags">
+                <li v-for="n in 6" :key="n" class="search-item">
+                  <DatasetCardFake></DatasetCardFake>
+                </li>
+              </ul>
+            </div>
+            <Pagination
+              class="pagination-element"
+              v-if="hasTags && tagsNumPages > 1"
+              :page=tagsPage
+              :numPages=tagsNumPages
+              @pageChange="page => onPageChange('tags', page)"></Pagination>
+        </section>
       </div>
     </div>
 
@@ -87,6 +118,8 @@ import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
+import CondensedTagCard from 'new-dashboard/components/Tag/CondensedTagCard';
+import TagListHeader from '../components/Tag/TagListHeader';
 import Pagination from 'new-dashboard/components/Pagination';
 import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
 import { mapState } from 'vuex';
@@ -97,13 +130,15 @@ export default {
   name: 'SearchPage',
   components: {
     CondensedMapHeader,
+    CondensedTagCard,
     DatasetCard,
     DatasetCardFake,
     DatasetListHeader,
     MapCard,
     MapCardFake,
     Pagination,
-    StickySubheader
+    StickySubheader,
+    TagListHeader
   },
   beforeRouteUpdate (to, from, next) {
     this.$store.dispatch('search/resetState');
@@ -132,13 +167,22 @@ export default {
       datasetsPage: state => state.search.datasets.page,
       datasetsNumPages: state => state.search.datasets.numPages,
       isFetchingDatasets: state => state.search.datasets.isFetching,
-      totalResults: state => state.search.maps.numResults + state.search.datasets.numResults
+      tags: state => state.search.tags.results,
+      tagsPage: state => state.search.tags.page,
+      tagsNumPages: state => state.search.tags.numPages,
+      isFetchingTags: state => state.search.tags.isFetching,
+      totalResults: state => state.search.maps.numResults +
+                             state.search.datasets.numResults +
+                             state.search.tags.numResults
     }),
     hasMaps () {
       return Object.keys(this.maps || {}).length;
     },
     hasDatasets () {
       return Object.keys(this.datasets || {}).length;
+    },
+    hasTags () {
+      return (this.tags || []).length;
     },
     allSectionsFetching () {
       return this.isFetchingMaps || this.isFetchingDatasets;

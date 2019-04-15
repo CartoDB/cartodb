@@ -58,22 +58,22 @@ export default {
     onFormSubmit () {
       this.blurInput();
 
-      if (this.searchTerm.includes(':')) {
-        this.goToSearchTermPage();
-      } else if (this.searchTerm) {
+      if (this.searchTerm.includes('#')) {
         this.goToSearchTagPage();
+      } else if (this.searchTerm) {
+        this.goToSearchTermPage();
       }
 
       this.searchTerm = '';
     },
-    goToSearchTermPage () {
+    goToSearchTagPage () {
       if (this.$router) {
         this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
       } else {
         window.location.href = `${this.baseUrl}/dashboard/search/tag/${this.searchTerm.substring(1)}`;
       }
     },
-    goToSearchTagPage () {
+    goToSearchTermPage () {
       if (this.$router) {
         this.$router.push({ name: 'search', params: { query: this.searchTerm } });
       } else {

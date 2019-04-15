@@ -9,7 +9,7 @@
           :staticRoute="`/dashboard/search/${query}`"
           v-if="query"
           @click.native="onPageChange">
-          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
+          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_count }} results</span>
         </router-link>
       </li>
       <li v-for="(result, index) in searchResults.result" :key="result.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     isSearchingTags () {
-      return this.query.includes(':');
+      return this.query.includes('#');
     },
     searchRoute () {
       if (this.isSearchingTags) {
@@ -102,7 +102,7 @@ export default {
         return;
       }
 
-      this.client.previewSearch(this.query,
+      this.client.previewSearch(this.query.replace('#',''),
 
         (err, _, data) => {
           this.isFetching = false;
@@ -110,7 +110,7 @@ export default {
           if (err) {
             return;
           }
-
+          debugger;
           this.searchResults = data;
         }
       );

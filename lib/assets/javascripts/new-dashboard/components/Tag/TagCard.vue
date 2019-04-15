@@ -87,14 +87,14 @@ export default {
 .tag__count--maps {
   &::before {
     width: 15px;
-    background-image: url('../assets/icons/sections/tags/map.svg');
+    background-image: url('../../assets/icons/sections/tags/map.svg');
   }
 }
 
 .tag__count--datasets {
   &::before {
     width: 14px;
-    background-image: url('../assets/icons/sections/tags/datasets.svg');
+    background-image: url('../../assets/icons/sections/tags/datasets.svg');
   }
 }
 </style>

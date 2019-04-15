@@ -145,6 +145,11 @@
     "usage": "Usage",
     "privacy": "Privacy"
   },
+  "TagListHeader": {
+    "name": "Name",
+    "maps": "Maps",
+    "datasets": "Datasets"
+  },
   "UserDropdown": {
     "settings": "Settings",
     "organizationSettings": "Your organization",

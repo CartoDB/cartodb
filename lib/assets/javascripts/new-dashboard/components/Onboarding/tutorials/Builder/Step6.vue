@@ -6,7 +6,7 @@
       <img svg-inline src="../../../../assets/icons/onboarding/congrats.svg" alt="">
       <h2 class="title is-body u-mb--16 u-mt--24 ">{{ $t(`Wizards.builder.step6.congrats.title`) }}</h2>
       <p v-html="$t(`Wizards.builder.step6.congrats.message1`)" class="text is-caption"></p>
-      <p v-html="$t(`Wizards.builder.step6.congrats.message2`)" class="text is-caption"></p>
+      <p v-html="$t(`Wizards.builder.step6.congrats.message2`, { url: downloadUrl })" class="text is-caption"></p>
     </div>
   </div>
   <div class="container u-mt--64 u-pb--80">
@@ -32,6 +32,7 @@
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import TutorialCard from 'new-dashboard/components/Onboarding/components/TutorialCard.vue';
 import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vue';
+import { getAssetsBaseUrl } from 'new-dashboard/utils/assets-version'
 
 export default {
   name: 'Step6',
@@ -40,6 +41,11 @@ export default {
     StepTitle,
     TutorialCard,
     Confetti
+  },
+  data () {
+    return {
+      downloadUrl: getAssetsBaseUrl() + 'unversioned/onboarding/Myfirstmap.carto'
+    }
   }
 };
 </script>

@@ -404,7 +404,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first map with CARTO VL!",
-          "message2": "<a download href='/assets/unversioned/onboarding/cartovl.zip'>Download</a> the full code example."
+          "message2": "<a href='{url}'>Download</a> the full code example."
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
@@ -496,7 +496,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
-          "message2": "Download the full example <a download href='/assets/unversioned/onboarding/cartoframes.ipynb'>here</a>"
+          "message2": "Download the full example <a href='{url}'>here</a>"
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
@@ -606,7 +606,7 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first web map using Builder",
-          "message2": "Download the full example <a download href='/assets/unversioned/onboarding/Myfirstmap.carto'>here</a>"
+          "message2": "Download the full example <a href='{url}'>here</a>"
         },
         "extras": {
           "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/' target='_blank'>Help Center</a>."

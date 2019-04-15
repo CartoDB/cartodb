@@ -1,7 +1,7 @@
 <template>
   <div class="datasetcard u-width--100">
     <div class="u-flex u-flex__align--center">
-      <img class="icon u-hideMobile" svg-inline src="../../../../assets/icons/datasets/data-types/dots.svg" alt="Icon for dots type dataset">
+      <div class="datasetcard-icon"></div>
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis" title="Populated places simple">{{content.title}}</h3>
       </div>
@@ -33,13 +33,16 @@ export default {
   padding: 0 16px;
   background-color: $white;
 
-  .icon {
-    width: 100%;
-    height: 100%;
+  .datasetcard-icon {
+    width: 36px;
+    height: 36px;
     margin-right: 16px;
-    padding: 8px;
     border-radius: 2px;
-    background-color: $softblue;
+    background-color: #F2F6F9;
+    background-image: url(/assets/1.0.0-assets.dashboard-onboarding-11/images/dots.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18px;
   }
 }
 </style>

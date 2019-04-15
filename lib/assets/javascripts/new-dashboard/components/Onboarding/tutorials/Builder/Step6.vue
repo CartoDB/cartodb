@@ -32,7 +32,7 @@
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import TutorialCard from 'new-dashboard/components/Onboarding/components/TutorialCard.vue';
 import Confetti from 'new-dashboard/components/Onboarding/components/Confetti.vue';
-import { getAssetsBaseUrl } from 'new-dashboard/utils/assets-version'
+import { getAssetsBaseUrl } from 'new-dashboard/utils/assets-version';
 
 export default {
   name: 'Step6',
@@ -45,7 +45,7 @@ export default {
   data () {
     return {
       downloadUrl: getAssetsBaseUrl() + 'unversioned/onboarding/Myfirstmap.carto'
-    }
+    };
   }
 };
 </script>

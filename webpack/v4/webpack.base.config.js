@@ -262,6 +262,14 @@ module.exports = {
             loader: 'vue-svg-inline-loader'
           }
         ]
+      },
+      {
+        test: /\.html$/,
+        use: 'raw-loader',
+        include: [
+          rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+          rootDir('lib/assets/javascripts/new-dashboard/components/Onboarding/wizard')
+        ]
       }
     ]
   },

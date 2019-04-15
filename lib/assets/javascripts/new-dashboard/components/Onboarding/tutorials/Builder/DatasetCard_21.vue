@@ -5,11 +5,11 @@
       <div class="title-container">
         <h3 class="text is-caption is-txtGrey u-ellipsis" title="Populated places simple">{{content.title}}</h3>
       </div>
-   </div>
-   <div class="u-flex u-flex__align--center">
-        <span class="text is-small is-txtSoftGrey u-mr--24" title="7,322 rows">{{content.rows}}</span>
-        <span class="text is-small is-txtSoftGrey u-mr--48">{{content.size}}</span>
-        <a download :href="content.link" class="button button--ghost button--outline">{{content.button}}</a>
+    </div>
+    <div class="u-flex u-flex__align--center">
+      <span class="text is-small is-txtSoftGrey u-mr--24" :title="content.rows">{{content.rows}}</span>
+      <span class="text is-small is-txtSoftGrey u-mr--48">{{content.size}}</span>
+      <a download :href="content.link" class="button button--ghost button--outline">{{content.button}}</a>
     </div>
   </div>
 </template>

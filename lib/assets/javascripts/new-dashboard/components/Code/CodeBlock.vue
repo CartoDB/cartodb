@@ -56,7 +56,7 @@ export default {
   },
   watch: {
     code () {
-      this.codemirror.setValue(this.code);
+      this.codemirror && this.codemirror.setValue(this.code);
     }
   }
 };
@@ -67,7 +67,3 @@ const defaultOptions = {
 };
 
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-</style>

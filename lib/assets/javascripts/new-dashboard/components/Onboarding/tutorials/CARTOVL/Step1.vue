@@ -17,7 +17,7 @@
 <script>
 import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
-import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartovl.html';
+import map from 'new-dashboard/assets/resources/onboarding/cartovl.html';
 
 export default {
   name: 'Step1',

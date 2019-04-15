@@ -5,7 +5,7 @@
 <script>
 import { createWizard } from '../wizard/createWizard';
 
-// CARTO VL Wizard
+// Wizards
 import CARTOVLWizard from '../tutorials/CARTOVL';
 import CARTOframesWizard from '../tutorials/CARTOframes';
 import BuilderWizard from '../tutorials/Builder';

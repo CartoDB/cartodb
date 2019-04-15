@@ -42,7 +42,7 @@ import StepTitle from 'new-dashboard/components/Onboarding/components/StepTitle.
 import Jupyter from 'new-dashboard/components/Code/Jupyter.vue';
 import JupyterBlock from 'new-dashboard/components/Code/JupyterBlock.vue';
 import InjectableIframe from 'new-dashboard/components/InjectableIframe';
-import map from 'raw-loader!new-dashboard/assets/resources/onboarding/cartoframes_step5.html';
+import map from 'new-dashboard/assets/resources/onboarding/cartoframes_step5.html';
 
 export default {
   name: 'Step6',

@@ -49,7 +49,7 @@ export default {
 
 .jupyter-in {
   .jupyter-title {
-    color: $juypiter__text--in;
+    color: $jupyter__text--in;
   }
 
   .CodeMirror {
@@ -60,7 +60,7 @@ export default {
 
 .jupyter-out {
   .jupyter-title {
-    color: $juypiter__text--out;
+    color: $jupyter__text--out;
   }
 }
 

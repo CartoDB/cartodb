@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TutorialCard.vue should not render the button in the card if button text is missing 1`] = `
+<div class="u-flex card-container">
+  <div class="u-flex u-ml--24  u-flex__direction--column u-flex__justify--between u-flex__grow--1">
+    <div class="u-flex u-flex__direction--column">
+      <h3 class="title is-caption u-mb--8">Fake tutorial title</h3>
+      <p class="text is-caption u-mb--8">Fake tutorial subtitle</p>
+    </div>
+    <!---->
+  </div>
+</div>
+`;
+
+exports[`TutorialCard.vue should render properly 1`] = `
+<div class="u-flex card-container">
+  <div class="u-flex u-ml--24  u-flex__direction--column u-flex__justify--between u-flex__grow--1">
+    <div class="u-flex u-flex__direction--column">
+      <h3 class="title is-caption u-mb--8">Fake tutorial title</h3>
+      <p class="text is-caption u-mb--8">Fake tutorial subtitle</p>
+    </div>
+    <div class="u-flex u-flex__justify--end"><a href="www.fakelink.com" target="_blank" class="button button--ghost button--outline">
+        Fake tutorial button
+      </a></div>
+  </div>
+</div>
+`;

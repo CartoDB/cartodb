@@ -6,7 +6,6 @@ Development
   suitable random key by using `bundle exec rake secret`
 
 ### Features
-
 - Visualizations backup revamp [#14698](https://github.com/CartoDB/cartodb/issues/14698)
   - Remove `VisualizationsExportService` [#14744](https://github.com/CartoDB/cartodb/pull/14744)
   - `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
@@ -17,6 +16,7 @@ Development
 - Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
 - Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
+- Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -52,6 +52,7 @@ Development
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
 - Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
 - Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
+- Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
 
 4.26.0 (2019-03-11)
 -------------------

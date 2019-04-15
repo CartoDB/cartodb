@@ -26,7 +26,6 @@
       </li>
     </ol>
 
-
     <StepTitle :title="$t(`Wizards.cartoframes.sections.extras`)" class="u-mt--64">
       <template slot="icon">
           <img svg-inline src="../../../../assets/icons/onboarding/extras.svg"/>

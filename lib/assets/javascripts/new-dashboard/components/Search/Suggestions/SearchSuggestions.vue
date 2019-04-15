@@ -110,7 +110,6 @@ export default {
           if (err) {
             return;
           }
-          debugger;
           this.searchResults = data;
         }
       );

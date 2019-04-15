@@ -55,7 +55,7 @@
                   <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
                 </li>
 
-                <div class="is-caption text" v-if="!hasDatasets">
+                <div class="is-caption text data--empty" v-if="!hasDatasets">
                   {{ $t('SearchPage.emptyText.datasets') }}
                 </div>
               </ul>
@@ -76,33 +76,28 @@
 
         <section class="section section--tags" ref="tags">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.tags') }}</div>
-            <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasTags">
-                <TagListHeader></TagListHeader>
-              </div>
-
-              <ul class="grid-cell grid-cell--col12" v-if="!isFetchingTags">
-                <li v-for="(tag, n) in tags" :key="n" class="search-item">
-                  <TagCard :tag=tag :condensed="true"></TagCard>
-                </li>
-
+            <ul class="grid" v-if="!isFetchingTags">
+              <li v-for="(tag, n) in tags" :key="n" class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+               <TagCard :tag=tag :condensed="true"></TagCard>
+              </li>
+               <li class="grid-cell">
                 <div class="is-caption text" v-if="!hasTags">
                   {{ $t('SearchPage.emptyText.tags') }}
                 </div>
-              </ul>
+              </li>
+            </ul>
 
-              <ul class="grid-cell grid-cell--col12" v-if="isFetchingTags">
-                <li v-for="n in 6" :key="n" class="search-item">
-                  <DatasetCardFake></DatasetCardFake>
-                </li>
-              </ul>
-            </div>
-            <Pagination
-              class="pagination-element"
-              v-if="hasTags && tagsNumPages > 1"
-              :page=tagsPage
-              :numPages=tagsNumPages
-              @pageChange="page => onPageChange('tags', page)"></Pagination>
+            <ul class="grid" v-if="isFetchingTags">
+              <li v-for="n in 6" :key="n" class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+                <FakeTagCard></FakeTagCard>
+              </li>
+            </ul>
+          <Pagination
+            class="pagination-element"
+            v-if="hasTags && tagsNumPages > 1"
+            :page=tagsPage
+            :numPages=tagsNumPages
+            @pageChange="page => onPageChange('tags', page)"></Pagination>
         </section>
       </div>
     </div>
@@ -119,7 +114,7 @@ import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
 import TagCard from 'new-dashboard/components/Tag/TagCard';
-import TagListHeader from '../components/Tag/TagListHeader';
+import FakeTagCard from 'new-dashboard/components/Tag/FakeTagCard';
 import Pagination from 'new-dashboard/components/Pagination';
 import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
 import { mapState } from 'vuex';
@@ -138,7 +133,7 @@ export default {
     Pagination,
     StickySubheader,
     TagCard,
-    TagListHeader
+    FakeTagCard
   },
   beforeRouteUpdate (to, from, next) {
     this.$store.dispatch('search/resetState');
@@ -185,7 +180,7 @@ export default {
       return (this.tags || []).length;
     },
     allSectionsFetching () {
-      return this.isFetchingMaps || this.isFetchingDatasets;
+      return this.isFetchingMaps || this.isFetchingDatasets || this.isFetchingTags;
     }
   },
   methods: {
@@ -238,6 +233,14 @@ export default {
     z-index: $z-index__stack-context--second;
   }
 
+  &--tags {
+    z-index: $z-index__stack-context--third;
+
+    .search-item--tag {
+      margin-bottom: 24px;
+    }
+  }
+
   &.has-pagination,
   &:last-child {
     margin-bottom: 48px;
@@ -287,7 +290,8 @@ export default {
   }
 }
 
-.maps--empty {
-  margin-bottom: 128px;
+.maps--empty,
+.data--empty {
+  margin-bottom: 64px;
 }
 </style>

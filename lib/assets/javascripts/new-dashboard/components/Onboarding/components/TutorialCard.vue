@@ -8,7 +8,7 @@
         <p class="text is-caption u-mb--8">{{content.subtitle}}</p>
       </div>
 
-      <div class="u-flex u-flex__justify--end">
+      <div v-if="content.link && content.button" class="u-flex u-flex__justify--end">
         <a :href="content.link" target="_blank" class="button button--ghost button--outline">
           {{content.button}}
         </a>

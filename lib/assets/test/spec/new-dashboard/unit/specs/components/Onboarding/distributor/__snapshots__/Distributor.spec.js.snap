@@ -3,7 +3,7 @@
 exports[`Distributor.vue should render engine warning for no engine users 1`] = `
 <section class="onboarding-welcome">
   <modal-stub name="onboarding-welcome" isopen="true">
-    <div class="distributor">
+    <div class="distributor gtm-onboarding">
       <div class="header">
         <div class="container">
           Wizards.Distributor.headerTitle
@@ -39,7 +39,7 @@ exports[`Distributor.vue should render engine warning for no engine users 1`] = 
 exports[`Distributor.vue should render properly 1`] = `
 <section class="onboarding-welcome">
   <modal-stub name="onboarding-welcome" isopen="true">
-    <div class="distributor">
+    <div class="distributor gtm-onboarding">
       <div class="header">
         <div class="container">
           Wizards.Distributor.headerTitle

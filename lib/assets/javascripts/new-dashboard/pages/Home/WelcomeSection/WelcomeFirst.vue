@@ -4,7 +4,7 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <OnboardingButton :isFirstTimeViewingDashboard="true"></OnboardingButton>
+        <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
         <a class="button button--border"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">

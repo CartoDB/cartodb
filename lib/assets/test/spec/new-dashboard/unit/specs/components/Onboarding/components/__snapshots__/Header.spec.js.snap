@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header.vue Methods should add "current" class to last step 1`] = `
+<div class="header">
+  <div class="container">
+    <ul class="breadcrumbs">
+      <li class="breadcrumbs__item"><a href="javascript:void 0" class="step-1"><span class="breadcrumbs__checkpoint"><span class="breadcrumbs__text">Fake Step 1</span></span></a></li>
+      <li class="breadcrumbs__item"><a href="javascript:void 0" class="step-2"><span class="breadcrumbs__checkpoint"><span class="breadcrumbs__text">Fake Step 2</span></span></a></li>
+      <li class="breadcrumbs__item current"><a href="javascript:void 0" class="step-3"><span class="breadcrumbs__checkpoint current"><span class="breadcrumbs__text">Fake Step 3</span></span></a></li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`Header.vue should render properly 1`] = `
+<div class="header">
+  <div class="container">
+    <ul class="breadcrumbs">
+      <li class="breadcrumbs__item"><a href="javascript:void 0" class="step-1"><span class="breadcrumbs__checkpoint"><span class="breadcrumbs__text">Fake Step 1</span></span></a></li>
+      <li class="breadcrumbs__item current"><a href="javascript:void 0" class="step-2"><span class="breadcrumbs__checkpoint current"><span class="breadcrumbs__text">Fake Step 2</span></span></a></li>
+      <li class="breadcrumbs__item"><a href="javascript:void 0" class="step-3"><span class="breadcrumbs__checkpoint"><span class="breadcrumbs__text">Fake Step 3</span></span></a></li>
+    </ul>
+  </div>
+</div>
+`;

@@ -49,6 +49,7 @@ Development
 - Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
 - Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
+- Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
 
 4.26.0 (2019-03-11)
 -------------------

@@ -1,34 +1,34 @@
 <template>
-  <a href=""
-      class="tag__item">
-      <div class="viz-column--main-info">
-        <div class="cell cell--start cell--first">
-          <div class="tag__thumbnail">
-              <div class="tag__icon"></div>
-          </div>
-        </div>
-        <div class="cell cell--main">
-            <h3 class="tag__title text is-caption is-txtGrey u-ellipsis row-title">
-              {{ tag.tag }}
-            </h3>
+  <div class="tag__item">
+    <div class="viz-column--main-info">
+      <div class="cell cell--start cell--first">
+        <div class="tag__thumbnail">
+            <div class="tag__icon"></div>
         </div>
       </div>
-      <div class="viz-column--extra-info">
-        <div class="viz-column--status">
-          <div class="cell cell--large u-txt-right">
-          </div>
-          <div class="tag__text cell cell--xsmall u-txt-right">
-            <span class="text is-small is-txtSoftGrey"> {{ tag.maps }}</span>
-          </div>
-          <div class="tag__text cell cell--small u-txt-right">
-            <span class="text is-small is-txtSoftGrey"> {{ tag.datasets }}</span>
-          </div>
+      <div class="cell cell--main">
+          <h3 class="tag__title text is-caption is-txtGrey u-ellipsis row-title">
+            {{ tag.tag }}
+          </h3>
+      </div>
+    </div>
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell cell--large u-txt-right">
+        </div>
+        <div class="tag__text cell cell--xsmall u-txt-right">
+          <span class="text is-small is-txtSoftGrey"> {{ tag.maps }}</span>
+        </div>
+        <div class="tag__text cell cell--small u-txt-right">
+          <span class="text is-small is-txtSoftGrey"> {{ tag.datasets }}</span>
         </div>
       </div>
-  </a>
+    </div>
+  </div>
 </template>
 
 <script>
+
 export default {
   name: 'CondensedTagCard',
   props: {
@@ -57,7 +57,6 @@ export default {
         color: $primary-color;
         text-decoration: underline;
       }
-
     }
   }
 
@@ -80,6 +79,4 @@ export default {
     background-size: 18px;
   }
 }
-
-
 </style>

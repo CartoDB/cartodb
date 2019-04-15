@@ -83,7 +83,7 @@
 
               <ul class="grid-cell grid-cell--col12" v-if="!isFetchingTags">
                 <li v-for="(tag, n) in tags" :key="n" class="search-item">
-                  <CondensedTagCard :tag=tag></CondensedTagCard>
+                  <TagCard :tag=tag :condensed="true"></TagCard>
                 </li>
 
                 <div class="is-caption text" v-if="!hasTags">
@@ -118,7 +118,7 @@ import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
-import CondensedTagCard from 'new-dashboard/components/Tag/CondensedTagCard';
+import TagCard from 'new-dashboard/components/Tag/TagCard';
 import TagListHeader from '../components/Tag/TagListHeader';
 import Pagination from 'new-dashboard/components/Pagination';
 import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
@@ -130,7 +130,6 @@ export default {
   name: 'SearchPage',
   components: {
     CondensedMapHeader,
-    CondensedTagCard,
     DatasetCard,
     DatasetCardFake,
     DatasetListHeader,
@@ -138,6 +137,7 @@ export default {
     MapCardFake,
     Pagination,
     StickySubheader,
+    TagCard,
     TagListHeader
   },
   beforeRouteUpdate (to, from, next) {

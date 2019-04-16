@@ -42,7 +42,7 @@ export default {
   },
   data () {
     return {
-      downloadUrl: getAssetsBaseUrl() + 'unversioned/onboarding/cartoframes.zip'
+      downloadUrl: getAssetsBaseUrl() + 'unversioned/onboarding/cartoframes.ipynb'
     };
   }
 };

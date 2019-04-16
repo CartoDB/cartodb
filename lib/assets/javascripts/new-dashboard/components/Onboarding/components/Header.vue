@@ -140,6 +140,7 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
   &__text {
     position: absolute;
     top: 24px;
+    left: 50%;
     transform: translateX(-50%);
     color: $text-color;
     font-size: 0.75em;

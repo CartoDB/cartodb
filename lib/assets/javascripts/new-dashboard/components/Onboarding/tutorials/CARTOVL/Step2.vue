@@ -57,15 +57,10 @@ const codeBlock1 =
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js"><\/script>
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css" rel="stylesheet">
 
-    <style>
-      #map {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
-    </style>
+    <!-- Your style will go here -->
   </head>
   <body>
+    <!-- Your map will go here -->
   </body>
 </html>`;
 </script>

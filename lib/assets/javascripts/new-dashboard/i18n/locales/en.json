@@ -358,7 +358,7 @@
       "step2": {
         "summary": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries.",
         "howto": {
-          "instruction1":"Create an HTML file and add the following scripts to your <code>&lt;head&gt;</code> element."
+          "instruction1":"Create an HTML file and add the following scripts."
         },
         "extras": {
           "resource1": "CARTO VL is our more advanced rendering library and new features are constantly being added. You can read about the newest capabilities in our <a href='https://carto.com/blog/categories/product-updates/' target='_blank'>Product Updates</a> blog.",
@@ -404,10 +404,10 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first map with CARTO VL!",
-          "message2": "<a href='{url}'>Download</a> the full code example."
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the full code example."
         },
         "extras": {
-          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/carto-vl/' target='_blank'>Developer Center</a>."
         },
         "cards": {
           "card1": {
@@ -496,10 +496,10 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
-          "message2": "Download the full example <a href='{url}'>here</a>"
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the notebook example."
         },
         "extras": {
-          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/cartoframes/' target='_blank'>Developer Center</a>."
         },
         "cards": {
           "card1": {
@@ -606,10 +606,10 @@
         "congrats": {
           "title": "Congratulations!",
           "message1": "You've just created your first web map using Builder",
-          "message2": "Download the full example <a href='{url}'>here</a>"
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the example."
         },
         "extras": {
-          "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/' target='_blank'>Help Center</a>."
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/tutorials/' target='_blank'>Help Center</a>."
         },
         "cards": {
           "card1": {

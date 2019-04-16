@@ -15,7 +15,7 @@
             <img svg-inline src="../../../../assets/icons/onboarding/learn.svg"/>
         </template>
       </StepTitle>
-      <p v-html="$t(`Wizards.cartovl.step5.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
+      <p v-html="$t(`Wizards.cartovl.step7.extras.resource1`)" class="text is-caption u-mt--16 u-mb--64"></p>
       <TutorialCard :content="$t(`Wizards.cartovl.step7.cards.card1`)" class="u-mb--16">
         <img src="../../../../assets/images/onboarding/stylefeatures.png" width="240" height="130" alt="Style features by category sample image"/>
       </TutorialCard>

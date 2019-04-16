@@ -1,0 +1,15 @@
+@import 'new-dashboard/styles/variables';
+
+.wizard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  overflow: auto;
+  background-color: $onboarding__bg-color;
+
+  // Fix for Safari Scrolling with GPU acceleration
+  /* stylelint-disable */
+  transform: translate3d(0, 0, 0);
+  /* stylelint-enable */
+}

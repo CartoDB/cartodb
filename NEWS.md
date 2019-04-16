@@ -15,6 +15,8 @@ Development
 - Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
 - Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
+- Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -49,6 +51,7 @@ Development
 - Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
 - Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
+- Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
 - Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
 
 4.26.0 (2019-03-11)

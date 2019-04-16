@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 4px;
   background: $primary-color;
   color: $white;
@@ -14,7 +14,8 @@
     outline: none;
   }
 
-  &:hover {
+  &:hover,
+  &:focus {
     background: $primary-color--dark;
   }
 }
@@ -29,7 +30,8 @@ a {
   background: transparent;
   color: $primary-color;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background: transparent;
     text-decoration: underline;
   }
@@ -40,8 +42,22 @@ a {
   background: $white;
   color: $primary-color;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background: $softblue;
+  }
+}
+
+.button--cta {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  background: $cta-button__bg-color;
+  color: $text-color;
+  font-size: 16px;
+
+  &:hover,
+  &:focus {
+    background: $cta-button__bg-color--hover;
   }
 }
 

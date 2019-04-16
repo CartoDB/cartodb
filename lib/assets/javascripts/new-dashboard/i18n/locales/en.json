@@ -186,7 +186,7 @@
   "SearchComponent": {
     "placeholder": {
       "default": "Search",
-      "active": "By #tag, name, or description"
+      "active": "By name, description or tag"
     }
   },
   "SearchPage": {

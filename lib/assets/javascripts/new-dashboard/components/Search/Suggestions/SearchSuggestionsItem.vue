@@ -1,11 +1,21 @@
 <template>
-  <a
-    :href="item.url || visualizationURL"
-    class="suggestions__item text is-caption"
-    :class="`suggestions__item--${item.type}`"
-    @click="onItemClicked">
-    {{item.name}}
-  </a>
+  <div>
+    <router-link
+      v-if="isTagType"
+      :to="{ name: 'tagSearch', params: { tag: item.name } }"
+      class="suggestions__item text is-caption suggestions__item--tag">
+      {{item.name}}
+    </router-link>
+    <a
+      v-else
+      :href="item.url || visualizationURL"
+      class="suggestions__item text is-caption"
+      :class="`suggestions__item--${item.type}`"
+      @click="onItemClicked"
+      target="_blank">
+      {{item.name}}
+    </a>
+  </div>
 </template>
 
 <script>
@@ -19,6 +29,9 @@ export default {
   computed: {
     visualizationURL () {
       return Visualization.getURL(this.$props.item, this.$cartoModels);
+    },
+    isTagType () {
+      return this.$props.item.type  === 'tag';
     }
   },
   methods: {

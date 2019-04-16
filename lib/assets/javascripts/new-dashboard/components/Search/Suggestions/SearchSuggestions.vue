@@ -62,21 +62,10 @@ export default {
 
   },
   computed: {
-    isSearchingTags () {
-      return this.query.includes('#');
-    },
     searchRoute () {
-      if (this.isSearchingTags) {
-        return 'tagSearch';
-      }
-
       return 'search';
     },
     searchRouteParameters () {
-      if (this.isSearchingTags) {
-        return { tag: this.query.substring(1) };
-      }
-
       return { query: this.query };
     },
     queryParameters () {
@@ -84,15 +73,7 @@ export default {
         types: 'derived,table',
         per_page: 4
       };
-
-      if (this.isSearchingTags) {
-        queryParameters.tags = this.query.substring(1);
-      }
-
-      if (!this.isSearchingTags) {
-        queryParameters.q = this.query;
-      }
-
+      queryParameters.q = this.query;
       return queryParameters;
     }
   },
@@ -102,7 +83,7 @@ export default {
         return;
       }
 
-      this.client.previewSearch(this.query.replace('#',''),
+      this.client.previewSearch(this.query,
 
         (err, _, data) => {
           this.isFetching = false;

@@ -74,7 +74,7 @@
               @pageChange="page => onPageChange('datasets', page)"></Pagination>
         </section>
 
-        <section class="section section--tags" ref="tags">
+        <section class="section section--tags" ref="tags" v-if="isTermSearch">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.tags') }}</div>
             <ul class="grid" v-if="!isFetchingTags">
               <li v-for="(tag, n) in tags" :key="n" class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
@@ -181,6 +181,9 @@ export default {
     },
     allSectionsFetching () {
       return this.isFetchingMaps || this.isFetchingDatasets || this.isFetchingTags;
+    },
+    isTermSearch () {
+      return this.searchTerm;
     }
   },
   methods: {

@@ -57,21 +57,8 @@ export default {
     },
     onFormSubmit () {
       this.blurInput();
-
-      if (this.searchTerm.includes('#')) {
-        this.goToSearchTagPage();
-      } else if (this.searchTerm) {
-        this.goToSearchTermPage();
-      }
-
+      this.goToSearchTermPage();
       this.searchTerm = '';
-    },
-    goToSearchTagPage () {
-      if (this.$router) {
-        this.$router.push({ name: 'tagSearch', params: { tag: this.searchTerm.substring(1) } });
-      } else {
-        window.location.href = `${this.baseUrl}/dashboard/search/tag/${this.searchTerm.substring(1)}`;
-      }
     },
     goToSearchTermPage () {
       if (this.$router) {

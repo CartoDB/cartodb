@@ -40,9 +40,9 @@ export default {
   },
   computed: {
     trialExpiredMessage () {
-      return (this.hasTrialExpirationDate ?
-      this.$t('TrialExpired.ExpirationMessage.description.phrase1.withDate', { expirationDate: this.humanReadableExpirationDate } ) :
-      this.$t('TrialExpired.ExpirationMessage.description.phrase1.noDate'));
+      return (this.hasTrialExpirationDate
+        ? this.$t('TrialExpired.ExpirationMessage.description.phrase1.withDate', { expirationDate: this.humanReadableExpirationDate })
+        : this.$t('TrialExpired.ExpirationMessage.description.phrase1.noDate'));
     },
     hasTrialExpirationDate () {
       return this.$store.state.user.trial_ends_at;

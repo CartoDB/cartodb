@@ -53,6 +53,7 @@ Development
 - Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
 - Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
 - Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
+- Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
 
 4.26.0 (2019-03-11)
 -------------------

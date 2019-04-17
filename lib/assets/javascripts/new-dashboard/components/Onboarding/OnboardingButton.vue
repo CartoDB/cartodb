@@ -19,7 +19,7 @@ export default {
   data () {
     return {
       hasVisitedOnboarding: false
-    }
+    };
   },
   mounted () {
     this.hasVisitedOnboarding = this.setHasVisitedOnboarding();
@@ -33,7 +33,7 @@ export default {
       if (localStorage.hasOwnProperty('hasVisitedOnboarding')) {
         return JSON.parse(window.localStorage.getItem('hasVisitedOnboarding'));
       } else {
-        return false
+        return false;
       }
     },
     updateHasVisitedOnboarding (visited) {

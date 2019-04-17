@@ -1,10 +1,12 @@
 <template>
   <div class="selector" tabindex="0">
-    <h3 class="title is-body is-medium u-mb--8" :class="iconClass">
-      {{ this.title }}
-    </h3>
+    <div>
+      <h3 class="selector__title title is-body is-medium u-mb--8" :class="iconClass">
+        {{ this.title }}
+      </h3>
 
-    <p class="text is-caption">{{ this.text }}</p>
+      <p class="text is-caption">{{ this.text }}</p>
+    </div>
 
     <ul class="selector__tags">
       <li class="selector__tags-item title" v-for="tag in tags" :key="tag">{{ tag }}</li>
@@ -41,6 +43,9 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .selector {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   max-width: 460px;
   height: 340px;
   padding: 1.5em;
@@ -86,8 +91,6 @@ export default {
   }
 
   &__tags {
-    margin-top: 66px;
-
     &-item {
       display: inline-block;
       margin-top: 8px;
@@ -104,7 +107,7 @@ export default {
     background-color: $softblue;
     box-shadow: $card__shadow;
 
-    > .title {
+    .selector__title {
       color: $primary-color;
       text-decoration: underline;
     }

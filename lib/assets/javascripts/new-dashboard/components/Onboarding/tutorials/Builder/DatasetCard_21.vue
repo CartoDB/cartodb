@@ -39,7 +39,7 @@ export default {
     margin-right: 16px;
     border-radius: 2px;
     background-color: #F2F6F9;
-    background-image: url(/assets/1.0.0-assets.dashboard-onboarding-11/images/dots.svg);
+    background-image: url(../../../../assets/icons/datasets/data-types/dots.svg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: 18px;

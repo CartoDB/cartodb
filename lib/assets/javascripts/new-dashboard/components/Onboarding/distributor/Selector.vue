@@ -4,7 +4,7 @@
       {{ this.title }}
     </h3>
 
-    <p class="is-caption">{{ this.text }}</p>
+    <p class="text is-caption">{{ this.text }}</p>
 
     <ul class="selector__tags">
       <li class="selector__tags-item title" v-for="tag in tags" :key="tag">{{ tag }}</li>
@@ -97,6 +97,16 @@ export default {
       border-radius: 3px;
       font-size: 10px;
       text-transform: uppercase;
+    }
+  }
+
+  &:hover {
+    background-color: $softblue;
+    box-shadow: $card__shadow;
+
+    > .title {
+      color: $primary-color;
+      text-decoration: underline;
     }
   }
 }

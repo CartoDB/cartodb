@@ -137,7 +137,7 @@ describe Carto::EncryptionService do
   end
 
   describe "#make_token" do
-    it "creates a random token with SHA1 by default" do
+    it "creates a random token with 40 characters by default" do
       result = @service.make_token
       result.length.should eql 40
     end
@@ -148,8 +148,8 @@ describe Carto::EncryptionService do
       result1.should_not eql result2
     end
 
-    it "creates a random token with SHA256 and custom digest key" do
-      result = @service.make_token(sha_class: Digest::SHA256, digest_key: 'patatin')
+    it "creates a random token with custom length" do
+      result = @service.make_token(length: 64)
       result.length.should eql 64
     end
   end

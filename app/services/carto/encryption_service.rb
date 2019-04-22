@@ -1,7 +1,9 @@
+require 'securerandom'
+
 module Carto
   class EncryptionService
 
-    AUTH_TOKEN_DIGEST_KEY = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'.freeze
+    DEFAULT_TOKEN_LENGTH = 40
 
     DEFAULT_AUTH_DIGEST_KEYS = {
       Digest::SHA1 => '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3',
@@ -20,9 +22,8 @@ module Carto
       verify_sha(password, secure_password, salt)
     end
 
-    def make_token(sha_class: DEFAULT_SHA_CLASS, digest_key: nil)
-      initial_digest = [Time.now, (1..10).map { rand.to_s }]
-      encrypt_sha(sha_class: sha_class, initial_digest: initial_digest, digest_key: digest_key)
+    def make_token(length: DEFAULT_TOKEN_LENGTH)
+      SecureRandom.hex(length / 2)
     end
 
     def argon2?(encryption)

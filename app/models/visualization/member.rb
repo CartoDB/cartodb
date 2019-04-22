@@ -460,8 +460,7 @@ module CartoDB
 
       # To be stored with the named map
       def make_auth_token
-        Carto::EncryptionService.new.make_token(sha_class: Digest::SHA256,
-                                                digest_key: Carto::EncryptionService::AUTH_TOKEN_DIGEST_KEY)
+        Carto::EncryptionService.new.make_token(length: 64)
       end
 
       def get_auth_token

@@ -31,7 +31,7 @@ export default {
       return Visualization.getURL(this.$props.item, this.$cartoModels);
     },
     isTagType () {
-      return this.$props.item.type  === 'tag';
+      return this.$props.item.type === 'tag';
     }
   },
   methods: {

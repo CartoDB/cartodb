@@ -42,8 +42,4 @@ export default {
     margin-bottom: 0;
   }
 }
-
-
-
-
 </style>

@@ -779,7 +779,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def generate_api_key
-    self.api_key ||= Carto::EncryptionService.new.make_token
+    self.api_key ||= make_token
   end
 
   def generate_token(column)
@@ -793,5 +793,9 @@ class Carto::User < ActiveRecord::Base
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     orgwise = options.fetch(:orgwise, true)
     [date_from, date_to, orgwise]
+  end
+
+  def make_token
+    Carto::EncryptionService.new.make_token
   end
 end

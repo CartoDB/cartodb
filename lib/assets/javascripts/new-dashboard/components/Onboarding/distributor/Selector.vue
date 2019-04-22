@@ -97,7 +97,7 @@ export default {
       margin-right: 8px;
       padding: 6px 16px;
       border: 1px solid $onboarding-tags__border-color;
-      border-radius: 3px;
+      border-radius: 18px;
       font-size: 10px;
       text-transform: uppercase;
     }

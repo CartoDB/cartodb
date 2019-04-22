@@ -318,5 +318,320 @@
     "groups": "{groupname} | {n} groups",
     "users": "{username} | {n} users",
     "and": "and"
+  },
+  "Wizards": {
+    "Distributor": {
+      "cta": "Get started",
+      "headerTitle": "Getting started",
+      "title": "What do you want to do?",
+      "feedback": {
+        "text": "Looking for a different geospatial workflow?",
+        "link": "Let us know."
+      },
+      "engineWarning": {
+        "text": "Needs access to API Keys.",
+        "link": "https://carto.com/help/getting-started/get-api-key/#why-do-you-need-this",
+        "linkText": "Learn more"
+      }
+    },
+    "footer": {
+      "back": "Back",
+      "next": "Next: {nextStep}",
+      "goToDashboard": "Go to dashboard"
+    },
+    "cartovl": {
+      "title": "Develop an interactive custom web map",
+      "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",
+      "tags" : ["JavaScript", "CARTO VL"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Develop an interactive web map",
+        "text1": "Our platform provides a set of libraries and APIs to develop customizable and interactive maps. CARTO VL is a JavaScript library to develop beautiful interactive web maps.",
+        "text2": "In this guide, you will learn how to load the library in your project, create a map with one of CARTO's basemaps, add a data layer, and style it.",
+        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers' target='_blank'>Developer Center</a>."
+      },
+      "step2": {
+        "summary": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries.",
+        "howto": {
+          "instruction1":"Create an HTML file and add the following scripts."
+        },
+        "extras": {
+          "resource1": "CARTO VL is our more advanced rendering library and new features are constantly being added. You can read about the newest capabilities in our <a href='https://carto.com/blog/categories/product-updates/' target='_blank'>Product Updates</a> blog.",
+          "resource2": "You can also <a href='https://www.npmjs.com/package/@carto/carto-vl' target='_blank'>install and load CARTO VL using npm</a>."
+        }
+      },
+      "step3": {
+        "summary": "Define the <code>&ltdiv&gt</code> element that will contain your map.",
+        "howto": {
+          "instruction1": "Define the <code>&lt;div&gt;</code> element that will contain the map in the <code>&lt;body&gt;</code> of your file. The map, layers and controls will be displayed in this element.",
+          "instruction2": "Paste the following CSS code in the bottom of the <code>&lt;head&gt;</code> element to define some basic styles for the map container."
+        }
+      },
+      "step4": {
+        "summary": "Add a CARTO basemap with the Mapbox GL map constructor.",
+        "howto": {
+          "instruction1":"Add the following script below your <code>&lt;div&gt;</code> container to load CARTO's Voyager basemap centered on the world at zoom level 2."
+        },
+        "extras": {
+          "resource1": "CARTO VL relies on <a href='https://docs.mapbox.com/mapbox-gl-js/api/' target='_blank'>Mapbox GL</a> render basemaps. Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
+        }
+      },
+      "step5": {
+        "summary": "Connect to a CARTO account and add a data layer to your map. In this example, we’re using an account named public and the default public API key.",
+        "howto": {
+          "instruction1":"Connect to a CARTO account by specifying the username and API key you want to use. In this case, we're using a test account and a test access key.",
+          "instruction2":"Now that CARTO VL has access, you can add any of the datasets in that account as a source layer to display on the map."
+          },
+        "extras": {
+          "resource1": "Want to use your own account? Learn about <a href='https://carto.com/developers/fundamentals/authorization/' target='_blank'>API Authorization</a>."
+        }
+      },
+      "step6": {
+        "summary": "Use styling properties to overwrite default symbology.",
+        "howto": {
+          "instruction1":"You can overwrite the default symbology applied to features on the map by adding custom styles inside of the <code>Viz</code> object."
+        },
+        "extras": {
+          "resource1": "Learn more about <a href='https://carto.com/developers/carto-vl/guides/style-with-expressions/' target='_blank'>styling with expressions</a>."
+        }
+      },
+      "step7": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first map with CARTO VL!",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the full code example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/carto-vl/' target='_blank'>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Style features by category",
+            "subtitle": "Learn how to change the style of the features by a given column",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-style-by-category"
+          },
+          "card2": {
+            "title": "Add hover popups",
+            "subtitle": "Learn how to display info about a feature when user mouses over it.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-hover"
+          },
+          "card3": {
+            "title": "Animate the features",
+            "subtitle": "Learn how to animate the features of the map by different columns.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-animate-and-color-by-date"
+          }
+        }
+      }
+    },
+    "cartoframes" : {
+      "title": "Add spatial data to your data science workflow",
+      "subtitle": "Integrate spatial data into your data science models using our Python library.",
+      "tags": ["Python", "CARTOframes"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "jupyter": {
+        "in" : "In:",
+        "out": "Out:"
+      },
+      "step1": {
+        "summary": "Integrate spatial analysis in your Python scripts.",
+        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href='https://jupyter.org/' target='_blank'>Jupyter Notebooks</a> and <a href='http://geopandas.org/' target='_blank'>GeoPandas</a>.",
+        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook.",
+        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
+      },
+      "step2": {
+        "summary": "Install CARTOframes and Jupyter Notebook.",
+        "howto": {
+          "instruction1":"Install CARTOframes with pip. Simply type the following in the command in your terminal.",
+          "instruction2":"Install Jupyter Notebook with pip. Type the following comand in your terminal.",
+          "instruction3":"Start Jupyter Notebook. Type the following command in your terminal."
+        },
+        "extras": {
+          "resource1": "There are <a href='https://cartoframes.readthedocs.io/en/v0.8.3/#install-instructions' target='_blank'>other ways to install CARTOframes</a>."
+        }
+      },
+      "step3": {
+        "summary": "Import <code>cartoframes</code> package and connect to CARTO account using a username and API key. In this example, we’re using an account named public and the default public API key.",
+        "howto": {
+          "instruction1":"Use <code>cartoframes.Credentials</code> to connect to a CARTO account. In this example, we’re using a test account and a test access key."
+        },
+        "extras": {
+          "resource1": "Want to use your own account? Learn about API Authorization <a href='https://carto.com/developers/fundamentals/authorization/' target='_blank'>here</a>."
+        }
+      },
+      "step4": {
+        "summary": "List all of the datasets in the given account.",
+        "howto": {
+          "instruction1":"List all of the available tables in the account:"
+        }
+      },
+      "step5": {
+        "summary": "Read one of the datasets into a pandas DataFrame.",
+        "howto": {
+          "instruction1":"Read and list the first rows of the <code>world_ports</code> datasets."
+        }
+      },
+      "step6": {
+        "summary": "Visualize <code>world_ports</code> as an interactive vector map.",
+        "howto": {
+          "instruction1":"Use <code>vector.vmap</code> and <code>vector.Layer</code> to visualize the dataset as an interactive vector map."
+        },
+        "extras": {
+          "resource1": "Learn more about <a href='https://cartoframes.readthedocs.io/en/stable/contrib.html#module-cartoframes.contrib.vector' target='_blank'>working with vector maps in CARTOframes</a>."
+        }
+      },
+      "step7": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the notebook example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/cartoframes/' target='_blank'>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Basic example",
+            "subtitle": "Learn more about the basics",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Basic%20Usage.ipynb"
+          },
+          "card2": {
+            "title": "CARTOframes with GeoPandas",
+            "subtitle": "Learn how to use CARTOframes with GeoPandas",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Shapely%2C%20Geopandas%2C%20and%20Cartoframes.ipynb"
+          },
+          "card3": {
+            "title": "Using CARTOframes to explore the Citibike system",
+            "subtitle": "Learn how to process data from Citibike, upload it to your account, and create some maps",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Citibike%20Example.ipynb"
+          }
+        }
+      }
+    },
+    "builder" : {
+      "title": "Create a web map from your browser",
+      "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
+      "tags": ["Online", "Builder"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Build a map with our drag & drop editor",
+        "text1": "Builder is our drag & drop tool to design, build and publish interactive web maps with your location data. Maps can be easily shared or embedded on any website or blog.",
+        "text2": "In this guide, you will learn how to upload a .csv file and create your first dataset, create a simple map, and publish it."
+      },
+      "step2": {
+        "summary": {
+          "text": "Download and upload a comma-separated values (CSV) file to create your first dataset."
+        },
+        "howto": {
+          "instruction1":"Download the following dataset:",
+          "instruction2":"Visit the Data page and click the “New Dataset” button",
+          "instruction3": "In the Connect dataset section click “Browse”, select the file, and click “Connect dataset”"
+        },
+        "extras": {
+          "resource1": "You can also <a href='https://carto.com/help/working-with-data/quick-data-import/' target='_blank'>import your data</a> by dragging and dropping your files into your dashboard."
+        },
+        "cards": {
+          "dataset1": {
+            "title": "World Ports",
+            "rows": "3,669 rows",
+            "size": "708 kB",
+            "button": "Download",
+            "link": "https://public.carto.com/api/v2/sql?q=select%20*%20from%20public.world_ports&format=csv&filename=world_ports"
+          }
+        }
+      },
+      "step3": {
+        "summary": {
+          "text": "Explore your new dataset and learn how to manipulate it."
+        },
+        "howto": {
+          "instruction1":"Once the upload has finished and the new dataset has been created, you will be redirected to the Dataset view. Here, you can explore your data.",
+          "instruction2":"Double-click on any cell to edit it.",
+          "instruction3":"Click on any of the columns to change the order, rename it, change its data type, remove it, or even add new columns.",
+          "instruction4":"You can also add new rows and export your data in different formats."
+        },
+        "extras": {
+          "resource1": "Use the little switch on the bottom left of the screen to explore your dataset using SQL."
+        }
+      },
+      "step4": {
+        "summary": {
+          "text": "Create a map using your new dataset."
+        },
+        "howto": {
+          "instruction1": "From the dataset view, click “CREATE MAP” (on the bottom right of your screen).",
+          "instruction2": "Your map will be created and you will be redirected to Builder, CARTO’s map editor:",
+          "instruction3": "Double click on the name of the map (Untitled Map) and rename it to “My first map”. This will be the name that you will see on your dashboard as well.",
+          "instruction4": "Change the style of the features on the map (eg: point size, point color, strike size, strike color) by clicking on the layer name and playing with the styling options."
+        },
+        "extras": {
+          "resource1": "Alternatively, you can also create maps directly from your dashboard. You can select one or more datasets from the Data page to create a map with multiple layers, or you can create a map from your Maps page."
+        }
+      },
+      "step5": {
+        "summary": {
+          "text": "Publish and share your map with the world."
+        },
+        "howto": {
+          "instruction1": "Click “Publish” to publish your map.",
+          "instruction2": "Click on the red privacy button to make your map “Public”.",
+          "instruction3": "Click “Publish” to publish this version of your map.",
+          "instruction4": "Your map has now been published and you can use the link or embed code to share your map."
+        },
+        "extras": {
+          "resource1": "Until you re-publish your map again, you can make as many changes as you need to without affecting the published version."
+        }
+      },
+      "step6": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first web map using Builder",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/tutorials/' target='_blank'>Help Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Understanding map layers in Builder",
+            "subtitle": "Learn how to add data layers to your maps, style them, and more.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/understanding-map-layers-in-builder/"
+          },
+          "card2": {
+            "title": "Customizing Pop-Ups with HTML",
+            "subtitle": "Learn how to setup and customise popups with HTML.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/customizing-pop-ups-with-html/"
+          },
+          "card3": {
+            "title": "Exploring Data with Widgets",
+            "subtitle": "Learn how to add interactive widgets to explore your data.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/exploring-widgets/"
+          }
+        }
+      }
+    }
   }
 }

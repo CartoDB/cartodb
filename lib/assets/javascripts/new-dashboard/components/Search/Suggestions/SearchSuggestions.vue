@@ -42,7 +42,7 @@ export default {
   data () {
     return {
       isFetching: true,
-      searchResults: [],
+      searchResults: {},
       client: new CartoNode.AuthenticatedClient(),
       activeSuggestionIndex: -1
     };
@@ -51,7 +51,7 @@ export default {
     query (newQuery) {
       if (newQuery === '') {
         this.isFetching = false;
-        this.searchResults = [];
+        this.searchResults = {};
         return;
       }
 
@@ -99,10 +99,10 @@ export default {
       this.$emit('pageChange');
     },
     getActiveSuggestionElement () {
-      return this.$el.querySelector('.suggestions--active a');
+      return this.$el.querySelector('.suggestions--active .suggestions__item');
     },
     keydownDown () {
-      if (this.activeSuggestionIndex < this.searchResults.visualizations.length) {
+      if (this.activeSuggestionIndex < this.searchResults.result.length) {
         this.activeSuggestionIndex++;
       }
     },

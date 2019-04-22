@@ -139,7 +139,7 @@ export default {
     this.$store.dispatch('search/resetState');
     this.isFirstFetch = true;
 
-    updateSearchParams(to, from, next);
+    this.updateSearchParams(to, from, next);
   },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('search/resetState');
@@ -203,7 +203,8 @@ export default {
       }
 
       window.scrollBy({ top: sectionBoundingClientRect.top - offsetDistance, behavior: 'smooth' });
-    }
+    },
+    updateSearchParams
   },
   watch: {
     allSectionsFetching (newValue) {

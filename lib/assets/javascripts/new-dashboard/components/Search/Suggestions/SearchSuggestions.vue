@@ -67,14 +67,6 @@ export default {
     },
     searchRouteParameters () {
       return { query: this.query };
-    },
-    queryParameters () {
-      const queryParameters = {
-        types: 'derived,table',
-        per_page: 4
-      };
-      queryParameters.q = this.query;
-      return queryParameters;
     }
   },
   methods: {

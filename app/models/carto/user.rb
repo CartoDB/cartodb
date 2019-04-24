@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'cartodb-common'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -143,8 +144,8 @@ class Carto::User < ActiveRecord::Base
 
     @password = value
     self.salt = ""
-    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value,
-                                                                 secret: Cartodb.config[:password_secret])
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
   end
 
   def reset_password_rate_limit
@@ -522,8 +523,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt,
-                                        secret: Cartodb.config[:password_secret]) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -550,8 +551,8 @@ class Carto::User < ActiveRecord::Base
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new_record?
     return old_password == new_password if old_password
-    Carto::EncryptionService.new.verify(password: new_password, secure_password: crypted_password_was, salt: salt,
-                                        secret: Cartodb.config[:password_secret])
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was, salt: salt,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?
@@ -796,6 +797,6 @@ class Carto::User < ActiveRecord::Base
   end
 
   def make_token
-    Carto::EncryptionService.new.make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

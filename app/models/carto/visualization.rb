@@ -1,4 +1,5 @@
 require 'active_record'
+require 'cartodb-common'
 require_relative '../visualization/stats'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
@@ -341,8 +342,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   def password_valid?(password)
     password_protected? &&
-      Carto::EncryptionService.new.verify(password: password, secure_password: encrypted_password, salt: password_salt,
-                                          secret: Cartodb.config[:password_secret])
+      Carto::Common::EncryptionService.verify(password: password, secure_password: encrypted_password,
+                                              salt: password_salt, secret: Cartodb.config[:password_secret])
   end
 
   def organization?
@@ -610,8 +611,8 @@ class Carto::Visualization < ActiveRecord::Base
   def password=(value)
     if value.present?
       self.password_salt = ""
-      self.encrypted_password = Carto::EncryptionService.new.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
+      self.encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
     end
   end
 

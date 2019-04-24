@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'cartodb-common'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -621,13 +622,13 @@ class User < Sequel::Model
     return false if new? || (@changing_passwords && !old_password)
     return old_password == new_password if old_password
     old_crypted_password = carto_user.crypted_password_was
-    Carto::EncryptionService.new.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
-                                        secret: Cartodb.config[:password_secret])
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    Carto::EncryptionService.new.verify(password: old_password, secure_password: crypted_password, salt: salt,
-                                        secret: Cartodb.config[:password_secret]) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -672,8 +673,8 @@ class User < Sequel::Model
 
     @password = value
     self.salt = ""
-    self.crypted_password = Carto::EncryptionService.new.encrypt(password: value,
-                                                                 secret: Cartodb.config[:password_secret])
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
     set_last_password_change_date
   end
 
@@ -694,8 +695,7 @@ class User < Sequel::Model
   end
 
   def database_password
-    encrypter = Carto::EncryptionService.new
-    encrypter.hex_digest(crypted_password) + database_username
+    Carto::Common::EncryptionService.hex_digest(crypted_password) + database_username
   end
 
   def user_database_host
@@ -2041,6 +2041,6 @@ class User < Sequel::Model
   end
 
   def make_token
-    Carto::EncryptionService.new.make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

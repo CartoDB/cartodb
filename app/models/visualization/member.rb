@@ -2,6 +2,7 @@
 require 'forwardable'
 require 'virtus'
 require 'json'
+require 'cartodb-common'
 require_relative '../markdown_render'
 require_relative './presenter'
 require_relative './name_checker'
@@ -438,8 +439,8 @@ module CartoDB
       def password=(value)
         if value && value.size > 0
           @password_salt = ""
-          @encrypted_password = Carto::EncryptionService.new.encrypt(password: value,
-                                                                     secret: Cartodb.config[:password_secret])
+          @encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
           self.dirty = true
         end
       end
@@ -449,8 +450,8 @@ module CartoDB
       end
 
       def password_valid?(password)
-        Carto::EncryptionService.new.verify(password: password, secure_password: @encrypted_password,
-                                            salt: @password_salt, secret: Cartodb.config[:password_secret])
+        Carto::Common::EncryptionService.verify(password: password, secure_password: @encrypted_password,
+                                                salt: @password_salt, secret: Cartodb.config[:password_secret])
       end
 
       def remove_password
@@ -460,7 +461,7 @@ module CartoDB
 
       # To be stored with the named map
       def make_auth_token
-        Carto::EncryptionService.new.make_token(length: 64)
+        Carto::Common::EncryptionService.make_token(length: 64)
       end
 
       def get_auth_token

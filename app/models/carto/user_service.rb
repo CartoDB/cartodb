@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'cartodb-common'
 require_dependency 'carto/db/connection'
 
 module Carto
@@ -145,8 +146,7 @@ module Carto
     end
 
     def database_password
-      encrypter = Carto::EncryptionService.new
-      encrypter.hex_digest(@user.crypted_password) + database_username
+      Carto::Common::EncryptionService.hex_digest(@user.crypted_password) + database_username
     end
 
     def in_database(options = {})

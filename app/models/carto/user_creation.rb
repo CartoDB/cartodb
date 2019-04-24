@@ -1,4 +1,5 @@
 # encoding: UTF-8
+require 'cartodb-common'
 require_dependency 'carto/user_authenticator'
 
 class Carto::UserCreation < ActiveRecord::Base
@@ -216,7 +217,7 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.github_user_id = github_user_id
     @cartodb_user.invitation_token = invitation_token
-    @cartodb_user.enable_account_token = Carto::EncryptionService.new.make_token if requires_validation_email?
+    @cartodb_user.enable_account_token = Carto::Common::EncryptionService.make_token if requires_validation_email?
 
     unless organization_id.nil? || @promote_to_organization_owner
       organization = ::Organization.where(id: organization_id).first

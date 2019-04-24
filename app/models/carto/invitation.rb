@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'active_record'
+require 'cartodb-common'
 require_dependency 'cartodb/errors'
 require_dependency 'carto/user_authenticator'
 
@@ -38,7 +39,7 @@ module Carto
                        welcome_text: welcome_text,
                        viewer: viewer)
 
-      invitation.seed = Carto::EncryptionService.new.make_token
+      invitation.seed = Carto::Common::EncryptionService.make_token
       if invitation.save
         invitation.reload
         invitation.users_emails = users_emails
@@ -59,7 +60,7 @@ module Carto
     end
 
     def token(email)
-      Carto::EncryptionService.new.encrypt(sha_class: Digest::SHA256, password: email, salt: seed)
+      Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: email, salt: seed)
     end
 
     def use(email, token)
@@ -82,7 +83,7 @@ module Carto
     private
 
     def verify_token(token, email)
-      Carto::EncryptionService.new.verify(password: email, secure_password: token, salt: seed)
+      Carto::Common::EncryptionService.verify(password: email, secure_password: token, salt: seed)
     end
 
     def users_emails_not_taken

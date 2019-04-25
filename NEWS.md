@@ -17,6 +17,7 @@ Development
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
 - Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
 - Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
+- Rake task to remove password salt [#14834](https://github.com/CartoDB/cartodb/pull/14834)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails

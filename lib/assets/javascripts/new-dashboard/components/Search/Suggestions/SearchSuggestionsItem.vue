@@ -3,6 +3,7 @@
     <router-link
       v-if="isTagType"
       :to="{ name: 'tagSearch', params: { tag: item.name } }"
+      :staticRoute="`/dashboard/search/tag/${item.name}`"
       class="suggestions__item text is-caption suggestions__item--tag">
       {{item.name}}
     </router-link>

@@ -9,7 +9,7 @@ exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
     </li>
     <li class="">
       <div>
-        <router-link to="[object Object]" class="suggestions__item text is-caption suggestions__item--tag">
+        <router-link to="[object Object]" staticroute="/dashboard/search/tag/example of map with analyses" class="suggestions__item text is-caption suggestions__item--tag">
           example of map with analyses
         </router-link>
       </div>

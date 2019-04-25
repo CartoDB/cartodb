@@ -103,7 +103,9 @@ export default {
     }
   }
 
-  &:hover {
+  &:hover,
+  &:focus {
+    outline: none;
     background-color: $softblue;
     box-shadow: $card__shadow;
 

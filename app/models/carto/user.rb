@@ -143,7 +143,6 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
-    self.salt = ""
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
   end
@@ -523,7 +522,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
                                             secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
@@ -551,7 +550,8 @@ class Carto::User < ActiveRecord::Base
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new_record?
     return old_password == new_password if old_password
-    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was, salt: salt,
+
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was,
                                             secret: Cartodb.config[:password_secret])
   end
 

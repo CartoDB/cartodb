@@ -682,6 +682,11 @@ CartoDB::Application.routes.draw do
   Carto::CartoGearsSupport.new.gears.each do |gear|
     mount gear.engine, at: '/'
   end
+
+  # resque_web_constraint = lambda { |request| request.remote_ip == '127.0.0.1' }
+  # constraints resque_web_constraint do
+    mount ResqueWeb::Engine => "/resque_web"
+  # end
 end
 
 # rubocop:enable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg

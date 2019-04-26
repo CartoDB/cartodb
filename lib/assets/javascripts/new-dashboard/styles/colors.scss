@@ -1,13 +1,12 @@
 $colors: (
-  'Primary': $primary-color,
+  'Primary': $color-primary,
   'White': $white,
-  'Grey': $text-color,
-  'SoftGrey': $text-secondary-color,
-  'GreyLight': $text-color-light,
-  'Premium': $premium-color,
-  'Alert': $alert,
-  'SoftBlue': $softblue,
-  'DarkBlue': $dark-blue
+  'Grey': $text__color,
+  'SoftGrey': $text__color--secondary,
+  'Premium': $color-premium,
+  'Alert': $alert-color,
+  'SoftBlue': $color-primary--soft,
+  'DarkBlue': $blue--900
 );
 
 @each $name, $color in $colors {

@@ -1,9 +1,94 @@
-//colors
+/* === COLORS === */
+
+/* Primary */
+$blue--100: #F2F6F9;
+$blue--300: #CBE4FF;
+$blue--500: #047AE6;
+$blue--700: #1074B5;
+$blue--900: #003267;
+
+/* Neutral */
+$white: #FFF;
+$neutral--100: #F9F9F9;
+$neutral--200: #EBEEF5;
+$neutral--300: #E6E8EB;
+$neutral--400: #C2CDD6;
+$neutral--500: #BABEC0;
+$neutral--600: #6F757B;
+$neutral--700: #34444C;
+$neutral--800: #2E3C43;
+$black: #000;
+
+/* Accents */
+$yellow--100: #F2E24B;
+$yellow--300: #FEE600;
+$yellow--500: #FFC300;
+$yellow--700: #F90;
+
+$yellow--900: rgba($yellow--500, 48%);//rgba(255, 195, 0, 0.48); info
+
+$red--500: #FA1414;
+$red--600: #E20703;
+
+$green--500: #74FFA8;
+$green--700: #72EEA8;
+
+/* Theme */
+$color-primary--soft: $blue--100;
+$color-primary: $blue--500;
+$color-primary--dark: $blue--700;
+
+$color-premium: $yellow--700;
+
+/* === TYPE === */
+$text__color: $neutral--800;
+$text__color--secondary: $neutral--800;
+
+$link__color: $color-primary;
+
+$code__border-color: $neutral--400;
+
+/* === COMPONENTS === */
+
+/* defaults */
+$border-color: $neutral--200;
+
+$alert-color: $red--600; //WIP
+
+/* buttons */
+$button__color: $white;
+$button__bg-color: $color-primary;
+$button__bg-color--hover: $color-primary--dark;
+
+$button-outline__color: $color-primary;
+$button-outline__border-color: $color-primary;
+$button-outline__bg-color: $white;
+$button-outline__bg-color--hover: $color-primary--soft;
+
+$button-ghost__color: $color-primary;
+
+$button-cta__color: $neutral--800;
+$button-cta__bg-color: $color-primary;
+$button-cta__bg-color--hover: $color-primary--dark;
+
+/* form */
+$checkbox__border-color: $border-color;
+$checkbox__bg-color: $white;
+$checkbox__border-color--hover: $color-primary;
+$checkbox__bg-color--selected: $color-primary;
+$checkbox-stroke__color: $white;
+
+
+
+
+
+/* === WIP === */
+
 $primary-color: #047AE6;
 $primary-color--soft: #B5D1F2;
 $primary-color--dark: #1074B5;
 $premium-color: #F90;
-$white: #FFF;
+
 $text-color: #2E3C43;
 $text-secondary-color: #6F757B;
 $text-color-light: #BABEC0;
@@ -24,8 +109,7 @@ $error-state: #FA1414;
 $layout-tablet: 800px;
 $layout-mobile: 600px;
 
-//type
-$code__border-color: #D9D9D9;
+
 
 //Jupyter code blocks
 $jupyter__fill-color: #F7F7F7;
@@ -37,16 +121,16 @@ $jupyter__text--out: #2F3F9F;
 $cta-button__bg-color: #FEE600;
 $cta-button__bg-color--hover: #F2E24B;
 
-$dropdown__shadow-color: rgba(0, 0, 0, 0.16);
+$dropdown__shadow-color: rgba(0, 0, 0, 0.16); // $black
 $dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
 
-$card__shadow-color: rgba(194, 205, 214, 0.8);
+$card__shadow-color: rgba(194, 205, 214, 0.8); //C2CDD6
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 
 $onboarding__bg-color: #F9F9F9;
 $onboarding-tags__border-color: #34444C;
 $onboarding-congrats__height: 445px;
-$onboarding-congrats__bg-color: rgba(203, 228, 255, 0.3);
+$onboarding-congrats__bg-color: rgba(203, 228, 255, 0.3); //#CBE4FF blue--300
 $onboarding-notification: #FEE600;
 $z-index__dialog: 1000;
 $z-index__navbar: 5;

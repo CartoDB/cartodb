@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/cartodb/cartodb-common.git
-  revision: 111326436a39282c67b9b649676aed03040ad153
-  branch: encryption-service
+  revision: e445c66023bfe83fcd62878ec0f3f37909156e01
+  branch: master
   specs:
     cartodb-common (0.1.0)
       argon2 (~> 2.0)

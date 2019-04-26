@@ -76,6 +76,7 @@ gem 'redcarpet', '3.3.3'
 gem 'rollbar',               '~>2.11.1'
 gem 'resque',                '1.25.2'
 gem 'resque-metrics',        '0.1.1'
+gem 'resque-web', require: 'resque_web'
 
 gem 'net-telnet'
 

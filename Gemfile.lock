@@ -97,6 +97,13 @@ GEM
       builder (>= 2.1.2)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
+    coffee-rails (4.2.2)
+      coffee-script (>= 2.2.0)
+      railties (>= 4.0.0)
+    coffee-script (2.4.1)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.12.2)
     compass (1.0.3)
       chunky_png (~> 1.2)
       compass-core (~> 1.0.2)
@@ -150,6 +157,8 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
+    font-awesome-sass (5.8.1)
+      sassc (>= 1.11)
     gc_tracer (1.5.1)
     get_process_mem (0.2.0)
     gibbon (1.1.4)
@@ -189,6 +198,10 @@ GEM
       hashie (>= 0.4.0)
       multi_json (~> 1.0, >= 1.0.3)
     jmespath (1.4.0)
+    jquery-rails (4.3.3)
+      rails-dom-testing (>= 1, < 3)
+      railties (>= 4.2.0)
+      thor (>= 0.14, < 2.0)
     json (1.8.6)
     json-schema (2.1.9)
     jwt (1.5.4)
@@ -303,6 +316,13 @@ GEM
       vegas (~> 0.1.2)
     resque-metrics (0.1.1)
       resque (~> 1.19)
+    resque-web (0.0.12)
+      coffee-rails
+      font-awesome-sass
+      jquery-rails
+      resque
+      sass-rails
+      twitter-bootstrap-rails
     retriable (3.1.2)
     rollbar (2.11.1)
       multi_json
@@ -330,6 +350,15 @@ GEM
       nokogiri (>= 1.5.10)
     rubyzip (1.2.2)
     sass (3.4.21)
+    sass-rails (5.0.7)
+      railties (>= 4.0.0, < 6)
+      sass (~> 3.1)
+      sprockets (>= 2.8, < 4.0)
+      sprockets-rails (>= 2.0, < 4.0)
+      tilt (>= 1.1, < 3)
+    sassc (2.0.1)
+      ffi (~> 1.9)
+      rake
     selenium-webdriver (2.52.0)
       childprocess (~> 0.5)
       multi_json (~> 1.0)
@@ -390,6 +419,11 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.6)
     trollop (2.1.2)
+    twitter-bootstrap-rails (2.2.8)
+      actionpack (>= 3.1)
+      execjs
+      rails (>= 3.1)
+      railties (>= 3.1)
     typhoeus (0.7.2)
       ethon (>= 0.7.4)
     tzinfo (1.2.5)
@@ -476,6 +510,7 @@ DEPENDENCIES
   responders (~> 2.0)
   resque (= 1.25.2)
   resque-metrics (= 0.1.1)
+  resque-web
   rollbar (~> 2.11.1)
   roo (= 1.13.2)
   rotp (~> 3.3, >= 3.3.1)

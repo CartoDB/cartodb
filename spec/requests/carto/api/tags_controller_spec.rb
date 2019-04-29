@@ -63,7 +63,7 @@ describe Carto::Api::TagsController do
 
       get_json api_v3_users_tags_url(shared_params), @headers do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:result]).to eq expected_tags
+        expect(response.body[:result]).to =~ expected_tags
         expect(response.body[:total]).to eq 2
         expect(response.body[:count]).to eq 2
       end

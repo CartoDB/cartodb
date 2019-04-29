@@ -58,7 +58,7 @@ describe Carto::Api::TagsController do
       login_as(@user1, scope: @user1.username)
       get_json api_v3_search_preview_url(q: "tag", types: "tag"), @headers do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:result]).to =~ expected_result
+        expect(response.body[:result]).to match_array(expected_result)
         expect(response.body[:total_count]).to eq 2
       end
     end

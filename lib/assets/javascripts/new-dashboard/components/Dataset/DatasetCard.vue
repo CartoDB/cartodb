@@ -367,7 +367,7 @@ export default {
   }
 
   &.row-dataType--premium {
-    background-color: $premium-color;
+    background-color: $color-premium;
 
     .row-typeIcon {
       fill: $white;

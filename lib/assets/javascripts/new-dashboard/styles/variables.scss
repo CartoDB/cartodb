@@ -25,7 +25,7 @@ $yellow--300: #FEE600;
 $yellow--500: #FFC300;
 $yellow--700: #F90;
 
-$yellow--900: rgba($yellow--500, 48%);//rgba(255, 195, 0, 0.48); info
+$yellow--900: rgba($yellow--500, 0.48);// info
 
 $red--500: #FA1414;
 $red--600: #E20703;
@@ -47,6 +47,10 @@ $text__color--secondary: $neutral--800;
 $link__color: $color-primary;
 
 $code__border-color: $neutral--400;
+
+/* === LAYOUT === */
+$layout-tablet: 800px;
+$layout-mobile: 600px;
 
 /* === COMPONENTS === */
 
@@ -71,6 +75,9 @@ $button-cta__color: $neutral--800;
 $button-cta__bg-color: $color-primary;
 $button-cta__bg-color--hover: $color-primary--dark;
 
+/* navbar */
+$navbar-avatar__bg-color: $neutral--500;
+
 /* form */
 $checkbox__border-color: $border-color;
 $checkbox__bg-color: $white;
@@ -78,6 +85,43 @@ $checkbox__border-color--hover: $color-primary;
 $checkbox__bg-color--selected: $color-primary;
 $checkbox-stroke__color: $white;
 
+/* dropdowns */
+$dropdown__shadow-color: rgba($black, 0.16);
+$dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
+
+/* cards */
+$card__shadow-color: rgba($neutral--400, 0.8);
+$card__shadow: 0 8px 20px 0 $card__shadow-color;
+
+/* === PAGES === */
+
+/* onboarding */
+$onboarding__bg-color: $neutral--100;
+$onboarding-tags__border-color: $neutral--700;
+$onboarding-congrats__height: 445px;
+$onboarding-congrats__bg-color: rgba($blue--300, 0.3);
+$onboarding-notification: $yellow--300;
+
+/* Jupyter code blocks
+  Not our palette color, just copying jupyter look and feel */
+$jupyter__fill-color: #F7F7F7;
+$jupyter__border-color: #CFCFCF;
+$jupyter__text--in: #DA4D24;
+$jupyter__text--out: #2F3F9F;
+
+/* === Z_INDEX === */
+$z-index__dialog: 1000;
+$z-index__navbar: 5;
+$z-index__subheader: 4;
+$z-index__dropdown: 3;
+$z-index__sticky: 2;
+$z-index__local-dropdown: 1;
+
+// Variables to create different stacking context
+// Used in pages where you have Maps and Dataset Lists
+$z-index__stack-context--first: 2;
+$z-index__stack-context--second: 1;
+$z-index__stack-context--third: 0;
 
 
 
@@ -85,13 +129,10 @@ $checkbox-stroke__color: $white;
 /* === WIP === */
 
 $primary-color: #047AE6;
-$primary-color--soft: #B5D1F2;
-$primary-color--dark: #1074B5;
-$premium-color: #F90;
 
 $text-color: #2E3C43;
 $text-secondary-color: #6F757B;
-$text-color-light: #BABEC0;
+
 $light-grey: #EBEEF5;
 $grey: #E6E8EB;
 $softblue: #F2F6F9;
@@ -105,42 +146,3 @@ $good-state: #72EEA8;
 $warning-state: #FFC300;
 $error-state: #FA1414;
 
-//Dimensions
-$layout-tablet: 800px;
-$layout-mobile: 600px;
-
-
-
-//Jupyter code blocks
-$jupyter__fill-color: #F7F7F7;
-$jupyter__border-color: #CFCFCF;
-$jupyter__text--in: #DA4D24;
-$jupyter__text--out: #2F3F9F;
-
-//components
-$cta-button__bg-color: #FEE600;
-$cta-button__bg-color--hover: #F2E24B;
-
-$dropdown__shadow-color: rgba(0, 0, 0, 0.16); // $black
-$dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
-
-$card__shadow-color: rgba(194, 205, 214, 0.8); //C2CDD6
-$card__shadow: 0 8px 20px 0 $card__shadow-color;
-
-$onboarding__bg-color: #F9F9F9;
-$onboarding-tags__border-color: #34444C;
-$onboarding-congrats__height: 445px;
-$onboarding-congrats__bg-color: rgba(203, 228, 255, 0.3); //#CBE4FF blue--300
-$onboarding-notification: #FEE600;
-$z-index__dialog: 1000;
-$z-index__navbar: 5;
-$z-index__subheader: 4;
-$z-index__dropdown: 3;
-$z-index__sticky: 2;
-$z-index__local-dropdown: 1;
-
-// Variables to create different stacking context
-// Used in pages where you have Maps and Dataset Lists
-$z-index__stack-context--first: 2;
-$z-index__stack-context--second: 1;
-$z-index__stack-context--third: 0;

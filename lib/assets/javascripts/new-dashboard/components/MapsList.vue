@@ -152,7 +152,9 @@ export default {
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
-      return this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+      return this.selectedMaps.length
+        ? this.$t('BulkActions.selected', {count: this.selectedMaps.length})
+        : this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
     },
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;

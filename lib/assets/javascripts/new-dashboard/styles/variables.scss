@@ -57,7 +57,10 @@ $layout-mobile: 600px;
 /* defaults */
 $border-color: $neutral--200;
 
-$alert-color: $red--600; //WIP
+$success__bg-color: $green--700;
+$warning__bg-color: $yellow--500;
+$danger__bg-color: $red--500;
+$danger__color: $red--600;
 
 /* buttons */
 $button__color: $white;
@@ -77,6 +80,7 @@ $button-cta__bg-color--hover: $color-primary--dark;
 
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;
+$notification__bg-color: $green--500;
 
 /* form */
 $checkbox__border-color: $border-color;
@@ -123,26 +127,12 @@ $z-index__stack-context--first: 2;
 $z-index__stack-context--second: 1;
 $z-index__stack-context--third: 0;
 
-
-
-
 /* === WIP === */
-
 $primary-color: #047AE6;
-
 $text-color: #2E3C43;
 $text-secondary-color: #6F757B;
-
 $light-grey: #EBEEF5;
 $grey: #E6E8EB;
 $softblue: #F2F6F9;
 $dark-blue: #003267;
-$alert: rgba(226, 7, 3, 1);
-$info: rgba(255, 195, 0, 0.48);
-$notification: #74FFA8;
-
-//Progress bar colors
-$good-state: #72EEA8;
-$warning-state: #FFC300;
-$error-state: #FA1414;
 

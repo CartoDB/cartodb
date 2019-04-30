@@ -48,7 +48,7 @@ export default {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: $notification;
+    background: $notification__bg-color;
     vertical-align: top;
   }
 

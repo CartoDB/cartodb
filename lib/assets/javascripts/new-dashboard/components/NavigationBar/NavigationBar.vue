@@ -231,7 +231,7 @@ export default {
       height: 12px;
       border: 2px solid $primary-color;
       border-radius: 50%;
-      background-color: $notification;
+      background-color: $notification__bg-color;
     }
   }
 

@@ -43,7 +43,7 @@ export default {
   height: 12px;
   margin-left: 24px;
   border-radius: 50%;
-  background: $notification;
+  background: $notification__bg-color;
 }
 
 .notification-html {

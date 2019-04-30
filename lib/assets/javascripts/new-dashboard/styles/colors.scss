@@ -3,18 +3,24 @@ $colors: (
   'White': $white,
   'Grey': $text__color,
   'SoftGrey': $text__color--secondary,
-  'Premium': $color-premium,
-  'Alert': $alert-color,
+  'Alert': $danger__color,
   'SoftBlue': $color-primary--soft,
   'DarkBlue': $blue--900
 );
 
 @each $name, $color in $colors {
-  .is-bg#{$name} {
-    background-color: #{$color};
-  }
-
   .is-txt#{$name} {
     color: #{$color};
+  }
+}
+
+$bgcolors: (
+  'White': $white,
+  'SoftBlue': $color-primary--soft
+);
+
+@each $name, $color in $bgcolors {
+  .is-bg#{$name} {
+    background-color: #{$color};
   }
 }

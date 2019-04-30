@@ -126,7 +126,7 @@ export default {
 
       &:focus {
         &::placeholder {
-          color: $text-secondary-color;
+          color: $text__color--secondary;
         }
       }
     }
@@ -149,7 +149,7 @@ export default {
   background-color: $white;
 
   &::placeholder {
-    color: $text-secondary-color;
+    color: $text__color--secondary;
   }
 
   &:focus,

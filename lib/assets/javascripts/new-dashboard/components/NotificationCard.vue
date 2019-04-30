@@ -34,7 +34,7 @@ export default {
 }
 
 .notification-received {
-  color: $text-secondary-color;
+  color: $text__color--secondary;
 }
 
 .notification-read {
@@ -48,7 +48,7 @@ export default {
 
 .notification-html {
   margin-top: 16px;
-  color: $text-color;
+  color: $text__color;
 
   &.is-unread {
     font-weight: 600;

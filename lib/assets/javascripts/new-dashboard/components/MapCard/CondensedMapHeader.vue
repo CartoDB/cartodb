@@ -134,7 +134,7 @@ export default {
 .element-sort {
   &.is-active,
   &:hover {
-    color: $text-color;
+    color: $text__color;
     cursor: pointer;
 
     &::after {

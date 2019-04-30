@@ -188,7 +188,7 @@ export default {
   max-width: 240px;
   height: 8px;
   border-radius: 4px;
-  background-color: $light-grey;
+  background-color: $progressbar__bg-color;
 
   &.progressbar--good {
     background-color: $success__bg-color;

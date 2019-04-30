@@ -83,7 +83,7 @@ export default {
   right: 0;
   width: 260px;
   margin-top: 8px;
-  border: 1px solid $grey;
+  border: 1px solid $border-color--dark;
   border-radius: 2px;
   background-color: $white;
   cursor: default;

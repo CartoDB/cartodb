@@ -56,6 +56,7 @@ $layout-mobile: 600px;
 
 /* defaults */
 $border-color: $neutral--200;
+$border-color--dark: $neutral--300;
 
 $success__bg-color: $green--700;
 $warning__bg-color: $yellow--500;
@@ -75,8 +76,8 @@ $button-outline__bg-color--hover: $color-primary--soft;
 $button-ghost__color: $color-primary;
 
 $button-cta__color: $neutral--800;
-$button-cta__bg-color: $color-primary;
-$button-cta__bg-color--hover: $color-primary--dark;
+$button-cta__bg-color: $yellow--300;
+$button-cta__bg-color--hover: $yellow--100;
 
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;
@@ -93,9 +94,13 @@ $checkbox-stroke__color: $white;
 $dropdown__shadow-color: rgba($black, 0.16);
 $dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
 
+/* progressbar */
+$progressbar__bg-color: $neutral--200;
+
 /* cards */
 $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
+$thumbnail__bg-color: $neutral--200;
 
 /* === PAGES === */
 
@@ -113,6 +118,9 @@ $jupyter__border-color: #CFCFCF;
 $jupyter__text--in: #DA4D24;
 $jupyter__text--out: #2F3F9F;
 
+/* lockout */
+$button-lockout__bg-color: $blue--900;
+
 /* === Z_INDEX === */
 $z-index__dialog: 1000;
 $z-index__navbar: 5;
@@ -127,12 +135,6 @@ $z-index__stack-context--first: 2;
 $z-index__stack-context--second: 1;
 $z-index__stack-context--third: 0;
 
-/* === WIP === */
-$primary-color: #047AE6;
-$text-color: #2E3C43;
-$text-secondary-color: #6F757B;
-$light-grey: #EBEEF5;
-$grey: #E6E8EB;
-$softblue: #F2F6F9;
-$dark-blue: #003267;
-
+/* === DEPRECATED === */
+$primary-color: $color-primary;
+$softblue: $color-primary--soft;

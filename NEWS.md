@@ -12,7 +12,12 @@ Development
   - New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
   - Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
 - Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
+- Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
+- Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
+- Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
+- Include tags in search results [CartoDB/product#243](https://github.com/CartoDB/product/issues/243)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails
@@ -41,11 +46,16 @@ Development
 - Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
 - Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
 - Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
+- Make drop functions code PG11 compatible ([#14792](https://github.com/CartoDB/cartodb/pull/14792))
 - Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
 - Add dependent visualizations to visualizations method in GET ([#14802](https://github.com/CartoDB/cartodb/pull/14802))
 - Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
 - Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
+- Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
+- Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
+- Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
+- Add badge for first onboarding visitors [#14831](https://github.com/CartoDB/cartodb/pull/14831)
 
 4.26.0 (2019-03-11)
 -------------------

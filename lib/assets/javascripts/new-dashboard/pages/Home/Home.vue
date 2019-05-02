@@ -1,12 +1,14 @@
 <template>
-<section class="page page--welcome">
-  <Welcome />
-  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
-  <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-  <MapsSection class="section section--maps" @contentChanged="onContentChanged"/>
-  <DatasetsSection class="section section--datasets section--noBorder" @contentChanged="onContentChanged"/>
-  <QuotaSection></QuotaSection>
-</section>
+  <section class="page page--welcome">
+    <Welcome />
+    <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
+    <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
+    <MapsSection class="section" @contentChanged="onContentChanged"/>
+    <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <QuotaSection></QuotaSection>
+
+    <router-view name="onboarding-modal"/>
+  </section>
 </template>
 
 <script>

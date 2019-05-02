@@ -27,7 +27,7 @@
             {{ $t(`MapListHeader.lastModified`) }}
           </span>
         </div>
-        <div class="cell cell--large u-txt-right u-p0" @click="changeOrder('mapviews')">
+        <div class="cell cell--large u-txt-right u-p--0 " @click="changeOrder('mapviews')">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
                   'is-active': isOrderApplied('mapviews'),
@@ -111,7 +111,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 0;
+  margin-bottom: 1px;
   padding: 14px;
   overflow: hidden;
   border-bottom: 1px solid $softblue;

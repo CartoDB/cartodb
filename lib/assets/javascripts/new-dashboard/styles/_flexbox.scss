@@ -22,6 +22,10 @@ $align: (
   display: flex;
 }
 
+.u-inlineflex {
+  display: inline-flex;
+}
+
 @each $name, $property in $direction {
   .u-flex__direction--#{$name} {
     flex-direction: #{$property} !important;
@@ -42,4 +46,8 @@ $align: (
   .u-flex__self--#{$name} {
     align-items: #{$property} !important;
   }
+}
+
+.u-flex__grow--1 {
+  flex-grow: 1;
 }

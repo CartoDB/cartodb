@@ -9,11 +9,11 @@
           :staticRoute="`/dashboard/search/${query}`"
           v-if="query"
           @click.native="onPageChange">
-          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
+          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_count }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
-        <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
+      <li v-for="(result, index) in searchResults.result" :key="result.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
+        <SearchSuggestionsItem :item="result" @itemClick="onPageChange"/>
       </li>
     </ul>
   </section>
@@ -42,7 +42,7 @@ export default {
   data () {
     return {
       isFetching: true,
-      searchResults: [],
+      searchResults: {},
       client: new CartoNode.AuthenticatedClient(),
       activeSuggestionIndex: -1
     };
@@ -51,7 +51,7 @@ export default {
     query (newQuery) {
       if (newQuery === '') {
         this.isFetching = false;
-        this.searchResults = [];
+        this.searchResults = {};
         return;
       }
 
@@ -62,38 +62,11 @@ export default {
 
   },
   computed: {
-    isSearchingTags () {
-      return this.query.includes(':');
-    },
     searchRoute () {
-      if (this.isSearchingTags) {
-        return 'tagSearch';
-      }
-
       return 'search';
     },
     searchRouteParameters () {
-      if (this.isSearchingTags) {
-        return { tag: this.query.substring(1) };
-      }
-
       return { query: this.query };
-    },
-    queryParameters () {
-      const queryParameters = {
-        types: 'derived,table',
-        per_page: 4
-      };
-
-      if (this.isSearchingTags) {
-        queryParameters.tags = this.query.substring(1);
-      }
-
-      if (!this.isSearchingTags) {
-        queryParameters.q = this.query;
-      }
-
-      return queryParameters;
     }
   },
   methods: {
@@ -102,8 +75,7 @@ export default {
         return;
       }
 
-      this.client.getVisualization('',
-        this.queryParameters,
+      this.client.previewSearch(this.query,
 
         (err, _, data) => {
           this.isFetching = false;
@@ -111,7 +83,6 @@ export default {
           if (err) {
             return;
           }
-
           this.searchResults = data;
         }
       );
@@ -120,10 +91,10 @@ export default {
       this.$emit('pageChange');
     },
     getActiveSuggestionElement () {
-      return this.$el.querySelector('.suggestions--active a');
+      return this.$el.querySelector('.suggestions--active .suggestions__item');
     },
     keydownDown () {
-      if (this.activeSuggestionIndex < this.searchResults.visualizations.length) {
+      if (this.activeSuggestionIndex < this.searchResults.result.length) {
         this.activeSuggestionIndex++;
       }
     },

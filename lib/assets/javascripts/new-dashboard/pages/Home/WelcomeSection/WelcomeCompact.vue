@@ -3,6 +3,7 @@
     <div class="container welcome-compact__content">
       <div class="welcome-compact__greeting title is-caption">{{ greeting }}</div>
       <div class="welcome-compact__actions">
+        <OnboardingButton :isFirstTimeViewingDashboard="false"></OnboardingButton>
         <CreateButton class="button--ghost" visualizationType="map" :disabled="isViewer">{{ $t(`HomePage.WelcomeSection.actions.createMap`) }}</CreateButton>
         <CreateButton class="button--ghost" visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`HomePage.WelcomeSection.actions.createDataset`) }}</CreateButton>
       </div>
@@ -16,11 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeCompact',
   components: {
-    CreateButton
+    CreateButton,
+    OnboardingButton
   },
   props: {
     name: String
@@ -70,7 +73,7 @@ export default {
   }
 
   .button--ghost {
-    margin-right: 36px;
+    margin-right: 48px;
     padding: 0;
     background: none;
     color: #047AE6;

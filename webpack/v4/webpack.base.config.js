@@ -69,6 +69,10 @@ module.exports = {
         from: rootDir('app/assets/images/google-maps-basemap-icons'),
         to: `./unversioned/images/google-maps-basemap-icon`,
         toType: 'dir'
+      }, {
+        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+        to: `./unversioned/onboarding/`,
+        toType: 'dir'
       }
     ]),
 
@@ -257,6 +261,14 @@ module.exports = {
           {
             loader: 'vue-svg-inline-loader'
           }
+        ]
+      },
+      {
+        test: /\.html$/,
+        use: 'raw-loader',
+        include: [
+          rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+          rootDir('lib/assets/javascripts/new-dashboard/components/Onboarding/wizard')
         ]
       }
     ]

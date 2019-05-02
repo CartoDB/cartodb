@@ -47,6 +47,7 @@ $onboarding__bg-color: #F9F9F9;
 $onboarding-tags__border-color: #34444C;
 $onboarding-congrats__height: 445px;
 $onboarding-congrats__bg-color: rgba(203, 228, 255, 0.3);
+$onboarding-notification: #FEE600;
 $z-index__dialog: 1000;
 $z-index__navbar: 5;
 $z-index__subheader: 4;
@@ -58,3 +59,4 @@ $z-index__local-dropdown: 1;
 // Used in pages where you have Maps and Dataset Lists
 $z-index__stack-context--first: 2;
 $z-index__stack-context--second: 1;
+$z-index__stack-context--third: 0;

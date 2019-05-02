@@ -5,14 +5,25 @@ exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
   <ul class="suggestions__content">
     <li class="">
       <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text">
-        Query text <span>- 1 results</span></router-link>
+        Query text <span>- 3 results</span></router-link>
     </li>
-    <li class=""><a href="http://example.com/viz/e97e0001-f1c2-425e-8c9b-0fb28da59200/map" class="suggestions__item text is-caption suggestions__item--derived">
-        First Map
-      </a></li>
-    <li class=""><a href="http://example.com/viz/8b378bf8-e74d-4187-9e57-4249db4c0f1f/map" class="suggestions__item text is-caption suggestions__item--derived">
-        Second map
-      </a></li>
+    <li class="">
+      <div>
+        <router-link to="[object Object]" staticroute="/dashboard/search/tag/example of map with analyses" class="suggestions__item text is-caption suggestions__item--tag">
+          example of map with analyses
+        </router-link>
+      </div>
+    </li>
+    <li class="">
+      <div><a href="http://user.carto.com/viz/67a6fa8c-237f-41d7-a499-33dfa28a4e06/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+          Citi Bike Map Import
+        </a></div>
+    </li>
+    <li class="">
+      <div><a href="http://user.carto.com/viz/c24a70b4-e18f-4836-82b9-c9be6377a37a/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+          Madrid traffic map
+        </a></div>
+    </li>
   </ul>
 </section>
 `;

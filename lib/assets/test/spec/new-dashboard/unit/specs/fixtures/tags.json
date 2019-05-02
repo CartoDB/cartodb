@@ -1,0 +1,19 @@
+{
+  "total": 1,
+  "count": 1,
+  "result": [
+    {
+      "tag": "example of map with analyses",
+      "datasets": 0,
+      "maps": 2
+    }
+  ],
+  "_links": {
+    "first": {
+      "href": "http://user.carto.com/api/v3/tags?action=index&controller=carto%2Fapi%2Ftags&format=json&include_shared=true&page=1&per_page=6&q=map&types=table%2Cderived&user_domain=user"
+    },
+    "last": {
+      "href": "http://user.carto.com/api/v3/tags?action=index&controller=carto%2Fapi%2Ftags&format=json&include_shared=true&page=1&per_page=6&q=map&types=table%2Cderived&user_domain=user"
+    }
+  }
+}

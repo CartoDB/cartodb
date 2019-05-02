@@ -73,7 +73,7 @@ export default {
   }
 
   .button--ghost {
-    margin-right: 36px;
+    margin-right: 48px;
     padding: 0;
     background: none;
     color: #047AE6;

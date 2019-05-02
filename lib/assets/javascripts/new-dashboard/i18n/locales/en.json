@@ -181,7 +181,7 @@
   "SearchComponent": {
     "placeholder": {
       "default": "Search",
-      "active": "By :tag, name, or description"
+      "active": "By name, description or tag"
     }
   },
   "SearchPage": {
@@ -197,7 +197,8 @@
     },
     "emptyText": {
       "maps": "No maps found.",
-      "datasets":  "No datasets found."
+      "datasets": "No datasets found.",
+      "tags": "No tags found."
     }
   },
   "HomePage": {

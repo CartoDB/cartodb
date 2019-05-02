@@ -27,6 +27,8 @@ app_assets: 
   asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
 ```
 
+Even if you're using CDN assets you still need to run `npm run build:static`.
+
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
 # Documentation

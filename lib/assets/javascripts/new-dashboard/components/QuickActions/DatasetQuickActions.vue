@@ -130,7 +130,7 @@ export default {
       bgPollingView._addDataset({
         type: 'duplication',
         table_name: `${Table.getUnqualifiedName(this.dataset.name)}_copy`,
-        value: `${this.dataset.permission.owner.username}.${this.dataset.name}`,
+        value: this.dataset.table.name,
         create_vis: false
       });
       this.closeDropdown();

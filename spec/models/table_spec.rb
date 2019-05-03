@@ -1402,8 +1402,6 @@ describe Table do
 
       it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
         delete_user_data @user
-        old_user_timeout = @user.user_timeout
-        old_user_db_timeout = @user.database_timeout
         data_import = DataImport.create(user_id: @user.id,
                                         data_source: fake_data_path('import_raster.tif.zip'))
         data_import.run_import!

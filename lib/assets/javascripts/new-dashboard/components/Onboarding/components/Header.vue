@@ -132,7 +132,7 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
       }
 
       & ~ .breadcrumbs__item .breadcrumbs__text {
-        color: $text-secondary-color;
+        color: $text__color--secondary;
       }
     }
   }
@@ -142,7 +142,7 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
     top: 24px;
     left: 50%;
     transform: translateX(-50%);
-    color: $text-color;
+    color: $text__color;
     font-size: 0.75em;
     white-space: nowrap;
   }
@@ -166,7 +166,7 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 
       .breadcrumbs__text {
         transition: all $bullet__transition $transition__timing-function;
-        color: $text-color;
+        color: $text__color;
         font-weight: 600;
       }
     }

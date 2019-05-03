@@ -92,7 +92,7 @@ export default {
 .distributor {
   height: 100%;
   background-color: $onboarding__bg-color;
-  color: $text-color;
+  color: $text__color;
 }
 
 .header {

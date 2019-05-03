@@ -1,17 +1,23 @@
 @import 'variables';
-@import 'grid';
-@import 'page';
-@import 'section';
-@import 'form';
-@import 'reset';
-@import 'buttons';
-@import 'colors';
-@import 'typography';
-@import 'dialogs';
-@import 'flexbox';
-@import 'spacing';
-@import 'utilities';
-@import 'solutionsIcons';
-@import 'cells';
-@import 'visualizations';
-@import 'code';
+
+@import 'base/reset';
+@import 'base/typography';
+
+@import 'layout/cells';
+@import 'layout/dialogs';
+@import 'layout/grid';
+@import 'layout/page';
+@import 'layout/section';
+
+@import 'components/buttons';
+@import 'components/checkbox';
+@import 'components/code';
+@import 'components/welcome';
+
+@import 'pages/solutionsIcons';
+@import 'pages/visualizations';
+
+@import 'utilities/colors';
+@import 'utilities/flexbox';
+@import 'utilities/spacing';
+@import 'utilities/utilities';

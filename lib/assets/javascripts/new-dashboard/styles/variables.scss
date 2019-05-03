@@ -40,7 +40,7 @@ $color-premium: $yellow--700;
 
 /* === TYPE === */
 $text__color: $neutral--800;
-$text__color--secondary: $neutral--800;
+$text__color--secondary: $neutral--600;
 
 $link__color: $color-primary;
 
@@ -82,7 +82,7 @@ $navbar-avatar__bg-color: $neutral--500;
 $notification__bg-color: $green--500;
 
 /* form */
-$checkbox__border-color: $border-color;
+$checkbox__border-color: $border-color--dark;
 $checkbox__bg-color: $white;
 $checkbox__border-color--hover: $color-primary;
 $checkbox__bg-color--selected: $color-primary;

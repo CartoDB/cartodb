@@ -1,22 +1,27 @@
 @import 'variables';
 
+// base
 @import 'base/reset';
 @import 'base/typography';
 
+// layout
 @import 'layout/cells';
 @import 'layout/dialogs';
 @import 'layout/grid';
 @import 'layout/page';
 @import 'layout/section';
 
+// components
 @import 'components/buttons';
 @import 'components/checkbox';
 @import 'components/code';
 @import 'components/welcome';
 
+// pages
 @import 'pages/solutionsIcons';
 @import 'pages/visualizations';
 
+// utilities
 @import 'utilities/colors';
 @import 'utilities/flexbox';
 @import 'utilities/spacing';

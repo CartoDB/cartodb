@@ -19,10 +19,7 @@ class PasswordResetsController < ApplicationController
     end
 
     @user = Carto::User.find_by_email(email)
-
-    if @user
-      @user.send_password_reset!
-    end
+    @user.try(:send_password_reset!)
 
     respond_to do |format|
       format.html { redirect_to CartoDB.path(self, "sent_password_reset") }

@@ -49,6 +49,7 @@ Development
 - Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
 - Make drop functions code PG11 compatible ([#14792](https://github.com/CartoDB/cartodb/pull/14792))
 - Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+- Add dependent visualizations to visualizations method in GET ([#14802](https://github.com/CartoDB/cartodb/pull/14802))
 - Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
 - Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
 - Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
@@ -60,6 +61,7 @@ Development
 - CSS color variables refactor ([#14837](https://github.com/CartoDB/cartodb/pull/14837))
 - Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
 - Obfuscate password in connector content ([CartoDB/support#2013](https://github.com/CartoDB/support/issues/2013))
+- Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
 - Replace title for items number when selecting visualizations [#14832](https://github.com/CartoDB/cartodb/issues/14832)
 
 4.26.0 (2019-03-11)

@@ -88,7 +88,7 @@ export default {
   cursor: pointer;
 
   &.element--selected {
-    color: $text-color;
+    color: $text__color;
     pointer-events: none;
   }
 }

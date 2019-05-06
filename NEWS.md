@@ -15,6 +15,7 @@ Development
 - Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
 - Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Password encryption with Argon2 [14811](https://github.com/CartoDB/cartodb/pull/14811)
 - Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
 - Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
 - Include tags in search results [CartoDB/product#243](https://github.com/CartoDB/product/issues/243)
@@ -55,7 +56,10 @@ Development
 - Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
 - Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
 - Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
-- Add badge for first onboarding visitors [#14831](https://github.com/CartoDB/cartodb/pull/14831)
+- Add badge for first onboarding visitors ([#14831](https://github.com/CartoDB/cartodb/pull/14831))
+- Fix "Duplicate datasets" action in the dashboard ([#2023](https://github.com/CartoDB/support/issues/2023))
+- CSS color variables refactor ([#14837](https://github.com/CartoDB/cartodb/pull/14837))
+- Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
 
 4.26.0 (2019-03-11)
 -------------------

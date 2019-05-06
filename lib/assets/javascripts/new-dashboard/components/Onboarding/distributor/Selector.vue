@@ -49,7 +49,7 @@ export default {
   max-width: 460px;
   height: 340px;
   padding: 1.5em;
-  border: 1px solid $grey;
+  border: 1px solid $border-color--dark;
   border-radius: 2px;
   background-color: $white;
   cursor: pointer;

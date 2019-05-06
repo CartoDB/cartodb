@@ -31,7 +31,7 @@ export default {
   width: 100%;
   height: 64px;
   transition: transform 200ms cubic-bezier(0.4, 0.01, 0.165, 0.99);
-  border-bottom: 1px solid $grey;
+  border-bottom: 1px solid $border-color--dark;
   background-color: $white;
 
   &.is-visible {

@@ -360,14 +360,14 @@ export default {
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border-radius: 2px;
-  background-color: $light-grey;
+  background-color: $thumbnail__bg-color;
 
   .row-typeIcon {
-    fill: $text-color;
+    fill: $text__color;
   }
 
   &.row-dataType--premium {
-    background-color: $premium-color;
+    background-color: $color-premium;
 
     .row-typeIcon {
       fill: $white;

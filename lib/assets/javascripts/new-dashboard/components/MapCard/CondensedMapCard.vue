@@ -191,7 +191,7 @@ export default {
       opacity: 1;
 
       .favorite-icon {
-        stroke: $text-secondary-color;
+        stroke: $text__color--secondary;
       }
 
       &:hover {

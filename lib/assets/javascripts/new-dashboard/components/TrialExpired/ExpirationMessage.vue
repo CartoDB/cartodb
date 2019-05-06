@@ -7,8 +7,11 @@
       <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
         {{ $t('TrialExpired.ExpirationMessage.title') }}
       </h2>
+      <p class="text is-body is-txtDarkBlue">
+         {{ this.trialExpiredMessage }}
+      </p>
       <p class="warning-description text is-body is-txtDarkBlue"
-          v-html="$t('TrialExpired.ExpirationMessage.description', { expirationDate: humanReadableExpirationDate })">
+         v-html="$t('TrialExpired.ExpirationMessage.description.phrase2', { expirationDays: this.expirationDays } )">
       </p>
       <div class="buttons-container">
         <a :href="addPaymentsURL" class="button upgrade-button is-caption">
@@ -30,9 +33,20 @@ import format from 'date-fns/format';
 export default {
   name: 'ExpirationMessage',
   props: {
-    addPaymentsURL: String
+    addPaymentsURL: String,
+    expirationDays: {
+      default: null
+    }
   },
   computed: {
+    trialExpiredMessage () {
+      return (this.hasTrialExpirationDate
+        ? this.$t('TrialExpired.ExpirationMessage.description.phrase1.withDate', { expirationDate: this.humanReadableExpirationDate })
+        : this.$t('TrialExpired.ExpirationMessage.description.phrase1.noDate'));
+    },
+    hasTrialExpirationDate () {
+      return this.$store.state.user.trial_ends_at;
+    },
     humanReadableExpirationDate () {
       return format(this.$store.state.user.trial_ends_at, 'MMMM DD, YYYY');
     }

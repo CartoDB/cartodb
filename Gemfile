@@ -67,7 +67,7 @@ gem 'gibbon',                  '1.1.4'
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
 gem 'uuidtools',                '2.1.5'
-gem 'argon2',                   '~> 2.0'
+gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', branch: 'master'
 
 # Markdown
 gem 'redcarpet', '3.3.3'

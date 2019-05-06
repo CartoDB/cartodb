@@ -23,12 +23,24 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
         <div class="js-grid__head--sticky">
           <!---->
           <ul class="grid-cell grid-cell--col12">
-            <div class="is-caption text">
+            <div class="is-caption text data--empty">
               SearchPage.emptyText.datasets
             </div>
           </ul>
           <!---->
         </div>
+        <!---->
+      </section>
+      <section class="section section--tags">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.tags</div>
+        <ul class="grid">
+          <li class="grid-cell">
+            <div class="is-caption text">
+              SearchPage.emptyText.tags
+            </div>
+          </li>
+        </ul>
+        <!---->
         <!---->
       </section>
     </div>
@@ -99,6 +111,31 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
         </div>
         <!---->
       </section>
+      <section class="section section--tags">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.tags</div>
+        <!---->
+        <ul class="grid">
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+          <li class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+            <faketagcard-stub></faketagcard-stub>
+          </li>
+        </ul>
+        <!---->
+      </section>
     </div>
   </div>
 </section>
@@ -146,6 +183,18 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
           <!---->
         </div>
         <pagination-stub page="1" numpages="2" class="pagination-element"></pagination-stub>
+      </section>
+      <section class="section section--tags">
+        <div class="section__title grid-cell title is-medium">SearchPage.sections.tags</div>
+        <ul class="grid">
+          <li class="grid-cell">
+            <div class="is-caption text">
+              SearchPage.emptyText.tags
+            </div>
+          </li>
+        </ul>
+        <!---->
+        <!---->
       </section>
     </div>
   </div>

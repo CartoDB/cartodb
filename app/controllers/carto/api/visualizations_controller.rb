@@ -454,8 +454,7 @@ module Carto
       end
 
       def link_ghost_tables
-        return unless current_user.present?
-        return unless current_user.has_feature_flag?('ghost_tables')
+        return unless current_user && current_user.has_feature_flag?('ghost_tables')
 
         # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
         # or asynchronously otherwise.

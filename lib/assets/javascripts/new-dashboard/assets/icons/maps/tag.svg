@@ -1,6 +1,0 @@
-<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(.5 .5)" fill="#2E3C43" fill-rule="evenodd">
-    <path d="M9 15a.75.75 0 0 1-.53-.22L.22 6.53A.75.75 0 0 1 0 6V.75C0 .34.34 0 .75 0H6c.2 0 .39.08.53.22l8.25 8.25c.3.3.3.77 0 1.06l-5.25 5.25A.75.75 0 0 1 9 15zM1.5 5.69l7.5 7.5L13.19 9l-7.5-7.5H1.5v4.19z" fill-rule="nonzero"/>
-    <circle cx="3.75" cy="3.75" r="1.5"/>
-  </g>
-</svg>

@@ -19,13 +19,6 @@ module.exports = {
 
   public_map_new: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
 
-  dashboard: [
-    rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
-    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
-    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
-    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
-  ],
-
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),

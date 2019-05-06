@@ -1,34 +1,125 @@
-//colors
-$primary-color: #047AE6;
-$primary-color--dark: #1074B5;
-$premium-color: #F90;
+/* === COLORS === */
+
+/* Primary */
+$blue--100: #F2F6F9;
+$blue--300: #CBE4FF;
+$blue--500: #047AE6;
+$blue--700: #1074B5;
+$blue--900: #003267;
+
+/* Neutral */
 $white: #FFF;
-$text-color: #2E3C43;
-$text-secondary-color: #6F757B;
-$text-color-light: #BABEC0;
-$light-grey: #EBEEF5;
-$grey: #E6E8EB;
-$softblue: #F2F6F9;
-$dark-blue: #003267;
-$alert: rgba(226, 7, 3, 1);
-$info: rgba(255, 195, 0, 0.48);
-$notification: #74FFA8;
+$neutral--100: #F9F9F9;
+$neutral--200: #EBEEF5;
+$neutral--300: #E6E8EB;
+$neutral--400: #C2CDD6;
+$neutral--500: #BABEC0;
+$neutral--600: #6F757B;
+$neutral--700: #34444C;
+$neutral--800: #2E3C43;
+$black: #000;
 
-//Progress bar colors
-$good-state: #72EEA8;
-$warning-state: #FFC300;
-$error-state: #FA1414;
+/* Accents */
+$yellow--100: #F2E24B;
+$yellow--300: #FEE600;
+$yellow--500: #FFC300;
+$yellow--700: #F90;
 
-//Dimensions
+$red--500: #FA1414;
+$red--600: #E20703;
+
+$green--500: #74FFA8;
+$green--700: #72EEA8;
+
+/* Theme */
+$color-primary--soft: $blue--100;
+$color-primary: $blue--500;
+$color-primary--dark: $blue--700;
+
+$color-premium: $yellow--700;
+
+/* === TYPE === */
+$text__color: $neutral--800;
+$text__color--secondary: $neutral--600;
+
+$link__color: $color-primary;
+
+$code__border-color: $neutral--400;
+
+/* === LAYOUT === */
 $layout-tablet: 800px;
 $layout-mobile: 600px;
 
-$dropdown__shadow-color: rgba(0, 0, 0, 0.16);
+/* === COMPONENTS === */
+
+/* defaults */
+$border-color: $neutral--200;
+$border-color--dark: $neutral--300;
+
+$success__bg-color: $green--700;
+$warning__bg-color: $yellow--500;
+$danger__bg-color: $red--500;
+$danger__color: $red--600;
+
+/* buttons */
+$button__color: $white;
+$button__bg-color: $color-primary;
+$button__bg-color--hover: $color-primary--dark;
+
+$button-outline__color: $color-primary;
+$button-outline__border-color: $color-primary;
+$button-outline__bg-color: $white;
+$button-outline__bg-color--hover: $color-primary--soft;
+
+$button-ghost__color: $color-primary;
+
+$button-cta__color: $neutral--800;
+$button-cta__bg-color: $yellow--300;
+$button-cta__bg-color--hover: $yellow--100;
+
+/* navbar */
+$navbar-avatar__bg-color: $neutral--500;
+$notification__bg-color: $green--500;
+
+/* form */
+$checkbox__border-color: $border-color--dark;
+$checkbox__bg-color: $white;
+$checkbox__border-color--hover: $color-primary;
+$checkbox__bg-color--selected: $color-primary;
+$checkbox-stroke__color: $white;
+
+/* dropdowns */
+$dropdown__shadow-color: rgba($black, 0.16);
 $dropdown__shadow: 0 2px 8px 0 $dropdown__shadow-color;
 
-$card__shadow-color: rgba(194, 205, 214, 0.8);
-$card__shadow: 0 8px 20px 0 $card__shadow-color;
+/* progressbar */
+$progressbar__bg-color: $neutral--200;
 
+/* cards */
+$card__shadow-color: rgba($neutral--400, 0.8);
+$card__shadow: 0 8px 20px 0 $card__shadow-color;
+$thumbnail__bg-color: $neutral--200;
+
+/* === PAGES === */
+
+/* onboarding */
+$onboarding__bg-color: $neutral--100;
+$onboarding-tags__border-color: $neutral--700;
+$onboarding-congrats__height: 445px;
+$onboarding-congrats__bg-color: rgba($blue--300, 0.3);
+$onboarding-notification: $yellow--300;
+
+/* Jupyter code blocks
+  Not our palette color, just copying jupyter look and feel */
+$jupyter__fill-color: #F7F7F7;
+$jupyter__border-color: #CFCFCF;
+$jupyter__text--in: #DA4D24;
+$jupyter__text--out: #2F3F9F;
+
+/* lockout */
+$button-lockout__bg-color: $blue--900;
+
+/* === Z_INDEX === */
 $z-index__dialog: 1000;
 $z-index__navbar: 5;
 $z-index__subheader: 4;
@@ -40,3 +131,8 @@ $z-index__local-dropdown: 1;
 // Used in pages where you have Maps and Dataset Lists
 $z-index__stack-context--first: 2;
 $z-index__stack-context--second: 1;
+$z-index__stack-context--third: 0;
+
+/* === DEPRECATED === */
+$primary-color: $color-primary;
+$softblue: $color-primary--soft;

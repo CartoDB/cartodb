@@ -39,7 +39,7 @@
 
         <div class="metadata" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="metadata__element" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img class="metadata__icon" svg-inline src="../../assets/icons/common/tag.svg">
+            <img class="metadata__icon" src="../../assets/icons/common/tag.svg" width="14" height="14">
 
             <ul class="metadata__tags" v-if="tagsChars <= maxTagsChars">
               <li v-for="(tag, index) in visualization.tags" :key="tag">
@@ -66,7 +66,7 @@
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--large u-txt-right u-p0">
+        <div class="cell cell--large u-txt-right u-p--0 ">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default {
       opacity: 1;
 
       .favorite-icon {
-        stroke: $text-secondary-color;
+        stroke: $text__color--secondary;
       }
 
       &:hover {
@@ -309,7 +309,7 @@ export default {
 
       .metadata__icon {
         margin-right: 4px;
-        transform: translate(0, 1px);
+        transform: translate(0, 2px);
       }
 
       li {

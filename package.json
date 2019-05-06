@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.82",
+  "version": "1.0.0-assets.88",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "cartodb-pecan": "0.2.x",
     "clipboard": "1.6.1",
     "codemirror": "5.14.2",
+    "confetti-js": "0.0.14",
     "d3-interpolate": "^1.1.6",
     "d3-queue": "^3.0.7",
     "date-fns": "^1.29.0",

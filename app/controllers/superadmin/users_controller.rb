@@ -14,7 +14,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   before_filter :get_user, only: [:update, :destroy, :show, :dump, :data_imports, :data_import]
   before_filter :get_carto_user, only: [:synchronizations, :synchronization, :geocodings, :geocoding]
 
-  rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
   layout 'application'
 
@@ -119,8 +119,8 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def data_imports
-    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
-    dataset = @user.data_imports_dataset.order(order.desc).paginate(page, per_page)
+    page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
+    dataset = @user.data_imports_dataset.order(Sequel.desc(order)).paginate(page, per_page)
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
     total_entries = dataset.pagination_record_count
@@ -147,7 +147,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def geocodings
-    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+    page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
     dataset = @user.geocodings.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?
@@ -169,7 +169,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
   end
 
   def synchronizations
-    page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
+    page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
     dataset = @user.synchronizations.order("#{order} desc")
 
     dataset = dataset.where(state: params[:status]) if params[:status].present?

@@ -23,29 +23,28 @@ module Carto
       include Carto::VisualizationMigrator
 
       ssl_required :index, :show, :create, :update, :destroy, :google_maps_static_image
-      ssl_allowed  :vizjson2, :vizjson3, :likes_count, :likes_list, :is_liked, :list_watching, :static_map,
+      ssl_allowed  :vizjson2, :vizjson3, :list_watching, :static_map,
         :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
+      skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map, :show]
 
       # :update and :destroy are correctly handled by permission check on the model
       before_filter :ensure_user_can_create, only: [:create]
 
-      before_filter :optional_api_authorization, only: [:show, :index, :vizjson2, :vizjson3, :is_liked, :add_like,
+      before_filter :optional_api_authorization, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
                                                         :remove_like, :notify_watching, :list_watching, :static_map]
 
       before_filter :id_and_schema_from_params
 
-      before_filter :load_visualization, only: [:likes_count, :likes_list, :is_liked, :add_like, :remove_like, :show,
+      before_filter :load_visualization, only: [:add_like, :remove_like, :show,
                                                 :list_watching, :notify_watching, :static_map, :vizjson2, :vizjson3,
                                                 :update, :destroy, :google_maps_static_image]
 
       before_filter :ensure_username_matches_visualization_owner, only: [:show, :static_map, :vizjson2, :vizjson3,
                                                                          :list_watching, :notify_watching, :update,
-                                                                         :likes_count, :likes_list, :is_liked,
                                                                          :destroy, :google_maps_static_image]
 
       before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
@@ -53,13 +52,13 @@ module Carto
       before_filter :link_ghost_tables, only: [:index]
       before_filter :load_common_data, only: [:index]
 
-      rescue_from Carto::OrderParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
       rescue_from Carto::UUIDParameterFormatError, with: :rescue_from_carto_error
       rescue_from Carto::ProtectedVisualizationLoadError, with: :rescue_from_protected_visualization_load_error
 
-      VALID_ORDER_PARAMS = [:updated_at, :size, :mapviews, :likes].freeze
+      VALID_ORDER_PARAMS = %i(name updated_at size mapviews favorited estimated_row_count privacy
+                              dependent_visualizations).freeze
 
       def show
         presenter = VisualizationPresenter.new(
@@ -68,7 +67,6 @@ module Carto
           show_user: params[:fetch_user] == 'true',
           show_user_basemaps: params[:show_user_basemaps] == 'true',
           show_liked: params[:show_liked] == 'true',
-          show_likes: params[:show_likes] == 'true',
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',
@@ -82,89 +80,56 @@ module Carto
       end
 
       def index
-        page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
-        types, total_types = get_types_parameters
+        offdatabase_orders = Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS.map(&:to_sym)
+        valid_order_combinations = VALID_ORDER_PARAMS - offdatabase_orders
+        opts = { valid_order_combinations: valid_order_combinations }
+        page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
+        _, total_types = get_types_parameters
+
         vqb = query_builder_with_filter_from_hash(params)
 
         presenter_cache = Carto::Api::PresenterCache.new
         presenter_options = presenter_options_from_hash(params).merge(related: false)
 
-        # TODO: undesirable table hardcoding, needed for disambiguation. Look for
-        # a better approach and/or move it to the query builder
+        visualizations = vqb.with_order(order, order_direction)
+                            .build_paged(page, per_page).map do |v|
+          VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                .with_presenter_cache(presenter_cache).to_poro
+        end
         response = {
-          visualizations: vqb.with_order("visualizations.#{order}", :desc).build_paged(page, per_page).map { |v|
-              VisualizationPresenter.new(v, current_viewer, self, presenter_options)
-                                    .with_presenter_cache(presenter_cache).to_poro
-          },
-          total_entries: vqb.build.count
+          visualizations: visualizations,
+          total_entries: vqb.build.size
         }
         if current_user && (params[:load_totals].to_s != 'false')
-          # Prefetching at counts removes duplicates
-          response.merge!({
-            total_user_entries: VisualizationQueryBuilder.new.with_types(total_types).with_user_id(current_user.id).build.count,
-            total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id).build.count,
-            total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id).with_user_id_not(current_user.id).with_prefetch_table.build.count
-          })
+          response.merge!(calculate_totals(total_types))
         end
         render_jsonp(response)
       rescue CartoDB::BoundingBoxError => e
         render_jsonp({ error: e.message }, 400)
-      rescue Carto::OrderParamInvalidError => e
+      rescue Carto::ParamInvalidError, Carto::ParamCombinationInvalidError => e
         render_jsonp({ error: e.message }, e.status)
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(exception: e)
         render_jsonp({ error: e.message }, 500)
       end
 
-      def likes_count
-        render_jsonp({
-          id: @visualization.id,
-          likes: @visualization.likes.count
-        })
-      end
-
-      def likes_list
-        render_jsonp({
-          id: @visualization.id,
-          likes: @visualization.likes.map { |like| { actor_id: like.actor } }
-        })
-      end
-
-      def is_liked
-        render_jsonp({
-          id: @visualization.id,
-          likes: @visualization.likes.count,
-          liked: current_viewer ? @visualization.liked_by?(current_viewer.id) : false
-        })
-      end
-
       def add_like
-        current_viewer_id = current_viewer.id
-
-        @visualization.add_like_from(current_viewer_id)
-
-        unless @visualization.is_owner?(current_viewer)
-          protocol = request.protocol.sub('://', '')
-          vis_url =
-            Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
-          @visualization.send_like_email(current_viewer, vis_url)
-        end
-
+        @visualization.add_like_from(current_viewer)
         render_jsonp(
           id: @visualization.id,
-          likes: @visualization.likes.count,
-          liked: @visualization.liked_by?(current_viewer_id)
+          liked: @visualization.liked_by?(current_viewer)
         )
+      rescue Carto::Visualization::UnauthorizedLikeError
+        render_jsonp({ text: "You don't have enough permissions to favorite this visualization" }, 403)
       rescue Carto::Visualization::AlreadyLikedError
-        render(text: "You've already liked this visualization", status: 400)
+        render_jsonp({ text: "You've already favorited this visualization" }, 400)
       end
 
       def remove_like
-        current_viewer_id = current_viewer.id
-
-        @visualization.remove_like_from(current_viewer_id)
-
-        render_jsonp(id: @visualization.id, likes: @visualization.likes.count, liked: false)
+        @visualization.remove_like_from(current_viewer)
+        render_jsonp(id: @visualization.id, liked: @visualization.liked_by?(current_viewer))
+      rescue Carto::Visualization::UnauthorizedLikeError
+        render_jsonp({ text: "You don't have enough permissions to favorite this visualization" }, 403)
       end
 
       def notify_watching
@@ -362,7 +327,7 @@ module Carto
       private
 
       # excluded:
-      #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :likes, :liked, :table, :user_id
+      #   :id, :map_id, :type, :created_at, :external_source, :url, :version, :table, :user_id
       #   :synchronization, :uses_builder_features, :auth_tokens, :transition_options, :prev_id, :next_id, :parent_id
       #   :active_child, :permission
       VALID_UPDATE_ATTRIBUTES = [:name, :display_name, :active_layer_id, :tags, :description, :privacy, :updated_at,
@@ -489,8 +454,7 @@ module Carto
       end
 
       def link_ghost_tables
-        return unless current_user.present?
-        return unless current_user.has_feature_flag?('ghost_tables')
+        return unless current_user && current_user.has_feature_flag?('ghost_tables')
 
         # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
         # or asynchronously otherwise.
@@ -507,6 +471,33 @@ module Carto
           CartoDB.notify_exception(e, {user:current_user})
           return true
         end
+      end
+
+      def calculate_totals(total_types)
+        # Prefetching at counts removes duplicates
+        {
+          total_user_entries: VisualizationQueryBuilder.new
+                                                       .with_types(total_types)
+                                                       .with_user_id(current_user.id)
+                                                       .build.size,
+          total_locked: VisualizationQueryBuilder.new
+                                                 .with_types(total_types)
+                                                 .with_user_id(current_user.id)
+                                                 .with_locked(true)
+                                                 .build.size,
+          total_likes: VisualizationQueryBuilder.new
+                                                .with_types(total_types)
+                                                .with_liked_by_user_id(current_user.id)
+                                                .with_locked(false)
+                                                .build.size,
+          total_shared: VisualizationQueryBuilder.new
+                                                 .with_types(total_types)
+                                                 .with_shared_with_user_id(current_user.id)
+                                                 .with_user_id_not(current_user.id)
+                                                 .with_locked(false)
+                                                 .with_prefetch_table
+                                                 .build.size
+        }
       end
     end
   end

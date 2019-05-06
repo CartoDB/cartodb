@@ -16,6 +16,8 @@ defaults: &defaults
   http_port:           3000 # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
+  # It's recommended to generate a new secret_key_base for each installation using `bundle exec rake secret`
+  secret_key_base:    '65903fa751affcdd71a9eb09308bcb404c50c8df03414db849ea22fbe8d4aae9ff344f6594630eb9c8367b4fd8ed2211d0342a49df473dccc27ae0be120b25ab'
   account_host:       'localhost.lan:3000'
   # Here you can define other hosts different to account_host that also will be CORS enabled
   # cors_enabled_hosts:
@@ -87,6 +89,10 @@ defaults: &defaults
     api_key:
   passwords:
     expiration_in_d:
+    rate_limit:
+      max_burst:
+      count:
+      period:
   metrics:
     hubspot:
       events_host: 'http://track.hubspot.com'
@@ -131,7 +137,7 @@ defaults: &defaults
     protocol: 'https'
     username: 'common-data'
     # base_url: 'https://common-data.carto.com'
-    format: 'shp'
+    format: 'gpkg'
     generate_every: 86400
   explore_api:
     username: ''
@@ -154,10 +160,18 @@ defaults: &defaults
     password: ''
     authentication: ''
     enable_starttls_auto: ''
+    template:
+      app_name: 'CARTO'
+      app_link: 'https://carto.com'
+      header_logo_url: 'http://carto-email-assets.s3.amazonaws.com/carto-logo.png'
+      footer_text: 'CARTO · Made in Madrid & New York City since 2012'
+      support_link: 'mailto:support@carto.com'
+      include_carto_links: true
   varnish_management:
     critical: false
     host: '127.0.0.1'
     port: 6082
+    http_port: 6081
     purge_command: 'purge'
     retries: 5
     timeout: 5
@@ -209,9 +223,10 @@ defaults: &defaults
       base_url: ''
       api_key: ''
       table_name: ''
-    mapzen:
-      search_bar_api_key: ''
+    search_bar_provider: ''
     mapbox:
+      search_bar_api_key: ''
+    tomtom:
       search_bar_api_key: ''
     api:
       host: 'localhost'

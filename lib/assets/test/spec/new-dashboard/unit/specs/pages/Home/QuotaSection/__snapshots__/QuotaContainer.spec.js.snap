@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`QuotaContainer.vue should render correct container with headers for quotas including total per month 1`] = `
+<div class="quota-container">
+  <div class="quota-headers">
+    <div class="quota-cell cell--main">
+      <h3 class="title is-caption quota-title">Test Title</h3>
+    </div>
+    <div class="quota-labels">
+      <div class="quota-cell cell--medium">
+        <p class="text is-small is-txtSoftGrey">QuotaSection.header.remaining</p>
+      </div>
+      <div class="quota-cell cell--medium cell--mobile">
+        <p class="text is-small is-txtSoftGrey">QuotaSection.header.used</p>
+      </div>
+      <div class="quota-cell cell--medium">
+        <p class="text is-small is-txtSoftGrey quota-total">
+          QuotaSection.header.total <span class="quota-month">QuotaSection.header.perMonth</span></p>
+      </div>
+      <div class="quota-cell cell--small"></div>
+    </div>
+  </div>
+  <div class="quota-info"></div>
+</div>
+`;

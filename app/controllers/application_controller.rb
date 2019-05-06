@@ -28,6 +28,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
+  IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(lockout login logout unauthenticated multifactor_authentication).freeze
 
   def self.ssl_required(*splat)
     if Rails.env.production? || Rails.env.staging?
@@ -196,14 +197,21 @@ class ApplicationController < ActionController::Base
   end
 
   def check_user_state
-    return unless (request.path =~ %r{^\/(lockout|login|logout|unauthenticated)}).nil?
+    return if IGNORE_PATHS_FOR_CHECK_USER_STATE.any? { |path| request.path.end_with?("/" + path) }
+
     viewed_username = CartoDB.extract_subdomain(request)
     if current_user.nil? || current_user.username != viewed_username
       user = Carto::User.find_by_username(viewed_username)
-      render_locked_owner if user.try(:locked?)
+      if user.try(:locked?)
+        render_locked_owner
+        return
+      end
     elsif current_user.locked?
       render_locked_user
+      return
     end
+
+    render_multifactor_authentication if multifactor_authentication_required?
   end
 
   def render_403
@@ -239,6 +247,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def multifactor_authentication_required?(user = current_viewer)
+    user &&
+      user.multifactor_authentication_configured? &&
+      !warden.session(user.username)[:multifactor_authentication_performed] &&
+      !warden.session(user.username)[:skip_multifactor_authentication]
+  rescue Warden::NotAuthenticated
+    false
+  end
+
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
     is_auth ? validate_session(current_user) : not_authorized
@@ -265,15 +282,24 @@ class ApplicationController < ActionController::Base
     validate_session(current_user) if got_auth
   end
 
-  def render_locked_user
+  def redirect_or_forbidden(path, error)
     respond_to do |format|
       format.html do
-        redirect_to CartoDB.path(self, 'lockout')
+        redirect_to CartoDB.url(self, path)
       end
       format.json do
-        head 404
+        render(json: { error: error }, status: 403)
       end
     end
+  end
+
+  def render_multifactor_authentication
+    session[:return_to] = request.original_url
+    redirect_or_forbidden('multifactor_authentication_session', 'mfa_required')
+  end
+
+  def render_locked_user
+    redirect_or_forbidden('lockout', 'lockout')
   end
 
   def render_locked_owner
@@ -291,7 +317,8 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html do
         session[:return_to] = request.url
-        redirect_to CartoDB.path(self, 'login') and return
+        redirect_to CartoDB.url(self, 'login', keep_base_url: true)
+        return
       end
       format.json do
         head :unauthorized
@@ -434,5 +461,6 @@ class ApplicationController < ActionController::Base
   def set_security_headers
     headers['X-Frame-Options'] = 'DENY'
     headers['X-XSS-Protection'] = '1; mode=block'
+    headers['X-Content-Type-Options'] = 'nosniff'
   end
 end

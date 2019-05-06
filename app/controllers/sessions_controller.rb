@@ -1,6 +1,4 @@
 # encoding: UTF-8
-require_dependency 'google_plus_config'
-require_dependency 'google_plus_api'
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'
@@ -11,14 +9,20 @@ require_relative '../../lib/user_account_creator'
 require_relative '../../lib/cartodb/stats/authentication'
 
 class SessionsController < ApplicationController
+  include ActionView::Helpers::DateHelper
   include LoginHelper
   include Carto::EmailCleaner
 
   SESSION_EXPIRED = 'session_expired'.freeze
+  PASSWORD_LOCKED = 'password_locked'.freeze
+  MULTIFACTOR_AUTHENTICATION_INACTIVITY = 'multifactor_authentication_inactivity'.freeze
+
+  MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY = 120.seconds
 
   layout 'frontend'
   ssl_required :new, :create, :destroy, :show, :unauthenticated, :account_token_authentication_error,
-               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change
+               :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change,
+               :password_locked, :multifactor_authentication, :multifactor_authentication_verify_code
 
   skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
 
@@ -36,10 +40,13 @@ class SessionsController < ApplicationController
   before_filter :load_organization
   before_filter :initialize_oauth_config
   before_filter :api_authorization_required, only: :show
+  after_action  :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
+
+  PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze
 
   def new
     if current_viewer
-      redirect_to(CartoDB.url(self, 'dashboard', { trailing_slash: true }, current_viewer))
+      redirect_to(CartoDB.url(self, 'dashboard', params: { trailing_slash: true }, user: current_viewer))
     elsif saml_authentication? && !user
       # Automatically trigger SAML request on login view load -- could easily trigger this elsewhere
       redirect_to(saml_service.authentication_request)
@@ -49,15 +56,21 @@ class SessionsController < ApplicationController
       redirect_to(url)
     else
       if params[:error] == SESSION_EXPIRED
-        @flash_login_error = 'Your session has expired. Please, log in to continue using CARTO.'
+        @flash_login_error = 'Your session has expired. ' + PLEASE_LOGIN
+      elsif params[:error] == PASSWORD_LOCKED
+        wait_text = time_ago_in_words(Time.now + params[:retry_after].to_i.seconds, include_seconds: true)
+        @flash_login_error =
+          'Too many failed login attempts.' +
+          " Please, wait #{wait_text} or reset your password to continue using CARTO."
+      elsif params[:error] == MULTIFACTOR_AUTHENTICATION_INACTIVITY
+        @flash_login_error = 'You\'ve been logged out due to a long time of inactivity. ' + PLEASE_LOGIN
       end
       render
     end
   end
 
   def create
-    strategies, username = saml_strategy_username || ldap_strategy_username ||
-                           google_strategy_username || credentials_strategy_username
+    strategies, username = saml_strategy_username || ldap_strategy_username || credentials_strategy_username
 
     unless strategies
       return saml_authentication? ? render_403 : render(action: 'new')
@@ -74,7 +87,7 @@ class SessionsController < ApplicationController
     user = authenticate!(*strategies, scope: username)
     CartoDB::Stats::Authentication.instance.increment_login_counter(user.email)
 
-    redirect_to session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+    redirect_to after_login_url(user)
   end
 
   def destroy
@@ -85,17 +98,59 @@ class SessionsController < ApplicationController
     render :json => {:email => current_user.email, :uid => current_user.id, :username => current_user.username}
   end
 
+  def multifactor_authentication
+    @user = current_viewer
+    return redirect_to after_login_url(@user) unless multifactor_authentication_required?
+
+    @mfa = @user.active_multifactor_authentication
+    render action: 'multifactor_authentication'
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
+    unauthenticated
+  end
+
+  def multifactor_authentication_verify_code
+    user = ::User.where(id: params[:user_id]).first
+    url = after_login_url(user)
+
+    if params[:skip] == "true" && user.active_multifactor_authentication.needs_setup?
+      disable_mfa(user.id)
+    else
+      return multifactor_authentication_inactivity if mfa_inactivity_period_expired?(user)
+
+      retry_after = user.password_login_attempt
+      if retry_after != ::User::LOGIN_NOT_RATE_LIMITED
+        cdb_logout
+        return password_locked(retry_after)
+      end
+
+      user.active_multifactor_authentication.verify!(params[:code])
+      user.reset_password_rate_limit
+    end
+
+    warden.session(user.username)[:multifactor_authentication_performed] = true
+    redirect_to url
+  rescue Carto::UnauthorizedError, Warden::NotAuthenticated
+    unauthenticated
+  end
+
   def unauthenticated
     username = extract_username(request, params)
     CartoDB::Stats::Authentication.instance.increment_failed_login_counter(username)
 
     # Use an instance variable to show the error instead of the flash hash. Setting the flash here means setting
     # the flash for the next request and we want to show the message only in the current one
-    @login_error = (params[:email].blank? && params[:password].blank?) ? 'Can\'t be blank' : 'Your account or your password is not ok'
+    @login_error = if mfa_request?
+                     'Verification code is not valid'
+                   elsif params[:email].blank? && params[:password].blank?
+                     'Can\'t be blank'
+                   else
+                     'Your account or your password is not ok'
+                   end
 
     respond_to do |format|
       format.html do
-        render :action => 'new' and return
+        return multifactor_authentication if mfa_request?
+        return render action: 'new'
       end
       format.json do
         head :unauthorized
@@ -147,9 +202,15 @@ class SessionsController < ApplicationController
     redirect_to edit_password_change_url(username) if username
   end
 
+  def password_locked(retry_after = warden.env['warden.options'][:retry_after])
+    warden.custom_failure!
+    redirect_to login_url + "?error=#{PASSWORD_LOCKED}&retry_after=#{retry_after}"
+  end
+
   def password_expired
     warden.custom_failure!
     cdb_logout
+    session[:return_to] = request.original_url
 
     respond_to do |format|
       format.html do
@@ -157,9 +218,16 @@ class SessionsController < ApplicationController
         redirect_to(url + "?error=#{SESSION_EXPIRED}")
       end
       format.json do
-        render(json: { error: 'session_expired' }, status: 403)
+        render(json: { error: SESSION_EXPIRED }, status: 403)
       end
     end
+  end
+
+  def multifactor_authentication_inactivity
+    warden.custom_failure!
+    cdb_logout
+
+    redirect_to login_url + "?error=#{MULTIFACTOR_AUTHENTICATION_INACTIVITY}"
   end
 
   def create_user(username, organization_id, email, created_via)
@@ -196,10 +264,10 @@ class SessionsController < ApplicationController
   protected
 
   def initialize_oauth_config
-    @oauth_configs = [google_plus_config, github_config].compact
+    @oauth_configs = [google_config, github_config].compact
   end
 
-  def google_plus_config
+  def google_config
     unless @organization && !@organization.auth_google_enabled
       Carto::Oauth::Google::Config.instance(form_authenticity_token, google_oauth_url,
                                             invitation_token: params[:invitation_token],
@@ -216,6 +284,27 @@ class SessionsController < ApplicationController
   end
 
   private
+
+  def mfa_request?
+    params[:code].presence || params[:skip].presence
+  end
+
+  def set_last_mfa_activity
+    user = ::User.where(id: params[:user_id]).first || current_viewer
+    warden.session(user.username)[:multifactor_authentication_last_activity] = Time.now.to_i if user
+  rescue Warden::NotAuthenticated
+  end
+
+  def mfa_inactivity_period_expired?(user)
+    time_inactive = Time.now.to_i - warden.session(user.username)[:multifactor_authentication_last_activity]
+    time_inactive > MAX_MULTIFACTOR_AUTHENTICATION_INACTIVITY
+  rescue Warden::NotAuthenticated
+  end
+
+  def after_login_url(user)
+    return login_url unless user
+    session.delete('return_to') || (user.public_url + CartoDB.path(self, 'dashboard', trailing_slash: true))
+  end
 
   def central_enabled?
     Cartodb::Central.sync_data_with_cartodb_central?
@@ -256,32 +345,12 @@ class SessionsController < ApplicationController
     end
   end
 
-  def google_strategy_username
-    if google_authentication? && !user_password_authentication?
-      user = GooglePlusAPI.new.get_user(params[:google_access_token])
-      if user
-        [:google_access_token, params[:user_domain].present? ? params[:user_domain] : user.username]
-      elsif user == false
-        # token not valid
-        nil
-      else
-        # token valid, unknown user
-        @google_plus_config.unauthenticated_valid_access_token = params[:google_access_token]
-        nil
-      end
-    end
-  end
-
   def credentials_strategy_username
     [:password, extract_username(request, params)] if user_password_authentication?
   end
 
   def user_password_authentication?
     params && params['email'].present? && params['password'].present?
-  end
-
-  def google_authentication?
-    params[:google_access_token].present? && @google_plus_config.present?
   end
 
   def ldap_authentication?
@@ -300,11 +369,13 @@ class SessionsController < ApplicationController
 
   def load_organization
     return @organization if @organization
-    # Useful for logout
-    return current_user.organization if current_user
 
-    subdomain = CartoDB.extract_subdomain(request)
-    @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    if current_viewer
+      @organization = current_viewer.organization
+    else
+      subdomain = CartoDB.extract_subdomain(request)
+      @organization = Carto::Organization.where(name: subdomain).first if subdomain
+    end
   end
 
   def do_logout
@@ -345,5 +416,10 @@ class SessionsController < ApplicationController
     else
       "/404.html"
     end
+  end
+
+  def disable_mfa(user_id)
+    service = Carto::UserMultifactorAuthUpdateService.new(user_id: user_id)
+    service.update(enabled: false)
   end
 end

@@ -403,7 +403,7 @@ describe User do
   it 'should store feature flags' do
     ff = FactoryGirl.create(:feature_flag, id: 10001, name: 'ff10001')
 
-    user = create_user :email => 'ff@example.com', :username => 'ff-user-01', :password => 'ff-user-01'
+    user = create_user email: 'ff@example.com', username: 'ff-user-01', password: '000ff-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user.feature_flags_user.map { |ffu| ffu.feature_flag_id }.should include(ff.id)
@@ -413,7 +413,7 @@ describe User do
   it 'should delete feature flags assignations to a deleted user' do
     ff = FactoryGirl.create(:feature_flag, id: 10002, name: 'ff10002')
 
-    user = create_user :email => 'ff2@example.com', :username => 'ff2-user-01', :password => 'ff2-user-01'
+    user = create_user email: 'ff2@example.com', username: 'ff2-user-01', password: '000ff2-user-01'
     user.set_relationships_from_central({ feature_flags: [ ff.id.to_s ]})
     user.save
     user_id = user.id
@@ -471,6 +471,26 @@ describe User do
     user.errors[:password].should be_present
 
     user.password = 'manolo' * 11
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+  end
+
+  it "should validate password is different than username" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+    user.password = user.password_confirmation = "adminipop"
+
+    user.valid?.should be_false
+    user.errors[:password].should be_present
+  end
+
+  it "should validate password is not a common one" do
+    user = ::User.new
+    user.username = "adminipop"
+    user.email = "adminipop@example.com"
+    user.password = user.password_confirmation = '123456'
+
     user.valid?.should be_false
     user.errors[:password].should be_present
   end
@@ -635,19 +655,27 @@ describe User do
 
   describe '#private_maps_enabled?' do
     it 'should not have private maps enabled by default' do
-      user_missing_private_maps = create_user :email => 'user_mpm@example.com',  :username => 'usermpm',  :password => 'usermpm'
+      user_missing_private_maps = create_user email: 'user_mpm@example.com',
+                                              username: 'usermpm',
+                                              password: '000usermpm'
       user_missing_private_maps.private_maps_enabled?.should eq false
       user_missing_private_maps.destroy
     end
 
     it 'should have private maps if enabled' do
-      user_with_private_maps = create_user :email => 'user_wpm@example.com',  :username => 'userwpm',  :password => 'userwpm', :private_maps_enabled => true
+      user_with_private_maps = create_user email: 'user_wpm@example.com',
+                                           username: 'userwpm',
+                                           password: '000userwpm',
+                                           private_maps_enabled: true
       user_with_private_maps.private_maps_enabled?.should eq true
       user_with_private_maps.destroy
     end
 
     it 'should not have private maps if disabled' do
-      user_without_private_maps = create_user :email => 'user_opm@example.com',  :username => 'useropm',  :password => 'useropm', :private_maps_enabled => false
+      user_without_private_maps = create_user email: 'user_opm@example.com',
+                                              username: 'useropm',
+                                              password: '000useropm',
+                                              private_maps_enabled: false
       user_without_private_maps.private_maps_enabled?.should eq false
       user_without_private_maps.destroy
     end
@@ -1274,7 +1302,9 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:upgraded_at).returns(nil)
     @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - (::User::TRIAL_DURATION_DAYS - 1).days)
+    @user.stubs(:upgraded_at).returns(Time.now - (::User::MAGELLAN_TRIAL_DAYS - 1).days)
+    @user.trial_ends_at.should_not be_nil
+    @user.stubs(:account_type).returns('PERSONAL30')
     @user.trial_ends_at.should_not be_nil
   end
 
@@ -1789,7 +1819,7 @@ describe User do
   end
 
   it "Tests password change" do
-    new_valid_password = '123456'
+    new_valid_password = '000123456'
 
     old_crypted_password = @user.crypted_password
 
@@ -1799,14 +1829,14 @@ describe User do
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid") # "to_s" of validation msg
+    }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/) # "to_s" of validation msg
 
     @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
     @user.valid?.should eq false
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password New password doesn't match confirmation")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
 
     @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
     @user.valid?.should eq false
@@ -1814,14 +1844,14 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password doesn't match confirmation")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password doesn't match confirmation")
 
     @user.change_password(@user_password, 'tiny', 'tiny')
     @user.valid?.should eq false
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password Must be at least 6 characters long")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
 
     long_password = 'long' * 20
     @user.change_password(@user_password, long_password, long_password)
@@ -1829,28 +1859,28 @@ describe User do
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password Must be at most 64 characters long")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
 
     @user.change_password('aaaaaa', nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
 
     @user.change_password(@user_password, nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:new_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
 
     @user.change_password(nil, nil, nil)
     @user.valid?.should eq false
     @user.errors.fetch(:old_password).nil?.should eq false
     expect {
       @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password New password can't be blank")
+    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
 
     @user.change_password(nil, new_valid_password, new_valid_password)
     @user.valid?.should eq false
@@ -1887,7 +1917,7 @@ describe User do
 
       @user.needs_password_confirmation?.should == false
 
-      new_valid_password = '123456'
+      new_valid_password = '000123456'
       @user.change_password("doesn't matter in this case", new_valid_password, new_valid_password)
 
       @user.needs_password_confirmation?.should == true
@@ -2730,7 +2760,6 @@ describe User do
 
   describe '#rate limits' do
     before :all do
-      @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
       @account_type = create_account_type_fg('FREE')
       @account_type_pro = create_account_type_fg('PRO')
       @account_type_org = create_account_type_fg('ORGANIZATION USER')
@@ -2745,7 +2774,7 @@ describe User do
       uo.promote_user_to_admin
       @organization.reload
       @user_org = FactoryGirl.build(:user, account_type: 'FREE')
-      @user_org.organization_id = @organization.id
+      @user_org.organization = @organization
       @user_org.enabled = true
       @user_org.save
 
@@ -2769,23 +2798,12 @@ describe User do
       @rate_limits_pro.destroy unless @rate_limits_pro.nil?
     end
 
-    before :each do
-      unless FeatureFlag.where(name: 'limits_v2').first.present?
-        @limits_feature_flag = FactoryGirl.create(:feature_flag, name: 'limits_v2', restricted: false)
-      end
-    end
-
-    after :each do
-      @limits_feature_flag.destroy if @limits_feature_flag.exists?
-    end
-
-    it 'does not create rate limits if feature flag is not enabled' do
-      @limits_feature_flag.destroy
+    it 'does create rate limits' do
       @user_no_ff = FactoryGirl.create(:valid_user, rate_limit_id: @rate_limits.id)
       map_prefix = "limits:rate:store:#{@user_no_ff.username}:maps:"
       sql_prefix = "limits:rate:store:#{@user_no_ff.username}:sql:"
-      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 0
-      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 0
+      $limits_metadata.EXISTS("#{map_prefix}anonymous").should eq 1
+      $limits_metadata.EXISTS("#{sql_prefix}query").should eq 1
     end
 
     it 'creates rate limits from user account type' do
@@ -2970,6 +2988,38 @@ describe User do
         expect(org_user2.password_expired?).to be_false
         Delorean.back_to_the_present
       end
+    end
+  end
+
+  describe 'ghost tables event trigger' do
+    it 'creates the cdb_ddl_execution table with the user' do
+      table_name = @user.in_database(as: :superuser)
+                        .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                        .first[:to_regclass]
+      table_name.should eql 'cdb_ddl_execution'
+    end
+
+    it 'removes the cdb_ddl_execution table when calling drop_ghost_tables_event_trigger' do
+      @user.db_service.drop_ghost_tables_event_trigger
+
+      table_name = @user.in_database(as: :superuser)
+                        .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                        .first[:to_regclass]
+      table_name.should be_nil
+
+      @user.db_service.create_ghost_tables_event_trigger
+    end
+
+    it 'saves the TIS config from app_config.yml to cdb_conf' do
+      CartoDB::UserModule::DBService.any_instance.unstub(:configure_ghost_table_event_trigger)
+      user = create_user
+
+      cdb_conf = user.in_database(as: :superuser)
+                     .fetch("SELECT cartodb.CDB_Conf_GetConf('invalidation_service')").first[:cdb_conf_getconf]
+      cdb_conf.should be
+
+      user.destroy
+      CartoDB::UserModule::DBService.any_instance.stubs(:configure_ghost_table_event_trigger).returns(true)
     end
   end
 

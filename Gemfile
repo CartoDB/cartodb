@@ -1,26 +1,29 @@
 source 'http://rubygems.org'
 
-gem 'rails',                   '4.2.10'
+gem 'rails',                   '4.2.11'
 
 gem 'rake',                    '0.9.2.2'
-gem 'pg',                      '0.15.0'
-gem 'sequel',                  '3.42.0'
-gem 'sequel_pg',               '1.6.3', require: 'sequel'
+
+# PostgreSQL
+gem 'pg',                      '0.20.0'
+gem 'sequel',                  '~> 4.45.0'
+gem 'sequel-rails', '~> 1.0.1'
+gem 'sequel_pg',               '~> 1.12.0', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
 
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
-gem 'sequel-rails', '0.9.15'
-
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.7'
 gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 
-gem 'redis',                   '3.3.0'
-gem 'hiredis',                 '0.6.1'
+# Redis
+gem 'hiredis',                 '~> 0.6.1'
+gem 'redis',                   '~> 3.3.5'
+
 gem 'nokogiri',                '~> 1.8.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-s3',              '~> 1'
@@ -29,7 +32,7 @@ gem 'request_store',           '1.1.0'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
-gem 'addressable',             '2.3.2', require: 'addressable/uri'
+gem 'addressable',             '~> 2.5', require: 'addressable/uri'
 
 gem 'ejs',                     '~> 1.1.1'
 gem 'execjs',                  '~> 0.4' # Required by ejs
@@ -56,19 +59,15 @@ gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
 gem 'faraday',                 '0.9.0'
-gem 'retriable',               '1.4.1'  # google-api-client needs this
-gem 'google-api-client',       '0.7.0'
+gem 'google-api-client',       '0.28.4'
 gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 
-# Geocoder (synchronizer doesn't needs it anymore)
-gem 'eventmachine',            '1.0.4'
-gem 'em-pg-client',            '0.2.1'
-
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
 gem 'uuidtools',                '2.1.5'
+gem 'argon2',                   '~> 2.0'
 
 # Markdown
 gem 'redcarpet', '3.3.3'
@@ -82,6 +81,10 @@ gem 'net-telnet'
 
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
+
+# Multifactor Authentication
+gem 'rotp', '~> 3.3', '>= 3.3.1'
+gem 'rqrcode', '~> 0.10.1'
 
 group :test do
   gem 'simplecov', '0.13.0', require: false

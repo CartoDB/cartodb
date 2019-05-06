@@ -27,7 +27,7 @@ module CartoDB
       # 'exclude_shared' and
       # 'only_shared' are other filtes applied
       # 'only_liked'
-      AVAILABLE_FIELD_FILTERS   = %w{ name type description map_id privacy id parent_id}
+      AVAILABLE_FIELD_FILTERS   = %w{name type description map_id privacy id parent_id}
 
       # Keys in this list are the only filters that should be kept for calculating totals (if present)
       FILTERS_ALLOWED_AT_TOTALS = [ :type, :user_id, :unauthenticated ]
@@ -36,7 +36,7 @@ module CartoDB
       FILTER_SHARED_NO = 'no'
       FILTER_SHARED_ONLY = 'only'
 
-      ALLOWED_ORDERING_FIELDS = [:likes, :mapviews, :row_count, :size]
+      ALLOWED_ORDERING_FIELDS = [:mapviews, :row_count, :size].freeze
 
       # Same as services/data-repository/backend/sequel.rb
       PAGE          = 1
@@ -72,7 +72,7 @@ module CartoDB
       #   except if 'exclude_shared' filter is also present and true,
       # - 'only_shared' forces to use different flow because if there are no shared there's nothing else to do
       # - 'locked' filter has special behaviour
-      # - If 'only_liked' it will return all liked visualizations, not only user's.
+      # - If 'only_liked' it will return all favorited visualizations, not only user's.
       def fetch(filters={})
         filters = filters.dup   # Avoid changing state
         @user_id = filters.fetch(:user_id, nil)
@@ -155,57 +155,11 @@ module CartoDB
         total
       end
 
-      # @throws KeyError
-      def total_liked_entries(type = nil)
-        type ||= @type
-        if @user_id.nil?
-          raise KeyError.new("Can't retrieve likes count without specifying user id")
-        end
-
-        if @unauthenticated_flag
-          unauthenticated_likes(type)
-        else
-          authenticated_likes(type)
-        end
-      end
-
       attr_reader :total_entries
 
       private
 
       attr_reader :collection
-
-      # noinspection RubyArgCount
-      def unauthenticated_likes(type)
-        # visualizations.id == :visualizations__id in Sequel
-        options = {
-          visualizations__id: :subject,
-          privacy: Visualization::Member::PRIVACY_PUBLIC
-        }
-        count_likes(type, options)
-      end
-
-      # noinspection RubyArgCount
-      def authenticated_likes(type)
-        options = {
-          visualizations__id: :subject
-        }
-
-        count_likes(type, options)
-      end
-
-      def count_likes(type, options)
-        options.merge!(type: type) if type
-
-        user_id = @user_id
-
-        dataset = CartoDB::Like.select(:subject)
-                               .where(actor: @user_id)
-                               .join(:visualizations, options)
-        dataset = add_liked_by_conditions_to_dataset(dataset, user_id)
-        dataset.distinct
-               .count
-      end
 
       def paginate_and_get_entries(dataset, filters)
         if @can_paginate
@@ -278,39 +232,6 @@ module CartoDB
         filters
       end
 
-      def compute_liked_filter_dataset(dataset, filters)
-        only_liked = filters.delete(:only_liked)
-        if only_liked == true || only_liked == "true"
-          if @user_id.nil?
-            nil
-          else
-            # If no order supplied, order by likes
-            filters[:order] = :likes if filters.fetch(:order, nil).nil?
-
-            liked_vis = user_liked_vis(@user_id)
-            if liked_vis.nil? || liked_vis.empty?
-              nil
-            else
-              dataset.where(id: liked_vis)
-            end
-          end
-        else
-          dataset
-        end
-      end
-
-      def add_liked_by_conditions_to_dataset(dataset, user_id)
-        user_shared_vis = user_shared_vis(user_id)
-        dataset = dataset.where {
-         ({ privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] }) |
-         ({ user_id: user_id }) |
-         ({ visualizations__id: user_shared_vis })
-        }
-        # TODO: this probably introduces duplicates. See #2899.
-        # Should be removed when like count and list matches for organizations
-        #include_shared_entities(dataset, { user_id: user_id } )
-      end
-
       def base_collection(filters)
         only_liked = filters.fetch(:only_liked, 'false')
         if only_liked == true || only_liked == 'true'
@@ -356,6 +277,40 @@ module CartoDB
         dataset
       end
 
+      def compute_liked_filter_dataset(dataset, filters)
+        only_liked = filters.delete(:only_liked)
+        if [true, 'true'].include?(only_liked)
+          if @user_id.nil?
+            nil
+          else
+            filters[:order] = :updated_at if filters.fetch(:order, nil).nil?
+
+            liked_vis = user_liked_vis(@user_id)
+            if liked_vis.nil? || liked_vis.empty?
+              nil
+            else
+              dataset.where(id: liked_vis)
+            end
+          end
+        else
+          dataset
+        end
+      end
+
+      def add_liked_by_conditions_to_dataset(dataset, user_id)
+        user_shared_vis = user_shared_vis(user_id)
+        dataset.where {
+          Sequel.|(
+            { privacy: [CartoDB::Visualization::Member::PRIVACY_PUBLIC, CartoDB::Visualization::Member::PRIVACY_LINK] },
+            { user_id: user_id },
+            { visualizations__id: user_shared_vis }
+          )
+        }
+        # TODO: this probably introduces duplicates. See #2899.
+        # Should be removed when like count and list matches for organizations
+        # include_shared_entities(dataset, { user_id: user_id } )
+      end
+
       def apply_filters(dataset, filters)
         @type = filters.fetch(:type, nil)
         @type = nil if @type == ''
@@ -379,8 +334,6 @@ module CartoDB
       # Note: Not implemented ascending order for now, all are descending sorts
       def lazy_order_by(objects, field)
         case field
-        when :likes
-          lazy_order_by_likes(objects)
         when :mapviews
           lazy_order_by_mapviews(objects)
         when :row_count
@@ -388,10 +341,6 @@ module CartoDB
         when :size
           lazy_order_by_size(objects)
         end
-      end
-
-      def lazy_order_by_likes(objects)
-        objects.sort! { |obj_a, obj_b| obj_b.likes.count <=> obj_a.likes.count }
       end
 
       def lazy_order_by_mapviews(objects)
@@ -426,7 +375,6 @@ module CartoDB
       end
 
       # Allows to order by any CartoDB::Visualization::Member attribute (eg: updated_at, created_at), plus:
-      # - likes
       # - mapviews
       # - row_count
       # - size

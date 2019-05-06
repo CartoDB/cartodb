@@ -8,10 +8,10 @@ module Carto
 
       def initialize(visualization, current_viewer, context,
                      related: true, related_canonical_visualizations: false, show_user: false,
-                     show_stats: true, show_likes: true, show_liked: true, show_table: true,
+                     show_stats: true, show_table: true, show_liked: true,
                      show_permission: true, show_synchronization: true, show_uses_builder_features: true,
                      show_table_size_and_row_count: true, show_auth_tokens: true, show_user_basemaps: false,
-                     password: nil)
+                     password: nil, with_dependent_visualizations: 0)
         @visualization = visualization
         @current_viewer = current_viewer
         @context = context
@@ -20,7 +20,6 @@ module Carto
         @load_related_canonical_visualizations = related_canonical_visualizations
         @show_user = show_user
         @show_stats = show_stats
-        @show_likes = show_likes
         @show_liked = show_liked
         @show_table = show_table
         @show_permission = show_permission
@@ -30,6 +29,7 @@ module Carto
         @show_auth_tokens = show_auth_tokens
         @show_user_basemaps = show_user_basemaps
         @password = password
+        @with_dependent_visualizations = with_dependent_visualizations
 
         @presenter_cache = Carto::Api::PresenterCache.new
       end
@@ -52,7 +52,16 @@ module Carto
           poro[:related_canonical_visualizations_count] = @visualization.related_canonical_visualizations.count
         end
 
-        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer.id) : false if show_liked
+        if with_dependent_visualizations > 0
+          dependencies = @visualization.dependent_visualizations
+          poro[:dependent_visualizations_count] = dependencies.count
+          limited_dependencies = most_recent_dependencies(dependencies, with_dependent_visualizations)
+          poro[:dependent_visualizations] = limited_dependencies.map do |dependent_visualization|
+            VisualizationPresenter.new(dependent_visualization, @current_viewer, @context).to_summarized_poro
+          end
+        end
+
+        poro[:liked] = @current_viewer ? @visualization.liked_by?(@current_viewer) : false if show_liked
         poro[:permission] = permission if show_permission
         poro[:stats] = show_stats ? @visualization.stats : {}
 
@@ -101,7 +110,6 @@ module Carto
         }
 
         poro[:related_tables] = related_tables if related
-        poro[:likes] = @visualization.likes_count if show_likes
         poro[:synchronization] = synchronization if show_synchronization
         poro[:uses_builder_features] = @visualization.uses_builder_features? if show_uses_builder_features
 
@@ -124,7 +132,6 @@ module Carto
           title:            @visualization.title,
           kind:             @visualization.kind,
           privacy:          @visualization.privacy.upcase,
-          likes:            @visualization.likes_count
         }
       end
 
@@ -136,6 +143,14 @@ module Carto
           updated_at:  @visualization.updated_at,
           permission:  permission.slice(:id, :owner),
           auth_tokens: auth_tokens
+        }
+      end
+
+      def to_search_preview_poro
+        {
+          type: @visualization.type,
+          name: @visualization.name,
+          url: url
         }
       end
 
@@ -151,7 +166,7 @@ module Carto
         if @visualization.is_privacy_private?
           # Final url will be like ORG.carto.com/u/VIEWER/viz/OWNER_SCHEMA.VIS_ID/public_map
           base_url_username = @current_viewer.username
-          vis_id_schema = @visualization.user.sql_safe_database_schema
+          vis_id_schema = @visualization.user.database_schema
         else
           # Final url will be like ORG.carto.com/u/VIEWER/viz/VIS_ID/public_map
           base_url_username = @visualization.user.username
@@ -169,10 +184,10 @@ module Carto
       private
 
       attr_reader :related, :load_related_canonical_visualizations, :show_user,
-                  :show_stats, :show_likes, :show_liked, :show_table,
+                  :show_stats, :show_table, :show_liked,
                   :show_permission, :show_synchronization, :show_uses_builder_features,
                   :show_table_size_and_row_count, :show_auth_tokens,
-                  :show_user_basemaps
+                  :show_user_basemaps, :with_dependent_visualizations
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
@@ -209,7 +224,7 @@ module Carto
                   end
 
         related.map do |table|
-          Carto::Api::UserTablePresenter.new(table, @current_viewer).to_poro
+          Carto::Api::UserTablePresenter.new(table, @current_viewer).with_presenter_cache(@presenter_cache).to_poro
         end
       end
 
@@ -233,10 +248,14 @@ module Carto
 
       def url
         if @visualization.canonical?
-          CartoDB.url(@context, 'public_tables_show_bis', { id: @visualization.qualified_name(@current_viewer) },
-                      @current_viewer)
+          dataset_name = @visualization.qualified_name(@current_viewer).tr('"', '')
+          CartoDB.url(@context, 'public_tables_show_bis',
+                      params: { id: dataset_name },
+                      user: @current_viewer)
         else
-          CartoDB.url(@context, 'public_visualizations_show_map', { id: @visualization.id }, @current_viewer)
+          CartoDB.url(@context, 'public_visualizations_show_map',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
         end
       end
 
@@ -246,6 +265,11 @@ module Carto
                                       fetch_db_size: false,
                                       fetch_basemaps: show_user_basemaps,
                                       fetch_profile: false).to_poro
+      end
+
+      def most_recent_dependencies(dependencies, limit)
+        sorted_dependencies = dependencies.sort_by(&:updated_at).reverse
+        sorted_dependencies.first(limit)
       end
     end
   end

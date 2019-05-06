@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchSuggestions.vue Rendering should render correctly 1`] = `
+<section class="suggestions suggestions--open">
+  <ul class="suggestions__content">
+    <li class="">
+      <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text">
+        Query text <span>- 3 results</span></router-link>
+    </li>
+    <li class="">
+      <div>
+        <router-link to="[object Object]" staticroute="/dashboard/search/tag/example of map with analyses" class="suggestions__item text is-caption suggestions__item--tag">
+          example of map with analyses
+        </router-link>
+      </div>
+    </li>
+    <li class="">
+      <div><a href="http://user.carto.com/viz/67a6fa8c-237f-41d7-a499-33dfa28a4e06/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+          Citi Bike Map Import
+        </a></div>
+    </li>
+    <li class="">
+      <div><a href="http://user.carto.com/viz/c24a70b4-e18f-4836-82b9-c9be6377a37a/map" target="_blank" class="suggestions__item text is-caption suggestions__item--derived">
+          Madrid traffic map
+        </a></div>
+    </li>
+  </ul>
+</section>
+`;
+
+exports[`SearchSuggestions.vue Rendering should render isFetching state 1`] = `
+<section class="suggestions suggestions--open">
+  <ul class="suggestions__content">
+    <li class="">
+      <router-link to="[object Object]" staticroute="/dashboard/search/Query text" class="suggestions__header is-caption text suggestions__header--loading">
+        Query text
+        <!---->
+      </router-link>
+    </li>
+  </ul>
+</section>
+`;

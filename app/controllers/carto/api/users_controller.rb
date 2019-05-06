@@ -1,5 +1,3 @@
-require_dependency 'google_plus_api'
-require_dependency 'google_plus_config'
 require_relative '../../helpers/avatar_helper'
 require_dependency 'carto/controller_helper'
 
@@ -14,6 +12,7 @@ module Carto
       include FrontendConfigHelper
       include AccountTypeHelper
       include AvatarHelper
+      include Carto::ControllerHelper
 
       UPDATE_ME_FIELDS = [
         :name, :last_name, :website, :description, :location, :twitter_username,
@@ -24,12 +23,13 @@ module Carto
 
       ssl_required
 
-      before_action :initialize_google_plus_config, only: [:me]
       before_action :optional_api_authorization, only: [:me]
       before_action :any_api_authorization_required, only: [:me_public]
       before_action :recalculate_user_db_size, only: [:me]
       skip_before_action :api_authorization_required, only: [:me, :me_public, :get_authenticated_users]
       skip_before_action :check_user_state, only: [:me, :delete_me]
+
+      rescue_from StandardError, with: :rescue_from_standard_error
 
       def show
         render json: Carto::Api::UserPresenter.new(uri_user).data
@@ -41,6 +41,7 @@ module Carto
         cant_be_deleted_reason = carto_viewer.try(:cant_be_deleted_reason)
         can_be_deleted = carto_viewer.present? ? cant_be_deleted_reason.nil? : nil
         viewer_organization_notifications = carto_viewer ? organization_notifications(carto_viewer) : []
+        viewer_unfiltered_notifications = carto_viewer ? unfiltered_organization_notifications(carto_viewer) : []
 
         render json: {
           user_data: carto_viewer.present? ? Carto::Api::UserPresenter.new(carto_viewer).data : nil,
@@ -48,11 +49,11 @@ module Carto
           config: frontend_config_hash(current_viewer),
           dashboard_notifications: carto_viewer.try(:notifications_for_category, :dashboard),
           organization_notifications: viewer_organization_notifications,
+          unfiltered_organization_notifications: viewer_unfiltered_notifications,
           is_just_logged_in: carto_viewer.present? ? !!flash['logged'] : nil,
           is_first_time_viewing_dashboard: !carto_viewer.try(:dashboard_viewed_at),
           can_change_email: carto_viewer.try(:can_change_email?),
           auth_username_password_enabled: carto_viewer.try(:organization).try(:auth_username_password_enabled),
-          should_display_old_password: carto_viewer.try(:should_display_old_password?),
           can_change_password: carto_viewer.try(:can_change_password?),
           plan_name: carto_viewer.present? ? plan_name(carto_viewer.account_type) : nil,
           plan_url: carto_viewer.try(:plan_url, request.protocol),
@@ -62,46 +63,33 @@ module Carto
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
-          google_plus_iframe_src: carto_viewer.present? ? google_plus_iframe_src : nil,
-          google_plus_client_id: carto_viewer.present? ? google_plus_client_id : nil
+          mfa_required: multifactor_authentication_required?
         }
       end
 
       def update_me
         user = current_viewer
-
         attributes = params[:user]
 
         if attributes.present?
-          unless password_change?(user, attributes) ||
-                 user.valid_password_confirmation(attributes[:password_confirmation])
+          unless user.valid_password_confirmation(attributes[:password_confirmation])
             raise Carto::PasswordConfirmationError.new
           end
-
-          update_password_if_needed(user, attributes)
-
-          if user.can_change_email? && attributes[:email].present?
-            user.set_fields(attributes, [:email])
-          end
-
-          if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
-            user.set_fields(attributes, [:avatar_url])
-          end
-
-          fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
-
-          user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
-
+          update_user_attributes(user, attributes)
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
-          user.update_in_central
-          user.save(raise_on_failure: true)
+
+          ActiveRecord::Base.transaction do
+            update_user_multifactor_authentication(user, attributes[:mfa])
+            user.update_in_central
+            user.save(raise_on_failure: true)
+          end
         end
 
         render_jsonp(Carto::Api::UserPresenter.new(user, current_viewer: current_viewer).to_poro)
       rescue CartoDB::CentralCommunicationFailure => e
         CartoDB::Logger.error(exception: e, user: user, params: params)
         render_jsonp({ errors: "There was a problem while updating your data. Please, try again." }, 422)
-      rescue Sequel::ValidationFailed
+      rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 400)
       rescue Carto::PasswordConfirmationError
         render_jsonp({ message: "Error updating your account details", errors: user.errors }, 403)
@@ -150,21 +138,14 @@ module Carto
 
       private
 
-      def google_plus_iframe_src
-        @google_plus_config.present? ? @google_plus_config.iframe_src : nil
-      end
-
-      def google_plus_client_id
-        @google_plus_config.present? ? @google_plus_config.client_id : nil
+      def unfiltered_organization_notifications(carto_viewer)
+        carto_viewer.received_notifications.order('received_at DESC').limit(10).map do |n|
+          Carto::Api::ReceivedNotificationPresenter.new(n).to_hash
+        end
       end
 
       def organization_notifications(carto_viewer)
         carto_viewer.received_notifications.unread.map { |n| Carto::Api::ReceivedNotificationPresenter.new(n).to_hash }
-      end
-
-      def initialize_google_plus_config
-        signup_action = Cartodb::Central.sync_data_with_cartodb_central? ? Cartodb::Central.new.google_signup_url : '/google/signup'
-        @google_plus_config = ::GooglePlusConfig.instance(CartoDB, Cartodb.config, signup_action)
       end
 
       def render_auth_users_data(user, referrer, subdomain, referrer_organization_username=nil)
@@ -219,10 +200,26 @@ module Carto
         @session_user ||= (current_viewer.nil? ? nil : Carto::User.where(id: current_viewer.id).first)
       end
 
+      def update_user_attributes(user, attributes)
+        update_password_if_needed(user, attributes)
+
+        if user.can_change_email? && attributes[:email].present?
+          user.set_fields(attributes, [:email])
+        end
+
+        if attributes[:avatar_url].present? && valid_avatar_file?(attributes[:avatar_url])
+          user.set_fields(attributes, [:avatar_url])
+        end
+
+        fields_to_be_updated = UPDATE_ME_FIELDS.select { |field| attributes.has_key?(field) }
+
+        user.set_fields(attributes, fields_to_be_updated) if fields_to_be_updated.present?
+      end
+
       def update_password_if_needed(user, attributes)
         if password_change?(user, attributes)
           user.change_password(
-            attributes[:old_password],
+            attributes[:password_confirmation],
             attributes[:new_password],
             attributes[:confirm_password]
           )
@@ -237,6 +234,14 @@ module Carto
 
       def recalculate_user_db_size
         current_user && Carto::UserDbSizeCache.new.update_if_old(current_user)
+      end
+
+      def update_user_multifactor_authentication(user, mfa_enabled)
+        return if mfa_enabled.nil?
+
+        service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
+        service.update(enabled: mfa_enabled)
+        warden.session(user.username)[:multifactor_authentication_performed] = false unless mfa_enabled
       end
     end
   end

@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotificationCard.vue basic behaviour should hide the green dot when the notification has been read 1`] = `
+<div class="notification">
+  <div class="notification-info">
+    <div class="notification-received text is-small">20/11/2018</div>
+    <!---->
+  </div>
+  <div class="notification-html text is-caption"></div>
+</div>
+`;
+
+exports[`NotificationCard.vue basic behaviour should render the body 1`] = `
+<div class="notification">
+  <div class="notification-info">
+    <div class="notification-received text is-small">20/11/2018</div> <span class="notification-read"></span>
+  </div>
+  <div class="notification-html text is-caption is-unread">
+    <p>Im an unread notification, I have bold text and a green dot on top.</p>
+  </div>
+</div>
+`;
+
+exports[`NotificationCard.vue basic behaviour should render the date properly formatted 1`] = `
+<div class="notification">
+  <div class="notification-info">
+    <div class="notification-received text is-small">20/11/2018</div> <span class="notification-read"></span>
+  </div>
+  <div class="notification-html text is-caption is-unread"></div>
+</div>
+`;
+
+exports[`NotificationCard.vue basic behaviour should show the green dot dot when the notification has not been read 1`] = `
+<div class="notification">
+  <div class="notification-info">
+    <div class="notification-received text is-small">20/11/2018</div> <span class="notification-read"></span>
+  </div>
+  <div class="notification-html text is-caption is-unread"></div>
+</div>
+`;

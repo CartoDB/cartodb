@@ -4,6 +4,7 @@ require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
 require_dependency 'carto/visualization_invalidation_service'
+require_dependency 'carto/visualization_backup_service'
 
 module Carto::VisualizationDependencies
   def fully_dependent_on?(user_table)
@@ -30,6 +31,7 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
+  include Carto::VisualizationBackupService
 
   AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
@@ -103,7 +105,6 @@ class Carto::Visualization < ActiveRecord::Base
   after_save :propagate_privacy_and_name_to, if: :table
 
   before_destroy :backup_visualization
-
   after_commit :perform_invalidations
 
   attr_accessor :register_table_only
@@ -199,24 +200,32 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   # TODO: refactor next methods, all have similar naming but some receive user and some others user_id
-  def liked_by?(user_id)
-    likes_by_user_id(user_id).any?
+  def liked_by?(user)
+    likes_by_user(user).any?
   end
 
-  def likes_by_user_id(user_id)
-    likes.where(actor: user_id)
+  def likes_by_user(user)
+    likes.where(actor: user.id)
   end
 
-  def add_like_from(user_id)
-    likes.create!(actor: user_id)
+  def add_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    likes.create!(actor: user.id)
 
     self
   rescue ActiveRecord::RecordNotUnique
     raise AlreadyLikedError
   end
 
-  def remove_like_from(user_id)
-    item = likes.where(actor: user_id)
+  def remove_like_from(user)
+    unless has_read_permission?(user)
+      raise UnauthorizedLikeError
+    end
+
+    item = likes.where(actor: user.id)
     item.first.destroy unless item.first.nil?
 
     self
@@ -390,11 +399,11 @@ class Carto::Visualization < ActiveRecord::Base
   alias :can_view_private_info? :has_read_permission?
 
   def estimated_row_count
-    table_service.nil? ? nil : table_service.estimated_row_count
+    user_table.try(:row_count)
   end
 
   def actual_row_count
-    table_service.nil? ? nil : table_service.actual_row_count
+    user_table.try(:actual_row_count)
   end
 
   def license_info
@@ -405,10 +414,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def can_be_cached?
     !is_privacy_private?
-  end
-
-  def likes_count
-    likes.size
   end
 
   def widgets
@@ -613,6 +618,18 @@ class Carto::Visualization < ActiveRecord::Base
     synchronization.present?
   end
 
+  def dependent_visualizations
+    user_table.try(:dependent_visualizations) || []
+  end
+
+  def backup_visualization(category = Carto::VisualizationBackup::CATEGORY_VISUALIZATION)
+    return true if remote?
+
+    if map && !destroyed?
+      create_visualization_backup(visualization: self, category: category)
+    end
+  end
+
   private
 
   def generate_salt
@@ -767,21 +784,6 @@ class Carto::Visualization < ActiveRecord::Base
     end
   end
 
-  def backup_visualization
-    return true if remote?
-
-    if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-      Carto::VisualizationsExportService.new.export(id)
-    end
-  rescue => exception
-    # Don't break deletion flow
-    CartoDB::Logger.error(
-      message: 'Error backing up visualization',
-      exception: exception,
-      visualization_id: id
-    )
-  end
-
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
@@ -829,4 +831,5 @@ class Carto::Visualization < ActiveRecord::Base
 
   class WatcherError < CartoDB::BaseCartoDBError; end
   class AlreadyLikedError < StandardError; end
+  class UnauthorizedLikeError < StandardError; end
 end

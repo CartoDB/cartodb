@@ -1,7 +1,7 @@
 <div class="js-signInMessageContainer"></div>
 
 <form class="Form InviteUsers-formContent js-invitesForm">
-  <div class="Form-row">
+  <div class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
       <label class="Form-label">Users email</label>
     </div>
@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="Form-row">
+  <div class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
       <label class="Form-label">Welcome text</label>
     </div>
@@ -25,7 +25,7 @@
     <div class="Form-rowInfo"></div>
   </div>
 
-  <div class="Form-row">
+  <div class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
       <label class="Form-label">Viewer user</label>
     </div>

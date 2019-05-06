@@ -65,7 +65,7 @@ describe Organization do
     end
 
     it 'Destroys users and owner as well' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -87,7 +87,7 @@ describe Organization do
     end
 
     it 'Destroys viewer users with shared visualizations' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 2, viewer_seats: 2).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 3, viewer_seats: 2).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -116,7 +116,7 @@ describe Organization do
     end
 
     it 'destroys users with unregistered tables' do
-      organization = Organization.new(quota_in_bytes: 1234567890, name: 'wadus', seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: 'wadus', seats: 5).save
 
       owner = create_user(quota_in_bytes: 524288000, table_quota: 500)
       owner_org = CartoDB::UserOrganization.new(organization.id, owner.id)
@@ -166,7 +166,7 @@ describe Organization do
 
   describe '#add_user_to_org' do
     it 'Tests adding a user to an organization (but no owner)' do
-      org_quota = 1234567890
+      org_quota = 123456789000
       org_name = unique_name('org')
       org_seats = 5
 
@@ -201,7 +201,7 @@ describe Organization do
     end
 
     it 'validates viewer and builder quotas' do
-      quota = 1234567890
+      quota = 123456789000
       name = unique_name('org')
       seats = 1
       viewer_seats = 1
@@ -271,7 +271,7 @@ describe Organization do
 
     it 'Tests setting a user as the organization owner' do
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       user = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -303,7 +303,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
 
       owner = create_user(:quota_in_bytes => 524288000, :table_quota => 500)
 
@@ -366,7 +366,7 @@ describe Organization do
       ::User.any_instance.stubs(:update_in_central).returns(true)
 
       org_name = unique_name('org')
-      organization = Organization.new(quota_in_bytes: 1234567890, name: org_name, seats: 5).save
+      organization = Organization.new(quota_in_bytes: 123456789000, name: org_name, seats: 5).save
       owner = create_test_user('orgowner')
       user_org = CartoDB::UserOrganization.new(organization.id, owner.id)
       user_org.promote_user_to_admin
@@ -446,105 +446,6 @@ describe Organization do
       organization2.valid?.should eq false
 
       organization.destroy
-    end
-  end
-
-  describe '#org_shared_vis' do
-    it "checks fetching all shared visualizations of an organization's members " do
-      bypass_named_maps
-
-      # Don't check/handle DB permissions
-      Permission.any_instance.stubs(:revoke_previous_permissions).returns(nil)
-      Permission.any_instance.stubs(:grant_db_permission).returns(nil)
-
-      vis_1_name = 'viz_1'
-      vis_2_name = 'viz_2'
-      vis_3_name = 'viz_3'
-
-      user1 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-      user2 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-      user3 = create_user(:quota_in_bytes => 1234567890, :table_quota => 5)
-
-      organization = Organization.new
-      organization.name = 'qwerty'
-      organization.seats = 5
-      organization.quota_in_bytes = 1234567890
-      organization.save.reload
-      user1.organization_id = organization.id
-      user1.save.reload
-      organization.owner_id = user1.id
-      organization.save.reload
-      user2.organization_id = organization.id
-      user2.save.reload
-      user3.organization_id = organization.id
-      user3.save.reload
-
-      vis1 = Visualization::Member.new(random_attributes(name: vis_1_name, user_id: user1.id)).store
-      vis2 = Visualization::Member.new(random_attributes(name: vis_2_name, user_id: user2.id)).store
-      vis3 = Visualization::Member.new(random_attributes(name: vis_3_name, user_id: user3.id)).store
-
-      perm = vis1.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      perm = vis2.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      perm = vis3.permission
-      perm.acl = [
-          {
-              type: Permission::TYPE_ORGANIZATION,
-              entity: {
-                  id:       organization.id,
-                  username: organization.name
-              },
-              access: Permission::ACCESS_READONLY
-          }
-      ]
-      perm.save
-
-      # Setup done, now to the proper test
-
-      org_vis_array = organization.public_visualizations.map { |vis|
-        vis.id
-      }
-      # Order is newest to oldest
-      org_vis_array.should eq [vis3.id, vis2.id, vis1.id]
-
-      # Clear first shared entities to be able to destroy
-      vis1.permission.acl = []
-      vis1.permission.save
-      vis2.permission.acl = []
-      vis2.permission.save
-      vis3.permission.acl = []
-      vis3.permission.save
-
-      begin
-        user3.destroy
-        user2.destroy
-        user1.destroy
-      rescue
-        # TODO: Finish deletion of organization users and remove this so users are properly deleted or test fails
-      end
     end
   end
 

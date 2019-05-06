@@ -30,7 +30,7 @@
         <div class="Filters-row">
           <ul class="Filters-group">
             <li class="u-flex u-alignCenter">
-              <a href="<%= CartoDB.url(self, 'mobile_apps', {}, current_user) %>" class="u-actionTextColor u-flex u-alignCenter">
+              <a href="<%= CartoDB.url(self, 'mobile_apps', user: current_user) %>" class="u-actionTextColor u-flex u-alignCenter">
                 <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
@@ -47,4 +47,4 @@
 
 </div>
 
-<%= render 'admin/shared/footer' %>
+<%= render 'admin/shared/new_private_footer' %>

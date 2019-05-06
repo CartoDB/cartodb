@@ -1,0 +1,638 @@
+{
+  "MapCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "views": "{views} views (30 days)",
+    "sharedBy": "Shared by {owner}",
+    "noDescription": "No description",
+    "noTags": "No tags",
+    "lastUpdate": "Updated {date} ago",
+    "tags": "tags"
+  },
+  "MapListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "views": "Views (30d)",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
+  "QuickActions": {
+    "title": "Quick actions",
+    "editInfo": "Edit name & description",
+    "manageTags": "Manage tags",
+    "createMap": "Create map",
+    "changePrivacy": "Change privacy",
+    "share": "Share with colleagues",
+    "duplicate": "Duplicate",
+    "lock": "Lock",
+    "unlock": "Unlock",
+    "delete": "Delete"
+  },
+  "BulkActions": {
+    "selected": "{count} selected",
+    "maps": {
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    },
+    "datasets": {
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "createMap": "Create map",
+      "changePrivacy": "Change privacy",
+      "duplicate": "Duplicate",
+      "unlock": "Unlock",
+      "lock": "Lock",
+      "delete": "Delete"
+    }
+  },
+  "DataPage": {
+    "header": {
+      "title": {
+        "mine": "Your Datasets",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Datasets",
+        "locked": "Your Locked Datasets",
+        "public": "Your Public Datasets",
+        "link": "Your Link-shared Datasets",
+        "password": "Your Password-protected Datasets",
+        "private": "Your Private Datasets"
+      }
+    },
+    "createDataset": "New Dataset",
+    "zeroCase": {
+      "title": "Upload, connect, or create your first dataset",
+      "description": "Bring your location data to CARTO so that you can visualise it and start predicting key insights. Learn about importing your data <a href='https://carto.com/help/tutorials/import-data/'>here</a>.",
+      "createDataset": "Create your first dataset"
+    },
+    "emptyCase": {
+      "default": "There are no datasets here.",
+      "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
+    }
+  },
+  "MapsPage": {
+    "header": {
+      "title": {
+        "mine": "Your Maps",
+        "shared": "Shared with you",
+        "favorited": "Your Favorited Maps",
+        "locked": "Your Locked Maps",
+        "public": "Your Public Maps",
+        "link": "Your Link-shared Maps",
+        "password": "Your Password-protected Maps",
+        "private": "Your Private Maps"
+      }
+    },
+    "createMap": "New Map",
+    "zeroCase": {
+      "title": "Create your first map to predict key insights",
+      "description": "Build your first Location Intelligence app and start predicting key insights from your location data with our drag and drop tool for analysts and business users. Learn about Builder <a href='https://carto.com/help/tutorials/builder/'>here</a>.",
+      "createMap": "Create your first map"
+    },
+    "emptyCase": {
+      "default": "There are no maps here.",
+      "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    }
+  },
+  "NotificationsPage": {
+    "header": {
+      "title": "Notifications"
+    },
+    "emptyState": "There are no notifications yet.",
+    "loadingState": "Loading your notifications."
+  },
+  "SettingsDropdown": {
+    "filter": "Filter",
+    "orderMaps": "Order",
+    "types": {
+      "maps": "Your maps",
+      "datasets": "Your datasets",
+      "shared": "Shared with you ({count})",
+      "favorited": "Favorited ({count})",
+      "locked": "Locked ({count})",
+      "publicPrivacy": "Public",
+      "privatePrivacy": "Private",
+      "linkPrivacy": "Link",
+      "passwordPrivacy": "Password"
+    }
+  },
+  "DatasetCard": {
+    "shared": {
+      "LINK": "Link",
+      "PUBLIC": "Public",
+      "PRIVATE": "Private",
+      "PASSWORD": "Password"
+    },
+    "lastSynced": "Synced {date} ago",
+    "lastUpdated": "Updated {date} ago",
+    "numberRows": "0 rows | 1 row | {count} rows",
+    "tags": "tags",
+    "maps": "0 maps | 1 map | {n} maps"
+  },
+  "DatasetListHeader": {
+    "name": "Name",
+    "lastModified": "Last Modified",
+    "rows": "Rows",
+    "size": "Size",
+    "usage": "Usage",
+    "privacy": "Privacy"
+  },
+  "UserDropdown": {
+    "settings": "Settings",
+    "organizationSettings": "Your organization",
+    "apiKeys": "API Keys",
+    "publicProfile": "Public Profile",
+    "notifications": "Notifications",
+    "feedback": "Share feedback",
+    "logout": "LOG OUT"
+  },
+  "SolutionsPage": {
+    "solutionsTitle": "Solutions for every business problem",
+    "solutionsDescription": "Consolidating your site network? Need to reduce fleet costs? Redesigning your sales territories? Answer your question through the lens of location.",
+    "talkUsTitle": "Like what you see?",
+    "talkUsDescription": "Our account management team will give you a firsthand view and discuss with you how we can help your organization to do the same.",
+    "talkUsButton": "Talk to us!",
+    "sitePlanning": {
+      "title": "Site Planning",
+      "description": "Drive site selection and investment decisions with always-on data streams, enabling more accurate revenue prediction and reduced risk of failed location decisions."
+    },
+    "territoryManagement": {
+      "title": "Territory Management",
+      "description": "Design and align sales and service territories to increase productivity and reduce costs using spatial field operations data."
+    },
+    "logisticsOptimization": {
+      "title": "Logistics Optimization",
+      "description": "Harness the power of geospatial to optimize your Supply Chain, enabling a smarter, more efficient operation."
+    }
+  },
+  "SolutionCard": {
+    "moreExamples": "View more examples",
+    "usedBy": "Used by:",
+    "goDemo": "Go to demo"
+  },
+  "SearchComponent": {
+    "placeholder": {
+      "default": "Search",
+      "active": "By name, description or tag"
+    }
+  },
+  "SearchPage": {
+    "title": {
+      "allFetching": "Loading results for \"{query}\"",
+      "searchTerm": "0 results for \"{query}\" | {n} result for \"{query}\" | {n} results for \"{query}\"",
+      "tag": "0 results for \"{query}\" tag | {n} result for \"{query}\" tag | {n} results for \"{query}\" tag"
+    },
+    "sections": {
+      "maps": "Maps",
+      "data": "Data",
+      "tags": "Tags"
+    },
+    "emptyText": {
+      "maps": "No maps found.",
+      "datasets": "No datasets found.",
+      "tags": "No tags found."
+    }
+  },
+  "HomePage": {
+    "WelcomeSection": {
+      "greeting" : "Hello, {name}",
+      "firstTime": {
+        "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
+        "planMessage": {
+          "free": "Remember that you're currently on the FREE plan.",
+          "30day": "Remember that you're currently on the 30-day personal trial.",
+          "pro": "Remember that you're currently on the Professional plan.",
+          "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
+          "organizationUser": "Remember that you're currently a member of the {organizationName} organization.",
+          "unknown": ""
+        },
+        "contactOrganizationAdmin": "Contact the admin",
+        "manageOrganization": "Manage my organization"
+      },
+      "trialMessage": "{date} left in your Trial.",
+      "notificationsButton": "Go to Notifications",
+      "learnMoreButton": "Learn More",
+      "actions": {
+        "createMap": "New map",
+        "createDataset": "New dataset"
+      },
+      "addPaymentMethod": "Add payment"
+    },
+    "MapsSection": {
+      "title": "Your Maps",
+      "viewAll" : "VIEW ALL MAPS"
+    },
+    "DatasetsSection": {
+      "title": "Your Datasets",
+      "viewAll": "VIEW ALL DATASETS"
+    },
+    "CreateMapCard": {
+      "header": "Create your first map to predict key insights",
+      "info": "Build your first Location Intelligence anañysis or take a look to our guides and help.",
+      "button": "Create your first Map"
+    },
+    "RecentSection": {
+      "title": "Recent content",
+      "viewTagsAction": "View your tags"
+    },
+    "TagsSection": {
+      "title": "Your tags",
+      "viewRecentContentAction": "View recent content",
+      "emptyState": {
+        "title": "You have no tags.",
+        "subtitle": "Add one to your maps or datasets and start organizing your <a href=\"https://carto.com/help/getting-started/new-dashboard/\">dashboard</a>."
+      },
+      "loading": "Asking the server politely for your tags."
+    }
+  },
+  "TrialExpired": {
+    "ExpirationMessage": {
+      "title": "Your trial has expired",
+      "description": "We couldn’t log you in because your trial expired on {expirationDate}<br/>All of your data will be safe for the next {expirationDays} days, but no one will be able to log in until your account is upgraded. If you have any question after your trial, please <a class='is-underline is-txtDarkBlue' href='mailto:sales@carto.com'>contact sales</a>.",
+      "actions": {
+        "addPayments": "Add payment method",
+        "deleteAccount": "Delete account"
+      }
+    }
+  },
+  "QuotaSection": {
+    "title": "Your Usage Metrics",
+    "header": {
+      "remaining": "Remaining",
+      "used": "Used",
+      "total": "Total",
+      "perMonth": "per month"
+    },
+    "disk": "Disk",
+    "dataServices": "Data Services",
+    "storage": "Storage",
+    "geocoding": "Geocoding",
+    "isolines": "Isolines",
+    "routing": "Routing",
+    "credits": "Your credits will be renewed in 0 days ({day} of each month). | Your credits will be renewed in {remainingDays} day ({day} of each month). | Your credits will be renewed in {remainingDays} days ({day} of each month)."
+  },
+  "Footer": {
+    "HelpCenter": {
+      "title": "Help Center",
+      "description": "Find answers to frequently asked questions, guides and tutorials about working with data, making Builder maps, managing your account, etc."
+    },
+    "DeveloperCenter": {
+      "title": "Developer Center",
+      "description": "Learn everything you need to know to build the next generation of Location Intelligence applications with the CARTO platform."
+    },
+    "GISStackExchange": {
+      "title": "GIS StackExchange",
+      "description": "Explore and share your CARTO-related questions with the GIS StackExchange Community."
+    },
+    "TechSupport": {
+      "title": "Tech Support",
+      "description": "Found a bug or technical issue? Contact our support team and let us know about it."
+    },
+    "DedicatedSupport": {
+      "title": "Dedicated Support",
+      "description": "Contact our dedicated support team and let us know how we can help you."
+    },
+    "OrganizationAdmin": {
+      "title": "Your organization's administrator",
+      "description": "Contact the administrator of your organization if you have issues regarding your account, quotas, etc."
+    }
+  },
+  "TagCard": {
+    "maps": "0 maps | {maps} map | {maps} maps",
+    "datasets": "0 datasets | {datasets} dataset | {datasets} datasets"
+  },
+  "FeedbackMessage": {
+    "title": "Share your feedback with us.",
+    "message": "Do you miss something? Should we be doing something differently?"
+  },
+  "SharedBrief": {
+    "sharedWith": "Shared with",
+    "org": "all your organization",
+    "groups": "{groupname} | {n} groups",
+    "users": "{username} | {n} users",
+    "and": "and"
+  },
+  "Wizards": {
+    "Distributor": {
+      "cta": "Get started",
+      "headerTitle": "Getting started",
+      "title": "What do you want to do?",
+      "feedback": {
+        "text": "Looking for a different geospatial workflow?",
+        "link": "Let us know."
+      },
+      "engineWarning": {
+        "text": "Needs access to API Keys.",
+        "link": "https://carto.com/help/getting-started/get-api-key/#why-do-you-need-this",
+        "linkText": "Learn more"
+      }
+    },
+    "footer": {
+      "back": "Back",
+      "next": "Next: {nextStep}",
+      "goToDashboard": "Go to dashboard"
+    },
+    "cartovl": {
+      "title": "Develop an interactive custom web map",
+      "subtitle": "Develop impressive interactive maps and use them on your websites and apps.",
+      "tags" : ["JavaScript", "CARTO VL"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Develop an interactive web map",
+        "text1": "Our platform provides a set of libraries and APIs to develop customizable and interactive maps. CARTO VL is a JavaScript library to develop beautiful interactive web maps.",
+        "text2": "In this guide, you will learn how to load the library in your project, create a map with one of CARTO's basemaps, add a data layer, and style it.",
+        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers' target='_blank'>Developer Center</a>."
+      },
+      "step2": {
+        "summary": "Create an HTML file using the template below that loads both the CARTO VL and Mapbox GL libraries.",
+        "howto": {
+          "instruction1":"Create an HTML file and add the following scripts."
+        },
+        "extras": {
+          "resource1": "CARTO VL is our more advanced rendering library and new features are constantly being added. You can read about the newest capabilities in our <a href='https://carto.com/blog/categories/product-updates/' target='_blank'>Product Updates</a> blog.",
+          "resource2": "You can also <a href='https://www.npmjs.com/package/@carto/carto-vl' target='_blank'>install and load CARTO VL using npm</a>."
+        }
+      },
+      "step3": {
+        "summary": "Define the <code>&ltdiv&gt</code> element that will contain your map.",
+        "howto": {
+          "instruction1": "Define the <code>&lt;div&gt;</code> element that will contain the map in the <code>&lt;body&gt;</code> of your file. The map, layers and controls will be displayed in this element.",
+          "instruction2": "Paste the following CSS code in the bottom of the <code>&lt;head&gt;</code> element to define some basic styles for the map container."
+        }
+      },
+      "step4": {
+        "summary": "Add a CARTO basemap with the Mapbox GL map constructor.",
+        "howto": {
+          "instruction1":"Add the following script below your <code>&lt;div&gt;</code> container to load CARTO's Voyager basemap centered on the world at zoom level 2."
+        },
+        "extras": {
+          "resource1": "CARTO VL relies on <a href='https://docs.mapbox.com/mapbox-gl-js/api/' target='_blank'>Mapbox GL</a> render basemaps. Choose between <code>carto.basemaps.voyager</code>, <code>carto.basemaps.positron</code>, and <code>carto.basemaps.darkmatter</code> basemaps."
+        }
+      },
+      "step5": {
+        "summary": "Connect to a CARTO account and add a data layer to your map. In this example, we’re using an account named public and the default public API key.",
+        "howto": {
+          "instruction1":"Connect to a CARTO account by specifying the username and API key you want to use. In this case, we're using a test account and a test access key.",
+          "instruction2":"Now that CARTO VL has access, you can add any of the datasets in that account as a source layer to display on the map."
+          },
+        "extras": {
+          "resource1": "Want to use your own account? Learn about <a href='https://carto.com/developers/fundamentals/authorization/' target='_blank'>API Authorization</a>."
+        }
+      },
+      "step6": {
+        "summary": "Use styling properties to overwrite default symbology.",
+        "howto": {
+          "instruction1":"You can overwrite the default symbology applied to features on the map by adding custom styles inside of the <code>Viz</code> object."
+        },
+        "extras": {
+          "resource1": "Learn more about <a href='https://carto.com/developers/carto-vl/guides/style-with-expressions/' target='_blank'>styling with expressions</a>."
+        }
+      },
+      "step7": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first map with CARTO VL!",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the full code example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/carto-vl/' target='_blank'>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Style features by category",
+            "subtitle": "Learn how to change the style of the features by a given column",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-style-by-category"
+          },
+          "card2": {
+            "title": "Add hover popups",
+            "subtitle": "Learn how to display info about a feature when user mouses over it.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-add-pop-ups-on-hover"
+          },
+          "card3": {
+            "title": "Animate the features",
+            "subtitle": "Learn how to animate the features of the map by different columns.",
+            "button": "Go to example",
+            "link": "https://carto.com/developers/carto-vl/examples/#example-animate-and-color-by-date"
+          }
+        }
+      }
+    },
+    "cartoframes" : {
+      "title": "Add spatial data to your data science workflow",
+      "subtitle": "Integrate spatial data into your data science models using our Python library.",
+      "tags": ["Python", "CARTOframes"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "jupyter": {
+        "in" : "In:",
+        "out": "Out:"
+      },
+      "step1": {
+        "summary": "Integrate spatial analysis in your Python scripts.",
+        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href='https://jupyter.org/' target='_blank'>Jupyter Notebooks</a> and <a href='http://geopandas.org/' target='_blank'>GeoPandas</a>.",
+        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook.",
+        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
+      },
+      "step2": {
+        "summary": "Install CARTOframes and Jupyter Notebook.",
+        "howto": {
+          "instruction1":"Install CARTOframes with pip. Simply type the following in the command in your terminal.",
+          "instruction2":"Install Jupyter Notebook with pip. Type the following comand in your terminal.",
+          "instruction3":"Start Jupyter Notebook. Type the following command in your terminal."
+        },
+        "extras": {
+          "resource1": "There are <a href='https://cartoframes.readthedocs.io/en/v0.8.3/#install-instructions' target='_blank'>other ways to install CARTOframes</a>."
+        }
+      },
+      "step3": {
+        "summary": "Import <code>cartoframes</code> package and connect to CARTO account using a username and API key. In this example, we’re using an account named public and the default public API key.",
+        "howto": {
+          "instruction1":"Use <code>cartoframes.Credentials</code> to connect to a CARTO account. In this example, we’re using a test account and a test access key."
+        },
+        "extras": {
+          "resource1": "Want to use your own account? Learn about API Authorization <a href='https://carto.com/developers/fundamentals/authorization/' target='_blank'>here</a>."
+        }
+      },
+      "step4": {
+        "summary": "List all of the datasets in the given account.",
+        "howto": {
+          "instruction1":"List all of the available tables in the account:"
+        }
+      },
+      "step5": {
+        "summary": "Read one of the datasets into a pandas DataFrame.",
+        "howto": {
+          "instruction1":"Read and list the first rows of the <code>world_ports</code> datasets."
+        }
+      },
+      "step6": {
+        "summary": "Visualize <code>world_ports</code> as an interactive vector map.",
+        "howto": {
+          "instruction1":"Use <code>vector.vmap</code> and <code>vector.Layer</code> to visualize the dataset as an interactive vector map."
+        },
+        "extras": {
+          "resource1": "Learn more about <a href='https://cartoframes.readthedocs.io/en/stable/contrib.html#module-cartoframes.contrib.vector' target='_blank'>working with vector maps in CARTOframes</a>."
+        }
+      },
+      "step7": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the notebook example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/cartoframes/' target='_blank'>Developer Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Basic example",
+            "subtitle": "Learn more about the basics",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Basic%20Usage.ipynb"
+          },
+          "card2": {
+            "title": "CARTOframes with GeoPandas",
+            "subtitle": "Learn how to use CARTOframes with GeoPandas",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Shapely%2C%20Geopandas%2C%20and%20Cartoframes.ipynb"
+          },
+          "card3": {
+            "title": "Using CARTOframes to explore the Citibike system",
+            "subtitle": "Learn how to process data from Citibike, upload it to your account, and create some maps",
+            "button": "Go to example",
+            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Citibike%20Example.ipynb"
+          }
+        }
+      }
+    },
+    "builder" : {
+      "title": "Create a web map from your browser",
+      "subtitle": "Uncover insights from your location data with our online drag and drop tool.",
+      "tags": ["Online", "Builder"],
+      "sections": {
+        "summary": "Summary",
+        "howto": "How To",
+        "extras": "Extras",
+        "learnmore": "Learn more"
+      },
+      "step1": {
+        "title": "Build a map with our drag & drop editor",
+        "text1": "Builder is our drag & drop tool to design, build and publish interactive web maps with your location data. Maps can be easily shared or embedded on any website or blog.",
+        "text2": "In this guide, you will learn how to upload a .csv file and create your first dataset, create a simple map, and publish it."
+      },
+      "step2": {
+        "summary": {
+          "text": "Download and upload a comma-separated values (CSV) file to create your first dataset."
+        },
+        "howto": {
+          "instruction1":"Download the following dataset:",
+          "instruction2":"Visit the Data page and click the “New Dataset” button",
+          "instruction3": "In the Connect dataset section click “Browse”, select the file, and click “Connect dataset”"
+        },
+        "extras": {
+          "resource1": "You can also <a href='https://carto.com/help/working-with-data/quick-data-import/' target='_blank'>import your data</a> by dragging and dropping your files into your dashboard."
+        },
+        "cards": {
+          "dataset1": {
+            "title": "World Ports",
+            "rows": "3,669 rows",
+            "size": "708 kB",
+            "button": "Download",
+            "link": "https://public.carto.com/api/v2/sql?q=select%20*%20from%20public.world_ports&format=csv&filename=world_ports"
+          }
+        }
+      },
+      "step3": {
+        "summary": {
+          "text": "Explore your new dataset and learn how to manipulate it."
+        },
+        "howto": {
+          "instruction1":"Once the upload has finished and the new dataset has been created, you will be redirected to the Dataset view. Here, you can explore your data.",
+          "instruction2":"Double-click on any cell to edit it.",
+          "instruction3":"Click on any of the columns to change the order, rename it, change its data type, remove it, or even add new columns.",
+          "instruction4":"You can also add new rows and export your data in different formats."
+        },
+        "extras": {
+          "resource1": "Use the little switch on the bottom left of the screen to explore your dataset using SQL."
+        }
+      },
+      "step4": {
+        "summary": {
+          "text": "Create a map using your new dataset."
+        },
+        "howto": {
+          "instruction1": "From the dataset view, click “CREATE MAP” (on the bottom right of your screen).",
+          "instruction2": "Your map will be created and you will be redirected to Builder, CARTO’s map editor:",
+          "instruction3": "Double click on the name of the map (Untitled Map) and rename it to “My first map”. This will be the name that you will see on your dashboard as well.",
+          "instruction4": "Change the style of the features on the map (eg: point size, point color, strike size, strike color) by clicking on the layer name and playing with the styling options."
+        },
+        "extras": {
+          "resource1": "Alternatively, you can also create maps directly from your dashboard. You can select one or more datasets from the Data page to create a map with multiple layers, or you can create a map from your Maps page."
+        }
+      },
+      "step5": {
+        "summary": {
+          "text": "Publish and share your map with the world."
+        },
+        "howto": {
+          "instruction1": "Click “Publish” to publish your map.",
+          "instruction2": "Click on the red privacy button to make your map “Public”.",
+          "instruction3": "Click “Publish” to publish this version of your map.",
+          "instruction4": "Your map has now been published and you can use the link or embed code to share your map."
+        },
+        "extras": {
+          "resource1": "Until you re-publish your map again, you can make as many changes as you need to without affecting the published version."
+        }
+      },
+      "step6": {
+        "congrats": {
+          "title": "Congratulations!",
+          "message1": "You've just created your first web map using Builder",
+          "message2": "<a href='{url}' class='is-bold'>Download</a> the example."
+        },
+        "extras": {
+          "resource1":"Learn more with the following examples from our <a href='https://carto.com/help/tutorials/' target='_blank'>Help Center</a>."
+        },
+        "cards": {
+          "card1": {
+            "title": "Understanding map layers in Builder",
+            "subtitle": "Learn how to add data layers to your maps, style them, and more.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/understanding-map-layers-in-builder/"
+          },
+          "card2": {
+            "title": "Customizing Pop-Ups with HTML",
+            "subtitle": "Learn how to setup and customise popups with HTML.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/customizing-pop-ups-with-html/"
+          },
+          "card3": {
+            "title": "Exploring Data with Widgets",
+            "subtitle": "Learn how to add interactive widgets to explore your data.",
+            "button": "Go to example",
+            "link": "https://carto.com/help/building-maps/exploring-widgets/"
+          }
+        }
+      }
+    }
+  }
+}

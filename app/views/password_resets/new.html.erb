@@ -1,0 +1,21 @@
+<%= render :layout => 'form' do %>
+  <% url = CartoDB.url(self, 'create_password_reset') %>
+  <%= form_tag url, method: :post, class: "js-Loading-form" do %>
+    <div class="Sessions-field">
+      <%= text_field_tag :email, '', class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} withBorderRadius", title: 'Your email', placeholder: 'Your email' %>
+      <% if @error || flash[:alert] %>
+        <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @error || flash[:alert] %>.">!</div>
+      <% end %>
+    </div>
+
+    <div class="Sessions-field">
+      <p>
+        <button type="submit" class="Sessions-submitButton u-tupper js-Sessions-button js-Loading">
+          <span class="js-Loading-text"><%= 'Send instructions' %></span>
+          <%= render :partial => 'shared/loading_animation' %>
+        </button>
+      </p>
+    </div>
+  <% end %>
+<% end %>
+

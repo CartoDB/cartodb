@@ -262,5 +262,51 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
     end
+
+    it 'perform a successfully ghost tables execution when is called from LinkGhostTablesByUsername' do
+      Carto::GhostTablesManager.expects(:new).with(@user.id).returns(@ghost_tables_manager).once
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername.perform(@user.username)
+    end
+
+    it 'should call the rerun_func and execute sync twice becuase other worker tried to get the lock' do
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      main = Thread.new do
+        run_in_user_database(%{
+          CREATE TABLE manoloescobar ("description" text);
+          SELECT * FROM CDB_CartodbfyTable('manoloescobar');
+        })
+        rerun_func = lambda do
+          Carto::GhostTablesManager.new(@user.id).send(:sync)
+        end
+        gtm = Carto::GhostTablesManager.new(@user.id)
+        gtm.get_bolt.run_locked(rerun_func: rerun_func) do
+          sleep(1)
+          Carto::GhostTablesManager.new(@user.id).send(:sync)
+        end
+      end
+      thr = Thread.new do
+        run_in_user_database(%{
+          CREATE TABLE manoloescobar2 ("description" text);
+          SELECT * FROM CDB_CartodbfyTable('manoloescobar2');
+        })
+        Carto::GhostTablesManager.new(@user.id).get_bolt.run_locked {}
+      end
+      thr.join
+      main.join
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+      @user.tables.count.should eq 2
+
+      run_in_user_database(%{
+        DROP TABLE manoloescobar;
+        DROP TABLE manoloescobar2;
+      })
+
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+    end
   end
 end

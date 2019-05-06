@@ -68,12 +68,14 @@ describe Carto::ApiKey do
     before(:all) do
       @table1 = create_table(user_id: @carto_user1.id)
       @table2 = create_table(user_id: @carto_user1.id)
+      @table3 = create_table(user_id: @carto_user1.id)
     end
 
     after(:all) do
       bypass_named_maps
       @table2.destroy
       @table1.destroy
+      @table3.destroy
     end
 
     after(:each) do
@@ -115,11 +117,24 @@ describe Carto::ApiKey do
       api_key.destroy
     end
 
+    it 'can grant only with select and update permissions' do
+      grants = [database_grant(@table1.database_schema, @table1.name, permissions: ['select', 'update']), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'only_update', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{@table1.name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        connection.execute("update #{@table1.name} set name = 'wadus2' where name = 'wadus'")
+      end
+    end
+
     it 'fails to grant to a non-existent table' do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception Carto::UnprocesableEntityError
+      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
     end
 
     it 'fails to grant to system table' do
@@ -141,11 +156,57 @@ describe Carto::ApiKey do
       end
     end
 
-    it 'fails to grant to an invalid table name' do
-      expect {
-        grants = [database_grant(@carto_user1.database_schema, "\"#{@table1.name}\""), apis_grant]
-        @carto_user1.api_keys.create_regular_key!(name: 'invalid_table_name', grants: grants)
-      }.to raise_exception(Carto::UnprocesableEntityError, /does not exist/)
+    it 'grants to a double quoted table name' do
+      old_name = @table3.name
+      @user1.in_database.run("ALTER TABLE #{old_name} RENAME TO \"wadus\"\"wadus\"")
+      grants = [database_grant(@carto_user1.database_schema, 'wadus"wadus'), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'valid_table_name', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from \"wadus\"\"wadus\"") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      api_key.destroy
+      @user1.in_database.run("ALTER TABLE \"wadus\"\"wadus\" RENAME TO #{old_name}")
+    end
+
+    it 'grants view' do
+      view_name = 'cool_view'
+
+      validate_view_api_key(
+        view_name,
+        "CREATE VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP VIEW #{view_name}"
+      )
+
+      validate_view_api_key(
+        view_name,
+        "CREATE MATERIALIZED VIEW #{view_name} AS SELECT * FROM #{@table1.name}",
+        "DROP MATERIALIZED VIEW #{view_name}"
+      )
+    end
+
+    def validate_view_api_key(view_name, create_query, drop_query)
+      @user1.in_database.run(create_query)
+      grants = [apis_grant(['sql']), database_grant(@table1.database_schema, view_name)]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'grants_view', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        begin
+          connection.execute("select count(1) from #{@table1.name}")
+        rescue Sequel::DatabaseError => e
+          e.message.should include "permission denied for relation #{@table1.name}"
+        end
+
+        connection.execute("select count(1) from #{view_name}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+
+      @user1.in_database.run(drop_query)
+      api_key.destroy
     end
 
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }
@@ -495,6 +556,100 @@ describe Carto::ApiKey do
 
       table.destroy
       other_user.destroy
+    end
+
+    it 'drop role with grants of objects owned by other user' do
+      user2 = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table_user2 = create_table(user_id: user2.id)
+      schema_and_table_user2 = "\"#{table_user2.database_schema}\".#{table_user2.name}"
+
+      table_user1 = create_table(user_id: @carto_user1.id)
+      grants = [database_grant(table_user1.database_schema, table_user1.name), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+
+      user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
+
+      expect { api_key.destroy! }.to_not raise_error
+
+      table_user1.destroy
+      table_user2.destroy
+      user2.destroy
+    end
+  end
+
+  describe 'org shared tables' do
+    include_context 'organization with users helper'
+
+    before :each do
+      @shared_table = create_table(user_id: @carto_org_user_1.id)
+
+      perm = @shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'rw' }]
+      perm.save!
+    end
+
+    it 'should create an api key using a shared table' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{schema_table}") do |result|
+          result[0]['count'].should eq '0'
+        end
+      end
+      api_key.destroy
+    end
+
+    it 'should revoke permissions removing shared permissions (rw to r)' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      # remove shared permissions
+      @shared_table.table_visualization.reload
+      perm = @shared_table.table_visualization.permission
+      perm.acl = [{ type: 'user', entity: { id: @carto_org_user_2.id }, access: 'r' }]
+      perm.save!
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("select count(1) from #{schema_table}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        expect {
+          connection.execute("insert into #{schema_table} (name) values ('wadus')")
+        }.to raise_exception /permission denied/
+      end
+
+      api_key.destroy
+    end
+
+    it 'should revoke permissions removing shared permissions (rw to none)' do
+      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
+
+      # remove shared permissions
+      @shared_table.table_visualization.reload
+      perm = @shared_table.table_visualization.permission
+      perm.acl = []
+      perm.save!
+
+      schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
+
+      with_connection_from_api_key(api_key) do |connection|
+        expect {
+          connection.execute("select count(1) from #{schema_table}")
+        }.to raise_exception /permission denied/
+
+        expect {
+          connection.execute("insert into #{schema_table} (name) values ('wadus')")
+        }.to raise_exception /permission denied/
+      end
+
+      api_key.destroy
     end
   end
 end

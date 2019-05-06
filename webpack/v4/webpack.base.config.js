@@ -7,6 +7,9 @@ const { version } = require('../../package.json');
 const { http_path_prefix } = require(`../../config/grunt_${process.env.NODE_ENV}.json`);
 const entryPoints = require('./entryPoints');
 
+const vueLoaderConfig = require('../new-dashboard/vue-loader.conf');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
 const rootDir = file => resolve(__dirname, '../../', file);
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
@@ -18,6 +21,7 @@ module.exports = {
     path: rootDir('public/assets')
   },
   resolve: {
+    extensions: ['.js', '.vue', '.json', '.scss'],
     symlinks: false,
     modules: require('../common/modules.js'),
     alias: require('../common/alias.js')
@@ -32,7 +36,8 @@ module.exports = {
 
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(false),
-      __ENV__: JSON.stringify('prod')
+      __ENV__: JSON.stringify('prod'),
+      __ASSETS_VERSION__: JSON.stringify(version)
     }),
 
     new MiniCssExtractPlugin({
@@ -64,6 +69,10 @@ module.exports = {
         from: rootDir('app/assets/images/google-maps-basemap-icons'),
         to: `./unversioned/images/google-maps-basemap-icon`,
         toType: 'dir'
+      }, {
+        from: rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+        to: `./unversioned/onboarding/`,
+        toType: 'dir'
       }
     ]),
 
@@ -82,7 +91,9 @@ module.exports = {
         `${version}/javascripts/editor3.js`,
         `${version}/javascripts/editor3.js.map`
       ]
-    })
+    }),
+
+    new VueLoaderPlugin()
   ],
   optimization: {
     splitChunks: {
@@ -177,6 +188,7 @@ module.exports = {
           rootDir('lib/assets/javascripts/carto-node'),
           rootDir('lib/assets/javascripts/builder'),
           rootDir('lib/assets/javascripts/dashboard'),
+          rootDir('lib/assets/javascripts/new-dashboard'),
           rootDir('node_modules/internal-carto.js')
         ],
         exclude: [
@@ -215,7 +227,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(ttf|eot|woff|woff2|svg)(.+#.+)?$/,
+        test: /\.(ttf|eot|woff|woff2)(.+#.+)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -226,15 +238,38 @@ module.exports = {
         }
       },
       {
-        test: /\.(png|gif)$/,
+        test: /\.(png|gif|svg)$/,
         use: {
           loader: 'file-loader',
           options: {
             name: `[name].[ext]`,
             outputPath: `${version}/images/`,
-            publicPath: `${http_path_prefix}/assets/${version}/fonts/`
+            publicPath: `${http_path_prefix}/assets/${version}/images/`
           }
         }
+      },
+
+      // New Dashboard Vue Configuration
+      {
+        test: /\.vue$/,
+        use: [
+
+          {
+            loader: 'vue-loader',
+            options: vueLoaderConfig
+          },
+          {
+            loader: 'vue-svg-inline-loader'
+          }
+        ]
+      },
+      {
+        test: /\.html$/,
+        use: 'raw-loader',
+        include: [
+          rootDir('lib/assets/javascripts/new-dashboard/assets/resources/onboarding'),
+          rootDir('lib/assets/javascripts/new-dashboard/components/Onboarding/wizard')
+        ]
       }
     ]
   },

@@ -230,17 +230,6 @@ module CartoDB
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
 
-        # from_table_deletion would be enough for canonical viz-based deletes,
-        # but common data loading also calls this delete without the flag to true, causing a call without a Map
-        begin
-          if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-            Carto::VisualizationsExportService.new.export(id)
-          end
-        rescue => exception
-          # Don't break deletion flow
-          CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
-        end
-
         repository.transaction do
           unlink_self_from_list!
 
@@ -573,29 +562,8 @@ module CartoDB
         end
       end
 
-      # @param user_id String UUID of the actor that likes the visualization
-      # @throws AlreadyLikedError
-      def add_like_from(user_id)
-        Like.create(actor: user_id, subject: id)
-        reload_likes
-        self
-      rescue Sequel::DatabaseError => exception
-        if exception.message =~ /duplicate key/i
-          raise AlreadyLikedError
-        else
-          raise exception
-        end
-      end
-
-      def remove_like_from(user_id)
-        item = likes.select { |like| like.actor == user_id }
-        item.first.destroy unless item.first.nil?
-        reload_likes
-        self
-      end
-
-      def liked_by?(user_id)
-        !(likes.select { |like| like.actor == user_id }.first.nil?)
+      def liked_by?(user)
+        !likes.select { |like| like.actor == user.id }.first.nil?
       end
 
       # @param viewer_user ::User

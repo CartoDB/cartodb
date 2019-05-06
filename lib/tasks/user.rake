@@ -61,4 +61,71 @@ namespace :user do
       puts "Changed the number of max layers for '#{user.username}' from #{old_max_layers} to #{max_layers}."
     end
   end
+
+  namespace :likes do
+    desc 'Clean likes for all the users of the organization'
+    task :clean_org_likes, [:organization] => [:environment] do |_, args|
+      raise 'Please specify the organization to be cleaned' if args[:organization].blank?
+      org = Carto::Organization.find_by_name(args[:organization])
+      raise "The organization '#{args[:organization]}' does not correspond to any organization" if org.nil?
+      org.users.find_each do |u|
+        Carto::Like.where(actor: u.id).delete_all
+      end
+    end
+    desc 'Clean likes for a user'
+    task :clean_user_likes, [:username] => [:environment] do |_, args|
+      raise 'Please specify the username to be cleaned' if args[:username].blank?
+      u = Carto::User.find_by_username(args[:username])
+      raise "The username '#{args[:username]}' does not correspond to any user" if u.nil?
+      Carto::Like.where(actor: u.id).delete_all
+    end
+  end
+
+  namespace :ghost_tables do
+    desc 'Install ghost tables trigger to all the organizations owners and regular users'
+    task :install_ghost_tables_trigger => :environment do
+      Carto::User.where(organization_id: nil).find_each do |user|
+        install_ghost_tables_trigger(user.id)
+      end
+
+      Organization.each { |org| install_ghost_tables_trigger(org.owner_id) }
+    end
+
+    def install_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
+      if user.nil?
+        puts "ERROR: User #{user_id} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        puts "ERROR: User #{user_id} must be an org owner or not to be an organization user"
+      elsif user.has_feature_flag?('ghost_tables_trigger_disabled')
+        puts "WARN: Skipping user #{user_id} (it has 'ghost_tables_trigger_disabled' feature flag)"
+      else
+        begin
+          user.db_service.create_ghost_tables_event_trigger
+        rescue StandardError => error
+          puts "ERROR creating ghost tables trigger for user #{user_id}: #{error.message}"
+        end
+      end
+    end
+
+    desc 'Drop ghost_tables_trigger to all the organizations owners and regular users'
+    task :drop_ghost_tables_trigger => :environment do
+      Carto::User.where(organization_id: nil).find_each do |user|
+        drop_ghost_tables_trigger(user.id)
+      end
+
+      Organization.each { |org| drop_ghost_tables_trigger(org.owner_id) }
+    end
+
+    def drop_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
+      if user.nil?
+        puts "ERROR: User #{username} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        puts "ERROR: User #{username} must be an org owner or not to be an organization user"
+      else
+        user.db_service.drop_ghost_tables_event_trigger
+      end
+    end
+  end
 end

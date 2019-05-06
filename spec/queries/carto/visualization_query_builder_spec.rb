@@ -31,6 +31,7 @@ describe Carto::VisualizationQueryBuilder do
       config.ignores << /LEFT JOIN pg_namespace n ON n.oid = c.relnamespace/
       config.ignores << /INNER JOIN pg_depend dep ON attr.attrelid = dep.refobjid AND attr.attnum = dep.refobjsubid/
       config.ignores << /WHERE a.attrelid = '".*"'::regclass/
+      config.ignores << /SHOW max_identifier_length/
     end
   end
 
@@ -81,6 +82,47 @@ describe Carto::VisualizationQueryBuilder do
     expect {
       @vqb.with_prefetch_table.build.where(id: table_visualization.id).first.user_table.name
     }.to make_database_queries(count: 1)
+  end
+
+  context '#with_prefetch_dependent_visualizations' do
+    before(:each) do
+      table = create_random_table(@user1)
+      @table_visualization = table.table_visualization
+      @visualization = FactoryGirl.create(:carto_visualization, user_id: @user1.id)
+      @visualization.map = FactoryGirl.create(:carto_map, user_id: @user1.id)
+      @visualization.save!
+      layer = FactoryGirl.build(:carto_layer)
+      layer.options[:table_name] = table.name
+      layer.save!
+      @visualization.layers << layer
+    end
+
+    after(:each) do
+      @visualization.destroy
+      @table_visualization.destroy
+    end
+
+    it 'can prefetch dependent visualizations' do
+      expect {
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 10)
+
+      expect {
+        @vqb.with_prefetch_dependent_visualizations
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
+    end
+
+    it 'can prefetch together two nested associations with the same root' do
+      expect {
+        @vqb.build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 10)
+
+      expect {
+        @vqb.with_prefetch_dependent_visualizations.with_prefetch_table
+            .build.where(id: @table_visualization.id).all[0].dependent_visualizations
+      }.to make_database_queries(count: 1)
+    end
   end
 
   it 'searches for shared visualizations' do
@@ -380,17 +422,33 @@ describe Carto::VisualizationQueryBuilder do
     expect { @vqb.with_id_or_name(nil) }.to raise_error
   end
 
+  it 'paginates correctly when ordering by size' do
+    table1 = create_random_table(@user1)
+    table2 = create_random_table(@user1)
+    table3 = create_random_table(@user1)
+
+    mocked_vis1 = Carto::Visualization.where(id: table1.table_visualization.id).first
+    mocked_vis2 = Carto::Visualization.where(id: table2.table_visualization.id).first
+    mocked_vis3 = Carto::Visualization.where(id: table3.table_visualization.id).first
+
+    mocked_vis1.stubs(:size).returns(200)
+    mocked_vis2.stubs(:size).returns(1)
+    mocked_vis3.stubs(:size).returns(600)
+
+    # Careful to not do anything else on this spec after this size assertions
+    Carto::Visualization::ActiveRecord_Relation.any_instance.stubs(:all).returns(
+      [mocked_vis3, mocked_vis1, mocked_vis2]
+    )
+
+    page = 2
+    per_page = 1
+    ids = @vqb.with_type(Carto::Visualization::TYPE_CANONICAL).with_order('size', :desc)
+              .build_paged(page, per_page).map(&:id)
+
+    ids.should == [table1.table_visualization.id]
+  end
+
   describe '#with_published' do
-    it 'is implied by public search, so querying public filters public, unpublished' do
-      map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 3, privacy: Carto::Visualization::PRIVACY_PUBLIC })
-
-      visualizations = @vqb.with_privacy(Carto::Visualization::PRIVACY_PUBLIC).build
-      visualization.published?.should be false
-      visualizations.map(&:id).should_not include visualization.id
-
-      destroy_full_visualization(map, table, table_visualization, visualization)
-    end
-
     it 'selects public v2' do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user1, visualization_attributes: { version: 2, privacy: Carto::Visualization::PRIVACY_PUBLIC })
 

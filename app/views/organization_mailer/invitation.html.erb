@@ -1,14 +1,18 @@
 <tr>
   <td align="left" style="font-size: 14px; line-height: 25px; font-family: 'Open Sans', Helvetica, Arial, sans-serif; color: #647083;">
     <p>Hello and welcome!</p>
-    <p>Join the <%= @invitation.organization.name %> organization in CARTO. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
-    <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
-    <p>Here are some resources to get you up and running:</p>
-    <ul>
-      <li><a href="https://carto.com/developers/">Developer Center</a>: Guides, FAQs and tutorials</li>
-      <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies and white papers for inspiration</li>
-      <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
-    </ul>
+    <p>Join the <%= @invitation.organization.name %> organization in <%= @app_name %>. Just <a href="<%= @invitation_signup_link %>" target="_blank" style="color: #1785FB">create your account</a>.</p>
+
+    <% unless Cartodb.get_config(:mailer, 'template', 'avoid_carto_links') %>
+      <p>CARTO is an open, powerful, and intuitive platform for discovering and predicting the key insights underlying the location data in our world.</p>
+      <p>Here are some resources to get you up and running:</p>
+      <ul>
+        <li><a href="https://carto.com/help/">Help Center</a>: FAQs, guides and tutorials.</li>
+        <li><a href="https://carto.com/developers/">Developer Center</a>: Platform documentation for developers.</li>
+        <li><a href="https://carto.com/resources/">Resource Center</a>: Case studies, webinars, and more.</li>
+        <li>Builder training videos: <a href="https://vimeo.com/173657117/340039d93f">UI</a>, <a href="https://vimeo.com/173657596/572660d9d2">Styling</a>, <a href="https://vimeo.com/173657654/970529bced">Analysis</a>, <a href="https://vimeo.com/173658241/dd37f7ea8c">Widgets</a>, <a href="https://vimeo.com/173658333/21259b1d37">Publishing</a></li>
+      </ul>
+    <% end %>
 
     <p>Below is a personalised message from your account administrator:</p>
   </td>

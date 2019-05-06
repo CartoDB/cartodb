@@ -33,7 +33,12 @@ module.exports = merge(baseConfig, {
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           zindex: false,
-          reduceIdents: false
+          reduceIdents: false,
+          autoprefixer: {
+            remove: false,
+            add: true,
+            browsers: ['> 1%']
+          }
         }
       })
     ]

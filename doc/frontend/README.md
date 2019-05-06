@@ -59,7 +59,7 @@ This is a list of available tasks to run:
 | `npm run bump`                 | Creates a patch version
 | `npm run bump:major`           | Creates a major version
 | `npm run bump:minor`           | Creates a minor version
-| `npm run update-internal-deps` | Update the `npm-shrinkwrap` file
+| `npm run update-internal-deps` | Update the `package-lock` file
 | `npm run ci`                   | Runs the CSS lint and tests
 
 ## Pull Request rules
@@ -260,7 +260,7 @@ npm run build:static
 Follow these steps to update to get latest changes:
 
 - go to `lib/assets/javascripts/cdb/`
-- `git checkout develop && git pull`
+- `git checkout v3 && git pull`
 - go back to root and run `grunt cdb`
 - commit both the new revision of the submodule and the generated file `vendor/assets/javascripts/cartodb.uncompressed.js`
 

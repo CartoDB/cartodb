@@ -287,7 +287,7 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key
       ), {
         user_id: user.id,
-        password_confirmation:  '12345678'
+        password_confirmation:  '00012345678'
       }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
@@ -329,7 +329,7 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key,
         user_id: user.id
       ), {
-        password_confirmation: '12345678'
+        password_confirmation: '00012345678'
       }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
@@ -373,7 +373,7 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key
       ), {
         users: [user_1.id, user_2.id],
-        password_confirmation: '12345678'
+        password_confirmation: '00012345678'
       }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
@@ -400,7 +400,7 @@ describe Carto::Api::GroupsController do
         api_key: @admin_user.api_key
       ), {
         users: [user_1.id, user_2.id],
-        password_confirmation: '12345678'
+        password_confirmation: '00012345678'
       }, @headers do |response|
         response.status.should == 200
         # INFO: since test doesn't actually trigger the extension we only check expectation on membership call
@@ -418,7 +418,7 @@ describe Carto::Api::GroupsController do
         group_id: group.id,
         api_key: @admin_user.api_key
       ), {
-        password_confirmation: '12345678'
+        password_confirmation: '00012345678'
       }, @headers do |response|
         response.status.should == 204
 
@@ -448,8 +448,8 @@ describe Carto::Api::GroupsController do
     it_behaves_like 'Groups editor management' do
       before(:all) do
         @admin_user = @organization.owner
-        @admin_user.password = '12345678'
-        @admin_user.password_confirmation = '12345678'
+        @admin_user.password = '00012345678'
+        @admin_user.password_confirmation = '00012345678'
         @admin_user.save
       end
     end
@@ -461,8 +461,8 @@ describe Carto::Api::GroupsController do
         @org_user_2.org_admin = true
         @org_user_2.save
         @admin_user = @org_user_2
-        @admin_user.password = '12345678'
-        @admin_user.password_confirmation = '12345678'
+        @admin_user.password = '00012345678'
+        @admin_user.password_confirmation = '00012345678'
         @admin_user.save
       end
     end

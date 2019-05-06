@@ -6,17 +6,7 @@
       <div class="u-inner">
         <div class="Sessions-center Sessions--centered">
           <div class="Sessions-logoContainer">
-            <picture class="Navbar-brand">
-              <% if @organization.present? && @organization.avatar_url.present? %>
-                <img src="<%= @organization.avatar_url %>" alt="<%= @organization.name %> organization">
-              <% else %>
-                <% if @organization.present? %>
-                  <%= image_tag("layout/carto-logo-darkblue.svg", :alt => "CARTO") %>
-                <% else %>
-                  <%= image_tag("layout/carto-logo.svg", :alt => "CARTO") %>
-                <% end %>
-              <% end %>
-            </picture>
+            <%= render :partial => 'shared/logo', locals: { organization: @organization } %>
           </div>
 
           <div class="js-info">
@@ -24,7 +14,7 @@
               <p class="Sessions-description">Please check your email inbox and click the "Activate your account" button in the welcome mail.</p>
 
             <% if @user %>
-              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', :user_id => @user.id) %>">here</a> and a new email will be sent directly to you.</p>
+              <p class="Sessions-description">If you didn't receive your validation email, click <a href="<%= CartoDB.url(self, 'resend_validation_mail', params: { :user_id => @user.id }) %>">here</a> and a new email will be sent directly to you.</p>
             <% end %>
           </div>
         </div>

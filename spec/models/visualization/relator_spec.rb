@@ -19,7 +19,7 @@ describe Visualization::Relator do
     @user = create_user({
         email: 'admin@cartotest.com',
         username: 'admin',
-        password: '123456'
+        password: '000123456'
       })
     @carto_user = Carto::User.find(@user.id)
   end
@@ -37,9 +37,9 @@ describe Visualization::Relator do
   describe '#estimated_row_count and #actual_row_count' do
 
     it 'should query Table estimated an actual row count methods' do
-      ::Table.any_instance.stubs(:estimated_row_count).returns(999)
+      ::Table.any_instance.stubs(:row_count_and_size).returns(row_count: 999)
       ::Table.any_instance.stubs(:actual_row_count).returns(1000)
-      table = create_table({:name => 'table1', :user_id => @user.id})
+      table = create_table(name: 'table1', user_id: @user.id)
       vis = table.table_visualization
       vis.estimated_row_count.should == 999
       vis.actual_row_count.should == 1000

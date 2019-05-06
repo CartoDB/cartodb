@@ -1,8 +1,9 @@
 # coding: UTF-8
 
 require 'securerandom'
-require_dependency 'google_plus_api'
-require_dependency 'carto/strong_password_validator'
+require_dependency 'carto/password_validator'
+require_dependency 'carto/strong_password_strategy'
+require_dependency 'carto/standard_password_strategy'
 require_dependency 'dummy_password_generator'
 
 # This class is quite coupled to UserCreation.
@@ -33,6 +34,7 @@ module CartoDB
       @user_params = {}
       @custom_errors = {}
       @created_via = created_via
+      @force_password_change = false
     end
 
     def with_username(value)
@@ -83,6 +85,11 @@ module CartoDB
       with_param(PARAM_ORG_ADMIN, value)
     end
 
+    def with_force_password_change
+      @built = false
+      @force_password_change = true
+    end
+
     def with_organization(organization, viewer: false)
       @built = false
       @organization = organization
@@ -117,13 +124,6 @@ module CartoDB
       @user
     end
 
-    def with_google_token(google_access_token)
-      @built = false
-      # get_user_data can return nil
-      @google_user_data = GooglePlusAPI.new.get_user_data(google_access_token)
-      self
-    end
-
     def with_oauth_api(oauth_api)
       @built = false
       @oauth_api = oauth_api
@@ -146,14 +146,22 @@ module CartoDB
           validate_organization_soft_limits
         end
 
-        if requires_strong_password_validation?
-          password_validator = Carto::StrongPasswordValidator.new
-          password_errors = password_validator.validate(@user.password)
+        password_validator = if requires_strong_password_validation?
+                               Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
+                             else
+                               Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
+                             end
 
-          unless password_errors.empty?
-            @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
-          end
+        password = @user_params[PARAM_PASSWORD] || @user.password
+        password_errors = password_validator.validate(password, password, @user)
+
+        unless password_errors.empty?
+          @custom_errors[:password] = [password_validator.formatted_error_message(password_errors)]
         end
+      end
+
+      if @force_password_change && @user.password_expiration_in_d.nil?
+        @custom_errors[:force_password_change] = ['Cannot be set if password expiration is not configured']
       end
 
       @custom_errors[:oauth] = 'Invalid oauth' if @oauth_api && !@oauth_api.valid?(@user)
@@ -232,6 +240,10 @@ module CartoDB
       @user.quota_in_bytes = @user_params[PARAM_QUOTA_IN_BYTES] if @user_params[PARAM_QUOTA_IN_BYTES]
       @user.viewer = @user_params[PARAM_VIEWER] if @user_params[PARAM_VIEWER]
       @user.org_admin = @user_params[PARAM_ORG_ADMIN] if @user_params[PARAM_ORG_ADMIN]
+
+      if @force_password_change && @user.password_expiration_in_d.present?
+        @user.last_password_change_date = Date.today - @user.password_expiration_in_d - 1
+      end
 
       @built = true
       @user

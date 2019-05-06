@@ -40,7 +40,8 @@ module FrontendConfigHelper
       upgrade_url:                cartodb_com_hosted? ? false : user.try(:upgrade_url, request.protocol).to_s,
       licenses:                   Carto::License.all,
       data_library_enabled:       CartoDB::Visualization::CommonDataService.configured?,
-      avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS
+      avatar_valid_extensions:    AVATAR_VALID_EXTENSIONS,
+      app_name:                   Cartodb.get_config(:mailer, 'template', 'app_name') || 'CARTO'
     }
 
     if CartoDB::Hubspot::instance.enabled? && !CartoDB::Hubspot::instance.token.blank?

@@ -2,7 +2,7 @@
   <%= insert_google_maps(@visualization.user.google_maps_query_string) %>
 <% end %>
 
-<%= editor_javascript_include_tag 'embed.js', 'public_like.js' %>
+<%= editor_javascript_include_tag 'embed.js' %>
 
 <script>
 
@@ -122,16 +122,6 @@
       visReadyTime.end();
       vis.on('load', function() {
         loadingTime.end();
-      });
-
-      var like = new cdb.open.LikeView({
-        el: $(".js-like"),
-        auto_fetch: false,
-        model: cdb.open.Like.newByVisData({
-          url: "<%= CartoDB.url(self, 'api_v1_visualizations_add_like', { id: @visualization.id }, @visualization.user) %>",
-          vis_id: "<%= @visualization.id %>",
-          likes: <%= @visualization.to_vizjson[:likes] %>
-        })
       });
 
       window.vis = vis;

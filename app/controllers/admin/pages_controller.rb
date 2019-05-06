@@ -46,13 +46,13 @@ class Admin::PagesController < Admin::AdminController
   def index
     if current_user
       # I am logged in, visiting my subdomain -> my dashboard
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_user)
+      redirect_to CartoDB.url(self, 'dashboard', user: current_user)
     elsif CartoDB.extract_subdomain(request).present?
       # I am visiting another user subdomain -> other user public pages
       redirect_to CartoDB.url(self, 'public_user_feed_home')
     elsif current_viewer
       # I am logged in but did not specify a subdomain -> my dashboard
-      redirect_to CartoDB.url(self, 'dashboard', {}, current_viewer)
+      redirect_to CartoDB.url(self, 'dashboard', user: current_viewer)
     else
       # I am not logged in and did not specify a subdomain -> login
       # Avoid using CartoDB.url helper, since we cannot get any user information from domain, path or session
@@ -69,33 +69,26 @@ class Admin::PagesController < Admin::AdminController
       username = CartoDB.extract_subdomain(request)
       org = get_organization_if_exists(username)
       render_404 and return if org.nil?
-      visualizations = (org.public_visualizations.to_a || [])
-      visualizations += (org.public_datasets.to_a || [])
+      visualizations = public_builder(organization_id: org.id).build
     else
       # Redirect to org url if has only user
       if eligible_for_redirect?(@viewed_user)
         redirect_to CartoDB.base_url(@viewed_user.organization.name) << CartoDB.path(self, 'public_sitemap') and return
       end
 
-      visualizations = Carto::VisualizationQueryBuilder.new
-                                                       .with_user_id(@viewed_user.id)
-                                                       .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
-                                                       .with_order('visualizations.updated_at', :desc)
-                                                       .without_raster
-                                                       .with_prefetch_user(true)
-                                                       .build
+      visualizations = public_builder(user_id: @viewed_user.id).with_prefetch_user(true).build
     end
 
     @urls = visualizations.map { |vis|
       case vis.type
       when Carto::Visualization::TYPE_DERIVED
         {
-          loc: CartoDB.url(self, 'public_visualizations_public_map', { id: vis.id }, vis.user),
+          loc: CartoDB.url(self, 'public_visualizations_public_map', params: { id: vis.id }, user: vis.user),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
       when Carto::Visualization::TYPE_CANONICAL
         {
-          loc: CartoDB.url(self, 'public_table', { id: vis.name }, vis.user),
+          loc: CartoDB.url(self, 'public_table', params: { id: vis.name }, user: vis.user),
           lastfreq: vis.updated_at.strftime("%Y-%m-%dT%H:%M:%S%:z")
         }
       end
@@ -216,10 +209,10 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def render_datasets(vis_query_builder, user = nil)
-    home = CartoDB.url(self, 'public_datasets_home', { page: PAGE_NUMBER_PLACEHOLDER }, user)
+    home = CartoDB.url(self, 'public_datasets_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
     set_pagination_vars(total_count: vis_query_builder.build.count,
                         per_page: DATASETS_PER_PAGE,
-                        first_page_url: CartoDB.url(self, 'public_datasets_home', {}, user),
+                        first_page_url: CartoDB.url(self, 'public_datasets_home', user: user),
                         numbered_page_url: home)
 
     @datasets = []
@@ -253,12 +246,12 @@ class Admin::PagesController < Admin::AdminController
   end
 
   def render_maps(vis_query_builder, user=nil)
-    set_pagination_vars({
-        total_count: vis_query_builder.build.count,
-        per_page:    MAPS_PER_PAGE,
-        first_page_url: CartoDB.url(self, 'public_maps_home', {}, user),
-        numbered_page_url: CartoDB.url(self, 'public_maps_home', {page: PAGE_NUMBER_PLACEHOLDER}, user)
-      })
+    set_pagination_vars(
+      total_count: vis_query_builder.build.count,
+      per_page:    MAPS_PER_PAGE,
+      first_page_url: CartoDB.url(self, 'public_maps_home', user: user),
+      numbered_page_url: CartoDB.url(self, 'public_maps_home', params: { page: PAGE_NUMBER_PLACEHOLDER }, user: user)
+    )
 
     vis_list = vis_query_builder.build_paged(current_page, MAPS_PER_PAGE).map do |v|
       Carto::Admin::VisualizationPublicMapAdapter.new(v, current_user, self)
@@ -311,7 +304,7 @@ class Admin::PagesController < Admin::AdminController
 
   def set_layout_vars_for_user(user, content_type)
     builder = user_maps_public_builder(user, visualization_version)
-    most_viewed = builder.with_order('mapviews', :desc).build_paged(1, 1).first
+    most_viewed = builder.with_order(:mapviews, :desc).build_paged(1, 1).first
 
     set_layout_vars({
         most_viewed_vis_map: most_viewed ? Carto::Admin::VisualizationPublicMapAdapter.new(most_viewed, current_user, self) : nil,
@@ -349,8 +342,8 @@ class Admin::PagesController < Admin::AdminController
   def set_layout_vars(required)
     @most_viewed_vis_map = required.fetch(:most_viewed_vis_map)
     @content_type        = required.fetch(:content_type)
-    @maps_url            = CartoDB.url(view_context, 'public_maps_home', {}, required.fetch(:user, nil))
-    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', {}, required.fetch(:user, nil))
+    @maps_url            = CartoDB.url(view_context, 'public_maps_home', user: required.fetch(:user, nil))
+    @datasets_url        = CartoDB.url(view_context, 'public_datasets_home', user: required.fetch(:user, nil))
     @default_fallback_basemap = required.fetch(:default_fallback_basemap, {})
     @base_url            = required.fetch(:base_url, {})
   end
@@ -410,6 +403,7 @@ class Admin::PagesController < Admin::AdminController
 
     builder = Carto::VisualizationQueryBuilder.new
                                               .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+                                              .with_published
                                               .without_raster
                                               .with_order(:updated_at, :desc)
                                               .with_user_id(user_id)
@@ -417,8 +411,6 @@ class Admin::PagesController < Admin::AdminController
                                               .with_tags(tags)
                                               .with_organization_id(organization_id)
                                               .with_version(version)
-
-    builder.with_published if vis_type == Carto::Visualization::TYPE_DERIVED
 
     builder
   end
@@ -491,7 +483,6 @@ class Admin::PagesController < Admin::AdminController
       tags:        vis.tags,
       updated_at:  vis.updated_at,
       owner:       vis.user,
-      likes_count: vis.likes.count,
       map_zoom:    vis.map.zoom
     }
   end

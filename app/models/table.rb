@@ -521,7 +521,7 @@ class Table
     first_columns     = []
     middle_columns    = []
     last_columns      = []
-    owner.in_database.schema(name, options.slice(:reload).merge(schema: owner.database_schema)).each do |column|
+    owner.in_database.schema(name, schema: owner.database_schema, reload: options.fetch(:reload, true)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
 
       calculate_the_geom_type if column[0] == :the_geom
@@ -669,7 +669,7 @@ class Table
   # make all identifiers SEQUEL Compatible
   # https://github.com/Vizzuality/cartodb/issues/331
   def make_sequel_compatible(attributes)
-    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[k.identifier] = v }
+    attributes.except(THE_GEOM).convert_nulls.each_with_object({}) { |(k, v), h| h[Sequel.identifier(k)] = v }
   end
 
   def add_column!(options)
@@ -682,7 +682,7 @@ class Table
     update_cdb_tablemetadata
     return {:name => column_name, :type => type, :cartodb_type => cartodb_type}
   rescue => e
-    if e.message =~ /^(PG::Error|PGError)/
+    if e.message =~ /^(PG::Error|PGError|PG::UndefinedObject)/
       raise CartoDB::InvalidType, e.message
     else
       raise e
@@ -978,11 +978,23 @@ class Table
   end
 
   def update_table_pg_stats
-    owner.in_database[%Q{ANALYZE #{qualified_table_name};}]
+    owner.in_database.execute(%{ANALYZE #{qualified_table_name};})
+  rescue StandardError => exception
+    if exception.message =~ /canceling statement due to statement timeout/i
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    else
+      raise exception
+    end
   end
 
   def update_table_geom_pg_stats
-    owner.in_database[%Q{ANALYZE #{qualified_table_name}(the_geom);}]
+    owner.in_database.execute(%{ANALYZE #{qualified_table_name}(the_geom);})
+  rescue StandardError => exception
+    if exception.message =~ /canceling statement due to statement timeout/i
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    else
+      raise exception
+    end
   end
 
   def owner
@@ -994,9 +1006,10 @@ class Table
   end
 
   def data_last_modified
-    owner.in_database.select(:updated_at)
-                     .from(:cdb_tablemetadata.qualify(:cartodb))
-                     .where(tabname: "'#{self.name}'::regclass".lit).first[:updated_at]
+    owner.in_database
+         .select(:updated_at)
+         .from(Sequel.qualify(:cartodb, :cdb_tablemetadata))
+         .where(tabname: Sequel.lit("'#{name}'::regclass")).first[:updated_at]
   rescue
     nil
   end

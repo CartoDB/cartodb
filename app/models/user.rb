@@ -86,8 +86,8 @@ class User < Sequel::Model
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
-  one_to_many :geocodings, order: :created_at.desc
-  one_to_many :search_tweets, order: :created_at.desc
+  one_to_many :geocodings, order: Sequel.desc(:created_at)
+  one_to_many :search_tweets, order: Sequel.desc(:created_at)
   many_to_one :organization
 
   many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
@@ -120,16 +120,14 @@ class User < Sequel::Model
 
   DEFAULT_MAX_LAYERS = 8
 
-  MIN_PASSWORD_LENGTH = 6
-  MAX_PASSWORD_LENGTH = 64
-
   GEOCODING_BLOCK_SIZE = 1000
   HERE_ISOLINES_BLOCK_SIZE = 1000
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
 
-  TRIAL_DURATION_DAYS = 15
+  MAGELLAN_TRIAL_DAYS = 15
+  PERSONAL30_TRIAL_DAYS = 30
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -146,8 +144,14 @@ class User < Sequel::Model
   STATE_ACTIVE = 'active'.freeze
   STATE_LOCKED = 'locked'.freeze
 
+  MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
+  MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
+
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
+
+  LOGIN_NOT_RATE_LIMITED = -1
 
   include VarnishCacheHandler
 
@@ -229,25 +233,18 @@ class User < Sequel::Model
   end
 
   def valid_password?(key, value, confirmation_value)
-    if value.nil?
-      errors.add(key, "New password can't be blank")
-    else
-      if value != confirmation_value
-        errors.add(key, "New password doesn't match confirmation")
-      end
-
-      if value.length < MIN_PASSWORD_LENGTH
-        errors.add(key, "Must be at least #{MIN_PASSWORD_LENGTH} characters long")
-      end
-
-      if value.length >= MAX_PASSWORD_LENGTH
-        errors.add(key, "Must be at most #{MAX_PASSWORD_LENGTH} characters long")
-      end
-
-      validate_different_passwords(nil, self.class.password_digest(value, salt), key)
-    end
+    password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
+    validate_different_passwords(nil, self.class.password_digest(value, salt), key)
 
     errors[key].empty?
+  end
+
+  def password_validator
+    if organization.try(:strong_passwords_enabled)
+      Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
+    else
+      Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
+    end
   end
 
   def valid_creation?(creator_user)
@@ -413,10 +410,16 @@ class User < Sequel::Model
     if changes.include?(:org_admin) && !organization_owner?
       org_admin ? db_service.grant_admin_permissions : db_service.revoke_admin_permissions
     end
+
+    reset_password_rate_limit if changes.include?(:crypted_password)
   end
 
   def api_keys
     Carto::ApiKey.where(user_id: id)
+  end
+
+  def user_multifactor_auths
+    Carto::UserMultifactorAuth.where(user_id: id)
   end
 
   def shared_entities
@@ -606,9 +609,6 @@ class User < Sequel::Model
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
     return unless validate_different_passwords(@old_password, @new_password)
 
-    # Must be set AFTER validations
-    set_last_password_change_date
-
     self.password = new_password_value
   end
 
@@ -674,6 +674,7 @@ class User < Sequel::Model
     @password = value
     self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
     self.crypted_password = self.class.password_digest(value, salt)
+    set_last_password_change_date
   end
 
   # Database configuration setup
@@ -880,8 +881,10 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.downcase == 'magellan' && upgraded_at && upgraded_at + TRIAL_DURATION_DAYS.days > Date.today
-      upgraded_at + TRIAL_DURATION_DAYS.days
+    if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + MAGELLAN_TRIAL_DAYS.days > Date.today
+      upgraded_at + MAGELLAN_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('personal30').zero?
+      created_at + PERSONAL30_TRIAL_DAYS.days
     else
       nil
     end
@@ -1020,6 +1023,10 @@ class User < Sequel::Model
     "limits:timeout:#{username}"
   end
 
+  def rate_limit_password_key
+    "limits:password:#{username}"
+  end
+
   # save users basic metadata to redis for other services (node sql api, geocoder api, etc)
   # to use
   def save_metadata
@@ -1055,8 +1062,22 @@ class User < Sequel::Model
     save_rate_limits
   end
 
+  def password_login_attempt
+    return LOGIN_NOT_RATE_LIMITED unless password_rate_limit_configured?
+
+    rate_limit = $users_metadata.call('CL.THROTTLE', rate_limit_password_key, @max_burst, @count, @period)
+
+    # it returns the number of seconds until the user should retry
+    # -1 means the action was allowed
+    # see https://github.com/brandur/redis-cell#response
+    rate_limit[3]
+  end
+
+  def reset_password_rate_limit
+    $users_metadata.DEL rate_limit_password_key if password_rate_limit_configured?
+  end
+
   def save_rate_limits
-    return unless has_feature_flag?('limits_v2')
     effective_rate_limit.save_to_redis(self)
   rescue => e
     CartoDB::Logger.error(message: 'Error saving rate limits to redis', exception: e)
@@ -1852,7 +1873,33 @@ class User < Sequel::Model
     last_password_change_date || created_at
   end
 
+  def multifactor_authentication_configured?
+    user_multifactor_auths.any?
+  end
+
+  def active_multifactor_authentication
+    user_multifactor_auths.order(created_at: :desc).first
+  end
+
+  def multifactor_authentication_status
+    if user_multifactor_auths.setup.any?
+      MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP
+    elsif user_multifactor_auths.enabled.any?
+      MULTIFACTOR_AUTHENTICATION_ENABLED
+    else
+      MULTIFACTOR_AUTHENTICATION_DISABLED
+    end
+  end
+
   private
+
+  def password_rate_limit_configured?
+    @max_burst ||= Cartodb.get_config(:passwords, 'rate_limit', 'max_burst')
+    @count ||= Cartodb.get_config(:passwords, 'rate_limit', 'count')
+    @period ||= Cartodb.get_config(:passwords, 'rate_limit', 'period')
+
+    [@max_burst, @count, @period].all?(&:present?)
+  end
 
   def common_data_outdated?
     last_common_data_update_date.nil? || last_common_data_update_date < Time.now - COMMON_DATA_ACTIVE_DAYS.day

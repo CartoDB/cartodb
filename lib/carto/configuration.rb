@@ -69,12 +69,12 @@ module Carto
       Cartodb.config[:cartodb_com_hosted] == false
     end
 
-    def mapzen_api_key
-      Cartodb.get_config(:geocoder, 'mapzen', 'search_bar_api_key')
-    end
-
-    def mapbox_api_key
-      Cartodb.get_config(:geocoder, 'mapbox', 'search_bar_api_key')
+    def geocoder_config
+      {
+        provider: Cartodb.get_config(:geocoder, 'search_bar_provider'),
+        mapbox: Cartodb.get_config(:geocoder, 'mapbox'),
+        tomtom: Cartodb.get_config(:geocoder, 'tomtom')
+      }
     end
 
     # Make some methods available. Remember that this sets methods as private.

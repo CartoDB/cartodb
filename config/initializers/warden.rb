@@ -2,6 +2,7 @@ require 'base64'
 
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
+require_dependency 'carto/errors'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
@@ -16,14 +17,23 @@ module CartoStrategy
     true
   end
 
+  def affected_by_reset_password_locked?
+    false
+  end
+
   def check_password_expired(user)
     if affected_by_password_expiration? && user.password_expired?
       throw(:warden, action: :password_change, username: user.username)
     end
   end
 
+  def reset_password_rate_limit(user)
+    user.reset_password_rate_limit if affected_by_reset_password_locked?
+  end
+
   def trigger_login_event(user)
     check_password_expired(user)
+    reset_password_rate_limit(user)
     CartoGearsApi::Events::EventManager.instance.notify(CartoGearsApi::Events::UserLoginEvent.new(user))
 
     # From the very beginning it's been assumed that after login you go to the dashboard, and
@@ -49,6 +59,10 @@ Warden::Strategies.add(:password) do
   include Carto::UserAuthenticator
   include Carto::EmailCleaner
   include CartoStrategy
+
+  def affected_by_reset_password_locked?
+    true
+  end
 
   def valid_password_strategy_for_user(user)
     user.organization.nil? || user.organization.auth_username_password_enabled
@@ -255,6 +269,8 @@ end
 
 # @see ApplicationController.update_session_security_token
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
+  auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
+
   auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
 
   # Only at the editor, and only after new authentications, destroy other sessions
@@ -276,7 +292,6 @@ end
 Warden::Manager.after_set_user do |user, auth, opts|
   # Without winning strategy (loading cookie from session) assume we want to respect expired passwords
   should_check_expiration = !auth.winning_strategy || auth.winning_strategy.affected_by_password_expiration?
-
   throw(:warden, action: :password_expired) if should_check_expiration && user.password_expired?
 end
 

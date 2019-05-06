@@ -1,43 +1,18 @@
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'dashboard' %>
+  <%= stylesheet_link_tag 'new_dashboard', 'new_lockout' %>
 <% end %>
 <%= content_for(:js) do %>
   <script type="text/javascript">
     var authenticity_token = "<%= form_authenticity_token %>";
     var user_data = <%= safe_js_object @user.data.to_json %>;
     var can_change_email = <%= @user.can_change_email? %>;
+    var payments_url = "<%= @payments_url %>";
 
     // Necessary for Google + actions
     var access_token = '';
-    <% if (@google_plus_config.present?) %>
-      document.domain = '<%= @google_plus_config.domain %>';
-      var iframe_src = '<%= @google_plus_config.iframe_src %>';
-    <% end %>
   </script>
-  <%= javascript_include_tag 'common', 'common_vendor', 'lockout' -%>
+
+  <%= javascript_include_tag 'common', 'common_vendor', 'new_lockout' -%>
 <% end %>
-<div class="DummyDashboard"></div>
-<div class='Lockout OnBoarding-welcome'>
-  <div class="OnBoarding-welcomeContent">
-    <div class="CDB-Text OnBoarding-welcomeContentInner">
-      <p class="OnBoarding-welcomeContentTitle OnBoarding-welcomeContentMargin">Welcome back,<br/><%= @user.username %>!</p>
-      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">You've reached the end of your CARTO trial period.</p>
-      <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">By upgrading, you'll be able to continue using CARTO. Our Professional plan is a great fit for occasional use, and our Enterprise plans offer access to the Data Observatory, private sharing, custom connectors, and business-strength data services.</p>
-      <% if @expiration_days %>
-        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your account and data will be preserved for <%= pluralize(@expiration_days, "day") %>, so that upon upgrade you will regain access to the data and maps.<br/>If you're a student or an ambassador, remember you can also qualify for our <a class="u-whiteTextColor" href="https://carto.com/community/">Community Program</a>.</p>
-      <% else %>
-        <p class="OnBoarding-welcomeContentText OnBoarding-welcomeContentMargin">Your account and data will be preserved for a few days, so that upon upgrade you will regain access to the data and maps.<br/>If you're a student or an ambassador, remember you can also qualify for our <a class="u-whiteTextColor" href="https://carto.com/community/">Community Program</a>.</p>
-      <% end %>
-      <a class="CDB-Button CDB-Button--secondary CDB-Button--white u-bSpace u-iBlock" href="mailto:sales@carto.com">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">CONTACT SALES</span>
-      </a>
-      <a class="CDB-Button CDB-Button--primary u-bSpace u-iBlock u-lSpace" href="<%= @payments_url %>">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">ADD PAYMENT METHOD</span>
-      </a>
-      <a class="CDB-Button CDB-Button--primary CDB-Button--error u-bSpace u-iBlock u-lSpace js-deleteAccount" href="javascript:void(0)">
-          <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-medium u-bSpace">DELETE ACCOUNT</span>
-      </a>
-    </div>
-  </div>
-</div>
-<%= render 'admin/shared/footer', :footer_margin => false %>
+
+<div id="root"></div>

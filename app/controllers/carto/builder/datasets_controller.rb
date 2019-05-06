@@ -43,7 +43,7 @@ module Carto
 
       def redirect_to_editor_if_forced
         unless current_user.builder_enabled?
-          redirect_to CartoDB.url(self, 'public_tables_show', { id: params[:id] }, current_user)
+          redirect_to CartoDB.url(self, 'public_tables_show', params: { id: params[:id] }, user: current_user)
         end
       end
 
@@ -70,7 +70,7 @@ module Carto
       end
 
       def unauthorized
-        redirect_to CartoDB.url(self, 'public_table_map', id: request.params[:id])
+        redirect_to CartoDB.url(self, 'public_table_map', params: { id: request.params[:id] })
       end
 
       def track_dataset_visit

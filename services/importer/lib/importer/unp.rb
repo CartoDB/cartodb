@@ -160,9 +160,10 @@ module CartoDB
         filename.force_encoding("UTF-8").valid_encoding?
       end
 
-      def normalize(filename)
-        normalized = underscore(filename)
-        rename(filename, normalized)
+      def normalize(path)
+        dir, filename = File.split(path)
+        normalized = File.join(dir, underscore(filename))
+        rename(path, normalized)
         normalized
       end
 

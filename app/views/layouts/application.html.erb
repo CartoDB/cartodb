@@ -4,11 +4,7 @@
     <meta charset='utf-8' />
     <title><%= yield :page_title -%>CARTO</title>
     <%= favicon_link_tag "favicons/favicon.ico" %>
-    <% if current_user.builder_enabled? %>
-      <%= stylesheet_link_tag 'common_new.css', :media => 'all' %>
-    <% else %>
-      <%= editor_stylesheet_link_tag 'cartodb.css', 'common.css', :media => 'all' %>
-    <% end %>
+    <%= stylesheet_link_tag 'common_new.css', :media => 'all' %>
     <%= yield :css -%>
     <%= csrf_meta_tag -%>
     <%= insert_google_tag_manager('primary') %>
@@ -16,8 +12,7 @@
   <body>
     <%= insert_google_tag_manager_no_script('primary') %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <% breadcrumb = local_assigns.fetch(:breadcrumb, true) %>
-      <%= render 'admin/shared/private_header', :breadcrumb => breadcrumb %>
+      <%= render 'admin/shared/new_private_header' %>
 
       <% if current_user.notification.present? %>
         <div class="CDB-Text FlashMessage">
@@ -26,8 +21,6 @@
           </div>
         </div>
       <% end %>
-
-      <%= render 'admin/shared/trial_notification' %>
     <% else %>
       <%= render 'admin/shared/vis_header' %>
     <% end %>
@@ -39,6 +32,7 @@
 
     <%= insert_trackjs() -%>
     <%= yield :js -%>
+    <%= javascript_include_tag 'header', 'footer' %>
     <%= insert_google_analytics('primary') -%>
     <%= insert_hubspot() -%>
     <%= render 'admin/shared/intercom' %>

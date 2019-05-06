@@ -5,8 +5,6 @@ module Carto
     class UserPresenter
       include AccountTypeHelper
 
-      BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
-
       def initialize(user,
                      fetch_groups: false,
                      current_viewer: nil,
@@ -117,6 +115,7 @@ module Carto
           last_name: @user.last_name,
           created_at: @user.created_at,
           username: @user.username,
+          state: @user.state,
           account_type: @user.account_type,
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
@@ -192,6 +191,7 @@ module Carto
             enabled: Carto::AccountType.new.mailchimp?(@user)
           },
           billing_period: @user.last_billing_cycle,
+          next_billing_period: @user.next_billing_cycle,
           api_key: @user.api_key,
           layers: @user.layers.map { |layer|
               Carto::Api::LayerPresenter.new(layer).to_poro
@@ -200,7 +200,6 @@ module Carto
           upgraded_at: @user.upgraded_at,
           show_trial_reminder: @user.trial_ends_at.present?,
           show_upgraded_message: (@user.account_type.downcase != 'free' && @user.upgraded_at && @user.upgraded_at + 15.days > Date.today ? true : false),
-          show_builder_activated_message: @user.created_at < BUILDER_ACTIVATION_DATE,
           actions: {
             private_tables: @user.private_tables_enabled,
             private_maps: @user.private_maps_enabled?,
@@ -229,7 +228,8 @@ module Carto
           twitter_username: @user.twitter_username,
           disqus_shortname: @user.disqus_shortname,
           available_for_hire: @user.available_for_hire,
-          location: @user.location
+          location: @user.location,
+          mfa_configured: @user.multifactor_authentication_configured?
         }
 
         if @user.google_maps_geocoder_enabled? && (!@user.organization.present? || @user.organization_owner?)

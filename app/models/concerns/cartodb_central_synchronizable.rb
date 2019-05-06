@@ -91,7 +91,7 @@ module Concerns
            :password_expiration_in_d]
         end
       elsif is_a?(::User)
-        [:account_type, :admin, :crypted_password, :database_host,
+        [:account_type, :admin, :org_admin, :crypted_password, :database_host,
          :database_timeout, :description, :disqus_shortname, :available_for_hire, :email,
          :geocoding_block_price, :geocoding_quota, :map_view_block_price,
          :map_view_quota, :max_layers,
@@ -114,7 +114,8 @@ module Concerns
          :salesforce_datasource_enabled, :viewer, :geocoder_provider,
          :isolines_provider, :routing_provider, :engine_enabled, :builder_enabled,
          :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit, :no_map_logo,
-         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role]
+         :user_render_timeout, :database_render_timeout, :state, :industry, :company, :phone, :job_role,
+         :password_reset_token, :password_reset_sent_at]
       end
     end
 
@@ -130,7 +131,7 @@ module Concerns
         end
       elsif self.is_a?(::User)
         attrs = values.slice(
-          :account_type, :admin, :crypted_password,
+          :account_type, :admin, :org_admin, :crypted_password,
           :database_host, :database_timeout, :description, :disqus_shortname, :available_for_hire,
           :email, :geocoding_block_price, :geocoding_quota, :map_view_block_price,
           :map_view_quota, :max_layers,
@@ -146,8 +147,10 @@ module Concerns
           :obs_general_quota, :obs_general_block_price, :soft_obs_general_limit,
           :viewer, :geocoder_provider, :isolines_provider, :routing_provider, :builder_enabled, :engine_enabled,
           :mapzen_routing_quota, :mapzen_routing_block_price, :soft_mapzen_routing_limit,
-          :industry, :company, :phone, :job_role
+          :industry, :company, :phone, :job_role,
+          :password_reset_token, :password_reset_sent_at
         )
+        attrs[:multifactor_authentication_status] = multifactor_authentication_status
         case action
         when :create
           attrs[:remote_user_id] = self.id

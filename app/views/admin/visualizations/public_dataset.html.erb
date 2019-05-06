@@ -8,11 +8,7 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @table.table_visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <% if @has_new_dashboard %>
-    <%= stylesheet_link_tag 'common_new', 'public_table_new', 'public_map_new' %>
-  <% else %>
-    <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_table', 'public_map' %>
-  <% end %>
+  <%= stylesheet_link_tag 'common_new', 'public_table_new', 'public_map_new' %>
 <% end %>
 
 <% content_for(:js) do %>
@@ -20,11 +16,7 @@
     <%= insert_google_maps(@user.google_maps_query_string) %>
   <% end %>
 
-  <% if @has_new_dashboard %>
-    <%= javascript_include_tag 'common', 'common_vendor', 'public_table_new' %>
-  <% else %>
-    <%= editor_javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'new_public_table', 'public_table.js' %>
-  <% end %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'public_table_new' %>
 
   <script>
     var table_name          = '<%=raw @table.qualified_table_name %>';
@@ -41,34 +33,6 @@
     var api_key             = <%= safe_js_object @api_key.to_json %>;
     var base_url            = '<%= @table.owner.public_url(nil, request.protocol == "https://" ? "https" : "http") %>';
     var login_url           = "<%= CartoDB.url(self, 'login') %>";
-
-    var debug = false;
-    <% if Rails.env.development? || Cartodb.config[:no_cdn] == true %>
-      debug = true;
-    <% end %>
-
-    <% unless @has_new_dashboard %>
-      cdb.config.set('debug', debug);
-
-      $(function() {
-        <% if Cartodb.config[:graphite_public] %>
-          if (location.protocol.indexOf('https') === -1) {
-            jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-              statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-                cartodb.core.Profiler.backend(function () {
-                statsc.send.apply(statsc, arguments);
-              })
-              // stop sending stats after 11 seconds
-              // statsc send stats in 5 secs interval so allow to send at least twice
-              setTimeout(function() {
-                  cartodb.core.Profiler.backend(null);
-              }, 11*1000);
-
-            })
-          }
-        <% end %>
-      });
-    <% end %>
   </script>
 
 <% end %>
@@ -79,14 +43,8 @@
   <div class="CDB-Text PublicMap-map js-map" id="map">
     <div class="Spinner Spinner--center js-spinner"></div>
 
-    <% if @has_new_dashboard %>
-      <div class="panes pane_table"></div>
-      <div class="panes pane_map"></div>
-    <% else %>
-      <div class="panes pane_table u-hideOnTablet"></div>
-      <div class="panes pane_map u-hideOnTablet"></div>
-      <div class="panes panes_mobile u-showOnTablet"></div>
-    <% end %>
+    <div class="panes pane_table"></div>
+    <div class="panes pane_map"></div>
 
     <div class="navigation u-showOnTablet">
       <ul>
@@ -131,7 +89,7 @@
             <% unless @is_data_library %>
               <li class="Navmenu-item">
                 <i class="Navmenu-rarrow CDB-IconFont CDB-IconFont-rArrowLight"></i>
-                <a href="<%= CartoDB.url(self, 'public_datasets_home', {}, @visualization.user) %>" class="Navmenu-link">Datasets</a>
+                <a href="<%= CartoDB.url(self, 'public_datasets_home', user: @visualization.user) %>" class="Navmenu-link">Datasets</a>
               </li>
             <% end %>
           </ul>
@@ -139,18 +97,6 @@
 
         <div class="PublicMap-rightBlock PublicMap-rightBlock--owner u-txt-right">
           <ul class="Navmenu-list">
-            <li class="Navmenu-item Navmenu-item--like last-child">
-              <ul class="u-valign">
-                <li class="Navmenu-subItem">
-                  <a href="#/like" class="Navmenu-link js-likes"
-                    data-vis-id="<%= @visualization.id %>"
-                    data-likes-count="<%= @likes_count %>"
-                    data-likes-size="big">
-                  </a>
-                </li>
-              </ul>
-            </li>
-
             <li class="Navmenu-item Navmenu-item--action Navmenu-item--withsep u-hideOnTablet">
               <div class="Navmenu-sep"></div>
 
@@ -166,7 +112,7 @@
             <% if !Cartodb.config[:cartodb_com_hosted].present? %>
               <li class="Navmenu-item u-hideOnTablet">
                 <a class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick is-active js-oneclick" href="https://oneclick.carto.com/?file=<%= CGI.escape( @export_sql_api_url ) %>&provider=<%= URI.encode(@table.owner.username) %>&logo=<%= URI.encode(@avatar_url) %>">Create map</a>
-                <a href="<%= CartoDB.url(self, 'public_tables_show', {id: @table.name}, @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CARTO</a>
+                <a href="<%= CartoDB.url(self, 'public_tables_show', params: { id: @table.name }, user: @table.owner.organization ? @table.owner : nil) %>" class="Button Button--main Navmenu-editLink Navmenu-editLink--edit Navmenu-editLink--oneclick js-edit">Edit in CARTO</a>
               </li>
             <% end %>
           </ul>
@@ -240,14 +186,14 @@
         <% @total_visualizations.last(3).each do |vis| %>
           <li class="MapsList-item">
             <div class="MapCard" data-vis-id="<%= vis.id %>" data-vis-owner-name="<%= vis.user[:username] %>">
-              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="MapCard-header js-header">
+              <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', params: { id: vis.id }, user: vis.user) %>" class="MapCard-header js-header">
                 <div class="MapCard-loader"></div>
               </a>
               <div class="MapCard-content MapCard-content--compact">
                 <div class="MapCard-contentBody">
                   <div class="MapCard-contentBodyRow MapCard-contentBodyRow--flex">
                     <h3 class="MapCard-title DefaultTitle CDB-Text is-semibold CDB-Size-large">
-                      <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', {id: vis.id}, vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
+                      <a href="<%= CartoDB.url(self, 'public_visualizations_public_map', params: { id: vis.id }, user: vis.user) %>" class="DefaultTitle-link u-ellipsLongText" title="<%= vis.name %>"><%= vis.name %></a>
                     </h3>
                   </div>
                   <div class="MapCard-contentFooterTimeDiff DefaultTimeDiff CDB-Text CDB-Size-medium u-altTextColor">

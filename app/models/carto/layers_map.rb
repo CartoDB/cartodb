@@ -1,12 +1,16 @@
 # encoding: utf-8
 
 require 'active_record'
+require_dependency 'carto/visualization_backup_service'
 
 module Carto
   class LayersMap < ActiveRecord::Base
+    include Carto::VisualizationBackupService
+
     belongs_to :layer, class_name: Carto::Layer
     belongs_to :map, class_name: Carto::Map
 
+    before_destroy :backup_visualization
     after_destroy :invalidate_map, :destroy_layer
 
     private
@@ -22,6 +26,14 @@ module Carto
       return if @layer_destroyed || layer.destroyed?
       @layer_destroyed = true
       layer.destroy
+    end
+
+    def backup_visualization
+      return if !map.visualization || map.visualization.destroyed? || @layer_destroyed || layer.destroyed?
+      create_visualization_backup(
+        visualization: map.visualization,
+        category: Carto::VisualizationBackup::CATEGORY_LAYER
+      )
     end
   end
 end

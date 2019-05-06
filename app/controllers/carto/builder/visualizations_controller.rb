@@ -60,7 +60,8 @@ module Carto
 
       def redirect_to_editor_if_forced
         if !current_user.builder_enabled? || @visualization.open_in_editor?
-          redirect_to CartoDB.url(self, 'public_visualizations_show_map', { id: params[:id] }, current_user)
+          redirect_to CartoDB.url(self, 'public_visualizations_show_map', params: { id: params[:id] },
+                                                                          user: current_user)
         end
       end
 
@@ -87,7 +88,8 @@ module Carto
       end
 
       def unauthorized
-        redirect_to CartoDB.url(self, 'builder_visualization_public_embed', visualization_id: request.params[:id])
+        redirect_to CartoDB.url(self, 'builder_visualization_public_embed',
+                                params: { visualization_id: request.params[:id] })
       end
 
       def track_builder_visit

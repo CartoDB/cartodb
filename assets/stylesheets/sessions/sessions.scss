@@ -72,6 +72,83 @@ $cWhite: #FFF;
   background-size: cover;
 }
 
+.Sessions-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top:180px;
+
+  div.header, div.footer {
+    text-align:center;
+    width: 562px;
+  }
+
+  div.footer {
+    margin-top: 35px;
+  }
+
+  h1.Sessions-title {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 31px;
+    margin: 0;
+  }
+
+  p.Sessions-text {
+    color: #b1b8c1;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 15px 0;
+  }
+
+  p.Sessions-link a {
+    color: #1785fb;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  p.Sessions-text--qrCode {
+    font-size: 11px;
+  }
+
+  img.qr, p.Sessions-text--qrCode {
+    width: 180px;
+  }
+
+  p.Sessions-text--sharedSecret {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+    line-height: 220px;
+  }
+
+  .Sessions-sharedSecretContainer {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    height: 244px;
+    border-radius: 4px;
+  }
+
+  p.Sessions-text--code {
+    font-weight: 500;
+    font-size: 12px;
+
+    a {
+      text-decoration: underline;
+    }
+  }
+}
+
+.Sessions-noMargin {
+  margin: 0;
+}
+
 .Sessions-content {
   display: flex;
   flex-grow: 1;
@@ -111,6 +188,10 @@ $cWhite: #FFF;
   line-height: 20px;
   text-align: center;
 
+  .Sessions-text--code, .Sessions-text--sharedSecret {
+    color: #979EA1;
+  }
+
   a {
     color: $cLocationBlue;
     text-decoration: none;
@@ -129,6 +210,10 @@ $cWhite: #FFF;
   line-height: 20px;
   text-align: center;
 
+  .Sessions-text--code, .Sessions-text--sharedSecret {
+    color: $cWhite;
+  }
+
   a {
     color: $cWhite;
     text-decoration: none;
@@ -140,7 +225,8 @@ $cWhite: #FFF;
 }
 
 .Sessions-loggedin,
-.Sessions-notloggedin {
+.Sessions-notloggedin,
+.Sessions-toggle {
   display: none;
 
   &.is-active {

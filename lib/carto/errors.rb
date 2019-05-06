@@ -14,9 +14,15 @@ module Carto
     end
   end
 
-  class OrderParamInvalidError < CartoError
-    def initialize(valid_values)
-      super("Wrong 'order' parameter value. Valid values are one of #{valid_values}", 400)
+  class ParamInvalidError < CartoError
+    def initialize(parameter, valid_values)
+      super("Wrong '#{parameter}' parameter value. Valid values are one of #{valid_values}", 400)
+    end
+  end
+
+  class ParamCombinationInvalidError < CartoError
+    def initialize(parameter, valid_values)
+      super("Wrong '#{parameter}' parameter combination. Valid values to combine: #{valid_values}", 400)
     end
   end
 
@@ -56,6 +62,13 @@ module Carto
   class UnprocesableEntityError < CartoError
     def initialize(message, status = 422)
       super(message, status)
+    end
+  end
+
+  class RelationDoesNotExistError < UnprocesableEntityError
+    def initialize(error_messages, error_relations)
+      super(error_messages.join(', '))
+      @user_message = "The following datasets don't exist: #{error_relations.join(', ')}"
     end
   end
 

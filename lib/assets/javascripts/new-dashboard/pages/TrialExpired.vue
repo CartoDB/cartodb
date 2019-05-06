@@ -14,7 +14,8 @@ export default {
   },
   data () {
     return {
-      addPaymentsURL: window.payments_url
+      addPaymentsURL: window.payments_url,
+      expirationDays: window.expiration_days
     };
   }
 };

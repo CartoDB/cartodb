@@ -57,6 +57,7 @@ Development
 - Add badge for first onboarding visitors ([#14831](https://github.com/CartoDB/cartodb/pull/14831))
 - Fix "Duplicate datasets" action in the dashboard ([#2023](https://github.com/CartoDB/support/issues/2023))
 - CSS color variables refactor ([#14837](https://github.com/CartoDB/cartodb/pull/14837))
+- Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
 
 4.26.0 (2019-03-11)
 -------------------

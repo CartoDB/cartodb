@@ -70,7 +70,7 @@ export default {
 
 .upgrade-button {
   margin-right: 64px;
-  background-color: $dark-blue;
+  background-color: $button-lockout__bg-color;
 }
 
 .link {
@@ -87,7 +87,6 @@ export default {
 
 .warning-title {
   margin-bottom: 16px;
-  color: $dark-blue;
 }
 
 .warning-description {

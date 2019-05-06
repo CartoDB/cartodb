@@ -243,54 +243,6 @@ describe Admin::PagesController do
     end
   end
 
-  describe '#explore' do
-    before(:each) do
-      host! "#{@org_name}.localhost.lan"
-    end
-
-    it 'should go to explore page' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/explore', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/explore'
-
-      user.delete
-    end
-
-    it 'should go to explore search page' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/search', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/search'
-
-      user.delete
-    end
-
-    it 'should go to explore search page with a query variable' do
-      user = mock_explore_feature_flag
-      host! 'localhost.lan'
-
-      get '/search/lala', {}, JSON_HEADER
-
-      last_response.status.should == 200
-      uri = URI.parse(last_request.url)
-      uri.host.should == 'localhost.lan'
-      uri.path.should == '/search/lala'
-
-      user.delete
-    end
-  end
-
   describe '#sitemap' do
     include Carto::Factories::Visualizations
     it 'should return 404 if no user or organization is provided' do

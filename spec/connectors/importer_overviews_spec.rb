@@ -368,7 +368,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{user1.database_schema}.#{ov_tables.first}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_tables.first}"
+        e.message.should match /permission denied .* #{ov_tables.first}/
       end
       failed.should be_true
     end
@@ -452,7 +452,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_table2}"
+        e.message.should match /permission denied .* #{ov_table2}/
       end
       failed.should be_true
 
@@ -527,7 +527,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_table2}"
+        e.message.should match /permission denied .* #{ov_table2}/
       end
       failed.should be_true
 

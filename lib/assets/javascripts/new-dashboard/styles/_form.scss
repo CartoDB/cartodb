@@ -7,7 +7,7 @@
     width: 24px;
     height: 24px;
     overflow: hidden;
-    border: 1px solid $grey;
+    border: 1px solid $checkbox__border-color;
     border-radius: 2px;
     pointer-events: none;
   }
@@ -17,7 +17,7 @@
     stroke-width: 2;
     stroke-dasharray: 48;
     stroke-dashoffset: 48;
-    stroke: #FFF;
+    stroke: $checkbox-stroke__color;
   }
 
   .checkbox-decorationMedia {
@@ -40,7 +40,7 @@
     margin: 0;
     padding: 0;
     border-radius: 3px;
-    background: $white;
+    background: $checkbox__bg-color;
     cursor: pointer;
 
     &::before {
@@ -63,13 +63,13 @@
     }
 
     &:hover + .checkbox-decoration {
-      border: 1px solid $primary-color;
+      border: 1px solid $checkbox__border-color--hover;
     }
 
     &.is-selected,
     &:checked {
       + .checkbox-decoration {
-        border: 1px solid $primary-color;
+        border: 1px solid $checkbox__border-color--hover;
 
         &::before {
           content: "";
@@ -83,7 +83,7 @@
           border-radius: 3px;
           opacity: 1;
           animation-fill-mode: forwards;
-          background: $primary-color;
+          background: $checkbox__bg-color--selected;
         }
 
         .checkbox-check {

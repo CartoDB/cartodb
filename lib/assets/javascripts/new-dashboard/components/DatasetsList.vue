@@ -256,7 +256,7 @@ export default {
 
 .dataset-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 

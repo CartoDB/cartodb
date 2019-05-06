@@ -74,6 +74,7 @@ Development
 * Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
 * Obfuscate password in connector content ([CartoDB/support#2013](https://github.com/CartoDB/support/issues/2013))
 * Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
+* Replace title for items number when selecting visualizations ([#14832](https://github.com/CartoDB/cartodb/issues/14832))
 * Organize CSS files following 7-1 pattern style ([#14843](https://github.com/CartoDB/cartodb/pull/14843))
 
 4.26.0 (2019-03-11)

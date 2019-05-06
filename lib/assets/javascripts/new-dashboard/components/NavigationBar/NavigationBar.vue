@@ -218,7 +218,7 @@ export default {
   margin-left: 24px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $text-color-light;
+  background-color: $navbar-avatar__bg-color;
   background-size: cover;
 
   &.has-notification {
@@ -231,7 +231,7 @@ export default {
       height: 12px;
       border: 2px solid $primary-color;
       border-radius: 50%;
-      background-color: $notification;
+      background-color: $notification__bg-color;
     }
   }
 

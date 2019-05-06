@@ -94,7 +94,7 @@ export default {
 
 .feedback__message {
   flex: 1;
-  color: $text-color;
+  color: $text__color;
 }
 
 .feedback__paragraph {

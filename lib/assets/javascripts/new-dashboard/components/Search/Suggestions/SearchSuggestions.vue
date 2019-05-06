@@ -124,7 +124,7 @@ export default {
   left: 0;
   width: calc(100% - 16px);
   margin-top: 8px;
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   border-radius: 2px;
   opacity: 0;
   background-color: $white;

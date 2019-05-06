@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 
 4.26.1 (2019-05-06)
 -------------------

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+* Minor copy edit in final step of Builder Onboarding
 
 4.26.1 (2019-05-06)
 -------------------

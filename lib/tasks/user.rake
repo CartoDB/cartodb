@@ -128,4 +128,27 @@ namespace :user do
       end
     end
   end
+
+  namespace :notifications do
+    desc 'Add a text in the notification field for users filtered by field'
+    task :add_by_field, [:filter_field, :filter_value, :notification] => [:environment] do |task, args|
+      allowed_fields = ['database_host']
+      raise "Filter field and value are needed" if args[:filter_field].nil? || args[:filter_value].nil?
+      raise "Unknown field #{args[:filter_field]} for filtering. Allowed fields are #{allowed_fields.join(',')}" unless allowed_fields.include?(args[:filter_field])
+      raise "Notification not provided. Please include it" if args[:notification].nil?
+      sql = "UPDATE users SET notification = '%s' WHERE %s = '%s'"
+      query = ActiveRecord::Base.send(:sanitize_sql_array, [sql, args[:notification], args[:filter_field], args[:filter_value]])
+      ActiveRecord::Base.connection.execute(query)
+    end
+
+    desc 'Clean notification for users filtered by field'
+    task :clean_by_field, [:filter_field, :filter_value] => [:environment] do |task, args|
+      allowed_fields = ['database_host']
+      raise "Filter field and value are needed" if args[:filter_field].nil? || args[:filter_value].nil?
+      raise "Unknown field #{args[:filter_field]} for filtering. Allowed fields are #{allowed_fields.join(',')}" unless allowed_fields.include?(args[:filter_field])
+      sql = "UPDATE users SET notification = NULL WHERE %s = '%s'"
+      query = ActiveRecord::Base.send(:sanitize_sql_array, [sql, args[:filter_field], args[:filter_value]])
+      ActiveRecord::Base.connection.execute(query)
+    end
+  end
 end

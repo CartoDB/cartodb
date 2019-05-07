@@ -150,7 +150,7 @@
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('profile.views.form.description') %>*</label>
     </div>
     <div class="FormAccount-rowData">
-      <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" cols="40" id="user_description" name="user[description]" rows="20"><%= user.description %></textarea>
+      <textarea class="CDB-Textarea CDB-Text FormAccount-textarea FormAccount-input FormAccount-input--totalwidth" cols="40" id="user_description" name="user[description]" rows="20"><%- user.description %></textarea>
     </div>
     <div class="FormAccount-rowInfo">
       <p class="CDB-Text CDB-Size-small u-altTextColor"></p>

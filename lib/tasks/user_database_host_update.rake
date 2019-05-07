@@ -9,7 +9,8 @@ namespace :cartodb do
 
 
       # update dbm without ORM
-
+      dbm_query = "UPDATE users SET database_host='#{dest_ip}' WHERE database_host='#{origin_ip}'"
+      ActiveRecord::Base.connection.execute(dbm_query)
 
       # update Redis
 

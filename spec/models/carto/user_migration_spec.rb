@@ -589,6 +589,10 @@ describe 'UserMigration' do
       DummyTester.new.remove_line?(line4).should be false
       line5 = '541; 1259 735510 FOREIGN TABLE aggregation agg_admin1 postgres'
       DummyTester.new.remove_line?(line5).should be false
+      line6 = "242; 1255 148122 FUNCTION org00000001-admin st_text(boolean) test_cartodb_user_0711adbd-17fc-482d-babf-82b935f8b65e\n"
+      DummyTester.new.remove_line?(line6).should be true
+      line7 = '5003; 0 0 ACL org00000001-admin FUNCTION "st_text"(boolean) test_cartodb_user_0711adbd-17fc-482d-babf-82b935f8b65e'
+      DummyTester.new.remove_line?(line7).should be true
     end
 
     it 'skips importing legacy functions using fixture' do
@@ -677,7 +681,7 @@ describe 'UserMigration' do
       it 'should not import acl over deprecated functions' do
         user1 = @carto_organization.users.first
         user2 = @carto_organization.users.last
-        user1.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
+        user1.in_database.execute('CREATE OR REPLACE FUNCTION st_text(boolean) RETURNS INT AS $$
         BEGIN
           RETURN 1;
         END;

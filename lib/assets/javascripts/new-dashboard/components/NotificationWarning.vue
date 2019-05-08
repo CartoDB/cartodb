@@ -1,6 +1,6 @@
 <template>
 <div class="notification">
-  <div v-html="htmlBody" class="notification-html text is-caption"></div>
+  <div v-html="htmlBody" class="text is-caption"></div>
 </div>
 </template>
 

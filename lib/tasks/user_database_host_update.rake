@@ -2,8 +2,8 @@ namespace :cartodb do
   namespace :database_host do
       desc 'Add a text in the notification field for users filtered by field'
       task :update_dbm_and_redis, [:origin_ip, :dest_ip] => [:environment] do |_, args|
-      raise 'Origin IP argument is mandatory' unless args[:origin_ip].present?
-      raise 'Destination IP argument is mandatory' unless args[:dest_ip].present?
+      raise 'Origin IP parameter is mandatory' unless args[:origin_ip].present?
+      raise 'Destination IP parameter is mandatory' unless args[:dest_ip].present?
       affected_users = ::User.where(database_host: args[:origin_ip]).count
 
       # think about message
@@ -29,6 +29,7 @@ namespace :cartodb do
       ActiveRecord::Base.connection.execute(query)
 
       # update Redis
+      ::User.where(database_host: args[:dest_ip]).order(:id).paged_each { |u| u.save_metadata }
 
     end
   end

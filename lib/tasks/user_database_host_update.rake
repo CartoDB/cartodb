@@ -1,19 +1,20 @@
 namespace :cartodb do
   namespace :database_host do
-    def update_dbm_and_redis(origin_ip, dest_ip)
-      # get all affected usernames
-      get_usernames_query = "SELECT username FROM users WHERE database_host='#{origin_ip}';"
-      usernames = ActiveRecord::Base.connection.execute(get_usernames_query).map { |row| row['username'] }
+      desc 'Add a text in the notification field for users filtered by field'
+      task :update_dbm_and_redis, [:origin_ip, :dest_ip] => [:environment] do |_, args|
+      raise 'Origin IP argument is mandatory' unless args[:origin_ip].present?
+      raise 'Destination IP argument is mandatory' unless args[:dest_ip].present?
+      affected_users = ::User.where(database_host: args[:origin_ip]).count
 
       # think about message
       reflection_seconds = ENV['ENABLE_FF_REFLECTION_SECONDS'] || 10
 
       puts "############################"
       puts "#"
-      puts "# The database_host of #{usernames.count} users will be updated"
+      puts "# The database_host of #{affected_users} users will be updated"
       puts "#"
-      puts "# Origin IP: #{origin_ip}"
-      puts "# Destination IP: #{dest_ip}"
+      puts "# Origin IP: #{args[:origin_ip]}"
+      puts "# Destination IP: #{args[:dest_ip]}"
       puts "#"
       puts "# You have #{reflection_seconds} seconds to cancel "
       puts "# the task before it starts"
@@ -23,8 +24,9 @@ namespace :cartodb do
       sleep reflection_seconds.to_i
 
       # update dbm without ORM
-      dbm_query = "UPDATE users SET database_host='#{dest_ip}' WHERE database_host='#{origin_ip}'"
-      ActiveRecord::Base.connection.execute(dbm_query)
+      dbm_query = "UPDATE users SET database_host='%s' WHERE database_host='%s'"
+      query = ActiveRecord::Base.send(:sanitize_sql_array, [dbm_query, args[:dest_ip], args[:origin_ip]])
+      ActiveRecord::Base.connection.execute(query)
 
       # update Redis
 

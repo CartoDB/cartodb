@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Sanitize profile form inputs
 
 4.26.1 (2019-05-06)
 -------------------

@@ -35,7 +35,7 @@ export default {
   height: 100%;
   padding: 16px;
   transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   background-color: $white;
 
   &:hover {

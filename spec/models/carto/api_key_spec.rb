@@ -91,7 +91,7 @@ describe Carto::ApiKey do
           connection.execute("select count(1) from #{@table2.name}")
         rescue Sequel::DatabaseError => e
           failed = true
-          e.message.should include "permission denied for relation #{@table2.name}"
+          e.message.should match /permission denied .* #{@table2.name}/
         end
         failed.should be_true
 
@@ -197,7 +197,7 @@ describe Carto::ApiKey do
         begin
           connection.execute("select count(1) from #{@table1.name}")
         rescue Sequel::DatabaseError => e
-          e.message.should include "permission denied for relation #{@table1.name}"
+          e.message.should match /permission denied .* #{@table1.name}/
         end
 
         connection.execute("select count(1) from #{view_name}") do |result|

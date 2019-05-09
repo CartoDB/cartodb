@@ -23,10 +23,10 @@ describe Carto::Api::TagsController do
       shared_visualization.tags = ["shared-tag"]
       shared_visualization.save
       shared_entity = CartoDB::SharedEntity.new(
-        recipient_id:   @user1.id,
+        recipient_id: @user1.id,
         recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
-        entity_id:      shared_visualization.id,
-        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        entity_id: shared_visualization.id,
+        entity_type: CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
       )
       shared_entity.save
 
@@ -58,7 +58,7 @@ describe Carto::Api::TagsController do
       login_as(@user1, scope: @user1.username)
       get_json api_v3_search_preview_url(q: "tag", types: "tag"), @headers do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:result]).to eq expected_result
+        expect(response.body[:result]).to match_array(expected_result)
         expect(response.body[:total_count]).to eq 2
       end
     end

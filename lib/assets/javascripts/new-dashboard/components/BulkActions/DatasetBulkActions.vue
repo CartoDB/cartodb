@@ -171,7 +171,7 @@ export default {
       bgPollingView._addDataset({
         type: 'duplication',
         table_name: `${Table.getUnqualifiedName(selectedDataset.name)}_copy`,
-        value: `${selectedDataset.permission.owner.username}.${selectedDataset.name}`,
+        value: selectedDataset.table.name,
         create_vis: false
       });
       this.deselectAll();

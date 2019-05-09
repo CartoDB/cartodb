@@ -1,4 +1,5 @@
 require 'active_record'
+require 'cartodb-common'
 require_relative '../visualization/stats'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
@@ -32,8 +33,6 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::AuthTokenGenerator
   include Carto::VisualizationDependencies
   include Carto::VisualizationBackupService
-
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
 
   TYPE_CANONICAL = 'table'.freeze
   TYPE_DERIVED = 'derived'.freeze
@@ -342,7 +341,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? &&
+      Carto::Common::EncryptionService.verify(password: password, secure_password: encrypted_password,
+                                              salt: password_salt, secret: Cartodb.config[:password_secret])
   end
 
   def organization?
@@ -609,8 +610,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def password=(value)
     if value.present?
-      self.password_salt = generate_salt if password_salt.nil?
-      self.encrypted_password = password_digest(value, password_salt)
+      self.password_salt = ""
+      self.encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
     end
   end
 
@@ -631,10 +633,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
-
-  def generate_salt
-    secure_digest(Time.now, (1..10).map { rand.to_s })
-  end
 
   def remove_password
     self.password_salt = nil
@@ -718,18 +716,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def set_default_permission
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
-  end
-
-  def password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
   end
 
   def has_private_tables?

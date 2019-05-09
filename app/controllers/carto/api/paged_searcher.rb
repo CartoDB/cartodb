@@ -6,7 +6,13 @@ module Carto
 
       def page_per_page_params(default_per_page: 20)
         page = (params[:page].presence || 1).to_i
+        unless page > 0
+          raise Carto::ParamInvalidError.new('page')
+        end
         per_page = (params[:per_page].presence || default_per_page).to_i
+        unless per_page > 0
+          raise Carto::ParamInvalidError.new('per_page')
+        end
         [page, per_page]
       end
 

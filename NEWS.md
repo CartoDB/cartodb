@@ -79,6 +79,7 @@ Development
 * Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
 * Replace title for items number when selecting visualizations ([#14832](https://github.com/CartoDB/cartodb/issues/14832))
 * Organize CSS files following 7-1 pattern style ([#14843](https://github.com/CartoDB/cartodb/pull/14843))
+* Synchronize password re-encryption with central ([#14867](https://github.com/CartoDB/cartodb/pull/14867))
 
 4.26.0 (2019-03-11)
 -------------------

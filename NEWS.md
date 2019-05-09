@@ -9,6 +9,9 @@ Development
 
 ### Bug fixes / enhancements
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
+- Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
+- Sanitize profile form inputs
+- Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
 
 4.26.1 (2019-05-06)
 -------------------
@@ -75,6 +78,7 @@ Development
 * Obfuscate password in connector content ([CartoDB/support#2013](https://github.com/CartoDB/support/issues/2013))
 * Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
 * Replace title for items number when selecting visualizations ([#14832](https://github.com/CartoDB/cartodb/issues/14832))
+* Organize CSS files following 7-1 pattern style ([#14843](https://github.com/CartoDB/cartodb/pull/14843))
 
 4.26.0 (2019-03-11)
 -------------------

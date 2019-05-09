@@ -1,5 +1,6 @@
 require 'spec_helper_min'
 require 'carto/user_authenticator'
+require 'cartodb-common'
 
 describe Carto::UserAuthenticator do
   include Carto::UserAuthenticator
@@ -27,17 +28,55 @@ describe Carto::UserAuthenticator do
     response_user.id.should eq @user.id
     response_user.email.should eq @user.email
 
-    response_user_2 = authenticate(@user.email.upcase, @user_password)
-    response_user_2.id.should eq @user.id
-    response_user_2.email.should eq @user.email
+    response_user2 = authenticate(@user.email.upcase, @user_password)
+    response_user2.id.should eq @user.id
+    response_user2.email.should eq @user.email
 
-    response_user_3 = authenticate(@user.username, @user_password)
-    response_user_3.id.should eq @user.id
-    response_user_3.email.should eq @user.email
+    response_user3 = authenticate(@user.username, @user_password)
+    response_user3.id.should eq @user.id
+    response_user3.email.should eq @user.email
 
-    response_user_4 = authenticate(@user.username.upcase, @user_password)
-    response_user_4.id.should eq @user.id
-    response_user_4.email.should eq @user.email
+    response_user4 = authenticate(@user.username.upcase, @user_password)
+    response_user4.id.should eq @user.id
+    response_user4.email.should eq @user.email
   end
 
+  context "password reencryption" do
+    after(:each) do
+      @user.password = @user_password
+      @user.save
+    end
+
+    it "reencrypts the password if it is correct and not saved with argon2" do
+      @user.crypted_password = Carto::Common::EncryptionService.encrypt(password: @user_password, salt: @user.salt,
+                                                                        sha_class: Digest::SHA1)
+      @user.save
+      @user.crypted_password.length.should eql 40
+
+      authenticate(@user.email, @user_password)
+
+      @user.reload.crypted_password.should =~ /^\$argon2/
+    end
+
+    it "does not reencrypt the password if the password is not correct" do
+      @user.crypted_password = Carto::Common::EncryptionService.encrypt(password: @user_password, salt: @user.salt,
+                                                                        sha_class: Digest::SHA1)
+      @user.save
+      initial_crypted_password = @user.crypted_password
+      initial_crypted_password.length.should eql 40
+
+      authenticate(@user.email, "wrong pass")
+
+      @user.reload.crypted_password.should eql initial_crypted_password
+    end
+
+    it "does not reencrypt the password if it was already with argon2" do
+      initial_crypted_password = @user.crypted_password
+      initial_crypted_password.should =~ /^\$argon2/
+
+      authenticate(@user.email, @user_password)
+
+      @user.reload.crypted_password.should eql initial_crypted_password
+    end
+  end
 end

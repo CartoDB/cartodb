@@ -319,6 +319,8 @@ class Carto::Permission < ActiveRecord::Base
       Carto::DbPermissionService.shared_entities_revokes(@old_acl, acl, entity.table) if entity.table?
     end
     update_shared_entities
+    # Notify change, caches should be invalidated
+    entity.table.update_cdb_tablemetadata if entity && entity.table
   end
 
   def update_changes_deletion

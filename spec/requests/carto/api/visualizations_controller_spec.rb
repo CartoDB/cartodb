@@ -343,6 +343,16 @@ describe Carto::Api::VisualizationsController do
       response_body.should == expected_response
     end
 
+    it 'returns 400 if wrong page parameter is passed' do
+      get base_url, { page: '%00' }, @headers
+      last_response.status.should == 400
+    end
+
+    it 'returns 400 if wrong per_page parameter is passed' do
+      get base_url, { per_page: '%00' }, @headers
+      last_response.status.should == 400
+    end
+
     it 'returns valid information for a user with one table' do
       table1 = create_random_table(@user_1)
       table1_visualization = CartoDB::Visualization::Member.new(id: table1.table_visualization.id).fetch

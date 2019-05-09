@@ -458,9 +458,16 @@ shared_examples_for 'permission models' do
   end
 
   describe '#shared_entities' do
+    before(:each) do
+      @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
+    end
+
+    after(:each) do
+      destroy_full_visualization(@map, @table, @table_visualization, @visualization)
+    end
+
     it 'tests the management of shared entities upon permission save (based on its ACL)' do
-      map, table, table_visualization, visualization = create_full_visualization(@carto_user)
-      entity_id = table_visualization.id
+      entity_id = @table_visualization.id
       permission = permission_from_visualization_id(entity_id)
       # Create old entries
       CartoDB::SharedEntity.new(
@@ -547,8 +554,32 @@ shared_examples_for 'permission models' do
       permission.save
 
       CartoDB::SharedEntity.where(entity_id: entity_id).count.should eq 0
+    end
 
-      destroy_full_visualization(map, table, table_visualization, visualization)
+    it 'triggers table metadata update (to purgue caches, for example) if a permission is removed' do
+      entity_id = @table_visualization.id
+      permission = permission_from_visualization_id(entity_id)
+
+      CartoDB::SharedEntity.new(
+        recipient_id:   @user.id,
+        recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+        entity_id:      entity_id,
+        entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+      ).save
+
+      permission.acl = [
+        {
+          type: Permission::TYPE_USER,
+          entity: {
+            id: @user.id,
+            username: @user.username
+          },
+          access: Permission::ACCESS_NONE
+        }
+      ]
+      # Twice: once at model `update_changes` and one on permission destroy (at cleanup)
+      ::Table.any_instance.expects(:update_cdb_tablemetadata).twice
+      permission.save
     end
   end
 
@@ -577,7 +608,7 @@ shared_examples_for 'permission models' do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
 
-    it "should call the permissions comparisson function with correct values" do
+    it "should call the permissions comparison function with correct values" do
       map, table, table_visualization, visualization = create_full_visualization(@carto_user)
       entity_id = visualization.id
       permission = permission_from_visualization_id(entity_id)

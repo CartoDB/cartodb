@@ -10,6 +10,7 @@ Development
 ### Bug fixes / enhancements
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
 - Sanitize profile form inputs
+- Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
 
 4.26.1 (2019-05-06)
 -------------------

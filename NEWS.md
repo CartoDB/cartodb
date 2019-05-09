@@ -10,6 +10,7 @@ Development
 ### Bug fixes / enhancements
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
 - Sanitize profile form inputs
+- Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
 
 4.26.1 (2019-05-06)
 -------------------

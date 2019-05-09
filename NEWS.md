@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Sanitize profile form inputs
+- Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
 
 4.26.1 (2019-05-06)
 -------------------

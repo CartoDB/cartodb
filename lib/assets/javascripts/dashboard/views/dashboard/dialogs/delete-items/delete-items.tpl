@@ -22,7 +22,7 @@
 </div>
 
 <% if (affectedVisCount > 0) { %>
-  <ul class="Dialog-body MapsList MapsList--centerItems is-singleRow">
+  <ul class="Dialog-body MapsList MapsList--centerItems u-pt--0 u-pb--20">
     <% visibleAffectedVis.forEach(function(vis) { %>
       <li class="MapsList-item">
         <div class="MapCard" data-vis-id="<%- vis.visId %>" data-vis-owner-name="<%- vis.ownerName %>" data-vis-auth-tokens="<%- vis.authTokens %>">

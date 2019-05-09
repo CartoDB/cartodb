@@ -25,7 +25,7 @@ feature "Forgot password" do
     page.should have_css "[data-content=\"Email cannot be blank.\"]"
   end
 
-  scenario "Reset password view shows an error if the email does not exist" do
+  scenario "Reset password view redirects to the right page if the email does not exist" do
     fill_in 'email', with: 'notfound@example.com'
     click_button "Send"
 

@@ -28,7 +28,7 @@ describe PasswordResetsController do
       request.path.should eq create_password_reset_path
     end
 
-    it 'shows an error if the email does not exist' do
+    it 'redirects to the right page if the email does not exist' do
       payload = { email: 'notfound@example.com' }
 
       post create_password_reset_path, payload, @headers

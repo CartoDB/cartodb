@@ -21,7 +21,6 @@ import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
 import NotificationWarning from 'new-dashboard/components/NotificationWarning';
 
-
 export default {
   name: 'Home',
   components: {

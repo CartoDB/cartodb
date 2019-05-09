@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 
 ### Bug fixes / enhancements
 - None yet

@@ -29,7 +29,7 @@ feature "Forgot password" do
     fill_in 'email', with: 'notfound@example.com'
     click_button "Send"
 
-    page.should have_css "[data-content='Cannot find email.']"
+    page.should have_content("Ok, we have sent you an email")
   end
 
   scenario "Reset password redirects to the right view" do

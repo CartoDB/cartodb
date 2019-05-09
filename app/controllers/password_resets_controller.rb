@@ -75,4 +75,11 @@ class PasswordResetsController < ApplicationController
     @organization = @user.organization
   end
 
+  def build_url(view_name)
+    organization_name = @user.organization.try(:name)
+    base_url = CartoDB.base_url(organization_name)
+    path = CartoDB.path(self, "#{view_name}_password_reset")
+    "#{base_url}#{path}"
+  end
+
 end

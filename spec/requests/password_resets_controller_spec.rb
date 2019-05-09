@@ -33,9 +33,10 @@ describe PasswordResetsController do
 
       post create_password_reset_path, payload, @headers
 
-      response.status.should == 200
-      response.body.should include "Cannot find email"
-      request.path.should eq create_password_reset_path
+      response.status.should == 302
+
+      follow_redirect!
+      request.path.should eq sent_password_reset_path
     end
 
     it 'updates the user password_reset_token and password_reset_sent_at' do

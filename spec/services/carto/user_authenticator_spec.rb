@@ -48,6 +48,7 @@ describe Carto::UserAuthenticator do
     end
 
     it "reencrypts the password if it is correct and not saved with argon2" do
+      ::User.any_instance.stubs(:update_in_central).returns(true)
       @user.crypted_password = Carto::Common::EncryptionService.encrypt(password: @user_password, salt: @user.salt,
                                                                         sha_class: Digest::SHA1)
       @user.save

@@ -24,7 +24,7 @@
 <% if (affectedVisCount > 0) { %>
   <ul class="Dialog-body MapsList MapsList--centerItems is-singleRow">
     <% visibleAffectedVis.forEach(function(vis) { %>
-      <li class="MapsList-item MapsList-item--woTopBottomMargins">
+      <li class="MapsList-item">
         <div class="MapCard" data-vis-id="<%- vis.visId %>" data-vis-owner-name="<%- vis.ownerName %>" data-vis-auth-tokens="<%- vis.authTokens %>">
           <a href="<%- vis.url %>" target="_blank" class="MapCard-header MapCard-header--compact js-header">
             <div class="MapCard-loader"></div>

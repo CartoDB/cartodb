@@ -155,7 +155,7 @@
 }
 
 .u-border-bottom {
-  border-bottom: 1px solid $cStructure-mainLine;
+  box-shadow: 0px 1px 0px $cStructure-mainLine;
 }
 
 @media (min-width: $sMedia-desktop) {

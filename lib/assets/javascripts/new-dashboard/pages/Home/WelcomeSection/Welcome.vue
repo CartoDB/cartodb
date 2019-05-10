@@ -76,8 +76,8 @@ export default {
       return freeUser.includes(this.user.account_type);
     },
     isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return noProUsers.includes(this.user.account_type);
+      const proUsers = ['professional-2019', 'ls-professional-2019'];
+      return proUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

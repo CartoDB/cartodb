@@ -154,6 +154,10 @@
   text-transform: uppercase;
 }
 
+.u-border-bottom {
+  box-shadow: 0px 1px 0px $cStructure-mainLine;
+}
+
 @media (min-width: $sMedia-desktop) {
   .u-inner {
     width: $sLayout-width;

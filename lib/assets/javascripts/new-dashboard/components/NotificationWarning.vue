@@ -37,9 +37,11 @@ export default {
   background-color: $notification__bg-color;
   color: $text__color;
   font-size: 12px;
+  text-align: center;
 
   .notification__text {
     display: inline-block;
+    width: 80%;
     line-height: 1.2;
   }
 

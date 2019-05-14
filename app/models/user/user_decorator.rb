@@ -23,6 +23,7 @@ module CartoDB
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
         public_map_quota: public_map_quota,
+        regular_api_key_quota: regular_api_key_quota,
         table_count: table_count,
         public_visualization_count: public_visualization_count,
         all_visualization_count: all_visualization_count,

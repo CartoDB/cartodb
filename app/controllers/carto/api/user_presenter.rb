@@ -120,6 +120,7 @@ module Carto
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           public_map_quota: @user.public_map_quota,
+          regular_api_key_quota: @user.regular_api_key_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
           industry: @user.industry,

@@ -98,7 +98,7 @@ module Concerns
            max_import_file_size max_import_table_row_count max_concurrent_import_count
            name last_name notification organization_id
            period_end_date private_tables_enabled quota_in_bytes salt
-           sync_tables_enabled table_quota public_map_quota twitter_username upgraded_at
+           sync_tables_enabled table_quota public_map_quota regular_api_key_quota twitter_username upgraded_at
            user_timeout username website soft_geocoding_limit
            batch_queries_statement_timeout
            twitter_datasource_enabled twitter_datasource_block_size
@@ -135,13 +135,14 @@ module Concerns
           available_for_hire email geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
           max_import_file_size max_import_table_row_count max_concurrent_import_count name last_name notification
           organization_id period_end_date private_tables_enabled quota_in_bytes salt sync_tables_enabled table_quota
-          public_map_quota twitter_username upgraded_at user_timeout username website soft_geocoding_limit
-          twitter_datasource_enabled soft_twitter_datasource_limit google_sign_in last_password_change_date
-          github_user_id google_maps_key google_maps_private_key here_isolines_quota here_isolines_block_price
-          soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price soft_obs_snapshot_limit obs_general_quota
-          obs_general_block_price soft_obs_general_limit viewer geocoder_provider isolines_provider routing_provider
-          builder_enabled engine_enabled mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit
-          industry company phone job_role password_reset_token password_reset_sent_at
+          public_map_quota regular_api_key_quota twitter_username upgraded_at user_timeout username website
+          soft_geocoding_limit twitter_datasource_enabled soft_twitter_datasource_limit google_sign_in
+          last_password_change_date github_user_id google_maps_key google_maps_private_key here_isolines_quota
+          here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
+          soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit viewer
+          geocoder_provider isolines_provider routing_provider builder_enabled engine_enabled mapzen_routing_quota
+          mapzen_routing_block_price soft_mapzen_routing_limit industry company phone job_role password_reset_token
+          password_reset_sent_at
         )
         attrs = values.slice(*allowed_attributes)
         attrs[:multifactor_authentication_status] = multifactor_authentication_status

@@ -66,16 +66,14 @@ export default {
       currentPage: state => state.datasets.page,
       datasets: state => state.datasets.list,
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries
+      numResults: state => state.datasets.metadata.total_entries,
+      isNotificationVisible: state => state.user.isNotificationVisible
     }),
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowPagination () {
       return !this.isFetchingDatasets && this.numResults > 0 && this.numPages > 1;
-    },
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {
@@ -120,7 +118,7 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.datasetsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      const notificationHeight = this.userNotification ? 60 : 0;
+      const notificationHeight = this.isNotificationVisible ? 60 : 0;
       return headerBoundingClientRect.top - notificationHeight;
     }
   }

@@ -73,16 +73,14 @@ export default {
       currentPage: state => state.maps.page,
       maps: state => state.maps.list,
       isFetchingMaps: state => state.maps.isFetching,
-      currentEntriesCount: state => state.maps.metadata.total_entries
+      currentEntriesCount: state => state.maps.metadata.total_entries,
+      isNotificationVisible: state => state.user.isNotificationVisible
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.currentEntriesCount > 0 && this.numPages > 1;
-    },
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {
@@ -126,7 +124,7 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.mapsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      const notificationHeight = this.userNotification ? 60 : 0;
+      const notificationHeight = this.isNotificationVisible ? 60 : 0;
       return headerBoundingClientRect.top - notificationHeight;
     },
     loadUserConfiguration () {

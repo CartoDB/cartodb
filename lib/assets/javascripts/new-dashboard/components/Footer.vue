@@ -1,5 +1,5 @@
 <template>
-  <div class="grid container footer">
+  <div class="container grid footer">
     <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo">
       <a href="https://carto.com">
         <img class="carto-logo" src="../assets/icons/common/cartoLogo.svg">

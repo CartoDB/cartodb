@@ -1,6 +1,6 @@
 <template>
 <Page class="is-bgSoftBlue">
-  <div class="container grid" :class="{ 'is-user-notification': userNotification }">
+  <div class="container grid grid__content">
     <h3 class="title is-body solutions-title">{{ $t(`SolutionsPage.solutionsTitle`) }}</h3>
     <p class="text is-caption solutions-description">{{ $t(`SolutionsPage.solutionsDescription`) }}</p>
 

@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': userNotification }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': isNotificationVisible }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -51,6 +51,7 @@ import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 import FeedbackPopup from '../FeedbackPopup';
 import storageAvailable from 'new-dashboard/utils/is-storage-available';
+import { mapState } from 'vuex';
 
 export default {
   name: 'NavigationBar',
@@ -77,11 +78,11 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      isNotificationVisible: state => state.user.isNotificationVisible
+    }),
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
-    },
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
     },
     popupWasShown () {
       if (!storageAvailable('localStorage')) {

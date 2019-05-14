@@ -1,5 +1,5 @@
 <template>
-  <div class="container grid">
+  <div class="container grid grid__content">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
         <template slot="icon">
@@ -48,10 +48,7 @@
       </InitialState>
     </div>
 
-    <div
-      v-if="shouldShowHeader"
-      class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-      :class="{ 'is-user-notification': userNotification }">
+    <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowHeader">
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -144,10 +141,7 @@ export default {
       currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      userNotification () {
-        return this.$store.getters['user/isNotificationVisible'];
-      }
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
@@ -256,8 +250,10 @@ export default {
   top: 64px;
 }
 
-.grid__head--sticky.is-user-notification {
-  top: 64px + $notification-warning__height;
+.is-user-notification {
+  .grid__head--sticky {
+    top: 64px + $notification-warning__height;
+  }
 }
 
 .pagination-element {

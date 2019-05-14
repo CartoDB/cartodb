@@ -1,16 +1,18 @@
 <template>
-  <section class="page" :class="{ 'is-user-notification': userNotification }">
+  <section class="page" :class="{ 'is-user-notification': isNotificationVisible }">
     <slot />
   </section>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'Page',
   computed: {
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
-    }
+    ...mapState({
+      isNotificationVisible: state => state.user.isNotificationVisible
+    })
   }
 }
 </script>
@@ -25,6 +27,6 @@ export default {
 }
 
 .page.is-user-notification {
-  padding-top: 128px + $notification-warning__height;
+  // padding-top: 128px + $notification-warning__height;
 }
 </style>

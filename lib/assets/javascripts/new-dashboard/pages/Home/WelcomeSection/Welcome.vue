@@ -1,5 +1,5 @@
 <template>
-  <section class="welcome-section" :class="{ 'is-user-notification': userNotification }">
+  <section class="welcome-section" :class="{ 'is-user-notification': isNotificationVisible }">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
@@ -35,11 +35,9 @@ export default {
       user: state => state.user,
       name: state => state.user.name || state.user.username,
       organization: state => state.user.organization,
-      notifications: state => state.user.organizationNotifications
+      notifications: state => state.user.organizationNotifications,
+      isNotificationVisible: state => state.user.isNotificationVisible
     }),
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
-    },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
     },

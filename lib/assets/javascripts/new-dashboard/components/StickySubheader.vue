@@ -1,7 +1,7 @@
 <template>
   <section
     class="sticky-subheader"
-    :class="{ 'is-visible': $props.isVisible, 'is-user-notification': userNotification }">
+    :class="{ 'is-visible': $props.isVisible, 'is-user-notification': isNotificationVisible }">
     <div class="container subheader-container">
       <slot />
     </div>
@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: 'StickySubheader',
   props: {
@@ -18,9 +19,9 @@ export default {
     }
   },
   computed: {
-    userNotification () {
-      return this.$store.getters['user/isNotificationVisible'];
-    }
+    ...mapState({
+      isNotificationVisible: state => state.user.isNotificationVisible
+    })
   }
 };
 </script>

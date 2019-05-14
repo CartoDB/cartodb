@@ -1,5 +1,5 @@
 <template>
-  <div class="container grid">
+  <div class="container grid grid__content">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
@@ -39,10 +39,7 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <div
-        v-if="shouldShowListHeader"
-        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-        :class="{ 'is-user-notification': userNotification }">
+      <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowListHeader">
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
@@ -153,9 +150,7 @@ export default {
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      userNotification () {
-        return this.$store.getters['user/isNotificationVisible'];
-      }
+      isNotificationVisible: state => state.user.isNotificationVisible
     }),
     pageTitle () {
       return this.selectedMaps.length
@@ -284,8 +279,10 @@ export default {
   top: 64px;
 }
 
-.grid__head--sticky.is-user-notification {
-  top: 64px + $notification-warning__height;
+.is-user-notification {
+  .grid__head--sticky {
+    top: 64px + $notification-warning__height;
+  }
 }
 
 .pagination-element {

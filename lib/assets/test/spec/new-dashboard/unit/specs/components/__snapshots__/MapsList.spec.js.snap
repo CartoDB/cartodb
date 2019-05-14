@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`MapsList.vue should render empty state 1`] = `
-<div class="container grid">
+<div class="container grid grid__content">
   <div class="full-width">
     <sectiontitle-stub title="MapsPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
@@ -14,7 +14,7 @@ exports[`MapsList.vue should render empty state 1`] = `
 `;
 
 exports[`MapsList.vue should render initial state 1`] = `
-<div class="container grid">
+<div class="container grid grid__content">
   <div class="full-width">
     <sectiontitle-stub title="MapsPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
@@ -27,7 +27,7 @@ exports[`MapsList.vue should render initial state 1`] = `
 `;
 
 exports[`MapsList.vue should render properly with condensed card and without change view mode available 1`] = `
-<div class="container grid" showviewall="true">
+<div class="container grid grid__content" showviewall="true">
   <div class="full-width">
     <sectiontitle-stub title="MapsPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->
@@ -49,7 +49,7 @@ exports[`MapsList.vue should render properly with condensed card and without cha
 `;
 
 exports[`MapsList.vue should render properly with simple card and with change view mode available 1`] = `
-<div class="container grid" showviewall="true">
+<div class="container grid grid__content" showviewall="true">
   <div class="full-width">
     <sectiontitle-stub title="MapsPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <!---->

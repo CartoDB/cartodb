@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Solutions.vue should render correct contents 1`] = `
-<section class="page is-bgSoftBlue">
-  <div class="container grid">
+<page-stub class="is-bgSoftBlue">
+  <div class="container grid grid__content">
     <h3 class="title is-body solutions-title">SolutionsPage.solutionsTitle</h3>
     <p class="text is-caption solutions-description">SolutionsPage.solutionsDescription</p>
     <ul class="grid-cell--col12 grid">
@@ -22,5 +22,5 @@ exports[`Solutions.vue should render correct contents 1`] = `
       <div class="talk-us-button"><a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration"><span>SolutionsPage.talkUsButton</span></a></div>
     </div>
   </div>
-</section>
+</page-stub>
 `;

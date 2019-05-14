@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DatasetsList.vue should render empty state 1`] = `
-<div class="container grid">
+<div class="container grid grid__content">
   <div class="full-width">
     <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
   </div>
@@ -16,7 +16,7 @@ exports[`DatasetsList.vue should render empty state 1`] = `
 `;
 
 exports[`DatasetsList.vue should render initial state 1`] = `
-<div class="container grid">
+<div class="container grid grid__content">
   <div class="full-width">
     <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template>
       <!---->
@@ -35,7 +35,7 @@ exports[`DatasetsList.vue should render initial state 1`] = `
 `;
 
 exports[`DatasetsList.vue should render properly 1`] = `
-<div class="container grid">
+<div class="container grid grid__content">
   <div class="full-width">
     <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
   </div>

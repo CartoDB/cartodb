@@ -1,6 +1,6 @@
 <template>
   <Page>
-    <div class="notifications-list-container container grid">
+    <div class="notifications-list-container container grid" :class="{ 'is-user-notification': userNotification }">
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
           <template slot="icon">

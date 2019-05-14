@@ -272,7 +272,7 @@ export default {
 }
 
 .navbar.is-user-notification {
-  margin-top: 60px;
+  margin-top: $notification-warning__height;
 }
 
 .feedback-popup {

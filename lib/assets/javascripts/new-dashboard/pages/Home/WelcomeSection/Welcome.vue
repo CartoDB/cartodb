@@ -96,6 +96,6 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .welcome-section.is-user-notification {
-  margin-top: 60px;
+  margin-top: $notification-warning__height;
 }
 </style>

@@ -11,12 +11,15 @@
       <span class="title" v-else-if="tag">{{ $tc('SearchPage.title.tag', totalResults, { query: tag }) }}</span>
     </StickySubheader>
 
-    <div class="container grid">
+    <div class="container grid" :class="{ 'is-user-notification': userNotification }">
       <div class="full-width">
         <section class="section section--maps" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasMaps">
+              <div 
+                v-if="hasMaps"
+                class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+                :class="{ 'is-user-notification': userNotification }">
                 <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
               </div>
 
@@ -46,7 +49,10 @@
         <section class="section section--datasets" ref="datasets">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasDatasets">
+              <div
+                v-if="hasDatasets"
+                class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+                :class="{ 'is-user-notification': userNotification }">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
               </div>
 
@@ -170,7 +176,10 @@ export default {
       isFetchingTags: state => state.search.tags.isFetching,
       totalResults: state => state.search.maps.numResults +
                              state.search.datasets.numResults +
-                             state.search.tags.numResults
+                             state.search.tags.numResults,
+      userNotification () {
+        return this.$store.getters['user/isNotificationVisible'];
+      }
     }),
     hasMaps () {
       return Object.keys(this.maps || {}).length;
@@ -280,6 +289,10 @@ export default {
 
 .grid__head--sticky {
   top: 128px;
+}
+
+.grid__head--sticky.is-user-notification {
+  top: calc(128px + $notification-warning__height);
 }
 
 .map-element {

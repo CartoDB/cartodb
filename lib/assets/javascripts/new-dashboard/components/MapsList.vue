@@ -39,7 +39,10 @@
         <CreateMapCard></CreateMapCard>
       </div>
 
-      <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowListHeader">
+      <div
+        v-if="shouldShowListHeader"
+        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+        :class="{ 'is-user-notification': userNotification }">
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
@@ -149,7 +152,10 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      userNotification () {
+        return this.$store.getters['user/isNotificationVisible'];
+      }
     }),
     pageTitle () {
       return this.selectedMaps.length
@@ -276,6 +282,10 @@ export default {
 
 .grid__head--sticky {
   top: 64px;
+}
+
+.grid__head--sticky.is-user-notification {
+  top: calc(64px + $notification-warning__height);
 }
 
 .pagination-element {

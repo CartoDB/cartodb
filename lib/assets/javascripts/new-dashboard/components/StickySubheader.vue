@@ -46,7 +46,7 @@ export default {
   }
 
   &.is-user-notification {
-    top: 60px;
+    top: $notification-warning__height;
   }
 }
 

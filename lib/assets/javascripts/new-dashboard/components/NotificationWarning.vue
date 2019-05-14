@@ -31,7 +31,8 @@ export default {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 60px;
+  height: $notification-warning__height;
+  max-height: $notification-warning__height;
   padding: 16px;
   background-color: $notification__bg-color;
   color: $text__color;

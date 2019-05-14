@@ -14,6 +14,7 @@
 
     <MapsList
       ref="mapsList"
+      class="grid__content"
       :hasBulkActions="true"
       :isCondensedDefault="isCondensed"
       :canChangeViewMode="true"

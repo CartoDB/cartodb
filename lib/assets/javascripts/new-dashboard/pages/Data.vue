@@ -13,6 +13,7 @@
 
     <DatasetsList
       ref="datasetsList"
+      class="grid__content"
       :hasBulkActions="true"
       :canHoverCard="true"
       :maxVisibleDatasets="maxVisibleDatasets"

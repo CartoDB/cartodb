@@ -1,5 +1,5 @@
 <template>
-  <div class="container grid grid__content">
+  <div class="container grid">
     <div class="full-width">
       <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
         <template slot="icon">

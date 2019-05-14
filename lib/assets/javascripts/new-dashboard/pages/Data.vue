@@ -67,9 +67,11 @@ export default {
       currentPage: state => state.datasets.page,
       datasets: state => state.datasets.list,
       isFetchingDatasets: state => state.datasets.isFetching,
-      numResults: state => state.datasets.metadata.total_entries,
-      isNotificationVisible: state => state.user.isNotificationVisible
+      numResults: state => state.datasets.metadata.total_entries
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },

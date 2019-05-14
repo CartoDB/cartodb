@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 export default {
   name: 'StickySubheader',
   props: {
@@ -19,9 +18,9 @@ export default {
     }
   },
   computed: {
-    ...mapState({
-      isNotificationVisible: state => state.user.isNotificationVisible
-    })
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    }
   }
 };
 </script>

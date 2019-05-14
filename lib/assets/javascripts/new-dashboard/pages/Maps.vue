@@ -74,9 +74,11 @@ export default {
       currentPage: state => state.maps.page,
       maps: state => state.maps.list,
       isFetchingMaps: state => state.maps.isFetching,
-      currentEntriesCount: state => state.maps.metadata.total_entries,
-      isNotificationVisible: state => state.user.isNotificationVisible
+      currentEntriesCount: state => state.maps.metadata.total_entries
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },

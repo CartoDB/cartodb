@@ -149,8 +149,7 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      isNotificationVisible: state => state.user.isNotificationVisible
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.selectedMaps.length

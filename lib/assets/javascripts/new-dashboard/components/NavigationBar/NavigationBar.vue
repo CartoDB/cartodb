@@ -51,7 +51,6 @@ import Search from '../Search/Search';
 import UserDropdown from './UserDropdown';
 import FeedbackPopup from '../FeedbackPopup';
 import storageAvailable from 'new-dashboard/utils/is-storage-available';
-import { mapState } from 'vuex';
 
 export default {
   name: 'NavigationBar',
@@ -78,9 +77,6 @@ export default {
     };
   },
   computed: {
-    ...mapState({
-      isNotificationVisible: state => state.user.isNotificationVisible
-    }),
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
     },
@@ -96,6 +92,9 @@ export default {
         !this.isFirstTimeInDashboard &&
         !this.hasDropdownOpenedForFirstTime &&
         !this.popupWasShown;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {

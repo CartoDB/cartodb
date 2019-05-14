@@ -35,9 +35,11 @@ export default {
       user: state => state.user,
       name: state => state.user.name || state.user.username,
       organization: state => state.user.organization,
-      notifications: state => state.user.organizationNotifications,
-      isNotificationVisible: state => state.user.isNotificationVisible
+      notifications: state => state.user.organizationNotifications
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
     },

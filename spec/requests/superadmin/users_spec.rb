@@ -95,6 +95,7 @@ feature "Superadmin's users API" do
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
       response.body[:public_map_quota].should == nil
+      response.body[:regular_api_key_quota].should == nil
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
       response.body[:sync_tables_enabled].should == false
@@ -105,6 +106,7 @@ feature "Superadmin's users API" do
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
       user.public_map_quota.should == nil
+      user.regular_api_key_quota.should == nil
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
@@ -135,6 +137,7 @@ feature "Superadmin's users API" do
     @user_atts[:quota_in_bytes] = 2000
     @user_atts[:table_quota] = 20
     @user_atts[:public_map_quota] = 20
+    @user_atts[:regular_api_key_quota] = 20
     @user_atts[:account_type] = 'Juliet'
     @user_atts[:private_tables_enabled] = true
     @user_atts[:sync_tables_enabled] = true
@@ -155,6 +158,7 @@ feature "Superadmin's users API" do
       response.body[:quota_in_bytes].should == 2000
       response.body[:table_quota].should == 20
       response.body[:public_map_quota].should == 20
+      response.body[:regular_api_key_quota].should == 20
       response.body[:account_type].should == 'Juliet'
       response.body[:private_tables_enabled].should == true
       response.body[:sync_tables_enabled].should == true
@@ -175,6 +179,7 @@ feature "Superadmin's users API" do
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
       user.public_map_quota.should == 20
+      user.regular_api_key_quota.should == 20
       user.account_type.should == 'Juliet'
       user.private_tables_enabled.should == true
       user.sync_tables_enabled.should == true
@@ -198,6 +203,7 @@ feature "Superadmin's users API" do
     @update_atts = { quota_in_bytes: 2000,
                      table_quota: 20,
                      public_map_quota: 20,
+                     regular_api_key_quota: 20,
                      max_layers: 10,
                      user_timeout: 100000,
                      database_timeout: 200000,
@@ -227,6 +233,7 @@ feature "Superadmin's users API" do
     user.quota_in_bytes.should == 2000
     user.table_quota.should == 20
     user.public_map_quota.should == 20
+    user.regular_api_key_quota.should == 20
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
     user.sync_tables_enabled.should == true
@@ -597,6 +604,7 @@ feature "Superadmin's users API" do
         quota_in_bytes: 2000,
         table_quota: 20,
         public_map_quota: 20,
+        regular_api_key_quota: 20,
         max_layers: 10,
         user_timeout: 100000,
         database_timeout: 200000,

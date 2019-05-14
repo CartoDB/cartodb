@@ -292,7 +292,7 @@ export default {
 }
 
 .grid__head--sticky.is-user-notification {
-  top: calc(128px + $notification-warning__height);
+  top: 128px + $notification-warning__height;
 }
 
 .map-element {

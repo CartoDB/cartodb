@@ -252,16 +252,12 @@ export default {
   width: 100%;
 }
 
-.is-user-notification {
-  padding-top: $notification-warning__height;
-}
-
 .grid__head--sticky {
   top: 64px;
 }
 
 .grid__head--sticky.is-user-notification {
-  top: calc(64px + $notification-warning__height);
+  top: 64px + $notification-warning__height;
 }
 
 .pagination-element {

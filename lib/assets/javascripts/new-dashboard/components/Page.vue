@@ -25,6 +25,6 @@ export default {
 }
 
 .page.is-user-notification {
-  padding-top: calc(128px + $notification-warning__height);
+  padding-top: 128px + $notification-warning__height;
 }
 </style>

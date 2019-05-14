@@ -285,7 +285,7 @@ export default {
 }
 
 .grid__head--sticky.is-user-notification {
-  top: calc(64px + $notification-warning__height);
+  top: 64px + $notification-warning__height;
 }
 
 .pagination-element {

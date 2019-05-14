@@ -38,7 +38,7 @@ export default {
       notifications: state => state.user.organizationNotifications
     }),
     userNotification () {
-      return this.$store.getters['user/notification'];
+      return this.$store.getters['user/isNotificationVisible'];
     },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });

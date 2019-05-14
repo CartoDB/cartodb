@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     userNotification () {
-      return this.$store.getters['user/notification'];
+      return this.$store.getters['user/isNotificationVisible'];
     }
   }
 };

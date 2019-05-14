@@ -82,7 +82,7 @@ export default {
       return !this.isFetchingMaps && this.currentEntriesCount > 0 && this.numPages > 1;
     },
     userNotification () {
-      return this.$store.getters['user/notification'];
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {

@@ -8,7 +8,7 @@
       :isFirstTimeInDashboard="isFirstTimeInDashboard"
       bundleType="dashboard"/>
     
-    <NotificationWarning v-if="Boolean(userNotification)" :htmlBody=userNotification />
+    <NotificationWarning v-if="Boolean(userNotification)" :htmlBody=user.notification />
 
     <router-view/>
 
@@ -43,7 +43,7 @@ export default {
       return this.$store.state.user;
     },
     userNotification () {
-      return this.$store.getters['user/notification'] || null;
+      return this.$store.getters['user/isNotificationVisible'];
     },
     baseUrl () {
       return this.$store.state.user.base_url;

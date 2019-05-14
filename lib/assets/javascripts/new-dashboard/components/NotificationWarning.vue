@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     close () {
-      this.$emit('closeUserNotification');
+      this.$store.dispatch('user/hideUserNotification');
     }
   }
 };

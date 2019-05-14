@@ -160,7 +160,8 @@ module CartoDB
           }
         }
       }.freeze
-      TABLE_NULL_EXCEPTIONS = ['table_quota', 'builder_enabled'].freeze # those won't be discarded if set to NULL
+      # the next fields won't be discarded if set to NULL
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'builder_enabled'].freeze
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)

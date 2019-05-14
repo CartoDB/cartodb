@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <div class="notifications-list-container container grid">
       <div class="full-width">
         <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
@@ -22,10 +22,11 @@
         <LoadingState v-if="isFetching" :text="loadingStateText" class="loading-state"></LoadingState>
       </div>
     </div>
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import EmptyState from '../components/States/EmptyState';
 import LoadingState from '../components/States/LoadingState';
 import NotificationCard from '../components/NotificationCard';
@@ -34,6 +35,7 @@ import SectionTitle from '../components/SectionTitle';
 export default {
   name: 'NotificationsPage',
   components: {
+    Page,
     EmptyState,
     LoadingState,
     NotificationCard,

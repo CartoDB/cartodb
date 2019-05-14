@@ -1,6 +1,9 @@
 <template>
 <div class="notification">
-  <div v-html="htmlBody" class="text is-caption"></div>
+  <span v-html="htmlBody" class="text notification__text"></span>
+  <button class="notification__close-button" @click="close" aria-label="Close">
+    <img src="../assets/icons/common/close.svg" />
+  </button>
 </div>
 </template>
 
@@ -9,6 +12,11 @@ export default {
   name: 'NotificationWarning',
   props: {
     htmlBody: String
+  },
+  methods: {
+    close () {
+      this.$emit('closeUserNotification');
+    }
   }
 };
 </script>
@@ -16,8 +24,38 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .notification {
+  display: flex;
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 60px;
+  padding: 16px;
+  background-color: $notification__bg-color;
   color: $text__color;
-  padding: 16px 112px;
-  background-color: $warning__bg-color;
+  font-size: 12px;
+
+  .notification__text {
+    display: inline-block;
+    line-height: 1.2;
+  }
+
+  /deep/ b {
+    font-weight: 900;
+  }
+}
+
+.notification__close-button {
+  position: absolute;
+  top: 0;
+  right: 24px;
+  height: 100%;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <StickySubheader :is-visible="true" class="page-subheader">
       <span class="title" v-if="isFirstFetch">
         {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
@@ -102,10 +102,11 @@
       </div>
     </div>
 
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
@@ -124,6 +125,7 @@ const TWO_HEADERS_HEIGHT = 128;
 export default {
   name: 'SearchPage',
   components: {
+    Page,
     CondensedMapHeader,
     DatasetCard,
     DatasetCardFake,

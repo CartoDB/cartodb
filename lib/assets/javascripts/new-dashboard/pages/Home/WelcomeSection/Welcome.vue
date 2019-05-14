@@ -1,5 +1,5 @@
 <template>
-  <section class="welcome-section">
+  <section class="welcome-section" :class="{ 'is-user-notification': userNotification }">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
@@ -37,6 +37,9 @@ export default {
       organization: state => state.user.organization,
       notifications: state => state.user.organizationNotifications
     }),
+    userNotification () {
+      return this.$store.getters['user/notification'];
+    },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
     },
@@ -89,3 +92,10 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.welcome-section.is-user-notification {
+  margin-top: 60px;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -20,13 +20,14 @@
       @applyOrder="applyOrder"
       @selectionChange="updateSelected" />
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </section>
+  </Page>
 </template>
 
 <script>
 
 import { mapState } from 'vuex';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import Page from 'new-dashboard/components/Page';
 import Pagination from 'new-dashboard/components/Pagination';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
@@ -37,6 +38,7 @@ export default {
   components: {
     DatasetBulkActions,
     StickySubheader,
+    Page,
     Pagination,
     DatasetsList
   },
@@ -71,6 +73,9 @@ export default {
     },
     shouldShowPagination () {
       return !this.isFetchingDatasets && this.numResults > 0 && this.numPages > 1;
+    },
+    userNotification () {
+      return this.$store.getters['user/notification'];
     }
   },
   methods: {
@@ -115,7 +120,8 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.datasetsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      return headerBoundingClientRect.top;
+      const notificationHeight = this.userNotification ? 60 : 0;
+      return headerBoundingClientRect.top - notificationHeight;
     }
   }
 };

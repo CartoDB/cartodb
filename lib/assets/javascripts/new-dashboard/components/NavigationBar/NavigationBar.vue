@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': userNotification }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -79,6 +79,9 @@ export default {
   computed: {
     isDashboardBundle () {
       return this.$props.bundleType === 'dashboard';
+    },
+    userNotification () {
+      return this.$store.getters['user/notification'];
     },
     popupWasShown () {
       if (!storageAvailable('localStorage')) {
@@ -266,6 +269,10 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.navbar.is-user-notification {
+  margin-top: 60px;
 }
 
 .feedback-popup {

@@ -1,7 +1,6 @@
 <template>
   <section class="page page--welcome">
     <Welcome />
-    <NotificationWarning v-if=userNotification :htmlBody=userNotification />
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
     <MapsSection class="section" @contentChanged="onContentChanged"/>
@@ -19,7 +18,6 @@ import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
-import NotificationWarning from 'new-dashboard/components/NotificationWarning';
 
 export default {
   name: 'Home',
@@ -29,8 +27,7 @@ export default {
     RecentSection,
     MapsSection,
     DatasetsSection,
-    QuotaSection,
-    NotificationWarning
+    QuotaSection
   },
   beforeMount () {
     this.$store.dispatch('recentContent/fetch');
@@ -56,9 +53,6 @@ export default {
     },
     isFirstTimeViewingDashboard () {
       return this.$store.state.config.isFirstTimeViewingDashboard;
-    },
-    userNotification () {
-      return this.$store.getters['user/notification'] || null;
     }
   },
   methods: {

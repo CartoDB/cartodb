@@ -1,5 +1,5 @@
 <template>
-<section class="page is-bgSoftBlue">
+<Page class="is-bgSoftBlue">
   <div class="container grid">
     <h3 class="title is-body solutions-title">{{ $t(`SolutionsPage.solutionsTitle`) }}</h3>
     <p class="text is-caption solutions-description">{{ $t(`SolutionsPage.solutionsDescription`) }}</p>
@@ -62,15 +62,17 @@
       </div>
     </div>
   </div>
-</section>
+</Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import SolutionCard from 'new-dashboard/components/Solutions/SolutionCard';
 
 export default {
   name: 'SolutionsPage',
   components: {
+    Page,
     SolutionCard
   }
 };

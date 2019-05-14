@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
@@ -24,12 +24,13 @@
       @selectionChange="updateSelected" />
 
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </section>
+  </Page>
 </template>
 
 <script>
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import { mapState } from 'vuex';
+import Page from 'new-dashboard/components/Page';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import Pagination from 'new-dashboard/components/Pagination';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
@@ -38,6 +39,7 @@ import MapsList from 'new-dashboard/components/MapsList.vue';
 export default {
   name: 'MapsPage',
   components: {
+    Page,
     MapBulkActions,
     StickySubheader,
     Pagination,
@@ -78,6 +80,9 @@ export default {
     },
     shouldShowPagination () {
       return !this.isFetchingMaps && this.currentEntriesCount > 0 && this.numPages > 1;
+    },
+    userNotification () {
+      return this.$store.getters['user/notification'];
     }
   },
   methods: {
@@ -121,7 +126,8 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.mapsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      return headerBoundingClientRect.top;
+      const notificationHeight = this.userNotification ? 60 : 0;
+      return headerBoundingClientRect.top - notificationHeight;
     },
     loadUserConfiguration () {
       if (localStorage.hasOwnProperty('mapViewMode')) {

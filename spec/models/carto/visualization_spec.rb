@@ -648,8 +648,8 @@ describe Carto::Visualization do
     end
 
     it 'allows to make the map public if the limit is not reached' do
-      @user.public_map_quota = 1
-      @user.save
+      @carto_user.public_map_quota = 1
+      @carto_user.save
 
       @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
       @visualization.save

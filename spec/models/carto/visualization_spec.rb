@@ -622,4 +622,39 @@ describe Carto::Visualization do
       end
     end
   end
+
+  context 'quota check' do
+    before(:each) do
+      @carto_user.private_maps_enabled = true
+      @carto_user.save
+      @visualization = FactoryGirl.create(:carto_visualization, user: @carto_user,
+                                                                privacy: Carto::Visualization::PRIVACY_PRIVATE)
+    end
+
+    after(:all) do
+      @carto_user.public_map_quota = nil
+      @carto_user.save
+    end
+
+    it 'does not allow to make a map public when the limit is reached' do
+      @carto_user.public_map_quota = 0
+      @carto_user.save
+
+      @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+      @visualization.save
+
+      @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PRIVATE
+      @visualization.errors.count.should eql 1
+    end
+
+    it 'allows to make the map public if the limit is not reached' do
+      @user.public_map_quota = 1
+      @user.save
+
+      @visualization.privacy = Carto::Visualization::PRIVACY_PUBLIC
+      @visualization.save
+
+      @visualization.reload.privacy.should eql Carto::Visualization::PRIVACY_PUBLIC
+    end
+  end
 end

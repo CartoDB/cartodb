@@ -2251,6 +2251,26 @@ describe Table do
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
       end
+
+      context 'organization' do
+        include_context 'organization with users helper'
+
+        it 'returns the right row count estimation without mixing tables from other users' do
+          table1 = new_table(user_id: @org_user_1.id, name: 'wadus1')
+          table1.save
+          table1.insert_row!(name: '1')
+          @org_user_1.in_database.run("ANALYZE #{table1.qualified_table_name}")
+
+          table2 = new_table(user_id: @org_user_2.id, name: 'wadus1')
+          table2.save
+          table2.insert_row!(name: '1')
+          table2.insert_row!(name: '2')
+          @org_user_2.in_database.run("ANALYZE #{table2.qualified_table_name}")
+
+          table1.estimated_row_count.should eq 1
+          table2.estimated_row_count.should eq 2
+        end
+      end
     end
   end
 

@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 
 gem 'rails',                   '4.2.11'
 
-gem 'rake',                    '0.9.2.2'
+gem 'rake',                    '12.3.2'
 
 # PostgreSQL
 gem 'pg',                      '0.20.0'

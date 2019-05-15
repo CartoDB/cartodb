@@ -283,7 +283,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     raindrops (0.15.0)
-    rake (0.9.2.2)
+    rake (12.3.2)
     rb-fsevent (0.9.7)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
@@ -475,7 +475,7 @@ DEPENDENCIES
   rails (= 4.2.11)
   rails_warden (= 0.5.8)
   raindrops (= 0.15.0)
-  rake (= 0.9.2.2)
+  rake (= 12.3.2)
   rb-readline
   rbtrace (= 0.4.8)
   redcarpet (= 3.3.3)

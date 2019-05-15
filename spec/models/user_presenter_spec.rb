@@ -163,6 +163,8 @@ describe Carto::Api::UserPresenter do
     new_data[:username].should == old_data[:username]
     new_data[:account_type].should == old_data[:account_type]
     new_data[:table_quota].should == old_data[:table_quota]
+    new_data[:public_map_quota].should == old_data[:public_map_quota]
+    new_data[:regular_api_key_quota].should == old_data[:regular_api_key_quota]
     new_data[:table_count].should == old_data[:table_count]
     new_data[:public_visualization_count].should == old_data[:public_visualization_count]
     new_data[:all_visualization_count].should == old_data[:all_visualization_count]

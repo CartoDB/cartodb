@@ -19,17 +19,10 @@ class PasswordResetsController < ApplicationController
     end
 
     @user = Carto::User.find_by_email(email)
-
-    if !@user
-      @error = "Cannot find email"
-      render :new
-      return
-    end
-
-    @user.send_password_reset!
+    @user.try(:send_password_reset!)
 
     respond_to do |format|
-      format.html { redirect_to build_url('sent') }
+      format.html { redirect_to CartoDB.path(self, "sent_password_reset") }
       format.js   { head :ok }
     end
   end

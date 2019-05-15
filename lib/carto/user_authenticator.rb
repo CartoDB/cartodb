@@ -28,8 +28,10 @@ module Carto
     def reencrypt_password(candidate, password)
       encrypter = Carto::Common::EncryptionService
       return if encrypter.argon2?(candidate.crypted_password)
+
       candidate.crypted_password = encrypter.encrypt(password: password, secret: Cartodb.config[:password_secret])
       candidate.salt = ""
+      candidate.update_in_central
       candidate.save
     end
   end

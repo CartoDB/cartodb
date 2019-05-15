@@ -8,7 +8,17 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-* Minor copy edit in final step of Builder Onboarding
+- Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
+- Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
+- Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
+- Sanitize profile form inputs
+- Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
+- Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
+- Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
+- Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
+- Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
+- Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
+- Minor copy edit in final step of Builder Onboarding
 
 4.26.1 (2019-05-06)
 -------------------
@@ -75,6 +85,9 @@ Development
 * Obfuscate password in connector content ([CartoDB/support#2013](https://github.com/CartoDB/support/issues/2013))
 * Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
 * Replace title for items number when selecting visualizations ([#14832](https://github.com/CartoDB/cartodb/issues/14832))
+* Organize CSS files following 7-1 pattern style ([#14843](https://github.com/CartoDB/cartodb/pull/14843))
+* Fix email enumeration vulnerability [#5217](https://github.com/CartoDB/cartodb-management/issues/5217)
+* Synchronize password re-encryption with central ([#14867](https://github.com/CartoDB/cartodb/pull/14867))
 
 4.26.0 (2019-03-11)
 -------------------

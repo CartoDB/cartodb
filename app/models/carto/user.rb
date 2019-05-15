@@ -494,7 +494,7 @@ class Carto::User < ActiveRecord::Base
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('professional').zero?
-      created_at + PROFESSIONAL_TRIAL_DAYS.days    
+      created_at + PROFESSIONAL_TRIAL_DAYS.days
     end
   end
 

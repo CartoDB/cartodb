@@ -1,5 +1,188 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`NavigationBar.vue should have is-user-notification class when the user has a notification 1`] = `
+Object {
+  "$_vueTestUtils_original": [Circular],
+  "_Ctor": Object {},
+  "components": Object {
+    "FeedbackPopup": Object {
+      "methods": Object {
+        "handleClick": [Function],
+        "markFeedbackPopupAsOpened": [Function],
+      },
+      "mounted": [Function],
+      "name": "FeedbackPopup",
+      "render": [Function],
+      "staticRenderFns": Array [],
+    },
+    "Search": Object {
+      "_Ctor": Object {
+        "10": [Function],
+        "18": [Function],
+        "2": [Function],
+        "26": [Function],
+        "34": [Function],
+        "42": [Function],
+      },
+      "components": Object {
+        "SearchSuggestions": Object {
+          "components": Object {
+            "SearchSuggestionsItem": Object {
+              "computed": Object {
+                "isTagType": [Function],
+                "visualizationURL": [Function],
+              },
+              "methods": Object {
+                "onItemClicked": [Function],
+              },
+              "name": "SearchSuggestionsItem",
+              "props": Object {
+                "item": [Function],
+              },
+              "render": [Function],
+              "staticRenderFns": Array [],
+            },
+          },
+          "computed": Object {
+            "searchRoute": [Function],
+            "searchRouteParameters": [Function],
+          },
+          "created": [Function],
+          "data": [Function],
+          "methods": Object {
+            "fetchSuggestions": [Function],
+            "getActiveSuggestionElement": [Function],
+            "keydownDown": [Function],
+            "keydownUp": [Function],
+            "onPageChange": [Function],
+            "resetActiveSuggestion": [Function],
+            "updateActiveSuggestion": [Function],
+          },
+          "name": "SearchSuggestions",
+          "props": Object {
+            "isOpen": Object {
+              "default": false,
+              "type": [Function],
+            },
+            "query": [Function],
+          },
+          "render": [Function],
+          "staticRenderFns": Array [],
+          "watch": Object {
+            "query": [Function],
+          },
+        },
+      },
+      "computed": Object {
+        "isFilled": [Function],
+        "placeholder": [Function],
+      },
+      "data": [Function],
+      "methods": Object {
+        "blurInput": [Function],
+        "goToSearchTermPage": [Function],
+        "onFormSubmit": [Function],
+        "onInputBlur": [Function],
+        "onInputFocus": [Function],
+        "onKeydownDown": [Function],
+        "onKeydownEnter": [Function],
+        "onKeydownUp": [Function],
+        "resetInput": [Function],
+      },
+      "name": "Search",
+      "props": Object {
+        "isSearchOpen": Object {
+          "default": false,
+          "type": [Function],
+        },
+      },
+      "render": [Function],
+      "staticRenderFns": Array [],
+    },
+    "UserDropdown": Object {
+      "_Ctor": Object {
+        "10": [Function],
+        "18": [Function],
+        "2": [Function],
+        "26": [Function],
+        "34": [Function],
+        "42": [Function],
+      },
+      "computed": Object {
+        "isOrganizationAdmin": [Function],
+      },
+      "methods": Object {
+        "linkClicked": [Function],
+      },
+      "name": "UserDropdown",
+      "props": Object {
+        "baseUrl": Object {
+          "default": "",
+          "type": [Function],
+        },
+        "notificationsCount": Object {
+          "type": [Function],
+        },
+        "open": Object {
+          "default": false,
+          "type": [Function],
+        },
+        "userModel": Object {
+          "type": [Function],
+        },
+      },
+      "render": [Function],
+      "staticRenderFns": Array [
+        [Function],
+        [Function],
+        [Function],
+        [Function],
+        [Function],
+        [Function],
+        [Function],
+      ],
+    },
+  },
+  "computed": Object {
+    "isDashboardBundle": [Function],
+    "isNotificationVisible": [Function],
+    "popupWasShown": [Function],
+    "shouldShowFeedbackPopup": [Function],
+  },
+  "data": [Function],
+  "methods": Object {
+    "closeDropdown": [Function],
+    "isHomePage": [Function],
+    "onFeedbackClicked": [Function],
+    "toggleDropdown": [Function],
+    "toggleSearch": [Function],
+  },
+  "name": "NavigationBar",
+  "props": Object {
+    "baseUrl": Object {
+      "type": [Function],
+    },
+    "bundleType": Object {
+      "default": "other",
+      "type": [Function],
+    },
+    "isFirstTimeInDashboard": Object {
+      "type": [Function],
+    },
+    "notificationsCount": Object {
+      "type": [Function],
+    },
+    "user": Object {
+      "type": [Function],
+    },
+  },
+  "render": [Function],
+  "staticRenderFns": Array [
+    [Function],
+  ],
+}
+`;
+
 exports[`NavigationBar.vue should render regular navbar with search input open 1`] = `
 <nav class="navbar is-search-open">
   <ul class="navbar-elementsContainer">

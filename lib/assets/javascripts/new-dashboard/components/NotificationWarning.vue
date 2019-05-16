@@ -15,7 +15,9 @@ export default {
   },
   methods: {
     close () {
-      this.$store.dispatch('user/hideUserNotification');
+      if (!this.$store) {
+        this.$store.dispatch('user/hideUserNotification');
+      }
     }
   }
 };

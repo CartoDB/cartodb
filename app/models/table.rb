@@ -993,6 +993,8 @@ class Table
   rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
       CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    elsif exception.cause.is_a?(PG::UndefinedColumn)
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised column does not exist')
     else
       raise exception
     end

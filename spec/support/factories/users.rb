@@ -55,6 +55,7 @@ module CartoDB
       user.enabled               = attributes[:enabled] == false ? false : true
       user.table_quota           = attributes[:table_quota]     if attributes[:table_quota]
       user.public_map_quota      = attributes[:public_map_quota] if attributes[:public_map_quota]
+      user.regular_api_key_quota = attributes[:regular_api_key_quota] if attributes[:regular_api_key_quota]
       user.quota_in_bytes        = attributes[:quota_in_bytes]  if attributes[:quota_in_bytes]
       user.account_type          = attributes[:account_type]    if attributes[:account_type]
       user.map_view_quota        = attributes[:map_view_quota]  if attributes.has_key?(:map_view_quota)

@@ -53,6 +53,7 @@ export default {
 }
 
 .notification__close-button {
+  display: none; // TO DO: improve notification warning behaviour
   position: absolute;
   top: 0;
   right: 24px;

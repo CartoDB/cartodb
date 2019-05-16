@@ -63,7 +63,10 @@ export default {
     user: Object,
     baseUrl: String,
     notificationsCount: Number,
-    isNotificationVisible: Boolean,
+    isNotificationVisible: {
+      type: Boolean,
+      default: false
+    },
     isFirstTimeInDashboard: Boolean,
     bundleType: {
       type: String,

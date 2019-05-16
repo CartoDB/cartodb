@@ -5,7 +5,7 @@
       :user="user"
       :baseUrl="baseUrl"
       :notificationsCount="notificationsCount"
-      :isNotificationVisible="isNotificationVisible"
+      :isNotificationVisible=isNotificationVisible
       :isFirstTimeInDashboard="isFirstTimeInDashboard"
       bundleType="dashboard"/>
     
@@ -44,7 +44,7 @@ export default {
       return this.$store.state.user;
     },
     isNotificationVisible () {
-      return this.$store.getters['user/isNotificationVisible'];
+      return !!this.$store.getters['user/isNotificationVisible'];
     },
     baseUrl () {
       return this.$store.state.user.base_url;

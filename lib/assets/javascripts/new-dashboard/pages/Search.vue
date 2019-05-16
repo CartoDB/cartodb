@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page class="page__sticky-subheader">
     <StickySubheader :is-visible="true" class="page-subheader">
       <span class="title" v-if="isFirstFetch">
         {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
@@ -46,7 +46,10 @@
         <section class="section section--datasets" ref="datasets">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasDatasets">
+              <div
+                v-if="hasDatasets"
+                class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+                :class="{ 'is-user-notification': isNotificationVisible }">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
               </div>
 
@@ -221,10 +224,6 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
-.page {
-  padding-top: 192px;
-}
-
 .section {
   position: relative;
   margin-bottom: 48px;
@@ -282,10 +281,8 @@ export default {
   top: 128px;
 }
 
-.is-user-notification {
-  .grid__head--sticky {
-    top: 128px + $notification-warning__height;
-  }
+.grid__head--sticky.is-user-notification {
+  top: 128px + $notification-warning__height;
 }
 
 .map-element {

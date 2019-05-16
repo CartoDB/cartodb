@@ -48,7 +48,11 @@
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowHeader">
+    <div
+        v-if="shouldShowHeader"
+        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+        :class="{ 'is-user-notification': isNotificationVisible }">
+
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -182,6 +186,9 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {
@@ -250,10 +257,8 @@ export default {
   top: 64px;
 }
 
-.is-user-notification {
-  .grid__head--sticky {
-    top: 64px + $notification-warning__height;
-  }
+.grid__head--sticky.is-user-notification {
+  top: 64px + $notification-warning__height;
 }
 
 .pagination-element {

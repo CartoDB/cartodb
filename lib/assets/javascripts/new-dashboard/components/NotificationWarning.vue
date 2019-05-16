@@ -26,7 +26,7 @@ export default {
 .notification {
   display: flex;
   position: fixed;
-  z-index: 10;
+  z-index: $z-index__notification-warning;
   top: 0;
   align-items: center;
   justify-content: center;

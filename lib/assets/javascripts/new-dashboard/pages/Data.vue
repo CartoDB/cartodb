@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <Page class="page__sticky-subheader">
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}

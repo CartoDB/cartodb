@@ -63,6 +63,7 @@ export default {
     user: Object,
     baseUrl: String,
     notificationsCount: Number,
+    isNotificationVisible: Boolean,
     isFirstTimeInDashboard: Boolean,
     bundleType: {
       type: String,
@@ -92,9 +93,6 @@ export default {
         !this.isFirstTimeInDashboard &&
         !this.hasDropdownOpenedForFirstTime &&
         !this.popupWasShown;
-    },
-    isNotificationVisible () {
-      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {

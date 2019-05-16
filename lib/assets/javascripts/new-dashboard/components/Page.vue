@@ -23,5 +23,17 @@ export default {
   min-height: calc(100vh - 392px);
   padding: 128px 0 120px;
   border-bottom: 1px solid $border-color;
+
+  &.is-user-notification {
+    padding-top: 128px + $notification-warning__height;
+  }
+}
+
+.page.page__sticky-subheader {
+  padding: 192px 0 120px;
+
+  &.is-user-notification {
+    padding-top: 192px + $notification-warning__height;
+  }
 }
 </style>

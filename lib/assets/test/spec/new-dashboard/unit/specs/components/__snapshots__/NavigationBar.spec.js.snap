@@ -145,7 +145,6 @@ Object {
   },
   "computed": Object {
     "isDashboardBundle": [Function],
-    "isNotificationVisible": [Function],
     "popupWasShown": [Function],
     "shouldShowFeedbackPopup": [Function],
   },
@@ -167,6 +166,9 @@ Object {
       "type": [Function],
     },
     "isFirstTimeInDashboard": Object {
+      "type": [Function],
+    },
+    "isNotificationVisible": Object {
       "type": [Function],
     },
     "notificationsCount": Object {

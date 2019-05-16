@@ -5,6 +5,7 @@
       :user="user"
       :baseUrl="baseUrl"
       :notificationsCount="notificationsCount"
+      :isNotificationVisible="isNotificationVisible"
       :isFirstTimeInDashboard="isFirstTimeInDashboard"
       bundleType="dashboard"/>
     

@@ -26,12 +26,7 @@
       application: '<%= trackjsAppKey %>',
       version: '<%= assetsVersion %>',
       userId: '<%= userName %>',
-      token: '<%= trackjsCustomer %>',
-      callback: { enabled: false },
-      console: { enabled: false, display: false },
-      network: { enabled: true },
-      window: { enabled: false },
-      visitor: { enabled: false }
+      token: '<%= trackjsCustomer %>'
     };
   </script>
 

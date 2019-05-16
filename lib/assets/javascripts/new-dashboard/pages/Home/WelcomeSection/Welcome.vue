@@ -76,7 +76,7 @@ export default {
       return freeUser.includes(this.user.account_type);
     },
     isProUser () {
-      const proUsers = ['professional-2019', 'professional-2019 LUMP-SUM'];
+      const proUsers = ['Professional', 'Annual Professional'];
       return proUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {

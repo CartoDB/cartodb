@@ -80,7 +80,7 @@ module FrontendConfigHelper
     if CartoDB.account_host.present? && show_account_update_url(user)
       config[:account_update_url] = "#{CartoDB.account_host}"\
                                     "#{CartoDB.account_path}/"\
-                                    "#{user.username}/update_payment"
+                                    "#{user.username}/plan"
     end
 
     config

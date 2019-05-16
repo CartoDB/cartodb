@@ -20,6 +20,7 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .page {
+  position: relative;
   min-height: calc(100vh - 392px);
   padding: 128px 0 120px;
   border-bottom: 1px solid $border-color;

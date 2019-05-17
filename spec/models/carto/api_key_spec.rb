@@ -342,7 +342,7 @@ describe Carto::ApiKey do
 
         it 'raises an exception when creating a regular key' do
           grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
-  
+
           expect {
             @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
           }.to raise_exception(CartoDB::QuotaExceeded, /regular API keys quota/)

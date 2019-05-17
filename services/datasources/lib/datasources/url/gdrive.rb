@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'stringio'
 require 'signet/oauth_2/client'
 require 'google/apis/drive_v2'
 require_relative '../../../../../lib/carto/http/client'
@@ -191,17 +192,28 @@ module CartoDB
         def get_resource(id)
           @drive.get_file(id) do |file, err|
             if err
-              error_msg = "(#{err.status_code}) retrieving file #{id}: #{err}"
-              raise DataDownloadError.new(error_msg, DATASOURCE_NAME)
+              if err.try(:status_code)
+                error_msg = "(#{err.status_code}) retrieving file #{id}: #{err}"
+                raise DataDownloadError.new(error_msg, DATASOURCE_NAME)
+              else
+                raise err
+              end
             end
             if file.export_links.present?
               @drive.export_file(file.id, 'text/csv', download_dest: StringIO.new) do |content, export_err|
-                raise export_err if export_err
-                return content
+                # Files larger than 10MB can't be downloaded with export_file
+                if export_err.try(:status_code) == 400
+                  return download_export(file.export_links['text/csv'])
+                else
+                  raise export_err if export_err
+
+                  return content
+                end
               end
             else
               @drive.get_file(file.id, download_dest: StringIO.new) do |content, download_err|
                 raise download_err if download_err
+
                 return content
               end
             end
@@ -309,6 +321,13 @@ module CartoDB
         end
 
         private
+
+        def download_export(export_link)
+          http_client = Carto::Http::Client.get('gdrive',
+                                                connecttimeout: 60,
+                                                timeout: 600)
+          http_client.get_stream(export_link, StringIO.new, { followlocation: true })
+        end
 
         # Formats all data to comply with our desired format
         # @param item_data Hash : Single item returned from GDrive API

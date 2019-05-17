@@ -50,25 +50,11 @@ module Carto
 
       # `options` are Typhoeus options. Example: { ssl_verifypeer: false, ssl_verifyhost: 0 }
       def get_file(url, file_path, options = {})
-        downloaded_file = File.open file_path, 'wb'
-        request = request(url, options)
-        request.on_headers do |response|
-          unless response.code == 200
-            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
-          end
+        file = File.open(file_path, 'wb')
+        get_stream(url, file) do |f|
+          f.close
         end
-        request.on_body do |chunk|
-          downloaded_file.write(chunk)
-        end
-        request.on_complete do |response|
-          unless response.success?
-            raise "Request failed. URL: #{url}. File path: #{file_path}. Code: #{response.code}. Body: #{response.body}"
-          end
-          downloaded_file.close
-        end
-        request.run
-
-        downloaded_file
+        file
       rescue => e
         CartoDB::Logger.error(
           exception: e,
@@ -76,6 +62,30 @@ module Carto
           file_path: file_path
         )
         raise e
+      end
+
+      # At stream you can pass File-like objects, such as StringIO
+      # `options` are Typhoeus options. Example: { ssl_verifypeer: false, ssl_verifyhost: 0 }
+      # Accepts a block that is called with the stream when the request is closed
+      def get_stream(url, stream, options = {})
+        request = request(url, options)
+        request.on_headers do |response|
+          unless response.code == 200
+            raise "Request failed. URL: #{url}. Code: #{response.code}. Body: #{response.body}"
+          end
+        end
+        request.on_body do |chunk|
+          stream.write(chunk)
+        end
+        request.on_complete do |response|
+          unless response.success?
+            raise "Request failed. URL: #{url}. Code: #{response.code}. Body: #{response.body}"
+          end
+          yield(stream) if block_given?
+        end
+        request.run
+
+        stream
       end
 
       private

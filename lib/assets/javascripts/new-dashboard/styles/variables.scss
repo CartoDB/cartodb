@@ -100,6 +100,10 @@ $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
 
+/* notification warning */
+
+$notification-warning__height: 60px;
+
 /* === PAGES === */
 
 /* onboarding */
@@ -121,6 +125,7 @@ $button-lockout__bg-color: $blue--900;
 
 /* === Z_INDEX === */
 $z-index__dialog: 1000;
+$z-index__notification-warning: 12;
 $z-index__navbar: 5;
 $z-index__subheader: 4;
 $z-index__dropdown: 3;

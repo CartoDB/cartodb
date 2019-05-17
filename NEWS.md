@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 
 ### Bug fixes / enhancements
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))

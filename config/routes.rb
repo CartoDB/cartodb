@@ -552,6 +552,14 @@ CartoDB::Application.routes.draw do
   UUID_REGEXP = /([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{2})([0-9a-f]{2})-([0-9a-f]{12})/
 
   scope module: 'carto/api', path: '(/user/:user_domain)(/u/:user_domain)/api/', defaults: { format: :json } do
+    scope 'v5/' do
+      # CARTOframes visualizations
+      post 'cartoframes/viz', to: 'cartoframes_visualizations#create', as: :api_v5_cartoframes_create_viz
+      delete 'cartoframes/viz', to: 'cartoframes_visualizations#delete', as: :api_v5_cartoframes_delete_viz
+      put 'cartoframes/viz', to: 'cartoframes_visualizations#update', as: :api_v5_cartoframes_update_viz
+      get 'cartoframes/viz', to: 'cartoframes_visualizations#index', as: :api_v5_cartoframes_list_vizs
+    end
+
     scope 'v4/', module: 'public' do
       # This scope is intended for public APIs that only authenticate via API Key and have CORS enabled
       match '*path', via: [:OPTIONS], to: 'application#options'

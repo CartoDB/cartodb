@@ -6,7 +6,6 @@ FactoryGirl.define do
     username "whatever"
     email "whatever@carto.com"
     crypted_password "rgjreogjorejgpovrjeg"
-    salt "ewefgrjwopjgow"
     google_sign_in false
     quota_in_bytes 10000000
     soft_twitter_datasource_limit false

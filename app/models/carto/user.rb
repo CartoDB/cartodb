@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'cartodb-common'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -142,8 +143,8 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
-    self.crypted_password = service.class.password_digest(value, salt)
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
   end
 
   def reset_password_rate_limit
@@ -521,7 +522,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && service.class.password_digest(old_password, salt) == crypted_password) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -533,24 +535,24 @@ class Carto::User < ActiveRecord::Base
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, service.class.password_digest(value, salt), key)
+    validate_password_not_in_use(nil, value, key)
 
     errors[key].empty?
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    unless different_passwords?(old_password, new_password)
+  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
+    if password_in_use?(old_password, new_password)
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
   end
 
-  def different_passwords?(old_password = nil, new_password = nil)
-    return true if new_record? || (@changing_passwords && !old_password)
-    old_password = crypted_password_was unless old_password.present?
-    new_password = crypted_password unless old_password.present? && new_password.present?
+  def password_in_use?(old_password = nil, new_password = nil)
+    return false if new_record?
+    return old_password == new_password if old_password
 
-    old_password.present? && old_password != new_password
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?
@@ -778,7 +780,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def generate_api_key
-    self.api_key ||= service.class.make_token
+    self.api_key ||= make_token
   end
 
   def generate_token(column)
@@ -792,5 +794,9 @@ class Carto::User < ActiveRecord::Base
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     orgwise = options.fetch(:orgwise, true)
     [date_from, date_to, orgwise]
+  end
+
+  def make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

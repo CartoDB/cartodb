@@ -15,8 +15,10 @@ Development
 - Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
 - Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
 - Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+- Password encryption with Argon2 [14811](https://github.com/CartoDB/cartodb/pull/14811)
 - Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
 - Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
+- Include tags in search results [CartoDB/product#243](https://github.com/CartoDB/product/issues/243)
 
 ### Bug fixes / enhancements
 - Add link to Help Center to invitation emails

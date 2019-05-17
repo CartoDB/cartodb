@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
@@ -14,6 +14,7 @@
 
     <MapsList
       ref="mapsList"
+      class="grid__content"
       :hasBulkActions="true"
       :isCondensedDefault="isCondensed"
       :canChangeViewMode="true"
@@ -24,12 +25,13 @@
       @selectionChange="updateSelected" />
 
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </section>
+  </Page>
 </template>
 
 <script>
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import { mapState } from 'vuex';
+import Page from 'new-dashboard/components/Page';
 import MapBulkActions from 'new-dashboard/components/BulkActions/MapBulkActions.vue';
 import Pagination from 'new-dashboard/components/Pagination';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
@@ -38,6 +40,7 @@ import MapsList from 'new-dashboard/components/MapsList.vue';
 export default {
   name: 'MapsPage',
   components: {
+    Page,
     MapBulkActions,
     StickySubheader,
     Pagination,
@@ -73,6 +76,9 @@ export default {
       isFetchingMaps: state => state.maps.isFetching,
       currentEntriesCount: state => state.maps.metadata.total_entries
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
@@ -121,7 +127,8 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.mapsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      return headerBoundingClientRect.top;
+      const notificationHeight = this.isNotificationVisible ? 60 : 0;
+      return headerBoundingClientRect.top - notificationHeight;
     },
     loadUserConfiguration () {
       if (localStorage.hasOwnProperty('mapViewMode')) {

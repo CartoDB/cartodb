@@ -30,6 +30,7 @@ module Carto
       return if encrypter.argon2?(candidate.crypted_password)
 
       candidate.crypted_password = encrypter.encrypt(password: password, secret: Cartodb.config[:password_secret])
+      candidate.update_in_central
       candidate.save
     end
   end

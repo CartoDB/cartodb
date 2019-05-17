@@ -190,7 +190,7 @@ export default {
   position: relative;
   height: 100%;
   transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   border-radius: 2px;
   background-clip: padding-box;
   background-color: $white;
@@ -209,7 +209,7 @@ export default {
 
     &.card--child-hover {
       .card-title {
-        color: $text-color;
+        color: $text__color;
       }
 
       .card-tags {
@@ -258,7 +258,7 @@ export default {
 
 .card-text {
   padding: 24px 16px;
-  color: $text-color;
+  color: $text__color;
 }
 
 .card-media {
@@ -346,7 +346,7 @@ export default {
   margin-bottom: 8px;
 
   a {
-    color: $text-color;
+    color: $text__color;
     text-decoration: none;
   }
 
@@ -355,7 +355,7 @@ export default {
   }
 
   a:hover {
-    color: $text-color;
+    color: $text__color;
     text-decoration: underline;
   }
 
@@ -398,7 +398,7 @@ export default {
       height: 16px;
 
       g {
-        fill: $text-color;
+        fill: $text__color;
       }
     }
   }

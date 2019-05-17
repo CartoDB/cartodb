@@ -5,8 +5,8 @@ module TrackjsHelper
       enabled = Cartodb.get_config(:trackjs, 'enabled')
       app_key = Cartodb.get_config(:trackjs, 'app_keys', app)
       version = CartoDB::Application.frontend_version
-
-      locals = { customer: customer, enabled: enabled, app_key: app_key, version: version }
+      is_embed = app == 'embeds' || app == 'builder-embeds'
+      locals = { customer: customer, enabled: enabled, app_key: app_key, version: version, is_embed: is_embed }
       render(partial: 'shared/trackjs', locals: locals)
     end
   end

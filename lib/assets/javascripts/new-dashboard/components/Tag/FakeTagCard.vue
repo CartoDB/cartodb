@@ -19,7 +19,7 @@ export default {
   position: relative;
   height: 100%;
   padding: 16px;
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   background-color: $white;
 }
 

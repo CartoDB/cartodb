@@ -993,6 +993,8 @@ class Table
   rescue StandardError => exception
     if exception.message =~ /canceling statement due to statement timeout/i
       CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised statement timeout')
+    elsif exception.cause.is_a?(PG::UndefinedColumn)
+      CartoDB::Logger.info(exception: exception, message: 'Analyze in import raised column does not exist')
     else
       raise exception
     end
@@ -1140,16 +1142,20 @@ class Table
       size_calc = is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
                                     : "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"') / 2"
 
-      data = owner.in_database.fetch(%Q{
+      data = owner.in_database.fetch(
+        %{
             SELECT
               #{size_calc} AS size,
               reltuples::integer AS row_count
             FROM pg_class
+            JOIN pg_catalog.pg_namespace n on n.oid = pg_class.relnamespace
             WHERE relname = ?
+            AND n.nspname = ?
           },
-          owner.database_schema,
-          name
-        ).first
+        owner.database_schema,
+        name,
+        database_schema
+      ).first
     rescue => exception
       data = nil
       # INFO: we don't want code to fail because of SQL error

@@ -169,6 +169,7 @@ Object {
       "type": [Function],
     },
     "isNotificationVisible": Object {
+      "default": false,
       "type": [Function],
     },
     "notificationsCount": Object {

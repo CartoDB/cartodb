@@ -24,12 +24,6 @@ module CartoDB
       public_map_count >= user.public_map_quota
     end
 
-    def over_public_map_quota?
-      return false unless user.public_map_quota
-
-      public_map_count > user.public_map_quota
-    end
-
     private
 
     def public_map_count

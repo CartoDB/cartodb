@@ -36,7 +36,7 @@ import { getAssetsBaseUrl } from 'new-dashboard/utils/assets-version';
 
 export default {
   name: 'Step6',
-  stepName: 'Final',
+  stepName: 'Download',
   components: {
     StepTitle,
     TutorialCard,

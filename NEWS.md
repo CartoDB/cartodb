@@ -20,7 +20,7 @@ Development
 - Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
 - Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
 - Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
-- Filter TrackJS errors ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
+- Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
 - Minor copy edit in final step of Builder Onboarding
 
 4.26.1 (2019-05-06)

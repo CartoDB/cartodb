@@ -147,7 +147,9 @@ export default {
       return this.$store.getters['user/canCreateDatasets'];
     },
     pageTitle () {
-      return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+      return this.selectedDatasets.length
+        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
+        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -254,7 +256,7 @@ export default {
 
 .dataset-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 

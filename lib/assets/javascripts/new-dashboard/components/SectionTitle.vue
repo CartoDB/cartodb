@@ -60,7 +60,7 @@ export default {
 .head-sectionTitle {
   display: flex;
   align-items: center;
-  color: $text-color;
+  color: $text__color;
   font: 700 24px/1.6 'Montserrat';
 
   .icon {
@@ -70,11 +70,11 @@ export default {
 }
 
 .head-sectionDescription {
-  color: $text-color;
+  color: $text__color;
   font: 400 16px/1.6 'Open Sans';
 
   a {
-    color: $text-color;
+    color: $text__color;
     text-decoration: none;
   }
 

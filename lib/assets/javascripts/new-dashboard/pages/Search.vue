@@ -55,7 +55,7 @@
                   <DatasetCard :dataset=dataset :canHover=false storeActionType="search"></DatasetCard>
                 </li>
 
-                <div class="is-caption text" v-if="!hasDatasets">
+                <div class="is-caption text data--empty" v-if="!hasDatasets">
                   {{ $t('SearchPage.emptyText.datasets') }}
                 </div>
               </ul>
@@ -73,6 +73,32 @@
               :numPages=datasetsNumPages
               @pageChange="page => onPageChange('datasets', page)"></Pagination>
         </section>
+
+        <section class="section section--tags" ref="tags" v-if="isTermSearch">
+          <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.tags') }}</div>
+            <ul class="grid" v-if="!isFetchingTags">
+              <li v-for="(tag, n) in tags" :key="n" class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+               <TagCard :tag=tag :condensed="true"></TagCard>
+              </li>
+               <li class="grid-cell">
+                <div class="is-caption text" v-if="!hasTags">
+                  {{ $t('SearchPage.emptyText.tags') }}
+                </div>
+              </li>
+            </ul>
+
+            <ul class="grid" v-if="isFetchingTags">
+              <li v-for="n in 6" :key="n" class="search-item--tag grid-cell grid-cell--col4 grid-cell--col6--tablet grid-cell--col12--mobile">
+                <FakeTagCard></FakeTagCard>
+              </li>
+            </ul>
+          <Pagination
+            class="pagination-element"
+            v-if="hasTags && tagsNumPages > 1"
+            :page=tagsPage
+            :numPages=tagsNumPages
+            @pageChange="page => onPageChange('tags', page)"></Pagination>
+        </section>
       </div>
     </div>
 
@@ -87,6 +113,8 @@ import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCard from 'new-dashboard/components/Dataset/DatasetCard';
 import DatasetCardFake from 'new-dashboard/components/Dataset/DatasetCardFake';
+import TagCard from 'new-dashboard/components/Tag/TagCard';
+import FakeTagCard from 'new-dashboard/components/Tag/FakeTagCard';
 import Pagination from 'new-dashboard/components/Pagination';
 import updateSearchParams from 'new-dashboard/router/hooks/update-search-params';
 import { mapState } from 'vuex';
@@ -103,13 +131,15 @@ export default {
     MapCard,
     MapCardFake,
     Pagination,
-    StickySubheader
+    StickySubheader,
+    TagCard,
+    FakeTagCard
   },
   beforeRouteUpdate (to, from, next) {
     this.$store.dispatch('search/resetState');
     this.isFirstFetch = true;
 
-    updateSearchParams(to, from, next);
+    this.updateSearchParams(to, from, next);
   },
   beforeRouteLeave (to, from, next) {
     this.$store.dispatch('search/resetState');
@@ -132,7 +162,13 @@ export default {
       datasetsPage: state => state.search.datasets.page,
       datasetsNumPages: state => state.search.datasets.numPages,
       isFetchingDatasets: state => state.search.datasets.isFetching,
-      totalResults: state => state.search.maps.numResults + state.search.datasets.numResults
+      tags: state => state.search.tags.results,
+      tagsPage: state => state.search.tags.page,
+      tagsNumPages: state => state.search.tags.numPages,
+      isFetchingTags: state => state.search.tags.isFetching,
+      totalResults: state => state.search.maps.numResults +
+                             state.search.datasets.numResults +
+                             state.search.tags.numResults
     }),
     hasMaps () {
       return Object.keys(this.maps || {}).length;
@@ -140,8 +176,14 @@ export default {
     hasDatasets () {
       return Object.keys(this.datasets || {}).length;
     },
+    hasTags () {
+      return (this.tags || []).length;
+    },
     allSectionsFetching () {
-      return this.isFetchingMaps || this.isFetchingDatasets;
+      return this.isFetchingMaps || this.isFetchingDatasets || this.isFetchingTags;
+    },
+    isTermSearch () {
+      return this.searchTerm;
     }
   },
   methods: {
@@ -161,7 +203,8 @@ export default {
       }
 
       window.scrollBy({ top: sectionBoundingClientRect.top - offsetDistance, behavior: 'smooth' });
-    }
+    },
+    updateSearchParams
   },
   watch: {
     allSectionsFetching (newValue) {
@@ -192,6 +235,14 @@ export default {
 
   &--datasets {
     z-index: $z-index__stack-context--second;
+  }
+
+  &--tags {
+    z-index: $z-index__stack-context--third;
+
+    .search-item--tag {
+      margin-bottom: 24px;
+    }
   }
 
   &.has-pagination,
@@ -239,11 +290,12 @@ export default {
 
 .search-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 
-.maps--empty {
-  margin-bottom: 128px;
+.maps--empty,
+.data--empty {
+  margin-bottom: 64px;
 }
 </style>

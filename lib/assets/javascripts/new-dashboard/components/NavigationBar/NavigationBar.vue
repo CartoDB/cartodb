@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': isNotificationVisible }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -63,6 +63,10 @@ export default {
     user: Object,
     baseUrl: String,
     notificationsCount: Number,
+    isNotificationVisible: {
+      type: Boolean,
+      default: false
+    },
     isFirstTimeInDashboard: Boolean,
     bundleType: {
       type: String,
@@ -218,7 +222,7 @@ export default {
   margin-left: 24px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $text-color-light;
+  background-color: $navbar-avatar__bg-color;
   background-size: cover;
 
   &.has-notification {
@@ -231,7 +235,7 @@ export default {
       height: 12px;
       border: 2px solid $primary-color;
       border-radius: 50%;
-      background-color: $notification;
+      background-color: $notification__bg-color;
     }
   }
 
@@ -266,6 +270,10 @@ export default {
     position: absolute;
     right: 16px;
   }
+}
+
+.navbar.is-user-notification {
+  margin-top: $notification-warning__height;
 }
 
 .feedback-popup {

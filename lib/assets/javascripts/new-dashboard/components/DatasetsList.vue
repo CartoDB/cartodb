@@ -48,7 +48,11 @@
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="shouldShowHeader">
+    <div
+        v-if="shouldShowHeader"
+        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+        :class="{ 'is-user-notification': isNotificationVisible }">
+
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -147,7 +151,9 @@ export default {
       return this.$store.getters['user/canCreateDatasets'];
     },
     pageTitle () {
-      return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+      return this.selectedDatasets.length
+        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
+        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -180,6 +186,9 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {
@@ -248,13 +257,17 @@ export default {
   top: 64px;
 }
 
+.grid__head--sticky.is-user-notification {
+  top: 64px + $notification-warning__height;
+}
+
 .pagination-element {
   margin-top: 64px;
 }
 
 .dataset-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 

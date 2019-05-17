@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page class="page__sticky-subheader">
     <StickySubheader :is-visible="true" class="page-subheader">
       <span class="title" v-if="isFirstFetch">
         {{ $t('SearchPage.title.allFetching', { query: searchTerm || tag }) }}
@@ -11,7 +11,7 @@
       <span class="title" v-else-if="tag">{{ $tc('SearchPage.title.tag', totalResults, { query: tag }) }}</span>
     </StickySubheader>
 
-    <div class="container grid">
+    <div class="container grid grid__content">
       <div class="full-width">
         <section class="section section--maps" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
@@ -46,7 +46,10 @@
         <section class="section section--datasets" ref="datasets">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasDatasets">
+              <div
+                v-if="hasDatasets"
+                class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+                :class="{ 'is-user-notification': isNotificationVisible }">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
               </div>
 
@@ -102,10 +105,11 @@
       </div>
     </div>
 
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import StickySubheader from 'new-dashboard/components/StickySubheader';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
@@ -124,6 +128,7 @@ const TWO_HEADERS_HEIGHT = 128;
 export default {
   name: 'SearchPage',
   components: {
+    Page,
     CondensedMapHeader,
     DatasetCard,
     DatasetCardFake,
@@ -219,10 +224,6 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
-.page {
-  padding-top: 192px;
-}
-
 .section {
   position: relative;
   margin-bottom: 48px;
@@ -280,6 +281,10 @@ export default {
   top: 128px;
 }
 
+.grid__head--sticky.is-user-notification {
+  top: 128px + $notification-warning__height;
+}
+
 .map-element {
   margin-bottom: 36px;
 }
@@ -290,7 +295,7 @@ export default {
 
 .search-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 

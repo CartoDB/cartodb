@@ -63,7 +63,7 @@ export default {
   }
 
   &:first-of-type {
-    border-top: 1px solid $grey;
+    border-top: 1px solid $border-color--dark;
   }
 
   &::after {

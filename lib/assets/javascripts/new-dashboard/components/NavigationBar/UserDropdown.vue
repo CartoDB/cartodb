@@ -195,6 +195,6 @@ export default {
   margin-top: 2px;
   margin-left: 24px;
   border-radius: 50%;
-  background-color: $notification;
+  background-color: $notification__bg-color;
 }
 </style>

@@ -2678,7 +2678,7 @@ describe Carto::Api::VisualizationsController do
         last_response.status.should == 200
       end
 
-      it 'returns a 400 response when making a map public without enough quota' do
+      it 'returns a 403 response when making a map public without enough quota' do
         @carto_user1.private_maps_enabled = true
         @carto_user1.public_map_quota = 0
         @carto_user1.save
@@ -2690,7 +2690,7 @@ describe Carto::Api::VisualizationsController do
             { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
             @headers
 
-        last_response.status.should == 400
+        last_response.status.should == 403
         last_response.body.should =~ /public map quota/
       end
     end

@@ -23,6 +23,7 @@ Development
 - Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
 - Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
 - Minor copy edit in final step of Builder Onboarding
+- New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
 
 
 4.26.1 (2019-05-06)

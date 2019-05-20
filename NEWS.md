@@ -5,15 +5,25 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 
 ### Bug fixes / enhancements
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
+- Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
 - Sanitize profile form inputs
 - Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
 - Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
 - Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
+- Adds organization appearance to forget link URL ([CartoDB/cartodb#14875](https://github.com/CartoDB/cartodb/issues/14875))
+- Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
+- Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
+- Updates `odbc_fdw` extension to version `0.4.0` [#14885](https://github.com/CartoDB/cartodb/pull/14885)
+- Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
+- Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
+- Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
+- Minor copy edit in final step of Builder Onboarding
+
 
 4.26.1 (2019-05-06)
 -------------------

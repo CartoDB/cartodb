@@ -4,7 +4,7 @@ module FrontendConfigHelper
   include AvatarHelper
   include FullstoryHelper
 
-  UPGRADE_LINK_ACCOUNT = 'Professional'.freeze
+  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'professional'].freeze
 
   def frontend_config_hash(user = current_user)
     config = {
@@ -91,6 +91,6 @@ module FrontendConfigHelper
   end
 
   def show_account_update_url(user)
-    user && user.account_type.casecmp(UPGRADE_LINK_ACCOUNT).zero?
+    user && UPGRADE_LINK_ACCOUNTS.include?(user.account_type.downcase)
   end
 end

@@ -57,7 +57,7 @@ export default {
       }
 
       if (this.isInTrial()) {
-        return '30day';
+        return 'trial';
       }
 
       if (this.isFreeUser()) {

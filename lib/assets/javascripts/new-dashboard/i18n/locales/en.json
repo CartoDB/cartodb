@@ -208,7 +208,7 @@
         "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
-          "30day": "Remember that you're currently on the 30-day personal trial.",
+          "trial": "Remember that you're currently on the professional trial.",
           "pro": "Remember that you're currently on the Professional plan.",
           "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
           "organizationUser": "Remember that you're currently a member of the {organizationName} organization.",

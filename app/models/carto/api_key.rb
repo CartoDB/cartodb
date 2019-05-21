@@ -111,7 +111,7 @@ module Carto
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
     scope :user_visible, -> { where(type: [TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_REGULAR]) }
-    scope :by_type, ->(types) { types.blank? ? user_visible : where(:type => types) }
+    scope :by_type, ->(types) { types.blank? ? user_visible : where(type: types) }
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
     attr_accessor :skip_role_setup

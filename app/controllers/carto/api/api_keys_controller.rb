@@ -19,7 +19,9 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
   VALID_ORDER_PARAMS = [:type, :name, :updated_at].freeze
-  VALID_TYPE_PARAMS = [Carto::ApiKey::TYPE_MASTER, Carto::ApiKey::TYPE_DEFAULT_PUBLIC, Carto::ApiKey::TYPE_REGULAR].freeze
+  VALID_TYPE_PARAMS = [Carto::ApiKey::TYPE_MASTER,
+                       Carto::ApiKey::TYPE_DEFAULT_PUBLIC,
+                       Carto::ApiKey::TYPE_REGULAR].freeze
 
   def create
     carto_viewer = Carto::User.find(current_viewer.id)

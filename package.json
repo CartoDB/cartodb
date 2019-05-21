@@ -1,10 +1,6 @@
 {
   "name": "cartodb-ui",
-<<<<<<< HEAD
   "version": "1.0.0-assets.96-welcome-5",
-=======
-  "version": "1.0.0-assets.95-welcome-4",
->>>>>>> Update package.json version
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

@@ -1,32 +1,12 @@
 # encoding: utf-8
 
 require_dependency 'carto/storage'
-require_relative '../cartodb/image_metadata'
+require 'carto/assets/assets_service'
+require_relative '../../cartodb/image_metadata'
 
 module Carto
-  class AssetsService
+  class ImageAssetsService < AssetsService
     VALID_EXTENSIONS = %w{.jpeg .jpg .gif .png .svg}.freeze
-
-    # resource can be anything accepted by OpenURI#open as a parameter
-    def upload(namespace, resource)
-      file = fetch_file(resource)
-      storage = Storage.instance.for(location)
-      identifier, url = storage.upload(namespace, file)
-
-      storage_info = {
-        type: storage.class.name.demodulize.downcase,
-        location: location,
-        identifier: identifier
-      }
-
-      [storage_info, url]
-    end
-
-    def remove(storage_info)
-      Storage.instance
-             .for(storage_info[:location], preferred_type: storage_info[:type])
-             .remove(storage_info[:identifier])
-    end
 
     def fetch_file(resource)
       extension = resource_extension(resource)

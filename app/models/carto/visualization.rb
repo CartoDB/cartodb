@@ -38,8 +38,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
+  TYPE_KUVIZ = 'kuviz'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze

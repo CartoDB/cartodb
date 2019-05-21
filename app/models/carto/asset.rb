@@ -1,19 +1,22 @@
 # encoding: utf-8
 
-require_dependency 'carto/assets_service'
-require_dependency 'carto/organization_assets_service'
+require_dependency 'carto/assets/image_assets_service'
+require_dependency 'carto/assets/organization_image_assets_service'
+require_dependency 'carto/assets/visualization_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
     belongs_to :user, class_name: Carto::User
     belongs_to :organization, class_name: Carto::Organization
+    belongs_to :visualization, class_name: Carto::Visualization
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
 
-    validates :user,         presence: true, unless: :organization
-    validates :organization, presence: true, unless: :user
-    validates :storage_info, presence: true, if: :organization
+    validates :user,         presence: true, unless: [:organization, :visualization]
+    validates :organization, presence: true, unless: [:user, :visualization]
+    validates :visualization, presence: true, unless: [:user, :organization]
+    validates :storage_info, presence: true, if: [:organization, :visualization]
     validates :public_url,   presence: true
 
     validate :validate_storage_info, if: :storage_info
@@ -27,6 +30,15 @@ module Carto
           public_url: url,
           storage_info: storage_info,
           kind: 'organization_asset')
+    end
+
+    def self.for_visualization(visualization:, resource:)
+      storage_info, url = VisualizationAssetsService.instance.upload(visualization, resource)
+
+      new(visualization: visualization,
+          public_url: url,
+          storage_info: storage_info,
+          kind: 'kuviz_asset')
     end
 
     def absolute_public_url
@@ -51,6 +63,9 @@ module Carto
     end
 
     def base_domain
+      if visualization.present?
+        return CartoDB.base_domain_from_name(visualization.user.subdomain)
+      end
       CartoDB.base_domain_from_name(user ? user.subdomain : organization.name)
     end
   end

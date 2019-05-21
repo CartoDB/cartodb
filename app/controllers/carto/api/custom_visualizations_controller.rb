@@ -15,7 +15,6 @@ class Carto::Api::CustomVisualizationsController < ::Api::ApplicationController
     kuviz = create_visualization_metadata(user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
-    debugger
     asset.save
 
     render_jsonp(Carto::Api::AssetPresenter.new(asset).to_hash,200)

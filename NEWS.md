@@ -16,6 +16,7 @@ Development
 - Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
 - Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
 - Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
+- Rake task to remove password salt [#14834](https://github.com/CartoDB/cartodb/pull/14834)
 - Adds organization appearance to forget link URL ([CartoDB/cartodb#14875](https://github.com/CartoDB/cartodb/issues/14875))
 - Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
 - Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))

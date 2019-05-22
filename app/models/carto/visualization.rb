@@ -759,9 +759,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    return unless privacy_changed?
+    return unless privacy_changed? && derived?
 
-    if derived? && is_privacy_private? && !user.try(:private_maps_enabled?)
+    if is_privacy_private? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
     elsif privacy_was == Carto::Visualization::PRIVACY_PRIVATE &&
           CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?

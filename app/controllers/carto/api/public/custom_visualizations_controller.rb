@@ -1,10 +1,9 @@
-class Carto::Api::CustomVisualizationsController < ::Api::ApplicationController
+class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::ApplicationController
   CONTENT_LENGTH_LIMIT_IN_BYTES = 20000
 
-  ssl_required :index, :create, :update, :delete
+  ssl_required
 
   before_action :validate_input_data, only: [:create, :update]
-  before_action :api_authorization_required
 
   def index
     head 501
@@ -43,19 +42,32 @@ class Carto::Api::CustomVisualizationsController < ::Api::ApplicationController
   def validate_input_data
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
       return render_jsonp({error: 'visualization over the size limit'}, 400)
-    elsif params[:data].present?
-      return render_jsonp({error: 'not a valid visualization parameter'}, 400) unless html_param?
+    elsif !params[:data].present?
+      return render_jsonp({error: 'missing data parameter'}, 400)
+    elsif !params[:name].present?
+      return render_jsonp({error: 'missing name parameter'}, 400)
     end
 
-    return render_jsonp({error: 'missing data parameter'}, 400) unless params[:data].present?
-    return render_jsonp({error: 'missing name parameter'}, 400) unless params[:name].present?
+    if params[:data].present?
+      return render_jsonp({error: 'data parameter must be encoded in base64'}, 400) unless base64?(params[:data])
+      return render_jsonp({error: 'data parameter must be HTML'}, 400) unless html_param?(params[:data])
+    end
   end
 
-  def html_param?
+  def base64?(data)
+    begin
+      Base64.strict_decode64(params[:data])
+      true
+    rescue ArgumentError
+      false
+    end
+  end
+
+  def html_param?(data)
     # FIXME this is a very naive implementantion. I'm trying to use
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
-    Base64.decode64(params[:data]).match(/\<html.*\>/).present?
+    Base64.strict_decode64(params[:data]).match(/\<html.*\>/).present?
   end
 
 end

@@ -23,7 +23,7 @@ module CartoDB
 
       public_map_count >= user.public_map_quota
     end
-      
+
     def will_be_over_regular_api_key_quota?
       return false unless user.regular_api_key_quota
 

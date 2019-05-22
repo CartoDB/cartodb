@@ -16,7 +16,7 @@ module Carto
     validates :user,         presence: true, unless: [:organization, :visualization]
     validates :organization, presence: true, unless: [:user, :visualization]
     validates :visualization, presence: true, unless: [:user, :organization]
-    validates :storage_info, presence: true, if: [:organization, :visualization]
+    validates :storage_info, presence: true, if: -> { organization.present? || visualization.present? }
     validates :public_url,   presence: true
 
     validate :validate_storage_info, if: :storage_info

@@ -60,29 +60,29 @@ describe Carto::Api::Public::CustomVisualizationsController do
   describe '#create' do
     it 'rejects if name parameter is not send in the request' do
       string_base64 = Base64.encode64('test string non-html')
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: string_base64, name: nil } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: string_base64, name: nil do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing name parameter')
       end
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: string_base64 } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: string_base64 do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing name parameter')
       end
     end
 
     it 'rejects if data parameter is not send in the request' do
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: nil, name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: nil, name: 'test' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing data parameter')
       end
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), name: 'test' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing data parameter')
       end
     end
 
     it 'rejects if data parameter is not encoded in base64' do
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: 'non-base64 test', name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: 'non-base64 test', name: 'test' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be encoded in base64')
       end
@@ -90,12 +90,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
     it 'rejects non html content' do
       string_base64 = Base64.strict_encode64('test string non-html')
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: string_base64, name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: string_base64, name: 'test' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be HTML')
       end
       pixel_base64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: pixel_base64, name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: pixel_base64, name: 'test' do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be HTML')
       end
@@ -103,7 +103,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
     it 'store html content' do
       html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
-      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: html_base64, name: 'test' } do |response|
+      post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: html_base64, name: 'test' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:visualization]).present?.should be true
         expect(response.body[:url]).present?.should be true

@@ -76,6 +76,7 @@ describe Carto::Asset do
       asset.valid?.should be_false
       asset.errors[:user].should_not be_empty
       asset.errors[:organization].should_not be_empty
+      asset.errors[:visualization].should_not be_empty
     end
 
     it 'requires a public url' do

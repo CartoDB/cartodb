@@ -17,6 +17,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+  rescue_from Carto::CartoError, with: :rescue_from_carto_error
 
   VALID_ORDER_PARAMS = [:type, :name, :updated_at].freeze
 
@@ -26,6 +27,8 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
+  rescue CartoDB::QuotaExceeded => e
+    raise Carto::CartoError.new(e.message, 403)
   end
 
   def destroy

@@ -30,15 +30,15 @@ module Carto
     end
 
     def fetch_file(resource)
-      raise NotImplementedError("This method should be implemented by children classes")
+      raise NotImplementedError.new("This method should be implemented by children classes")
     end
 
     def location
-      raise NotImplementedError("This method should be implemented by children classes")
+      raise NotImplementedError.new("This method should be implemented by children classes")
     end
 
     def max_size_in_bytes
-      raise NotImplementedError("This method should be implemented by children classes")
+      raise NotImplementedError.new("This method should be implemented by children classes")
     end
 
     def resource_extension(resource)

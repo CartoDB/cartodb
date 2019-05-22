@@ -57,7 +57,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def base64?(data)
     begin
-      Base64.strict_decode64(params[:data])
+      Base64.strict_decode64(data)
       true
     rescue ArgumentError
       false
@@ -68,7 +68,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     # FIXME this is a very naive implementantion. I'm trying to use
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
-    Base64.strict_decode64(params[:data]).match(/\<html.*\>/).present?
+    Base64.strict_decode64(data).match(/\<html.*\>/).present?
   end
 
 end

@@ -16,7 +16,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(user,kuviz,asset).to_hash,200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(user,kuviz,asset).to_hash, 200)
   end
 
   def update
@@ -42,26 +42,24 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def validate_input_data
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
-      return render_jsonp({error: 'visualization over the size limit'}, 400)
+      return render_jsonp({ error: 'visualization over the size limit' }, 400)
     elsif !params[:data].present?
-      return render_jsonp({error: 'missing data parameter'}, 400)
+      return render_jsonp({ error: 'missing data parameter' }, 400)
     elsif !params[:name].present?
-      return render_jsonp({error: 'missing name parameter'}, 400)
+      return render_jsonp({ error: 'missing name parameter' }, 400)
     end
 
     if params[:data].present?
-      return render_jsonp({error: 'data parameter must be encoded in base64'}, 400) unless base64?(params[:data])
-      return render_jsonp({error: 'data parameter must be HTML'}, 400) unless html_param?(params[:data])
+      return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400) unless base64?(params[:data])
+      return render_jsonp({ error: 'data parameter must be HTML' }, 400) unless html_param?(params[:data])
     end
   end
 
   def base64?(data)
-    begin
-      Base64.strict_decode64(data)
-      true
-    rescue ArgumentError
-      false
-    end
+    Base64.strict_decode64(data)
+    true
+  rescue ArgumentError
+    false
   end
 
   def html_param?(data)

@@ -25,7 +25,7 @@ describe Carto::VisualizationAssetsService do
 
     it 'uploads file and stores in the local system' do
       visualization = FactoryGirl.create(:carto_visualization)
-      storage_info, url = Carto::VisualizationAssetsService.instance.upload(visualization,StringIO.new('test'))
+      storage_info, url = Carto::VisualizationAssetsService.instance.upload(visualization, StringIO.new('test'))
       storage_info.present?.should be true
       url.present?.should be true
     end

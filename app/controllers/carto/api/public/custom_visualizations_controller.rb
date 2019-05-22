@@ -16,7 +16,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::AssetPresenter.new(asset).to_hash,200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(user,kuviz,asset).to_hash,200)
   end
 
   def update
@@ -33,6 +33,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz = Carto::Visualization.new
     kuviz.name = params[:name]
     kuviz.privacy = params[:password].present? ? Carto::Visualization::PRIVACY_PROTECTED : Carto::Visualization::PRIVACY_PUBLIC
+    kuviz.password = params[:password]
     kuviz.type = Carto::Visualization::TYPE_KUVIZ
     kuviz.user = user
     kuviz.save

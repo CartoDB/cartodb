@@ -105,6 +105,8 @@ describe Carto::Api::Public::CustomVisualizationsController do
       html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
       post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), { data: html_base64, name: 'test' } do |response|
         expect(response.status).to eq(200)
+        expect(response.body[:visualization]).present?.should be true
+        expect(response.body[:url]).present?.should be true
       end
     end
   end

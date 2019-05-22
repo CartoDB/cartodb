@@ -23,6 +23,12 @@ module CartoDB
 
       public_map_count >= user.public_map_quota
     end
+      
+    def will_be_over_regular_api_key_quota?
+      return false unless user.regular_api_key_quota
+
+      regular_api_key_count >= user.regular_api_key_quota
+    end
 
     private
 
@@ -38,6 +44,10 @@ module CartoDB
                       with_type(Carto::Visualization::TYPE_DERIVED).
                       with_privacy(not_private)
       query_builder.build.count
+    end
+
+    def regular_api_key_count
+      user.api_keys.select { |api_key| api_key.type == Carto::ApiKey::TYPE_REGULAR }.count
     end
 
     attr_reader :user

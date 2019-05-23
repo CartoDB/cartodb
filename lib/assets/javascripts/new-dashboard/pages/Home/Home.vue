@@ -1,5 +1,5 @@
 <template>
-  <section class="page page--welcome">
+  <Page class="page--welcome">
     <Welcome />
     <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
     <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
@@ -8,7 +8,7 @@
     <QuotaSection></QuotaSection>
 
     <router-view name="onboarding-modal"/>
-  </section>
+  </Page>
 </template>
 
 <script>
@@ -18,6 +18,7 @@ import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
+import Page from 'new-dashboard/components/Page';
 
 export default {
   name: 'Home',
@@ -27,7 +28,8 @@ export default {
     RecentSection,
     MapsSection,
     DatasetsSection,
-    QuotaSection
+    QuotaSection,
+    Page
   },
   beforeMount () {
     this.$store.dispatch('recentContent/fetch');
@@ -74,7 +76,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.page {
+.page.page {
   &--welcome {
     padding: 64px 0 0;
   }

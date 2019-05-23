@@ -1,11 +1,15 @@
 <template>
   <div id="app">
+
     <NavigationBar
       :user="user"
       :baseUrl="baseUrl"
       :notificationsCount="notificationsCount"
+      :isNotificationVisible=isNotificationVisible
       :isFirstTimeInDashboard="isFirstTimeInDashboard"
       bundleType="dashboard"/>
+    
+    <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
 
     <router-view/>
 
@@ -17,6 +21,7 @@
 
 <script>
 import NavigationBar from 'new-dashboard/components/NavigationBar/NavigationBar';
+import NotificationWarning from 'new-dashboard/components/NotificationWarning';
 import Footer from 'new-dashboard/components/Footer';
 import BackgroundPollingView from './components/Backbone/BackgroundPollingView.vue';
 import MamufasImportView from './components/Backbone/MamufasImportView.vue';
@@ -26,6 +31,7 @@ export default {
   name: 'App',
   components: {
     NavigationBar,
+    NotificationWarning,
     BackgroundPollingView,
     Footer,
     MamufasImportView
@@ -36,6 +42,9 @@ export default {
   computed: {
     user () {
       return this.$store.state.user;
+    },
+    isNotificationVisible () {
+      return !!this.$store.getters['user/isNotificationVisible'];
     },
     baseUrl () {
       return this.$store.state.user.base_url;
@@ -75,4 +84,5 @@ export default {
 * {
   box-sizing: border-box;
 }
+
 </style>

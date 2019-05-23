@@ -1,5 +1,5 @@
 <template>
-  <section class="page">
+  <Page>
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -13,6 +13,7 @@
 
     <DatasetsList
       ref="datasetsList"
+      class="grid__content"
       :hasBulkActions="true"
       :canHoverCard="true"
       :maxVisibleDatasets="maxVisibleDatasets"
@@ -20,13 +21,14 @@
       @applyOrder="applyOrder"
       @selectionChange="updateSelected" />
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </section>
+  </Page>
 </template>
 
 <script>
 
 import { mapState } from 'vuex';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import Page from 'new-dashboard/components/Page';
 import Pagination from 'new-dashboard/components/Pagination';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
@@ -37,6 +39,7 @@ export default {
   components: {
     DatasetBulkActions,
     StickySubheader,
+    Page,
     Pagination,
     DatasetsList
   },
@@ -66,6 +69,9 @@ export default {
       isFetchingDatasets: state => state.datasets.isFetching,
       numResults: state => state.datasets.metadata.total_entries
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
@@ -115,7 +121,8 @@ export default {
     getHeaderBottomPageOffset () {
       const headerContainer = this.$refs.datasetsList.getHeaderContainer();
       const headerBoundingClientRect = headerContainer.$el.getBoundingClientRect();
-      return headerBoundingClientRect.top;
+      const notificationHeight = this.isNotificationVisible ? 60 : 0;
+      return headerBoundingClientRect.top - notificationHeight;
     }
   }
 };

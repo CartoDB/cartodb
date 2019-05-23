@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Search.vue Rendering should render empty state correctly 1`] = `
-<section class="page">
+<page-stub class="page__sticky-subheader">
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
-  <div class="container grid">
+  <div class="container grid grid__content">
     <div class="full-width">
       <section class="section section--maps">
         <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
@@ -45,15 +45,15 @@ exports[`Search.vue Rendering should render empty state correctly 1`] = `
       </section>
     </div>
   </div>
-</section>
+</page-stub>
 `;
 
 exports[`Search.vue Rendering should render fetching state correctly 1`] = `
-<section class="page">
+<page-stub class="page__sticky-subheader">
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">
       SearchPage.title.allFetching
       <span class="loading"><img svg-inline="" src="../assets/icons/common/loading.svg" class="loading__svg"></span></span></stickysubheader-stub>
-  <div class="container grid">
+  <div class="container grid grid__content">
     <div class="full-width">
       <section class="section section--maps">
         <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
@@ -138,13 +138,13 @@ exports[`Search.vue Rendering should render fetching state correctly 1`] = `
       </section>
     </div>
   </div>
-</section>
+</page-stub>
 `;
 
 exports[`Search.vue Rendering should render search results correctly 1`] = `
-<section class="page">
+<page-stub class="page__sticky-subheader">
   <stickysubheader-stub isvisible="true" class="page-subheader"><span class="title">SearchPage.title.searchTerm</span></stickysubheader-stub>
-  <div class="container grid">
+  <div class="container grid grid__content">
     <div class="full-width">
       <section class="section section--maps has-pagination">
         <div class="section__title grid-cell title is-medium">SearchPage.sections.maps</div>
@@ -198,5 +198,5 @@ exports[`Search.vue Rendering should render search results correctly 1`] = `
       </section>
     </div>
   </div>
-</section>
+</page-stub>
 `;

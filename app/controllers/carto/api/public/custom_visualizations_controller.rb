@@ -50,23 +50,20 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     end
 
     if params[:data].present?
-      return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400) unless base64?(params[:data])
-      return render_jsonp({ error: 'data parameter must be HTML' }, 400) unless html_param?(params[:data])
+      begin
+        decoded_data = Base64.strict_decode64(params[:data])
+        return render_jsonp({ error: 'data parameter must be HTML' }, 400) unless html_param?(decoded_data)
+      rescue ArgumentError
+        return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
+      end
     end
-  end
-
-  def base64?(data)
-    Base64.strict_decode64(data)
-    true
-  rescue ArgumentError
-    false
   end
 
   def html_param?(data)
     # FIXME this is a very naive implementantion. I'm trying to use
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
-    Base64.strict_decode64(data).match(/\<html.*\>/).present?
+    data.match(/\<html.*\>/).present?
   end
 
 end

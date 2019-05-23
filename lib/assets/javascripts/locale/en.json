@@ -3,8 +3,8 @@
     "trial_notification": {
       "views": {
         "trial_notification": {
-          "message": "You're currently under your %{trial_days}-day Trial Period. Add your billing info to keep using our platform.",
-          "add_payment": "Add payment method"
+          "message": "<strong>%{trial_days} days left in your Trial Period.</strong> Subscribe now to keep using our platform.",
+          "add_payment": "Subscribe Now"
         }
       }
     }

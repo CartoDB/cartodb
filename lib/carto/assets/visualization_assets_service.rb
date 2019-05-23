@@ -9,6 +9,7 @@ module Carto
     include Singleton
 
     EXTENSION = ".html".freeze
+    DEFAULT_MAX_SIZE_IN_BYTES = 1048576
 
     def upload(visualization, resource)
       super(visualization.id, resource)
@@ -43,7 +44,7 @@ module Carto
 
       configured = Cartodb.get_config(:assets, 'visualization', 'max_size_in_bytes')
 
-      @max_size_in_bytes = configured || super
+      @max_size_in_bytes = configured || DEFAULT_MAX_SIZE_IN_BYTES
     end
   end
 end

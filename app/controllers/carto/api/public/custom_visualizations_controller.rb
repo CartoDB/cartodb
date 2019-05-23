@@ -16,7 +16,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(user,kuviz,asset).to_hash, 200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self,user,kuviz,asset).to_hash, 200)
   end
 
   def update

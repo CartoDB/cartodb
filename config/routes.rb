@@ -87,6 +87,11 @@ CartoDB::Application.routes.draw do
     get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
     post '/oauth2/authorize', to: 'oauth_provider#authorize'
     post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
+
+    namespace :kuviz, path: '/' do
+      # Custom Visualizations
+      match '/kuviz/:id', to: 'custom_visualizations#show', via: :get, as: :show
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization

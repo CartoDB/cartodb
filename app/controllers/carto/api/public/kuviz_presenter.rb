@@ -3,7 +3,8 @@ module Carto
     module Public
       class KuvizPresenter
 
-        def initialize(user, kuviz, asset)
+        def initialize(context, user, kuviz, asset)
+          @context = context
           @user = user
           @kuviz = kuviz
           @asset = asset
@@ -13,7 +14,9 @@ module Carto
           base_rails_url = CartoDB.base_url(@user.username)
           {
             visualization: @kuviz.id,
-            url: "#{base_rails_url}/kuviz/#{@kuviz.id}"
+            url: CartoDB.url(@context, 'kuviz_show',
+                             params: { id: @kuviz.id },
+                             user: @user)
           }
         end
       end

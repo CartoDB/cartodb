@@ -129,6 +129,8 @@ module Carto
           job_role: @user.job_role,
           org_admin: @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
+          link_visualization_count: @user.link_visualization_count,
+          password_visualization_count: @user.password_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,

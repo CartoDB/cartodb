@@ -328,11 +328,11 @@ defaults: &defaults
       options: { color: '#ffffff' }
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'carto.com'
-  aws:
-    s3:
-      access_key_id: "test"
-      secret_access_key: "test"
-      region: ''
+  #aws:
+    #s3:
+      #access_key_id: "test"
+      #secret_access_key: "test"
+      #region: ''
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes

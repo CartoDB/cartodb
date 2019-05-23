@@ -11,7 +11,6 @@ module Carto
         end
 
         def to_hash
-          base_rails_url = CartoDB.base_url(@user.username)
           {
             visualization: @kuviz.id,
             url: CartoDB.url(@context, 'kuviz_show',

@@ -13,9 +13,9 @@ module Carto
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
 
-    validates :user,         presence: true, unless: [:organization, :visualization]
-    validates :organization, presence: true, unless: [:user, :visualization]
-    validates :visualization, presence: true, unless: [:user, :organization]
+    validates :user,         presence: true, unless: -> { organization.present? || visualization.present? }
+    validates :organization, presence: true, unless: -> { user.present? || visualization.present? }
+    validates :visualization, presence: true, unless: -> { user.present? || organization.present? }
     validates :storage_info, presence: true, if: -> { organization.present? || visualization.present? }
     validates :public_url,   presence: true
 

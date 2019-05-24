@@ -328,7 +328,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
 	spec/lib/carto/assets/image_assets_service_spec.rb \
 	spec/lib/carto/assets/organization_image_assets_service_spec.rb \
-	spec/lib/carto/assets/visualization_assets_service_spec.rb \
+	spec/lib/carto/assets/kuviz_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \

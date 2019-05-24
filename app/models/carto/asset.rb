@@ -2,7 +2,7 @@
 
 require_dependency 'carto/assets/image_assets_service'
 require_dependency 'carto/assets/organization_image_assets_service'
-require_dependency 'carto/assets/visualization_assets_service'
+require_dependency 'carto/assets/kuviz_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
@@ -33,7 +33,7 @@ module Carto
     end
 
     def self.for_visualization(visualization:, resource:)
-      storage_info, url = VisualizationAssetsService.instance.upload(visualization, resource)
+      storage_info, url = KuvizAssetsService.instance.upload(visualization, resource)
 
       new(visualization: visualization,
           public_url: url,

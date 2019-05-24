@@ -5,7 +5,7 @@ require 'carto/assets/assets_service'
 require 'singleton'
 
 module Carto
-  class VisualizationAssetsService < AssetsService
+  class KuvizAssetsService < AssetsService
     include Singleton
 
     EXTENSION = ".html".freeze
@@ -16,7 +16,7 @@ module Carto
     end
 
     def fetch_file(resource)
-      temp_file = Tempfile.new(["viz_asset_download_#{Time.now.utc.to_i}", EXTENSION])
+      temp_file = Tempfile.new(["kuviz_asset_#{Time.now.utc.to_i}", EXTENSION])
 
       begin
         read = IO.copy_stream(resource, temp_file, max_size_in_bytes + 1)
@@ -31,18 +31,18 @@ module Carto
       temp_file
     end
 
-    DEFAULT_LOCATION = 'visualization_assets'.freeze
+    DEFAULT_LOCATION = 'kuviz_assets'.freeze
 
     def location
-      @location ||= Cartodb.get_config(:assets, 'visualization', 'bucket') ||
-                    Cartodb.get_config(:assets, 'visualization', 'location') ||
+      @location ||= Cartodb.get_config(:assets, 'kuviz', 'bucket') ||
+                    Cartodb.get_config(:assets, 'kuviz', 'location') ||
                     DEFAULT_LOCATION
     end
 
     def max_size_in_bytes
       return @max_size_in_bytes if @max_size_in_bytes
 
-      configured = Cartodb.get_config(:assets, 'visualization', 'max_size_in_bytes')
+      configured = Cartodb.get_config(:assets, 'kuviz', 'max_size_in_bytes')
 
       @max_size_in_bytes = configured || DEFAULT_MAX_SIZE_IN_BYTES
     end

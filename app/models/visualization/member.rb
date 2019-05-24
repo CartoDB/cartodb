@@ -417,6 +417,10 @@ module CartoDB
         type == TYPE_SLIDE
       end
 
+      def kuviz?
+        type == TYPE_KUVIZ
+      end
+
       def invalidate_cache
         invalidate_redis_cache
         invalidate_varnish_vizjson_cache

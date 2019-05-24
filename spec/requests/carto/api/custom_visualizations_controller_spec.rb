@@ -30,13 +30,15 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'works with regular api_key' do
+    it 'works with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(501)
       end
+    end
 
+    it 'works with regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
         expect(response.status).to eq(501)
@@ -101,7 +103,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'store html content' do
+    it 'stores html content' do
       html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
       post_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key), data: html_base64, name: 'test' do |response|
         expect(response.status).to eq(200)

@@ -309,6 +309,10 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_REMOTE
   end
 
+  def kuviz?
+    type == TYPE_KUVIZ
+  end
+
   def layers
     map ? map.layers : []
   end

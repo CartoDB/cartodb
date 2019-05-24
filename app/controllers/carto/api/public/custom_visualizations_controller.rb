@@ -42,7 +42,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def validate_input_data
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
-      return render_jsonp({ error: 'visualization over the size limit' }, 400)
+      return render_jsonp({ error: "visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
     elsif !params[:data].present?
       return render_jsonp({ error: 'missing data parameter' }, 400)
     elsif !params[:name].present?

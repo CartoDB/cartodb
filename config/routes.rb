@@ -90,7 +90,9 @@ CartoDB::Application.routes.draw do
 
     namespace :kuviz, path: '/' do
       # Custom Visualizations
-      match '/kuviz/:id', to: 'custom_visualizations#show', via: :get, as: :show
+      match '/kuviz/:id', to: 'visualizations#show', via: :get, as: :show
+      match '/kuviz/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
+      match '/kuviz/:id/protected', to: 'visualizations#show', via: :get
     end
   end
 

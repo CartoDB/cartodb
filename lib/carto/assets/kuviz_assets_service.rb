@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require 'carto/storage'
-require 'carto/assets/assets_service'
+require_dependency 'carto/storage'
+require_dependency 'carto/assets/assets_service'
 require 'singleton'
 
 module Carto

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_dependency 'carto/storage'
-require_relative './assets_service'
+require_dependency 'carto/assets/assets_service'
 require_relative '../../cartodb/image_metadata'
 
 module Carto

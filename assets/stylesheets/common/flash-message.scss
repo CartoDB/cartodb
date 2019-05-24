@@ -44,6 +44,14 @@
   background: #F0F7FC;
 }
 
+.FlashMessage--text {
+  font-family: 'Montserrat-SemiBold';
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 16px;
+  text-align: right;
+}
+
 .FlashMessage-info {
   color: $cTypography-headers;
   font-size: $sFontSize-large;

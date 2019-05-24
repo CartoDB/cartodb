@@ -346,7 +346,7 @@ defaults: &defaults
     # kuviz:
     #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, kuviz assets will be stored locally and this line is not needed.
     #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
-    #   location: 'kuviz_assets' # Optional subdirectory for local assets, default is 'visualization_assets'
+    #   location: 'kuviz_assets' # Optional subdirectory for local assets, default is 'kuviz_assets'
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:

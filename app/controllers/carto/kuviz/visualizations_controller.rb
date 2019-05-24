@@ -10,6 +10,9 @@ module Carto
         @source = open(@kuviz.public_url).read
         add_cache_headers
         render layout: false
+      rescue => e
+        CartoDB::Logger.error(exception: e)
+        return(render_pretty_404)
       end
 
       def show_protected
@@ -47,6 +50,9 @@ module Carto
         response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
       end
 
+      def render_pretty_404
+        render(file: "public/404.html", layout: false, status: 404)
+      end
     end
   end
 end

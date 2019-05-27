@@ -15,7 +15,23 @@ class Carto::VisualizationQueryBuilder
   end
 
   def self.user_public_visualizations(user)
-    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED).with_published
+    user_public_privacy_visualizations.with_published
+  end
+
+  def self.user_public_privacy_visualizations(user)
+    user_public(user).with_type(Carto::Visualization::TYPE_DERIVED)
+  end
+
+  def self.user_link_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_type(Carto::Visualization::TYPE_DERIVED)
+       .with_privacy(Carto::Visualization::PRIVACY_LINK)
+  end
+
+  def self.user_password_privacy_visualizations(user)
+    new.with_user_id(user.id)
+       .with_type(Carto::Visualization::TYPE_DERIVED)
+       .with_privacy(Carto::Visualization::PRIVACY_PROTECTED)
   end
 
   def self.user_all_visualizations(user)

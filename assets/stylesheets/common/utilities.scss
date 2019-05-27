@@ -55,6 +55,10 @@
   text-align: right;
 }
 
+.u-whiteSpace-nowrap {
+  white-space: nowrap;
+}
+
 .u-valign::before {
   content: "";
   display: inline-block;

@@ -537,6 +537,35 @@ describe Carto::ApiKey do
         }.to raise_error(ActiveRecord::RecordInvalid)
       end
     end
+
+    describe 'filter by type' do
+      it 'filters just master' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_MASTER])
+        api_keys.count.should eq 1
+        api_keys.first.type.should eq Carto::ApiKey::TYPE_MASTER
+      end
+
+      it 'filters just default_public' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_DEFAULT_PUBLIC])
+        api_keys.count.should eq 1
+        api_keys.first.type.should eq Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+      end
+
+      it 'filters default_public and master' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_DEFAULT_PUBLIC, Carto::ApiKey::TYPE_MASTER])
+        api_keys.count.should eq 2
+      end
+
+      it 'filters all if empty array' do
+        api_keys = @carto_user1.api_keys.by_type([])
+        api_keys.count.should eq 2
+      end
+
+      it 'filters all if nil type' do
+        api_keys = @carto_user1.api_keys.by_type(nil)
+        api_keys.count.should eq 2
+      end
+    end
   end
 
   describe 'with plain users' do

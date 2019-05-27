@@ -18,7 +18,7 @@
   <div class="u-tSpace">
     <p class="ApiKeys-warning-text">
       <span class="js-icon-warning ApiKeys-warning-icon"></span>
-      <span class="u-altTextColor">For testing and development only! This API key can be used to perform any API request without restriction!</span>
+      <span>For testing and development only! This API key can be used to perform any API request without restriction!</span>
     </p>
   </div>
 </section>

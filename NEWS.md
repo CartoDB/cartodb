@@ -27,6 +27,7 @@ Development
 - Minor copy edit in final step of Builder Onboarding
 - Filter API keys by type (#14904)
 - Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
+- Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
 
 4.26.1 (2019-05-06)
 -------------------

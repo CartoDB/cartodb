@@ -228,6 +228,7 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.try(:id), exception: e)
+        raise e if e.is_a?(Carto::UnauthorizedError)
         render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
 

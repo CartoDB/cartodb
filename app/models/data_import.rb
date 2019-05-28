@@ -229,6 +229,15 @@ class DataImport < Sequel::Model
     CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)
     self
+  rescue Carto::UnauthorizedError => e
+    log.append "Exception: #{e.message}"
+    log.append e.backtrace, truncate = false
+    stacktrace = e.message + e.backtrace.join
+    CartoDB.report_exception(e, 'Public map quota exceeded', error_info: stacktrace)
+    error = CartoDB::Importer2::MapQuotaExceededError.new
+    handle_failure(error)
+    raise error
+    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false
@@ -263,6 +272,14 @@ class DataImport < Sequel::Model
     self.state      = STATE_FAILURE
     save
     raise CartoDB::QuotaExceeded, 'More tables required'
+  end
+
+  def raise_over_map_quota_error
+    log.append 'Over account public maps limit, please upgrade'
+    self.error_code = 8003
+    self.state      = STATE_FAILURE
+    save
+    raise CartoDB::QuotaExceeded, 'More public maps required'
   end
 
   def mark_as_failed_if_stuck!

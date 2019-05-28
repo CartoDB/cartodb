@@ -7,7 +7,7 @@ module Carto
 
       def show
         return kuviz_password_protected if @kuviz.visualization.password_protected?
-        @source = open(@kuviz.public_url).read
+        @source = read_source_data()
         add_cache_headers
         render layout: false
       rescue => e
@@ -25,7 +25,7 @@ module Carto
           return kuviz_password_protected
         end
 
-        @source = open(@kuviz.public_url).read
+        @source = read_source_data()
         add_cache_headers
 
         render 'show', layout: false
@@ -38,6 +38,14 @@ module Carto
 
       def get_kuviz
         @kuviz = Carto::Asset.find_by_visualization_id(params[:id])
+      end
+
+      def read_source_data
+        if @kuviz.storage_info[:type] == 'local'
+          File.open(@kuviz.storage_info[:identifier]).read
+        else
+          URI.parse(@kuviz.public_url).open.read
+        end
       end
 
       def kuviz_password_protected

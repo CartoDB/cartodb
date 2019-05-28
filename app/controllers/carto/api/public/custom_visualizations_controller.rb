@@ -11,6 +11,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   ssl_required
 
   before_action :validate_input_data, only: [:create, :update]
+  before_action :get_kuviz, only: [:update, :delete]
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -44,7 +45,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, user, kuviz, asset).to_hash, 200)
   rescue StandardError => e
-    CartoDB::Logger.error(exception: e)
+    CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
   end
 
@@ -53,7 +54,12 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def delete
-    head 501
+    @kuviz.destroy
+    head 204
+  rescue StandardError => exception
+    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: exception,
+                          visualization: @kuviz)
+    render_jsonp({ errors: [exception.message] }, 400)
   end
 
   private
@@ -93,6 +99,13 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     # Nokogiri to validate the HTML but it doesn't works as I want
     # so
     data.match(/\<html.*\>/).present?
+  end
+
+  def get_kuviz
+    @kuviz = Carto::Visualization.find(params[:id])
+    if @kuviz.nil?
+      raise Carto::LoadError.new('Kuviz doesn\'t exist', 404)
+    end
   end
 
 end

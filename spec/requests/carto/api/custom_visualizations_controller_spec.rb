@@ -19,7 +19,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   after(:all) do
     @user.destroy
-    FileUtils.rmtree(Carto::Conf.new.public_uploads_path() + '/tests')
+    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
   end
 
   describe '#common' do
@@ -208,6 +208,29 @@ describe Carto::Api::Public::CustomVisualizationsController do
         expect(response.status).to eq(200)
         expect(response.body[:visualizations]).present?.should be true
         expect(response.body[:url]).present?.should be true
+      end
+    end
+  end
+  describe '#delete' do
+    before(:each) do
+      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
+      @kuviz.save
+      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
+                                              resource: StringIO.new('<html><body>test</body></html>'))
+      @asset.save
+    end
+
+    it 'should delete kuviz and assets' do
+      expect(File.exist?(@asset.storage_info[:identifier])).to be true
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz.id) do |response|
+        expect(response.status).to eq(204)
+        expect(File.exist?(@asset.storage_info[:identifier])).to be false
+      end
+    end
+
+    it 'should return 400 error if kuviz doesn\'t exist' do
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: '47f41ab4-63de-439f-a826-de5deab14de6') do |response|
+        expect(response.status).to eq(400)
       end
     end
   end

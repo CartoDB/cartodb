@@ -7,17 +7,17 @@ module Carto
 
       def show
         return kuviz_password_protected if @kuviz.visualization.password_protected?
-        @source = read_source_data()
+        @source = read_source_data
         add_cache_headers
         render layout: false
       rescue => e
         CartoDB::Logger.error(exception: e)
-        return(render_pretty_404)
+        render_pretty_404
       end
 
       def show_protected
         submitted_password = params.fetch(:password, nil)
-        return(render_pretty_404) unless @kuviz.visualization.password_protected? and @kuviz.visualization.has_password?
+        return(render_pretty_404) unless @kuviz.visualization.password_protected? && @kuviz.visualization.has_password?
 
         unless @kuviz.visualization.password_valid?(submitted_password)
           flash[:placeholder] = '*' * (submitted_password ? submitted_password.size : DEFAULT_PLACEHOLDER_CHARS)
@@ -25,7 +25,7 @@ module Carto
           return kuviz_password_protected
         end
 
-        @source = read_source_data()
+        @source = read_source_data
         add_cache_headers
 
         render 'show', layout: false
@@ -49,7 +49,7 @@ module Carto
       end
 
       def kuviz_password_protected
-        render 'kuviz_password', :layout => 'application_password_layout'
+        render 'kuviz_password', layout: 'application_password_layout'
       end
 
       def add_cache_headers

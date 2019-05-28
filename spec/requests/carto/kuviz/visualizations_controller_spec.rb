@@ -62,7 +62,7 @@ describe Carto::Kuviz::VisualizationsController do
     end
 
     it 'shows 404 if the kuviz is not password protected' do
-      @kuviz.password=''
+      @kuviz.password = ''
       @kuviz.privacy = Carto::Visualization::PRIVACY_PUBLIC
       @kuviz.save
       post kuviz_password_protected_url(id: @kuviz.id), password: 'wrong_password'

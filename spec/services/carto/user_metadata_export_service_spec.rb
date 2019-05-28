@@ -187,6 +187,18 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.10 (without regular_api_key_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_ten)
+
+      expect(user.regular_api_key_quota).to be_nil
+    end
+
+    it 'imports 1.0.9 (without public_map_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_nine)
+
+      expect(user.public_map_quota).to be_nil
+    end
+
     it 'imports 1.0.8 (without oauth_apps and oauth_app_users)' do
       user = test_import_user_from_export(full_export_one_zero_eight)
 
@@ -735,7 +747,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.9",
+      version: "1.0.10",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -750,6 +762,8 @@ describe Carto::UserMetadataExportService do
         map_enabled: true,
         quota_in_bytes: 5000000,
         table_quota: nil,
+        public_map_quota: 20,
+        regular_api_key_quota: 20,
         account_type: "FREE",
         private_tables_enabled: false,
         period_end_date: nil,
@@ -1108,8 +1122,22 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_ten) do
+    user_hash = full_export[:user].except!(:regular_api_key_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_nine) do
+    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_eight) do
-    user_hash = full_export[:user].except!(:oauth_app_users)
+    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users)
 
     full_export[:user] = user_hash
     full_export

@@ -21,6 +21,10 @@ describe Carto::Api::VisualizationsController do
   include VisualizationDestructionHelper
   include FeatureFlagHelper
 
+  before(:all) do
+    create_account_type_fg('ORGANIZATION USER')
+  end
+
   describe 'vizjson2 generator' do
     it_behaves_like 'vizjson generator' do
       def api_vx_visualizations_vizjson_url(options)
@@ -337,6 +341,16 @@ describe Carto::Api::VisualizationsController do
         'total_locked' => 0
       }
       response_body.should == expected_response
+    end
+
+    it 'returns 400 if wrong page parameter is passed' do
+      get base_url, { page: '%00' }, @headers
+      last_response.status.should == 400
+    end
+
+    it 'returns 400 if wrong per_page parameter is passed' do
+      get base_url, { per_page: '%00' }, @headers
+      last_response.status.should == 400
     end
 
     it 'returns valid information for a user with one table' do

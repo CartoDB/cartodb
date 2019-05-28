@@ -7,6 +7,14 @@ GIT
       oauth (>= 0.4.4)
 
 GIT
+  remote: https://github.com/cartodb/cartodb-common.git
+  revision: e445c66023bfe83fcd62878ec0f3f37909156e01
+  branch: master
+  specs:
+    cartodb-common (0.1.0)
+      argon2 (~> 2.0)
+
+GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git
   revision: d99f2fcf13b9737a150f869fe9b9fbc0d788aa3f
   branch: fix-responder
@@ -59,6 +67,9 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     analytics-ruby (2.0.13)
     arel (6.0.4)
+    argon2 (2.0.2)
+      ffi (~> 1.9)
+      ffi-compiler (>= 0.1)
     aws-partitions (1.77.0)
     aws-sdk-core (3.19.0)
       aws-partitions (~> 1.0)
@@ -124,9 +135,6 @@ GEM
       faraday (~> 0.9, ~> 0.8)
       oauth2 (~> 1.1)
     ejs (1.1.1)
-    em-pg-client (0.2.1)
-      eventmachine (>= 0.12.10)
-      pg (>= 0.13.2)
     equalizer (0.0.11)
     erubis (2.7.0)
     ethon (0.8.1)
@@ -147,6 +155,9 @@ GEM
     faye-websocket (0.4.7)
       eventmachine (>= 0.12.0)
     ffi (1.9.25)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
     gc_tracer (1.5.1)
     get_process_mem (0.2.0)
     gibbon (1.1.4)
@@ -171,7 +182,7 @@ GEM
       os (~> 0.9)
       signet (~> 0.7)
     hashie (3.4.3)
-    hiredis (0.6.1)
+    hiredis (0.6.3)
     http_parser.rb (0.5.3)
     httparty (0.13.7)
       json (~> 1.8)
@@ -229,7 +240,7 @@ GEM
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
     os (0.9.6)
-    pg (0.15.0)
+    pg (0.20.0)
     poltergeist (1.0.3)
       capybara (~> 1.1)
       childprocess (~> 0.3)
@@ -282,7 +293,7 @@ GEM
       msgpack (>= 0.4.3)
       trollop (>= 1.16.2)
     redcarpet (3.3.3)
-    redis (3.3.0)
+    redis (3.3.5)
     redis-namespace (1.5.2)
       redis (~> 3.0, >= 3.0.4)
     representable (3.0.4)
@@ -332,15 +343,15 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sequel (3.44.0)
-    sequel-rails (0.9.15)
-      actionpack (>= 3.2.0)
-      activemodel
-      railties (>= 3.2.0)
-      sequel (>= 3.28, < 5.0)
-    sequel_pg (1.6.3)
-      pg (>= 0.8.0)
-      sequel (>= 3.39.0)
+    sequel (4.45.0)
+    sequel-rails (1.0.1)
+      actionpack (>= 4.0.0)
+      activemodel (>= 4.0.0)
+      railties (>= 4.0.0)
+      sequel (>= 3.28, < 6.0)
+    sequel_pg (1.12.0)
+      pg (>= 0.18.0)
+      sequel (>= 4.38.0)
     signet (0.11.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -428,6 +439,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   byebug
   capybara (= 1.1.2)
+  cartodb-common!
   charlock_holmes (= 0.7.6)
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)
@@ -436,8 +448,6 @@ DEPENDENCIES
   delorean
   dropbox_api (= 0.1.6)
   ejs (~> 1.1.1)
-  em-pg-client (= 0.2.1)
-  eventmachine (= 1.0.4)
   execjs (~> 0.4)
   factory_girl_rails (~> 4.0.0)
   fake_net_ldap!
@@ -445,7 +455,7 @@ DEPENDENCIES
   gc_tracer (= 1.5.1)
   gibbon (= 1.1.4)
   google-api-client (= 0.28.4)
-  hiredis (= 0.6.1)
+  hiredis (~> 0.6.1)
   instagram (= 1.1.6)
   json-schema (= 2.1.9)
   memory_profiler
@@ -457,7 +467,7 @@ DEPENDENCIES
   nokogiri (~> 1.8.2)
   oauth (= 0.4.7)
   oauth-plugin!
-  pg (= 0.15.0)
+  pg (= 0.20.0)
   poltergeist (>= 1.0.0)
   protected_attributes
   rack
@@ -469,7 +479,7 @@ DEPENDENCIES
   rb-readline
   rbtrace (= 0.4.8)
   redcarpet (= 3.3.3)
-  redis (= 3.3.0)
+  redis (~> 3.3.5)
   request_store (= 1.1.0)
   responders (~> 2.0)
   resque (= 1.25.2)
@@ -482,9 +492,9 @@ DEPENDENCIES
   ruby-prof (= 0.15.1)
   ruby-saml (= 1.4.1)
   selenium-webdriver (>= 2.5.0)
-  sequel (= 3.44.0)
-  sequel-rails (= 0.9.15)
-  sequel_pg (= 1.6.3)
+  sequel (~> 4.45.0)
+  sequel-rails (~> 1.0.1)
+  sequel_pg (~> 1.12.0)
   simplecov (= 0.13.0)
   simplecov-json
   simplecov-rcov
@@ -502,4 +512,4 @@ DEPENDENCIES
   zeus
 
 BUNDLED WITH
-   1.17.1
+   1.17.3

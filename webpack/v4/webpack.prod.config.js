@@ -35,7 +35,9 @@ module.exports = merge(baseConfig, {
           zindex: false,
           reduceIdents: false,
           autoprefixer: {
-            remove: false
+            remove: false,
+            add: true,
+            browsers: ['> 1%']
           }
         }
       })

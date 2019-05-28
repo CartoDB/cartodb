@@ -310,7 +310,7 @@ describe Table do
 
       it "should return a sequel interface" do
         table = create_table :user_id => @user.id
-        table.sequel.class.should == Sequel::Postgres::Dataset
+        table.sequel.is_a?(Sequel::Postgres::Dataset).should be_true
       end
 
       it "should have a privacy associated and it should be private by default" do
@@ -1384,14 +1384,33 @@ describe Table do
         table = Table.new(user_table: UserTable[data_import.table_id])
         table.should_not be_nil, "Import failure: #{data_import.log}"
         table.name.should match(/^twitters/)
+
         @user.user_timeout = 1
         @user.database_timeout = 1
         @user.save
-        table.update_table_geom_pg_stats
+
+        begin
+          table.update_table_geom_pg_stats
+        ensure
+          @user.user_timeout = old_user_timeout
+          @user.database_timeout = old_user_db_timeout
+          @user.save
+        end
+
         table.rows_counted.should == 7
-        @user.user_timeout = old_user_timeout
-        @user.database_timeout = old_user_db_timeout
-        @user.save
+      end
+
+      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
+        delete_user_data @user
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('import_raster.tif.zip'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^import_raster/)
+
+        table.update_table_geom_pg_stats
       end
 
       it "should not drop a table that exists when upload fails" do
@@ -2231,6 +2250,26 @@ describe Table do
         pk_row1 = table.insert_row!(:name => 'name1')
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
+      end
+
+      context 'organization' do
+        include_context 'organization with users helper'
+
+        it 'returns the right row count estimation without mixing tables from other users' do
+          table1 = new_table(user_id: @org_user_1.id, name: 'wadus1')
+          table1.save
+          table1.insert_row!(name: '1')
+          @org_user_1.in_database.run("ANALYZE #{table1.qualified_table_name}")
+
+          table2 = new_table(user_id: @org_user_2.id, name: 'wadus1')
+          table2.save
+          table2.insert_row!(name: '1')
+          table2.insert_row!(name: '2')
+          @org_user_2.in_database.run("ANALYZE #{table2.qualified_table_name}")
+
+          table1.estimated_row_count.should eq 1
+          table2.estimated_row_count.should eq 2
+        end
       end
     end
   end

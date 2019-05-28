@@ -3,24 +3,27 @@ source 'http://rubygems.org'
 gem 'rails',                   '4.2.11'
 
 gem 'rake',                    '0.9.2.2'
-gem 'pg',                      '0.15.0'
-gem 'sequel',                  '3.44.0'
-gem 'sequel_pg',               '1.6.3', require: 'sequel'
+
+# PostgreSQL
+gem 'pg',                      '0.20.0'
+gem 'sequel',                  '~> 4.45.0'
+gem 'sequel-rails', '~> 1.0.1'
+gem 'sequel_pg',               '~> 1.12.0', require: 'sequel'
 
 gem 'activerecord-postgresql-adapter'
 
 gem 'protected_attributes'
 gem 'responders', '~> 2.0'
 
-gem 'sequel-rails', '0.9.15'
-
 gem 'rails_warden',            '0.5.8' # Auth via the Warden Rack framework
 gem 'ruby-saml',               '1.4.1'
 gem 'oauth',                   '0.4.7'
 gem 'oauth-plugin',            git: 'https://github.com/CartoDB/oauth-plugin.git', :branch => 'cartodb'
 
-gem 'redis',                   '3.3.0'
-gem 'hiredis',                 '0.6.1'
+# Redis
+gem 'hiredis',                 '~> 0.6.1'
+gem 'redis',                   '~> 3.3.5'
+
 gem 'nokogiri',                '~> 1.8.2'
 gem 'statsd-client',           '0.0.7', require: 'statsd'
 gem 'aws-sdk-s3',              '~> 1'
@@ -61,13 +64,10 @@ gem 'dropbox_api',             '0.1.6'
 gem 'instagram',               '1.1.6'
 gem 'gibbon',                  '1.1.4'
 
-# Geocoder (synchronizer doesn't needs it anymore)
-gem 'eventmachine',            '1.0.4'
-gem 'em-pg-client',            '0.2.1'
-
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
 gem 'uuidtools',                '2.1.5'
+gem 'cartodb-common',           git: 'https://github.com/cartodb/cartodb-common.git', branch: 'master'
 
 # Markdown
 gem 'redcarpet', '3.3.3'

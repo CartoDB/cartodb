@@ -4,14 +4,8 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`MapsPage.createMap`) }}</CreateButton>
-        <CreateButton visualizationType="map" v-if="!isOrganizationAdmin">{{ $t(`DataPage.createDataset`) }}</CreateButton>
-        <a class="button button--small is-primary"
-          :href="`mailto:${organizationMail}`"
-          v-if="isOrganizationUser && !isOrganizationAdmin">
-          {{ $t('HomePage.WelcomeSection.firstTime.contactOrganizationAdmin') }}
-        </a>
-        <a class="button button--small is-primary"
+        <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
+        <a class="button button--border"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
           {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
@@ -23,11 +17,13 @@
 
 <script>
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
-    CreateButton
+    CreateButton,
+    OnboardingButton
   },
   props: {
     name: String,
@@ -59,6 +55,12 @@ export default {
     organizationMail () {
       const organization = this.$store.state.user.organization;
       return organization.admin_email;
+    },
+    canCreateDatasets () {
+      return this.$store.getters['user/canCreateDatasets'];
+    },
+    isViewer () {
+      return this.$store.getters['user/isViewer'];
     }
   }
 };
@@ -84,7 +86,7 @@ export default {
     justify-content: center;
   }
 
-  .button {
+  .button.button--border {
     border: 1px solid $white;
     background: none;
     color: $white;

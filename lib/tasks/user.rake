@@ -80,4 +80,75 @@ namespace :user do
       Carto::Like.where(actor: u.id).delete_all
     end
   end
+
+  namespace :ghost_tables do
+    desc 'Install ghost tables trigger to all the organizations owners and regular users'
+    task :install_ghost_tables_trigger => :environment do
+      Carto::User.where(organization_id: nil).find_each do |user|
+        install_ghost_tables_trigger(user.id)
+      end
+
+      Organization.each { |org| install_ghost_tables_trigger(org.owner_id) }
+    end
+
+    def install_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
+      if user.nil?
+        puts "ERROR: User #{user_id} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        puts "ERROR: User #{user_id} must be an org owner or not to be an organization user"
+      elsif user.has_feature_flag?('ghost_tables_trigger_disabled')
+        puts "WARN: Skipping user #{user_id} (it has 'ghost_tables_trigger_disabled' feature flag)"
+      else
+        begin
+          user.db_service.create_ghost_tables_event_trigger
+        rescue StandardError => error
+          puts "ERROR creating ghost tables trigger for user #{user_id}: #{error.message}"
+        end
+      end
+    end
+
+    desc 'Drop ghost_tables_trigger to all the organizations owners and regular users'
+    task :drop_ghost_tables_trigger => :environment do
+      Carto::User.where(organization_id: nil).find_each do |user|
+        drop_ghost_tables_trigger(user.id)
+      end
+
+      Organization.each { |org| drop_ghost_tables_trigger(org.owner_id) }
+    end
+
+    def drop_ghost_tables_trigger(user_id)
+      user = ::User.find(id: user_id)
+      if user.nil?
+        puts "ERROR: User #{username} does not exist"
+      elsif user.organization_user? && !user.organization_owner?
+        puts "ERROR: User #{username} must be an org owner or not to be an organization user"
+      else
+        user.db_service.drop_ghost_tables_event_trigger
+      end
+    end
+  end
+
+  namespace :notifications do
+    desc 'Add a text in the notification field for users filtered by field'
+    task :add_by_field, [:filter_field, :filter_value, :notification] => [:environment] do |task, args|
+      allowed_fields = ['database_host']
+      raise "Filter field and value are needed" if args[:filter_field].nil? || args[:filter_value].nil?
+      raise "Unknown field #{args[:filter_field]} for filtering. Allowed fields are #{allowed_fields.join(',')}" unless allowed_fields.include?(args[:filter_field])
+      raise "Notification not provided. Please include it" if args[:notification].nil?
+      sql = "UPDATE users SET notification = '%s' WHERE %s = '%s'"
+      query = ActiveRecord::Base.send(:sanitize_sql_array, [sql, args[:notification], args[:filter_field], args[:filter_value]])
+      ActiveRecord::Base.connection.execute(query)
+    end
+
+    desc 'Clean notification for users filtered by field'
+    task :clean_by_field, [:filter_field, :filter_value] => [:environment] do |task, args|
+      allowed_fields = ['database_host']
+      raise "Filter field and value are needed" if args[:filter_field].nil? || args[:filter_value].nil?
+      raise "Unknown field #{args[:filter_field]} for filtering. Allowed fields are #{allowed_fields.join(',')}" unless allowed_fields.include?(args[:filter_field])
+      sql = "UPDATE users SET notification = NULL WHERE %s = '%s'"
+      query = ActiveRecord::Base.send(:sanitize_sql_array, [sql, args[:filter_field], args[:filter_value]])
+      ActiveRecord::Base.connection.execute(query)
+    end
+  end
 end

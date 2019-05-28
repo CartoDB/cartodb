@@ -92,7 +92,7 @@ export default {
   transition: all 0.25s linear;
   border-radius: 4px;
   opacity: 0;
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: $dropdown__shadow;
   pointer-events: none;
 
   &::before {
@@ -105,7 +105,7 @@ export default {
     transform-origin: center center;
     border-radius: 4px;
     background-color: $white;
-    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: $dropdown__shadow;
   }
 
   &.is-open {
@@ -195,6 +195,6 @@ export default {
   margin-top: 2px;
   margin-left: 24px;
   border-radius: 50%;
-  background-color: $notification;
+  background-color: $notification__bg-color;
 }
 </style>

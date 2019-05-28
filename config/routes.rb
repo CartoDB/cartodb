@@ -44,11 +44,6 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
-  # Explore
-  get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
-  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
-  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
-
   # Data library
   get   '(/user/:user_domain)(/u/:user_domain)/data-library'           => 'data_library#index',     as: :data_library_index
 
@@ -131,6 +126,7 @@ CartoDB::Application.routes.draw do
 
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/tag/:q'           => 'visualizations#index', as: :tag_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
@@ -269,9 +265,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
 
-    # Tags
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
-
     # Private dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
@@ -281,6 +274,8 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications'     => 'visualizations#index', as: :notifications_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions/'        => 'visualizations#index', as: :solutions
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started'       => 'visualizations#index', as: :get_started
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -627,6 +622,7 @@ CartoDB::Application.routes.draw do
       end
 
       get 'tags' => 'tags#index', as: :api_v3_users_tags
+      get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
     end
 
     scope 'v2/' do

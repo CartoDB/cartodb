@@ -1,13 +1,28 @@
-@import "./variables";
-@import "./grid";
-@import "./page";
-@import "./section";
-@import "./form";
-@import "./reset";
-@import "./buttons";
-@import "./colors";
-@import "./typography";
-@import "./dialogs";
-@import "./utilities";
-@import "./solutionsIcons";
-@import "./cells";
+@import 'variables';
+
+// base
+@import 'base/reset';
+@import 'base/typography';
+
+// layout
+@import 'layout/cells';
+@import 'layout/dialogs';
+@import 'layout/grid';
+@import 'layout/page';
+@import 'layout/section';
+
+// components
+@import 'components/buttons';
+@import 'components/checkbox';
+@import 'components/code';
+@import 'components/welcome';
+
+// pages
+@import 'pages/solutionsIcons';
+@import 'pages/visualizations';
+
+// helpers
+@import 'helpers/colors';
+@import 'helpers/flexbox';
+@import 'helpers/spacing';
+@import 'helpers/utilities';

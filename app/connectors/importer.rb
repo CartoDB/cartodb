@@ -3,6 +3,7 @@ require 'uuidtools'
 require 'carto/importer/table_setup'
 
 require_relative '../models/visualization/support_tables'
+require_relative '../../lib/carto/ghost_tables_manager'
 require_dependency 'carto/db/user_schema'
 require_dependency 'visualization/derived_creator'
 
@@ -62,17 +63,34 @@ module CartoDB
           }
         else
           log('Proceeding to register')
-          results.select(&:success?).each { |result|
-            register(result)
-          }
+          register_results(results)
           results.select(&:success?).each { |result|
             create_overviews(result)
           }
-
           create_visualization if data_import.create_visualization
         end
-
         self
+      end
+
+      def register_results(results)
+        gtm = Carto::GhostTablesManager.new(user.id)
+        bolt = gtm.get_bolt
+        rerun_func = lambda { gtm.send(:sync) }
+        lock_acquired = bolt.run_locked(attempts: 10, timeout: 30000, rerun_func: rerun_func) do
+          results.select(&:success?).each do |result|
+            register(result)
+          end
+        end
+        # In case we couldnt acquire bolt we want to continue with the import work so we register the
+        # results anyway
+        unless lock_acquired
+          CartoDB::Logger.warning(message: "Couldn't acquire bolt to register. Registering without bolt",
+                                  user: user,
+                                  import_id: @data_import_id)
+          results.select(&:success?).each do |result|
+            register(result)
+          end
+        end
       end
 
       def register(result)

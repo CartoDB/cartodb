@@ -1,7 +1,7 @@
 Sequel.migration do
   up do
     create_table :visualization_exports do
-      Uuid :id, primary_key: true, default: 'uuid_generate_v4()'.lit
+      Uuid :id, primary_key: true, default: Sequel.lit('uuid_generate_v4()')
       String :visualization_id, type: 'uuid', null: false
       String :user_id, type: 'uuid', null: false
       String :user_tables_ids, text: true

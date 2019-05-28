@@ -70,7 +70,8 @@ module Carto
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',
-          password: params[:password]
+          password: params[:password],
+          with_dependent_visualizations: params[:with_dependent_visualizations].to_i || 0
         )
 
         render_jsonp(::JSON.dump(presenter.to_poro))
@@ -454,8 +455,7 @@ module Carto
       end
 
       def link_ghost_tables
-        return unless current_user.present?
-        return unless current_user.has_feature_flag?('ghost_tables')
+        return unless current_user && current_user.has_feature_flag?('ghost_tables')
 
         # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
         # or asynchronously otherwise.
@@ -477,14 +477,27 @@ module Carto
       def calculate_totals(total_types)
         # Prefetching at counts removes duplicates
         {
-          total_user_entries: VisualizationQueryBuilder.new.with_types(total_types)
-                                                       .with_user_id(current_user.id).build.size,
-          total_locked: VisualizationQueryBuilder.new.with_types(total_types)
-                                                 .with_user_id(current_user.id).with_locked(true).build.size,
-          total_likes: VisualizationQueryBuilder.new.with_types(total_types).with_liked_by_user_id(current_user.id)
+          total_user_entries: VisualizationQueryBuilder.new
+                                                       .with_types(total_types)
+                                                       .with_user_id(current_user.id)
+                                                       .build.size,
+          total_locked: VisualizationQueryBuilder.new
+                                                 .with_types(total_types)
+                                                 .with_user_id(current_user.id)
+                                                 .with_locked(true)
+                                                 .build.size,
+          total_likes: VisualizationQueryBuilder.new
+                                                .with_types(total_types)
+                                                .with_liked_by_user_id(current_user.id)
+                                                .with_locked(false)
                                                 .build.size,
-          total_shared: VisualizationQueryBuilder.new.with_types(total_types).with_shared_with_user_id(current_user.id)
-                                                 .with_user_id_not(current_user.id).with_prefetch_table.build.size
+          total_shared: VisualizationQueryBuilder.new
+                                                 .with_types(total_types)
+                                                 .with_shared_with_user_id(current_user.id)
+                                                 .with_user_id_not(current_user.id)
+                                                 .with_locked(false)
+                                                 .with_prefetch_table
+                                                 .build.size
         }
       end
     end

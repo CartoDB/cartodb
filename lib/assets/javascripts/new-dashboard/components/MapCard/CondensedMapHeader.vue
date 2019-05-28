@@ -1,32 +1,58 @@
 <template>
   <div class="map-list-row">
-    <div class="map-list-cell cell cell--start">
+    <div class="viz-column--main-info">
+      <div class="cell cell--start">
+      </div>
+      <div class="cell cell--main" @click="changeOrder('name')">
+        <span class="text is-small is-txtSoftGrey"
+              :class="{
+                'is-active': isOrderApplied('name'),
+                'is-reversed': isReverseOrderApplied('name'),
+                'element-sort': isSortable
+              }">
+          {{ $t(`MapListHeader.name`) }}
+        </span>
+      </div>
     </div>
-    <div class="map-list-cell cell cell--main" @click="changeOrder('name')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('name'), 'is-reversed': isReverseOrderApplied('name') }">
-        {{ $t(`MapListHeader.name`) }}
-      </span>
+
+    <div class="viz-column--extra-info">
+      <div class="viz-column--status">
+        <div class="cell cell--large" @click="changeOrder('updated_at')">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('updated_at'),
+                  'is-reversed': isReverseOrderApplied('updated_at'),
+                  'element-sort': isSortable
+                }">
+            {{ $t(`MapListHeader.lastModified`) }}
+          </span>
+        </div>
+        <div class="cell cell--large u-txt-right u-p--0 " @click="changeOrder('mapviews')">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('mapviews'),
+                  'is-reversed': isReverseOrderApplied('mapviews'),
+                  'element-sort': isSortable
+                }">
+            {{ $t(`MapListHeader.views`) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="viz-column--share">
+        <div class="cell cell--small" @click="changeOrder('privacy')">
+          <span class="text is-small is-txtSoftGrey"
+                :class="{
+                  'is-active': isOrderApplied('privacy'),
+                  'is-reversed': isReverseOrderApplied('privacy'),
+                  'element-sort': isSortable
+                }">
+            {{ $t(`MapListHeader.privacy`) }}
+          </span>
+        </div>
+        <div class="cell cell--end"></div>
+      </div>
     </div>
-    <div class="map-list-cell cell cell--large" @click="changeOrder('updated_at')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('updated_at'), 'is-reversed': isReverseOrderApplied('updated_at') }">
-        {{ $t(`MapListHeader.lastModified`) }}
-      </span>
-    </div>
-    <div class="map-list-cell cell cell--large" @click="changeOrder('mapviews')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('mapviews'), 'is-reversed': isReverseOrderApplied('mapviews') }">
-        {{ $t(`MapListHeader.views`) }}
-      </span>
-    </div>
-    <div class="map-list-cell cell cell--medium cell--privacy" @click="changeOrder('privacy')">
-      <span class="text element-sort is-small is-txtSoftGrey"
-            :class="{ 'is-active': isOrderApplied('privacy'), 'is-reversed': isReverseOrderApplied('privacy') }">
-        {{ $t(`MapListHeader.privacy`) }}
-      </span>
-    </div>
-    <div class="map-list-cell cell cell--end"></div>
   </div>
 </template>
 
@@ -35,7 +61,11 @@ export default {
   name: 'CondensedMapHeader',
   props: {
     order: String,
-    orderDirection: String
+    orderDirection: String,
+    isSortable: {
+      type: Boolean,
+      default: true
+    }
   },
   methods: {
     changeOrder (order) {
@@ -81,43 +111,30 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 0;
-  padding: 8px 14px;
+  margin-bottom: 1px;
+  padding: 14px;
   overflow: hidden;
+  border-bottom: 1px solid $softblue;
   background-color: $white;
-}
-
-.map-list-cell {
-  &:first-of-type {
-    padding-left: 0;
-  }
-
-  &:last-of-type {
-    padding-right: 0;
-  }
+  cursor: default;
 }
 
 .cell--start {
   display: flex;
   align-items: center;
   align-self: flex-start;
-  width: 68px;
+  width: 58px;
   height: 100%;
 }
 
 .cell--end {
-  width: 44px;
-}
-
-.cell--privacy {
-  display: flex;
-  align-items: center;
+  width: 38px;
 }
 
 .element-sort {
   &.is-active,
   &:hover {
-    color: $text-color;
+    color: $text__color;
     cursor: pointer;
 
     &::after {

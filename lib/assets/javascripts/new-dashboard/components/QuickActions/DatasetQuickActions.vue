@@ -24,7 +24,7 @@ export default {
       type: String,
       default: 'datasets'
     },
-    isShared: {
+    isSharedWithMe: {
       type: Boolean,
       default: false
     }
@@ -56,7 +56,7 @@ export default {
       if (this.dataset.locked) {
         return 'locked';
       }
-      if (this.isShared) {
+      if (this.isSharedWithMe) {
         return 'shared';
       }
       return 'mine';
@@ -130,7 +130,7 @@ export default {
       bgPollingView._addDataset({
         type: 'duplication',
         table_name: `${Table.getUnqualifiedName(this.dataset.name)}_copy`,
-        value: this.dataset.name,
+        value: this.dataset.table.name,
         create_vis: false
       });
       this.closeDropdown();

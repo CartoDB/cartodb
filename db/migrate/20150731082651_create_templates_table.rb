@@ -4,7 +4,7 @@ Sequel.migration do
     SequelRails::connection.run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'
 
     create_table :templates do
-      Uuid        :id,                      primary_key: true, null: false, unique: false, default: 'uuid_generate_v4()'.lit
+      Uuid        :id,                      primary_key: true, null: false, unique: false, default: Sequel.lit('uuid_generate_v4()')
       Uuid        :source_visualization_id, null: false
       String      :title,                   null: false
       String      :description,             null: false, default: ''

@@ -1,12 +1,14 @@
 <template>
-<section class="page page--welcome">
-  <Welcome />
-  <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
-  <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
-  <MapsSection class="section" @contentChanged="onContentChanged"/>
-  <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
-  <QuotaSection></QuotaSection>
-</section>
+  <Page class="page--welcome">
+    <Welcome />
+    <RecentSection class="section" v-if="isSectionActive('RecentSection') && hasRecentContent" @sectionChange="changeSection" @contentChanged="onContentChanged"/>
+    <TagsSection class="section tags-section" v-if="isSectionActive('TagsSection')" @sectionChange="changeSection"/>
+    <MapsSection class="section" @contentChanged="onContentChanged"/>
+    <DatasetsSection class="section section--noBorder" @contentChanged="onContentChanged"/>
+    <QuotaSection></QuotaSection>
+
+    <router-view name="onboarding-modal"/>
+  </Page>
 </template>
 
 <script>
@@ -16,7 +18,7 @@ import RecentSection from './RecentSection/RecentSection.vue';
 import MapsSection from './MapsSection/MapsSection.vue';
 import DatasetsSection from './DatasetsSection/DatasetsSection.vue';
 import QuotaSection from './QuotaSection/QuotaSection.vue';
-import { sendMetric, MetricsTypes } from 'new-dashboard/core/metrics';
+import Page from 'new-dashboard/components/Page';
 
 export default {
   name: 'Home',
@@ -26,18 +28,20 @@ export default {
     RecentSection,
     MapsSection,
     DatasetsSection,
-    QuotaSection
+    QuotaSection,
+    Page
   },
   beforeMount () {
     this.$store.dispatch('recentContent/fetch');
-  },
-  created () {
+
     this.$store.dispatch('maps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
-    if (this.isFirstTimeViewingDashboard) {
-      sendMetric(MetricsTypes.VISITED_PRIVATE_PAGE, { page: 'dashboard' });
-    }
+    this.$store.dispatch('maps/setResultsPerPage', 6);
+    this.$store.dispatch('datasets/setResultsPerPage', 6);
+
+    this.$store.dispatch('maps/fetch');
+    this.$store.dispatch('datasets/fetch');
   },
   data () {
     return {
@@ -60,9 +64,10 @@ export default {
     changeSection (nextActiveSection) {
       this.activeSection = nextActiveSection;
     },
-    onContentChanged (type) {
+    onContentChanged () {
       this.$store.dispatch('recentContent/fetch');
-      this.$store.dispatch(`${type}/fetch`);
+      this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('datasets/fetch');
     }
   }
 };
@@ -71,8 +76,22 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.page--welcome {
-  padding: 64px 0 0;
+.page.page {
+  &--welcome {
+    padding: 64px 0 0;
+  }
+}
+
+.section {
+  position: relative;
+
+  &--maps {
+    z-index: $z-index__stack-context--first;
+  }
+
+  &--datasets {
+    z-index: $z-index__stack-context--second;
+  }
 }
 
 .tags-section {

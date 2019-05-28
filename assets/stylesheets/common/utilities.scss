@@ -55,6 +55,10 @@
   text-align: right;
 }
 
+.u-whiteSpace-nowrap {
+  white-space: nowrap;
+}
+
 .u-valign::before {
   content: "";
   display: inline-block;
@@ -152,6 +156,10 @@
 
 .u-tupper {
   text-transform: uppercase;
+}
+
+.u-border-bottom {
+  box-shadow: 0px 1px 0px $cStructure-mainLine;
 }
 
 @media (min-width: $sMedia-desktop) {

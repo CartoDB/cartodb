@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'cartodb-common'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -36,7 +37,6 @@ class User < Sequel::Model
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
   include Carto::EmailCleaner
-  extend Carto::UserAuthenticator
   include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
@@ -86,8 +86,8 @@ class User < Sequel::Model
   one_to_many :maps
   one_to_many :assets
   one_to_many :data_imports
-  one_to_many :geocodings, order: :created_at.desc
-  one_to_many :search_tweets, order: :created_at.desc
+  one_to_many :geocodings, order: Sequel.desc(:created_at)
+  one_to_many :search_tweets, order: Sequel.desc(:created_at)
   many_to_one :organization
 
   many_to_many :layers, class: ::Layer, :order => :order, :after_add => proc { |user, layer|
@@ -182,7 +182,7 @@ class User < Sequel::Model
     validates_unique   :email, :message => 'is already taken'
     validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
 
-    validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
+    validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
@@ -234,7 +234,7 @@ class User < Sequel::Model
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, self.class.password_digest(value, salt), key)
+    validate_password_not_in_use(nil, value, key)
 
     errors[key].empty?
   end
@@ -282,7 +282,7 @@ class User < Sequel::Model
   def before_create
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
-    self.api_key ||= self.class.make_token
+    self.api_key ||= make_token
   end
 
   def before_save
@@ -404,7 +404,7 @@ class User < Sequel::Model
     # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
-    $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
+    $users_metadata.HSET(key, 'map_key', make_token) if locked?
     db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
@@ -599,7 +599,6 @@ class User < Sequel::Model
     # Mark as changing passwords
     @changing_passwords = true
 
-    @old_password = old_password
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
@@ -607,28 +606,29 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
-    return unless validate_different_passwords(@old_password, @new_password)
+    return unless validate_password_not_in_use(old_password, @new_password)
 
     self.password = new_password_value
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    unless different_passwords?(old_password, new_password)
+  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
+    if password_in_use?(old_password, new_password)
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
   end
 
-  def different_passwords?(old_password = nil, new_password = nil)
-    return true if new? || (@changing_passwords && !old_password)
-    old_password = carto_user.crypted_password_was unless old_password.present?
-    new_password = crypted_password unless old_password.present? && new_password.present?
-
-    old_password.present? && old_password != new_password
+  def password_in_use?(old_password = nil, new_password = nil)
+    return false if new? || (@changing_passwords && !old_password)
+    return old_password == new_password if old_password
+    old_crypted_password = carto_user.crypted_password_was
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -672,8 +672,9 @@ class User < Sequel::Model
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
-    self.crypted_password = self.class.password_digest(value, salt)
+    self.salt = ""
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
     set_last_password_change_date
   end
 
@@ -694,7 +695,7 @@ class User < Sequel::Model
   end
 
   def database_password
-    crypted_password + database_username
+    Carto::Common::EncryptionService.hex_digest(crypted_password) + database_username
   end
 
   def user_database_host
@@ -1741,20 +1742,19 @@ class User < Sequel::Model
   end
 
   def copy_account_features(to)
-    to.set_fields(self, [
-      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
-      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
-      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
-      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
-      :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
-      :here_isolines_block_price, :soft_here_isolines_limit, :obs_snapshot_quota,
-      :obs_snapshot_block_price, :soft_obs_snapshot_limit, :obs_general_quota,
-      :obs_general_block_price, :soft_obs_general_limit
-    ])
-    to.invite_token = ::User.make_token
+    attributes_to_copy = %i(
+      private_tables_enabled sync_tables_enabled max_layers user_timeout database_timeout geocoding_quota map_view_quota
+      table_quota public_map_quota regular_api_key_quota database_host period_end_date map_view_block_price
+      geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
+      twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
+      here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
+      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit
+    )
+    to.set_fields(self, attributes_to_copy)
+    to.invite_token = make_token
   end
 
-  def regenerate_api_key(new_api_key = ::User.make_token)
+  def regenerate_api_key(new_api_key = make_token)
     invalidate_varnish_cache
     update api_key: new_api_key
   end
@@ -2037,5 +2037,9 @@ class User < Sequel::Model
 
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
+  end
+
+  def make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

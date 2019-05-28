@@ -16,6 +16,10 @@ defaults: &defaults
   http_port:           3000 # nil|integer. HTTP port to use when building urls. Leave empty to use default (80)
   https_port:          # nil|integer. HTTPS port to use when building urls. Leave empty to use default (443)
   secret_token:       '71c2b25921b84a1cb21c71503ab8fb23'
+  # It's recommended to generate a new secret_key_base for each installation using `bundle exec rake secret`
+  secret_key_base:    '65903fa751affcdd71a9eb09308bcb404c50c8df03414db849ea22fbe8d4aae9ff344f6594630eb9c8367b4fd8ed2211d0342a49df473dccc27ae0be120b25ab'
+  # It's recommended to generate a new password_secret (pepper for password encryption) for each installation using `bundle exec rake secret`
+  password_secret:    'cc914bbbfa1d7156ec1424260d3a3214f3d1720aae872c1a5887f918929d0fec6f048d708f1ca79b4e43d20b4b623726e656917c9b8f2de0ea6c18e2ee80ce89'
   account_host:       'localhost.lan:3000'
   # Here you can define other hosts different to account_host that also will be CORS enabled
   # cors_enabled_hosts:
@@ -135,7 +139,7 @@ defaults: &defaults
     protocol: 'https'
     username: 'common-data'
     # base_url: 'https://common-data.carto.com'
-    format: 'shp'
+    format: 'gpkg'
     generate_every: 86400
   explore_api:
     username: ''
@@ -169,6 +173,7 @@ defaults: &defaults
     critical: false
     host: '127.0.0.1'
     port: 6082
+    http_port: 6081
     purge_command: 'purge'
     retries: 5
     timeout: 5

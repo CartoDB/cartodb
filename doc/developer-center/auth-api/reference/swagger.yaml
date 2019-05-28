@@ -1,0 +1,571 @@
+openapi: 3.0.0
+info:
+  title: Auth API
+  description: >
+    # Introduction
+
+    This API allows you to manage API keys. API keys are the fundamental
+    building block of CARTO's authorization system. See this this guide for more
+    information.
+
+
+    This API accepts and returns JSON.
+
+    API base endpoint is `https://<your_username>.carto.com/api/v3/api_keys` or `https://<org_name>.carto.com/u/<your_username/api/v3/api_keys` in case you are using a user belonging to an organization.
+
+    # Authorization
+
+    There are three different API Keys that provide with different access privileges:
+
+    1. `default`: This API provides access to all public objects. It cannot be removed.
+
+    1. `master`: Using this API Key you will have full access and will be able to create/manage `regular` API Keys. It cannot be removed. You should keep its token safe and use it only when strictly necessary.
+
+    1. `regular`: This API Keys can be created with custom access privileges and can also be removed.
+
+    # API Key format
+
+    Every API Key consists on four main parts:
+
+    1. **name**: You will choose it when creating the API Key and it will be used for indexing your API Keys.
+
+    1. **type**: As mentioned before, there are three type of API Keys: `default`, `master` and `regular` providing different levels of access.
+
+    1. **token**: It will be used for authenticating your requests.
+
+    1. **grants**: Describes which APIs this API Key provides access to and to which tables. It consists on an array of two JSON objects. This object's `type` attribute can be `apis`, `database` or `dataservices`:
+
+        - `apis`: Describes which APIs does this API Key provide access to through `apis` attribute:
+        ```{
+              {
+                    "type": "apis",
+                    "apis": [
+                        "sql",
+                        "maps"
+                    ]
+              }
+        ```
+        - `database`: Describes to which tables and which privleges on each table this API Key grants access to though `tables` attribute:
+        ```{
+              {
+                    "type": "database",
+                    "tables": [
+                        {
+                            "schema": "public",
+                            "name": "my_table",
+                            "permissions": [
+                                "insert",
+                                "select",
+                                "update"
+                            ]
+                        }
+                    ]
+              }
+        ```
+        - `dataservices`: Describes to which data services this API Key grants access to though `services` attribute:
+        ```{
+              {
+                    "type": "dataservices",
+                    "services": [
+                        "geocoding",
+                        "routing",
+                        "isolines",
+                        "observatory"
+                    ]
+              }
+        ```
+
+    # Authentication
+
+    In order to authenticate your requests to the API, they need to include a `Basic` `Authentication` header, where the `username` would be your username and the `password` would be your API Key's token. This authentication method will be valid across all CARTO components (Auth API, Maps API, SQL API). You can build your own `Authorization` header as follows:
+
+
+    ```
+    "Basic #{Base64.strict_encode64(username + ':' + api_key.token)}"
+    ```
+
+
+    **Important:** The API key you provide to access Auth API must be of type
+    `master`.
+  version: 0.0.1
+  contact:
+    name: Have you found an error? Github issues
+    url: 'https://github.com/CartoDB/cartodb/issues/new'
+servers:
+  - url: 'https://{user}.carto.com/api/v3'
+    description: Production server (uses live data)
+    variables:
+      domain:
+        default: carto.com
+        description: 'If on premise, change it to your domain'
+      user:
+        default: username
+        description: Your username
+paths:
+  /api_keys:
+    get:
+      summary: List API keys
+      description: Returns the API keys list.
+      tags:
+        - API Keys
+      operationId: getApiKeys
+      parameters:
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Limits number of API Keys listed
+          required: false
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Defines what page to fetch
+          required: false
+        - in: query
+          name: order
+          schema:
+            type: string
+          description: Its used to define the critera by which API Keys are listed. It can be any of the attributes
+          required: false
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiKeys'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+
+    post:
+      summary: Create API key
+      description: >-
+        Creates a `regular` API key. `master` and `default_public` API Keys are automatically generated on
+        user's creation.
+      tags:
+        - API Keys
+      operationId: createApiKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyCreation'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/BadInput'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+
+  '/api_keys/{name}':
+    parameters:
+      - $ref: '#/components/parameters/apiKeyName'
+    get:
+      summary: Get API key
+      description: >-
+        Returns an API key based on its `name`.
+
+      tags:
+        - API Keys
+      operationId: getApiKeyById
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+
+    delete:
+      summary: Delete API key
+      description: >-
+        Deletes an API key based on it's `name`. Only `regular` API keys can be
+        deleted.
+      tags:
+        - API Keys
+      operationId: deleteApiKeyById
+      responses:
+        '200':
+          description: The resource was deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+
+  '/api_keys/{name}/token/regenerate':
+    parameters:
+      - $ref: '#/components/parameters/apiKeyName'
+    post:
+      summary: Regenerate API key token
+      description: Regenerates the API key token. The rest of the fields remain the same.
+      tags:
+        - API Keys
+      operationId: regenerateApiKeyById
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+
+components:
+  schemas:
+    ApiKeys:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of API Keys
+        count:
+          type: integer
+          description: Number of returned API Keys
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiKey'
+        _links:
+          type: object
+          properties:
+            first:
+              $ref: '#/components/schemas/Links'
+              description: Link to the first page
+            prev:
+              $ref: '#/components/schemas/Links'
+              description: Link to the previous page
+            next:
+              $ref: '#/components/schemas/Links'
+              description: Link to the next page
+            last:
+              $ref: '#/components/schemas/Links'
+              description: Link to the last page
+      example:
+        total: 3
+        count: 3
+        result:
+          - name: Master
+            user:
+              username: amartin
+            type: master
+            token: slxIYwIDyEGGS2W9W-uEKw
+            grants:
+              - type: apis
+                apis:
+                  - sql
+                  - maps
+              - type: database
+                tables: []
+              - type: dataservices
+                services:
+                  - geocoding
+                  - routing
+                  - isolines
+                  - observatory
+            created_at: '2018-02-08 14:24:41 +0000'
+            updated_at: '2018-02-08 14:24:41 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/Master'
+          - name: MyTableApi
+            user:
+              username: amartin
+            type: regular
+            token: moLv8B-kotcjUL-uxMhbGg
+            grants:
+              - type: apis
+                apis:
+                  - maps
+              - type: database
+                tables:
+                  - schema: public
+                    name: my_table
+                    permissions:
+                      - insert
+                      - select
+                      - update
+              - type: dataservices
+                services:
+                  - geocoding
+                  - observatory
+            created_at: '2018-02-14 13:23:12 +0000'
+            updated_at: '2018-02-14 13:23:12 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/MyTableApi'
+          - name: Default public
+            user:
+              username: amartin
+            type: default
+            token: default_public
+            grants:
+              - type: apis
+                apis:
+                  - sql
+                  - maps
+              - type: database
+                tables: []
+            created_at: '2018-02-15 13:50:36 +0000'
+            updated_at: '2018-02-15 13:50:36 +0000'
+            _links:
+              self: 'https://carto.com/api/v3/api_keys/Default%20public'
+        _links:
+          first:
+            href: 'https://carto.com/api/v3/api_keys?order=updated_at&page=1&per_page=20'
+          last:
+            href: 'https://carto.com/api/v3/api_keys?order=updated_at&page=1&per_page=20'
+
+    ApiKey:
+      allOf:
+        - type: object
+          properties:
+            name:
+              type: string
+            user:
+              properties:
+                username:
+                  type: string
+            type:
+              $ref: '#/components/schemas/ApiKeysTypes'
+            token:
+              type: string
+            grants:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/ApisGrant'
+                  - $ref: '#/components/schemas/GrantDatabase'
+                  - $ref: '#/components/schemas/GrantDataservices'
+            _links:
+              type: object
+              properties:
+                self:
+                  $ref: '#/components/schemas/Links'
+                  description: Link to the resource
+        - $ref: '#/components/schemas/Timestamps'
+      required:
+        - name
+        - type
+        - grants
+      example:
+        name: MyTableApi
+        user:
+          username: amartin
+        type: regular
+        token: moLv8B-kotcjUL-uxMhbGg
+        grants:
+          - type: apis
+            apis:
+              - maps
+          - type: database
+            tables:
+              - schema: public
+                name: my_table
+                permissions:
+                  - insert
+                  - select
+                  - update
+          - type: dataservices
+            services:
+              - geocoding
+              - observatory
+        created_at: '2018-02-14 13:23:12 +0000'
+        updated_at: '2018-02-14 13:23:12 +0000'
+        _links:
+          self:
+            href: 'http://amartin.carto.com/api/v3/api_keys/MyTableApi'
+
+    ApiKeyCreation:
+      type: object
+      properties:
+        name:
+          type: string
+          description: For identifying your API Key
+        grants:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/GrantDatabase'
+              - $ref: '#/components/schemas/ApisGrant'
+              - $ref: '#/components/schemas/GrantDataservices'
+            discriminator:
+              propertyName: type
+      required:
+        - name
+        - grants
+      example:
+        name: MyTableApi
+        grants:
+          - type: apis
+            apis:
+              - maps
+          - type: database
+            tables:
+              - schema: public
+                name: my_table
+                permissions:
+                  - select
+                  - update
+                  - insert
+          - type: dataservices
+            services:
+              - geocoding
+              - observatory
+    GrantDataservices:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - dataservices
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dataservices'
+          uniqueItems: true
+      required:
+        - type
+        - services
+    Dataservices:
+      type: string
+      enum:
+        - geocoding
+        - routing
+        - isolines
+        - observatory
+
+    GrantDatabase:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - database
+        tables:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableGrant'
+      required:
+        - type
+        - tables
+    TableGrant:
+      type: object
+      properties:
+        name:
+          type: string
+        schema:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+            enum:
+              - select
+              - insert
+              - update
+              - delete
+          uniqueItems: true
+      required:
+        - name
+        - schema
+        - permissions
+    ApisGrant:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - apis
+        apis:
+          type: array
+          items:
+            $ref: '#/components/schemas/Apis'
+          uniqueItems: true
+      required:
+        - type
+        - apis
+    Apis:
+      type: string
+      enum:
+        - sql
+        - maps
+    ApiKeysTypes:
+      type: string
+      enum:
+        - master
+        - default
+        - regular
+    Timestamps:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Links:
+      type: object
+      properties:
+        href:
+          type: string
+          format: url
+          description: link to the resource
+  securitySchemes:
+    ApiKeyHTTPBasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyQueryParam:
+      type: apiKey
+      in: header
+      name: api_key
+  parameters:
+    apiKeyName:
+      in: path
+      name: name
+      required: true
+      schema:
+        type: string
+      description: the API key `name`
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized. Wrong or no authentication provided.
+    Forbidden:
+      description: Forbidden. The API key does not authorize this request.
+    BadInput:
+      description: Request's parameters error

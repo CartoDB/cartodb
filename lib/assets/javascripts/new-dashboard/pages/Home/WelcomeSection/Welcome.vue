@@ -1,5 +1,5 @@
 <template>
-  <section class="welcome-section">
+  <section class="welcome-section" :class="{ 'is-user-notification': isNotificationVisible }">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
@@ -15,7 +15,6 @@
 <script>
 import { mapState } from 'vuex';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
@@ -24,7 +23,6 @@ import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
 export default {
   name: 'Welcome',
   components: {
-    CreateButton,
     WelcomeBasic,
     WelcomeCompact,
     WelcomeFirst
@@ -39,6 +37,9 @@ export default {
       organization: state => state.user.organization,
       notifications: state => state.user.organizationNotifications
     }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
     },
@@ -56,7 +57,7 @@ export default {
       }
 
       if (this.isInTrial()) {
-        return 'trial';
+        return '30day';
       }
 
       if (this.isFreeUser()) {
@@ -91,3 +92,10 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.welcome-section.is-user-notification {
+  margin-top: $notification-warning__height;
+}
+</style>

@@ -61,7 +61,6 @@ WORKING_SPECS_1 = \
 	spec/lib/image_metadata_spec.rb \
 	spec/lib/central_spec.rb \
 	spec/lib/trending_maps_spec.rb \
-	spec/lib/explore_api_spec.rb \
 	spec/lib/user_account_creator_spec.rb \
 	spec/lib/carto/filename_generator_spec.rb \
 	spec/lib/carto/http_header_authentication_spec.rb \
@@ -83,8 +82,8 @@ WORKING_SPECS_1 = \
 	spec/services/carto/data_library_service_spec.rb \
 	spec/services/carto/user_authenticator_spec.rb \
 	spec/requests/sessions_controller_spec.rb \
-	spec/services/carto/visualizations_export_service_spec.rb \
 	spec/services/carto/visualizations_export_service_2_spec.rb \
+	spec/services/carto/visualization_backup_service_spec.rb \
 	$(NULL)
 
 WORKING_SPECS_2 = \
@@ -334,6 +333,8 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/tasks/layers_rake_spec.rb \
 	spec/lib/tasks/fix_unique_legends_spec.rb \
 	spec/lib/tasks/oauth_rake_spec.rb \
+	spec/lib/tasks/user_rake_spec.rb \
+	spec/lib/tasks/user_database_host_update_rake_spec.rb \
 	spec/models/carto/username_proposer_spec.rb \
 	spec/services/carto/overquota_users_service_spec.rb \
 	spec/services/visualization/common_data_service_spec.rb \
@@ -350,6 +351,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/tag_query_builder_spec.rb \
 	spec/requests/carto/api/tags_controller_spec.rb \
 	spec/lib/carto/oauth/google/api_spec.rb \
+	spec/queries/carto/dashboard_preview_searcher_spec.rb \
+	spec/requests/carto/api/search_preview_controller_spec.rb \
+	spec/tasks/passwords_rake_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

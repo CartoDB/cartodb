@@ -1818,95 +1818,83 @@ describe User do
     organization.destroy
   end
 
-  it "Tests password change" do
-    new_valid_password = '000123456'
+  describe "#change_password" do
+    before(:all) do
+      @new_valid_password = '000123456'
+      @user3 = create_user(password: @user_password)
+    end
 
-    old_crypted_password = @user.crypted_password
+    after(:all) do
+      @user3.destroy
+    end
 
-    @user.change_password('aaabbb', new_valid_password, new_valid_password)
-    @user.valid?.should eq false
+    it "updates crypted_password" do
+      initial_crypted_password = @user3.crypted_password
+      @user3.change_password(@user_password, @new_valid_password, @new_valid_password)
+      @user3.valid?.should eq true
+      @user3.save(raise_on_failure: true)
+      @user3.crypted_password.should_not eql initial_crypted_password
 
-    @user.errors.fetch(:old_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/) # "to_s" of validation msg
+      @user3.change_password(@new_valid_password, @user_password, @user_password)
+      @user3.save(raise_on_failure: true)
+    end
 
-    @user.change_password(@user_password, 'aaabbb', 'bbbaaa')
-    @user.valid?.should eq false
-    @user.errors.fetch(:new_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
+    it "checks old password" do
+      @user3.change_password('aaabbb', @new_valid_password, @new_valid_password)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:old_password).nil?.should eq false
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, /old_password Old password not valid/)
+    end
 
-    @user.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
-    @user.valid?.should eq false
-    @user.errors.fetch(:old_password).nil?.should eq false
-    @user.errors.fetch(:new_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password doesn't match confirmation")
+    it "checks password confirmation" do
+      @user3.change_password(@user_password, 'aaabbb', 'bbbaaa')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, "new_password doesn't match confirmation")
+    end
 
-    @user.change_password(@user_password, 'tiny', 'tiny')
-    @user.valid?.should eq false
-    @user.errors.fetch(:new_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
+    it "can throw several errors" do
+      @user3.change_password('aaaaaa', 'aaabbb', 'bbbaaa')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:old_password).nil?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expected_errors = "old_password Old password not valid, new_password doesn't match confirmation"
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, expected_errors)
+    end
 
-    long_password = 'long' * 20
-    @user.change_password(@user_password, long_password, long_password)
-    @user.valid?.should eq false
-    @user.errors.fetch(:new_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
+    it "checks minimal length" do
+      @user3.change_password(@user_password, 'tiny', 'tiny')
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, "new_password must be at least 6 characters long")
+    end
 
-    @user.change_password('aaaaaa', nil, nil)
-    @user.valid?.should eq false
-    @user.errors.fetch(:old_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
+    it "checks maximal length" do
+      long_password = 'long' * 20
+      @user3.change_password(@user_password, long_password, long_password)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, "new_password must be at most 64 characters long")
+    end
 
-    @user.change_password(@user_password, nil, nil)
-    @user.valid?.should eq false
-    @user.errors.fetch(:new_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
-
-    @user.change_password(nil, nil, nil)
-    @user.valid?.should eq false
-    @user.errors.fetch(:old_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid, new_password can't be blank")
-
-    @user.change_password(nil, new_valid_password, new_valid_password)
-    @user.valid?.should eq false
-    @user.errors.fetch(:old_password).nil?.should eq false
-    expect {
-      @user.save(raise_on_failure: true)
-    }.to raise_exception(Sequel::ValidationFailed, "old_password Old password not valid")
-
-    @user.change_password(@user_password, new_valid_password, new_valid_password)
-    @user.valid?.should eq true
-    @user.save
-
-    new_crypted_password = @user.crypted_password
-
-    (old_crypted_password != new_crypted_password).should eq true
-
-    @user.change_password(new_valid_password, @user_password, @user_password)
-    @user.valid?.should eq true
-    @user.save
-
-    @user.crypted_password.should eq old_crypted_password
-
-    last_password_change_date = @user.last_password_change_date
-    @user.change_password(@user_password, @user_password, @user_password)
-    @user.save
-    @user.last_password_change_date.should eq last_password_change_date
+    it "checks that the new password is not nil" do
+      @user3.change_password(@user_password, nil, nil)
+      @user3.valid?.should eq false
+      @user3.errors.fetch(:new_password).nil?.should eq false
+      expect {
+        @user3.save(raise_on_failure: true)
+      }.to raise_exception(Sequel::ValidationFailed, "new_password can't be blank")
+    end
   end
 
   describe "when user is signed up with google sign-in and don't have any password yet" do
@@ -2988,6 +2976,38 @@ describe User do
         expect(org_user2.password_expired?).to be_false
         Delorean.back_to_the_present
       end
+    end
+  end
+
+  describe 'ghost tables event trigger' do
+    it 'creates the cdb_ddl_execution table with the user' do
+      table_name = @user.in_database(as: :superuser)
+                        .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                        .first[:to_regclass]
+      table_name.should eql 'cdb_ddl_execution'
+    end
+
+    it 'removes the cdb_ddl_execution table when calling drop_ghost_tables_event_trigger' do
+      @user.db_service.drop_ghost_tables_event_trigger
+
+      table_name = @user.in_database(as: :superuser)
+                        .fetch("SELECT to_regclass('cartodb.cdb_ddl_execution');")
+                        .first[:to_regclass]
+      table_name.should be_nil
+
+      @user.db_service.create_ghost_tables_event_trigger
+    end
+
+    it 'saves the TIS config from app_config.yml to cdb_conf' do
+      CartoDB::UserModule::DBService.any_instance.unstub(:configure_ghost_table_event_trigger)
+      user = create_user
+
+      cdb_conf = user.in_database(as: :superuser)
+                     .fetch("SELECT cartodb.CDB_Conf_GetConf('invalidation_service')").first[:cdb_conf_getconf]
+      cdb_conf.should be
+
+      user.destroy
+      CartoDB::UserModule::DBService.any_instance.stubs(:configure_ghost_table_event_trigger).returns(true)
     end
   end
 

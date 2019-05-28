@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Selector.vue should render properly 1`] = `
+<div tabindex="0" class="selector">
+  <div>
+    <h3 class="selector__title title is-body is-medium u-mb--8">
+      JavaScript Tutorial
+    </h3>
+    <p class="text is-caption">This a fake description</p>
+  </div>
+  <ul class="selector__tags">
+    <li class="selector__tags-item title">Fake tag</li>
+    <li class="selector__tags-item title">More fake tag</li>
+  </ul>
+</div>
+`;

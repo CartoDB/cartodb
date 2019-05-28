@@ -42,12 +42,7 @@
     <div class="card-text">
       <div class="card-header" :class="{ 'card-header__no-description': !sectionsToShow.description}">
         <h2 :title="visualization.name" class="card-title title is-caption" :class="{'title-overflow': (titleOverflow || isStarInNewLine) && !singleLineTitle, 'single-line': singleLineTitle}">
-          <template v-if="singleLineTitle">
-            <span class="title-element">{{ visualization.name }}</span>&nbsp;
-          </template>
-          <template v-else>
-            {{ visualization.name }}&nbsp;
-          </template>
+          <span :class="{ 'title-element': singleLineTitle }">{{ visualization.name }}</span>
           <span
             v-if="showInteractiveElements"
             class="card-favorite"
@@ -65,12 +60,12 @@
       </div>
 
       <ul class="card-metadata">
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && !isSharedWithMe">
           <span class="icon icon--privacy" :class="privacyIcon"></span>
           <p>{{ $t(`MapCard.shared.${visualization.privacy}`) }} <span v-if="showViews">| {{ $t(`MapCard.views`, { views: numberViews })}}</span></p>
         </li>
 
-        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isShared">
+        <li class="card-metadataItem text is-caption" v-if="sectionsToShow.privacy && isSharedWithMe">
           <span class="icon icon--privacy icon--sharedBy" :style="{ backgroundImage: `url('${visualization.permission.owner.avatar_url}')` }"></span>
           <p>{{ $t(`MapCard.sharedBy`, { owner: visualization.permission.owner.username })}}</p>
         </li>
@@ -81,7 +76,7 @@
         </li>
 
         <li class="card-metadataItem text is-caption" v-if="sectionsToShow.tags">
-          <span class="icon"><img inline-svg src="../../assets/icons/maps/tag.svg"></span>
+          <span class="icon"><img class="icon__tags" svg-inline src="../../assets/icons/common/tag.svg"></span>
 
           <ul class="card-tags" v-if="tagsChars <= maxTagsChars">
             <li v-for="(tag, index) in visualization.tags" :key="tag">
@@ -194,22 +189,27 @@ export default {
 .card {
   position: relative;
   height: 100%;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid $light-grey;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid $border-color;
+  border-radius: 2px;
+  background-clip: padding-box;
   background-color: $white;
 
   &:hover {
+    border-color: transparent;
+    box-shadow: $card__shadow;
     cursor: pointer;
 
     &:not(.card--child-hover) {
       .card-title {
         color: $primary-color;
+        text-decoration: underline;
       }
     }
 
     &.card--child-hover {
       .card-title {
-        color: $text-color;
+        color: $text__color;
       }
 
       .card-tags {
@@ -258,7 +258,7 @@ export default {
 
 .card-text {
   padding: 24px 16px;
-  color: $text-color;
+  color: $text__color;
 }
 
 .card-media {
@@ -309,7 +309,7 @@ export default {
   max-height: 48px;
   margin-bottom: 8px;
   overflow: hidden;
-  transition: background 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &.title-overflow {
     padding-right: 24px;
@@ -346,7 +346,7 @@ export default {
   margin-bottom: 8px;
 
   a {
-    color: $text-color;
+    color: $text__color;
     text-decoration: none;
   }
 
@@ -355,7 +355,7 @@ export default {
   }
 
   a:hover {
-    color: $text-color;
+    color: $text__color;
     text-decoration: underline;
   }
 
@@ -392,6 +392,15 @@ export default {
       border-radius: 2px;
       background-size: contain;
     }
+
+    .icon__tags {
+      width: 16px;
+      height: 16px;
+
+      g {
+        fill: $text__color;
+      }
+    }
   }
 }
 
@@ -426,7 +435,7 @@ export default {
 }
 
 .card-favorite {
-  margin-left: 4px;
+  margin-left: 8px;
   opacity: 0;
 
   svg {

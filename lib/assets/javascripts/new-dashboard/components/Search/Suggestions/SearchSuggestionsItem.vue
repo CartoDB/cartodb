@@ -1,11 +1,22 @@
 <template>
-  <a
-    :href="item.url || visualizationURL"
-    class="suggestions__item text is-caption"
-    :class="`suggestions__item--${item.type}`"
-    @click="onItemClicked">
-    {{item.name}}
-  </a>
+  <div>
+    <router-link
+      v-if="isTagType"
+      :to="{ name: 'tagSearch', params: { tag: item.name } }"
+      :staticRoute="`/dashboard/search/tag/${item.name}`"
+      class="suggestions__item text is-caption suggestions__item--tag">
+      {{item.name}}
+    </router-link>
+    <a
+      v-else
+      :href="item.url || visualizationURL"
+      class="suggestions__item text is-caption"
+      :class="`suggestions__item--${item.type}`"
+      @click="onItemClicked"
+      target="_blank">
+      {{item.name}}
+    </a>
+  </div>
 </template>
 
 <script>
@@ -19,6 +30,9 @@ export default {
   computed: {
     visualizationURL () {
       return Visualization.getURL(this.$props.item, this.$cartoModels);
+    },
+    isTagType () {
+      return this.$props.item.type === 'tag';
     }
   },
   methods: {
@@ -36,13 +50,21 @@ export default {
   display: block;
   position: relative;
   width: 100%;
-  padding: 16px 16px 16px 36px;
+  padding: 12px 16px 12px 36px;
   overflow: hidden;
-  color: $text-color;
+  color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $softblue;
+  }
+
+  &:first-of-type {
+    border-top: 1px solid $border-color--dark;
+  }
 
   &::after {
     content: '';
@@ -61,8 +83,7 @@ export default {
 .suggestions--active {
   .suggestions__item {
     background-color: rgba($primary-color, 0.05);
-    color: $primary-color;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 
@@ -75,6 +96,12 @@ export default {
 .suggestions__item--table {
   &::after {
     background-image: url('../../../assets/icons/navbar/search/search-data.svg');
+  }
+}
+
+.suggestions__item--tag {
+  &::after {
+    background-image: url('../../../assets/icons/navbar/search/search-tags.svg');
   }
 }
 </style>

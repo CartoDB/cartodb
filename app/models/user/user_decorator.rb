@@ -1,7 +1,6 @@
 module CartoDB
   module UserDecorator
     include AccountTypeHelper
-    BUILDER_ACTIVATION_DATE = Date.new(2016, 11, 11).freeze
 
     # Options:
     # - show_api_calls: load api calls. Default: true.
@@ -23,6 +22,8 @@ module CartoDB
         account_type: account_type,
         account_type_display_name: plan_name(account_type),
         table_quota: table_quota,
+        public_map_quota: public_map_quota,
+        regular_api_key_quota: regular_api_key_quota,
         table_count: table_count,
         public_visualization_count: public_visualization_count,
         all_visualization_count: all_visualization_count,
@@ -95,7 +96,6 @@ module CartoDB
         upgraded_at: upgraded_at,
         show_trial_reminder: trial_ends_at.present?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
-        show_builder_activated_message: created_at < BUILDER_ACTIVATION_DATE,
         actions: {
           private_tables: private_tables_enabled,
           private_maps: private_maps_enabled?,

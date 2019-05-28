@@ -27,7 +27,9 @@
         </template>
 
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.createDataset`) }}</CreateButton>
+          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
+            {{ $t(`DataPage.createDataset`) }}
+          </CreateButton>
         </template>
       </SectionTitle>
     </div>
@@ -41,12 +43,16 @@
           <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
         </template>
       </InitialState>
     </div>
 
-    <div class="grid-cell grid-cell--noMargin grid-cell--col12" v-if="shouldShowHeader">
+    <div
+        v-if="shouldShowHeader"
+        class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+        :class="{ 'is-user-notification': isNotificationVisible }">
+
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
 
@@ -127,10 +133,6 @@ export default {
       lastCheckedItem: null
     };
   },
-  created: function () {
-    this.$store.dispatch('datasets/setResultsPerPage', this.maxVisibleDatasets);
-    this.fetchDatasets();
-  },
   computed: {
     ...mapState({
       appliedFilter: state => state.datasets.filterType,
@@ -145,14 +147,19 @@ export default {
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
+    canCreateDatasets () {
+      return this.$store.getters['user/canCreateDatasets'];
+    },
     pageTitle () {
-      return this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+      return this.selectedDatasets.length
+        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
+        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && !this.isFirstTimeViewingDashboard;
+      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&
@@ -162,7 +169,7 @@ export default {
         this.totalUserEntries <= 0;
     },
     emptyState () {
-      return (!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) &&
+      return ((!this.isFirstTimeViewingDashboard || this.hasSharedDatasets) || this.isFirstTimeViewerAfterAction) &&
         !this.isFetchingDatasets &&
         !this.currentEntriesCount;
     },
@@ -170,11 +177,18 @@ export default {
       const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
       return this.hasSharedDatasets ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
     },
+    isFirstTimeViewerAfterAction () {
+      // First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
+      return this.isFirstTimeViewingDashboard && this.currentEntriesCount <= 0 && !this.hasFilterApplied('mine');
+    },
     hasSharedDatasets () {
       return this.totalShared > 0;
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {
@@ -239,13 +253,21 @@ export default {
   width: 100%;
 }
 
+.grid__head--sticky {
+  top: 64px;
+}
+
+.grid__head--sticky.is-user-notification {
+  top: 64px + $notification-warning__height;
+}
+
 .pagination-element {
   margin-top: 64px;
 }
 
 .dataset-item {
   &:not(:last-child) {
-    border-bottom: 1px solid $light-grey;
+    border-bottom: 1px solid $border-color;
   }
 }
 

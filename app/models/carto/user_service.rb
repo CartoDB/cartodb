@@ -1,12 +1,11 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'cartodb-common'
 require_dependency 'carto/db/connection'
 
 module Carto
   class UserService
-
-    AUTH_DIGEST = '47f940ec20a0993b5e9e4310461cc8a6a7fb84e3'
 
     def initialize(user_model)
       @user = user_model
@@ -116,18 +115,6 @@ module Carto
       end
     end
 
-    def self.password_digest(password, salt)
-      digest = AUTH_DIGEST
-      10.times do
-        digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-      end
-      digest
-    end
-
-    def self.make_token
-      secure_digest(Time.now, (1..10).map{ rand.to_s })
-    end
-
     def cartodb_extension_version_pre_mu?
       current_version = cartodb_extension_semver(cartodb_extension_version)
       if current_version.size == 3
@@ -148,8 +135,6 @@ module Carto
       ).first['org_member_role']
     end
 
-    private
-
     # Returns a tree elements array with [major, minor, patch] as in http://semver.org/
     def cartodb_extension_semver(extension_version)
       extension_version.split('.').take(3).map(&:to_i)
@@ -160,12 +145,8 @@ module Carto
                                                                    .first['v']
     end
 
-    def self.secure_digest(*args)
-      Digest::SHA1.hexdigest(args.flatten.join('--'))
-    end
-
     def database_password
-      @user.crypted_password + database_username
+      Carto::Common::EncryptionService.hex_digest(@user.crypted_password) + database_username
     end
 
     def in_database(options = {})

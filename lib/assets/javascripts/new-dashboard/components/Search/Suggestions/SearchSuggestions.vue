@@ -3,16 +3,17 @@
     <ul v-if="searchResults" class="suggestions__content">
       <li :class="{'suggestions--active': activeSuggestionIndex === 0 }" @mouseover="updateActiveSuggestion(0)">
         <router-link
-          :to="{ name: searchRoute, params: searchRouteParameters }"
           class="suggestions__header is-caption text"
           :class="{ 'suggestions__header--loading': isFetching }"
+          :to="{ name: searchRoute, params: searchRouteParameters }"
+          :staticRoute="`/dashboard/search/${query}`"
           v-if="query"
           @click.native="onPageChange">
-          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_entries }} results</span>
+          {{ query }} <span v-if="!isFetching">- {{ searchResults.total_count }} results</span>
         </router-link>
       </li>
-      <li v-for="(visualization, index) in searchResults.visualizations" :key="visualization.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
-        <SearchSuggestionsItem :item="visualization" @itemClick="onPageChange"/>
+      <li v-for="(result, index) in searchResults.result" :key="result.id" :class="{'suggestions--active': activeSuggestionIndex === index + 1}"  @mouseover="updateActiveSuggestion(index + 1)">
+        <SearchSuggestionsItem :item="result" @itemClick="onPageChange"/>
       </li>
     </ul>
   </section>
@@ -41,7 +42,7 @@ export default {
   data () {
     return {
       isFetching: true,
-      searchResults: [],
+      searchResults: {},
       client: new CartoNode.AuthenticatedClient(),
       activeSuggestionIndex: -1
     };
@@ -50,7 +51,7 @@ export default {
     query (newQuery) {
       if (newQuery === '') {
         this.isFetching = false;
-        this.searchResults = [];
+        this.searchResults = {};
         return;
       }
 
@@ -61,44 +62,20 @@ export default {
 
   },
   computed: {
-    isSearchingTags () {
-      return this.query.includes(':');
-    },
     searchRoute () {
-      if (this.isSearchingTags) {
-        return 'tagSearch';
-      }
-
       return 'search';
     },
     searchRouteParameters () {
-      if (this.isSearchingTags) {
-        return { tag: this.query.substring(1) };
-      }
-
       return { query: this.query };
-    },
-    queryParameters () {
-      const queryParameters = {
-        types: 'derived,table',
-        per_page: 4
-      };
-
-      if (this.isSearchingTags) {
-        queryParameters.tags = this.query.substring(1);
-      }
-
-      if (!this.isSearchingTags) {
-        queryParameters.q = this.query;
-      }
-
-      return queryParameters;
     }
   },
   methods: {
     fetchSuggestions () {
-      this.client.getVisualization('',
-        this.queryParameters,
+      if (!this.query) {
+        return;
+      }
+
+      this.client.previewSearch(this.query,
 
         (err, _, data) => {
           this.isFetching = false;
@@ -106,7 +83,6 @@ export default {
           if (err) {
             return;
           }
-
           this.searchResults = data;
         }
       );
@@ -115,10 +91,10 @@ export default {
       this.$emit('pageChange');
     },
     getActiveSuggestionElement () {
-      return this.$el.querySelector('.suggestions--active a');
+      return this.$el.querySelector('.suggestions--active .suggestions__item');
     },
     keydownDown () {
-      if (this.activeSuggestionIndex < this.searchResults.visualizations.length) {
+      if (this.activeSuggestionIndex < this.searchResults.result.length) {
         this.activeSuggestionIndex++;
       }
     },
@@ -148,7 +124,7 @@ export default {
   left: 0;
   width: calc(100% - 16px);
   margin-top: 8px;
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   border-radius: 2px;
   opacity: 0;
   background-color: $white;
@@ -168,8 +144,7 @@ export default {
   width: 100%;
   padding: 16px 16px 16px 38px;
   overflow: hidden;
-  border-bottom: 1px solid $grey;
-  color: $text-color;
+  color: $primary-color;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -208,8 +183,7 @@ export default {
 .suggestions--active {
   .suggestions__header {
     background-color: rgba($primary-color, 0.05);
-    color: $primary-color;
-    text-decoration: none;
+    text-decoration: underline;
   }
 }
 

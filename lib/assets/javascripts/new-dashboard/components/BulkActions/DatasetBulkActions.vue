@@ -29,7 +29,7 @@ export default {
       return {
         single: [
           {
-            name: this.$t('BulkActions.datasets.selectAllDatasets'),
+            name: this.$t('BulkActions.datasets.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllMapsSelected
           },
@@ -39,28 +39,28 @@ export default {
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.changeDatasetPrivacy'),
+            name: this.$t('BulkActions.datasets.changePrivacy'),
             event: 'changePrivacy',
             shouldBeHidden: this.isAnyShared || this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.duplicateDataset'),
+            name: this.$t('BulkActions.datasets.duplicate'),
             event: 'duplicateDataset'
           },
           {
-            name: this.$t('BulkActions.datasets.lockDataset'),
+            name: this.$t('BulkActions.datasets.lock'),
             event: 'lockDataset',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.unlockDataset'),
+            name: this.$t('BulkActions.datasets.unlock'),
             event: 'unlockDataset',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
             shouldBeHidden: !this.areAllLocked
           },
           {
-            name: this.$t('BulkActions.datasets.deleteDataset'),
+            name: this.$t('BulkActions.datasets.delete'),
             event: 'deleteDataset',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
@@ -69,12 +69,12 @@ export default {
         ],
         multiple: [
           {
-            name: this.$t('BulkActions.datasets.selectAllDatasets'),
+            name: this.$t('BulkActions.datasets.selectAll'),
             event: 'selectAll',
             shouldBeHidden: this.areAllDatasetsSelected
           },
           {
-            name: this.$t('BulkActions.datasets.deselectAllDatasets'),
+            name: this.$t('BulkActions.datasets.deselectAll'),
             event: 'deselectAll'
           },
           {
@@ -83,19 +83,19 @@ export default {
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.lockDatasets'),
+            name: this.$t('BulkActions.datasets.lock'),
             event: 'lockDatasets',
             shouldBeDisabled: this.isAnyShared && !this.areAllLocked,
             shouldBeHidden: this.isAnyLocked
           },
           {
-            name: this.$t('BulkActions.datasets.unlockDatasets'),
+            name: this.$t('BulkActions.datasets.unlock'),
             event: 'unlockDatasets',
             shouldBeDisabled: this.isAnyShared && this.areAllLocked,
             shouldBeHidden: !this.areAllLocked
           },
           {
-            name: this.$t('BulkActions.datasets.deleteDatasets'),
+            name: this.$t('BulkActions.datasets.delete'),
             event: 'deleteDatasets',
             isDestructive: true,
             shouldBeDisabled: this.isAnyShared && !this.isAnyLocked,
@@ -108,7 +108,7 @@ export default {
       return this.selectedDatasets.length > 1 ? 'multiple' : 'single';
     },
     isAnyShared () {
-      return this.selectedDatasets.some(dataset => Visualization.isShared(dataset, this.$cartoModels));
+      return this.selectedDatasets.some(dataset => Visualization.isSharedWithMe(dataset, this.$cartoModels));
     },
     isAnyLocked () {
       return this.selectedDatasets.some(dataset => dataset.locked);
@@ -171,7 +171,7 @@ export default {
       bgPollingView._addDataset({
         type: 'duplication',
         table_name: `${Table.getUnqualifiedName(selectedDataset.name)}_copy`,
-        value: selectedDataset.name,
+        value: selectedDataset.table.name,
         create_vis: false
       });
       this.deselectAll();

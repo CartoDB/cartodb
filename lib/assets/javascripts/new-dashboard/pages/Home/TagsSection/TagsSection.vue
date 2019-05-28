@@ -35,7 +35,7 @@
 
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import TagCard from 'new-dashboard/components/TagCard';
+import TagCard from 'new-dashboard/components/Tag/TagCard';
 import Pagination from 'new-dashboard/components/Pagination';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import LoadingState from 'new-dashboard/components/States/LoadingState';

@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': isNotificationVisible }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -37,7 +37,7 @@
       <div class="navbar-user">
         <div class="navbar-avatar" :class="{'has-notification': notificationsCount}" :style="{ backgroundImage: `url('${user.avatar_url}')` }" @click.stop.prevent="toggleDropdown"></div>
         <UserDropdown :userModel="user" :notificationsCount="notificationsCount" :open="isDropdownOpen" :baseUrl="baseUrl" v-click-outside="closeDropdown" @linkClick="closeDropdown" />
-        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup"/>
+        <FeedbackPopup class="feedback-popup" v-if="shouldShowFeedbackPopup" @feedbackClick="onFeedbackClicked"/>
       </div>
       <span class="navbar-searchClose" @click="toggleSearch">
         <img svg-inline src="../../assets/icons/navbar/close.svg" />
@@ -63,6 +63,10 @@ export default {
     user: Object,
     baseUrl: String,
     notificationsCount: Number,
+    isNotificationVisible: {
+      type: Boolean,
+      default: false
+    },
     isFirstTimeInDashboard: Boolean,
     bundleType: {
       type: String,
@@ -99,16 +103,17 @@ export default {
       this.hasDropdownOpenedForFirstTime = true;
       this.isDropdownOpen = !this.isDropdownOpen;
     },
-
     closeDropdown () {
       this.isDropdownOpen = false;
     },
-
     toggleSearch () {
       this.isSearchOpen = !this.isSearchOpen;
     },
     isHomePage () {
       return (this.$route || {}).name === 'home';
+    },
+    onFeedbackClicked () {
+      this.toggleDropdown();
     }
   }
 };
@@ -120,7 +125,7 @@ export default {
 .navbar {
   display: flex;
   position: fixed;
-  z-index: 11;
+  z-index: $z-index__navbar;
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -217,7 +222,7 @@ export default {
   margin-left: 24px;
   overflow: hidden;
   border-radius: 50%;
-  background-color: $text-color-light;
+  background-color: $navbar-avatar__bg-color;
   background-size: cover;
 
   &.has-notification {
@@ -230,7 +235,7 @@ export default {
       height: 12px;
       border: 2px solid $primary-color;
       border-radius: 50%;
-      background-color: $notification;
+      background-color: $notification__bg-color;
     }
   }
 
@@ -267,9 +272,13 @@ export default {
   }
 }
 
+.navbar.is-user-notification {
+  margin-top: $notification-warning__height;
+}
+
 .feedback-popup {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 18px);
   right: 0;
 }
 </style>

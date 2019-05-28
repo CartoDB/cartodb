@@ -2,6 +2,7 @@
 require 'forwardable'
 require 'virtus'
 require 'json'
+require 'cartodb-common'
 require_relative '../markdown_render'
 require_relative './presenter'
 require_relative './name_checker'
@@ -47,7 +48,6 @@ module CartoDB
       PERMISSION_READONLY = CartoDB::Permission::ACCESS_READONLY
       PERMISSION_READWRITE = CartoDB::Permission::ACCESS_READWRITE
 
-      AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
       TOKEN_DIGEST = '6da98b2da1b38c5ada2547ad2c3268caa1eb58dc20c9144ead844a2eda1917067a06dcb54833ba2'.freeze
 
       VERSION_BUILDER = 3
@@ -165,7 +165,7 @@ module CartoDB
 
         if privacy == PRIVACY_PROTECTED
           validator.validate_presence_of_with_custom_message(
-            { encrypted_password: encrypted_password, password_salt: password_salt },
+            { encrypted_password: encrypted_password },
             "password can't be blank")
         end
 
@@ -229,17 +229,6 @@ module CartoDB
 
       def delete(from_table_deletion = false)
         raise CartoDB::InvalidMember.new(user: "Viewer users can't delete visualizations") if user.viewer
-
-        # from_table_deletion would be enough for canonical viz-based deletes,
-        # but common data loading also calls this delete without the flag to true, causing a call without a Map
-        begin
-          if user.has_feature_flag?(Carto::VisualizationsExportService::FEATURE_FLAG_NAME) && map
-            Carto::VisualizationsExportService.new.export(id)
-          end
-        rescue => exception
-          # Don't break deletion flow
-          CartoDB.notify_error(exception.message, error: exception.inspect, user: user, visualization_id: id)
-        end
 
         repository.transaction do
           unlink_self_from_list!
@@ -449,8 +438,9 @@ module CartoDB
 
       def password=(value)
         if value && value.size > 0
-          @password_salt = generate_salt if @password_salt.nil?
-          @encrypted_password = password_digest(value, @password_salt)
+          @password_salt = ""
+          @encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
           self.dirty = true
         end
       end
@@ -460,7 +450,8 @@ module CartoDB
       end
 
       def password_valid?(password)
-        has_password? && (password_digest(password, @password_salt) == @encrypted_password)
+        Carto::Common::EncryptionService.verify(password: password, secure_password: @encrypted_password,
+                                                salt: @password_salt, secret: Cartodb.config[:password_secret])
       end
 
       def remove_password
@@ -470,11 +461,7 @@ module CartoDB
 
       # To be stored with the named map
       def make_auth_token
-        digest = secure_digest(Time.now, (1..10).map{ rand.to_s })
-        10.times do
-          digest = secure_digest(digest, TOKEN_DIGEST)
-        end
-        digest
+        Carto::Common::EncryptionService.make_token(length: 64)
       end
 
       def get_auth_token
@@ -870,23 +857,6 @@ module CartoDB
       def configuration
         return {} unless defined?(Cartodb)
         Cartodb.config
-      end
-
-      def password_digest(password, salt)
-        digest = AUTH_DIGEST
-        10.times do
-          digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-        end
-        digest
-      end
-
-      def generate_salt
-        secure_digest(Time.now, (1..10).map{ rand.to_s })
-      end
-
-      def secure_digest(*args)
-        #noinspection RubyArgCount
-        Digest::SHA256.hexdigest(args.flatten.join)
       end
 
       def safe_sequel_delete

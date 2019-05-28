@@ -44,7 +44,7 @@ describe CartoDB::InternalGeocoder::Geocoder do
   def load_csv(path , table_name)
     @db.run("DROP TABLE IF EXISTS #{table_name}")
     @db.run("CREATE TABLE #{table_name} (the_geom geometry, cartodb_id integer, geo_string text)")
-    @db.run("COPY #{table_name.lit}(cartodb_id, geo_string) FROM '#{path}' DELIMITER ',' CSV")
+    @db.run("COPY #{Sequel.lit(table_name)}(cartodb_id, geo_string) FROM '#{path}' DELIMITER ',' CSV")
   end # create_table
 
 end # CartoDB::GeocoderCache

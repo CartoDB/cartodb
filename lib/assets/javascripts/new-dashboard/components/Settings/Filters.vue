@@ -1,6 +1,6 @@
 <template>
-<div class="section section--noBorder">
-  <h6 class="text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.filter') }}</h6>
+<div class="filters">
+  <h6 class="filters-title text is-xsmall is-txtSoftGrey u-tupper letter-spacing">{{ $t('SettingsDropdown.filter') }}</h6>
   <ul class="list">
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isFilterApplied('mine') }">
       <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('mine') }" @click="setFilter('mine')">
@@ -23,18 +23,20 @@
       </a>
     </li>
     <li class="type text is-caption is-txtGrey" :class="{ 'type--selected': isPrivacyFilterApplied }">
-      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('public') }" @click="setFilter('public')">
-        {{ $t('SettingsDropdown.types.publicPrivacy') }}
-      </a> |
-      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('private') }" @click="setFilter('private')">
-        {{ $t('SettingsDropdown.types.privatePrivacy') }}
-      </a> |
-      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('link') }" @click="setFilter('link')">
-        {{ $t('SettingsDropdown.types.linkPrivacy') }}
-      </a> |
-      <a href="javascript:void(0)" class="element" :class="{ 'element--selected': isFilterApplied('password') }" @click="setFilter('password')">
-        {{ $t('SettingsDropdown.types.passwordPrivacy') }}
-      </a>
+      <div class="element">
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('public') }" @click="setFilter('public')">
+          {{ $t('SettingsDropdown.types.publicPrivacy') }}
+        </a> |
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('private') }" @click="setFilter('private')">
+          {{ $t('SettingsDropdown.types.privatePrivacy') }}
+        </a> |
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('link') }" @click="setFilter('link')">
+          {{ $t('SettingsDropdown.types.linkPrivacy') }}
+        </a> |
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('password') }" @click="setFilter('password')">
+          {{ $t('SettingsDropdown.types.passwordPrivacy') }}
+        </a>
+      </div>
     </li>
   </ul>
 </div>
@@ -73,20 +75,17 @@ export default {
 <style lang="scss" scoped>
 @import 'new-dashboard/styles/variables';
 
-.section {
-  padding: 24px 12px 24px 36px;
-  background-color: #FFF;
-}
+.filters {
+  background-color: $white;
 
-.list {
-  margin-top: 8px;
+  &-title {
+    padding: 20px 24px 12px 36px;
+  }
 }
 
 .type {
-  margin-bottom: 8px;
-
-  &:last-of-type {
-    margin-bottom: 0;
+  &:not(:last-child) {
+    border-bottom: 1px solid $softblue;
   }
 
   &.type--selected {
@@ -96,7 +95,7 @@ export default {
       content: "";
       position: absolute;
       top: 50%;
-      left: -22px;
+      left: 14px;
       width: 14px;
       height: 14px;
       transform: translateY(-50%);
@@ -108,10 +107,24 @@ export default {
 }
 
 .element {
-  text-decoration: none;
+  display: block;
+  padding: 12px 24px 12px 36px;
 
+  &--inline {
+    display: inline-block;
+    padding: 0;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: $softblue;
+  }
+}
+
+.element,
+.element--inline {
   &.element--selected {
-    color: $text-color;
+    color: $text__color;
     pointer-events: none;
   }
 }

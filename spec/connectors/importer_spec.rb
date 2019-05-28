@@ -510,7 +510,7 @@ describe CartoDB::Connector::Importer do
       @visualization.tags.should include('exported')
       map = @visualization.map
       map.center.should eq "[39.75365697136308, -2.318115234375]"
-    end    
+    end
 
     it 'imports a visualization export when the table already exists' do
       @existing_table = create_table(name: 'twitter_t3chfest_reduced', user_id: @user.id)

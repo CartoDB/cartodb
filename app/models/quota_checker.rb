@@ -18,7 +18,7 @@ module CartoDB
       user.tables.count > user.table_quota.to_i
     end
 
-    def will_be_over_public_map_quota?(number_of_new_maps=1)
+    def will_be_over_public_map_quota?(number_of_new_maps = 1)
       return false unless user.public_map_quota
 
       public_map_count + number_of_new_maps > user.public_map_quota

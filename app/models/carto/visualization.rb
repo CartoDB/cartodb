@@ -763,7 +763,8 @@ class Carto::Visualization < ActiveRecord::Base
 
     if is_privacy_private? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
-    elsif (!privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE) &&
+    elsif (privacy_was == Carto::Visualization::PRIVACY_PRIVATE ||
+          (!privacy_was && privacy != Carto::Visualization::PRIVACY_PRIVATE)) &&
           CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
       errors.add(:privacy, 'over account public map quota')
     end

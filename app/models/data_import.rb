@@ -237,7 +237,6 @@ class DataImport < Sequel::Model
     error = CartoDB::Importer2::MapQuotaExceededError.new
     handle_failure(error)
     raise error
-    self
   rescue => exception
     log.append "Exception: #{exception.to_s}"
     log.append exception.backtrace, truncate = false

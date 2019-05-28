@@ -1612,7 +1612,7 @@ describe Carto::VisualizationsExportService2 do
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         expect {
           Carto::VisualizationsExportPersistenceService.new.save_import(@user2, built_viz)
-        }.to raise_error(Carto::UnauthorizedError)          
+        }.to raise_error(Carto::UnauthorizedError)    
         @user2.unstub(:public_map_quota)
       end
 

@@ -56,8 +56,8 @@ export default {
         return 'professional';
       }
 
-      if (this.isInTrial()) {
-        return 'trial';
+      if (this.isPersonal30()) {
+        return '30day';
       }
 
       if (this.isFreeUser()) {
@@ -68,16 +68,17 @@ export default {
     }
   },
   methods: {
-    isInTrial () {
-      return Boolean(this.trialEndDate);
+    isPersonal30 () {
+      const personal30User = ['PERSONAL30'];
+      return personal30User.includes(this.user.account_type);
     },
     isFreeUser () {
-      const freeUser = ['free'];
+      const freeUser = ['FREE'];
       return freeUser.includes(this.user.account_type);
     },
     isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return noProUsers.includes(this.user.account_type);
+      const proUsers = ['Professional'];
+      return proUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

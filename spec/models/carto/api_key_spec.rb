@@ -328,6 +328,26 @@ describe Carto::ApiKey do
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: two_apis_grant)
         }.to raise_exception(ActiveRecord::RecordInvalid, /Grants only one user section is allowed/)
       end
+
+      context 'without enough regular api key quota' do
+        before(:all) do
+          @carto_user1.regular_api_key_quota = 0
+          @carto_user1.save
+        end
+
+        after(:all) do
+          @carto_user1.regular_api_key_quota = be_nil
+          @carto_user1.save
+        end
+
+        it 'raises an exception when creating a regular key' do
+          grants = [database_grant(@table1.database_schema, @table1.name), apis_grant]
+
+          expect {
+            @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+          }.to raise_exception(CartoDB::QuotaExceeded, /regular API keys quota/)
+        end
+      end
     end
 
     describe '#table_permission_from_db' do
@@ -515,6 +535,35 @@ describe Carto::ApiKey do
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'bad', grants: grants)
         }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    describe 'filter by type' do
+      it 'filters just master' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_MASTER])
+        api_keys.count.should eq 1
+        api_keys.first.type.should eq Carto::ApiKey::TYPE_MASTER
+      end
+
+      it 'filters just default_public' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_DEFAULT_PUBLIC])
+        api_keys.count.should eq 1
+        api_keys.first.type.should eq Carto::ApiKey::TYPE_DEFAULT_PUBLIC
+      end
+
+      it 'filters default_public and master' do
+        api_keys = @carto_user1.api_keys.by_type([Carto::ApiKey::TYPE_DEFAULT_PUBLIC, Carto::ApiKey::TYPE_MASTER])
+        api_keys.count.should eq 2
+      end
+
+      it 'filters all if empty array' do
+        api_keys = @carto_user1.api_keys.by_type([])
+        api_keys.count.should eq 2
+      end
+
+      it 'filters all if nil type' do
+        api_keys = @carto_user1.api_keys.by_type(nil)
+        api_keys.count.should eq 2
       end
     end
   end

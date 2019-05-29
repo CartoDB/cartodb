@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require 'carto/storage'
-require 'carto/assets/assets_service'
+require_dependency 'carto/storage'
+require_dependency 'carto/assets/assets_service'
 require 'singleton'
 
 module Carto
@@ -29,6 +29,14 @@ module Carto
         temp_file.close
       end
       temp_file
+    end
+
+    def read_source_data(asset)
+      if asset.storage_info[:type] == 'local'
+        File.open(asset.storage_info[:identifier]).read
+      else
+        URI.parse(asset.public_url).open.read
+      end
     end
 
     DEFAULT_LOCATION = 'kuviz_assets'.freeze

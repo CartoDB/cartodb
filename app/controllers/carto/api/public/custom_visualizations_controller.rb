@@ -10,6 +10,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   ssl_required
 
+  before_action :validate_mandatory_creation_params, only: [:create]
   before_action :validate_input_data, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create]
@@ -82,10 +83,6 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   def validate_input_data
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
       return render_jsonp({ error: "visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
-    elsif !params[:data].present?
-      return render_jsonp({ error: 'missing data parameter' }, 400)
-    elsif !params[:name].present?
-      return render_jsonp({ error: 'missing name parameter' }, 400)
     end
 
     if params[:data].present?
@@ -95,6 +92,14 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       rescue ArgumentError
         return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
       end
+    end
+  end
+
+  def validate_mandatory_creation_params
+    if !params[:data].present?
+      return render_jsonp({ error: 'missing data parameter' }, 400)
+    elseif !params[:name].present?
+      return render_jsonp({ error: 'missing name parameter' }, 400)
     end
   end
 

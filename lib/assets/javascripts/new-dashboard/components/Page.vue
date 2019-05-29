@@ -25,6 +25,10 @@ export default {
   padding: 128px 0 120px;
   border-bottom: 1px solid $border-color;
 
+  &--welcome {
+    padding-top: 64px;
+  }
+
   &.is-user-notification {
     padding-top: 128px - $notification-warning__height;
   }

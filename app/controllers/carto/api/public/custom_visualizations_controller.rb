@@ -13,9 +13,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :validate_input_data, only: [:create, :update]
 
   def index
-    offdatabase_orders = Carto::VisualizationQueryOrderer::SUPPORTED_OFFDATABASE_ORDERS.map(&:to_sym)
-    valid_order_combinations = VALID_ORDER_PARAMS - offdatabase_orders
-    opts = { valid_order_combinations: valid_order_combinations }
+    opts = { valid_order_combinations: VALID_ORDER_PARAMS }
     page, per_page, order, order_direction = page_per_page_order_params(VALID_ORDER_PARAMS, opts)
     params[:type] = Carto::Visualization::TYPE_KUVIZ
     vqb = query_builder_with_filter_from_hash(params)

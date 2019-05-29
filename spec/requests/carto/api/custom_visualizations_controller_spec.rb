@@ -77,7 +77,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @kuviz_password.destroy
     end
 
-    it 'shows one visualization' do
+    it 'shows all the visualizations' do
       get_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:visualizations].size).to eq(2)

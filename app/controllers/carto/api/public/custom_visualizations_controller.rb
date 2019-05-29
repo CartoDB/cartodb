@@ -7,11 +7,15 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   CONTENT_LENGTH_LIMIT_IN_BYTES = 20000
   VALID_ORDER_PARAMS = %i(name updated_at privacy).freeze
+  ALLOWED_PRIVACY_MODES = [
+    Carto::Visualization::PRIVACY_PUBLIC,
+    Carto::Visualization::PRIVACY_PROTECTED
+  ].freeze
 
   ssl_required
 
   before_action :validate_mandatory_creation_params, only: [:create]
-  before_action :validate_input_data, only: [:create, :update]
+  before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_for_permission, only: [:update, :delete]
@@ -51,10 +55,6 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def update
-    if params[:privacy].present? && params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED && !params[:password].present?
-      return render_jsonp({ errors: 'Changing privacy to protected should come along with the password param' }, 400)
-    end
-
     @kuviz.update_attributes!(params.permit(:name, :privacy, :password))
 
     if params[:data].present?
@@ -95,9 +95,18 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
   end
 
-  def validate_input_data
+  def validate_input_parameters
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
       return render_jsonp({ error: "visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
+    end
+
+    if params[:privacy].present?
+      unless ALLOWED_PRIVACY_MODES.include?(params[:privacy])
+        return render_jsonp({ error: "privacy mode not allowed. Allowed ones are #{ALLOWED_PRIVACY_MODES}"}, 400)
+      end
+      if params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED && !params[:password].present?
+        return render_jsonp({ error: 'Changing privacy to protected should come along with the password param' }, 400)
+      end
     end
 
     if params[:data].present?

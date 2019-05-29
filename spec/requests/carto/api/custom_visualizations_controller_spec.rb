@@ -265,7 +265,14 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'should fail if user tries to update privacy to protected and don\'t provide password' do
       put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:errors]).to eq 'Changing privacy to protected should come along with the password param'
+        expect(response.body[:error]).to eq 'Changing privacy to protected should come along with the password param'
+      end
+    end
+
+    it 'should fail if user tries to update privacy to private' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'private' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq 'privacy mode not allowed. Allowed ones are ["public", "password"]'
       end
     end
 

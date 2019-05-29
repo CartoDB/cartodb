@@ -24,8 +24,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
     visualizations = vqb.with_order(order, order_direction)
                         .build_paged(page, per_page).map do |v|
-      asset = Carto::Asset.find_by_visualization_id(v.id)
-      Carto::Api::Public::KuvizPresenter.new(self, v.user, v, asset).to_hash
+      Carto::Api::Public::KuvizPresenter.new(self, v.user, v).to_hash
     end
     response = {
       visualizations: visualizations,
@@ -45,14 +44,23 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz, asset).to_hash, 200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
   end
 
   def update
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, user, kuviz, asset).to_hash, 200)
+    if params[:privacy].present? && params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED
+      return render_jsonp({ errors: 'Changing privacy to protected should come along with the password param' },
+                          400) unless params[:password].present?
+    end
+    @kuviz.update_attributes!(params.permit(:name, :privacy, :password))
+
+    if params[:data].present?
+      @kuviz.asset.update_visualization_resource(StringIO.new(Base64.decode64(params[:data])))
+    end
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
   end
 
   def delete

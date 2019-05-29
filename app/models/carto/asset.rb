@@ -43,8 +43,8 @@ module Carto
 
     def update_visualization_resource(resource)
       storage_info, url = KuvizAssetsService.instance.upload(visualization, resource)
-      public_url = url
-      storage_info = storage_info
+      self.public_url = url
+      self.storage_info = storage_info
       save
     end
 

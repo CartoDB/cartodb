@@ -219,15 +219,15 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @kuviz_2 = FactoryGirl.create(:kuviz_visualization)
-      @kuviz_2.save
-      @asset_2 = Carto::Asset.for_visualization(visualization: @kuviz_2,
-                                                resource: StringIO.new('<html><body>test</body></html>'))
-      @asset_2.save
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
+      @kuviz2.save
+      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
+                                               resource: StringIO.new('<html><body>test</body></html>'))
+      @asset2.save
     end
 
     it 'should update an existing kuviz name' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'new name'  do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'new name' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:name]).to eq('new name')
       end
@@ -240,7 +240,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
 
       new_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>new data uploaded</body></html>')
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), data: new_html_base64  do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), data: new_html_base64 do |response|
         expect(response.status).to eq(200)
       end
 
@@ -251,26 +251,26 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'should update an existing kuviz privacy' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password', password: 'test'  do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password', password: 'test' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:privacy]).to eq ('password')
+        expect(response.body[:privacy]).to eq 'password'
       end
 
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'public'  do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'public' do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:privacy]).to eq ('public')
+        expect(response.body[:privacy]).to eq 'public'
       end
     end
 
     it 'should fail if user tries to update privacy to protected and don\'t provide password' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password'  do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:errors]).to eq ('Changing privacy to protected should come along with the password param')
+        expect(response.body[:errors]).to eq 'Changing privacy to protected should come along with the password param'
       end
     end
 
     it 'shouldn\'t update an existing kuviz if the user doesn\'t have permission' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz_2.id), name: 'test' do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz2.id), name: 'test' do |response|
         expect(response.status).to eq(403)
       end
     end
@@ -289,11 +289,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @kuviz_2 = FactoryGirl.create(:kuviz_visualization)
-      @kuviz_2.save
-      @asset_2 = Carto::Asset.for_visualization(visualization: @kuviz_2,
-                                                resource: StringIO.new('<html><body>test</body></html>'))
-      @asset_2.save
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
+      @kuviz2.save
+      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
+                                               resource: StringIO.new('<html><body>test</body></html>'))
+      @asset2.save
     end
 
     it 'should delete kuviz and assets' do
@@ -305,7 +305,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'shouldn\'t delete a kuviz for which the user doesn\'t have permissions' do
-      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz_2.id) do |response|
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz2.id) do |response|
         expect(response.status).to eq(403)
       end
     end

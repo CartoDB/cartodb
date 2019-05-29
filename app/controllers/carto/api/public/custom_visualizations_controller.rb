@@ -51,14 +51,16 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def update
-    if params[:privacy].present? && params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED
-      return render_jsonp({ errors: 'Changing privacy to protected should come along with the password param' },
-                          400) unless params[:password].present?
+    if params[:privacy].present? && params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED && !params[:password].present?
+      return render_jsonp({ errors: 'Changing privacy to protected should come along with the password param' }, 400)
     end
+
     @kuviz.update_attributes!(params.permit(:name, :privacy, :password))
 
     if params[:data].present?
       @kuviz.asset.update_visualization_resource(StringIO.new(Base64.decode64(params[:data])))
+      # In case we only update the asset we need to invalidate the visualization
+      @kuviz.save
     end
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
   end
@@ -110,9 +112,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def validate_mandatory_creation_params
     if !params[:data].present?
-      return render_jsonp({ error: 'missing data parameter' }, 400)
+      render_jsonp({ error: 'missing data parameter' }, 400)
     elsif !params[:name].present?
-      return render_jsonp({ error: 'missing name parameter' }, 400)
+      render_jsonp({ error: 'missing name parameter' }, 400)
     end
   end
 

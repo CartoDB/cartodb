@@ -160,7 +160,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#create' do
     it 'rejects if name parameter is not send in the request' do
-      string_base64 = Base64.encode64('test string non-html')
+      string_base64 = Base64.strict_encode64('<html><body>test html</body></html>')
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: nil do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing name parameter')
@@ -218,6 +218,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
+      @kuviz_2 = FactoryGirl.create(:kuviz_visualization)
+      @kuviz_2.save
+      @asset_2 = Carto::Asset.for_visualization(visualization: @kuviz_2,
+                                                resource: StringIO.new('<html><body>test</body></html>'))
+      @asset_2.save
     end
 
     it 'should delete kuviz and assets' do
@@ -228,9 +233,15 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'should return 400 error if kuviz doesn\'t exist' do
+    it 'shouldn\'t delete a kuviz for which the user doesn\'t have permissions' do
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz_2.id) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'should return 404 error if kuviz doesn\'t exist' do
       delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: '47f41ab4-63de-439f-a826-de5deab14de6') do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(404)
       end
     end
   end

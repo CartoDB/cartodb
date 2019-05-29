@@ -13,7 +13,8 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :validate_mandatory_creation_params, only: [:create]
   before_action :validate_input_data, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
-  before_action :get_user, only: [:create]
+  before_action :get_user, only: [:create, :update, :delete]
+  before_action :check_for_permission, only: [:update, :delete]
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -39,19 +40,19 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def create
-    kuviz = create_visualization_metadata(user)
+    kuviz = create_visualization_metadata(@logged_user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, user, kuviz, asset).to_hash, 200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz, asset).to_hash, 200)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
   end
 
   def update
-    head 501
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, user, kuviz, asset).to_hash, 200)
   end
 
   def delete
@@ -77,7 +78,11 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def get_user
-    current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
+    @logged_user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
+  end
+
+  def check_for_permission
+    head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
   end
 
   def validate_input_data
@@ -98,7 +103,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   def validate_mandatory_creation_params
     if !params[:data].present?
       return render_jsonp({ error: 'missing data parameter' }, 400)
-    elseif !params[:name].present?
+    elsif !params[:name].present?
       return render_jsonp({ error: 'missing name parameter' }, 400)
     end
   end

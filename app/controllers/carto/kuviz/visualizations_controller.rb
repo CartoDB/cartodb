@@ -12,7 +12,7 @@ module Carto
         @source = KuvizAssetsService.instance.read_source_data(@kuviz)
         add_cache_headers
         render layout: false
-      rescue => e
+      rescue StandardError => e
         CartoDB::Logger.error(exception: e)
         render_404
       end

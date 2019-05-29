@@ -31,6 +31,14 @@ module Carto
       temp_file
     end
 
+    def read_source_data(asset)
+      if asset.storage_info[:type] == 'local'
+        File.open(asset.storage_info[:identifier]).read
+      else
+        URI.parse(asset.public_url).open.read
+      end
+    end
+
     DEFAULT_LOCATION = 'kuviz_assets'.freeze
 
     def location

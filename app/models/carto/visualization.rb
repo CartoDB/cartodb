@@ -78,6 +78,8 @@ class Carto::Visualization < ActiveRecord::Base
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
 
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
+
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
   has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy

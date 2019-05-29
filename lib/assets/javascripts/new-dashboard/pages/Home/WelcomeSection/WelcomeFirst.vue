@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import differenceInDays from 'date-fns/difference_in_days';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
@@ -38,7 +39,8 @@ export default {
 
       const firstTimeMessage = this.$t('HomePage.WelcomeSection.firstTime.message');
       const planMessage = this.$t(`HomePage.WelcomeSection.firstTime.planMessage.${this.userType}`, {
-        organizationName
+        organizationName,
+        trialLength: this.trialLength
       });
 
       return `${firstTimeMessage} ${planMessage}`;
@@ -61,6 +63,11 @@ export default {
     },
     isViewer () {
       return this.$store.getters['user/isViewer'];
+    },
+    trialLength () {
+      const trialEndDate = this.$store.state.user.trial_ends_at;
+      const createdAt = this.$store.state.user.created_at;
+      return trialEndDate ? differenceInDays(trialEndDate, createdAt) : null;
     }
   }
 };

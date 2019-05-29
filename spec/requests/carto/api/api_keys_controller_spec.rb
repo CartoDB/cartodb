@@ -502,6 +502,11 @@ describe Carto::Api::ApiKeysController do
         get_json api_keys_url, auth_params.merge(per_page: 20), auth_headers do |response|
           expect(response.body[:result].map { |ak| ak[:type] }).not_to(include('internal'))
         end
+
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(per_page: 20, type: ''), auth_headers do |response|
+          expect(response.body[:result].map { |ak| ak[:type] }).not_to(include('internal'))
+        end
       end
 
       it 'should come master first, default type second and then regular' do
@@ -615,6 +620,82 @@ describe Carto::Api::ApiKeysController do
         get_json api_keys_url, auth_params.merge(per_page: 2, page: 2, order: :invalid), auth_headers do |response|
           response.status.should eq 400
           response.body.fetch(:errors).should_not be_nil
+        end
+      end
+
+      it 'validates type param with valid types' do
+        Carto::Api::ApiKeysController::VALID_TYPE_PARAMS.each do |param|
+          auth_user(@carto_user_index)
+          get_json api_keys_url, auth_params.merge(type: param), auth_headers do |response|
+            response.status.should eq 200
+          end
+        end
+      end
+
+      it 'validates type param with invalid' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'INVALID'), auth_headers do |response|
+          response.status.should eq 400
+          response.body.fetch(:errors).should_not be_nil
+        end
+      end
+
+      it 'validates type param with several types' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,regular'), auth_headers do |response|
+          response.status.should eq 200
+        end
+      end
+
+      it 'validates type param with empty type' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: ''), auth_headers do |response|
+          response.status.should eq 200
+        end
+      end
+
+      it 'filters by master type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+        end
+      end
+
+      it 'filters by default type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'default'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:total].should eq 1
+        end
+      end
+
+      it 'filters by several types param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,regular'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'regular'
+        end
+      end
+
+      it 'filters by all types param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: 'master,default, regular'), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
+        end
+      end
+
+      it 'filters by all user visible if empty type param' do
+        auth_user(@carto_user_index)
+        get_json api_keys_url, auth_params.merge(type: ''), auth_headers do |response|
+          response.status.should eq 200
+          response.body[:result][0][:type].should eq 'master'
+          response.body[:result][1][:type].should eq 'default'
+          response.body[:result][2][:type].should eq 'regular'
         end
       end
     end

@@ -8,8 +8,10 @@ Development
 - Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
 - Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
+- New attributes to /me endpoint (#14862)
 
 ### Bug fixes / enhancements
+- Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
 - Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
@@ -26,6 +28,10 @@ Development
 - Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
 - Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
 - Minor copy edit in final step of Builder Onboarding
+- Filter API keys by type (#14904)
+- Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
+- Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
+- Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
 
 
 4.26.1 (2019-05-06)

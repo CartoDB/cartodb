@@ -209,7 +209,7 @@
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
           "30day": "Remember that you're currently on the 30-day personal trial.",
-          "pro": "Remember that you're currently on the Professional plan.",
+          "professional": "Remember that you're currently on the {trialLength}-day Professional trial.",
           "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
           "organizationUser": "Remember that you're currently a member of the {organizationName} organization.",
           "unknown": ""

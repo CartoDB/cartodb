@@ -12,6 +12,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   before_action :validate_input_data, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
+  before_action :get_user, only: [:create]
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -37,7 +38,6 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def create
-    user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
     kuviz = create_visualization_metadata(user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
@@ -73,6 +73,10 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz.user = user
     kuviz.save
     kuviz
+  end
+
+  def get_user
+    current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
   end
 
   def validate_input_data

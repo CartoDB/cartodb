@@ -1512,6 +1512,24 @@ class User < Sequel::Model
                         })
   end
 
+  def public_privacy_visualization_count
+    public_visualization_count
+  end
+
+  def link_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_LINK,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def password_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({

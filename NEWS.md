@@ -10,6 +10,7 @@ Development
 - New attributes to /me endpoint (#14862)
 
 ### Bug fixes / enhancements
+- Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
 - Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))

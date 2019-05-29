@@ -567,8 +567,8 @@ CartoDB::Application.routes.draw do
 
       # Custom visualizations
       post 'kuviz', to: 'custom_visualizations#create', as: :api_v4_kuviz_create_viz
-      delete 'kuviz', to: 'custom_visualizations#delete', as: :api_v4_kuviz_delete_viz
-      put 'kuviz', to: 'custom_visualizations#update', as: :api_v4_kuviz_update_viz
+      delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
+      put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
       get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
     end
 

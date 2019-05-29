@@ -5,7 +5,7 @@ require_relative '../../../../lib/carto/configuration'
 
 describe Carto::KuvizAssetsService do
   after(:all) do
-    FileUtils.rmtree(Carto::Conf.new.public_uploads_path() + '/tests')
+    FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
   end
 
   describe('#fetch_file') do

@@ -160,7 +160,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#create' do
     it 'rejects if name parameter is not send in the request' do
-      string_base64 = Base64.encode64('test string non-html')
+      string_base64 = Base64.strict_encode64('<html><body>test html</body></html>')
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: nil do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing name parameter')
@@ -211,6 +211,84 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
   end
+
+  describe '#update' do
+    before(:each) do
+      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
+      @kuviz.save
+      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
+                                              resource: StringIO.new('<html><body>test</body></html>'))
+      @asset.save
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
+      @kuviz2.save
+      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
+                                               resource: StringIO.new('<html><body>test</body></html>'))
+      @asset2.save
+    end
+
+    it 'should update an existing kuviz name' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:name]).to eq('new name')
+      end
+    end
+
+    it 'should update an existing kuviz data' do
+      get kuviz_show_url(id: @kuviz.id) do |response|
+        response.status.should eq 200
+        response.body.scan(/<body>test<\/body>/).present?.should == true
+      end
+
+      new_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>new data uploaded</body></html>')
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), data: new_html_base64 do |response|
+        expect(response.status).to eq(200)
+      end
+
+      get kuviz_show_url(id: @kuviz.id) do |response|
+        response.status.should eq 200
+        response.body.scan(/<body>new data uploaded<\/body>/).present?.should == true
+      end
+    end
+
+    it 'should update an existing kuviz privacy' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password', password: 'test' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:privacy]).to eq 'password'
+      end
+
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'public' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:privacy]).to eq 'public'
+      end
+    end
+
+    it 'should fail if user tries to update privacy to protected and don\'t provide password' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'password' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq 'Changing privacy to protected should come along with the password param'
+      end
+    end
+
+    it 'should fail if user tries to update privacy to private' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), privacy: 'private' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq 'privacy mode not allowed. Allowed ones are ["public", "password"]'
+      end
+    end
+
+    it 'shouldn\'t update an existing kuviz if the user doesn\'t have permission' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz2.id), name: 'test' do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'should return 404 error if kuviz doesn\'t exist' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: '47f41ab4-63de-439f-a826-de5deab14de6') do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+  end
+
   describe '#delete' do
     before(:each) do
       @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
@@ -218,6 +296,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
+      @kuviz2.save
+      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
+                                               resource: StringIO.new('<html><body>test</body></html>'))
+      @asset2.save
     end
 
     it 'should delete kuviz and assets' do
@@ -228,9 +311,15 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'should return 400 error if kuviz doesn\'t exist' do
+    it 'shouldn\'t delete a kuviz for which the user doesn\'t have permissions' do
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz2.id) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'should return 404 error if kuviz doesn\'t exist' do
       delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: '47f41ab4-63de-439f-a826-de5deab14de6') do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(404)
       end
     end
   end

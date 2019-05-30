@@ -3,11 +3,10 @@ module Carto
     module Public
       class KuvizPresenter
 
-        def initialize(context, user, kuviz, asset)
+        def initialize(context, user, kuviz)
           @context = context
           @user = user
           @kuviz = kuviz
-          @asset = asset
         end
 
         def to_hash

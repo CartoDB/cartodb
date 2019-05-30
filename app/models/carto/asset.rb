@@ -41,6 +41,13 @@ module Carto
           kind: 'kuviz_asset')
     end
 
+    def update_visualization_resource(resource)
+      storage_info, url = KuvizAssetsService.instance.upload(visualization, resource)
+      self.public_url = url
+      self.storage_info = storage_info
+      save
+    end
+
     def absolute_public_url
       uri = URI.parse(public_url)
       (uri.absolute? ? uri : URI.join(base_domain, uri)).to_s

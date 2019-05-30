@@ -7,11 +7,18 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   CONTENT_LENGTH_LIMIT_IN_BYTES = 20000
   VALID_ORDER_PARAMS = %i(name updated_at privacy).freeze
+  ALLOWED_PRIVACY_MODES = [
+    Carto::Visualization::PRIVACY_PUBLIC,
+    Carto::Visualization::PRIVACY_PROTECTED
+  ].freeze
 
   ssl_required
 
-  before_action :validate_input_data, only: [:create, :update]
+  before_action :validate_mandatory_creation_params, only: [:create]
+  before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
+  before_action :get_user, only: [:create, :update, :delete]
+  before_action :check_for_permission, only: [:update, :delete]
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -21,8 +28,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
     visualizations = vqb.with_order(order, order_direction)
                         .build_paged(page, per_page).map do |v|
-      asset = Carto::Asset.find_by_visualization_id(v.id)
-      Carto::Api::Public::KuvizPresenter.new(self, v.user, v, asset).to_hash
+      Carto::Api::Public::KuvizPresenter.new(self, v.user, v).to_hash
     end
     response = {
       visualizations: visualizations,
@@ -37,20 +43,26 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def create
-    user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
-    kuviz = create_visualization_metadata(user)
+    kuviz = create_visualization_metadata(@logged_user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
 
-    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, user, kuviz, asset).to_hash, 200)
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
   end
 
   def update
-    head 501
+    @kuviz.update_attributes!(params.permit(:name, :privacy, :password))
+
+    if params[:data].present?
+      @kuviz.asset.update_visualization_resource(StringIO.new(Base64.decode64(params[:data])))
+      # In case we only update the asset we need to invalidate the visualization
+      @kuviz.save
+    end
+    render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
   end
 
   def delete
@@ -75,13 +87,26 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz
   end
 
-  def validate_input_data
+  def get_user
+    @logged_user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
+  end
+
+  def check_for_permission
+    head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
+  end
+
+  def validate_input_parameters
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
       return render_jsonp({ error: "visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
-    elsif !params[:data].present?
-      return render_jsonp({ error: 'missing data parameter' }, 400)
-    elsif !params[:name].present?
-      return render_jsonp({ error: 'missing name parameter' }, 400)
+    end
+
+    if params[:privacy].present?
+      unless ALLOWED_PRIVACY_MODES.include?(params[:privacy])
+        return render_jsonp({ error: "privacy mode not allowed. Allowed ones are #{ALLOWED_PRIVACY_MODES}"}, 400)
+      end
+      if params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED && !params[:password].present?
+        return render_jsonp({ error: 'Changing privacy to protected should come along with the password param' }, 400)
+      end
     end
 
     if params[:data].present?
@@ -91,6 +116,14 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       rescue ArgumentError
         return render_jsonp({ error: 'data parameter must be encoded in base64' }, 400)
       end
+    end
+  end
+
+  def validate_mandatory_creation_params
+    if !params[:data].present?
+      render_jsonp({ error: 'missing data parameter' }, 400)
+    elsif !params[:name].present?
+      render_jsonp({ error: 'missing name parameter' }, 400)
     end
   end
 

@@ -41,7 +41,7 @@ export default {
       return this.$store.getters['user/isNotificationVisible'];
     },
     trialTimeLeft () {
-      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
+      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
     },
     userType () {
       if (this.isOrganizationAdmin()) {

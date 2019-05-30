@@ -1912,7 +1912,7 @@ class User < Sequel::Model
 
   def remaining_trial_days
     return 0 unless trial_ends_at
-    (trial_ends_at - DateTime.now).to_f.floor
+    ((end_date - Time.now)/ 1.day).round
   end
 
   private

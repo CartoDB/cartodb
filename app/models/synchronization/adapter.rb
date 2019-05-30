@@ -43,7 +43,7 @@ module CartoDB
           import_cleanup(user.database_schema, result.table_name)
           @table_setup.cartodbfy(result.table_name)
           @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
-          overwrite(table_name, result)
+          overwrite(table_name, result, geo_type)
           setup_table(table_name, geo_type)
           @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(table_name)
@@ -63,20 +63,34 @@ module CartoDB
         @user
       end
 
-      def overwrite(table_name, result)
+      def overwrite(table_name, result, geo_type)
         return false unless runner.remote_data_updated?
-        temporary_name = temporary_name_for(result.table_name)
 
-        # The relation might (and probably will) already exist in the user public schema
-        # as source table is a synchronization and those keep same ID along their life
-        # (and the geom index uses table id as base for its name),
-        # so first we need to remove old table, then change schema of the imported one
-        # and finally rename newly moved table to original name
+        qualified_result_table_name = %{"#{result.schema}"."#{result.table_name}"}
+        skip_columns = '{the_geom, the_geom_webmercator}'
+
         database.transaction do
-          rename(table_name, temporary_name) if exists?(table_name)
-          drop(temporary_name) if exists?(temporary_name)
-          rename(result.table_name, table_name)
+          if geo_type.nil?
+            # If there's no geometry in the result table, not worth
+            # syncing. Maybe those were added via geocoding
+            database.execute(%{
+              SELECT cartodb.CDB_SyncTable(
+                '#{qualified_result_table_name}',
+                '#{user.database_schema}', '#{table_name}',
+                '#{skip_columns}'
+              )})
+          else
+            database.execute(%{
+              SELECT cartodb.CDB_SyncTable(
+                '#{qualified_result_table_name}',
+                '#{user.database_schema}', '#{table_name}'
+              )})
+          end
         end
+
+        drop(result.table_name) if exists?(result.table_name)
+
+        # TODO not sure whether these two are needed
         @table_setup.fix_oid(table_name)
         @table_setup.update_cdb_tablemetadata(table_name)
       rescue => exception

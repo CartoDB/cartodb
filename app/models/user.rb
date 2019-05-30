@@ -1912,7 +1912,11 @@ class User < Sequel::Model
 
   def remaining_trial_days
     return 0 unless trial_ends_at
-    ((end_date - Time.now)/ 1.day).round
+    ((trial_ends_at - Date.today) / 1.day).round
+  end
+
+  def is_trial_user?
+    account_type.to_s.casecmp('personal30').zero? || account_type.to_s.casecmp('professional').zero?
   end
 
   private

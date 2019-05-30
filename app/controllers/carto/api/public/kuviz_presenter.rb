@@ -11,7 +11,7 @@ module Carto
 
         def to_hash
           {
-            visualization: @kuviz.id,
+            id: @kuviz.id,
             name: @kuviz.name,
             privacy: @kuviz.privacy,
             created_at: @kuviz.created_at,

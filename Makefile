@@ -34,8 +34,10 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/templates_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
+	spec/requests/carto/api/custom_visualizations_controller_spec.rb \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
 	spec/requests/carto/builder/visualizations_controller_spec.rb \
+	spec/requests/carto/kuviz/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
 	spec/requests/warden_spec.rb \
 	spec/models/map_spec.rb \

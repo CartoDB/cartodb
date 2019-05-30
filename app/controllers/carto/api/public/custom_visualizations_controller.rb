@@ -102,7 +102,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
     if params[:privacy].present?
       unless ALLOWED_PRIVACY_MODES.include?(params[:privacy])
-        return render_jsonp({ error: "privacy mode not allowed. Allowed ones are #{ALLOWED_PRIVACY_MODES}"}, 400)
+        return render_jsonp({ error: "privacy mode not allowed. Allowed ones are #{ALLOWED_PRIVACY_MODES}" }, 400)
       end
       if params[:privacy] == Carto::Visualization::PRIVACY_PROTECTED && !params[:password].present?
         return render_jsonp({ error: 'Changing privacy to protected should come along with the password param' }, 400)

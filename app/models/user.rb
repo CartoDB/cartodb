@@ -129,6 +129,7 @@ class User < Sequel::Model
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
   PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -1912,11 +1913,11 @@ class User < Sequel::Model
 
   def remaining_trial_days
     return 0 unless trial_ends_at
-    ((trial_ends_at - Date.today) / 1.day).round
+    ((trial_ends_at - Time.now) / 1.day).round
   end
 
-  def is_trial_user?
-    account_type.to_s.casecmp('personal30').zero? || account_type.to_s.casecmp('professional').zero?
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

@@ -39,6 +39,7 @@ class Carto::User < ActiveRecord::Base
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
   PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -767,6 +768,15 @@ class Carto::User < ActiveRecord::Base
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

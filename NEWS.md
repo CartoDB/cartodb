@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
 - Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)

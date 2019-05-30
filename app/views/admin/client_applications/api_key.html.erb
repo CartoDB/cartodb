@@ -11,10 +11,7 @@
     var dashboardNotifications = <%= safe_js_object @dashboard_notifications.to_json %>;
     var organization_notifications = <%= safe_js_object @organization_notifications.to_json %>;
   </script>
-
-  <% if @has_engine_enabled %>
-    <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
-  <% end %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'api_keys_new' %>
 <% end %>
 
 <%= content_for(:css) do %>
@@ -35,7 +32,7 @@
     <%= render :partial => 'admin/shared/api_keys_subheader' %>
 
     <% if @has_engine_enabled %>
-        <div class="api-keys js-api-keys-new"></div>
+      <div class="api-keys js-api-keys-new"></div>
     <% else %>
       <%= render :partial => 'api_keys_cta' %>
     <% end %>

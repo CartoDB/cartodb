@@ -111,6 +111,7 @@ module Carto
     scope :default_public, -> { where(type: TYPE_DEFAULT_PUBLIC) }
     scope :regular, -> { where(type: TYPE_REGULAR) }
     scope :user_visible, -> { where(type: [TYPE_MASTER, TYPE_DEFAULT_PUBLIC, TYPE_REGULAR]) }
+    scope :by_type, ->(types) { types.blank? ? user_visible : where(type: types) }
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
     attr_accessor :skip_role_setup
@@ -143,6 +144,9 @@ module Carto
     end
 
     def self.create_regular_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+      over_regular_quota = CartoDB::QuotaChecker.new(user).will_be_over_regular_api_key_quota?
+      raise CartoDB::QuotaExceeded.new('You have reached your regular API keys quota') if over_regular_quota
+
       create!(
         user: user,
         type: TYPE_REGULAR,

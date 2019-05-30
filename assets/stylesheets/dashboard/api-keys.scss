@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
-  border-bottom: 1px solid rgba(#000, 0.1);
+  border-bottom: 1px solid rgba(#000, 0.15);
 }
 
 .ApiKeys-list {
@@ -51,20 +51,25 @@
 
 .ApiKeys-footer {
   padding: 20px 0;
-  border-top: 1px solid rgba(#000, 0.1);
 }
 
-.ApiKeys-footer-text {
+.ApiKeys-warning-text {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: flex-start;
-  color: #999;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 300;
   line-height: 22px;
 }
 
-.ApiKeys-footer-icon {
+.ApiKeys-warning-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
+.ApiKeys-info-icon {
   width: 20px;
   height: 20px;
   margin-right: 8px;

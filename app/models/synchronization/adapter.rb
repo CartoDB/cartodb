@@ -66,7 +66,11 @@ module CartoDB
       def overwrite(table_name, result, geo_type)
         return false unless runner.remote_data_updated?
 
-        qualified_result_table_name = %{"#{result.schema}"."#{result.table_name}"}
+        # NOTE for some reason the import table is already moved to
+        # the user schema. My guess is that this is more a convenience
+        # than anything and that it can interfere with Ghost Tables
+        # and datasets in the Dashboard
+        qualified_result_table_name = %{"#{user.database_schema}"."#{result.table_name}"}
         skip_columns = '{the_geom, the_geom_webmercator}'
 
         database.transaction do

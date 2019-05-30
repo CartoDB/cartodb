@@ -1910,6 +1910,11 @@ class User < Sequel::Model
     end
   end
 
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    (trial_ends_at - DateTime.now).to_f.floor
+  end
+
   private
 
   def password_rate_limit_configured?

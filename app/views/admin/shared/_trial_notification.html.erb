@@ -3,8 +3,8 @@
     <div class="CDB-Text FlashMessage FlashMessage--main">
       <div class="u-inner">
         <div class="FlashMessage FlashMessage-info FlashMessage--main u-flex u-justifyCenter u-alignCenter">
-          <p class="FlashMessage--text"><%= current_user.remaining_trial_days %> days left in your Trial Period. To keep using our platform,
-            <a href="<%= current_user.update_payment_url(request.protocol) %>" class="FlashMessage--text">Subscribe now</a>
+          <p class="FlashMessage--text"><%= current_user.remaining_trial_days %> days left in your trial.
+            <a href="<%= current_user.update_payment_url(request.protocol) %>" class="FlashMessage--text">Subscribe now to keep using our platform.</a>
           </p>
         </div>
       </div>

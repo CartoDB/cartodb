@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataServicesQuota.vue should render correct contents 1`] = `
+<quotacontainer-stub>
+  <quotawidget-stub name="QuotaSection.geocoding" availablequota="1200" usedquota="103" formattolocale="true" helplink="https://carto.com/help/working-with-data/geocoding/"></quotawidget-stub>
+  <quotawidget-stub name="QuotaSection.isolines" availablequota="1332" usedquota="134" formattolocale="true" helplink="https://carto.com/help/working-with-data/isolines/"></quotawidget-stub>
+  <quotawidget-stub name="QuotaSection.routing" availablequota="102" usedquota="54" formattolocale="true" helplink="https://carto.com/help/working-with-data/routing/"></quotawidget-stub>
+</quotacontainer-stub>
+`;

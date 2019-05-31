@@ -32,7 +32,7 @@ Development
 - Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
 - Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
 - Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
-
+- Include limits metrics in quota & metrics section ([#14923](https://github.com/CartoDB/cartodb/issues/14923))
 
 4.26.1 (2019-05-06)
 -------------------

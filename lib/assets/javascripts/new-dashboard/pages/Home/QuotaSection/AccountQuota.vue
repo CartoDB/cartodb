@@ -33,7 +33,7 @@ import QuotaContainer from './QuotaContainer';
 import CartoNode from 'carto-node';
 import apiKeysCollectionTypes from 'dashboard/data/api-keys-collection-types';
 
-const limitsUsers = ['Professional', '[DEDICATED]'];
+const limitsUsers = ['Professional'];
 
 export default {
   name: 'AccountQuota',
@@ -76,13 +76,13 @@ export default {
     storageHelpLink () {
       return 'https://carto.com/help/your-account/your-disk-storage/';
     },
-    hasTableLimits() {
+    hasTableLimits () {
       return limitsUsers.includes(this.planAccountType);
     },
-    hasPublicMapLimits() {
+    hasPublicMapLimits () {
       return limitsUsers.includes(this.planAccountType);
     },
-    hasApiKeysLimits() {
+    hasApiKeysLimits () {
       return limitsUsers.includes(this.planAccountType);
     },
     usedPublicMaps () {
@@ -138,5 +138,5 @@ export default {
       );
     }
   }
-}
+};
 </script>

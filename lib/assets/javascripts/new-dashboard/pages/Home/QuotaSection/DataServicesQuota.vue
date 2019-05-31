@@ -28,9 +28,9 @@ export default {
       routingUsed: state => state.user.mapzen_routing.monthly_use,
       routingAvailable: state => state.user.mapzen_routing.quota ? state.user.mapzen_routing.quota : 0,
       isolinesUsed: state => state.user.here_isolines.monthly_use,
-      isolinesAvailable: state => state.user.here_isolines.quota,
-     }),
-     geocodingHelpLink () {
+      isolinesAvailable: state => state.user.here_isolines.quota
+    }),
+    geocodingHelpLink () {
       return 'https://carto.com/help/working-with-data/geocoding/';
     },
     isolinesHelpLink () {

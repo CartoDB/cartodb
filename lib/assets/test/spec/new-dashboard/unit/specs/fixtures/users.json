@@ -45,7 +45,7 @@
     "db_size_in_megabytes":6.78,
     "remaining_table_quota":null,
     "remaining_byte_quota":1066631168,
-    "table_count": 14,
+    "table_count": 12,
     "table_quota": 40,
     "viewer": false,
     "org_admin": false,

@@ -93,6 +93,7 @@ export default {
   &--financial {
     background-image: url("../../assets/icons/datasets/data-observatory/data-types/finance.svg");
   }
+
   &--demographics {
     background-image: url("../../assets/icons/datasets/data-observatory/data-types/finance.svg"); //CHANGE
   }

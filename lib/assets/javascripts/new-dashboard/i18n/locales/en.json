@@ -217,7 +217,7 @@
         "contactOrganizationAdmin": "Contact the admin",
         "manageOrganization": "Manage my organization"
       },
-      "trialMessage": "{date} left in your Trial.",
+      "trialMessage": "{date} left in your Trial",
       "notificationsButton": "Go to Notifications",
       "learnMoreButton": "Learn More",
       "actions": {

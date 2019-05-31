@@ -205,6 +205,10 @@ module CartoDB
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
         user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
+
+          # For consistency with regular imports, also eases testing
+          Table.sanitize_columns(table_name, {database_schema: schema_name, connection: user_database})
+
           # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
           # In that case:
           #  - If cartodb_id already exists, remove ogc_fid

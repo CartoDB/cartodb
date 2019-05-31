@@ -227,6 +227,9 @@ class Table
       # ensure unique name, also ensures self.name can override any imported table name
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
+      # Make sure column names are sanitized. Make it consistently.
+      self.class.sanitize_columns(uniname, {database_schema: owner.database_schema, connection: owner.in_database})
+
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
         'host' => owner.database_host,

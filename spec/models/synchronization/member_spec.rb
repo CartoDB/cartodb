@@ -149,7 +149,7 @@ describe Synchronization::Member do
         @user1.reload
       end
 
-      it 'fails to overwrite tables with views' do
+      it 'now works with tables with views' do
         url = 'https://wadus.com/guess_country.csv'
 
         path = fake_data_path('guess_country.csv')
@@ -170,8 +170,7 @@ describe Synchronization::Member do
         @user2.in_database.execute('CREATE VIEW wadus AS SELECT * FROM guess_country')
 
         member.run
-        expect(member.state).to eq 'failure'
-        expect(member.error_code).to eq 2013
+        expect(member.state).to eq 'success'
       end
 
       it 'should sync files with missing ogc_fid' do

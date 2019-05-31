@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataObservatoryList.vue should render correct contents 1`] = `
+<div class="container grid">
+  <div class="grid-cell grid-cell--col8 grid-cell--col12--tablet">
+    <sectiontitle-stub title="dataObservatory.title" class="head-section--small"><template></template></sectiontitle-stub>
+    <p class="text is-body">dataObservatory.description</p>
+  </div>
+  <div class="grid-cell grid-cell--col12 u-mt--36"><input name="dataobservatory-search" placeholder="dataObservatory.searchPlaceholder" class="dataobservatory-search text is-caption">
+    <div class="grid u-ml--16 u-mt--24">
+      <div class="grid-cell--col6">
+        <h3 class="title is-caption is-txtSoftGrey">dataObservatory.dataType</h3>
+        <ul class="grid">
+          <li class="checkbox grid grid--align-center u-mt--16 grid-cell--col5"><input id="category 1Filter" type="checkbox" class="checkbox-input" value="Category 1"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span> <label for="category 1Filter" class="u-ml--16 text is-small">Category 1</label></li>
+          <li class="checkbox grid grid--align-center u-mt--16 grid-cell--col5"><input id="category 2Filter" type="checkbox" class="checkbox-input" value="Category 2"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span> <label for="category 2Filter" class="u-ml--16 text is-small">Category 2</label></li>
+        </ul>
+      </div>
+      <div class="grid-cell--col6">
+        <h3 class="title is-caption is-txtSoftGrey">dataObservatory.geographies</h3>
+        <ul class="grid">
+          <li class="checkbox grid grid--align-center u-mt--16 grid-cell--col5"><input id="country 1Filter" type="checkbox" class="checkbox-input" value="Country 1"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span> <label for="country 1Filter" class="u-ml--16 text is-small">Country 1</label></li>
+          <li class="checkbox grid grid--align-center u-mt--16 grid-cell--col5"><input id="country 2Filter" type="checkbox" class="checkbox-input" value="Country 2"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span> <label for="country 2Filter" class="u-ml--16 text is-small">Country 2</label></li>
+          <li class="checkbox grid grid--align-center u-mt--16 grid-cell--col5"><input id="country 4Filter" type="checkbox" class="checkbox-input" value="Country 4"> <span class="checkbox-decoration"><img svg-inline="" src="../assets/icons/common/checkbox.svg"></span> <label for="country 4Filter" class="u-ml--16 text is-small">Country 4</label></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <ul class="grid-cell u-mt--64 grid-cell--col12">
+    <li>
+      <dataobservatorycard-stub dataset="[object Object]" class="u-mb--16"></dataobservatorycard-stub>
+    </li>
+    <li>
+      <dataobservatorycard-stub dataset="[object Object]" class="u-mb--16"></dataobservatorycard-stub>
+    </li>
+    <li>
+      <dataobservatorycard-stub dataset="[object Object]" class="u-mb--16"></dataobservatorycard-stub>
+    </li>
+  </ul>
+</div>
+`;

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataObservatoryCard.vue Should open the card 1`] = `
+<div class="dataobservatory-card">
+  <div class="u-flex">
+    <div class="dataobservatory-type u-mr--16 dataobservatory-type--category-1"></div>
+    <div class="dataobservatory-information">
+      <h3 class="title is-body is-txtGrey">Data 1</h3>
+    </div>
+    <div class="dataobservatory-morebutton"><a class="text is-semibold is-small">dataObservatory.close</a></div>
+  </div>
+  <div class="u-ml--64 dataobservatory-extra-information is-open" style="max-height: 0px;">
+    <p class="text is-caption u-mt--16 u-mb--36">This is a description test</p>
+    <div class="grid grid--align-center"><a href="#" class="title is-small u-mr--24 button">dataObservatory.viewSample</a> <a href="#" class="title is-small button button--outline">dataObservatory.interested</a></div>
+  </div>
+</div>
+`;
+
+exports[`DataObservatoryCard.vue should render correct contents 1`] = `
+<div class="dataobservatory-card">
+  <div class="u-flex">
+    <div class="dataobservatory-type u-mr--16 dataobservatory-type--category-1"></div>
+    <div class="dataobservatory-information">
+      <h3 class="title is-body is-txtGrey">Data 1</h3>
+    </div>
+    <div class="dataobservatory-morebutton"><a class="text is-semibold is-small">dataObservatory.viewMore</a></div>
+  </div>
+  <div class="u-ml--64 dataobservatory-extra-information" style="max-height: 0;">
+    <p class="text is-caption u-mt--16 u-mb--36">This is a description test</p>
+    <div class="grid grid--align-center"><a href="#" class="title is-small u-mr--24 button">dataObservatory.viewSample</a> <a href="#" class="title is-small button button--outline">dataObservatory.interested</a></div>
+  </div>
+</div>
+`;

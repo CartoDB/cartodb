@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DataObservatory.vue Rendering should render correctly 1`] = `
+<page-stub class="page--data">
+  <datasecondarynavigation-stub></datasecondarynavigation-stub>
+  <section class="section section--noBorder">
+    <dataobservatorylist-stub></dataobservatorylist-stub>
+  </section>
+</page-stub>
+`;

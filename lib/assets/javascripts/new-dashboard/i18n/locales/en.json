@@ -640,5 +640,40 @@
         }
       }
     }
+  },
+  "dataObservatory": {
+    "title": "Location Data Streams",
+    "description": "Augment your own data and broaden your analysis with the most up to date third party premium data available.",
+    "searchPlaceholder": "Find data",
+    "dataType": "Data Category",
+    "geographies": "Geographies",
+    "viewMore": "View more",
+    "close": "Close",
+    "viewSample": "View sample",
+    "moreInfo": "More info",
+    "interested": "Interested?",
+    "datasets": [
+      {
+        "title": "Test Dataset 1",
+        "category": "Financial",
+        "description": "This file provides typical consumption patterns by the hour of the day and the day of the week for a particular area. For each one of the time units, consumption statistics by the hour of the day and the day of the week are provided in the response and it is only available for month grouping.",
+        "geographies": ["Spain"],
+        "companies": ["Company 1"]
+      },
+      {
+        "title": "Another dataset for testing purposes",
+        "category": "Financial",
+        "description": "A dataset that is used only for testing purposes. This description it's just a test",
+        "geographies": ["Australia", "US", "Canada" , "UK"],
+        "companies": ["Company 2"]
+      },
+      {
+        "title": "Big dataset",
+        "category": "Demographics",
+        "description": "Basic demographic data, purchasing power by household, annual famility expenditure by category of spent, etc.",
+        "geographies": ["Spain"],
+        "companies": ["Company 3", "Company 4", "Company 5"]
+      }
+    ]
   }
 }

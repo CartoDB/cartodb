@@ -1,5 +1,6 @@
 <template>
-  <Page>
+  <Page class="page--data">
+    <DataSecondaryNavigation></DataSecondaryNavigation>
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -10,17 +11,18 @@
         @selectAll="selectAll"
         @deselectAll="deselectAll"></DatasetBulkActions>
     </StickySubheader>
-
-    <DatasetsList
-      ref="datasetsList"
-      class="grid__content"
-      :hasBulkActions="true"
-      :canHoverCard="true"
-      :maxVisibleDatasets="maxVisibleDatasets"
-      @applyFilter="applyFilter"
-      @applyOrder="applyOrder"
-      @selectionChange="updateSelected" />
-    <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    <section class="section section--noBorder">
+      <DatasetsList
+        ref="datasetsList"
+        class="grid__content"
+        :hasBulkActions="true"
+        :canHoverCard="true"
+        :maxVisibleDatasets="maxVisibleDatasets"
+        @applyFilter="applyFilter"
+        @applyOrder="applyOrder"
+        @selectionChange="updateSelected" />
+      <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
+    </section>
   </Page>
 </template>
 
@@ -33,6 +35,7 @@ import Pagination from 'new-dashboard/components/Pagination';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import StickySubheader from '../components/StickySubheader';
 import DatasetsList from 'new-dashboard/components/DatasetsList.vue';
+import DataSecondaryNavigation from 'new-dashboard/components/NavigationBar/DataSecondaryNavigation.vue';
 
 export default {
   name: 'DataPage',
@@ -41,7 +44,8 @@ export default {
     StickySubheader,
     Page,
     Pagination,
-    DatasetsList
+    DatasetsList,
+    DataSecondaryNavigation
   },
   data () {
     return {
@@ -127,3 +131,10 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.page.page--data {
+  padding: 64px 0 0;
+}
+</style>

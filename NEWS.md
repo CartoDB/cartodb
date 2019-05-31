@@ -31,6 +31,7 @@ Development
 - Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
 - Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
 - Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
+- Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
 
 
 4.26.1 (2019-05-06)

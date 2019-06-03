@@ -217,14 +217,14 @@
         "contactOrganizationAdmin": "Contact the admin",
         "manageOrganization": "Manage my organization"
       },
-      "trialMessage": "{date} left in your Trial",
+      "trialMessage": "{date} left in your trial.&nbsp;",
       "notificationsButton": "Go to Notifications",
       "learnMoreButton": "Learn More",
       "actions": {
         "createMap": "New map",
         "createDataset": "New dataset"
       },
-      "addPaymentMethod": "Subscribe now."
+      "subscribeNow": " Subscribe now."
     },
     "MapsSection": {
       "title": "Your Maps",

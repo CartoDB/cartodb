@@ -218,6 +218,10 @@ The following table contains a list of known errors codes and possible solutions
       <td>Not enough Twitter credits - Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@carto.com?subject=Exceeded%20Twitter%20quota'>Sales</a> if you have questions about how to obtain more credits.</td>
     </tr>
     <tr>
+      <td>8007</td>
+      <td>Over account public maps limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
+    </tr>
+    <tr>
       <td>6666</td>
       <td>Dataset too big - The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20big%20import%20error'>support@carto.com</a>.</td>
     </tr>

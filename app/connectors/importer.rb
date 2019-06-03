@@ -62,6 +62,14 @@ module CartoDB
             drop(result.table_name)
           }
         else
+          log('Checking public map quota')
+          vis = runner.visualizations.select do |v|
+            v.type == Carto::Visualization::TYPE_DERIVED && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
+          end
+          if CartoDB::QuotaChecker.new(data_import.user).will_be_over_public_map_quota?(vis.count)
+            log('Results would set public map overquota')
+            raise CartoDB::Importer2::MapQuotaExceededError.new
+          end
           log('Proceeding to register')
           register_results(results)
           results.select(&:success?).each { |result|

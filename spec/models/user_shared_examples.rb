@@ -501,6 +501,7 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.routing_provider = 'mapbox'
       @user1.save.reload
+      @organization.routing_provider = 'mapbox'
       @organization.mapzen_routing_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (Date.current + 1) << 1
@@ -547,6 +548,7 @@ shared_examples_for "user models" do
       @user1.period_end_date = (Date.current + 1) << 1
       @user1.routing_provider = 'mapbox'
       @user1.save.reload
+      @organization.routing_provider = 'mapbox'
       @organization.mapzen_routing_quota = 500
       @organization.save.reload
       @organization.owner.period_end_date = (Date.current + 1) << 1

@@ -694,5 +694,23 @@ describe CartoDB::Connector::Importer do
       canonical_layer = user_table.visualization.data_layers.first
       canonical_layer.user_tables.count.should eq 1
     end
+
+    it 'fails to import a visualization export if public map quota is exceeded' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+
+      Carto::User.any_instance.stubs(:public_map_quota).returns(0)
+      @data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      @data_import.values[:data_source] = filepath
+      expect { @data_import.run_import! }.to raise_error('Public map quota exceeded')
+      @data_import.success.should eq false
+      @data_import.error_code.should eq 8007
+      Carto::User.any_instance.unstub(:public_map_quota)
+    end
   end
 end

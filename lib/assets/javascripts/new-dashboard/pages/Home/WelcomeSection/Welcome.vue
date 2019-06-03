@@ -93,10 +93,3 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-.welcome-section.is-user-notification {
-  margin-top: $notification-warning__height;
-}
-</style>

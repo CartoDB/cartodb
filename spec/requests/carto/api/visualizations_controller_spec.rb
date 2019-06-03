@@ -2655,6 +2655,69 @@ describe Carto::Api::VisualizationsController do
         visualization.data_layers.count.should eq 1
       end
     end
+
+    describe '#update' do
+      after(:all) do
+        @carto_user1.private_maps_enabled = false
+        @carto_user1.public_map_quota = nil
+        @carto_user1.save
+      end
+
+      it 'returns a 200 response when making a map public with enough quota' do
+        @carto_user1.private_maps_enabled = true
+        @carto_user1.public_map_quota = nil
+        @carto_user1.save
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+                                                                 privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+        request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
+        put api_v1_visualizations_update_url(request_params),
+            { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
+
+        last_response.status.should == 200
+        visualization.destroy!
+      end
+
+      it 'returns a 403 response when making a map public without enough quota' do
+        @carto_user1.private_maps_enabled = true
+        @carto_user1.public_map_quota = 0
+        @carto_user1.save
+        visualization = FactoryGirl.create(:carto_visualization, user: @carto_user1,
+                                                                 privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+        request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
+        put api_v1_visualizations_update_url(request_params),
+            { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
+
+        last_response.status.should == 403
+        last_response.body.should =~ /public map quota/
+      end
+
+      it 'returns a 200 response when making a table public without enough map quota' do
+        @carto_user1.private_maps_enabled = true
+        @carto_user1.public_map_quota = 0
+        @carto_user1.save
+        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user1.id)
+        map = FactoryGirl.create(:carto_map)
+        user_table.map = map
+        user_table.save!
+        visualization = FactoryGirl.create(:carto_visualization,
+                                           type: Carto::Visualization::TYPE_CANONICAL,
+                                           map: map,
+                                           user: @carto_user1,
+                                           privacy: Carto::Visualization::PRIVACY_PRIVATE)
+
+        request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
+        put api_v1_visualizations_update_url(request_params),
+            { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
+
+        last_response.status.should == 200
+        visualization.destroy!
+      end
+    end
   end
 
   describe 'index' do

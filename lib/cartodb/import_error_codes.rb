@@ -295,6 +295,11 @@ module CartoDB
                   "Sales</a> if you have questions about how to obtain more credits.",
       source: ERROR_SOURCE_USER
     },
+    8007 => {
+      title: 'Over account public maps limit, please upgrade',
+      what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.",
+      source: ERROR_SOURCE_USER
+    },
     6666 => {
       title: 'Dataset too big',
       what_about: "The dataset you tried to import is too big and cannot be processed. If the dataset allows it, you can try splitting it into smaller files and then append them once imported, or contact our support team at <a href='mailto:support@carto.com?subject=Dataset%20too%20big%20import%20error'>support@carto.com</a>.",

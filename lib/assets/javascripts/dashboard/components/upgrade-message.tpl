@@ -23,7 +23,7 @@
       <% } else { %>
         &nbsp;
         <a href="mailto:sales@carto.com" class="UpgradeElement-infoText">
-          <span>Contact Sales.</span>
+          <span>Talk to Sales.</span>
         </a>
       <% } %>
     </div>

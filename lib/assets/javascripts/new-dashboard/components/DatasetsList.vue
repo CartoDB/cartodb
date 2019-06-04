@@ -189,7 +189,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     getDatasetQuotaCounter () {
-      return this.datasetQuota ? ` (${this.totalUserEntries}/${this.datasetQuota})`: '';
+      return this.datasetQuota && !this.hasUserReachedLimit ? ` (${this.totalUserEntries}/${this.datasetQuota})`: '';
     },
     hasUserReachedLimit () {
       return this.totalUserEntries >= this.datasetQuota;

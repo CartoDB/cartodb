@@ -154,7 +154,7 @@ export default {
     pageTitle () {
       return this.selectedDatasets.length
         ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
-        : `${this.$t(`DataPage.header.title['${this.appliedFilter}']`)} ${this.getDatasetQuotaCounter}`;
+        : `${this.$t(`DataPage.header.title['${this.appliedFilter}']`)}${this.getDatasetQuotaCounter}`;
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -189,7 +189,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     getDatasetQuotaCounter () {
-      return this.datasetQuota ? `(${this.totalUserEntries}/${this.datasetQuota})`: '';
+      return this.datasetQuota ? ` (${this.totalUserEntries}/${this.datasetQuota})`: '';
     },
     hasUserReachedLimit () {
       return this.totalUserEntries >= this.datasetQuota;

@@ -161,7 +161,7 @@ export default {
     pageTitle () {
       return this.selectedMaps.length
         ? this.$t('BulkActions.selected', {count: this.selectedMaps.length})
-        : `${this.$t(`MapsPage.header.title['${this.appliedFilter}']`)} ${this.getPublicMapQuotaCounter}`;
+        : `${this.$t(`MapsPage.header.title['${this.appliedFilter}']`)}${this.getPublicMapQuotaCounter}`;
     },
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
@@ -199,7 +199,7 @@ export default {
       return (this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal) || 0;
     },
     getPublicMapQuotaCounter () {
-      return this.publicMapQuota && !this.hasUserReachedLimit ? `(Public Maps ${this.publicMapsCount}/${this.publicMapQuota})`: '';
+      return this.publicMapQuota && !this.hasUserReachedLimit ? ` (Public Maps ${this.publicMapsCount}/${this.publicMapQuota})`: '';
     },
     hasUserReachedLimit () {
       return this.publicMapsCount >= this.publicMapQuota;

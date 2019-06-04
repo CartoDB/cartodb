@@ -143,8 +143,9 @@ export default {
       isFetchingDatasets: state => state.datasets.isFetching,
       filterType: state => state.datasets.filterType,
       currentEntriesCount: state => state.datasets.metadata.total_entries,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries,
+      totalUserEntries: state => state.datasets.metadata.total_user_entries || 0,
       totalShared: state => state.datasets.metadata.total_shared,
+      datasetQuota: state => state.user.table_quota,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     canCreateDatasets () {
@@ -153,7 +154,7 @@ export default {
     pageTitle () {
       return this.selectedDatasets.length
         ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
-        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
+        : `${this.$t(`DataPage.header.title['${this.appliedFilter}']`)} ${this.getDatasetQuotaCounter}`;
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -186,6 +187,12 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    getDatasetQuotaCounter () {
+      return this.datasetQuota ? `(${this.totalUserEntries}/${this.datasetQuota})`: '';
+    },
+    hasUserReachedLimit () {
+      return this.totalUserEntries >= this.datasetQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

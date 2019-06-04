@@ -152,12 +152,16 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
+      publicMapQuota: state => state.user.public_map_quota,
+      linkMapsTotal: state => state.user.link_privacy_map_count,
+      passwordMapsTotal: state => state.user.password_privacy_map_count,
+      publicMapsTotal: state => state.user.public_privacy_map_count,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     pageTitle () {
       return this.selectedMaps.length
         ? this.$t('BulkActions.selected', {count: this.selectedMaps.length})
-        : this.$t(`MapsPage.header.title['${this.appliedFilter}']`);
+        : `${this.$t(`MapsPage.header.title['${this.appliedFilter}']`)} ${this.getPublicMapQuotaCounter}`;
     },
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
@@ -190,6 +194,15 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    publicMapsCount () {
+      return (this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal) || 0;
+    },
+    getPublicMapQuotaCounter () {
+      return this.publicMapQuota && !this.hasUserReachedLimit ? `(Public Maps ${this.publicMapsCount}/${this.publicMapQuota})`: '';
+    },
+    hasUserReachedLimit () {
+      return this.publicMapsCount >= this.publicMapQuota;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

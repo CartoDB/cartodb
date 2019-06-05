@@ -270,7 +270,7 @@ module CartoDB
       source: ERROR_SOURCE_USER
     },
     8002 => {
-      title: 'Over account table limit, please upgrade',
+      title: 'You have reached the limit of datasets for your plan. Upgrade your account to get unlimited datasets',
       what_about: "To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.",
       source: ERROR_SOURCE_USER
     },

@@ -733,10 +733,20 @@
           "info": "Keep your data and get a larger quota by upgrading your plan",
           "title": "Your quota has run out"
         },
+        "8002": {
+          "description": "Remove some of your datasets to gain available space or upgrade your account",
+          "info": "Keep your datasets and get a larger quota by upgrading your plan",
+          "title": "Your datasets quota has run out"
+        },
         "8005": {
           "description": "Remove any layer or upgrade your account",
           "info": "Keep your maps and get more layer count quota by upgrading your plan",
           "title": "You have reached your layer count limit"
+        },
+        "8007": {
+          "description": "Make private some of your maps to gain available space or upgrade your account",
+          "info": "Keep your public maps and get a larger quota by upgrading your plan",
+          "title": "Your public maps quota has run out"
         },
         "upgrade": "upgrade"
       },

@@ -16,6 +16,12 @@
             :counterLabel="'Public Maps'"/>
         </template>
 
+        <template v-if="isUserOutOfQuota" slot="warning">
+          <SectionTitleWarning>
+            <div v-html="$t('MapsPage.header.warning', { path: accountUpdateURL })"></div>
+          </SectionTitleWarning>
+        </template>
+
         <template slot="dropdownButton">
           <MapBulkActions
             :selectedMaps="selectedMaps"
@@ -103,6 +109,7 @@ import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHea
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import SectionTitleWarning from 'new-dashboard/components/SectionTitleWarning';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
@@ -141,6 +148,7 @@ export default {
     MapCardFake,
     SectionTitle,
     VisualizationsTitle,
+    SectionTitleWarning,
     InitialState
   },
   data () {
@@ -164,7 +172,8 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      accountUpdateURL: state => state.config.account_update_url
     }),
     ...mapGetters({
       publicMapsQuota: 'user/publicMapsQuota',

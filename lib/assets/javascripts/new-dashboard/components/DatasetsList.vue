@@ -15,6 +15,12 @@
             :isOutOfQuota="isOutOfDatasetsQuota"/>
         </template>
 
+        <template v-if="isUserOutOfQuota" slot="warning">
+          <SectionTitleWarning>
+            <div v-html="$t('DataPage.header.warning', { path: accountUpdateURL })"></div>
+          </SectionTitleWarning>
+        </template>
+
         <template slot="dropdownButton">
           <DatasetBulkActions
             :selectedDatasets="selectedDatasets"
@@ -103,6 +109,7 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import SectionTitleWarning from 'new-dashboard/components/SectionTitleWarning';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -130,6 +137,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
+    SectionTitleWarning,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -156,7 +164,8 @@ export default {
       currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      accountUpdateURL: state => state.config.account_update_url
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',

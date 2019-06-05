@@ -65,7 +65,8 @@
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets"
-      }
+      },
+      "warning": "<span class='is-bold'>You can't have more datasets.</span> Erase or <a href='{path}'>upgrade</a>."
     },
     "createDataset": "New Dataset",
     "zeroCase": {
@@ -89,7 +90,8 @@
         "link": "Your Link-shared Maps",
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps"
-      }
+      },
+      "warning": "<span class='is-bold'>You can't have more public maps.</span> Erase or <a href='{path}'>upgrade</a>."
     },
     "createMap": "New Map",
     "zeroCase": {

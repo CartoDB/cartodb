@@ -2,13 +2,18 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.27.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
 - Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)
+- Inform users about quota errors (#14921)
 
 ### Bug fixes / enhancements
 - Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
@@ -35,6 +40,8 @@ Development
 - New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
 - Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
 - Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
+- Update quota copies (#14945)
+- Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
 
 4.26.1 (2019-05-06)
 -------------------

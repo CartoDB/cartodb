@@ -40,6 +40,7 @@ sudo make install
 - Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
 - Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
 - Update quota copies (#14945)
+- Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
 
 4.26.1 (2019-05-06)
 -------------------

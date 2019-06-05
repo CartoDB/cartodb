@@ -734,9 +734,9 @@
           "title": "Your quota has run out"
         },
         "8002": {
-          "description": "Remove some of your datasets to gain available space or upgrade your account",
-          "info": "Keep your datasets and get a larger quota by upgrading your plan",
-          "title": "Your datasets quota has run out"
+          "description": "You have reached the limit of datasets for your plan",
+          "info": "Remove some of your datasets or upgrade your account to get unlimited datasets",
+          "title": "Your dataset couldn't be created"
         },
         "8005": {
           "description": "Remove any layer or upgrade your account",
@@ -744,9 +744,9 @@
           "title": "You have reached your layer count limit"
         },
         "8007": {
-          "description": "Make private some of your maps to gain available space or upgrade your account",
-          "info": "Keep your public maps and get a larger quota by upgrading your plan",
-          "title": "Your public maps quota has run out"
+          "description": "You have reached the limit of public maps for your plan",
+          "info": "Make some of your maps private or upgrade your account to get unlimited public maps",
+          "title": "Your map couldn't be created or updated"
         },
         "upgrade": "upgrade"
       },
@@ -1635,7 +1635,7 @@
       "option": "Duplicate dataset",
       "query": "applied query",
       "customOption": "Create Dataset from query",
-      "error": "There was an error duplicating %{name}",
+      "error": "Your dataset couldn't be created",
       "loading": "Duplicating your dataset %{name}..."
     },
     "lock": {

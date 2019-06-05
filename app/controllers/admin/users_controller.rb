@@ -29,6 +29,12 @@ class Admin::UsersController < Admin::AdminController
     end
   end
 
+
+  def maintenance
+    # TODO: Logic to display when user is affected by maintenance
+    render locals: { breadcrumb: false }
+  end
+
   private
 
   def setup_user

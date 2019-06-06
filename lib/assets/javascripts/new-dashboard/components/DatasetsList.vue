@@ -17,7 +17,7 @@
 
         <template v-if="isUserOutOfQuota" slot="warning">
           <SectionTitleWarning>
-            <div v-html="$t('DataPage.header.warning', { path: accountUpdateURL })"></div>
+            <div v-html="$t('DataPage.header.warning', { path: `//${ accountUpdateURL }` })"></div>
           </SectionTitleWarning>
         </template>
 

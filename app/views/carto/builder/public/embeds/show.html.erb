@@ -25,7 +25,7 @@
 <% end %>
 
 <%= content_for(:js) do %>
-  <%= insert_trackjs('builder-embeds', 0.2) %>
+  <%= insert_trackjs('builder-embeds', Cartodb.config[:trackjs]['frequency']) %>
 
   <% if @vizjson[:map_provider] == 'googlemaps' && @google_maps_qs.present? %>
     <%= insert_google_maps(@google_maps_qs) %>

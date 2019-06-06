@@ -69,7 +69,7 @@ class User < Sequel::Model
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
 
   self.strict_param_setting = false
 
@@ -128,6 +128,8 @@ class User < Sequel::Model
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -886,8 +888,8 @@ class User < Sequel::Model
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    else
-      nil
+    elsif account_type.to_s.casecmp('professional').zero?
+      created_at + PROFESSIONAL_TRIAL_DAYS.days
     end
   end
 
@@ -1512,6 +1514,24 @@ class User < Sequel::Model
                         })
   end
 
+  def public_privacy_visualization_count
+    public_visualization_count
+  end
+
+  def link_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_LINK,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def password_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
@@ -1889,6 +1909,15 @@ class User < Sequel::Model
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

@@ -23,7 +23,7 @@ module CartoDB
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
       CDB_DATASERVICES_CLIENT_VERSION = '0.26.2'.freeze
-      ODBC_FDW_VERSION = '0.3.0'.freeze
+      ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -594,7 +594,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.26.1'
+          cdb_extension_target_version = '0.27.1'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

@@ -76,10 +76,8 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.page.page {
-  &--welcome {
-    padding: 64px 0 0;
-  }
+header.is-user-notification + section.page--welcome {
+  padding: 0;
 }
 
 .section {

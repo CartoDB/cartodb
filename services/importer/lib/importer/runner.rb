@@ -29,7 +29,7 @@ module CartoDB
       UNKNOWN_ERROR_CODE      = 99999
 
       # Hard-limit on number of spawned tables (zip files, KMLs and so on)
-      MAX_TABLES_PER_IMPORT = 10
+      MAX_TABLES_PER_IMPORT = 50
 
       # @param options Hash
       # {

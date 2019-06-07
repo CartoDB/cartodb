@@ -33,10 +33,15 @@ export default {
       return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     },
     canCreateDatasets () {
-      return this.$store.getters['user/canCreateDatasets'];
+      return this.$store.getters['user/canCreateDatasets'] && !this.isUserOutOfQuota;
     },
     isViewer () {
       return this.$store.getters['user/isViewer'];
+    },
+    isUserOutOfQuota () {
+      const tableQuota = this.$store.state.user.table_quota;
+      const tableCount = this.$store.state.user.table_count;
+      return tableQuota && tableCount >= tableQuota;
     }
   }
 };

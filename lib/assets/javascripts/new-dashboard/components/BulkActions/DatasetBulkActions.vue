@@ -45,7 +45,8 @@ export default {
           },
           {
             name: this.$t('BulkActions.datasets.duplicate'),
-            event: 'duplicateDataset'
+            event: 'duplicateDataset',
+            shouldBeDisabled: this.isUserOutOfQuota
           },
           {
             name: this.$t('BulkActions.datasets.lock'),
@@ -115,6 +116,11 @@ export default {
     },
     areAllLocked () {
       return this.selectedDatasets.every(dataset => dataset.locked);
+    },
+    isUserOutOfQuota () {
+      const tableQuota = this.$store.state.user.table_quota;
+      const tableCount = this.$store.state.user.table_count;
+      return tableQuota && tableCount >= tableQuota;
     }
   },
   methods: {

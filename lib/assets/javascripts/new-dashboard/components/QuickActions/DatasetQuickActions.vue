@@ -38,7 +38,7 @@ export default {
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldBeDisabled: this.isOutOfDatasetQuota},
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldBeDisabled: this.isUserOutOfQuota},
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
@@ -65,7 +65,7 @@ export default {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
     },
-    isOutOfDatasetQuota () {
+    isUserOutOfQuota () {
       const tableQuota = this.$store.state.user.table_quota;
       const tableCount = this.$store.state.user.table_count;
       return tableQuota && tableCount >= tableQuota;

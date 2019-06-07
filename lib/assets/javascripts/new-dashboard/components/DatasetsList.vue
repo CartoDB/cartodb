@@ -15,7 +15,7 @@
             :isOutOfQuota="isOutOfDatasetsQuota"/>
         </template>
 
-        <template v-if="isUserOutOfQuota" slot="warning">
+        <template v-if="isUserOutOfQuota && !selectedDatasets.length" slot="warning">
           <SectionTitleWarning>
             <div v-html="$t('DataPage.header.warning', { path: `//${ accountUpdateURL }` })"></div>
           </SectionTitleWarning>

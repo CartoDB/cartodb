@@ -299,7 +299,7 @@
 
 
 <%= content_for(:js) do %>
-  <%= insert_trackjs('embeds', Cartodb.config[:trackjs]['frequency']) %>
+  <%= insert_trackjs('embeds') %>
 
   <% if @visualization.map.provider == 'googlemaps' %>
     <%= insert_google_maps(@google_maps_query_string) %>

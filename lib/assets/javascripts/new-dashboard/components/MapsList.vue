@@ -199,9 +199,9 @@ export default {
       return (this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal) || 0;
     },
     getPublicMapQuotaCounter () {
-      return this.publicMapQuota && !this.hasUserReachedLimit ? ` (Public Maps ${this.publicMapsCount}/${this.publicMapQuota})` : '';
+      return this.publicMapQuota && !this.isUserOutOfQuota ? ` (Public Maps ${this.publicMapsCount}/${this.publicMapQuota})` : '';
     },
-    hasUserReachedLimit () {
+    isUserOutOfQuota () {
       return this.publicMapsCount >= this.publicMapQuota;
     },
     shouldShowViewSwitcher () {

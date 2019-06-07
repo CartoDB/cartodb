@@ -146,6 +146,7 @@ export default {
       totalUserEntries: state => state.datasets.metadata.total_user_entries || 0,
       totalShared: state => state.datasets.metadata.total_shared,
       datasetQuota: state => state.user.table_quota,
+      datasetCount: state => state.user.table_count,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
     canCreateDatasets () {
@@ -189,10 +190,10 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     getDatasetQuotaCounter () {
-      return this.datasetQuota && !this.hasUserReachedLimit ? ` (${this.totalUserEntries}/${this.datasetQuota})` : '';
+      return this.datasetQuota && !this.isUserOutOfQuota ? ` (${this.datasetCount}/${this.datasetQuota})` : '';
     },
-    hasUserReachedLimit () {
-      return this.totalUserEntries >= this.datasetQuota;
+    isUserOutOfQuota () {
+      return this.datasetCount >= this.datasetQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
@@ -248,6 +249,9 @@ export default {
   watch: {
     selectedDatasets () {
       this.$emit('selectionChange', this.selectedDatasets);
+    },
+    totalUserEntries () {
+      this.$store.dispatch('user/updateTableCount', this.totalUserEntries);
     }
   }
 };

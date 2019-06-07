@@ -1,6 +1,7 @@
 module TrackjsHelper
-  def insert_trackjs(app = 'editor')
-    if Cartodb.get_config(:trackjs, 'customer') && params[:cookies] != '0'
+  def insert_trackjs(app = 'editor', freq = 1)
+    lucky = freq.nil? || freq >= rand
+    if Cartodb.get_config(:trackjs, 'customer') && params[:cookies] != '0' && lucky
       customer = Cartodb.get_config(:trackjs, 'customer')
       enabled = Cartodb.get_config(:trackjs, 'enabled')
       app_key = Cartodb.get_config(:trackjs, 'app_keys', app)

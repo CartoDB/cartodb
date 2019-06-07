@@ -81,6 +81,7 @@ defaults: &defaults
     app_keys:
       editor: ''
       embeds: ''
+    frequency: 0.2
   #fullstory:
     #org: 'XXXXX'
   facebook:

@@ -16,7 +16,7 @@
             :counterLabel="'Public Maps'"/>
         </template>
 
-        <template v-if="isUserOutOfQuota && !selectedMaps.length" slot="warning">
+        <template v-if="shouldShowLimitsWarning" slot="warning">
           <SectionTitleWarning>
             <div v-html="$t('MapsPage.header.warning', { path: `//${ accountUpdateURL }` })"></div>
           </SectionTitleWarning>
@@ -211,6 +211,9 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    shouldShowLimitsWarning () {
+      return this.publicMapsQuota && this.isOutOfPublicMapsQuota && !this.selectedMaps.length;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

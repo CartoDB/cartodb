@@ -1,5 +1,5 @@
 <template>
-  <QuotaContainer :title="title" :perMonth="perMonth">
+  <QuotaContainer :title="$t(`QuotaSection.dataServices`)" :perMonth="true">
     <QuotaWidget :name="$t(`QuotaSection.geocoding`)" :usedQuota="geocodingUsed" :availableQuota="geocodingAvailable" :helpLink="geocodingHelpLink"></QuotaWidget>
     <QuotaWidget :name="$t(`QuotaSection.isolines`)" :usedQuota="isolinesUsed" :availableQuota="isolinesAvailable" :helpLink="isolinesHelpLink"></QuotaWidget>
     <QuotaWidget :name="$t(`QuotaSection.routing`)" :usedQuota="routingUsed" :availableQuota="routingAvailable" :helpLink="routingHelpLink"></QuotaWidget>
@@ -16,10 +16,6 @@ export default {
   components: {
     QuotaWidget,
     QuotaContainer
-  },
-  props: {
-    title: String,
-    perMonth: Boolean
   },
   computed: {
     ...mapState({

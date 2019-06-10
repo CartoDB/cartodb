@@ -1,28 +1,30 @@
 <template>
-  <QuotaContainer :title="title" :perMonth="perMonth">
-    <QuotaWidget :name="$t(`QuotaSection.storage`)"
+  <QuotaContainer :title="$t(`QuotaSection.account`)" :perMonth="false">
+    <QuotaWidget
+      :name="$t(`QuotaSection.storage`)"
       :usedQuota="getAmountInUnit(usedStorage, amountExponent)"
       :availableQuota="getAmountInUnit(availableStorage, amountExponent)"
       :unit="getUnit(amountExponent)"
       :formatToLocale="false"
-      :helpLink="storageHelpLink"
-      ></QuotaWidget>
+      :helpLink="storageHelpLink"/>
 
-    <QuotaWidget v-if="hasTableLimits" :name="$t(`QuotaSection.publicMaps`)"
+    <QuotaWidget
+      v-if="hasTableLimits"
+      :name="$t(`QuotaSection.publicMaps`)"
       :usedQuota="usedPublicMaps"
-      :availableQuota="availablePublicMaps"
-      helpLink=""
-      ></QuotaWidget>
-    <QuotaWidget v-if="hasPublicMapLimits" :name="$t(`QuotaSection.datasets`)"
+      :availableQuota="availablePublicMaps"/>
+
+    <QuotaWidget
+      v-if="hasPublicMapLimits"
+      :name="$t(`QuotaSection.datasets`)"
       :usedQuota="usedDatasets"
-      :availableQuota="availableDatasets"
-      helpLink=""
-      ></QuotaWidget>
-    <QuotaWidget v-if="hasApiKeysLimits" :name="$t(`QuotaSection.apiKeys`)"
+      :availableQuota="availableDatasets"/>
+
+    <QuotaWidget
+      v-if="hasApiKeysLimits"
+      :name="$t(`QuotaSection.apiKeys`)"
       :usedQuota="usedApiKeys"
-      :availableQuota="availableApiKeys"
-      helpLink=""
-      ></QuotaWidget>
+      :availableQuota="availableApiKeys"/>
   </QuotaContainer>
 </template>
 
@@ -31,9 +33,8 @@ import { mapState } from 'vuex';
 import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
 import CartoNode from 'carto-node';
-import apiKeysCollectionTypes from 'dashboard/data/api-keys-collection-types';
-
-const limitsUsers = ['Professional'];
+import { apiKeysTypes } from 'new-dashboard/core/constants/api-keys';
+import { accountsWithLimits } from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'AccountQuota',
@@ -41,16 +42,11 @@ export default {
     QuotaWidget,
     QuotaContainer
   },
-  props: {
-    title: String,
-    perMonth: Boolean
-  },
   beforeMount () {
     this.getApiKeysTotal();
   },
   data () {
     return {
-      client: new CartoNode.AuthenticatedClient(),
       usedApiKeys: 0
     };
   },
@@ -77,13 +73,13 @@ export default {
       return 'https://carto.com/help/your-account/your-disk-storage/';
     },
     hasTableLimits () {
-      return limitsUsers.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType);
     },
     hasPublicMapLimits () {
-      return limitsUsers.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType);
     },
     hasApiKeysLimits () {
-      return limitsUsers.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType);
     },
     usedPublicMaps () {
       return this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal;
@@ -127,7 +123,7 @@ export default {
       return number / Math.pow(2, exponent);
     },
     getApiKeysTotal () {
-      this.client.getApiKeys(apiKeysCollectionTypes.REGULAR,
+      this.$store.state.client.getApiKeys(apiKeysTypes.REGULAR,
 
         (err, _, data) => {
           if (err) {

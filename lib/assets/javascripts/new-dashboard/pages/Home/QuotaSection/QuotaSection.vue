@@ -9,10 +9,10 @@
         </SectionTitle>
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <AccountQuota :title="$t(`QuotaSection.account`)" :perMonth="false"></AccountQuota>
+            <AccountQuota></AccountQuota>
           </li>
           <li class="grid-cell grid-cell--col12 quota-listitem">
-            <DataServicesQuota :title="$t(`QuotaSection.dataServices`)" :perMonth="true"></DataServicesQuota>
+            <DataServicesQuota></DataServicesQuota>
           </li>
         </ul>
         <div class="quota-billing">

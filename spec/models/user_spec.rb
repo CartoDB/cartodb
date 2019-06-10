@@ -1306,6 +1306,8 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:account_type).returns('PERSONAL30')
     @user.trial_ends_at.should_not be_nil
+    @user.stubs(:account_type).returns('Professional')
+    @user.trial_ends_at.should_not be_nil
   end
 
   describe '#hard_geocoding_limit?' do

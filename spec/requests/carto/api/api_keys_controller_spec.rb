@@ -360,7 +360,7 @@ describe Carto::Api::ApiKeysController do
           auth_user(@carto_user)
           post_json api_keys_url, auth_params.merge(create_payload), auth_headers do |response|
             response.status.should eq 403
-            response.body[:errors].should match /regular API keys quota/
+            response.body[:errors].should match /limit of API keys/
           end
         end
       end

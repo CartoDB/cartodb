@@ -199,7 +199,7 @@ The following table contains a list of known errors codes and possible solutions
     </tr>
     <tr>
       <td>8002</td>
-      <td>Over account table limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
+      <td>You have reached the limit of datasets for your plan. Upgrade your account to get unlimited datasets - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
     </tr>
     <tr>
       <td>8003</td>
@@ -216,6 +216,10 @@ The following table contains a list of known errors codes and possible solutions
     <tr>
       <td>8006</td>
       <td>Not enough Twitter credits - Unfortunately, you don't have enough Twitter credits to proceed. Please contact <a href='mailto:sales@carto.com?subject=Exceeded%20Twitter%20quota'>Sales</a> if you have questions about how to obtain more credits.</td>
+    </tr>
+    <tr>
+      <td>8007</td>
+      <td>Over account public maps limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
     </tr>
     <tr>
       <td>6666</td>

@@ -1,16 +1,15 @@
 <template>
   <div id="app">
-
-    <NavigationBar
-      :user="user"
-      :baseUrl="baseUrl"
-      :notificationsCount="notificationsCount"
-      :isNotificationVisible=isNotificationVisible
-      :isFirstTimeInDashboard="isFirstTimeInDashboard"
-      bundleType="dashboard"/>
-    
-    <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
-
+    <header :class="{ 'is-user-notification': isNotificationVisible }">
+      <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
+      <NavigationBar
+        :user="user"
+        :baseUrl="baseUrl"
+        :notificationsCount="notificationsCount"
+        :isNotificationVisible=isNotificationVisible
+        :isFirstTimeInDashboard="isFirstTimeInDashboard"
+        bundleType="dashboard"/>
+    </header>
     <router-view/>
 
     <Footer :user="user"/>
@@ -83,6 +82,14 @@ export default {
 
 * {
   box-sizing: border-box;
+}
+
+header {
+  padding-top: 60px;
+
+  &.is-user-notification {
+    padding-top: 124px;
+  }
 }
 
 </style>

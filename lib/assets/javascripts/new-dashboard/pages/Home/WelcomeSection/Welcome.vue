@@ -3,9 +3,9 @@
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
-        <span class="text is-small">{{ trialTimeLeft }}</span>
-        <a class="button button--small button--outline" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
-          {{ $t('HomePage.WelcomeSection.addPaymentMethod') }}
+        <span v-html="trialTimeLeft" class="title is-small"></span>
+        <a class="title is-small" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
+          {{ $t('HomePage.WelcomeSection.subscribeNow') }}
         </a>
       </template>
     </WelcomeCompact>
@@ -41,7 +41,7 @@ export default {
       return this.$store.getters['user/isNotificationVisible'];
     },
     trialTimeLeft () {
-      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
+      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
     },
     userType () {
       if (this.isOrganizationAdmin()) {
@@ -56,7 +56,7 @@ export default {
         return 'professional';
       }
 
-      if (this.isInTrial()) {
+      if (this.isPersonal30()) {
         return '30day';
       }
 
@@ -68,16 +68,17 @@ export default {
     }
   },
   methods: {
-    isInTrial () {
-      return Boolean(this.trialEndDate);
+    isPersonal30 () {
+      const personal30User = ['PERSONAL30'];
+      return personal30User.includes(this.user.account_type);
     },
     isFreeUser () {
-      const freeUser = ['free'];
+      const freeUser = ['FREE'];
       return freeUser.includes(this.user.account_type);
     },
     isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return noProUsers.includes(this.user.account_type);
+      const proUsers = ['Professional'];
+      return proUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {
@@ -92,10 +93,3 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-.welcome-section.is-user-notification {
-  margin-top: $notification-warning__height;
-}
-</style>

@@ -10,14 +10,14 @@ describe Superadmin::AccountTypesController do
     before(:each) do
       @account_type = create_account_type_fg('PRO')
       @account_type_param = {
-        account_type: "PERSONAL30",
+        account_type: "Professional",
         rate_limit: @account_type.rate_limit.api_attributes
       }
     end
 
     after(:each) do
       @account_type.destroy
-      Carto::AccountType.where(account_type: "PERSONAL30").each(&:destroy)
+      Carto::AccountType.where(account_type: "Professional").each(&:destroy)
     end
 
     it 'should create account_type' do

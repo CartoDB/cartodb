@@ -453,22 +453,20 @@ class Admin::PagesController < Admin::AdminController
     geometry_type = dataset.kind
     if geometry_type != 'raster'
       table_geometry_types = dataset.table.geometry_types
-      geometry_type = table_geometry_types.first.present? ? GEOMETRY_MAPPING.fetch(table_geometry_types.first.downcase, '') : ''
+      geometry_type = GEOMETRY_MAPPING.fetch(table_geometry_types.first.try(&:downcase), '')
     end
 
-    begin
-      vis_item(dataset).merge({
-        rows_count: dataset.table.rows_counted,
-        size_in_bytes: dataset.table.table_size,
-        geometry_type: geometry_type,
-        source: markdown_html_safe(dataset.source)
-      })
-    rescue => e
-      # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
-      # We don't want public page to be broken, but error must be traced.
-      CartoDB.notify_exception(e, { vis: dataset })
-      nil
-    end
+    vis_item(dataset).merge(
+      rows_count: dataset.table.rows_counted,
+      size_in_bytes: dataset.table.table_size,
+      geometry_type: geometry_type,
+      source: markdown_html_safe(dataset.source)
+    )
+  rescue StandardError => e
+    # A dataset might be invalid. For example, having the table deleted and not yet cleaned.
+    # We don't want public page to be broken, but error must be traced.
+    CartoDB.notify_exception(e, vis: dataset)
+    nil
   end
 
   def process_map_render(map)

@@ -252,6 +252,10 @@ module Carto
           CartoDB.url(@context, 'public_tables_show_bis',
                       params: { id: dataset_name },
                       user: @current_viewer)
+        elsif @visualization.kuviz?
+          CartoDB.url(@context, 'kuviz_show',
+                      params: { id: @visualization.id },
+                      user: @current_viewer)
         else
           CartoDB.url(@context, 'public_visualizations_show_map',
                       params: { id: @visualization.id },

@@ -329,11 +329,11 @@ defaults: &defaults
       options: { color: '#ffffff' }
   cartodb_com_hosted: true
   cartodb_central_domain_name: 'carto.com'
-  aws:
-    s3:
-      access_key_id: "test"
-      secret_access_key: "test"
-      region: ''
+  #aws:
+    #s3:
+      #access_key_id: "test"
+      #secret_access_key: "test"
+      #region: ''
   assets:
     s3_bucket_name: "tests"
     max_file_size: 5242880 # 5.megabytes
@@ -344,6 +344,10 @@ defaults: &defaults
     #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, organization assets will be stored locally and this line is not needed.
     #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
     #   location: 'organization_assets' # Optional subdirectory for local assets, default is 'organization_assets'
+    # kuviz:
+    #   bucket: "tests" # Required if 'aws.s3' config is present. Bucket must exist beforehand. If no 'aws.s3' config is present, kuviz assets will be stored locally and this line is not needed.
+    #   max_size_in_bytes: 1048576 # Optional, default is 1 MB
+    #   location: 'kuviz_assets' # Optional subdirectory for local assets, default is 'kuviz_assets'
   app_assets:
     asset_host: "//cartodb-libs.global.ssl.fastly.net/cartodbui"
   avatars:

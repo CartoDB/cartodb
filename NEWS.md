@@ -13,6 +13,7 @@ sudo make install
 - Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)
+- Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
 - Inform users about quota errors (#14921)
 
 ### Bug fixes / enhancements

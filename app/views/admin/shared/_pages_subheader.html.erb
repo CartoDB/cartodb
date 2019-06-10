@@ -1,26 +1,4 @@
 <div class="SideMenu CDB-Text CDB-Size-medium">
-  <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-    <a class="Filters-link" href="<%= current_user.plan_url(request.protocol) %>">
-  <% end %>
-
-  <div class="SideMenu-progress">
-    <% per = current_user.quota_in_bytes.to_i == 0 ? 100 : (current_user.db_size_in_bytes * 100) / current_user.quota_in_bytes %>
-    <% className = '' %>
-    <% if (per > 80 && per < 90) %>
-      <% className = 'caution' %>
-    <% elsif (per > 89) %>
-      <% className = 'danger' %>
-    <% end %>
-    <div class="SideMenu-progressBar">
-      <div class="progress-bar">
-        <span class="bar-2 <%= className %>" style="width:<%= per %>%"></span>
-      </div>
-    </div>
-    <span class="CDB-Text CDB-Size-medium u-altTextColor"><%= number_to_human_size(current_user.db_size_in_bytes, precision: 2, significant: false).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %> of <%= number_to_human_size(current_user.quota_in_bytes).gsub(/ |Bytes/, {" "=>"", "Bytes"=>"B"}) %></span>
-  </div>
-
-  <span class="SideMenu-separator"></span>
-
   <div class="SideMenu-type">
     <ul class="SideMenu-list">
       <li class="SideMenu-typeItem"><a href="<%= CartoDB.url(self, 'profile_user', user: current_user) %>" class="SideMenu-typeLink <%= 'is-selected' if "#{params[:controller]}_#{params[:action]}" == "admin/users_profile" %>">Profile</a></li>
@@ -37,26 +15,4 @@
       <% end %>
     </ul>
   </div>
-
-  <div class="SideMenu-helpSegment CDB-Text CDB-Size-medium u-flex u-alignCenter">
-    <div class="LayoutIcon LayoutIcon--darkGrey">
-      <i class="CDB-IconFont CDB-IconFont-boss"></i>
-    </div>
-    <div class="SideMenu-helpSegment--paragraph">
-      <p>Having issues?</p>
-      <p>
-        <% if !current_user.organization.present? %>
-          <a href="mailto:support@carto.com">Contact support</a>
-        <% elsif !current_user.organization_owner? %>
-          <a href="mailto:<%= current_user.organization.admin_email%>">Contact your org. admin</a>
-        <% else %>
-          <a href="mailto:enterprise-support@carto.com">Contact your VIP support</a>
-        <% end %>
-      </p>
-    </div>
-  </div>
-
-  <% if !Cartodb.config[:cartodb_com_hosted].present? %>
-    </a>
-  <% end %>
 </div>

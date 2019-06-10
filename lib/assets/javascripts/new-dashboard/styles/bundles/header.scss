@@ -4,8 +4,6 @@
 @import "../helpers/colors";
 @import "../helpers/utilities";
 
-#app,
-.FormAccount-Section,
 .FlashMessage-container {
   padding-top: 64px;
 }
@@ -25,4 +23,12 @@
 .navbar-placeholder-logo {
   width: 24px;
   height: 24px;
+}
+
+#header {
+  padding-top: 60px;
+
+  &.is-user-notification {
+    padding-top: 124px;
+  }
 }

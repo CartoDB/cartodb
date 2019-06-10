@@ -307,6 +307,26 @@ describe Admin::PagesController do
     end
   end
 
+  describe '#datasets' do
+    include_context 'users helper'
+
+    before(:each) do
+      host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+    end
+
+    it 'returns 200 if a dataset has no table' do
+      FactoryGirl.create(:table_visualization, user_id: @carto_user1.id, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      Carto::Visualization.count.should eql 1
+      visualization = Carto::Visualization.first
+      visualization.table.should be_nil
+
+      get public_datasets_home_url(user_domain: @carto_user1.username)
+
+      last_response.status.should == 200
+      last_response.body.should =~ /doesn\'t have any items/
+    end
+  end
+
   def mock_explore_feature_flag
     anyuser = prepare_user('anyuser')
     ::User.any_instance.stubs(:has_feature_flag?)

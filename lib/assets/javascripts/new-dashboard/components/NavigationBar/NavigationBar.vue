@@ -125,6 +125,7 @@ export default {
 .navbar {
   display: flex;
   position: fixed;
+  top: 0;
   z-index: $z-index__navbar;
   align-items: center;
   justify-content: space-between;
@@ -273,7 +274,7 @@ export default {
 }
 
 .navbar.is-user-notification {
-  margin-top: $notification-warning__height;
+  top: $notification-warning__height;
 }
 
 .feedback-popup {

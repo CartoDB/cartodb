@@ -32,7 +32,6 @@
 import { mapState } from 'vuex';
 import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
-import CartoNode from 'carto-node';
 import { apiKeysTypes } from 'new-dashboard/core/constants/api-keys';
 import { accountsWithLimits } from 'new-dashboard/core/constants/accounts';
 

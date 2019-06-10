@@ -7,10 +7,10 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
       <sectiontitle-stub title="QuotaSection.title" class="grid-cell"><template></template></sectiontitle-stub>
       <ul class="grid quota-list">
         <li class="grid-cell grid-cell--col12 quota-listitem">
-          <accountquota-stub title="QuotaSection.account"></accountquota-stub>
+          <accountquota-stub></accountquota-stub>
         </li>
         <li class="grid-cell grid-cell--col12 quota-listitem">
-          <dataservicesquota-stub title="QuotaSection.dataServices" permonth="true"></dataservicesquota-stub>
+          <dataservicesquota-stub></dataservicesquota-stub>
         </li>
       </ul>
       <div class="quota-billing"><span class="quota-billingday text is-small is-txtSoftGrey">

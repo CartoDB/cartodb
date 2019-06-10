@@ -1414,6 +1414,7 @@ class User < Sequel::Model
       in_database(as: :superuser) do |user_database|
         user_database.transaction do
           user_database.fetch(%{SET LOCAL lock_timeout = '1s'})
+          user_database.fetch(%{SET LOCAL statement_timeout = '5s'})
           user_database.fetch(%{SELECT cartodb.#{user_data_size_function}}).first[:cdb_userdatasize]
         end
       end

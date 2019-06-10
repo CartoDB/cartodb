@@ -276,7 +276,7 @@ class Table
       end
 
       # All normal fields casted to text
-      self.schema(reload: true, cartodb_types: false).each do |column|
+      self.schema(reload: false, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run(%{ALTER TABLE #{qualified_table_name} ALTER COLUMN "#{column[0]}" TYPE text})
@@ -353,7 +353,7 @@ class Table
       end
     end
 
-    self.schema(reload:true)
+    self.schema(reload:false)
     set_table_id
   rescue => e
     self.handle_creation_error(e)
@@ -513,7 +513,11 @@ class Table
   end
 
   def self.table_size(name, options)
-    options[:connection]['SELECT pg_total_relation_size(?) AS size', name].first[:size] / 2
+    options[:connection].transaction_with_timeout(statement_timeout: '5s') do |db|
+      db.fetch(%{SET LOCAL statement_timeout = '1s'})
+      db.fetch(%{SET LOCAL lock_timeout = '1s'})
+      db.fetch(%{SELECT pg_total_relation_size(?) AS size}).first[:size] / 2
+    end
   rescue Sequel::DatabaseError
     nil
   end
@@ -522,7 +526,7 @@ class Table
     first_columns     = []
     middle_columns    = []
     last_columns      = []
-    owner.in_database.schema(name, schema: owner.database_schema, reload: options.fetch(:reload, true)).each do |column|
+    owner.in_database.schema(name, schema: owner.database_schema, reload: options.fetch(:reload, false)).each do |column|
       next if column[0] == THE_GEOM_WEBMERCATOR
 
       calculate_the_geom_type if column[0] == :the_geom
@@ -559,7 +563,7 @@ class Table
   def insert_row!(raw_attributes)
     primary_key = nil
     owner.in_database do |user_database|
-      schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
+      schema = user_database.schema(name, schema: owner.database_schema, reload: false).map{|c| c.first}
       raw_attributes.delete(:id) unless schema.include?(:id)
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
       if attributes.keys.size != raw_attributes.keys.size
@@ -612,7 +616,7 @@ class Table
 
     rows_updated = 0
     owner.in_database do |user_database|
-      schema = user_database.schema(name, schema: owner.database_schema, reload: true).map{|c| c.first}
+      schema = user_database.schema(name, schema: owner.database_schema, reload: false).map{|c| c.first}
       raw_attributes.delete(:id) unless schema.include?(:id)
 
       attributes = raw_attributes.dup.select{ |k,v| schema.include?(k.to_sym) }
@@ -716,13 +720,13 @@ class Table
   end #modify_column!
 
   def column_type_for(column_name)
-    schema(cartodb_types: false, reload: true).select { |c|
+    schema(cartodb_types: false, reload: false).select { |c|
       c[0] == column_name.to_sym
     }.first[1]
   end #column_type_for
 
   def self.column_names_for(db, table_name, owner)
-    db.schema(table_name, schema: owner.database_schema, reload: true).map{ |s| s[0].to_s }
+    db.schema(table_name, schema: owner.database_schema, reload: false).map{ |s| s[0].to_s }
   end #column_names
 
   def rename_column(old_name, new_name='')
@@ -876,7 +880,7 @@ class Table
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
         CartoDB::InternalGeocoder::LatitudeLongitude.new(user_conn).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
       end
-      schema(reload: true)
+      schema(reload: false)
     else
       raise InvalidArgument
     end
@@ -1142,20 +1146,24 @@ class Table
       size_calc = is_raster? ? "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"')"
                                     : "pg_total_relation_size('\"' || ? || '\".\"' || relname || '\"') / 2"
 
-      data = owner.in_database.fetch(
-        %{
-            SELECT
-              #{size_calc} AS size,
-              reltuples::integer AS row_count
-            FROM pg_class
-            JOIN pg_catalog.pg_namespace n on n.oid = pg_class.relnamespace
-            WHERE relname = ?
-            AND n.nspname = ?
+      data = owner.in_database.transaction do
+        owner.in_database.fetch(%{SET LOCAL lock_timeout = '1s'})
+        owner.in_database.fetch(%{SET LOCAL statement_timeout = '5s'})
+        owner.in_database.fetch(
+          %{
+              SELECT
+                #{size_calc} AS size,
+                reltuples::integer AS row_count
+              FROM pg_class
+              JOIN pg_catalog.pg_namespace n on n.oid = pg_class.relnamespace
+              WHERE relname = ?
+              AND n.nspname = ?
           },
-        owner.database_schema,
-        name,
-        database_schema
-      ).first
+          owner.database_schema,
+          name,
+          database_schema
+        ).first
+      end
     rescue => exception
       data = nil
       # INFO: we don't want code to fail because of SQL error
@@ -1276,13 +1284,19 @@ class Table
   def query_geometry_types
     # We do not query the DB, if the_geom does not exist we just recover
     begin
-      owner.in_database[ %Q{
-        SELECT DISTINCT ST_GeometryType(the_geom) FROM (
-          SELECT the_geom
-        FROM #{qualified_table_name}
-          WHERE (the_geom is not null) LIMIT 10
-        ) as foo
-      }].all.map {|r| r[:st_geometrytype] }
+      owner.in_database do |owner_db|
+        owner_db.transaction do
+          owner_db.fetch(%{SET LOCAL lock_timeout = '1s'})
+          owner_db.fetch(%{SET LOCAL statement_timeout = '5s'})
+          owner_db.fetch(%{
+           SELECT DISTINCT ST_GeometryType(the_geom) FROM (
+             SELECT the_geom
+               FROM #{qualified_table_name}
+               WHERE (the_geom is not null) LIMIT 10
+           ) as foo
+          }).all.map {|r| r[:st_geometrytype] }
+        end
+      end
     rescue
       []
     end
@@ -1305,7 +1319,7 @@ class Table
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 
-    connection.schema(table_name, schema: database_schema, reload: true).each do |column|
+    connection.schema(table_name, schema: database_schema, reload: false).each do |column|
       column_name = column[0].to_s
       column_type = column[1][:db_type]
       column_name = ensure_column_has_valid_name(table_name, column_name, options)
@@ -1362,7 +1376,7 @@ class Table
   def self.get_column_names(table_name, options={})
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
-    table_schema = connection.schema(table_name, schema: database_schema, reload: true)
+    table_schema = connection.schema(table_name, schema: database_schema, reload: false)
     table_schema.map { |column| column[0].to_s }
   end
 
@@ -1381,7 +1395,7 @@ class Table
 
   def set_the_geom_column!(type = nil)
     if type.nil?
-      if self.schema(reload: true).flatten.include?(THE_GEOM)
+      if self.schema(reload: false).flatten.include?(THE_GEOM)
         if self.schema.select{ |k| k[0] == THE_GEOM }.first[1] == 'geometry'
           row = owner.in_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first
           if row

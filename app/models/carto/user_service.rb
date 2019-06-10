@@ -111,6 +111,7 @@ module Carto
         in_database(as: :superuser) do |user_database|
           user_database.transaction do
             user_database.execute(%{SET LOCAL lock_timeout = '1s'})
+            user_database.execute(%{SET LOCAL statement_timeout = '5s'})
             user_database.execute(%{SELECT cartodb.#{user_data_size_function}}).first['cdb_userdatasize'].to_i
           end
         end

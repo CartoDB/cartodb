@@ -43,10 +43,11 @@ export default {
 
   &.is-visible {
     transform: translate3d(0, 64px, 0);
-  }
 
-  &.is-user-notification {
-    top: $notification-warning__height;
+    &.is-user-notification {
+      $stickyHeaderPosition: calc(64px + #{$notification-warning__height});
+      transform: translate3d(0, #{$stickyHeaderPosition}, 0);
+    }
   }
 }
 

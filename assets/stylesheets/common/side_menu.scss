@@ -97,20 +97,3 @@
     cursor: default;
   }
 }
-
-.SideMenu-helpSegment {
-  display: flex;
-  flex-direction: row;
-  padding: 15px;
-  border: 1px solid $cTypography-help;
-  border-radius: 4px;
-  background: $cStructure-grayBkg;
-}
-
-.SideMenu-helpSegment--paragraph {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-left: 15px;
-  color: $cTypography-paragraphs;
-}

@@ -20,6 +20,8 @@
 
   .ScrollView-content {
     flex: 1;
+    width: 100%;
+    max-width: 940px;
     padding: 18px 0;
   }
 }

@@ -127,7 +127,7 @@ module Carto
           end
         rescue => ee
           CartoDB.report_exception(ee, "Failed to get user db size, retrying...", user: @user)
-          raise ee
+          #raise ee
         end
         retry unless attempts > 1
         CartoDB.notify_exception(e, user: @user)

@@ -213,7 +213,7 @@ export default {
       return this.selectedMaps.length > 0;
     },
     shouldShowLimitsWarning () {
-      return this.publicMapsQuota && this.isOutOfPublicMapsQuota && !this.selectedMaps.length;
+      return this.isOutOfPublicMapsQuota && !this.selectedMaps.length;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

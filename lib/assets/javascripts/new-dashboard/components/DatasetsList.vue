@@ -208,7 +208,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     shouldShowLimitsWarning () {
-      return this.datasetsQuota && this.isOutOfDatasetsQuota && !this.selectedDatasets.length;
+      return this.isOutOfDatasetsQuota && !this.selectedDatasets.length;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

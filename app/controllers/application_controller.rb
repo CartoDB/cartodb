@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_asset_debugging
   before_filter :cors_preflight_check
   before_filter :check_maintenance_mode
-  before_filter :check_user_state  
+  before_filter :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header

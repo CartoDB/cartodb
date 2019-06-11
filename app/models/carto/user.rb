@@ -34,10 +34,12 @@ class Carto::User < ActiveRecord::Base
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -125,8 +127,9 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
+  # this method can be removed when the salt column is finally removed from the database
   def self.columns
-    super.reject { |c| c.name == "arcgis_datasource_enabled" }
+    super.reject { |c| c.name == "salt" }
   end
 
   def name_or_username
@@ -145,7 +148,6 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
-    self.salt = ""
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
   end
@@ -494,6 +496,8 @@ class Carto::User < ActiveRecord::Base
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('professional').zero?
+      created_at + PROFESSIONAL_TRIAL_DAYS.days
     end
   end
 
@@ -525,7 +529,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
                                             secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
@@ -553,7 +557,8 @@ class Carto::User < ActiveRecord::Base
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new_record?
     return old_password == new_password if old_password
-    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was, salt: salt,
+
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was,
                                             secret: Cartodb.config[:password_secret])
   end
 
@@ -765,6 +770,15 @@ class Carto::User < ActiveRecord::Base
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

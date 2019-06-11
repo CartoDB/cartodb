@@ -2,7 +2,11 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.27.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
@@ -10,8 +14,11 @@ Development
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)
 - New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+- Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
+- Inform users about quota errors (#14921)
 
 ### Bug fixes / enhancements
+- Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
 - Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
@@ -33,8 +40,12 @@ Development
 - Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
 - Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
 - Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
+- New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
 - Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
 - Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
+- Update quota copies (#14945)
+- Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
+- Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
 
 4.26.1 (2019-05-06)
 -------------------

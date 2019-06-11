@@ -69,7 +69,7 @@ class User < Sequel::Model
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
 
   self.strict_param_setting = false
 
@@ -109,7 +109,6 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
-                 :salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -128,6 +127,8 @@ class User < Sequel::Model
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -621,13 +622,14 @@ class User < Sequel::Model
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new? || (@changing_passwords && !old_password)
     return old_password == new_password if old_password
+
     old_crypted_password = carto_user.crypted_password_was
-    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password,
                                             secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
                                             secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
@@ -672,7 +674,6 @@ class User < Sequel::Model
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = ""
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
@@ -886,8 +887,8 @@ class User < Sequel::Model
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    else
-      nil
+    elsif account_type.to_s.casecmp('professional').zero?
+      created_at + PROFESSIONAL_TRIAL_DAYS.days
     end
   end
 
@@ -1911,6 +1912,15 @@ class User < Sequel::Model
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

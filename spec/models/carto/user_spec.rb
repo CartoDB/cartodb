@@ -50,7 +50,7 @@ describe Carto::User do
     end
 
     it 'false for BASIC and PRO accounts' do
-      ['BASIC', 'PRO'].each do |account_type|
+      ['BASIC', 'PRO', 'Professional'].each do |account_type|
         @carto_user.account_type = account_type
 
         @carto_user.soft_geocoding_limit?.should be_false

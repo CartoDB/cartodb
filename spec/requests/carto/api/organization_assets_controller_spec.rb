@@ -231,7 +231,7 @@ describe Carto::Api::OrganizationAssetsController do
     end
 
     it 'works for organization owners' do
-      Carto::OrganizationAssetsService.instance
+      Carto::OrganizationImageAssetsService.instance
                                       .stubs(:fetch_file)
                                       .returns(Tempfile.new('test'))
 

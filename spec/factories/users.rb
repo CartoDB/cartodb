@@ -51,7 +51,6 @@ FactoryGirl.define do
     trait :valid do
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
-      salt 'kkkkkkkkk'
       crypted_password 'kkkkkkkkk'
     end
 
@@ -76,7 +75,6 @@ FactoryGirl.define do
 
     password { email.split('@').first }
     password_confirmation { email.split('@').first }
-    salt 'kkkkkkkkk'
     crypted_password do
       Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
     end

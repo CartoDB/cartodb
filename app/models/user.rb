@@ -52,17 +52,12 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
-  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
-                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
-                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
-                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
-                'Transportation and Logistics'].freeze
-
-  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
-               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
-
-  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
-                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
+  INDUSTRIES = [
+    "Apparel & Fashion", "Banking & Financial Services", "Business Services", "Consulting Services",
+    "Consumer & Retail", "Education & Research", "Energy & Mining", "Government", "Health & Medical", "Insurance",
+    "Manufacturing", "Marketing & Advertising", "Natural Resources & Environment", "Non-Profit", "Other", "Real Estate",
+    "Software & Technology", "Transportation & Logistics", "Utilities & Communications"
+  ].freeze
 
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and

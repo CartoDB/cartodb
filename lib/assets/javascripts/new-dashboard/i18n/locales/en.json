@@ -277,9 +277,12 @@
       "total": "Total",
       "perMonth": "per month"
     },
-    "disk": "Disk",
+    "account": "Your Account",
     "dataServices": "Data Services",
     "storage": "Storage",
+    "publicMaps": "Public Maps",
+    "datasets": "Datasets",
+    "apiKeys": "API keys",
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",

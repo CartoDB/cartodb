@@ -42,6 +42,7 @@ sudo make install
 - Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
 - Update quota copies (#14945)
 - Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
+- Include limits metrics in quota & metrics section ([#14923](https://github.com/CartoDB/cartodb/issues/14923))
 
 4.26.1 (2019-05-06)
 -------------------

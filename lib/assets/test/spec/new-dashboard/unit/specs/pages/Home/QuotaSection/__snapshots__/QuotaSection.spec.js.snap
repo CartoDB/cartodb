@@ -7,16 +7,10 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
       <sectiontitle-stub title="QuotaSection.title" class="grid-cell"><template></template></sectiontitle-stub>
       <ul class="grid quota-list">
         <li class="grid-cell grid-cell--col12 quota-listitem">
-          <quotacontainer-stub title="QuotaSection.disk">
-            <quotawidget-stub name="QuotaSection.storage" availablequota="1024" usedquota="6.78125" unit="MB" helplink="https://carto.com/help/your-account/your-disk-storage/"></quotawidget-stub>
-          </quotacontainer-stub>
+          <accountquota-stub></accountquota-stub>
         </li>
         <li class="grid-cell grid-cell--col12 quota-listitem">
-          <quotacontainer-stub title="QuotaSection.dataServices" permonth="true">
-            <quotawidget-stub name="QuotaSection.geocoding" availablequota="1200" usedquota="103" formattolocale="true" helplink="https://carto.com/help/working-with-data/geocoding/"></quotawidget-stub>
-            <quotawidget-stub name="QuotaSection.isolines" availablequota="1332" usedquota="134" formattolocale="true" helplink="https://carto.com/help/working-with-data/isolines/"></quotawidget-stub>
-            <quotawidget-stub name="QuotaSection.routing" availablequota="102" usedquota="54" formattolocale="true" helplink="https://carto.com/help/working-with-data/routing/"></quotawidget-stub>
-          </quotacontainer-stub>
+          <dataservicesquota-stub></dataservicesquota-stub>
         </li>
       </ul>
       <div class="quota-billing"><span class="quota-billingday text is-small is-txtSoftGrey">

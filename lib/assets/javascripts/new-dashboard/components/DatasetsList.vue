@@ -173,7 +173,7 @@ export default {
       isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
     }),
     canCreateDatasets () {
-      return this.$store.getters['user/canCreateDatasets'] && !this.isUserOutOfQuota;
+      return this.$store.getters['user/canCreateDatasets'];
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;

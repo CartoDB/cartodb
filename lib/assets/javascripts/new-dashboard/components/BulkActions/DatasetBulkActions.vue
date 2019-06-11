@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Table from 'new-dashboard/core/models/table';
@@ -25,6 +26,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
+    }),
     actions () {
       return {
         single: [
@@ -46,7 +50,7 @@ export default {
           {
             name: this.$t('BulkActions.datasets.duplicate'),
             event: 'duplicateDataset',
-            shouldBeDisabled: this.isUserOutOfQuota
+            shouldBeDisabled: this.isOutOfDatasetsQuota
           },
           {
             name: this.$t('BulkActions.datasets.lock'),
@@ -116,11 +120,6 @@ export default {
     },
     areAllLocked () {
       return this.selectedDatasets.every(dataset => dataset.locked);
-    },
-    isUserOutOfQuota () {
-      const tableQuota = this.$store.state.user.table_quota;
-      const tableCount = this.$store.state.user.table_count;
-      return tableQuota && tableCount >= tableQuota;
     }
   },
   methods: {

@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import * as Table from 'new-dashboard/core/models/table';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
@@ -30,6 +31,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
+    }),
     actions () {
       return {
         mine: [
@@ -38,7 +42,7 @@ export default {
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldBeDisabled: this.isUserOutOfQuota},
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateDataset', shouldBeDisabled: this.isOutOfDatasetsQuota},
           { name: this.$t('QuickActions.lock'), event: 'lockDataset' },
           { name: this.$t('QuickActions.delete'), event: 'deleteDataset', isDestructive: true }
         ],
@@ -65,11 +69,6 @@ export default {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
     },
-    isUserOutOfQuota () {
-      const tableQuota = this.$store.state.user.table_quota;
-      const tableCount = this.$store.state.user.table_count;
-      return tableQuota && tableCount >= tableQuota;
-    }
   },
   methods: {
     getActionHandlers () {

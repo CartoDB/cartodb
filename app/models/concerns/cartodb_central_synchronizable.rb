@@ -115,7 +115,7 @@ module Concerns
            isolines_provider routing_provider engine_enabled builder_enabled
            mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit no_map_logo
            user_render_timeout database_render_timeout state industry company phone job_role
-           password_reset_token password_reset_sent_at)
+           password_reset_token password_reset_sent_at maintenance_mode)
       end
     end
 

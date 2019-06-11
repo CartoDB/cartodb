@@ -3,7 +3,7 @@
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
 
-  ssl_required  :account, :profile, :lockout
+  ssl_required  :account, :profile, :lockout, :maintenance
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -30,8 +30,11 @@ class Admin::UsersController < Admin::AdminController
   end
 
   def maintenance
-    # TODO: Logic to display when user is affected by maintenance
-    render locals: { breadcrumb: false }
+    if current_user.maintenance_mode?
+      render locals: { breadcrumb: false }
+    else
+      render_404
+    end
   end
 
   private

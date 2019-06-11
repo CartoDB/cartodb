@@ -154,7 +154,7 @@ export default {
       isFetchingDatasets: state => state.datasets.isFetching,
       filterType: state => state.datasets.filterType,
       currentEntriesCount: state => state.datasets.metadata.total_entries,
-      totalUserEntries: state => state.datasets.metadata.total_user_entries || 0,
+      totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),

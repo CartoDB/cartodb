@@ -45,6 +45,7 @@ sudo make install
 - Update quota copies (#14945)
 - Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
 - Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
+- Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
 
 4.26.1 (2019-05-06)
 -------------------

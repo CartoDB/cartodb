@@ -1,9 +1,19 @@
 <template>
   <div class="container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedMaps.length" ref="headerContainer">
+      <SectionTitle class="grid-cell" :showActionButton="!selectedMaps.length" ref="headerContainer">
         <template slot="icon">
           <img src="../assets/icons/section-title/map.svg">
+        </template>
+
+        <template slot="title">
+          <VisualizationsTitle
+            :defaultTitle="$t(`MapsPage.header.title['${appliedFilter}']`)"
+            :selectedItems="selectedMaps.length"
+            :vizQuota="publicMapsQuota"
+            :vizCount="publicMapsCount"
+            :isOutOfQuota="isOutOfPublicMapsQuota"
+            :counterLabel="'Public Maps'"/>
         </template>
 
         <template slot="dropdownButton">
@@ -82,7 +92,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import CreateMapCard from 'new-dashboard/components/CreateMapCard';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
@@ -92,6 +102,7 @@ import MapCard from 'new-dashboard/components/MapCard/MapCard.vue';
 import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHeader.vue';
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
@@ -129,6 +140,7 @@ export default {
     CondensedMapHeader,
     MapCardFake,
     SectionTitle,
+    VisualizationsTitle,
     InitialState
   },
   data () {
@@ -152,17 +164,13 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      publicMapQuota: state => state.user.public_map_quota,
-      linkMapsTotal: state => state.user.link_privacy_map_count,
-      passwordMapsTotal: state => state.user.password_privacy_map_count,
-      publicMapsTotal: state => state.user.public_privacy_map_count,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
-    pageTitle () {
-      return this.selectedMaps.length
-        ? this.$t('BulkActions.selected', {count: this.selectedMaps.length})
-        : `${this.$t(`MapsPage.header.title['${this.appliedFilter}']`)}${this.getPublicMapQuotaCounter}`;
-    },
+    ...mapGetters({
+      publicMapsQuota: 'user/publicMapsQuota',
+      publicMapsCount: 'user/publicMapsCount',
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+    }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
     },
@@ -194,15 +202,6 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
-    },
-    publicMapsCount () {
-      return (this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal) || 0;
-    },
-    getPublicMapQuotaCounter () {
-      return this.publicMapQuota && !this.isUserOutOfQuota ? ` (Public Maps ${this.publicMapsCount}/${this.publicMapQuota})` : '';
-    },
-    isUserOutOfQuota () {
-      return this.publicMapsCount >= this.publicMapQuota;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

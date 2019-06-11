@@ -3,7 +3,7 @@
     <div class="head-sectionContainer">
       <h2 class="head-sectionTitle is-txtGrey">
         <span class="icon icon--large"><slot name="icon"></slot></span>
-        {{title}}
+        <slot name="title"></slot>
       </h2>
 
       <ul class="head-sectionActions">
@@ -25,7 +25,6 @@
 export default {
   name: 'SectionTitle',
   props: {
-    title: String,
     description: String,
     showActionButton: Boolean
   }

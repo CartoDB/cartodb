@@ -2,10 +2,11 @@
   <div class="section is-bgSoftBlue section--noBorder">
     <div class="container">
       <div class="full-width">
-        <SectionTitle class="grid-cell" :title="$t(`QuotaSection.title`)">
+        <SectionTitle class="grid-cell">
           <template slot="icon">
             <img svg-inline src="../../../assets/icons/section-title/quota.svg">
           </template>
+        <template slot="title">{{ $t('QuotaSection.title') }}</template>
         </SectionTitle>
         <ul class="grid quota-list">
           <li class="grid-cell grid-cell--col12 quota-listitem">

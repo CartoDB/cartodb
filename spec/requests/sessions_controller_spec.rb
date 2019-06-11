@@ -950,7 +950,7 @@ describe SessionsController do
       before(:all) do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.owner
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 
@@ -970,7 +970,7 @@ describe SessionsController do
       before(:all) do
         @organization = FactoryGirl.create(:organization_with_users, :mfa_enabled)
         @user = @organization.users.last
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 
@@ -993,7 +993,7 @@ describe SessionsController do
                                            :mfa_enabled,
                                            auth_username_password_enabled: false)
         @user = @organization.users.last
-        @user.password = @user.password_confirmation = @user.salt = @user.crypted_password = '00012345678'
+        @user.password = @user.password_confirmation = @user.crypted_password = '00012345678'
         @user.save
       end
 

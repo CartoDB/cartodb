@@ -109,7 +109,6 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
-                 :salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -623,13 +622,14 @@ class User < Sequel::Model
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new? || (@changing_passwords && !old_password)
     return old_password == new_password if old_password
+
     old_crypted_password = carto_user.crypted_password_was
-    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password,
                                             secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
                                             secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
@@ -674,7 +674,6 @@ class User < Sequel::Model
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = ""
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date

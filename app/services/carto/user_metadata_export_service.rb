@@ -26,7 +26,7 @@ module Carto
   module UserMetadataExportServiceConfiguration
     CURRENT_VERSION = '1.0.11'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
-      email crypted_password salt database_name username admin enabled invite_token invite_token_date
+      email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
       period_end_date map_view_quota max_layers database_timeout user_timeout upgraded_at map_view_block_price
       geocoding_quota dashboard_viewed_at sync_tables_enabled database_host geocoding_block_price api_key

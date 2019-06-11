@@ -68,7 +68,7 @@ export default {
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
-    },
+    }
   },
   methods: {
     getActionHandlers () {

@@ -21,12 +21,12 @@ export default {
       return this.$t('BulkActions.selected', {count: this.selectedItems});
     },
     compoundTitle () {
-      return this.vizQuota && !this.isOutOfQuota? this.titleWithCounter : this.defaultTitle
+      return this.vizQuota && !this.isOutOfQuota ? this.titleWithCounter : this.defaultTitle;
     },
     titleWithCounter () {
       return this.counterLabel
         ? `${this.defaultTitle} (${this.counterLabel} ${this.vizCount}/${this.vizQuota})`
-        : `${this.defaultTitle} (${this.vizCount}/${this.vizQuota})`
+        : `${this.defaultTitle} (${this.vizCount}/${this.vizQuota})`;
     }
   }
 

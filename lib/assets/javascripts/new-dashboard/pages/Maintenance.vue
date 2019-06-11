@@ -1,16 +1,12 @@
 <template>
   <Page>
     <section>
-      <div class="container warning-container">
-        <div class="warning-icon">
-          <img src="../assets/icons/expired-trial/warning-icon.svg" />
+      <div class="container maintenance-container">
+        <div class="maintenance-icon">
+          <img src="../assets/icons/common/wrench.svg" />
         </div>
-        <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
-          Sorry
-        </h2>
-        <p class="text is-body is-txtDarkBlue">
-          We're down for scheduled maintenance
-        </p>
+        <h2 class="maintenance-title title is-title is-txtDarkBlue is-bold">{{ $t('MaintenancePage.title') }}</h2>
+        <p class="text is-body is-txtDarkBlue">{{ $t('MaintenancePage.text') }}</p>
       </div>
     </section>
   </Page>
@@ -28,17 +24,16 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
 
-.warning-container {
+.maintenance-container {
   text-align: center;
 }
 
-.warning-icon {
+.maintenance-icon {
   margin-bottom: 48px;
 }
 
-.warning-title {
+.maintenance-title {
   margin-bottom: 16px;
 }
 </style>

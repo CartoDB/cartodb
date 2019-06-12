@@ -14,6 +14,7 @@ sudo make install
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)
 - Inform users about quota errors (#14921)
+- Inform users about their quota usage (#14924)
 
 ### Bug fixes / enhancements
 - Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)

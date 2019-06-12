@@ -187,6 +187,13 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.11 (without company_employees and use_case)' do
+      user = test_import_user_from_export(full_export_one_zero_eleven)
+
+      expect(user.company_employees).to be_nil
+      expect(user.use_case).to be_nil
+    end
+
     it 'imports 1.0.10 (without regular_api_key_quota)' do
       user = test_import_user_from_export(full_export_one_zero_ten)
 
@@ -1121,8 +1128,15 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_eleven) do
+    user_hash = full_export[:user].except!(:use_case, :company_employees)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_ten) do
-    user_hash = full_export[:user].except!(:regular_api_key_quota)
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
 
     full_export[:user] = user_hash
     full_export

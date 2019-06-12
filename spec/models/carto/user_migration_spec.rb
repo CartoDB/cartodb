@@ -572,7 +572,7 @@ describe 'UserMigration' do
     end
 
     it 'loads legacy functions' do
-      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2499
+      CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS.count.should eq 2503
     end
 
     it 'matches functions with attributes qualified with namespace' do

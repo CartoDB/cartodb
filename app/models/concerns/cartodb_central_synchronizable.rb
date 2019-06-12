@@ -97,7 +97,7 @@ module Concerns
            map_view_quota max_layers
            max_import_file_size max_import_table_row_count max_concurrent_import_count
            name last_name notification organization_id
-           period_end_date private_tables_enabled quota_in_bytes salt
+           period_end_date private_tables_enabled quota_in_bytes
            sync_tables_enabled table_quota public_map_quota regular_api_key_quota twitter_username upgraded_at
            user_timeout username website soft_geocoding_limit
            batch_queries_statement_timeout
@@ -134,7 +134,7 @@ module Concerns
           account_type admin org_admin crypted_password database_host database_timeout description disqus_shortname
           available_for_hire email geocoding_block_price geocoding_quota map_view_block_price map_view_quota max_layers
           max_import_file_size max_import_table_row_count max_concurrent_import_count name last_name notification
-          organization_id period_end_date private_tables_enabled quota_in_bytes salt sync_tables_enabled table_quota
+          organization_id period_end_date private_tables_enabled quota_in_bytes sync_tables_enabled table_quota
           public_map_quota regular_api_key_quota twitter_username upgraded_at user_timeout username website
           soft_geocoding_limit twitter_datasource_enabled soft_twitter_datasource_limit google_sign_in
           last_password_change_date github_user_id google_maps_key google_maps_private_key here_isolines_quota

@@ -171,7 +171,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'includes 3rd party scripts for analytics' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {
@@ -194,7 +195,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'does not include 3rd party scripts if cookies=0 query param is present' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {

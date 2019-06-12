@@ -1,11 +1,11 @@
 # encoding: utf-8
 
 require 'carto/storage'
-require 'carto/assets_service'
+require 'carto/assets/image_assets_service'
 require 'singleton'
 
 module Carto
-  class OrganizationAssetsService < AssetsService
+  class OrganizationImageAssetsService < ImageAssetsService
     include Singleton
 
     def upload(organization, resource)

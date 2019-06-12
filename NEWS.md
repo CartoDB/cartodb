@@ -13,9 +13,11 @@ sudo make install
 - Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
 - Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
 - New attributes to /me endpoint (#14862)
+- Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
 - Inform users about quota errors (#14921)
 
 ### Bug fixes / enhancements
+- Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
 - Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
@@ -42,6 +44,7 @@ sudo make install
 - Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
 - Update quota copies (#14945)
 - Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
+- Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
 - Include limits metrics in quota & metrics section ([#14923](https://github.com/CartoDB/cartodb/issues/14923))
 
 4.26.1 (2019-05-06)

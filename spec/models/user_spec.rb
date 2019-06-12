@@ -433,7 +433,7 @@ describe User do
     user.dashboard_viewed?.should be_true
   end
 
-  it "should validate that password is present if record is new and crypted_password or salt are blank" do
+  it "should validate that password is present if record is new and crypted_password is blank" do
     user = ::User.new
     user.username = "adminipop"
     user.email = "adminipop@example.com"
@@ -443,14 +443,12 @@ describe User do
 
     another_user = new_user(user.values.merge(:password => "admin123"))
     user.crypted_password = another_user.crypted_password
-    user.salt = another_user.salt
     user.valid?.should be_true
     user.save
 
-    # Let's ensure that crypted_password and salt does not change
+    # Let's ensure that crypted_password does not change
     user_check = ::User[user.id]
     user_check.crypted_password.should == another_user.crypted_password
-    user_check.salt.should == another_user.salt
 
     user.password = nil
     user.valid?.should be_true

@@ -52,13 +52,6 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
-  INDUSTRIES = [
-    "Apparel & Fashion", "Banking & Financial Services", "Business Services", "Consulting Services",
-    "Consumer & Retail", "Education & Research", "Energy & Mining", "Government", "Health & Medical", "Insurance",
-    "Manufacturing", "Marketing & Advertising", "Natural Resources & Environment", "Non-Profit", "Other", "Real Estate",
-    "Software & Technology", "Transportation & Logistics", "Utilities & Communications"
-  ].freeze
-
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.

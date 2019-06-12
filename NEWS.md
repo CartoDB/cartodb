@@ -15,6 +15,7 @@ sudo make install
 - New attributes to /me endpoint (#14862)
 - Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
 - Inform users about quota errors (#14921)
+- Inform users about their quota usage (#14924)
 
 ### Bug fixes / enhancements
 - Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)

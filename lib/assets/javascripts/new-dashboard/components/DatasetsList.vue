@@ -15,6 +15,12 @@
             :isOutOfQuota="isOutOfDatasetsQuota"/>
         </template>
 
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <BadgeWarning>
+            <div v-html="$t('DataPage.header.warning', { path: `//${ upgradeUrl }` })"></div>
+          </BadgeWarning>
+        </template>
+
         <template slot="dropdownButton">
           <DatasetBulkActions
             :selectedDatasets="selectedDatasets"
@@ -103,6 +109,7 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import BadgeWarning from 'new-dashboard/components/BadgeWarning';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -130,6 +137,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
+    BadgeWarning,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -156,7 +164,8 @@ export default {
       currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      upgradeUrl: state => state.config.upgrade_url
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -197,6 +206,9 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    shouldShowLimitsWarning () {
+      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

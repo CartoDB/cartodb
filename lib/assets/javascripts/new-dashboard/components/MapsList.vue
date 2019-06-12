@@ -16,6 +16,12 @@
             :counterLabel="'Public Maps'"/>
         </template>
 
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <BadgeWarning>
+            <div v-html="$t('MapsPage.header.warning', { path: `//${ upgradeUrl }` })"></div>
+          </BadgeWarning>
+        </template>
+
         <template slot="dropdownButton">
           <MapBulkActions
             :selectedMaps="selectedMaps"
@@ -103,6 +109,7 @@ import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHea
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import BadgeWarning from 'new-dashboard/components/BadgeWarning';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
@@ -141,6 +148,7 @@ export default {
     MapCardFake,
     SectionTitle,
     VisualizationsTitle,
+    BadgeWarning,
     InitialState
   },
   data () {
@@ -164,7 +172,8 @@ export default {
       filterType: state => state.maps.filterType,
       totalUserEntries: state => state.maps.metadata.total_user_entries,
       totalShared: state => state.maps.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      upgradeUrl: state => state.config.upgrade_url
     }),
     ...mapGetters({
       publicMapsQuota: 'user/publicMapsQuota',
@@ -202,6 +211,9 @@ export default {
     },
     isSomeMapSelected () {
       return this.selectedMaps.length > 0;
+    },
+    shouldShowLimitsWarning () {
+      return !this.selectedMaps.length && this.isOutOfPublicMapsQuota;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;

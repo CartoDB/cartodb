@@ -16,9 +16,9 @@
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
-          <SectionTitleWarning>
-            <div v-html="$t('DataPage.header.warning', { path: `//${ accountUpdateURL }` })"></div>
-          </SectionTitleWarning>
+          <BadgeWarning>
+            <div v-html="$t('DataPage.header.warning', { path: `//${ upgradeUrl }` })"></div>
+          </BadgeWarning>
         </template>
 
         <template slot="dropdownButton">
@@ -109,7 +109,7 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import SectionTitleWarning from 'new-dashboard/components/SectionTitleWarning';
+import BadgeWarning from 'new-dashboard/components/BadgeWarning';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -137,7 +137,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
-    SectionTitleWarning,
+    BadgeWarning,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -165,7 +165,7 @@ export default {
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      accountUpdateURL: state => state.config.account_update_url
+      upgradeUrl: state => state.config.upgrade_url
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -208,7 +208,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     shouldShowLimitsWarning () {
-      return this.isOutOfDatasetsQuota && !this.selectedDatasets.length;
+      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

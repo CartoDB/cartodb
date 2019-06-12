@@ -1,20 +1,20 @@
 <template>
-  <div class="SectionTitleWarning">
-    <img class="SectionTitleWarning__icon" src="../assets/icons/common/warning-icon.svg" width="16" height="16" />
+  <div class="BadgeWarning">
+    <img class="BadgeWarning__icon" src="../assets/icons/common/warning-icon.svg" width="16" height="16" />
     <slot></slot>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SectionTitleWarning'
+  name: 'BadgeWarning'
 };
 </script>
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.SectionTitleWarning {
+.BadgeWarning {
   display: flex;
   align-items: center;
   padding: .4em 1em;

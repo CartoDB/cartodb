@@ -4,7 +4,7 @@ exports[`QuotaSection.vue should render correct contents 1`] = `
 <div class="section is-bgSoftBlue section--noBorder">
   <div class="container">
     <div class="full-width">
-      <sectiontitle-stub title="QuotaSection.title" class="grid-cell"><template></template></sectiontitle-stub>
+      <sectiontitle-stub class="grid-cell"><template></template> <template></template></sectiontitle-stub>
       <ul class="grid quota-list">
         <li class="grid-cell grid-cell--col12 quota-listitem">
           <accountquota-stub></accountquota-stub>

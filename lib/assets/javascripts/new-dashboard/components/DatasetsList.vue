@@ -1,9 +1,18 @@
 <template>
   <div class="container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
+      <SectionTitle class="grid-cell" :showActionButton="!selectedDatasets.length" ref="headerContainer">
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" width="18" height="20" />
+        </template>
+
+        <template slot="title">
+          <VisualizationsTitle
+            :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
+            :selectedItems="selectedDatasets.length"
+            :vizQuota="datasetsQuota"
+            :vizCount="datasetsCount"
+            :isOutOfQuota="isOutOfDatasetsQuota"/>
         </template>
 
         <template slot="dropdownButton">
@@ -87,12 +96,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -119,6 +129,7 @@ export default {
     CreateButton,
     SettingsDropdown,
     SectionTitle,
+    VisualizationsTitle,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -147,13 +158,13 @@ export default {
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
     }),
+    ...mapGetters({
+      datasetsCount: 'user/datasetsCount',
+      datasetsQuota: 'user/datasetsQuota',
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
+    }),
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
-    },
-    pageTitle () {
-      return this.selectedDatasets.length
-        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
-        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -241,6 +252,9 @@ export default {
   watch: {
     selectedDatasets () {
       this.$emit('selectionChange', this.selectedDatasets);
+    },
+    totalUserEntries () {
+      this.$store.dispatch('user/updateTableCount', this.totalUserEntries);
     }
   }
 };

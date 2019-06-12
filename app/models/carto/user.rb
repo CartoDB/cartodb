@@ -127,11 +127,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  # this method can be removed when the salt column is finally removed from the database
-  def self.columns
-    super.reject { |c| c.name == "salt" }
-  end
-
   def name_or_username
     name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end

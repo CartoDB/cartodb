@@ -12,7 +12,10 @@
   <body>
     <%= insert_google_tag_manager_no_script('primary') %>
     <% if ( ( controller_name != "visualizations" && controller_name != "tables" )  || action_name != "show" ) %>
-      <%= render 'admin/shared/new_private_header' %>
+
+      <% unless ( controller_name == 'users') %>
+        <%= render 'admin/shared/new_private_header' %>
+      <% end %>
 
       <% if current_user.notification.present? %>
         <div class="CDB-Text FlashMessage">
@@ -32,7 +35,11 @@
 
     <%= insert_trackjs() -%>
     <%= yield :js -%>
-    <%= javascript_include_tag 'header', 'footer' %>
+
+    <% unless ( controller_name == 'users' ) %>
+      <%= javascript_include_tag 'header', 'footer' %>
+    <% end %>
+
     <%= insert_google_analytics('primary') -%>
     <%= insert_hubspot() -%>
     <%= render 'admin/shared/intercom' %>

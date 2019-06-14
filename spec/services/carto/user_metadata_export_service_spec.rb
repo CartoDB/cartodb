@@ -187,6 +187,12 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.11 (without maintenance_mode)' do
+      user = test_import_user_from_export(full_export_one_zero_eleven)
+
+      expect(user.maintenance_mode).to be_nil
+    end
+
     it 'imports 1.0.10 (without regular_api_key_quota)' do
       user = test_import_user_from_export(full_export_one_zero_ten)
 
@@ -755,6 +761,7 @@ describe Carto::UserMetadataExportService do
         username: "user00000001",
         state: 'active',
         admin: nil,
+        maintenance_mode: false,
         enabled: true,
         invite_token: nil,
         invite_token_date: nil,
@@ -1119,6 +1126,13 @@ describe Carto::UserMetadataExportService do
         }]
       }
     }
+  end
+
+  let(:full_export_one_zero_eleven) do
+    user_hash = full_export[:user].except!(:maintenance_mode)
+
+    full_export[:user] = user_hash
+    full_export
   end
 
   let(:full_export_one_zero_ten) do

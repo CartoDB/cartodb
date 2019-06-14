@@ -21,10 +21,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.9: oauth_apps, oauth_app_users and friends
 # 1.0.10: public_map_quota
 # 1.0.11: regular_api_key_quota
+# 1.0.12: maintenance_mode
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.11'.freeze
+    CURRENT_VERSION = '1.0.12'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
@@ -43,7 +44,7 @@ module Carto
       salesforce_datasource_enabled builder_enabled geocoder_provider isolines_provider routing_provider
       github_user_id engine_enabled mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit
       no_map_logo org_admin last_name user_render_timeout database_render_timeout frontend_version
-      asset_host state company phone industry job_role password_reset_token password_reset_sent_at
+      asset_host state company phone industry job_role password_reset_token password_reset_sent_at maintenance_mode
     ).freeze
 
     BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze

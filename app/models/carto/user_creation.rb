@@ -28,11 +28,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   after_create :use_invitation
 
-  # this method can be removed when the salt column is finally removed from the database
-  def self.columns
-    super.reject { |c| c.name == "salt" }
-  end
-
   def self.new_user_signup(user, created_via = CREATED_VIA_ORG_SIGNUP)
     # Normal validation breaks state_machine method generation
     raise 'User needs username' unless user.username

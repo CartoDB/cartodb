@@ -1,12 +1,14 @@
 <template>
   <header class="dummy-header">
-    <img svg-inline src="../assets/icons/common/cartoLogo-white.svg" />
+    <a href="https://carto.com">
+      <img svg-inline src="../assets/icons/common/cartoLogo-white.svg" />
+    </a>
   </header>
 </template>
 
 <script>
 export default {
-  name: 'DummyHeader',
+  name: 'DummyHeader'
 };
 </script>
 

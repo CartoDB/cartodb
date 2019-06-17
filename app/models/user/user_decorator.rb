@@ -2,6 +2,28 @@ module CartoDB
   module UserDecorator
     include AccountTypeHelper
 
+    def activity(options = {})
+      calls = options.fetch(:show_api_calls, true) ? get_api_calls(from: last_billing_cycle, to: Date.today) : []
+      map_views = calls.fill(0, calls.size..29).reduce(:+)
+
+      {
+        id: id,
+        email: email,
+        username: username,
+        state: state,
+        account_type: account_type,
+        table_count: table_count,
+        public_map_count: public_privacy_visualization_count + link_privacy_visualization_count + password_privacy_visualization_count,
+        map_count: all_visualization_count,
+        map_views: map_views,
+        geocoding_credits_count: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
+        routing_credits_count: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
+        isolines_credits_count: organization_user? ? organization.get_here_isolines_calls : get_here_isolines_calls,
+        billing_period: last_billing_cycle,
+        regular_api_key_count: api_keys.by_type('regular').count
+      }
+    end
+
     # Options:
     # - show_api_calls: load api calls. Default: true.
     # - extended: load real_table_count and last_active_time. Default: false.

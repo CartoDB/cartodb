@@ -19,7 +19,7 @@ module CartoDB
         geocoding_credits_count: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
         routing_credits_count: organization_user? ? organization.get_mapzen_routing_calls : get_mapzen_routing_calls,
         isolines_credits_count: organization_user? ? organization.get_here_isolines_calls : get_here_isolines_calls,
-        billing_period: last_billing_cycle,
+        billing_period: last_billing_cycle ? last_billing_cycle.strftime('%Q') : nil,
         regular_api_key_count: api_keys.by_type('regular').count
       }
     end

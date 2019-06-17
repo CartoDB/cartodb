@@ -190,7 +190,7 @@ describe Carto::UserMetadataExportService do
     it 'imports 1.0.11 (without maintenance_mode)' do
       user = test_import_user_from_export(full_export_one_zero_eleven)
 
-      expect(user.maintenance_mode).to be_nil
+      expect(user.maintenance_mode).to eq false
     end
 
     it 'imports 1.0.10 (without regular_api_key_quota)' do
@@ -1129,9 +1129,7 @@ describe Carto::UserMetadataExportService do
   end
 
   let(:full_export_one_zero_eleven) do
-    user_hash = full_export[:user].except!(:maintenance_mode)
-
-    full_export[:user] = user_hash
+    full_export[:user][:maintenance_mode] = false
     full_export
   end
 

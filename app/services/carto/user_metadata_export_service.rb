@@ -152,7 +152,7 @@ module Carto
     def build_feature_flag_from_name(ff_name)
       ff = FeatureFlag.where(name: ff_name).first
       if ff
-        FeatureFlagsUser.new(feature_flag_id: ff.id)
+        Carto::FeatureFlagsUser.new(feature_flag_id: ff.id)
       else
         CartoDB::Logger.warning(message: 'Feature flag not found in user import', feature_flag: ff_name)
         nil

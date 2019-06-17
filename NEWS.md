@@ -18,6 +18,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
+- New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
 - Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
 - Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
 - Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)

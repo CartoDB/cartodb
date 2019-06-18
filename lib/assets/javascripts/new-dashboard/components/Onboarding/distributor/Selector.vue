@@ -106,7 +106,6 @@ export default {
   &:hover,
   &:focus {
     outline: none;
-    background-color: $softblue;
     box-shadow: $card__shadow;
 
     .selector__title {

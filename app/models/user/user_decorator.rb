@@ -4,7 +4,7 @@ module CartoDB
 
     def activity(options = {})
       calls = options.fetch(:show_api_calls, true) ? get_api_calls(from: last_billing_cycle, to: Date.today) : []
-      map_views = calls.fill(0, calls.size..29).reduce(:+)
+      map_views = calls.reduce(0, :+)
 
       {
         id: id,

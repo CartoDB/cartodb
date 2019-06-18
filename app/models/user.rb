@@ -1847,6 +1847,10 @@ class User < Sequel::Model
     state == STATE_LOCKED
   end
 
+  def maintenance_mode?
+    maintenance_mode == true
+  end
+
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
   def destroy_account

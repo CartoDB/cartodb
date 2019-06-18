@@ -3,7 +3,7 @@
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
 
-  ssl_required  :account, :profile, :lockout
+  ssl_required  :account, :profile, :lockout, :maintenance
 
   before_filter :invalidate_browser_cache
   before_filter :login_required
@@ -23,6 +23,14 @@ class Admin::UsersController < Admin::AdminController
     if current_user.locked?
       @expiration_days = @user.remaining_days_deletion
       @payments_url = @user.plan_url(request.protocol)
+      render locals: { breadcrumb: false }
+    else
+      render_404
+    end
+  end
+
+  def maintenance
+    if current_user.maintenance_mode?
       render locals: { breadcrumb: false }
     else
       render_404

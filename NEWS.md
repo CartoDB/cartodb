@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
 
 ### Bug fixes / enhancements
 - Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))

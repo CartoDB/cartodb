@@ -18,10 +18,8 @@ export default {
     DummyHeader,
     Footer
   },
-  computed: {
-    user () {
-      return this.$store.state.user;
-    }
+  props: {
+    user: Object
   }
 };
 </script>

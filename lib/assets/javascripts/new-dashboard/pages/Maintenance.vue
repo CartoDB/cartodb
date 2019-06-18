@@ -1,14 +1,12 @@
 <template>
   <Page>
-    <section>
-      <div class="container maintenance-container">
-        <div class="maintenance-icon">
-          <img src="../assets/icons/common/wrench.svg" />
-        </div>
-        <h2 class="maintenance-title title is-title is-txtDarkBlue is-bold">{{ $t('MaintenancePage.title') }}</h2>
-        <p class="text is-body is-txtDarkBlue">{{ $t('MaintenancePage.text') }}</p>
+    <div class="container maintenance-container">
+      <div class="maintenance-icon">
+        <img src="../assets/icons/common/wrench.svg" />
       </div>
-    </section>
+      <h2 class="maintenance-title title is-title is-txtDarkBlue is-bold">{{ $t('MaintenancePage.title') }}</h2>
+      <p class="text is-body is-txtDarkBlue">{{ $t('MaintenancePage.text') }}</p>
+    </div>
   </Page>
 </template>
 

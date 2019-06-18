@@ -4,7 +4,7 @@
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
         <span v-html="trialTimeLeft" class="title is-small"></span>
-        <a class="title is-small" :href="`//${ accountUpgradeURL }`" v-if="accountUpgradeURL">
+        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
           {{ $t('HomePage.WelcomeSection.subscribeNow') }}
         </a>
       </template>

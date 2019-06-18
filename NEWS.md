@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
 
 4.27.0 (2019-06-17)
 -------------------

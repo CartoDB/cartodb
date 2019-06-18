@@ -35,6 +35,9 @@ class Superadmin::UsersController < Superadmin::SuperadminController
       respond_with(:superadmin, username_dbsize.map do |username, db_size_in_bytes|
         { 'username' => username, 'db_size_in_bytes' => db_size_in_bytes }
       end) and return
+    elsif params[:account_type].present? && params[:state].present?
+      users = ::User.where(account_type: params[:account_type], state: params[:state])
+      respond_with(:superadmin, users.map(&:activity))
     else
       users = ::User.all
       respond_with(:superadmin, users.map(&:data))

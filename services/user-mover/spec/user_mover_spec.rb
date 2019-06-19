@@ -22,13 +22,15 @@ describe CartoDB::DataMover::ExportJob do
   end
 
   let(:first_user) do
-    create_user(
+    user = create_user(
       quota_in_bytes: 100.megabyte,
       private_tables_enabled: true,
       database_timeout: 123450,
       user_timeout: 456780,
       table_quota: nil
     )
+    user.db_service.drop_ghost_tables_event_trigger
+    user
   end
 
   shared_examples "a migrated user" do
@@ -113,6 +115,7 @@ describe CartoDB::DataMover::ExportJob do
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
+    user.db_service.drop_ghost_tables_event_trigger
     org.reload
     create_tables(user)
 
@@ -139,6 +142,7 @@ describe CartoDB::DataMover::ExportJob do
         quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
       )
       user.save
+      user.db_service.drop_ghost_tables_event_trigger
       org.reload
 
       create_tables(org.owner)
@@ -182,6 +186,7 @@ describe CartoDB::DataMover::ExportJob do
       quota_in_bytes: 100.megabyte, table_quota: 400, organization: org, account_type: 'ORGANIZATION USER'
     )
     user.save
+    user.db_service.drop_ghost_tables_event_trigger
     org.reload
 
     create_tables(org.owner)
@@ -209,6 +214,7 @@ describe CartoDB::DataMover::ExportJob do
     user = create_user(
       quota_in_bytes: 100.megabyte, table_quota: 50, private_tables_enabled: true, sync_tables_enabled: true
     )
+    user.db_service.drop_ghost_tables_event_trigger
     create_tables(user)
 
     old_user_data = user.as_json
@@ -273,6 +279,7 @@ module Helpers
     org = create_organization(name: String.random(5).downcase, quota_in_bytes: 2500.megabytes)
 
     owner = create_user(quota_in_bytes: 500.megabytes, table_quota: 200, private_tables_enabled: true)
+    owner.db_service.drop_ghost_tables_event_trigger
     uo = CartoDB::UserOrganization.new(org.id, owner.id)
     uo.promote_user_to_admin
     owner.db_service.setup_organization_owner

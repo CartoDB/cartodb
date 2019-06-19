@@ -44,7 +44,6 @@ describe 'UserMigration' do
 
     before :each do
       @user = FactoryGirl.build(:valid_user).save
-      @user.db_service.drop_ghost_tables_event_trigger
       @carto_user = Carto::User.find(@user.id)
       @user_attributes = @carto_user.attributes
 
@@ -491,7 +490,6 @@ describe 'UserMigration' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
-    user.db_service.drop_ghost_tables_event_trigger
     carto_user = Carto::User.find(user.id)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
@@ -517,7 +515,6 @@ describe 'UserMigration' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
 
     user = FactoryGirl.build(:valid_user).save
-    user.db_service.drop_ghost_tables_event_trigger
     carto_user = Carto::User.find(user.id)
 
     @map, @table, @table_visualization, @visualization = create_full_visualization(carto_user)
@@ -539,7 +536,6 @@ describe 'UserMigration' do
   it 'exports and imports a user with raster overviews because exporting skips them' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     user = FactoryGirl.build(:valid_user).save
-    user.db_service.drop_ghost_tables_event_trigger
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
     user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
@@ -603,7 +599,6 @@ describe 'UserMigration' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS = ["FUNCTION increment(integer)", "FUNCTION sumita(integer,integer)"].freeze
       user = FactoryGirl.build(:valid_user).save
-      user.db_service.drop_ghost_tables_event_trigger
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
       user.in_database.execute('CREATE OR REPLACE FUNCTION increment(i INT) RETURNS INT AS $$
@@ -640,7 +635,6 @@ describe 'UserMigration' do
     it 'imports functions and tables that are not on the legacy list using fixture' do
       CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
       user = FactoryGirl.build(:valid_user).save
-      user.db_service.drop_ghost_tables_event_trigger
       carto_user = Carto::User.find(user.id)
       user_attributes = carto_user.attributes
       user.in_database.execute('CREATE OR REPLACE FUNCTION st_text(b boolean) RETURNS INT AS $$
@@ -841,7 +835,6 @@ describe 'UserMigration' do
     before :each do
       @user = FactoryGirl.build(:valid_user)
       @user.save
-      @user.db_service.drop_ghost_tables_event_trigger
       @carto_user = Carto::User.find(@user.id)
       @master_api_key = @carto_user.api_keys.master.first
       @map, @table, @table_visualization, @visualization = create_full_visualization(@carto_user)
@@ -1199,7 +1192,6 @@ describe 'UserMigration' do
 
   def create_user_with_visualizations
     user = FactoryGirl.build(:valid_user).save
-    user.db_service.drop_ghost_tables_event_trigger
 
     filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_two_tables.carto"
     data_import = DataImport.create(

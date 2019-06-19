@@ -59,6 +59,7 @@ sudo make install
 * Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
 * Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
 * Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
+* Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 
 4.26.1 (2019-05-06)
 -------------------

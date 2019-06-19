@@ -187,6 +187,12 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
+    it 'imports 1.0.11 (without maintenance_mode)' do
+      user = test_import_user_from_export(full_export_one_zero_eleven)
+
+      expect(user.maintenance_mode).to eq false
+    end
+
     it 'imports 1.0.10 (without regular_api_key_quota)' do
       user = test_import_user_from_export(full_export_one_zero_ten)
 
@@ -747,7 +753,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.10",
+      version: "1.0.12",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -755,6 +761,7 @@ describe Carto::UserMetadataExportService do
         username: "user00000001",
         state: 'active',
         admin: nil,
+        maintenance_mode: true,
         enabled: true,
         invite_token: nil,
         invite_token_date: nil,
@@ -1119,6 +1126,11 @@ describe Carto::UserMetadataExportService do
         }]
       }
     }
+  end
+
+  let(:full_export_one_zero_eleven) do
+    full_export[:user][:maintenance_mode] = false
+    full_export
   end
 
   let(:full_export_one_zero_ten) do

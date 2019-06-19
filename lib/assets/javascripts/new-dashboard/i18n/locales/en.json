@@ -645,5 +645,9 @@
         }
       }
     }
+  },
+  "MaintenancePage": {
+    "title": "We’ll be up and running soon",
+    "text": "Your account is under maintenance. Sorry for the inconvenience!"
   }
 }

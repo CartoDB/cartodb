@@ -435,11 +435,15 @@ feature "Superadmin's users API" do
     before do
       @user  = create_user
       @user2 = create_user
+      @user3 = create_user
+      @user4 = create_user
     end
 
     after do
       @user.destroy
       @user2.destroy
+      @user3.destroy
+      @user4.destroy
     end
 
     it "gets all users" do
@@ -457,6 +461,31 @@ feature "Superadmin's users API" do
         response.status.should == 200
         response.body[0]["username"].should == @user.username
         response.body.length.should == 1
+      end
+    end
+
+    it "gets active Juliet users" do
+      @user3.account_type = 'Juliet'
+      @user3.state = 'active'
+      @user3.save
+
+      @user4.account_type = 'Juliet'
+      @user4.state = 'locked'
+      @user4.save
+
+      get_json superadmin_users_path, { account_type: 'Juliet', state: 'active' }, superadmin_headers do |response|
+        response.status.should == 200
+        response.body.length.should eq 1
+        response.body[0]["username"].should == @user3.username
+        response.body[0].has_key?('table_count').should eq true
+        response.body[0].has_key?('public_map_count').should eq true
+        response.body[0].has_key?('map_count').should eq true
+        response.body[0].has_key?('geocoding_credits_count').should eq true
+        response.body[0].has_key?('routing_credits_count').should eq true
+        response.body[0].has_key?('isolines_credits_count').should eq true
+        response.body[0].has_key?('billing_period').should eq true
+        response.body[0].has_key?('regular_api_key_count').should eq true
+        response.body[0].has_key?('map_views').should eq true
       end
     end
 

@@ -2,51 +2,65 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.27.1`. Run the following to have it available:
+- None yet
+
+### Features
+- New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+
+### Bug fixes / enhancements
+- Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
+- New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+
+4.27.0 (2019-06-17)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.27.1`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
-- Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
-- Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
-- New attributes to /me endpoint (#14862)
-- Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
-- Inform users about quota errors (#14921)
-- Inform users about their quota usage (#14924)
+* Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
+* Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
+* Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
+* New attributes to /me endpoint (#14862)
+* Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
+* Inform users about quota errors (#14921)
 
 ### Bug fixes / enhancements
-- Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
-- Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
-- Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
-- Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
-- Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
-- Sanitize profile form inputs
-- Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
-- Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
-- Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
-- Rake task to remove password salt [#14834](https://github.com/CartoDB/cartodb/pull/14834)
-- Adds organization appearance to forget link URL ([CartoDB/cartodb#14875](https://github.com/CartoDB/cartodb/issues/14875))
-- Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
-- Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
-- Updates `odbc_fdw` extension to version `0.4.0` [#14885](https://github.com/CartoDB/cartodb/pull/14885)
-- Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
-- Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
-- Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
-- Minor copy edit in final step of Builder Onboarding
-- Filter API keys by type (#14904)
-- Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
-- Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
-- Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
-- New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
-- Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
-- Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
-- Update quota copies (#14945)
-- Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
-- Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
-- Include limits metrics in quota & metrics section ([#14923](https://github.com/CartoDB/cartodb/issues/14923))
+* Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
+* Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
+* Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
+* Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
+* Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
+* Sanitize profile form inputs
+* Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
+* Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
+* Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
+* Rake task to remove password salt [#14834](https://github.com/CartoDB/cartodb/pull/14834)
+* Adds organization appearance to forget link URL ([CartoDB/cartodb#14875](https://github.com/CartoDB/cartodb/issues/14875))
+* Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
+* Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
+* Updates `odbc_fdw` extension to version `0.4.0` [#14885](https://github.com/CartoDB/cartodb/pull/14885)
+* Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
+* Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
+* Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
+* Minor copy edit in final step of Builder Onboarding
+* Filter API keys by type (#14904)
+* Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
+* Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
+* Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
+* New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
+* Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
+* Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
+* Update quota copies (#14945)
+* Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
+* Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
+* Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
+* Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 
 4.26.1 (2019-05-06)
 -------------------

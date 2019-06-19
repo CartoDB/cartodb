@@ -1,27 +1,25 @@
 <template>
   <div id="app">
     <DummyHeader />
-    <TrialExpiredPage />
+    <Maintenance />
     <Footer :user="user"/>
   </div>
 </template>
 
 <script>
-import TrialExpiredPage from 'new-dashboard/pages/TrialExpired';
+import Maintenance from 'new-dashboard/pages/Maintenance';
 import DummyHeader from 'new-dashboard/components/DummyHeader';
 import Footer from 'new-dashboard/components/Footer';
 
 export default {
-  name: 'LockoutApp',
+  name: 'MaintenanceApp',
   components: {
-    TrialExpiredPage,
+    Maintenance,
     DummyHeader,
     Footer
   },
-  computed: {
-    user () {
-      return this.$store.state.user;
-    }
+  props: {
+    user: Object
   }
 };
 </script>

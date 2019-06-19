@@ -37,15 +37,12 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          index_statements = @table_setup.generate_index_statements(user.database_schema, table_name)
           move_to_schema(result)
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
           @table_setup.cartodbfy(result.table_name)
-          @table_setup.copy_privileges(user.database_schema, table_name, user.database_schema, result.table_name)
           overwrite(table_name, result, geo_type)
           setup_table(table_name, geo_type)
-          @table_setup.run_index_statements(index_statements, @database)
           @table_setup.recreate_overviews(table_name)
         end
         self

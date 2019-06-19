@@ -18,7 +18,7 @@
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
           <BadgeWarning>
-            <div v-html="$t('MapsPage.header.warning', { path: `//${ upgradeUrl }` })"></div>
+            <div v-html="$t('MapsPage.header.warning', { counter: `(${publicMapsCount}/${publicMapsQuota})`, path: upgradeUrl })"></div>
           </BadgeWarning>
         </template>
 

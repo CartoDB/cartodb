@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.106-fixmaint4",
+  "version": "1.0.0-assets.106",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

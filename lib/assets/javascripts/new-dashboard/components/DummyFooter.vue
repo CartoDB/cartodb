@@ -34,7 +34,7 @@
 
 <script>
 export default {
-  name: 'DummyFooter',
+  name: 'DummyFooter'
 };
 </script>
 

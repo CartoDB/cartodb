@@ -5,12 +5,21 @@ Development
 - None yet
 
 ### Features
-- New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+- None yet
 
 ### Bug fixes / enhancements
-- Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
-- New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
-- Do not require trackjs config ([#14979](https://github.com/CartoDB/cartodb/pull/14979))
+- None yet
+
+4.27.1 (2019-06-20)
+-------------------
+
+### Features
+* New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+
+### Bug fixes / enhancements
+* Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
+* New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+* Do not require trackjs config ([#14979](https://github.com/CartoDB/cartodb/pull/14979))
 
 4.27.0 (2019-06-17)
 -------------------

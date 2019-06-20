@@ -1,9 +1,24 @@
 <template>
   <div class="container grid">
     <div class="full-width">
-      <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="!selectedDatasets.length" ref="headerContainer">
+      <SectionTitle class="grid-cell" :showActionButton="!selectedDatasets.length" ref="headerContainer">
         <template slot="icon">
           <img src="../assets/icons/section-title/data.svg" width="18" height="20" />
+        </template>
+
+        <template slot="title">
+          <VisualizationsTitle
+            :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
+            :selectedItems="selectedDatasets.length"
+            :vizQuota="datasetsQuota"
+            :vizCount="datasetsCount"
+            :isOutOfQuota="isOutOfDatasetsQuota"/>
+        </template>
+
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <BadgeWarning>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+          </BadgeWarning>
         </template>
 
         <template slot="dropdownButton">
@@ -87,12 +102,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import DatasetCard from '../components/Dataset/DatasetCard';
 import DatasetListHeader from '../components/Dataset/DatasetListHeader';
 import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
+import BadgeWarning from 'new-dashboard/components/BadgeWarning';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -119,6 +136,8 @@ export default {
     CreateButton,
     SettingsDropdown,
     SectionTitle,
+    VisualizationsTitle,
+    BadgeWarning,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -145,15 +164,16 @@ export default {
       currentEntriesCount: state => state.datasets.metadata.total_entries,
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
-      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard
+      isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
+      upgradeUrl: state => state.config.upgrade_url
+    }),
+    ...mapGetters({
+      datasetsCount: 'user/datasetsCount',
+      datasetsQuota: 'user/datasetsQuota',
+      isOutOfDatasetsQuota: 'user/isOutOfDatasetsQuota'
     }),
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
-    },
-    pageTitle () {
-      return this.selectedDatasets.length
-        ? this.$t('BulkActions.selected', {count: this.selectedDatasets.length})
-        : this.$t(`DataPage.header.title['${this.appliedFilter}']`);
     },
     areAllDatasetsSelected () {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
@@ -186,6 +206,9 @@ export default {
     },
     isSomeDatasetSelected () {
       return this.selectedDatasets.length > 0;
+    },
+    shouldShowLimitsWarning () {
+      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
@@ -241,6 +264,9 @@ export default {
   watch: {
     selectedDatasets () {
       this.$emit('selectionChange', this.selectedDatasets);
+    },
+    totalUserEntries () {
+      this.$store.dispatch('user/updateTableCount', this.totalUserEntries);
     }
   }
 };
@@ -273,5 +299,9 @@ export default {
 
 .empty-state {
   margin: 20vh 0 8vh;
+}
+
+.warning {
+  white-space: nowrap;
 }
 </style>

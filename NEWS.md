@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
 - Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)

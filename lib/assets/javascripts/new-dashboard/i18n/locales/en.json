@@ -66,7 +66,7 @@
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets"
       },
-      "warning": "<span class='is-bold'>You can't have more datasets {counter}.</span> Delete or <a href='{path}'>upgrade</a>."
+      "warning": "<span class='is-bold'>You have reached your dataset limit {limit}.</span> Delete or <a href='{path}'>upgrade</a>."
     },
     "createDataset": "New Dataset",
     "zeroCase": {
@@ -91,7 +91,7 @@
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps"
       },
-      "warning": "<span class='is-bold'>You can't have more public maps {counter}.</span> Delete or <a href='{path}'>upgrade</a>."
+      "warning": "<span class='is-bold'>You have reached your public maps limit {limit}.</span> Delete or <a href='{path}'>upgrade</a>."
     },
     "createMap": "New Map",
     "zeroCase": {

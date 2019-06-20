@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix migrations of users with oauth_app_user_roles (#14981)
 
 4.27.1 (2019-06-20)
 -------------------

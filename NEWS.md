@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
 
 4.27.1 (2019-06-20)
 -------------------

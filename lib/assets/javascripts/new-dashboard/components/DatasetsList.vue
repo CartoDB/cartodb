@@ -17,7 +17,7 @@
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
           <BadgeWarning>
-            <div v-html="$t('DataPage.header.warning', { limit: `(${datasetsQuota})`, path: upgradeUrl })"></div>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
           </BadgeWarning>
         </template>
 
@@ -299,5 +299,9 @@ export default {
 
 .empty-state {
   margin: 20vh 0 8vh;
+}
+
+.warning {
+  white-space: nowrap;
 }
 </style>

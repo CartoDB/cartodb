@@ -17,6 +17,7 @@ export default {
 .BadgeWarning {
   display: flex;
   align-items: center;
+  margin: 0 1em;
   padding: .4em 1em;
   border-radius: 30px;
   background-color: rgba($warning__bg-color, 0.2);

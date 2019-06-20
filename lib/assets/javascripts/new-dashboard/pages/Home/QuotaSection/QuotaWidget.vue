@@ -28,8 +28,8 @@
           {{ formatToLocale ? getNumberInLocaleFormat(roundOneDecimal(availableQuota)) : roundOneDecimal(availableQuota) }} {{unit}}
         </span>
       </div>
-      <div v-if="helpLink" class="quota-help cell--small">
-        <a :href="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+      <div class="quota-help cell--small">
+        <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>

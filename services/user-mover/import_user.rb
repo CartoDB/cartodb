@@ -504,7 +504,10 @@ module CartoDB
       end
 
       def create_user_oauth_app_user_roles(user_id)
-        Carto::User.find(user_id).oauth_app_users.each(&:create_dataset_role)
+        Carto::User.find(user_id).oauth_app_users.each do |oau|
+          superuser_user_pg_conn.query(oau.create_dataset_role_query)
+        end
+
       rescue Carto::OauthProvider::Errors::ServerError => e
         # Ignore managed oauth_app_user errors
         @logger.error "Error creating oauth app user role: #{e}"

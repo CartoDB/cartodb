@@ -29,7 +29,7 @@ describe Carto::OauthProvider::Scopes do
           "schemas:c:public",
           "schemas:c:a",
           'schemas:c:a.a',
-          "schemas:w:a",
+          "schemas:w:a"
         ]
       )
       expect(scopes).to eq ["datasets:rw:a.a.twf", "datasets:c:a.twf", "schemas:w:a"]
@@ -179,20 +179,20 @@ describe Carto::OauthProvider::Scopes do
           ], @carto_org_user_2
         )
         expect(scopes).to be_empty
-      end      
+      end
 
       it 'returns scope for non-user org schema' do
         @helper = TestUserFactory.new
-        @org_user_owner_2 = @helper.create_owner(@organization_2)
+        @org_user_owner2 = @helper.create_owner(@organization_2)
 
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
           [
             "schemas:c:#{@carto_org_user_1.database_schema}",
             "schemas:c:#{@carto_org_user_2.database_schema}",
-            "schemas:c:#{@org_user_owner_2.database_schema}"
+            "schemas:c:#{@org_user_owner2.database_schema}"
           ], @carto_org_user_2
         )
-        expect(scopes).to eq(["schemas:c:#{@org_user_owner_2.database_schema}"])
+        expect(scopes).to eq(["schemas:c:#{@org_user_owner2.database_schema}"])
       end
     end
 

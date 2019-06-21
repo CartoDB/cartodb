@@ -2,7 +2,11 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.27.2`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))

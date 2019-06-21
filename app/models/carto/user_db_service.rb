@@ -56,7 +56,7 @@ module Carto
     end
 
     def all_tables_granted(role = nil)
-      roles_str = role ? role : all_user_roles.map { |r| "'#{r}'" }.join(',')
+      roles_str = role ? "'#{role}'" : all_user_roles.map { |r| "'#{r}'" }.join(',')
       query = %{
         SELECT
           s.nspname as schema,
@@ -109,7 +109,7 @@ module Carto
             WHERE schema_name !~ '^pg_'
               AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
           ),
-          final AS (
+          schemas_roles_permissions AS (
           SELECT
               permissions.ptype,
               schemas.sname AS obj_name,
@@ -122,14 +122,20 @@ module Carto
             CROSS JOIN permissions
           WHERE
             permissions.ptype = 'SCHEMA'
+          ),
+          schemas_and_grants AS (
+            SELECT obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            FROM schemas_roles_permissions
+            GROUP BY 1
+            ORDER BY 1
           )
           SELECT
-            obj_name AS object_name,
-            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            object_name, granted_permissions
           FROM
-            final
-          GROUP BY 1
-          ORDER BY 1;
+            schemas_and_grants
+          WHERE
+            granted_permissions is not null and granted_permissions <> '';
       }
 
       @user.in_database(as: :superuser) do |database|

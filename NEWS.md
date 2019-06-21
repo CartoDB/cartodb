@@ -6,6 +6,8 @@ Development
 
 ### Features
 - New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+- OAuth:
+  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
 
 ### Bug fixes / enhancements
 - Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))

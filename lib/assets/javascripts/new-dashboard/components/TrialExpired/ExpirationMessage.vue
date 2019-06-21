@@ -2,7 +2,7 @@
   <section>
     <div class="container warning-container">
       <div class="warning-icon">
-        <img src="../../assets/icons/expired-trial/warning-icon.svg" />
+        <img src="../../assets/icons/common/warning-icon.svg" />
       </div>
       <h2 class="warning-title title is-title is-txtDarkBlue is-bold">
         {{ $t('TrialExpired.ExpirationMessage.title') }}

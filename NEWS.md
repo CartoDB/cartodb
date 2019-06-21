@@ -5,10 +5,21 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
-- None yet
+- Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
+
+4.27.1 (2019-06-20)
+-------------------
+
+### Features
+* New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+
+### Bug fixes / enhancements
+* Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
+* New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+* Do not require trackjs config ([#14979](https://github.com/CartoDB/cartodb/pull/14979))
 
 4.27.0 (2019-06-17)
 -------------------
@@ -58,6 +69,7 @@ sudo make install
 * Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
 * Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
 * Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
+* Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 
 4.26.1 (2019-05-06)
 -------------------

@@ -3,7 +3,8 @@
 exports[`DatasetsList.vue should render empty state 1`] = `
 <div class="container grid">
   <div class="full-width">
-    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template>
+      <!----> <template></template> <template></template></sectiontitle-stub>
   </div>
   <!---->
   <!---->
@@ -18,7 +19,8 @@ exports[`DatasetsList.vue should render empty state 1`] = `
 exports[`DatasetsList.vue should render initial state 1`] = `
 <div class="container grid">
   <div class="full-width">
-    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template>
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template>
+      <!----> <template></template>
       <!---->
     </sectiontitle-stub>
   </div>
@@ -37,7 +39,8 @@ exports[`DatasetsList.vue should render initial state 1`] = `
 exports[`DatasetsList.vue should render properly 1`] = `
 <div class="container grid">
   <div class="full-width">
-    <sectiontitle-stub title="DataPage.header.title['mine']" showactionbutton="true" class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub showactionbutton="true" class="grid-cell"><template></template> <template></template>
+      <!----> <template></template> <template></template></sectiontitle-stub>
   </div>
   <!---->
   <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky">

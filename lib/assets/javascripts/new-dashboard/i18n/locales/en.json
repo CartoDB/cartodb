@@ -65,7 +65,8 @@
         "link": "Your Link-shared Datasets",
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets"
-      }
+      },
+      "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited datasets."
     },
     "createDataset": "New Dataset",
     "zeroCase": {
@@ -89,7 +90,8 @@
         "link": "Your Link-shared Maps",
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps"
-      }
+      },
+      "warning": "<span class='is-bold'>{counter} public maps used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited public maps."
     },
     "createMap": "New Map",
     "zeroCase": {
@@ -277,9 +279,12 @@
       "total": "Total",
       "perMonth": "per month"
     },
-    "disk": "Disk",
+    "account": "Your Account",
     "dataServices": "Data Services",
     "storage": "Storage",
+    "publicMaps": "Public Maps",
+    "datasets": "Datasets",
+    "apiKeys": "API keys",
     "geocoding": "Geocoding",
     "isolines": "Isolines",
     "routing": "Routing",
@@ -640,5 +645,9 @@
         }
       }
     }
+  },
+  "MaintenancePage": {
+    "title": "We’ll be up and running soon",
+    "text": "Your account is under maintenance. Sorry for the inconvenience!"
   }
 }

@@ -308,7 +308,7 @@ describe Carto::ApiKey do
 
       it 'validates with no tables' do
         database_grants = {
-          type: "database",          
+          type: "database",
           schemas: [
             {
               name: "wadus",

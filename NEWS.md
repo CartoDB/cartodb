@@ -12,6 +12,8 @@ sudo make install
 - Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
   `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
+- OAuth:
+  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
 
 ### Bug fixes / enhancements
 - Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))

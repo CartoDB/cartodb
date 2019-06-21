@@ -121,9 +121,8 @@ module Carto
       results = all_schemas_granted
       privileges_hashed = {}
 
-      if !results.nil?
+      unless results.nil?
         results.each do |row|
-          privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
           create = row['create'] == 't' ? 'create' : nil
           usage = row['usage'] == 't' ? 'usage' : nil
           privileges_hashed[row['schema']] = [create, usage].compact

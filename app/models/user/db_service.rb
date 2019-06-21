@@ -450,7 +450,7 @@ module CartoDB
         results = all_schemas_granted(role)
         return {} if results.nil?
 
-        results.map{ |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
+        results.map { |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
       end
 
       def drop_owned_by_user(conn, role)

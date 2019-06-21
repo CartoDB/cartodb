@@ -167,9 +167,11 @@ describe Carto::OauthProvider::Scopes do
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
           ["schemas:c:#{@carto_org_user_1.database_schema}"], @carto_org_user_2
         )
-        expect(scopes).to eq([
-          "schemas:c:#{@carto_org_user_1.database_schema}"
-        ])
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}"
+          ]
+        )
       end
 
       it 'returns scopes for same org users schemas' do
@@ -180,10 +182,12 @@ describe Carto::OauthProvider::Scopes do
             "schemas:c:#{@carto_org_user_owner.database_schema}"
           ], @carto_org_user_2
         )
-        expect(scopes).to eq([
-          "schemas:c:#{@carto_org_user_1.database_schema}",
-          "schemas:c:#{@carto_org_user_owner.database_schema}"
-        ])
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@carto_org_user_owner.database_schema}"
+          ]
+        )
       end
 
       it 'returns scopes for non-user org schema' do
@@ -197,10 +201,12 @@ describe Carto::OauthProvider::Scopes do
             "schemas:c:#{@org_user_owner2.database_schema}"
           ], @carto_org_user_2
         )
-        expect(scopes).to eq([
-          "schemas:c:#{@carto_org_user_1.database_schema}",
-          "schemas:c:#{@org_user_owner2.database_schema}"
-        ])
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@org_user_owner2.database_schema}"
+          ]
+        )
       end
     end
 

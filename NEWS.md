@@ -8,10 +8,21 @@ Development
 - New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
 - OAuth:
   - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
-- Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
-- New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+- Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
+
+4.27.1 (2019-06-20)
+-------------------
+
+### Features
+* New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+
+### Bug fixes / enhancements
+* Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
+* New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+* Do not require trackjs config ([#14979](https://github.com/CartoDB/cartodb/pull/14979))
 
 4.27.0 (2019-06-17)
 -------------------

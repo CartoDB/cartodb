@@ -401,6 +401,40 @@ module CartoDB
         privileges_hashed
       end
 
+      def all_schemas_granted
+        query = %{
+          WITH schemas AS (
+            SELECT n.nspname AS schema
+              FROM pg_catalog.pg_namespace n
+                WHERE n.nspname !~ '^pg_'
+                  AND n.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ) SELECT schema,
+            pg_catalog.has_schema_privilege(current_user, schema, 'CREATE') AS create,
+            pg_catalog.has_schema_privilege(current_user, schema, 'USAGE') AS usage
+              FROM schemas;
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_schemas_granted_hashed
+        results = all_schemas_granted
+        privileges_hashed = {}
+
+        if !results.nil?
+          results.each do |row|
+            privileges_hashed[row[:schema]] = {} if privileges_hashed[row[:schema]].nil?
+            create = row[:create] == 't' ? 'create' : nil
+            usage = row[:usage] == 't' ? 'usage' : nil
+            privileges_hashed[row[:schema]] = [create, usage].compact
+          end
+        end
+
+        privileges_hashed
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end

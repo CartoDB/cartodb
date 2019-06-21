@@ -99,6 +99,40 @@ module Carto
       privileges_hashed
     end
 
+    def all_schemas_granted
+      query = %{
+        WITH schemas AS (
+          SELECT n.nspname AS schema
+            FROM pg_catalog.pg_namespace n
+              WHERE n.nspname !~ '^pg_'
+                AND n.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
+        ) SELECT schema,
+          pg_catalog.has_schema_privilege(current_user, schema, 'CREATE') AS create,
+          pg_catalog.has_schema_privilege(current_user, schema, 'USAGE') AS usage
+            FROM schemas;
+      }
+
+      @user.in_database(as: :superuser) do |database|
+        database.execute(query)
+      end
+    end
+
+    def all_schemas_granted_hashed
+      results = all_schemas_granted
+      privileges_hashed = {}
+
+      if !results.nil?
+        results.each do |row|
+          privileges_hashed[row['schema']] = {} if privileges_hashed[row['schema']].nil?
+          create = row['create'] == 't' ? 'create' : nil
+          usage = row['usage'] == 't' ? 'usage' : nil
+          privileges_hashed[row['schema']] = [create, usage].compact
+        end
+      end
+
+      privileges_hashed
+    end
+
     def organization_member_group_role_member_name
       query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
       execute_in_user_database(query).first['org_member_role']

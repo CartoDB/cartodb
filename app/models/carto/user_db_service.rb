@@ -55,17 +55,8 @@ module Carto
       roles
     end
 
-    def roles_str(role)
-      roles = []
-      if role.present?
-        roles << role
-      else
-        roles = all_user_roles
-      end
-      roles.map { |r| "'#{r}'" }.join(',')
-    end
-
     def all_tables_granted(role = nil)
+      roles_str = role ? role : all_user_roles.map { |r| "'#{r}'" }.join(',')
       query = %{
         SELECT
           s.nspname as schema,
@@ -77,7 +68,7 @@ module Carto
           JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
           JOIN pg_roles r ON acl.grantee = r.oid
         WHERE
-          r.rolname IN (#{roles_str(role)}) AND
+          r.rolname IN (#{roles_str}) AND
           s.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
         GROUP BY schema, t;
       }
@@ -102,13 +93,15 @@ module Carto
     end
 
     def all_schemas_granted(role)
+      roles_str = role ? role : all_user_roles.join(',')
+      permissions = 'create,usage'
       query = %{
         WITH
           roles AS (
-            SELECT unnest('{#{roles_str(role).delete("'")}}'::text[]) AS rname
+            SELECT unnest('{#{roles_str}}'::text[]) AS rname
           ),
           permissions AS (
-            SELECT 'SCHEMA' AS ptype, unnest('{create,usage}'::text[]) AS pname
+            SELECT 'SCHEMA' AS ptype, unnest('{#{permissions}}'::text[]) AS pname
           ),
           schemas AS (
             SELECT schema_name AS sname

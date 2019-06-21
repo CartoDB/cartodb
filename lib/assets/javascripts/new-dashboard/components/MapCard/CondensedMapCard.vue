@@ -274,6 +274,10 @@ export default {
   .cell__title {
     display: flex;
     align-items: center;
+
+    &:hover + .metadata .metadata__tag {
+      text-decoration: none;
+    }
   }
 
   .quick-actions {

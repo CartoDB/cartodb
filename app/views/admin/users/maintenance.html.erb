@@ -2,14 +2,6 @@
   <%= stylesheet_link_tag 'new_dashboard', 'maintenance' %>
 <% end %>
 <%= content_for(:js) do %>
-  <script type="text/javascript">
-    var authenticity_token = "<%= form_authenticity_token %>";
-    var user_data = <%= safe_js_object @user.data.to_json %>;
-
-    // Necessary for Google + actions
-    var access_token = '';
-  </script>
-
   <%= javascript_include_tag 'common', 'common_vendor', 'maintenance' -%>
 <% end %>
 

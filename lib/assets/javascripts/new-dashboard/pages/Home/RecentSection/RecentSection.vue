@@ -1,11 +1,11 @@
 <template>
   <section class="recent-section is-bgSoftBlue">
     <div class="container">
-      <SectionTitle class="grid-cell" :title="$t('HomePage.RecentSection.title')">
+      <SectionTitle class="grid-cell">
         <template slot="icon">
           <img src="../../../assets/icons/section-title/recent.svg">
         </template>
-
+        <template slot="title">{{ $t('HomePage.RecentSection.title') }}</template>
         <template slot="actionButton">
           <button class="button button--small is-primary button--ghost button--last" @click="goToTagsSection">
             <img svg-inline src="../../../assets/icons/sections/recent-content/tags.svg" class="recent__action"/>

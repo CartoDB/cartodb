@@ -55,15 +55,17 @@ module Carto
       roles
     end
 
-    def all_tables_granted(role = nil)
+    def roles_str(role)
       roles = []
       if role.present?
         roles << role
       else
         roles = all_user_roles
       end
-      roles_str = roles.map { |r| "'#{r}'" }.join(',')
+      roles.map { |r| "'#{r}'" }.join(',')
+    end
 
+    def all_tables_granted(role = nil)
       query = %{
         SELECT
           s.nspname as schema,
@@ -75,7 +77,7 @@ module Carto
           JOIN LATERAL aclexplode(COALESCE(c.relacl, acldefault('r'::"char", c.relowner))) acl ON TRUE
           JOIN pg_roles r ON acl.grantee = r.oid
         WHERE
-          r.rolname IN (#{roles_str}) AND
+          r.rolname IN (#{roles_str(role)}) AND
           s.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
         GROUP BY schema, t;
       }
@@ -99,17 +101,42 @@ module Carto
       privileges_hashed
     end
 
-    def all_schemas_granted
+    def all_schemas_granted(role)
       query = %{
-        WITH schemas AS (
-          SELECT n.nspname AS schema
-            FROM pg_catalog.pg_namespace n
-              WHERE n.nspname !~ '^pg_'
-                AND n.nspname NOT IN ('cartodb', 'cdb', 'cdb_importer')
-        ) SELECT schema,
-          pg_catalog.has_schema_privilege(current_user, schema, 'CREATE') AS create,
-          pg_catalog.has_schema_privilege(current_user, schema, 'USAGE') AS usage
-            FROM schemas;
+        WITH
+          roles AS (
+            SELECT unnest('{#{roles_str(role).delete("'")}}'::text[]) AS rname
+          ),
+          permissions AS (
+            SELECT 'SCHEMA' AS ptype, unnest('{create,usage}'::text[]) AS pname
+          ),
+          schemas AS (
+            SELECT schema_name AS sname
+            FROM information_schema.schemata
+            WHERE schema_name !~ '^pg_'
+              AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ),
+          final AS (
+          SELECT
+              permissions.ptype,
+              schemas.sname AS obj_name,
+              roles.rname,
+              permissions.pname,
+              has_schema_privilege(roles.rname, schemas.sname, permissions.pname) AS has_permission
+          FROM
+            schemas
+            CROSS JOIN roles
+            CROSS JOIN permissions
+          WHERE
+            permissions.ptype = 'SCHEMA'
+          )
+          SELECT
+            obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+          FROM
+            final
+          GROUP BY 1
+          ORDER BY 1;
       }
 
       @user.in_database(as: :superuser) do |database|
@@ -117,19 +144,11 @@ module Carto
       end
     end
 
-    def all_schemas_granted_hashed
-      results = all_schemas_granted
-      privileges_hashed = {}
+    def all_schemas_granted_hashed(role = nil)
+      results = all_schemas_granted(role)
+      return {} if results.nil?
 
-      unless results.nil?
-        results.each do |row|
-          create = row['create'] == 't' ? 'create' : nil
-          usage = row['usage'] == 't' ? 'usage' : nil
-          privileges_hashed[row['schema']] = [create, usage].compact
-        end
-      end
-
-      privileges_hashed
+      results.map{ |row| [row['object_name'], row['granted_permissions'].split(',')] }.to_h
     end
 
     def organization_member_group_role_member_name

@@ -163,14 +163,16 @@ describe Carto::OauthProvider::Scopes do
         expect(scopes).to be_empty
       end
 
-      it 'validates other user schema' do
+      it 'returns scopes for other user schema' do
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
           ["schemas:c:#{@carto_org_user_1.database_schema}"], @carto_org_user_2
         )
-        expect(scopes).to be_empty
+        expect(scopes).to eq([
+          "schemas:c:#{@carto_org_user_1.database_schema}"
+        ])
       end
 
-      it 'validates user org schemas' do
+      it 'returns scopes for same org users schemas' do
         scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
           [
             "schemas:c:#{@carto_org_user_1.database_schema}",
@@ -178,10 +180,13 @@ describe Carto::OauthProvider::Scopes do
             "schemas:c:#{@carto_org_user_owner.database_schema}"
           ], @carto_org_user_2
         )
-        expect(scopes).to be_empty
+        expect(scopes).to eq([
+          "schemas:c:#{@carto_org_user_1.database_schema}",
+          "schemas:c:#{@carto_org_user_owner.database_schema}"
+        ])
       end
 
-      it 'returns scope for non-user org schema' do
+      it 'returns scopes for non-user org schema' do
         @helper = TestUserFactory.new
         @org_user_owner2 = @helper.create_owner(@organization_2)
 
@@ -192,7 +197,10 @@ describe Carto::OauthProvider::Scopes do
             "schemas:c:#{@org_user_owner2.database_schema}"
           ], @carto_org_user_2
         )
-        expect(scopes).to eq(["schemas:c:#{@org_user_owner2.database_schema}"])
+        expect(scopes).to eq([
+          "schemas:c:#{@carto_org_user_1.database_schema}",
+          "schemas:c:#{@org_user_owner2.database_schema}"
+        ])
       end
     end
 

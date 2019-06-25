@@ -10,8 +10,6 @@ module CartoDB
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
 
-      attr_accessor :table
-
       def initialize(table_name, runner, database, user, overviews_creator)
         @table_name   = table_name
         @runner       = runner

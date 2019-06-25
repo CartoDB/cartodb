@@ -39,7 +39,7 @@ module CartoDB
           geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
           import_cleanup(user.database_schema, result.table_name)
           @table_setup.cartodbfy(result.table_name)
-          overwrite(table_name, result, geo_type)
+          overwrite(user.database_schema, table_name, result, geo_type)
           setup_table(table_name, geo_type)
           @table_setup.recreate_overviews(table_name)
         end
@@ -58,14 +58,35 @@ module CartoDB
         @user
       end
 
-      def overwrite(table_name, result, geo_type)
+      def overwrite(schema, table_name, result, geo_type)
+        # Determine what kind of overwrite to perform
+        # overwrite_replace substitutes the existing table by the new one,
+        # so any modifications since previous import/sync are lost.
+        # overwrite_sync will preserve columns added since the import/sync,
+        # and the geometry as well if the new table doesn't have it (nil geo_type)
+
+        # For the time being the latter method will only be used with tables
+        # that have had the geocoder analysis applied, resulting in an column
+        # named carto_geocode_hash being present.
+        # TODO: we could perform the sync if there's any column named `_carto_*`
+        # (carto_geocode_hash would need be renamed as _carto_geocode_hash)
+        sync = has_column(schema, table_name, 'carto_geocode_hash')
+
+        if sync
+          overwrite_sync(schema, table_name, result, geo_type)
+        else
+          overwrite_replace(schema, table_name, result)
+        end
+      end
+
+      def overwrite_sync(schema, table_name, result, geo_type)
         return false unless runner.remote_data_updated?
 
-        # NOTE for some reason the import table is already moved to
-        # the user schema. My guess is that this is more a convenience
-        # than anything and that it can interfere with Ghost Tables
-        # and datasets in the Dashboard
-        qualified_result_table_name = %{"#{user.database_schema}"."#{result.table_name}"}
+        # NOTE the import table is already moved to the user schema;
+        # this was done (#7543) because the cartodbfication performs
+        # queries on CDB_UserQuotaSize and other functions expected
+        # to exist in the schema of the table.
+        qualified_result_table_name = %{"#{schema}"."#{result.table_name}"}
         skip_columns = '{the_geom, the_geom_webmercator}'
 
         database.transaction do
@@ -75,14 +96,14 @@ module CartoDB
             database.execute(%{
               SELECT cartodb.CDB_SyncTable(
                 '#{qualified_result_table_name}',
-                '#{user.database_schema}', '#{table_name}',
+                '#{schema}', '#{table_name}',
                 '#{skip_columns}'
               )})
           else
             database.execute(%{
               SELECT cartodb.CDB_SyncTable(
                 '#{qualified_result_table_name}',
-                '#{user.database_schema}', '#{table_name}'
+                '#{schema}', '#{table_name}'
               )})
           end
         end
@@ -108,7 +129,38 @@ module CartoDB
         raise exception
       end
 
-      def setup_table(table_name, geo_type)
+      def overwrite_replace(schema, table_name, result)
+        return false unless runner.remote_data_updated?
+
+        @table_setup.copy_privileges(schema, table_name, schema, result.table_name)
+        index_statements = @table_setup.generate_index_statements(schema, table_name)
+
+        temporary_name = temporary_name_for(result.table_name)
+        database.transaction do
+          rename(table_name, temporary_name) if exists?(table_name)
+          drop(temporary_name) if exists?(temporary_name)
+          rename(result.table_name, table_name)
+        end
+        @table_setup.fix_oid(table_name)
+        @table_setup.update_cdb_tablemetadata(table_name)
+        @table_setup.run_index_statements(index_statements, @database)
+      rescue => exception
+        @error_code = OVERWRITE_ERROR
+        puts "Sync overwrite ERROR: #{exception.message}: #{exception.backtrace.join}"
+
+        # Gets all attributes in the result except for 'log_trace', as it is too long for Rollbar
+        result_hash = CartoDB::Importer2::Result::ATTRIBUTES.map { |m| [m, result.send(m)] if m != 'log_trace' }
+                                                            .compact.to_h
+        CartoDB::Logger.error(message: 'Error in sync overwrite',
+                              exception: exception,
+                              user: user,
+                              table: table_name,
+                              result: result_hash)
+        drop(result.table_name) if exists?(result.table_name)
+        raise exception
+      end
+
+      def setup_table(table_name, geo_type) # << NEEDED?
         table = Carto::UserTable.find(user.tables.where(name: table_name).first.id).service
 
         table.force_schema = true
@@ -128,6 +180,21 @@ module CartoDB
                               table: table_name)
       ensure
         @table_setup.fix_oid(table_name)
+      end
+
+      def has_column(schema_name, table_name, column_name)
+        qualified_table_name = "\"#{schema_name}\".#{table_name}"
+        sql = %Q{
+          SELECT TRUE as has_column FROM pg_catalog.pg_attribute a
+          WHERE
+            a.attname = '#{column_name}'
+            AND a.attnum > 0
+            AND NOT a.attisdropped
+            AND a.attrelid = '#{qualified_table_name}'::regclass::oid
+            LIMIT 1
+        }
+        result = user.in_database[sql].first
+        return result && result[:has_column]
       end
 
       # From Table#get_the_geom_type!, adapted to unregistered tables

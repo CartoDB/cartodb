@@ -128,8 +128,8 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'show' do
     before(:all) do
-      @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
       @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+      @params = { api_key: @user1.api_key, id: @app.id }
     end
 
     after(:all) do
@@ -141,7 +141,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      get_json api_v4_oauth_apps_index_url do |response|
+      get_json api_v4_oauth_apps_show_url(id: @app.id) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -156,7 +156,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 200 with all the info from an OAuth App' do
-      get_json api_v4_oauth_apps_show_url(@params.merge(id: @app.id)) do |response|
+      get_json api_v4_oauth_apps_show_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:id]).to eq @app.id
         expect(response.body[:name]).to eq @app.name

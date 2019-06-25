@@ -2,24 +2,21 @@
   <div id="app">
     <DummyHeader />
     <Maintenance />
-    <Footer :user="user"/>
+    <DummyFooter />
   </div>
 </template>
 
 <script>
 import Maintenance from 'new-dashboard/pages/Maintenance';
 import DummyHeader from 'new-dashboard/components/DummyHeader';
-import Footer from 'new-dashboard/components/Footer';
+import DummyFooter from 'new-dashboard/components/DummyFooter';
 
 export default {
   name: 'MaintenanceApp',
   components: {
     Maintenance,
     DummyHeader,
-    Footer
-  },
-  props: {
-    user: Object
+    DummyFooter
   }
 };
 </script>

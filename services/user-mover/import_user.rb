@@ -504,10 +504,12 @@ module CartoDB
       end
 
       def create_user_oauth_app_user_roles(user_id)
-        Carto::User.find(user_id).oauth_app_users.each(&:create_dataset_role)
+        Carto::User.find(user_id).oauth_app_users.each do |oau|
+          superuser_user_pg_conn.query(oau.create_dataset_role_query)
+        end
       rescue Carto::OauthProvider::Errors::ServerError => e
         # Ignore managed oauth_app_user errors
-        CartoDB::Logger.error(message: 'Error creating oauth app user role', exception: e)
+        @logger.error "Error creating oauth app user role: #{e}"
       end
 
       def grant_org_oauth_app_user_roles(org_id)
@@ -518,7 +520,7 @@ module CartoDB
         Carto::User.find(user_id).oauth_app_users.each(&:grant_dataset_role_privileges)
       rescue Carto::OauthProvider::Errors::InvalidScope => e
         # Ignore managed oauth_app_user errors
-        CartoDB::Logger.error(message: 'Error granting permissions to dataset role', exception: e)
+        @logger.error "Error granting permissions to dataset role: #{e}"
       end
 
       def org_role_name(database_name)

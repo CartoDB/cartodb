@@ -12,6 +12,11 @@ module Carto
 
         def add_to_api_key_grants(grants, user); end
 
+        def ensure_grant_section(grants, section)
+          grants.reject! { |i| i[:type] == section[:type] }
+          grants << section
+        end
+
         def ensure_includes_apis(grants, apis)
           return if apis.blank?
           apis_section = grants.find { |i| i[:type] == 'apis' }
@@ -48,13 +53,14 @@ module Carto
           section = grants.find { |i| i[:type] == @type }
           unless section
             section = { type: @type, @grant_key => [] }
-            grants << section
           end
           section
         end
 
         def add_to_api_key_grants(grants, _user = nil)
-          grant_section(grants)[@grant_key] << @service
+          section = grant_section(grants)
+          section[@grant_key] << @service
+          ensure_grant_section(grants, section)
         end
       end
 
@@ -91,7 +97,7 @@ module Carto
         attr_reader :schema
 
         def initialize(scope)
-          _, permission, @schema = scope.split(':')
+          _, permission, @schema = self.class.schema_permission(scope)
           super('database', permission, CATEGORY_SCHEMA, description(permission.to_sym))
           @grant_key = :schemas
           @permission = permission.to_sym
@@ -121,6 +127,12 @@ module Carto
 
           database_section[@grant_key] = [] unless database_section.key?(@grant_key)
           database_section[@grant_key] << schema_section
+
+          ensure_grant_section(grants, database_section)
+        end
+
+        def self.schema_permission(scope)
+          scope.split(':')
         end
 
         def self.is_a?(scope)
@@ -201,6 +213,8 @@ module Carto
           }
 
           database_section[@grant_key] << table_section
+
+          ensure_grant_section(grants, database_section)
         end
 
         def self.is_a?(scope)

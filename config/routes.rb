@@ -87,6 +87,13 @@ CartoDB::Application.routes.draw do
     get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
     post '/oauth2/authorize', to: 'oauth_provider#authorize'
     post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
+
+    namespace :kuviz, path: '/' do
+      # Custom Visualizations
+      match '/kuviz/:id', to: 'visualizations#show', via: :get, as: :show
+      match '/kuviz/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
+      match '/kuviz/:id/protected', to: 'visualizations#show', via: :get
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -123,6 +130,9 @@ CartoDB::Application.routes.draw do
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
+
+    # Maintenance Mode
+    get '(/user/:user_domain)(/u/:user_domain)/maintenance_mode' => 'users#maintenance', as: :maintenance_mode
 
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
@@ -557,6 +567,12 @@ CartoDB::Application.routes.draw do
       match '*path', via: [:OPTIONS], to: 'application#options'
 
       get 'me', to: 'users#me_public', as: :api_v4_users_me
+
+      # Custom visualizations
+      post 'kuviz', to: 'custom_visualizations#create', as: :api_v4_kuviz_create_viz
+      delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
+      put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
+      get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
     end
 
     scope 'v3/' do

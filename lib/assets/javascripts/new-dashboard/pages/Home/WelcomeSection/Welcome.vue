@@ -3,9 +3,9 @@
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
-        <span class="text is-small">{{ trialTimeLeft }}</span>
-        <a class="button button--small button--outline" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
-          {{ $t('HomePage.WelcomeSection.addPaymentMethod') }}
+        <span v-html="trialTimeLeft" class="title is-small"></span>
+        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
+          {{ $t('HomePage.WelcomeSection.subscribeNow') }}
         </a>
       </template>
     </WelcomeCompact>
@@ -30,7 +30,7 @@ export default {
   computed: {
     ...mapState({
       isFirst: state => state.config.isFirstTimeViewingDashboard,
-      accountUpdateURL: state => state.config.account_update_url,
+      accountUpgradeURL: state => state.config.upgrade_url,
       trialEndDate: state => state.user.trial_ends_at,
       user: state => state.user,
       name: state => state.user.name || state.user.username,
@@ -41,7 +41,7 @@ export default {
       return this.$store.getters['user/isNotificationVisible'];
     },
     trialTimeLeft () {
-      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date()) });
+      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
     },
     userType () {
       if (this.isOrganizationAdmin()) {
@@ -93,10 +93,3 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-@import 'new-dashboard/styles/variables';
-
-.welcome-section.is-user-notification {
-  margin-top: $notification-warning__height;
-}
-</style>

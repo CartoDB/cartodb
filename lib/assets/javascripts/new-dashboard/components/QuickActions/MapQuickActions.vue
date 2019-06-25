@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Visualization from 'new-dashboard/core/models/visualization';
@@ -26,14 +27,17 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+    }),
     actions () {
       return {
         mine: [
           { name: this.$t('QuickActions.editInfo'), event: 'editInfo' },
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
-          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy' },
+          { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldBeDisabled: !this.canChangePrivacy },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap' },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate },
           { name: this.$t('QuickActions.lock'), event: 'lockMap' },
           { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
         ],
@@ -51,6 +55,15 @@ export default {
     isUserInsideOrganization () {
       const userOrganization = this.$store.state.user.organization;
       return userOrganization && userOrganization.id;
+    },
+    isSelectedMapPrivate () {
+      return this.map.privacy === 'PRIVATE';
+    },
+    canChangePrivacy () {
+      return !this.isOutOfPublicMapsQuota || !this.isSelectedMapPrivate;
+    },
+    canDuplicate () {
+      return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
     }
   },
   methods: {

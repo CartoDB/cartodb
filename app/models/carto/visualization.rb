@@ -38,8 +38,9 @@ class Carto::Visualization < ActiveRecord::Base
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
+  TYPE_KUVIZ = 'kuviz'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
@@ -76,6 +77,8 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :active_layer, class_name: Carto::Layer
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
+
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -306,6 +309,10 @@ class Carto::Visualization < ActiveRecord::Base
 
   def remote?
     type == TYPE_REMOTE
+  end
+
+  def kuviz?
+    type == TYPE_KUVIZ
   end
 
   def layers

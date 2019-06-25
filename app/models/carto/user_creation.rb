@@ -38,7 +38,6 @@ class Carto::UserCreation < ActiveRecord::Base
     user_creation.username = user.username
     user_creation.email = user.email
     user_creation.crypted_password = user.crypted_password
-    user_creation.salt = user.salt
     user_creation.organization_id = user.organization.nil? ? nil : user.organization.id
     user_creation.quota_in_bytes = user.quota_in_bytes
     user_creation.soft_geocoding_limit = user.soft_geocoding_limit
@@ -214,7 +213,6 @@ class Carto::UserCreation < ActiveRecord::Base
     @cartodb_user.username = username
     @cartodb_user.email = email
     @cartodb_user.crypted_password = crypted_password
-    @cartodb_user.salt = salt
     @cartodb_user.google_sign_in = google_sign_in
     @cartodb_user.github_user_id = github_user_id
     @cartodb_user.invitation_token = invitation_token
@@ -344,7 +342,6 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def clean_password
     self.crypted_password = ''
-    self.salt = ''
     self.save
   end
 

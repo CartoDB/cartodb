@@ -52,24 +52,12 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
-  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
-                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
-                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
-                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
-                'Transportation and Logistics'].freeze
-
-  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
-               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
-
-  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
-                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
-
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
 
   self.strict_param_setting = false
 
@@ -109,7 +97,6 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
-                 :salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -128,6 +115,8 @@ class User < Sequel::Model
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  PROFESSIONAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'professional'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -621,13 +610,14 @@ class User < Sequel::Model
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new? || (@changing_passwords && !old_password)
     return old_password == new_password if old_password
+
     old_crypted_password = carto_user.crypted_password_was
-    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password,
                                             secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password, salt: salt,
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
                                             secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
@@ -672,7 +662,6 @@ class User < Sequel::Model
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = ""
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
@@ -886,8 +875,8 @@ class User < Sequel::Model
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    else
-      nil
+    elsif account_type.to_s.casecmp('professional').zero?
+      created_at + PROFESSIONAL_TRIAL_DAYS.days
     end
   end
 
@@ -1858,6 +1847,10 @@ class User < Sequel::Model
     state == STATE_LOCKED
   end
 
+  def maintenance_mode?
+    maintenance_mode == true
+  end
+
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
   def destroy_account
@@ -1907,6 +1900,15 @@ class User < Sequel::Model
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   private

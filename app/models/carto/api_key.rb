@@ -145,7 +145,7 @@ module Carto
 
     def self.create_regular_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
       over_regular_quota = CartoDB::QuotaChecker.new(user).will_be_over_regular_api_key_quota?
-      raise CartoDB::QuotaExceeded.new('You have reached your regular API keys quota') if over_regular_quota
+      raise CartoDB::QuotaExceeded.new('You have reached the limit of API keys for your plan') if over_regular_quota
 
       create!(
         user: user,

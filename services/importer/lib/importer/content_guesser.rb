@@ -14,7 +14,7 @@ module CartoDB
       COUNTRIES_COLUMN = 'name_'
       COUNTRIES_QUERY = "SELECT #{COUNTRIES_COLUMN} FROM admin0_synonyms"
       DEFAULT_MINIMUM_ENTROPY = 0.9
-      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id']
+      ID_COLUMNS = ['ogc_fid', 'gid', 'cartodb_id', 'objectid'].freeze
 
       attr_reader :country_name_normalizer
 

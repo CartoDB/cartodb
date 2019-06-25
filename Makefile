@@ -34,8 +34,10 @@ WORKING_SPECS_1 = \
 	spec/requests/carto/api/templates_controller_spec.rb \
 	spec/requests/carto/api/user_creations_controller_spec.rb \
 	spec/requests/carto/api/widgets_controller_spec.rb \
+	spec/requests/carto/api/custom_visualizations_controller_spec.rb \
 	spec/requests/carto/builder/public/embeds_controller_spec.rb \
 	spec/requests/carto/builder/visualizations_controller_spec.rb \
+	spec/requests/carto/kuviz/visualizations_controller_spec.rb \
 	spec/requests/visualizations_controller_helper_spec.rb \
 	spec/requests/warden_spec.rb \
 	spec/models/map_spec.rb \
@@ -326,8 +328,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/helpers/carto/html_safe_spec.rb \
 	spec/models/carto/asset_spec.rb \
 	spec/requests/carto/api/organization_assets_controller_spec.rb \
-	spec/lib/carto/assets_service_spec.rb \
-	spec/lib/carto/organization_assets_service_spec.rb \
+	spec/lib/carto/assets/image_assets_service_spec.rb \
+	spec/lib/carto/assets/organization_image_assets_service_spec.rb \
+	spec/lib/carto/assets/kuviz_assets_service_spec.rb \
 	spec/lib/carto/storage_options/local_spec.rb \
 	spec/lib/carto/visualization_invalidation_service_spec.rb \
 	spec/lib/tasks/layers_rake_spec.rb \
@@ -353,7 +356,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/oauth/google/api_spec.rb \
 	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
-	spec/tasks/passwords_rake_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

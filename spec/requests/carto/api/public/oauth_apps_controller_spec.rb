@@ -124,7 +124,6 @@ describe Carto::Api::Public::OauthAppsController do
         end
       end
     end
-
   end
 
   describe 'show' do
@@ -166,7 +165,6 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.body.size).to eq 11
       end
     end
-
   end
 
   describe 'create' do
@@ -229,7 +227,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
-      get_json api_v4_oauth_apps_show_url(@params.merge(id: wrong_id)), @payload do |response|
+      put_json api_v4_oauth_apps_update_url(@params.merge(id: wrong_id)), @payload do |response|
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
@@ -249,6 +247,46 @@ describe Carto::Api::Public::OauthAppsController do
       put_json api_v4_oauth_apps_update_url(@params), payload do |response|
         expect(response.status).to eq(200)
         expect(@app.reload.client_secret).to_not eq 'secreto ibérico'
+      end
+    end
+  end
+
+  describe 'regenerate_secret' do
+    before(:all) do
+      @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+      @params = { id: @app.id, api_key: @user1.api_key }
+    end
+
+    after(:all) do
+      @app.destroy
+    end
+
+    before(:each) do
+      host! "#{@user1.username}.localhost.lan"
+    end
+
+    it 'returns 401 if there is no authenticated user' do
+      put_json api_v4_oauth_apps_regenerate_secret_url(id: @app.id) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 404 if the app is not found' do
+      wrong_id = @user1.id
+
+      put_json api_v4_oauth_apps_regenerate_secret_url(@params.merge(id: wrong_id)) do |response|
+        expect(response.status).to eq(404)
+        expect(response.body[:errors]).to eq 'Record not found'
+      end
+    end
+
+    it 'returns 200 if everything is ok' do
+      original_secret = @app.client_secret
+
+      put_json api_v4_oauth_apps_regenerate_secret_url(@params) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:client_secret]).to_not eq original_secret
+        expect(@app.reload.client_secret).to_not eq original_secret
       end
     end
   end
@@ -288,6 +326,5 @@ describe Carto::Api::Public::OauthAppsController do
         expect(@carto_user1.reload.oauth_apps.size).to eq 0
       end
     end
-
   end
 end

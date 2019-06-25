@@ -11,7 +11,7 @@ module Carto
         ssl_required
 
         before_action :load_user
-        before_action :load_oauth_app, only: [:show, :update, :destroy]
+        before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy]
 
         setup_default_rescues
 
@@ -48,6 +48,11 @@ module Carto
         def update
           @oauth_app.update_attributes!(permitted_params)
           render_jsonp(OauthAppPresenter.new(@oauth_app).to_poro, 200)
+        end
+
+        def regenerate_secret
+          @oauth_app.regenerate_client_secret
+          render_jsonp(OauthAppPresenter.new(@oauth_app.reload).to_poro, 200)
         end
 
         def destroy

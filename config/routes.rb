@@ -579,6 +579,7 @@ CartoDB::Application.routes.draw do
       get 'oauth_apps/:id', to: 'oauth_apps#show', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_show
       post 'oauth_apps', to: 'oauth_apps#create', as: :api_v4_oauth_apps_create
       put 'oauth_apps/:id', to: 'oauth_apps#update', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_update
+      put 'oauth_apps/:id/regenerate_secret', to: 'oauth_apps#regenerate_secret', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_regenerate_secret
       delete 'oauth_apps/:id', to: 'oauth_apps#destroy', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_destroy
     end
 

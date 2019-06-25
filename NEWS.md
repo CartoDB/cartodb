@@ -6,6 +6,7 @@ Development
 
 ### Features
 - Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+- API to manage owned OAuth apps ([#14985](https://github.com/CartoDB/cartodb/issues/14985))
 
 ### Bug fixes / enhancements
 - Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)

@@ -160,7 +160,7 @@ module CartoDB
         raise exception
       end
 
-      def setup_table(table_name, geo_type) # << NEEDED?
+      def setup_table(table_name, geo_type)
         table = Carto::UserTable.find(user.tables.where(name: table_name).first.id).service
 
         table.force_schema = true
@@ -184,7 +184,7 @@ module CartoDB
 
       def has_column(schema_name, table_name, column_name)
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
-        sql = %Q{
+        sql = %{
           SELECT TRUE as has_column FROM pg_catalog.pg_attribute a
           WHERE
             a.attname = '#{column_name}'
@@ -194,7 +194,7 @@ module CartoDB
             LIMIT 1
         }
         result = user.in_database[sql].first
-        return result && result[:has_column]
+        result && result[:has_column]
       end
 
       # From Table#get_the_geom_type!, adapted to unregistered tables

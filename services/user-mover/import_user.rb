@@ -507,9 +507,13 @@ module CartoDB
         Carto::User.find(user_id).oauth_app_users.each do |oau|
           superuser_user_pg_conn.query(oau.create_dataset_role_query)
         end
-      rescue Carto::OauthProvider::Errors::ServerError => e
-        # Ignore managed oauth_app_user errors
-        @logger.error "Error creating oauth app user role: #{e}"
+      rescue PG::Error => e
+        # Ignore role already exists errors
+        if e.message =~ /already exists/
+          @logger.warn "Warning: Oauth app user role already exists"
+        else
+          throw e
+        end
       end
 
       def grant_org_oauth_app_user_roles(org_id)

@@ -457,7 +457,7 @@ module Carto
 
     def grant_ownership_role_privileges
       return if schema_permissions.all? { |s| s.permissions.empty? }
-      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if ownership_role_name.present?
+      db_run("GRANT \"#{db_role}\" TO \"#{ownership_role_name}\"") if ownership_role_name.present?
     end
 
     def setup_table_permissions

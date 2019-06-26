@@ -12,6 +12,7 @@ module Carto
 
         before_action :load_user
         before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy]
+        before_action :engine_required
 
         setup_default_rescues
 
@@ -21,7 +22,7 @@ module Carto
           page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
           oauth_apps = user_or_organization_apps
           filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, page, per_page, order)
-          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_poro }
+          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash }
 
           render_jsonp(
             paged_result(
@@ -30,29 +31,29 @@ module Carto
               page: page,
               per_page: per_page,
               params: params.except('controller', 'action')
-            ) { |params| api_keys_url(params) },
+            ) { |params| api_v4_oauth_apps_index_url(params) },
             200
           )
         end
 
         def show
-          render_jsonp(OauthAppPresenter.new(@oauth_app).to_poro, 200)
+          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash, 200)
         end
 
         def create
           create_params = permitted_params.merge(user: @user)
           oauth_app = OauthApp.create!(create_params)
-          render_jsonp(OauthAppPresenter.new(oauth_app).to_poro, 201)
+          render_jsonp(OauthAppPresenter.new(oauth_app).to_hash, 201)
         end
 
         def update
           @oauth_app.update_attributes!(permitted_params)
-          render_jsonp(OauthAppPresenter.new(@oauth_app).to_poro, 200)
+          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash, 200)
         end
 
         def regenerate_secret
-          @oauth_app.regenerate_client_secret
-          render_jsonp(OauthAppPresenter.new(@oauth_app.reload).to_poro, 200)
+          @oauth_app.regenerate_client_secret!
+          render_jsonp(OauthAppPresenter.new(@oauth_app.reload).to_hash, 200)
         end
 
         def destroy
@@ -71,14 +72,14 @@ module Carto
         end
 
         def user_or_organization_apps
-          return @user.oauth_apps unless @user.organization_owner?
+          return @user.oauth_apps unless @user.organization_admin?
 
           org_users = @user.organization.users
           Carto::OauthApp.where(user: org_users)
         end
 
         def permitted_params
-          params.permit(:name, :icon_url, :restricted, redirect_uris: [])
+          params.permit(:name, :icon_url, redirect_uris: [])
         end
 
       end

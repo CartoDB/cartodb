@@ -35,9 +35,9 @@ module Carto
       attributes.symbolize_keys.slice(*ALLOWED_SYNC_ATTRIBUTES).merge(user_id: user.id)
     end
 
-    def regenerate_client_secret
+    def regenerate_client_secret!
       self.client_secret = SecureRandom.urlsafe_base64(CLIENT_SECRET_RANDOM_BYTES)
-      save
+      save!
     end
 
     private

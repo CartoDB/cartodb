@@ -266,7 +266,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      put_json api_v4_oauth_apps_regenerate_secret_url(id: @app.id) do |response|
+      post_json api_v4_oauth_apps_regenerate_secret_url(id: @app.id) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -274,7 +274,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
-      put_json api_v4_oauth_apps_regenerate_secret_url(@params.merge(id: wrong_id)) do |response|
+      post_json api_v4_oauth_apps_regenerate_secret_url(@params.merge(id: wrong_id)) do |response|
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
@@ -283,7 +283,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 200 if everything is ok' do
       original_secret = @app.client_secret
 
-      put_json api_v4_oauth_apps_regenerate_secret_url(@params) do |response|
+      post_json api_v4_oauth_apps_regenerate_secret_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:client_secret]).to_not eq original_secret
         expect(@app.reload.client_secret).to_not eq original_secret

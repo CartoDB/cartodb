@@ -551,13 +551,13 @@ describe Carto::ApiKey do
 
       it 'doesn\'t show removed schema' do
         schema_name = 'test'
-        create_function = """
+        create_function = '
           CREATE FUNCTION test._CDB_UserQuotaInBytes() RETURNS integer AS $$
           BEGIN
           RETURN 1;
           END; $$
           LANGUAGE PLPGSQL;
-        """;
+        '
         @carto_user1.in_database(as: :superuser).execute("CREATE SCHEMA #{schema_name}")
         @carto_user1.in_database(as: :superuser).execute(create_function)
 

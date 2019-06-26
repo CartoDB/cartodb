@@ -118,7 +118,7 @@ module Carto
           [
             {
               type: 'apis',
-              apis: ['maps', 'sql']
+              apis: ['sql']
             },
             {
               type: 'database',
@@ -377,7 +377,7 @@ module Carto
           [
             {
               type: 'apis',
-              apis: ['maps', 'sql']
+              apis: ['sql']
             },
             {
               type: 'database',

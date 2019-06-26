@@ -527,7 +527,6 @@ describe Carto::ApiKey do
 
       after(:all) do
         @public_table.destroy
-        @user1.in_database(as: :superuser).run('DROP SCHEMA test')
       end
 
       it 'loads newly created grants for role' do
@@ -538,19 +537,20 @@ describe Carto::ApiKey do
         schema_permission = api_key_schema_permissions(api_key, schema_name)
         schema_permission.should be_nil
 
-        @user1.in_database(as: :superuser).run("CREATE SCHEMA #{schema_name}")
-        sql = "grant CREATE on schema \"#{schema_name}\" to \"#{api_key.db_role}\""
+        create_schema
+        sql = "GRANT CREATE ON SCHEMA \"#{schema_name}\" to \"#{api_key.db_role}\""
         @user1.in_database(as: :superuser).run(sql)
 
         schema_permission = api_key_schema_permissions(api_key, schema_name)
         schema_permission.should be
         schema_permission.permissions.should include('create')
 
+        drop_schema
         api_key.destroy
       end
 
-      it 'doesn\'t show removed schema' do
-        schema_name = 'test'
+      def create_schema(schema_name = 'test')
+        drop_schema
         create_function = '
           CREATE FUNCTION test._CDB_UserQuotaInBytes() RETURNS integer AS $$
           BEGIN
@@ -558,25 +558,95 @@ describe Carto::ApiKey do
           END; $$
           LANGUAGE PLPGSQL;
         '
-        @carto_user1.in_database(as: :superuser).execute("CREATE SCHEMA #{schema_name}")
+        @carto_user1.in_database(as: :superuser).execute("CREATE SCHEMA \"#{schema_name}\"")
         @carto_user1.in_database(as: :superuser).execute(create_function)
+      end
 
-        sql = "grant CREATE on schema \"#{schema_name}\" to \"#{@carto_user1.database_username}\""
+      def create_role(role_name = 'test')
+        drop_role
+        @carto_user1.in_database(as: :superuser).execute("CREATE ROLE \"#{role_name}\"")
+      end
+
+      def drop_role(role_name = 'test')
+        @carto_user1.in_database(as: :superuser).execute("DROP ROLE IF EXISTS \"#{role_name}\"")
+      end
+
+      def grant_user(schema_name = 'test')
+        sql = "GRANT CREATE ON SCHEMA \"#{schema_name}\" to \"#{@carto_user1.database_username}\""
         @carto_user1.in_database(as: :superuser).execute(sql)
+      end
+
+      def create_api_key(schema_name = 'test', permissions = ['create'])
+        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
+        @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
+      end
+
+      def create_oauth_api_key(schema_name = 'test', permissions = ['create'], role = 'test')
+        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
+        @carto_user1.api_keys.create_oauth_key!(name: 'wadus', grants: grants, ownership_role_name: role)
+      end
+
+      def drop_schema(schema_name = 'test')
+        sql = "DROP SCHEMA IF EXISTS \"#{schema_name}\" CASCADE"
+        @carto_user1.in_database(as: :superuser).execute(sql)
+      end
+
+      it 'doesn\'t show removed schema' do
+        schema_name = 'test'
+        create_schema
+        grant_user
+        api_key = create_api_key
 
         permissions = ['create']
-        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
-        api_key = @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
+        permissions.each do |permission|
+          api_key_schema_permissions(api_key, schema_name).permissions.should include(permission)
+        end
+
+        drop_schema
+        api_key_schema_permissions(api_key, schema_name).should be_nil
+
+        api_key.destroy
+      end
+
+      it 'grants creation in schema to master role' do
+        schema_name = 'test'
+        create_schema
+        grant_user
+        api_key = create_api_key
+
+        master_api_key = @carto_user1.api_keys.master.first
+
+        permissions = ['create']
+        permissions.each do |permission|
+          api_key_schema_permissions(master_api_key, schema_name).permissions.should include(permission)
+        end
+
+        drop_schema
+        api_key_schema_permissions(master_api_key, schema_name).should be_nil
+
+        api_key.destroy
+      end
+
+      it 'grants creation in schema to ownserhip role' do
+        schema_name = 'test'
+
+        create_schema
+        grant_user
+        create_role
+
+        permissions = ['create']
+        api_key = create_oauth_api_key
+        api_key.stubs(:db_role).returns('test')
 
         permissions.each do |permission|
           api_key_schema_permissions(api_key, schema_name).permissions.should include(permission)
         end
 
-        sql = "drop schema \"#{schema_name}\" cascade"
-        @carto_user1.in_database(as: :superuser).execute(sql)
-
+        drop_schema
         api_key_schema_permissions(api_key, schema_name).should be_nil
 
+        drop_role
+        api_key.unstub(:db_role)
         api_key.destroy
       end
 
@@ -788,6 +858,18 @@ describe Carto::ApiKey do
       other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
       table = create_table(user_id: other_user.id)
       grants = [table_grant(table.database_schema, table.name), apis_grant]
+      expect {
+        @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+      }.to raise_exception ActiveRecord::RecordInvalid
+
+      table.destroy
+      other_user.destroy
+    end
+
+    it 'fails to grant to a non-owned schema' do
+      other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
+      table = create_table(user_id: other_user.id)
+      grants = [schema_grant(table.database_schema), apis_grant]
       expect {
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
       }.to raise_exception ActiveRecord::RecordInvalid

@@ -18,7 +18,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-  class Permissions
+  class ApiKeyPermissions
     attr_reader :name, :permissions
 
     def initialize(name:, permissions: [])
@@ -38,7 +38,7 @@ module Carto
     def write_permissions; end
   end
 
-  class TablePermissions < Permissions
+  class TablePermissions < ApiKeyPermissions
     WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
 
     attr_reader :schema
@@ -53,7 +53,7 @@ module Carto
     end
   end
 
-  class SchemaPermissions < Permissions
+  class SchemaPermissions < ApiKeyPermissions
     WRITE_PERMISSIONS = ['create'].freeze
 
     def write_permissions

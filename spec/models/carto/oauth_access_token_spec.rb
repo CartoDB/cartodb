@@ -43,6 +43,11 @@ module Carto
         expect(access_token.errors[:scopes]).to(include("contains unsupported scopes: wadus"))
       end
 
+      it 'does accept create tables in schema scopes' do
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["schemas:c"])
+        expect(access_token).to(be_valid)
+      end
+
       it 'does accept read datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ["datasets:r:#{@user_table.name}"])
         expect(access_token).to(be_valid)
@@ -63,8 +68,18 @@ module Carto
         expect(access_token).to(be_valid)
       end
 
+      it 'does not validate schemas existence on datasets scopes' do
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['schemas:c:wadus'])
+        expect(access_token).to(be_valid)
+      end
+
       it 'does not accept invalid datasets scopes' do
         access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['datasets:f'])
+        expect(access_token).to_not(be_valid)
+      end
+
+      it 'does not accept invalid schema scopes' do
+        access_token = OauthAccessToken.new(oauth_app_user: @app_user, scopes: ['schemas:f'])
         expect(access_token).to_not(be_valid)
       end
 
@@ -89,6 +104,39 @@ module Carto
           OauthAccessToken.create!(oauth_app_user: @app_user,
                                    scopes: ['datasets:r:wadus'])
         }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'raises an error when creating an api key for an non-existent dataset' do
+        expect {
+          OauthAccessToken.create!(oauth_app_user: @app_user,
+                                   scopes: ['schemas:c:wadus'])
+        }.to raise_error(ActiveRecord::RecordInvalid)
+      end
+
+      it 'includes create permission for schemas scopes' do
+        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['maps', 'sql']
+            },
+            {
+              type: 'database',
+              schemas: [
+                {
+                  name: 'public',
+                  permissions: ['create']
+                }
+              ]
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: ['schemas:c'])
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
       end
 
       it 'api key includes read permissions for datasets scopes' do
@@ -234,7 +282,13 @@ module Carto
       it 'should fail with non shared dataset' do
         expect {
           OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [@non_shared_dataset_scope])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+      end
+
+      it 'should fail with non shared schema' do
+        expect {
+          OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['schemas:c:non_existent'])
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
       end
 
       it 'should fail with shared and non shared dataset' do
@@ -243,7 +297,7 @@ module Carto
             oauth_app_user: @app_user,
             scopes: [@shared_dataset_scope, @non_shared_dataset_scope]
           )
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       describe 'read - write permissions' do
@@ -263,7 +317,7 @@ module Carto
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
           expect {
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
-          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
         end
       end
     end
@@ -319,10 +373,42 @@ module Carto
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end
 
+      it 'works with shared schema' do
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['maps', 'sql']
+            },
+            {
+              type: 'database',
+              schemas: [
+                {
+                  name: @carto_org_user_2.database_schema,
+                  permissions: ['create']
+                }
+              ]
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: ["schemas:c:#{@carto_org_user_2.database_schema}"])
+        expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
+
       it 'should fail with non shared dataset' do
         expect {
           OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [@non_org_shared_dataset_scope])
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
+      end
+
+      it 'should fail with non shared schema' do
+        expect {
+          OauthAccessToken.create!(oauth_app_user: @app_user,
+                                   scopes: ["schemas:c:wadus"])
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
       end
 
       it 'should fail with shared and non shared dataset' do
@@ -331,7 +417,7 @@ module Carto
             oauth_app_user: @app_user,
             scopes: [@org_shared_dataset_scope, @non_org_shared_dataset_scope]
           )
-        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+        }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
       end
 
       describe 'read - write permissions' do
@@ -357,7 +443,7 @@ module Carto
           rw_scope = "datasets:rw:#{@carto_org_user_1.database_schema}.#{@only_read_table.name}"
           expect {
             OauthAccessToken.create!(oauth_app_user: @app_user, scopes: [rw_scope])
-          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+          }.to raise_error(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
         end
       end
     end

@@ -555,8 +555,7 @@ module Carto
 
     def affected_schemas
       # assume table friends don't introduce new schemas
-      schemas = table_permissions.map(&:schema) + schema_permissions.map(&:name)
-      schemas.uniq
+      table_permissions.map(&:schema).uniq
     end
 
     def redis_key(token = self.token)

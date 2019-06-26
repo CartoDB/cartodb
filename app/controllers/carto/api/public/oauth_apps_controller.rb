@@ -31,7 +31,7 @@ module Carto
               page: page,
               per_page: per_page,
               params: params.except('controller', 'action')
-            ) { |params| api_v4_oauth_apps_index_url(params) },
+            ) { |params| api_v4_oauth_apps_url(params) },
             200
           )
         end

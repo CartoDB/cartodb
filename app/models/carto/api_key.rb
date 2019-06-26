@@ -114,7 +114,7 @@ module Carto
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :check_table_permissions, :check_schema_permissions, unless: :skip_role_setup
+    validate :check_permissions, unless: :skip_role_setup
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
@@ -434,15 +434,19 @@ module Carto
       user_data_grants[:data]
     end
 
-    def check_table_permissions
+    def check_permissions
       # Only checks if no previous errors in JSON definition
+      check_table_permissions
+      check_schema_permissions
+    end
+
+    def check_table_permissions
       if errors[:grants].empty? && invalid_tables_permissions.any?
         errors.add(:grants, 'can only grant table permissions you have')
       end
     end
 
     def check_schema_permissions
-      # Only checks if no previous errors in JSON definition
       if errors[:grants].empty? && invalid_schemas_permissions.any?
         errors.add(:grants, 'can only grant schema permissions you have')
       end
@@ -499,7 +503,7 @@ module Carto
 
     def grant_ownership_role_privileges
       return if schema_permissions.all? { |s| s.permissions.empty? }
-      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if ownership_role_name.present?
+      db_run("GRANT \"#{db_role}\" TO \"#{ownership_role_name}\"") if ownership_role_name.present?
     end
 
     def setup_table_permissions

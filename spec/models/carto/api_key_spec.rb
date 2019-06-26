@@ -13,7 +13,8 @@ describe Carto::ApiKey do
   end
 
   def database_grant(database_schema = 'wadus', table_name = 'wadus',
-                     permissions: ['insert', 'select', 'update', 'delete'])
+                     permissions: ['insert', 'select', 'update', 'delete'],
+                     schema_permissions: ['create'])
     {
       type: "database",
       tables: [
@@ -21,6 +22,12 @@ describe Carto::ApiKey do
           schema: database_schema,
           name: table_name,
           permissions: permissions
+        }
+      ],
+      schemas: [
+        {
+          name: database_schema,
+          permissions: schema_permissions
         }
       ]
     }
@@ -276,6 +283,45 @@ describe Carto::ApiKey do
     end
 
     describe 'validations' do
+      it 'fails with invalid schema permissions' do
+        database_grants = {
+          type: "database",
+          tables: [
+            {
+              schema: "wadus",
+              name: "wadus",
+              permissions: ["insert"]
+            }
+          ],
+          schemas: [
+            {
+              name: "wadus",
+              permissions: ["create", "insert"]
+            }
+          ]
+        }
+        grants = [apis_grant, database_grants]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+        }.to raise_exception(ActiveRecord::RecordInvalid, /value "insert" did not match one of the following values/)
+      end
+
+      it 'validates with no tables' do
+        database_grants = {
+          type: "database",
+          schemas: [
+            {
+              name: "wadus",
+              permissions: ["create"]
+            }
+          ]
+        }
+        grants = [apis_grant, database_grants]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+        }.to_not raise_error
+      end
+
       it 'fails with several apis sections' do
         two_apis_grant = [apis_grant, apis_grant, database_grant]
         expect {

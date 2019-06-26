@@ -360,7 +360,7 @@ module Carto
       table_permissions = {}
 
       databases = grants.find { |v| v[:type] == 'database' }
-      return table_permissions unless databases.present?
+      return table_permissions unless databases.try(:[], :tables).present?
 
       databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
@@ -394,7 +394,7 @@ module Carto
 
     def invalid_tables_permissions
       databases = grants.find { |v| v[:type] == 'database' }
-      return [] unless databases.present?
+      return [] unless databases.try(:[], :tables).present?
 
       allowed = user.db_service.all_tables_granted_hashed
 

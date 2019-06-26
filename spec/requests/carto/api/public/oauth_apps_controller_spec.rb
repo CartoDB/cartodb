@@ -30,6 +30,24 @@ describe Carto::Api::Public::OauthAppsController do
         end
       end
 
+      context 'with engine disabled' do
+        before(:each) do
+          @user1.engine_enabled = false
+          @user1.save
+        end
+
+        after(:each) do
+          @user1.engine_enabled = true
+          @user1.save
+        end
+
+        it 'returns 404' do
+          get_json api_v4_oauth_apps_index_url(@params) do |response|
+            expect(response.status).to eq(404)
+          end
+        end
+      end
+
       it 'returns 200 with the OAuth apps owned by the current user (sort by updated at by default)' do
         get_json api_v4_oauth_apps_index_url(@params) do |response|
           expect(response.status).to eq(200)
@@ -52,12 +70,24 @@ describe Carto::Api::Public::OauthAppsController do
         end
       end
 
-      it 'paginates the results' do
-        get_json api_v4_oauth_apps_index_url(@params.merge(page: 2, per_page: 1)) do |response|
-          expect(response.status).to eq(200)
-          expect(response.body[:total]).to eq 2
-          expect(response.body[:count]).to eq 1
-          expect(response.body[:result][0][:id]).to eq @app2.id
+      context 'pagination' do
+        it 'paginates the results' do
+          get_json api_v4_oauth_apps_index_url(@params.merge(page: 2, per_page: 1)) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:total]).to eq 2
+            expect(response.body[:count]).to eq 1
+            expect(response.body[:result][0][:id]).to eq @app2.id
+          end
+        end
+
+        it 'returns the expected links' do
+          base_url = "http://#{@user1.username}.localhost.lan/api/v4/oauth_apps?api_key=#{@user1.api_key}&format=json"
+          get_json api_v4_oauth_apps_index_url(@params.merge(page: 1, per_page: 1)) do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:_links][:first][:href]).to eq "#{base_url}&page=1&per_page=1"
+            expect(response.body[:_links][:next][:href]).to eq "#{base_url}&page=2&per_page=1"
+            expect(response.body[:_links][:last][:href]).to eq "#{base_url}&page=2&per_page=1"
+          end
         end
       end
 
@@ -146,6 +176,24 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    context 'with engine disabled' do
+      before(:each) do
+        @user1.engine_enabled = false
+        @user1.save
+      end
+
+      after(:each) do
+        @user1.engine_enabled = true
+        @user1.save
+      end
+
+      it 'returns 404' do
+        get_json api_v4_oauth_apps_show_url(@params) do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+    end
+
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
@@ -187,6 +235,24 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    context 'with engine disabled' do
+      before(:each) do
+        @user1.engine_enabled = false
+        @user1.save
+      end
+
+      after(:each) do
+        @user1.engine_enabled = true
+        @user1.save
+      end
+
+      it 'returns 404' do
+        post_json api_v4_oauth_apps_create_url(@params), @payload do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+    end
+
     it 'returns 422 if a required parameter is missing' do
       post_json api_v4_oauth_apps_create_url(@params), @payload.except(:name) do |response|
         expect(response.status).to eq(422)
@@ -221,6 +287,24 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 401 if there is no authenticated user' do
       put_json api_v4_oauth_apps_update_url(id: @app.id), @payload do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    context 'with engine disabled' do
+      before(:each) do
+        @user1.engine_enabled = false
+        @user1.save
+      end
+
+      after(:each) do
+        @user1.engine_enabled = true
+        @user1.save
+      end
+
+      it 'returns 404' do
+        put_json api_v4_oauth_apps_update_url(@params), @payload do |response|
+          expect(response.status).to eq(404)
+        end
       end
     end
 
@@ -271,6 +355,24 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    context 'with engine disabled' do
+      before(:each) do
+        @user1.engine_enabled = false
+        @user1.save
+      end
+
+      after(:each) do
+        @user1.engine_enabled = true
+        @user1.save
+      end
+
+      it 'returns 404' do
+        post_json api_v4_oauth_apps_regenerate_secret_url(@params) do |response|
+          expect(response.status).to eq(404)
+        end
+      end
+    end
+
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
@@ -308,6 +410,24 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 401 if there is no authenticated user' do
       delete_json api_v4_oauth_apps_destroy_url(id: @app.id) do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    context 'with engine disabled' do
+      before(:each) do
+        @user1.engine_enabled = false
+        @user1.save
+      end
+
+      after(:each) do
+        @user1.engine_enabled = true
+        @user1.save
+      end
+
+      it 'returns 404' do
+        delete_json api_v4_oauth_apps_destroy_url(@params) do |response|
+          expect(response.status).to eq(404)
+        end
       end
     end
 

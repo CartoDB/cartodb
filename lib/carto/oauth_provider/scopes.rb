@@ -117,7 +117,7 @@ module Carto
         end
 
         def add_to_api_key_grants(grants, user)
-          ensure_includes_apis(grants, ['maps', 'sql'])
+          ensure_includes_apis(grants, ['sql'])
           database_section = grant_section(grants)
 
           schema_section = {

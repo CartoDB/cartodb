@@ -25,7 +25,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 401 if there is no authenticated user' do
-        get_json api_v4_oauth_apps_index_url do |response|
+        get_json api_v4_oauth_apps_url do |response|
           expect(response.status).to eq(401)
         end
       end
@@ -42,14 +42,14 @@ describe Carto::Api::Public::OauthAppsController do
         end
 
         it 'returns 404' do
-          get_json api_v4_oauth_apps_index_url(@params) do |response|
+          get_json api_v4_oauth_apps_url(@params) do |response|
             expect(response.status).to eq(404)
           end
         end
       end
 
       it 'returns 200 with the OAuth apps owned by the current user (sort by updated at by default)' do
-        get_json api_v4_oauth_apps_index_url(@params) do |response|
+        get_json api_v4_oauth_apps_url(@params) do |response|
           expect(response.status).to eq(200)
           expect(response.body[:total]).to eq 2
           expect(response.body[:count]).to eq 2
@@ -62,7 +62,7 @@ describe Carto::Api::Public::OauthAppsController do
         @user3 = FactoryGirl.create(:valid_user)
         host! "#{@user3.username}.localhost.lan"
 
-        get_json api_v4_oauth_apps_index_url(api_key: @user3.api_key) do |response|
+        get_json api_v4_oauth_apps_url(api_key: @user3.api_key) do |response|
           expect(response.status).to eq(200)
           expect(response.body[:total]).to eq 0
           expect(response.body[:count]).to eq 0
@@ -72,7 +72,7 @@ describe Carto::Api::Public::OauthAppsController do
 
       context 'pagination' do
         it 'paginates the results' do
-          get_json api_v4_oauth_apps_index_url(@params.merge(page: 2, per_page: 1)) do |response|
+          get_json api_v4_oauth_apps_url(@params.merge(page: 2, per_page: 1)) do |response|
             expect(response.status).to eq(200)
             expect(response.body[:total]).to eq 2
             expect(response.body[:count]).to eq 1
@@ -82,7 +82,7 @@ describe Carto::Api::Public::OauthAppsController do
 
         it 'returns the expected links' do
           base_url = "http://#{@user1.username}.localhost.lan/api/v4/oauth_apps?api_key=#{@user1.api_key}&format=json"
-          get_json api_v4_oauth_apps_index_url(@params.merge(page: 1, per_page: 1)) do |response|
+          get_json api_v4_oauth_apps_url(@params.merge(page: 1, per_page: 1)) do |response|
             expect(response.status).to eq(200)
             expect(response.body[:_links][:first][:href]).to eq "#{base_url}&page=1&per_page=1"
             expect(response.body[:_links][:next][:href]).to eq "#{base_url}&page=2&per_page=1"
@@ -93,7 +93,7 @@ describe Carto::Api::Public::OauthAppsController do
 
       context 'ordering' do
         it 'orders results by name' do
-          get_json api_v4_oauth_apps_index_url(@params.merge(order: 'name')) do |response|
+          get_json api_v4_oauth_apps_url(@params.merge(order: 'name')) do |response|
             expect(response.status).to eq(200)
             expect(response.body[:total]).to eq 2
             expect(response.body[:count]).to eq 2
@@ -103,7 +103,7 @@ describe Carto::Api::Public::OauthAppsController do
         end
 
         it 'orders results by restricted' do
-          get_json api_v4_oauth_apps_index_url(@params.merge(order: 'restricted')) do |response|
+          get_json api_v4_oauth_apps_url(@params.merge(order: 'restricted')) do |response|
             expect(response.status).to eq(200)
             expect(response.body[:total]).to eq 2
             expect(response.body[:count]).to eq 2
@@ -113,7 +113,7 @@ describe Carto::Api::Public::OauthAppsController do
         end
 
         it 'returns 400 if the ordering param is invalid' do
-          get_json api_v4_oauth_apps_index_url(@params.merge(order: 'client_secret')) do |response|
+          get_json api_v4_oauth_apps_url(@params.merge(order: 'client_secret')) do |response|
             expect(response.status).to eq(400)
             expect(response.body[:errors]).to include "Wrong 'order' parameter value"
           end
@@ -140,7 +140,7 @@ describe Carto::Api::Public::OauthAppsController do
 
       it 'returns all the OAuth apps in the organization for the organization owner' do
         params = @params.merge(api_key: @org_user_owner.api_key, user_domain: @org_user_owner.username)
-        get_json api_v4_oauth_apps_index_url(params) do |response|
+        get_json api_v4_oauth_apps_url(params) do |response|
           expect(response.status).to eq(200)
           expect(response.body[:total]).to eq 3
         end
@@ -148,7 +148,7 @@ describe Carto::Api::Public::OauthAppsController do
 
       it 'returns only the user apps for non owners' do
         params = @params.merge(api_key: @org_user_1.api_key, user_domain: @org_user_1.username)
-        get_json api_v4_oauth_apps_index_url(params) do |response|
+        get_json api_v4_oauth_apps_url(params) do |response|
           expect(response.status).to eq(200)
           expect(response.body[:total]).to eq 1
         end
@@ -171,7 +171,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      get_json api_v4_oauth_apps_show_url(id: @app.id) do |response|
+      get_json api_v4_oauth_app_url(id: @app.id) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -188,7 +188,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 404' do
-        get_json api_v4_oauth_apps_show_url(@params) do |response|
+        get_json api_v4_oauth_app_url(@params) do |response|
           expect(response.status).to eq(404)
         end
       end
@@ -197,14 +197,14 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
-      get_json api_v4_oauth_apps_show_url(@params.merge(id: wrong_id)) do |response|
+      get_json api_v4_oauth_app_url(@params.merge(id: wrong_id)) do |response|
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
     end
 
     it 'returns 200 with all the info from an OAuth App' do
-      get_json api_v4_oauth_apps_show_url(@params) do |response|
+      get_json api_v4_oauth_app_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:id]).to eq @app.id
         expect(response.body[:name]).to eq @app.name
@@ -230,7 +230,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      post_json api_v4_oauth_apps_create_url, @payload do |response|
+      post_json api_v4_oauth_apps_url, @payload do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -247,21 +247,21 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 404' do
-        post_json api_v4_oauth_apps_create_url(@params), @payload do |response|
+        post_json api_v4_oauth_apps_url(@params), @payload do |response|
           expect(response.status).to eq(404)
         end
       end
     end
 
     it 'returns 422 if a required parameter is missing' do
-      post_json api_v4_oauth_apps_create_url(@params), @payload.except(:name) do |response|
+      post_json api_v4_oauth_apps_url(@params), @payload.except(:name) do |response|
         expect(response.status).to eq(422)
         expect(response.body[:errors]).to eq ({ name: ["can't be blank"] })
       end
     end
 
     it 'returns 201 if everything is ok' do
-      post_json api_v4_oauth_apps_create_url(@params), @payload do |response|
+      post_json api_v4_oauth_apps_url(@params), @payload do |response|
         expect(response.status).to eq(201)
         expect(response.body[:name]).to eq 'my app'
         expect(@carto_user1.reload.oauth_apps.size).to eq 1
@@ -285,7 +285,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      put_json api_v4_oauth_apps_update_url(id: @app.id), @payload do |response|
+      put_json api_v4_oauth_app_url(id: @app.id), @payload do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -302,7 +302,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 404' do
-        put_json api_v4_oauth_apps_update_url(@params), @payload do |response|
+        put_json api_v4_oauth_app_url(@params), @payload do |response|
           expect(response.status).to eq(404)
         end
       end
@@ -311,14 +311,14 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
-      put_json api_v4_oauth_apps_update_url(@params.merge(id: wrong_id)), @payload do |response|
+      put_json api_v4_oauth_app_url(@params.merge(id: wrong_id)), @payload do |response|
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
     end
 
     it 'returns 200 if everything is ok' do
-      put_json api_v4_oauth_apps_update_url(@params), @payload do |response|
+      put_json api_v4_oauth_app_url(@params), @payload do |response|
         expect(response.status).to eq(200)
         expect(response.body[:name]).to eq 'updated name'
         expect(@app.reload.name).to eq 'updated name'
@@ -328,7 +328,7 @@ describe Carto::Api::Public::OauthAppsController do
     it 'ignores non-editable fields' do
       payload = { client_secret: 'secreto ibérico' }
 
-      put_json api_v4_oauth_apps_update_url(@params), payload do |response|
+      put_json api_v4_oauth_app_url(@params), payload do |response|
         expect(response.status).to eq(200)
         expect(@app.reload.client_secret).to_not eq 'secreto ibérico'
       end
@@ -408,7 +408,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     it 'returns 401 if there is no authenticated user' do
-      delete_json api_v4_oauth_apps_destroy_url(id: @app.id) do |response|
+      delete_json api_v4_oauth_app_url(id: @app.id) do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -425,7 +425,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       it 'returns 404' do
-        delete_json api_v4_oauth_apps_destroy_url(@params) do |response|
+        delete_json api_v4_oauth_app_url(@params) do |response|
           expect(response.status).to eq(404)
         end
       end
@@ -434,14 +434,14 @@ describe Carto::Api::Public::OauthAppsController do
     it 'returns 404 if the app is not found' do
       wrong_id = @user1.id
 
-      delete_json api_v4_oauth_apps_destroy_url(@params.merge(id: wrong_id)) do |response|
+      delete_json api_v4_oauth_app_url(@params.merge(id: wrong_id)) do |response|
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
     end
 
     it 'returns 204 if everything is ok' do
-      delete_json api_v4_oauth_apps_destroy_url(@params) do |response|
+      delete_json api_v4_oauth_app_url(@params) do |response|
         expect(response.status).to eq(204)
         expect(@carto_user1.reload.oauth_apps.size).to eq 0
       end

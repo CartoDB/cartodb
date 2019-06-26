@@ -40,7 +40,7 @@ describe Carto::ApiKey do
   end
 
   def table_grant(database_schema = 'wadus', table_name = 'wadus',
-                     permissions: ['insert', 'select', 'update', 'delete'])
+                  permissions: ['insert', 'select', 'update', 'delete'])
     {
       type: "database",
       tables: [

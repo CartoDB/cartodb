@@ -451,7 +451,7 @@ module Carto
     end
 
     def drop_db_role
-      db_run("DROP OWNED BY  \"#{db_role}\"")
+      db_run("DROP OWNED BY \"#{db_role}\"")
       db_run("DROP ROLE \"#{db_role}\"")
     end
 

@@ -6,9 +6,15 @@ require 'support/helpers'
 describe Carto::ApiKey do
   include CartoDB::Factories
 
-  def api_key_permissions(api_key, schema, table_name)
+  def api_key_table_permissions(api_key, schema, table_name)
     api_key.table_permissions_from_db.find do |tp|
       tp.schema == schema && tp.name == table_name
+    end
+  end
+
+  def api_key_schema_permissions(api_key, schema)
+    api_key.schema_permissions_from_db.find do |sp|
+      sp.name == schema
     end
   end
 
@@ -24,6 +30,32 @@ describe Carto::ApiKey do
           permissions: permissions
         }
       ],
+      schemas: [
+        {
+          name: database_schema,
+          permissions: schema_permissions
+        }
+      ]
+    }
+  end
+
+  def table_grant(database_schema = 'wadus', table_name = 'wadus',
+                     permissions: ['insert', 'select', 'update', 'delete'])
+    {
+      type: "database",
+      tables: [
+        {
+          schema: database_schema,
+          name: table_name,
+          permissions: permissions
+        }
+      ]
+    }
+  end
+
+  def schema_grant(database_schema = 'wadus', schema_permissions: ['create'])
+    {
+      type: "database",
       schemas: [
         {
           name: database_schema,
@@ -137,11 +169,32 @@ describe Carto::ApiKey do
       end
     end
 
+    it 'grants create tables on schema' do
+      table1 = create_table(user_id: @carto_user1.id)
+      grants = [schema_grant(table1.database_schema), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'only_update', grants: grants)
+
+      table1.destroy
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table \"#{table1.database_schema}\".#{table1.name} as select 1 as test")
+        connection.execute("select count(1) from \"#{table1.database_schema}\".#{table1.name}") do |result|
+          result[0]['count'].should eq '1'
+        end
+      end
+    end
+
+    it 'fails to grant to a non-existent schema' do
+      expect {
+        grants = [schema_grant('not-exists'), apis_grant]
+        @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant schema permissions you have/)
+    end
+
     it 'fails to grant to a non-existent table' do
       expect {
         grants = [database_grant(@carto_user1.database_schema, 'not-exists'), apis_grant]
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
-      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant permissions you have/)
+      }.to raise_exception(ActiveRecord::RecordInvalid, /can only grant table permissions you have/)
     end
 
     it 'fails to grant to system table' do
@@ -160,6 +213,33 @@ describe Carto::ApiKey do
             connection.execute("select count(1) from cartodb.#{table}")
           }.to raise_exception /permission denied/
         end
+      end
+    end
+
+    it 'fails to access schemas not granted' do
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
+
+      with_connection_from_api_key(api_key) do |connection|
+        expect {
+          connection.execute("create table \"#{@table1.database_schema}\".test as select 1 as test")
+        }.to raise_exception /permission denied/
+      end
+    end
+
+    it 'fails to grant to system schema' do
+      expect {
+        grants = [schema_grant('information_schema'), apis_grant]
+        @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
+      }.to raise_exception ActiveRecord::RecordInvalid
+    end
+
+    it 'fails to create table in system schema' do
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: [apis_grant])
+
+      with_connection_from_api_key(api_key) do |connection|
+        expect {
+          connection.execute("create table information_schema.test as select 1 as test")
+        }.to raise_exception /permission denied/
       end
     end
 
@@ -308,13 +388,7 @@ describe Carto::ApiKey do
 
       it 'validates with no tables' do
         database_grants = {
-          type: "database",
-          schemas: [
-            {
-              name: "wadus",
-              permissions: ["create"]
-            }
-          ]
+          type: "database"
         }
         grants = [apis_grant, database_grants]
         expect {
@@ -413,7 +487,7 @@ describe Carto::ApiKey do
         sql = "grant SELECT on table \"#{@table2.database_schema}\".\"#{@table2.name}\" to \"#{api_key.db_role}\""
         @user1.in_database(as: :superuser).run(sql)
 
-        table_permission = api_key_permissions(api_key, @table2.database_schema, @table2.name)
+        table_permission = api_key_table_permissions(api_key, @table2.database_schema, @table2.name)
         table_permission.should be
         table_permission.permissions.should include('select')
 
@@ -426,13 +500,13 @@ describe Carto::ApiKey do
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
 
         permissions.each do |permission|
-          api_key_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
+          api_key_table_permissions(api_key, @table1.database_schema, @table1.name).permissions.should include(permission)
         end
 
         sql = "drop table \"#{@user1.database_schema}\".\"#{@table1.name}\""
         @user1.in_database(as: :superuser).run(sql)
 
-        api_key_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
+        api_key_table_permissions(api_key, @table1.database_schema, @table1.name).should be_nil
 
         api_key.destroy
       end
@@ -440,8 +514,77 @@ describe Carto::ApiKey do
       it 'shows public tables' do
         api_key = @carto_user1.api_keys.default_public.first
         unless @carto_user1.has_organization?
-          api_key_permissions(api_key, @public_table.database_schema, @public_table.name)
+          api_key_table_permissions(api_key, @public_table.database_schema, @public_table.name)
             .permissions.should eq ['select']
+        end
+      end
+    end
+
+    describe '#schema_permission_from_db' do
+      before(:all) do
+        @public_table = create_table(user_id: @carto_user1.id)
+      end
+
+      after(:all) do
+        @public_table.destroy
+        @user1.in_database(as: :superuser).run('DROP SCHEMA test')
+      end
+
+      it 'loads newly created grants for role' do
+        schema_name = 'test'
+        grants = [apis_grant(['maps', 'sql'])]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
+
+        schema_permission = api_key_schema_permissions(api_key, schema_name)
+        schema_permission.should be_nil
+
+        @user1.in_database(as: :superuser).run("CREATE SCHEMA #{schema_name}")
+        sql = "grant CREATE on schema \"#{schema_name}\" to \"#{api_key.db_role}\""
+        @user1.in_database(as: :superuser).run(sql)
+
+        schema_permission = api_key_schema_permissions(api_key, schema_name)
+        schema_permission.should be
+        schema_permission.permissions.should include('create')
+
+        api_key.destroy
+      end
+
+      it 'doesn\'t show removed schema' do
+        schema_name = 'test'
+        create_function = """
+          CREATE FUNCTION test._CDB_UserQuotaInBytes() RETURNS integer AS $$
+          BEGIN
+          RETURN 1;
+          END; $$
+          LANGUAGE PLPGSQL;
+        """;
+        @carto_user1.in_database(as: :superuser).execute("CREATE SCHEMA #{schema_name}")
+        @carto_user1.in_database(as: :superuser).execute(create_function)
+
+        sql = "grant CREATE on schema \"#{schema_name}\" to \"#{@carto_user1.database_username}\""
+        @carto_user1.in_database(as: :superuser).execute(sql)
+
+        permissions = ['create']
+        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
+
+        permissions.each do |permission|
+          api_key_schema_permissions(api_key, schema_name).permissions.should include(permission)
+        end
+
+        sql = "drop schema \"#{schema_name}\" cascade"
+        @carto_user1.in_database(as: :superuser).execute(sql)
+
+        api_key_schema_permissions(api_key, schema_name).should be_nil
+
+        api_key.destroy
+      end
+
+      it 'shows public schemas' do
+        api_key = @carto_user1.api_keys.default_public.first
+        unless @carto_user1.has_organization?
+          api_key_schema_permissions(api_key, @public_table.database_schema)
+            .permissions.should eq ['usage']
         end
       end
     end
@@ -644,7 +787,7 @@ describe Carto::ApiKey do
     it 'fails to grant to a non-owned table' do
       other_user = TestUserFactory.new.create_test_user(unique_name('user'), @auth_organization)
       table = create_table(user_id: other_user.id)
-      grants = [database_grant(table.database_schema, table.name), apis_grant]
+      grants = [table_grant(table.database_schema, table.name), apis_grant]
       expect {
         @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
       }.to raise_exception ActiveRecord::RecordInvalid
@@ -659,7 +802,7 @@ describe Carto::ApiKey do
       schema_and_table_user2 = "\"#{table_user2.database_schema}\".#{table_user2.name}"
 
       table_user1 = create_table(user_id: @carto_user1.id)
-      grants = [database_grant(table_user1.database_schema, table_user1.name), apis_grant]
+      grants = [table_grant(table_user1.database_schema, table_user1.name), apis_grant]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'full', grants: grants)
 
       user2.in_database.run("GRANT SELECT ON #{schema_and_table_user2} TO \"#{api_key.db_role}\"")
@@ -684,7 +827,7 @@ describe Carto::ApiKey do
     end
 
     it 'should create an api key using a shared table' do
-      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
       api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
       schema_table = "\"#{@shared_table.database_schema}\".\"#{@shared_table.name}\""
@@ -698,7 +841,7 @@ describe Carto::ApiKey do
     end
 
     it 'should revoke permissions removing shared permissions (rw to r)' do
-      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
       api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
       # remove shared permissions
@@ -723,7 +866,7 @@ describe Carto::ApiKey do
     end
 
     it 'should revoke permissions removing shared permissions (rw to none)' do
-      grants = [apis_grant(['sql']), database_grant(@shared_table.database_schema, @shared_table.name)]
+      grants = [apis_grant(['sql']), table_grant(@shared_table.database_schema, @shared_table.name)]
       api_key = @carto_org_user_2.api_keys.create_regular_key!(name: 'grants_shared', grants: grants)
 
       # remove shared permissions

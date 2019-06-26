@@ -18,13 +18,10 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-  class TablePermissions
-    WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
+  class Permissions
+    attr_reader :name, :permissions
 
-    attr_reader :schema, :name, :permissions
-
-    def initialize(schema:, name:, permissions: [])
-      @schema = schema
+    def initialize(name:, permissions: [])
       @name = name
       @permissions = permissions
     end
@@ -35,7 +32,32 @@ module Carto
     end
 
     def write?
-      !(@permissions & WRITE_PERMISSIONS).empty?
+      !(@permissions & write_permissions).empty?
+    end
+
+    def write_permissions; end
+  end
+
+  class TablePermissions < Permissions
+    WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
+
+    attr_reader :schema
+
+    def initialize(schema:, name:, permissions: [])
+      super(name: name, permissions: permissions)
+      @schema = schema
+    end
+
+    def write_permissions
+      WRITE_PERMISSIONS
+    end
+  end
+
+  class SchemaPermissions < Permissions
+    WRITE_PERMISSIONS = ['create'].freeze
+
+    def write_permissions
+      WRITE_PERMISSIONS
     end
   end
 
@@ -92,7 +114,7 @@ module Carto
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :check_table_permissions, unless: :skip_role_setup
+    validate :check_table_permissions, :check_schema_permissions, unless: :skip_role_setup
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
@@ -114,7 +136,7 @@ module Carto
     scope :by_type, ->(types) { types.blank? ? user_visible : where(type: types) }
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
-    attr_accessor :skip_role_setup
+    attr_accessor :skip_role_setup, :ownership_role_name
     attr_writer :skip_cdb_conf_info
 
     private_class_method :new, :create, :create!
@@ -155,12 +177,13 @@ module Carto
       )
     end
 
-    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:, ownership_role_name:)
       create!(
         user: user,
         type: TYPE_OAUTH,
         name: name,
-        grants: grants
+        grants: grants,
+        ownership_role_name: ownership_role_name
       )
     end
 
@@ -204,6 +227,11 @@ module Carto
       @table_permissions_cache.values
     end
 
+    def schema_permissions
+      @schema_permissions_cache ||= process_schema_permissions
+      @schema_permissions_cache.values
+    end
+
     def table_permissions_from_db
       query = %{
         SELECT
@@ -222,6 +250,12 @@ module Carto
         TablePermissions.new(schema: line['table_schema'],
                              name: line['table_name'],
                              permissions: line['privilege_types'].split(','))
+      end
+    end
+
+    def schema_permissions_from_db
+      user.db_service.all_schemas_granted_hashed(db_role).map do |schema, permissions|
+        SchemaPermissions.new(name: schema, permissions: permissions)
       end
     end
 
@@ -371,6 +405,21 @@ module Carto
       table_permissions
     end
 
+    def process_schema_permissions
+      schema_permissions = {}
+
+      databases = grants.find { |v| v[:type] == 'database' }
+      return schema_permissions unless databases.try(:[], :schemas).present?
+
+      databases[:schemas].each do |schema|
+        schema_id = schema[:name]
+        schema_permissions[schema_id] ||= Carto::SchemaPermissions.new(name: schema[:name])
+        schema_permissions[schema_id].merge!(schema[:permissions])
+      end
+
+      schema_permissions
+    end
+
     def process_data_services
       data_services_grants = grants.find { |v| v[:type] == 'dataservices' }
       return nil unless data_services_grants.present?
@@ -388,7 +437,14 @@ module Carto
     def check_table_permissions
       # Only checks if no previous errors in JSON definition
       if errors[:grants].empty? && invalid_tables_permissions.any?
-        errors.add(:grants, 'can only grant permissions you have')
+        errors.add(:grants, 'can only grant table permissions you have')
+      end
+    end
+
+    def check_schema_permissions
+      # Only checks if no previous errors in JSON definition
+      if errors[:grants].empty? && invalid_schemas_permissions.any?
+        errors.add(:grants, 'can only grant schema permissions you have')
       end
     end
 
@@ -409,6 +465,22 @@ module Carto
       invalid
     end
 
+    def invalid_schemas_permissions
+      databases = grants.find { |v| v[:type] == 'database' }
+      return [] unless databases.try(:[], :schemas).present?
+
+      allowed = user.db_service.all_schemas_granted_hashed
+
+      invalid = []
+      databases[:schemas].each do |schema|
+        if allowed[schema[:name]].nil? ||
+           (schema[:permissions] - allowed[schema[:name]]).any?
+          invalid << schema
+        end
+      end
+      invalid
+    end
+
     def create_db_config
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
@@ -418,32 +490,54 @@ module Carto
 
     def setup_db_role
       create_role
+      setup_table_permissions
+      setup_schema_permissions
+      grant_ownership_role_privileges
 
-      non_existent_tables = []
+      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+    end
+
+    def grant_ownership_role_privileges
+      return if schema_permissions.all? { |s| s.permissions.empty? }
+      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if ownership_role_name.present?
+    end
+
+    def setup_table_permissions
+      setup_permissions(table_permissions) do |tp|
+        Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
+          sequences_for_table(schema, table_name).each do |seq|
+            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
+          end
+        end
+      end
+    end
+
+    def setup_schema_permissions
+      setup_permissions(schema_permissions) do |sp|
+        db_run("GRANT #{sp.permissions.join(', ')} ON SCHEMA \"#{sp.name}\" TO \"#{db_role}\"")
+      end
+    end
+
+    def setup_permissions(permissions)
+      non_existent = []
       errors = []
-      table_permissions.each do |tp|
-        unless tp.permissions.empty?
+      permissions.each do |p|
+        unless p.permissions.empty?
           begin
             # here we catch exceptions to show a proper error to the user request
-            # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
-            # which may or may not exists
-            Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
-              db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
-              sequences_for_table(schema, table_name).each do |seq|
-                db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
-              end
-            end
+            # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
+            # tables or schema that may or may not exist
+            yield p
           rescue Carto::UnprocesableEntityError => e
             raise e unless e.message =~ /does not exist/
-            non_existent_tables << tp.name
+            non_existent << p.name
             errors << e.message
           end
         end
       end
 
-      raise Carto::RelationDoesNotExistError.new(errors, non_existent_tables) unless non_existent_tables.empty?
-
-      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+      raise Carto::RelationDoesNotExistError.new(errors, non_existent) unless non_existent.empty?
     end
 
     def create_role
@@ -457,7 +551,8 @@ module Carto
 
     def affected_schemas
       # assume table friends don't introduce new schemas
-      table_permissions.map(&:schema).uniq
+      schemas = table_permissions.map(&:schema) + schema_permissions.map(&:name)
+      schemas.uniq
     end
 
     def redis_key(token = self.token)

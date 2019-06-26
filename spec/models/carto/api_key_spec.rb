@@ -549,71 +549,18 @@ describe Carto::ApiKey do
         api_key.destroy
       end
 
-<<<<<<< HEAD
       it 'doesn\'t show removed schema' do
         schema_name = 'test'
         create_schema
         grant_user
         api_key = create_api_key
 
-=======
-      def create_schema(schema_name = 'test')
-        drop_schema
-        create_function = '
-          CREATE FUNCTION test._CDB_UserQuotaInBytes() RETURNS integer AS $$
-          BEGIN
-          RETURN 1;
-          END; $$
-          LANGUAGE PLPGSQL;
-        '
-        @carto_user1.in_database(as: :superuser).execute("CREATE SCHEMA \"#{schema_name}\"")
-        @carto_user1.in_database(as: :superuser).execute(create_function)
-      end
-
-      def create_role(role_name = 'test')
-        drop_role
-        @carto_user1.in_database(as: :superuser).execute("CREATE ROLE \"#{role_name}\"")
-      end
-
-      def drop_role(role_name = 'test')
-        @carto_user1.in_database(as: :superuser).execute("DROP ROLE IF EXISTS \"#{role_name}\"")
-      end
-
-      def grant_user(schema_name = 'test')
-        sql = "GRANT CREATE ON SCHEMA \"#{schema_name}\" to \"#{@carto_user1.database_username}\""
-        @carto_user1.in_database(as: :superuser).execute(sql)
-      end
-
-      def create_api_key(schema_name = 'test', permissions = ['create'])
-        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
-        @carto_user1.api_keys.create_regular_key!(name: 'wadus', grants: grants)
-      end
-
-      def create_oauth_api_key(schema_name = 'test', permissions = ['create'], role = 'test')
-        grants = [schema_grant(schema_name, schema_permissions: permissions), apis_grant]
-        @carto_user1.api_keys.create_oauth_key!(name: 'wadus', grants: grants, ownership_role_name: role)
-      end
-
-      def drop_schema(schema_name = 'test')
-        sql = "DROP SCHEMA IF EXISTS \"#{schema_name}\" CASCADE"
-        @carto_user1.in_database(as: :superuser).execute(sql)
-      end
-
-      it 'doesn\'t show removed schema' do
-        schema_name = 'test'
-        create_schema
-        grant_user
-        api_key = create_api_key
-
->>>>>>> moar tests
         permissions = ['create']
         permissions.each do |permission|
           api_key_schema_permissions(api_key, schema_name).permissions.should include(permission)
         end
 
         drop_schema
-<<<<<<< HEAD
-=======
         api_key_schema_permissions(api_key, schema_name).should be_nil
 
         api_key.destroy
@@ -654,7 +601,6 @@ describe Carto::ApiKey do
         end
 
         drop_schema
->>>>>>> moar tests
         api_key_schema_permissions(api_key, schema_name).should be_nil
 
         drop_role

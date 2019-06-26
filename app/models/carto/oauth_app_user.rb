@@ -52,10 +52,14 @@ module Carto
     end
 
     def create_dataset_role
-      user.in_database(as: :superuser).execute("CREATE ROLE \"#{dataset_role_name}\" CREATEROLE")
+      user.in_database(as: :superuser).execute(create_dataset_role_query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
       raise OauthProvider::Errors::ServerError.new
+    end
+
+    def create_dataset_role_query
+      "CREATE ROLE \"#{dataset_role_name}\" CREATEROLE"
     end
 
     def grant_dataset_role_privileges

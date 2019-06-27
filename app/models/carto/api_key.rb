@@ -299,7 +299,8 @@ module Carto
     def save_cdb_conf_info
       info = {
         username: user.username,
-        permissions: data_services || []
+        permissions: data_services || [],
+        ownership_role_name: ownership_role_name || oauth_access_token.try(:ownership_role_name) || ''
       }
 
       db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")

@@ -240,6 +240,45 @@ module Carto
       end
     end
 
+    describe 'cdb_conf_info' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
+        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+      end
+
+      after(:all) do
+        @user.destroy
+        @app.destroy
+        @user_table.destroy
+      end
+
+      it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
+        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
+                                  .returns(username: @app_user.user.username,
+                                           permissions: [],
+                                           ownership_role_name: @app_user.ownership_role_name)
+                                  .at_least_once
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+          scopes: [
+            "schemas:c"
+          ])
+      end
+
+      it 'does not save ownership_role_name in cdb_conf_info if schemas not granted' do
+        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
+                                  .returns(username: @app_user.user.username,
+                                           permissions: [],
+                                           ownership_role_name: '')
+                                  .at_least_once
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+          scopes: [
+            "datasets:r:#{@user_table.name}"
+          ])
+      end
+    end
+
     describe '#shared datasets' do
       before :each do
         @app = FactoryGirl.create(:oauth_app, user: @carto_org_user_1)

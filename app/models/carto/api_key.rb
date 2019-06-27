@@ -477,10 +477,8 @@ module Carto
 
       invalid = []
       databases[:schemas].each do |schema|
-        if allowed[schema[:name]].nil? ||
-           (schema[:permissions] - allowed[schema[:name]]).any?
-          invalid << schema
-        end
+        invalid_schema = (schema[:permissions] - allowed[schema[:name]].to_a).any?
+        invalid << schema if invalid_schema
       end
       invalid
     end
@@ -526,16 +524,16 @@ module Carto
     def setup_permissions(permissions)
       non_existent = []
       errors = []
-      permissions.each do |p|
-        unless p.permissions.empty?
+      permissions.each do |api_key_permission|
+        unless api_key_permission.permissions.empty?
           begin
             # here we catch exceptions to show a proper error to the user request
             # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
             # tables or schema that may or may not exist
-            yield p
+            yield api_key_permission
           rescue Carto::UnprocesableEntityError => e
             raise e unless e.message =~ /does not exist/
-            non_existent << p.name
+            non_existent << api_key_permission.name
             errors << e.message
           end
         end

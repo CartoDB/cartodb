@@ -11,7 +11,8 @@ module Carto
         ssl_required
 
         before_action :load_user
-        before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy]
+        before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy, :revoke]
+        before_action :load_index_params, only: [:index, :index_granted]
         before_action :engine_required
 
         setup_default_rescues
@@ -19,21 +20,13 @@ module Carto
         VALID_ORDER_PARAMS = [:name, :updated_at, :restricted, :user_id].freeze
 
         def index
-          page, per_page, order = page_per_page_order_params(VALID_ORDER_PARAMS)
           oauth_apps = user_or_organization_apps
-          filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, page, per_page, order)
-          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash }
+          render_paged(oauth_apps) { |params| api_v4_oauth_apps_url(params) }
+        end
 
-          render_jsonp(
-            paged_result(
-              result: result,
-              total_count: oauth_apps.size,
-              page: page,
-              per_page: per_page,
-              params: params.except('controller', 'action')
-            ) { |params| api_v4_oauth_apps_url(params) },
-            200
-          )
+        def index_granted
+          oauth_apps = @user.granted_oauth_apps
+          render_paged(oauth_apps) { |params| api_v4_oauth_apps_index_granted_url(params) }
         end
 
         def show
@@ -61,6 +54,12 @@ module Carto
           head :no_content
         end
 
+        def revoke
+          oauth_app_user = @oauth_app.oauth_app_users.where(user_id: @user.id).first
+          oauth_app_user.destroy!
+          head :no_content
+        end
+
         private
 
         def load_user
@@ -69,6 +68,10 @@ module Carto
 
         def load_oauth_app
           @oauth_app = Carto::OauthApp.find(params[:id])
+        end
+
+        def load_index_params
+          @page, @per_page, @order = page_per_page_order_params(VALID_ORDER_PARAMS)
         end
 
         def user_or_organization_apps
@@ -82,6 +85,20 @@ module Carto
           params.permit(:name, :icon_url, redirect_uris: [])
         end
 
+        def render_paged(oauth_apps)
+          filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, @page, @per_page, @order)
+          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash }
+
+          enriched_response = paged_result(
+            result: result,
+            total_count: oauth_apps.size,
+            page: @page,
+            per_page: @per_page,
+            params: params.except('controller', 'action')
+          ) { |params| yield(params) }
+
+          render_jsonp(enriched_response, 200)
+        end
       end
     end
   end

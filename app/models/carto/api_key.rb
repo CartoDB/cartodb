@@ -2,6 +2,7 @@ require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -18,49 +19,6 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-  class ApiKeyPermissions
-    attr_reader :name, :permissions
-
-    def initialize(name:, permissions: [])
-      @name = name
-      @permissions = permissions
-    end
-
-    def merge!(permissions)
-      down_permissions = permissions.map(&:downcase)
-      @permissions += down_permissions.reject { |p| @permissions.include?(p) }
-    end
-
-    def write?
-      !(@permissions & write_permissions).empty?
-    end
-
-    def write_permissions; end
-  end
-
-  class TablePermissions < ApiKeyPermissions
-    WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
-
-    attr_reader :schema
-
-    def initialize(schema:, name:, permissions: [])
-      super(name: name, permissions: permissions)
-      @schema = schema
-    end
-
-    def write_permissions
-      WRITE_PERMISSIONS
-    end
-  end
-
-  class SchemaPermissions < ApiKeyPermissions
-    WRITE_PERMISSIONS = ['create'].freeze
-
-    def write_permissions
-      WRITE_PERMISSIONS
-    end
-  end
-
   class ApiKey < ActiveRecord::Base
 
     include Carto::AuthTokenGenerator

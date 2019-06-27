@@ -453,8 +453,6 @@ module Carto
       setup_table_permissions
       setup_schema_permissions
       grant_ownership_role_privileges
-
-      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
     def grant_ownership_role_privileges
@@ -471,6 +469,8 @@ module Carto
           end
         end
       end
+
+      schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
     end
 
     def setup_schema_permissions
@@ -483,17 +483,16 @@ module Carto
       non_existent = []
       errors = []
       permissions.each do |api_key_permission|
-        unless api_key_permission.permissions.empty?
-          begin
-            # here we catch exceptions to show a proper error to the user request
-            # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
-            # tables or schema that may or may not exist
-            yield api_key_permission
-          rescue Carto::UnprocesableEntityError => e
-            raise e unless e.message =~ /does not exist/
-            non_existent << api_key_permission.name
-            errors << e.message
-          end
+        next if api_key_permission.permissions.empty?
+        begin
+          # here we catch exceptions to show a proper error to the user request
+          # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
+          # tables or schema that may or may not exist
+          yield api_key_permission
+        rescue Carto::UnprocesableEntityError => e
+          raise e unless e.message =~ /does not exist/
+          non_existent << api_key_permission.name
+          errors << e.message
         end
       end
 
@@ -509,7 +508,7 @@ module Carto
       db_run("DROP ROLE \"#{db_role}\"")
     end
 
-    def affected_schemas
+    def schemas_from_granted_tables
       # assume table friends don't introduce new schemas
       table_permissions.map(&:schema).uniq
     end
@@ -571,9 +570,9 @@ module Carto
       $users_metadata
     end
 
-    def grant_aux_write_privileges_for_schema(s)
-      db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
-      db_run("GRANT ALL ON FUNCTION \"#{s}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\"")
+    def grant_usage_privileges_for_schema(schema)
+      db_run("GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{db_role}\"")
+      db_run("GRANT ALL ON FUNCTION \"#{schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\"")
     end
 
     def valid_master_key

@@ -31,6 +31,10 @@ module Carto
       oauth_app_user.user
     end
 
+    def ownership_role_name
+      oauth_app_user.ownership_role_name
+    end
+
     private
 
     def create_api_key
@@ -43,7 +47,7 @@ module Carto
       self.api_key = oauth_app_user.user.api_keys.create_oauth_key!(
         name: "oauth_authorization #{SecureRandom.uuid}",
         grants: grants,
-        ownership_role_name: oauth_app_user.ownership_role_name
+        ownership_role_name: ownership_role_name
       )
     end
 

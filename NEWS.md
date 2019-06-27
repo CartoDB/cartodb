@@ -9,6 +9,7 @@ Development
 - OAuth:
   - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
   - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+  - Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
 - Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements

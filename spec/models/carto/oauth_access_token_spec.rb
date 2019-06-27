@@ -235,36 +235,45 @@ module Carto
         @app = FactoryGirl.create(:oauth_app, user: @user)
         @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
         @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
+        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
       end
 
       after(:all) do
         @user.destroy
         @app.destroy
         @user_table.destroy
+        Carto::ApiKey.any_instance.unstub(:db_role)
       end
 
       it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
                      .returns(username: @app_user.user.username,
                               permissions: [],
-                              ownership_role_name: @app_user.ownership_role_name)
+                              roles: {
+                                db_role_name: @db_role,
+                                ownership_role_name: @app_user.ownership_role_name
+                              })
                      .at_least_once
         OauthAccessToken.create!(oauth_app_user: @app_user,
-                                                scopes: [
-                                                  "schemas:c"
-                                                ])
+                                 scopes: [
+                                   "schemas:c"
+                                 ])
       end
 
       it 'does not save ownership_role_name in cdb_conf_info if schemas not granted' do
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
                      .returns(username: @app_user.user.username,
                               permissions: [],
-                              ownership_role_name: '')
+                              roles: {
+                                db_role_name: @db_role,
+                                ownership_role_name: ''
+                              })
                      .at_least_once
         OauthAccessToken.create!(oauth_app_user: @app_user,
-                                                scopes: [
-                                                  "datasets:r:#{@user_table.name}"
-                                                ])
+                                 scopes: [
+                                   "datasets:r:#{@user_table.name}"
+                                 ])
       end
     end
 

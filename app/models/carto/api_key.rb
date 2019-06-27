@@ -350,10 +350,7 @@ module Carto
       {
         username: user.username,
         permissions: data_services || [],
-        roles: {
-          db_role_name: db_role,
-          ownership_role_name: effective_ownership_role_name || ''
-        }
+        ownership_role_name: effective_ownership_role_name || ''
       }
     end
 

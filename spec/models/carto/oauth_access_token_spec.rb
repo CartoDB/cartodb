@@ -250,10 +250,7 @@ module Carto
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
                      .returns(username: @app_user.user.username,
                               permissions: [],
-                              roles: {
-                                db_role_name: @db_role,
-                                ownership_role_name: @app_user.ownership_role_name
-                              })
+                              ownership_role_name: @app_user.ownership_role_name)
                      .at_least_once
         OauthAccessToken.create!(oauth_app_user: @app_user,
                                  scopes: [
@@ -265,10 +262,7 @@ module Carto
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
                      .returns(username: @app_user.user.username,
                               permissions: [],
-                              roles: {
-                                db_role_name: @db_role,
-                                ownership_role_name: ''
-                              })
+                              ownership_role_name: '')
                      .at_least_once
         OauthAccessToken.create!(oauth_app_user: @app_user,
                                  scopes: [

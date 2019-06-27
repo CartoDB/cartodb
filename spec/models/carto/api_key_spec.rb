@@ -705,10 +705,26 @@ describe Carto::ApiKey do
     end
 
     describe 'data services api key' do
+      before :each do
+        @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
+        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+      end
+
+      after :each do
+        Carto::ApiKey.any_instance.unstub(:db_role)
+      end
+
       it 'cdb_conf info with dataservices' do
         grants = [apis_grant, data_services_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'dataservices', grants: grants)
-        expected = { username: @carto_user1.username, permissions: ['geocoding', 'routing', 'isolines', 'observatory'] }
+        expected = {
+                      username: @carto_user1.username,
+                      permissions: ['geocoding', 'routing', 'isolines', 'observatory'],
+                      roles: {
+                        db_role_name: @db_role,
+                        ownership_role_name: ''
+                      }
+                   }
 
         @user1.in_database(as: :superuser) do |db|
           query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"
@@ -727,7 +743,14 @@ describe Carto::ApiKey do
       it 'cdb_conf info without dataservices' do
         grants = [apis_grant]
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'testname', grants: grants)
-        expected = { username: @carto_user1.username, permissions: [] }
+        expected = {
+                      username: @carto_user1.username,
+                      permissions: [],
+                      roles: {
+                        db_role_name: @db_role,
+                        ownership_role_name: ''
+                      }
+                   }
 
         @user1.in_database(as: :superuser) do |db|
           query = "SELECT cartodb.cdb_conf_getconf('#{Carto::ApiKey::CDB_CONF_KEY_PREFIX}#{api_key.db_role}')"

@@ -121,18 +121,20 @@ module Carto
       it 'is authorized only if all requested scopes are already granted' do
         o1 = "datasets:rw:#{@carto_user.database_schema}.#{@t1.name}"
         o2 = "datasets:rw:#{@carto_user.database_schema}.#{@t2.name}"
+        o3 = "schemas:c:#{@carto_user.database_schema}"
 
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2, o3])
 
         expect(oau).to(be_authorized([o1]))
         expect(oau).to(be_authorized([o2]))
-        expect(oau).to(be_authorized([o1, o2]))
+        expect(oau).to(be_authorized([o3]))
+        expect(oau).to(be_authorized([o1, o2, o3]))
 
         expect(oau).not_to(be_authorized(['not_allowed']))
         expect(oau).not_to(be_authorized([o1, 'not_allowed']))
       end
 
-      it 'should be authenticated if requesting read permission having read-write' do
+      it 'should be authorized if requesting read permission having read-write' do
         write_read = "datasets:rw:#{@t1.name}"
         read = "datasets:r:#{@t1.name}"
 
@@ -141,7 +143,7 @@ module Carto
         expect(oau).to(be_authorized([read]))
       end
 
-      it 'should NOT be authenticated if requesting read-write permission having only read' do
+      it 'should NOT be authorized if requesting read-write permission having only read' do
         write_read = "datasets:rw:#{@t1.name}"
         read = "datasets:r:#{@t1.name}"
 
@@ -177,6 +179,7 @@ module Carto
         o2 = "datasets:rw:#{@t2.name}"
         o3 = "datasets:rw:#{@t3.name}"
         o4 = "datasets:rw:#{@t4.name}"
+        o5 = "schemas:c:#{@carto_user.database_schema}"
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
@@ -194,6 +197,9 @@ module Carto
 
         oau.upgrade!([])
         expect(oau.scopes).to(eq([o1, o2, o3, o4]))
+
+        oau.upgrade!([o5])
+        expect(oau.scopes).to(eq([o1, o2, o3, o4, o5]))
       end
     end
 

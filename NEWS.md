@@ -5,6 +5,10 @@ Development
 - None yet
 
 ### Features
+- New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+- OAuth:
+  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
 - Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements

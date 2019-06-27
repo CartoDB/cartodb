@@ -18,7 +18,7 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_dataset_role, :grant_dataset_role_privileges, unless: :skip_role_setup
+    after_create :create_roles, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
     after_destroy :drop_dataset_role, unless: :skip_role_setup
 
@@ -51,15 +51,26 @@ module Carto
       end
     end
 
-    def create_dataset_role
-      user.in_database(as: :superuser).execute(create_dataset_role_query)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+    def create_roles
+      db_run(create_dataset_role_query)
+      db_run(create_ownership_role_query)
     end
 
     def create_dataset_role_query
       "CREATE ROLE \"#{dataset_role_name}\" CREATEROLE"
+    end
+
+    def create_ownership_role_query
+      "CREATE ROLE \"#{ownership_role_name}\""
+    end
+
+    def ensure_role_grants
+      grant_dataset_role_privileges
+      grant_ownership_role_privileges
+    end
+
+    def grant_ownership_role_privileges
+      db_run("GRANT \"#{ownership_role_name}\" TO \"#{user.database_username}\"")
     end
 
     def grant_dataset_role_privileges
@@ -97,6 +108,10 @@ module Carto
       end
 
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
+    end
+
+    def ownership_role_name
+      "carto_oauth_app_o_#{id}"
     end
 
     private
@@ -174,6 +189,17 @@ module Carto
 
     def dataset_role_name
       "carto_oauth_app_#{id}"
+    end
+
+    def db_run(query, connection = db_connection)
+      connection.execute(query)
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: 'Error running SQL command', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def db_connection
+      @db_connection ||= user.in_database(as: :superuser)
     end
   end
 end

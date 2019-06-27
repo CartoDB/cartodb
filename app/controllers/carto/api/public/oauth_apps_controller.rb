@@ -69,6 +69,7 @@ module Carto
 
         def load_oauth_app
           @oauth_app = Carto::OauthApp.find(params[:id])
+          raise ActiveRecord::RecordNotFound.new unless @oauth_app.user_id == @user.id
         end
 
         def user_or_organization_apps

@@ -463,7 +463,7 @@ module Carto
       grant_ownership_role_privileges
     end
 
-    def grant_ownership_role_privileges      
+    def grant_ownership_role_privileges
       db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
     end
 

@@ -256,26 +256,26 @@ module Carto
 
       it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
-                                  .returns(username: @app_user.user.username,
-                                           permissions: [],
-                                           ownership_role_name: @app_user.ownership_role_name)
-                                  .at_least_once
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
-          scopes: [
-            "schemas:c"
-          ])
+                     .returns(username: @app_user.user.username,
+                              permissions: [],
+                              ownership_role_name: @app_user.ownership_role_name)
+                     .at_least_once
+        OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: [
+                                                  "schemas:c"
+                                                ])
       end
 
       it 'does not save ownership_role_name in cdb_conf_info if schemas not granted' do
         Carto::ApiKey.any_instance.expects(:cdb_conf_info)
-                                  .returns(username: @app_user.user.username,
-                                           permissions: [],
-                                           ownership_role_name: '')
-                                  .at_least_once
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
-          scopes: [
-            "datasets:r:#{@user_table.name}"
-          ])
+                     .returns(username: @app_user.user.username,
+                              permissions: [],
+                              ownership_role_name: '')
+                     .at_least_once
+        OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: [
+                                                  "datasets:r:#{@user_table.name}"
+                                                ])
       end
     end
 

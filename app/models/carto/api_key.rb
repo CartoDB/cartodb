@@ -339,17 +339,19 @@ module Carto
     end
 
     def save_cdb_conf_info
-      info = {
-        username: user.username,
-        permissions: data_services || [],
-        ownership_role_name: ownership_role_name || oauth_access_token.try(:ownership_role_name) || ''
-      }
-
-      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")
+      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{cdb_conf_info.to_json}');")
     end
 
     def remove_cdb_conf_info
       db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
+    end
+
+    def cdb_conf_info
+      {
+        username: user.username,
+        permissions: data_services || [],
+        ownership_role_name: effective_ownership_role_name || ''
+      }
     end
 
     def skip_cdb_conf_info
@@ -358,6 +360,11 @@ module Carto
 
     def skip_cdb_conf_info?
       skip_cdb_conf_info.present?
+    end
+
+    def effective_ownership_role_name
+      return if schema_permissions.all? { |s| s.permissions.empty? }
+      ownership_role_name || oauth_access_token.try(:ownership_role_name)
     end
 
     private
@@ -502,9 +509,8 @@ module Carto
       affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
     end
 
-    def grant_ownership_role_privileges
-      return if schema_permissions.all? { |s| s.permissions.empty? }
-      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if ownership_role_name.present?
+    def grant_ownership_role_privileges      
+      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
     end
 
     def setup_table_permissions

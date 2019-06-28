@@ -280,77 +280,103 @@ describe Carto::Api::Public::OauthAppsController do
   end
 
   describe 'update' do
-    before(:all) do
-      @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
-      @params = { id: @app.id, api_key: @user1.api_key }
-      @payload = { name: 'updated name' }
-    end
-
-    after(:all) do
-      @app.destroy
-    end
-
-    before(:each) do
-      host! "#{@user1.username}.localhost.lan"
-    end
-
-    it 'returns 401 if there is no authenticated user' do
-      put_json api_v4_oauth_app_url(id: @app.id), @payload do |response|
-        expect(response.status).to eq(401)
+    context 'regular users' do
+      before(:all) do
+        @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
+        @params = { id: @app.id, api_key: @user1.api_key }
+        @payload = { name: 'updated name' }
       end
-    end
 
-    context 'with engine disabled' do
+      after(:all) do
+        @app.destroy
+      end
+
       before(:each) do
-        @user1.engine_enabled = false
-        @user1.save
+        host! "#{@user1.username}.localhost.lan"
       end
 
-      after(:each) do
-        @user1.engine_enabled = true
-        @user1.save
+      it 'returns 401 if there is no authenticated user' do
+        put_json api_v4_oauth_app_url(id: @app.id), @payload do |response|
+          expect(response.status).to eq(401)
+        end
       end
 
-      it 'returns 404' do
-        put_json api_v4_oauth_app_url(@params), @payload do |response|
+      context 'with engine disabled' do
+        before(:each) do
+          @user1.engine_enabled = false
+          @user1.save
+        end
+
+        after(:each) do
+          @user1.engine_enabled = true
+          @user1.save
+        end
+
+        it 'returns 404' do
+          put_json api_v4_oauth_app_url(@params), @payload do |response|
+            expect(response.status).to eq(404)
+          end
+        end
+      end
+
+      it 'returns 404 if the app is not found' do
+        wrong_id = @user1.id
+
+        put_json api_v4_oauth_app_url(@params.merge(id: wrong_id)), @payload do |response|
           expect(response.status).to eq(404)
+          expect(response.body[:errors]).to eq 'Record not found'
+        end
+      end
+
+      it 'returns 404 if the app is not owned' do
+        other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+
+        put_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
+          expect(response.status).to eq(404)
+        end
+
+        other_app.destroy
+      end
+
+      it 'returns 200 if everything is ok' do
+        put_json api_v4_oauth_app_url(@params), @payload do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:name]).to eq 'updated name'
+          expect(@app.reload.name).to eq 'updated name'
+        end
+      end
+
+      it 'ignores non-editable fields' do
+        payload = { client_secret: 'secreto ibérico' }
+
+        put_json api_v4_oauth_app_url(@params), payload do |response|
+          expect(response.status).to eq(200)
+          expect(@app.reload.client_secret).to_not eq 'secreto ibérico'
         end
       end
     end
 
-    it 'returns 404 if the app is not found' do
-      wrong_id = @user1.id
-
-      put_json api_v4_oauth_app_url(@params.merge(id: wrong_id)), @payload do |response|
-        expect(response.status).to eq(404)
-        expect(response.body[:errors]).to eq 'Record not found'
-      end
-    end
-
-    it 'returns 404 if the app is not owned' do
-      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
-
-      put_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
-        expect(response.status).to eq(404)
+    context 'organizational users' do
+      before(:all) do
+        @app = FactoryGirl.create(:oauth_app, user_id: @org_user_1.id)
+        @params = { id: @app.id, api_key: @org_user_owner.api_key, user_domain: @org_user_owner.username }
+        @payload = { name: 'updated name' }
       end
 
-      other_app.destroy
-    end
-
-    it 'returns 200 if everything is ok' do
-      put_json api_v4_oauth_app_url(@params), @payload do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:name]).to eq 'updated name'
-        expect(@app.reload.name).to eq 'updated name'
+      after(:all) do
+        @app.destroy
       end
-    end
 
-    it 'ignores non-editable fields' do
-      payload = { client_secret: 'secreto ibérico' }
+      before(:each) do
+        host! "#{@organization.name}.localhost.lan"
+      end
 
-      put_json api_v4_oauth_app_url(@params), payload do |response|
-        expect(response.status).to eq(200)
-        expect(@app.reload.client_secret).to_not eq 'secreto ibérico'
+      it 'allows the admin to update any app from the organization' do
+        put_json api_v4_oauth_app_url(@params), @payload do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:name]).to eq 'updated name'
+          expect(@app.reload.name).to eq 'updated name'
+        end
       end
     end
   end

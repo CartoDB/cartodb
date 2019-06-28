@@ -45,8 +45,8 @@ info:
                     ]
               }
         ```
-        - `database`: Describes to which tables and schemas and which privleges on them this API Key grants access to through `tables` and `schemas` attributes. \
-          You can grant read (`select`) or write (`insert`, `update`, `delete`) permissions on tables. \
+        - `database`: Describes to which tables and schemas and which privleges on them this API Key grants access to through `tables` and `schemas` attributes.
+          You can grant read (`select`) or write (`insert`, `update`, `delete`) permissions on tables.
           For the case of `schemas` once granted the `create` permission on a schema you'll be able to run SQL queries such as `CREATE TABLE AS...`, `CREATE VIEW AS...` etc. to create entities on it.
         ```{
               {

@@ -10,6 +10,7 @@ Development
 ### Bug fixes / enhancements
 - Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
 - Fix migrations of users with oauth_app_user_roles ([#14981](https://github.com/CartoDB/cartodb/issues/14981))
+- Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 
 4.27.1 (2019-06-20)
 -------------------

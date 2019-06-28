@@ -11,7 +11,7 @@ module Carto
         ssl_required
 
         before_action :load_user
-        before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy]
+        before_action :load_owned_app, only: [:show, :update, :regenerate_secret, :destroy]
         before_action :engine_required
 
         setup_default_rescues
@@ -67,12 +67,12 @@ module Carto
           @user = Carto::User.find(current_viewer.id)
         end
 
-        def load_oauth_app
+        def load_owned_app
           @oauth_app = Carto::OauthApp.find(params[:id])
-          raise ActiveRecord::RecordNotFound.new unless permission?
+          raise ActiveRecord::RecordNotFound.new unless owned?
         end
 
-        def permission?
+        def owned?
           return true if @oauth_app.user_id == @user.id
 
           @user.organization_admin? && @user.organization == @oauth_app.user.organization

@@ -11,7 +11,8 @@ module Carto
         ssl_required
 
         before_action :load_user
-        before_action :load_oauth_app, only: [:show, :update, :regenerate_secret, :destroy, :revoke]
+        before_action :load_owned_app, only: [:show, :update, :regenerate_secret, :destroy]
+        before_action :load_granted_app, only: :revoke
         before_action :load_index_params, only: [:index, :index_granted]
         before_action :engine_required
 
@@ -66,15 +67,24 @@ module Carto
           @user = Carto::User.find(current_viewer.id)
         end
 
-        def load_oauth_app
+        def load_owned_app
           @oauth_app = Carto::OauthApp.find(params[:id])
-          raise ActiveRecord::RecordNotFound.new unless permission?
+          raise ActiveRecord::RecordNotFound.new unless owned?
         end
 
-        def permission?
+        def load_granted_app
+          @oauth_app = Carto::OauthApp.find(params[:id])
+          raise ActiveRecord::RecordNotFound.new unless granted?
+        end
+
+        def owned?
           return true if @oauth_app.user_id == @user.id
 
           @user.organization_admin? && @user.organization == @oauth_app.user.organization
+        end
+
+        def granted?
+          @user.granted_oauth_apps.include?(@oauth_app)
         end
 
         def load_index_params

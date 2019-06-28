@@ -684,6 +684,15 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    it 'returns 404 if the app is not granted' do
+      @carto_org_user_1.granted_oauth_apps.each(&:destroy)
+
+      post_json api_v4_oauth_apps_revoke_url(@params) do |response|
+        expect(response.status).to eq(404)
+        expect(response.body[:errors]).to eq 'Record not found'
+      end
+    end
+
     it 'returns 204 if everything is ok' do
       expect(@carto_org_user_1.reload.granted_oauth_apps.size).to eq 1
 

@@ -323,6 +323,16 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    it 'returns 404 if the app is not owned' do
+      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+
+      get_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
+        expect(response.status).to eq(404)
+      end
+
+      other_app.destroy
+    end
+
     it 'returns 200 with all the info from an OAuth App' do
       get_json api_v4_oauth_app_url(@params) do |response|
         expect(response.status).to eq(200)
@@ -437,6 +447,16 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    it 'returns 404 if the app is not owned' do
+      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+
+      put_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
+        expect(response.status).to eq(404)
+      end
+
+      other_app.destroy
+    end
+
     it 'returns 200 if everything is ok' do
       put_json api_v4_oauth_app_url(@params), @payload do |response|
         expect(response.status).to eq(200)
@@ -502,6 +522,16 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
+    it 'returns 404 if the app is not owned' do
+      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+
+      post_json api_v4_oauth_apps_regenerate_secret_url(@params.merge(id: other_app.id)) do |response|
+        expect(response.status).to eq(404)
+      end
+
+      other_app.destroy
+    end
+
     it 'returns 200 if everything is ok' do
       original_secret = @app.client_secret
 
@@ -558,6 +588,16 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
+    end
+
+    it 'returns 404 if the app is not owned' do
+      other_app = FactoryGirl.create(:oauth_app, user_id: @user2.id)
+
+      delete_json api_v4_oauth_app_url(@params.merge(id: other_app.id)) do |response|
+        expect(response.status).to eq(404)
+      end
+
+      other_app.destroy
     end
 
     it 'returns 204 if everything is ok' do

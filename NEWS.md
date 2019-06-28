@@ -14,6 +14,8 @@ sudo make install
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
 - OAuth:
   - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
 - Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))

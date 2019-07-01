@@ -585,48 +585,6 @@ describe Carto::ApiKey do
         api_key.destroy
       end
 
-      it 'grants creation in schema to ownserhip role' do
-        schema_name = 'test'
-
-        create_schema
-        grant_user
-        create_role
-
-        permissions = ['create']
-        api_key = create_oauth_api_key
-        api_key.stubs(:db_role).returns('test')
-
-        permissions.each do |permission|
-          api_key_schema_permissions(api_key, schema_name).permissions.should include(permission)
-        end
-
-        drop_schema
-        api_key_schema_permissions(api_key, schema_name).should be_nil
-
-        drop_role
-        api_key.unstub(:db_role)
-        api_key.destroy
-      end
-
-      it 'grants creation in schema to master role' do
-        schema_name = 'test'
-        create_schema
-        grant_user
-        api_key = create_api_key
-
-        master_api_key = @carto_user1.api_keys.master.first
-
-        permissions = ['create']
-        permissions.each do |permission|
-          api_key_schema_permissions(master_api_key, schema_name).permissions.should include(permission)
-        end
-
-        drop_schema
-        api_key_schema_permissions(master_api_key, schema_name).should be_nil
-
-        api_key.destroy
-      end
-
       it 'shows public schemas' do
         api_key = @carto_user1.api_keys.default_public.first
         unless @carto_user1.has_organization?

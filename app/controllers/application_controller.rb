@@ -292,6 +292,10 @@ class ApplicationController < ActionController::Base
     validate_session(current_user)
   end
 
+  def engine_required
+    render_404 unless current_viewer.try(:engine_enabled?)
+  end
+
   # This only allows to authenticate if sending an API request to username.api_key subdomain,
   # but doesn't break the request if can't authenticate
   def optional_api_authorization

@@ -9,11 +9,20 @@ Development
 - OAuth:
   - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
   - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
-- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
-- Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
-- Fix migrations of users with oauth_app_user_roles ([#14981](https://github.com/CartoDB/cartodb/issues/14981))
+- None yet
+
+4.28.0 (2019-07-01)
+-------------------
+
+### Features
+* Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+* API to manage OAuth apps ([#14985](https://github.com/CartoDB/cartodb/issues/14985), [#14986](https://github.com/CartoDB/cartodb/issues/14986))
+
+### Bug fixes / enhancements
+* Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
+* Fix migrations of users with oauth_app_user_roles ([#14981](https://github.com/CartoDB/cartodb/issues/14981))
 
 4.27.1 (2019-06-20)
 -------------------

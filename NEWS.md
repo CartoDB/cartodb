@@ -12,7 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
 
 4.28.0 (2019-07-01)
 -------------------

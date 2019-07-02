@@ -14,6 +14,7 @@ sudo make install
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
 
 ### Bug fixes / enhancements
+- Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
 - Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
 
 4.28.0 (2019-07-01)

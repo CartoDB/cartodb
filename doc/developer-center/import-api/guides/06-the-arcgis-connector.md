@@ -197,3 +197,25 @@ curl -v -H "Content-Type: application/json" -d '{"interval":"0","service_item_id
   "success": true
 }
 ```
+
+## Limits
+
+Connections to ArcGIS&trade; server are limited by two types of timeouts: connection and response timeouts.
+
+### Connection timeout
+
+Connection timeout to the ArcGIS&trade; server is set to 60 seconds.
+
+This means if the ArcGIS&trade; server does not respond to a request in 60 seconds the connection is closed and the synchronization of the dataset will fail.
+
+In the vast majority of cases a connection timeout means there's something wrong in the ArcGIS&trade; server, so you should contact the server administrator for more details about the issue.
+
+### Response timeout
+
+Response timeout from the ArcGIS&trade; server is set to 60 seconds.
+
+This means the ArcGIS&trade; server did not finish the request in 60 seconds, after the connection was made, so the resulting dataset will be incomplete and the import will fail with a `Download timeout` error code.
+
+Response timeouts can happen for a number of reasons, the more commons ones are because the ArcGIS&trade; server is overloaded and is not able to respond in a timely manner or the dataset is too big to be transferred in 60 seconds from the server to CARTO.
+
+In any case, we recommend you to first check any issue with the ArcGIS&trade; server administrator and if that does not solve the issue contact us at [support@carto.com](mailto:support@carto.com) for more details.

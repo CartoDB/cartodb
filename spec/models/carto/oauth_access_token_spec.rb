@@ -114,7 +114,7 @@ module Carto
       end
 
       it 'includes create permission for schemas scopes' do
-        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -145,7 +145,7 @@ module Carto
           [
             {
               type: 'apis',
-              apis: ['maps','sql']
+              apis: ['maps', 'sql']
             },
             {
               type: 'database',

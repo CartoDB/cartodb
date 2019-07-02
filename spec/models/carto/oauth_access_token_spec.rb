@@ -114,6 +114,7 @@ module Carto
       end
 
       it 'includes create permission for schemas scopes' do
+        user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
           [
             {
@@ -144,7 +145,7 @@ module Carto
           [
             {
               type: 'apis',
-              apis: ['maps', 'sql']
+              apis: ['maps','sql']
             },
             {
               type: 'database',
@@ -226,6 +227,48 @@ module Carto
         expect(access_token.api_key).to(be)
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
+    end
+
+    describe 'cdb_conf_info' do
+      before(:all) do
+        @user = FactoryGirl.create(:carto_user)
+        @app = FactoryGirl.create(:oauth_app, user: @user)
+        @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
+        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
+        Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
+      end
+
+      after(:all) do
+        @user.destroy
+        @app.destroy
+        @user_table.destroy
+        Carto::ApiKey.any_instance.unstub(:db_role)
+      end
+
+      it 'saves ownership_role_name in cdb_conf_info if schemas granted' do
+        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
+                     .returns(username: @app_user.user.username,
+                              permissions: [],
+                              ownership_role_name: @app_user.ownership_role_name)
+                     .at_least_once
+        OauthAccessToken.create!(oauth_app_user: @app_user,
+                                 scopes: [
+                                   "schemas:c"
+                                 ])
+      end
+
+      it 'does not save ownership_role_name in cdb_conf_info if schemas not granted' do
+        Carto::ApiKey.any_instance.expects(:cdb_conf_info)
+                     .returns(username: @app_user.user.username,
+                              permissions: [],
+                              ownership_role_name: '')
+                     .at_least_once
+        OauthAccessToken.create!(oauth_app_user: @app_user,
+                                 scopes: [
+                                   "datasets:r:#{@user_table.name}"
+                                 ])
       end
     end
 

@@ -5,12 +5,12 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  # ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
   # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
 
   # The production environment is meant for finished, "live" apps.
   # Code is not reloaded between requests
-  config.cache_classes = true
+  config.cache_classes = false
 
   # Full error reports are disabled and caching is turned on
   config.consider_all_requests_local       = true

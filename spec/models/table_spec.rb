@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 # NOTE that these tests are very sensitive to precisce versions of GDAL (1.9.0)
 # 747 # Table post import processing tests should add a point the_geom column after importing a CSV
@@ -1240,7 +1240,7 @@ describe Table do
 
         table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
         table.should_not be_nil, "Import failure: #{data_import.log}"
-        update_data = {:upo___nombre_partido=>"PSOEE"}
+        update_data = {:upo_nombre_partido=>"PSOEE"}
         id = 5
 
         lambda {
@@ -1248,7 +1248,7 @@ describe Table do
         }.should_not raise_error
 
         res = table.sequel.where(:cartodb_id => 5).first
-        res[:upo___nombre_partido].should == "PSOEE"
+        res[:upo_nombre_partido].should == "PSOEE"
       end
 
       it "should be able to insert data in rows with column names with multiple underscores" do
@@ -1260,14 +1260,14 @@ describe Table do
         table.should_not be_nil, "Import failure: #{data_import.log}"
 
         pk = nil
-        insert_data = {:upo___nombre_partido=>"PSOEE"}
+        insert_data = {:upo_nombre_partido=>"PSOEE"}
 
         lambda {
           pk = table.insert_row!(insert_data)
         }.should_not raise_error
 
         res = table.sequel.where(:cartodb_id => pk).first
-        res[:upo___nombre_partido].should == "PSOEE"
+        res[:upo_nombre_partido].should == "PSOEE"
       end
 
       # No longer used, now we automatically rename reserved word columns

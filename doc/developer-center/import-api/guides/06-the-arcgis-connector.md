@@ -214,7 +214,7 @@ In the vast majority of cases a connection timeout means there's something wrong
 
 Response timeout from the ArcGIS&trade; server is set to 60 seconds.
 
-This means if the ArcGIS&trade; server did not finish the request in 60 seconds, after the connection was made, so the resulting dataset will be incomplete and the import will fail.
+This means the ArcGIS&trade; server did not finish the request in 60 seconds, after the connection was made, so the resulting dataset will be incomplete and the import will fail with a `Download timeout` error code.
 
 Response timeouts can happen for a number of reasons, the more commons ones are because the ArcGIS&trade; server is overloaded and is not able to respond in a timely manner or the dataset is too big to be transferred in 60 seconds from the server to CARTO.
 

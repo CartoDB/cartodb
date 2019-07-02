@@ -9,7 +9,9 @@ sudo make install
 ```
 
 ### Features
-- None yet
+- Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
+  `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
+  ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
 
 ### Bug fixes / enhancements
 - None yet

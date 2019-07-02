@@ -2,17 +2,20 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.27.2`. Run the following to have it available:
+- This release upgrades the CartoDB PostgreSQL extension to `0.28.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- None yet
+- Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
+  `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
+  ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
 
 ### Bug fixes / enhancements
 - Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
+- Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
 
 4.28.0 (2019-07-01)
 -------------------

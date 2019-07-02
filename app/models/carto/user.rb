@@ -88,6 +88,7 @@ class Carto::User < ActiveRecord::Base
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
+  has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
   delegate [
     :database_username, :database_password, :in_database,

@@ -198,11 +198,11 @@ curl -v -H "Content-Type: application/json" -d '{"interval":"0","service_item_id
 }
 ```
 
-## Limits
+### Limits
 
 Connections to ArcGIS&trade; server are limited by two types of timeouts: connection and response timeouts.
 
-### Connection timeout
+#### Connection timeout
 
 Connection timeout to the ArcGIS&trade; server is set to 60 seconds.
 
@@ -210,7 +210,7 @@ This means if the ArcGIS&trade; server does not respond to a request in 60 secon
 
 In the vast majority of cases a connection timeout means there's something wrong in the ArcGIS&trade; server, so you should contact the server administrator for more details about the issue.
 
-### Response timeout
+#### Response timeout
 
 Response timeout from the ArcGIS&trade; server is set to 60 seconds.
 

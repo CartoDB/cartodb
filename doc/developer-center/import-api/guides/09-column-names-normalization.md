@@ -17,7 +17,7 @@ This is because as part of the import workflow there's a process to normalize th
 
 Find below a table with some examples of column names and how they are normalized by the Import API:
 
-|original column name| normalized column name |
+| *original column name* | *normalized column name* |
 | Field: 2 | field_
 | 2 Items | _2_item
 | Unnamed: 0 | unnamed_0
@@ -29,10 +29,8 @@ Find below a table with some examples of column names and how they are normalize
 | 1.0 | _1_0
 | SELECT | _select
 | à | a
-| longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabesplittedrightnow 
-    | longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabespli 
-| longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabesplittedrightnow 
-    | longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabe_1 
+| longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabesplittedrightnow | longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabespli 
+| longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabesplittedrightnow | longcolumnshouldbesplittedsomehowanditellyouwhereitsgonnabe_1 
 | all | _all
 
 ### Changing column names

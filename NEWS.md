@@ -15,6 +15,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
+- Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
 - Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
 
 4.28.0 (2019-07-01)

@@ -18,9 +18,9 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_roles, :ensure_role_grants, unless: :skip_role_setup
+    after_create :create_roles, :enable_schema_triggers, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_dataset_role, unless: :skip_role_setup
+    after_destroy :drop_dataset_role, :disable_schema_triggers, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 
@@ -63,6 +63,7 @@ module Carto
     def create_ownership_role_query
       "CREATE ROLE \"#{ownership_role_name}\""
     end
+
 
     def ensure_role_grants
       grant_dataset_role_privileges
@@ -164,6 +165,16 @@ module Carto
       raise OauthProvider::Errors::ServerError.new
     end
 
+    def enable_schema_triggers
+      return if user.organization_user? && oauth_users_in_organization > 1
+      user.db_service.create_oauth_reassign_ownership_event_trigger()
+    end
+
+    def disable_schema_triggers
+      return if user.organization_user? && oauth_users_in_organization >= 1
+      user.db_service.drop_oauth_reassign_ownership_event_trigger()
+    end
+
     def validate_scopes
       invalid_scopes = OauthProvider::Scopes.invalid_scopes_and_tables(scopes, user)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.present?
@@ -200,6 +211,11 @@ module Carto
 
     def db_connection
       @db_connection ||= user.in_database(as: :superuser)
+    end
+
+    def oauth_users_in_organization
+      return 0 unless user.organization_user?
+      Carto::OauthAppUser.joins(:user).where('organization_id = ?', user.organization_id).count
     end
   end
 end

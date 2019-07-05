@@ -222,25 +222,24 @@ module Carto
     end
 
     describe 'datasets scope' do
-      before(:all) do
+      before(:each) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
         @table1 = create_table(user_id: @carto_user.id)
-        @table2 = create_table(user_id: @carto_user.id)
       end
 
-      after(:all) do
+      after(:each) do
         @table1.destroy
-        @table2.destroy
         @app.destroy
         @user.destroy
         @carto_user.destroy
       end
 
       it 'creation and update' do
+        table2 = create_table(user_id: @carto_user.id)
         dataset_scope1 = "datasets:rw:#{@table1.name}"
-        dataset_scope2 = "datasets:r:#{@table2.name}"
+        dataset_scope2 = "datasets:r:#{table2.name}"
         scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -252,10 +251,11 @@ module Carto
         oau.upgrade!([dataset_scope1])
         expect(oau.scopes).to(eq(scopes))
 
+        table2.destroy
         oau.destroy
       end
 
-      it 'rename table' do
+      it 'rename table and check how it affects the scopes' do
         scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
         expect(oau.all_scopes).to(eq(scopes_before))
@@ -270,6 +270,49 @@ module Carto
 
         oau.destroy
       end
+
+      it 'write on table with the proper permissions' do
+        scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        oau.destroy
+      end
+
+      it 'should fail if we change the write permissions and we try to write in the table' do
+        scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
+        scopes_after = ['offline', 'user:profile']
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
+        access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: scopes_after)[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          expect {
+            connection.execute("insert into #{@table1.name} (cartodb_id) values (1000)")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for relation #{@table1.name}/)
+        end
+
+        oau.destroy
+      end
+
     end
 
     describe 'schemas scope' do

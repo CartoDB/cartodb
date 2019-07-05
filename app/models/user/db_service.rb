@@ -1414,7 +1414,6 @@ module CartoDB
       end
 
       def create_oauth_reassign_ownership_event_trigger
-        return unless @user.has_feature_flag?('oauth_create_table')
         @user.in_database(as: :superuser).run('SELECT CDB_EnableOAuthReassignTablesTrigger()')
       end
 

@@ -64,7 +64,6 @@ module Carto
       "CREATE ROLE \"#{ownership_role_name}\""
     end
 
-
     def ensure_role_grants
       grant_dataset_role_privileges
       grant_ownership_role_privileges
@@ -167,12 +166,12 @@ module Carto
 
     def enable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization > 1
-      user.db_service.create_oauth_reassign_ownership_event_trigger()
+      user.db_service.create_oauth_reassign_ownership_event_trigger
     end
 
     def disable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization >= 1
-      user.db_service.drop_oauth_reassign_ownership_event_trigger()
+      user.db_service.drop_oauth_reassign_ownership_event_trigger
     end
 
     def validate_scopes

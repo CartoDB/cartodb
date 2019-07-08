@@ -320,9 +320,13 @@ module Carto
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @table1 = create_table(user_id: @carto_user.id)
+        @table2 = create_table(user_id: @carto_user.id)
       end
 
       after(:all) do
+        @table1.destroy
+        @table2.destroy
         @app.destroy
         @user.destroy
         @carto_user.destroy

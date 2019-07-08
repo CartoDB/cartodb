@@ -320,14 +320,31 @@ module Carto
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
         @app = FactoryGirl.create(:oauth_app, user: @carto_user)
-        @table1 = create_table(user_id: @carto_user.id)
-        @table2 = create_table(user_id: @carto_user.id)
       end
 
       after(:all) do
         @app.destroy
         @user.destroy
         @carto_user.destroy
+      end
+
+      it 'creation and update' do
+        table2 = create_table(user_id: @carto_user.id)
+        dataset_scope1 = "datasets:rw:#{@table1.name}"
+        dataset_scope2 = "datasets:r:#{table2.name}"
+        scopes = ['user:profile', dataset_scope1, dataset_scope2]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq(scopes))
+
+        oau.upgrade!([dataset_scope1])
+        expect(oau.scopes).to(eq(scopes))
+
+        table2.destroy
+        oau.destroy
       end
 
       it 'create table with permissions should work and assign it to the owner_role' do

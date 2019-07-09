@@ -360,14 +360,14 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table pepito as select 1 as test")
-          connection.execute("select count(1) from pepito") do |result|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
             result[0]['count'].should eq '1'
           end
-          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'pepito'") do |result|
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
             result[0]['owner'].should eq oau.ownership_role_name
           end
-          connection.execute("drop table pepito")
+          connection.execute("drop table test_table")
         end
 
         oau.destroy
@@ -382,7 +382,7 @@ module Carto
 
         with_connection_from_api_key(access_token.api_key) do |connection|
           expect {
-            connection.execute("create table pepito as select 1 as test")
+            connection.execute("create table test_table as select 1 as test")
           }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
         end
 
@@ -399,11 +399,11 @@ module Carto
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table pepito as select 1 as test")
-          connection.execute("select count(1) from pepito") do |result|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
             result[0]['count'].should eq '1'
           end
-          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'pepito'") do |result|
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
             result[0]['owner'].should eq oau.ownership_role_name
           end
         end
@@ -411,13 +411,13 @@ module Carto
         access_token_new = refresh_token.exchange!(requested_scopes: scopes)[0]
         expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
         with_connection_from_api_key(access_token_new.api_key) do |connection|
-          connection.execute("drop table pepito")
+          connection.execute("drop table test_table")
         end
 
         oau.destroy
       end
 
-      it 'create table with permission, then refresh token and remove permission, then drop table and get exception' do
+      it 'create table with permission, then refresh token and remove permission, then try to create another table and get exception' do
         schemas_scope = "schemas:c"
         scopes = ['offline', 'user:profile', schemas_scope]
 
@@ -427,24 +427,49 @@ module Carto
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          connection.execute("create table pepito as select 1 as test")
-          connection.execute("select count(1) from pepito") do |result|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
             result[0]['count'].should eq '1'
           end
-          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'pepito'") do |result|
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
             result[0]['owner'].should eq oau.ownership_role_name
           end
+          connection.execute("drop table test_table")
         end
 
         access_token_new = refresh_token.exchange!(requested_scopes: ['offline', 'user:profile'])[0]
         expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
         with_connection_from_api_key(access_token_new.api_key) do |connection|
           expect {
-            connection.execute("create table pepito_without_permissions as select 1 as test")
+            connection.execute("create table test_table_without_permissions as select 1 as test")
           }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
         end
 
         oau.destroy
+      end
+
+      it 'master role can drop tables created with access token API key' do
+        schemas_scope = "schemas:c"
+        scopes = ['offline', 'user:profile', schemas_scope]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
+        access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
+            result[0]['count'].should eq '1'
+          end
+        end
+
+        with_connection_from_api_key(@carto_user.api_keys.master.first) do |connection|
+          connection.execute("drop table test_table")
+          connection.execute("select * from pg_class where relname = 'test_table'") do |result|
+            result.count.should eq 0
+          end
+        end
       end
     end
 

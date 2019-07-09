@@ -167,15 +167,15 @@ module Carto
     def enable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization > 1
       user.db_service.create_oauth_reassign_ownership_event_trigger
-    rescue Exception => e
-      CartoDB.notify_exception(e, {oauth_app_user: self})
+    rescue StandardError => e
+      CartoDB.notify_exception(e, oauth_app_user: self)
     end
 
     def disable_schema_triggers
       return if user.organization_user? && oauth_users_in_organization >= 1
       user.db_service.drop_oauth_reassign_ownership_event_trigger
-    rescue Exception => e
-      CartoDB.notify_exception(e, {oauth_app_user: self})
+    rescue StandardError => e
+      CartoDB.notify_exception(e, oauth_app_user: self)
     end
 
     def validate_scopes

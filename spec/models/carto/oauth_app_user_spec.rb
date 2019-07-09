@@ -307,7 +307,7 @@ module Carto
         with_connection_from_api_key(access_token_new.api_key) do |connection|
           expect {
             connection.execute("insert into #{@table1.name} (cartodb_id) values (1000)")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for relation #{@table1.name}/)
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
         end
 
         oau.destroy
@@ -336,7 +336,7 @@ module Carto
           end
           expect {
             connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
-          }.to raise_exception(Sequel::DatabaseError, /permission denied for relation #{@table1.name}/)
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
         end
 
         oau.destroy

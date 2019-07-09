@@ -27,7 +27,7 @@ module Carto
 
         def index_granted
           oauth_apps = @user.granted_oauth_apps
-          render_paged(oauth_apps) { |params| api_v4_oauth_apps_index_granted_url(params) }
+          render_paged(oauth_apps, public: true) { |params| api_v4_oauth_apps_index_granted_url(params) }
         end
 
         def show
@@ -102,9 +102,9 @@ module Carto
           params.permit(:name, :icon_url, redirect_uris: [])
         end
 
-        def render_paged(oauth_apps)
+        def render_paged(oauth_apps, public: false)
           filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, @page, @per_page, @order)
-          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash }
+          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash(public: public) }
 
           enriched_response = paged_result(
             result: result,

@@ -209,7 +209,8 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.body[:total]).to eq 2
         expect(response.body[:count]).to eq 2
         expect(response.body[:result][0][:id]).to eq @app1.id
-        expect(response.body[:result][0][:username]).to eq @carto_org_user_2.username
+        expect(response.body[:result][0][:username]).to be_nil
+        expect(response.body[:result][0][:client_secret]).to be_nil
       end
     end
 

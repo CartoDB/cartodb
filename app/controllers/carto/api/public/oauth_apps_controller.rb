@@ -104,7 +104,9 @@ module Carto
 
         def render_paged(oauth_apps, public: false)
           filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, @page, @per_page, @order)
-          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash(public: public) }
+          result = filtered_oauth_apps.map do |oauth_app|
+            OauthAppPresenter.new(oauth_app, user: @user).to_hash(public: public)
+          end
 
           enriched_response = paged_result(
             result: result,

@@ -9,8 +9,9 @@ module Carto
 
         PUBLIC_ATTRIBUTES = %i(id name created_at updated_at).freeze
 
-        def initialize(oauth_app)
+        def initialize(oauth_app, user: nil)
           @oauth_app = oauth_app
+          @user = user
         end
 
         def to_hash(public: false)
@@ -24,7 +25,11 @@ module Carto
         end
 
         def to_public_hash
-          @oauth_app.slice(*PUBLIC_ATTRIBUTES)
+          if @user
+            oauth_app_user = @oauth_app.oauth_app_users.where(user: @user).first
+            scopes = Carto::OauthProvider::Scopes.scopes_by_category(oauth_app_user.all_scopes)
+          end
+          @oauth_app.slice(*PUBLIC_ATTRIBUTES).merge(scopes: scopes)
         end
 
       end

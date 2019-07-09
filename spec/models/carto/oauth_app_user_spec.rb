@@ -313,6 +313,35 @@ module Carto
         oau.destroy
       end
 
+      it 'should let downgrade scope for datasets from rw to r scope' do
+        scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
+        scopes_after = ['offline', 'user:profile', "datasets:r:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
+        access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: scopes_after)[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+          expect {
+            connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for relation #{@table1.name}/)
+        end
+
+        oau.destroy
+      end
+
     end
 
     describe 'schemas scope' do

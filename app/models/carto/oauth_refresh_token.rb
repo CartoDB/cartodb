@@ -27,7 +27,7 @@ module Carto
 
     def exchange!(requested_scopes: scopes)
       raise OauthProvider::Errors::InvalidGrant.new if expired?
-      invalid_scopes = requested_scopes - scopes
+      invalid_scopes = Carto::OauthProvider::Scopes.subtract_scopes(requested_scopes, scopes, oauth_app_user.user.database_schema)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
 
       ActiveRecord::Base.transaction do

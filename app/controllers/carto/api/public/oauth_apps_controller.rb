@@ -22,7 +22,7 @@ module Carto
 
         def index
           oauth_apps = user_or_organization_apps
-          render_paged(oauth_apps) { |params| api_v4_oauth_apps_url(params) }
+          render_paged(oauth_apps, private_data: true) { |params| api_v4_oauth_apps_url(params) }
         end
 
         def index_granted
@@ -31,23 +31,23 @@ module Carto
         end
 
         def show
-          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash, 200)
+          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash(private_data: true), 200)
         end
 
         def create
           create_params = permitted_params.merge(user: @user)
           oauth_app = OauthApp.create!(create_params)
-          render_jsonp(OauthAppPresenter.new(oauth_app).to_hash, 201)
+          render_jsonp(OauthAppPresenter.new(oauth_app).to_hash(private_data: true), 201)
         end
 
         def update
           @oauth_app.update_attributes!(permitted_params)
-          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash, 200)
+          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash(private_data: true), 200)
         end
 
         def regenerate_secret
           @oauth_app.regenerate_client_secret!
-          render_jsonp(OauthAppPresenter.new(@oauth_app.reload).to_hash, 200)
+          render_jsonp(OauthAppPresenter.new(@oauth_app.reload).to_hash(private_data: true), 200)
         end
 
         def destroy
@@ -102,9 +102,11 @@ module Carto
           params.permit(:name, :icon_url, redirect_uris: [])
         end
 
-        def render_paged(oauth_apps)
+        def render_paged(oauth_apps, private_data: false)
           filtered_oauth_apps = Carto::PagedModel.paged_association(oauth_apps, @page, @per_page, @order)
-          result = filtered_oauth_apps.map { |oauth_app| OauthAppPresenter.new(oauth_app).to_hash }
+          result = filtered_oauth_apps.map do |oauth_app|
+            OauthAppPresenter.new(oauth_app, user: @user).to_hash(private_data: private_data)
+          end
 
           enriched_response = paged_result(
             result: result,

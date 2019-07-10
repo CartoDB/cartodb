@@ -167,7 +167,7 @@ describe Carto::Api::Public::OauthAppsController do
       @app1.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
       @app2.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
 
-      Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app1)
+      Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app1, scopes: ['user:profile'])
       Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app2)
     end
 
@@ -203,13 +203,15 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
-    it 'returns 200 with the OAuth apps granted by the current user (sort by updated at by default)' do
+    it 'returns 200 with the OAuth apps granted by the current user and the scopes (sort by updated at by default)' do
       get_json api_v4_oauth_apps_index_granted_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:total]).to eq 2
         expect(response.body[:count]).to eq 2
         expect(response.body[:result][0][:id]).to eq @app1.id
-        expect(response.body[:result][0][:username]).to eq @carto_org_user_2.username
+        expect(response.body[:result][0][:scopes][0][:description]).to eq 'User and personal data'
+        expect(response.body[:result][0][:username]).to be_nil
+        expect(response.body[:result][0][:client_secret]).to be_nil
       end
     end
 

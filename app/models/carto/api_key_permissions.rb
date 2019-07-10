@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Carto
   class ApiKeyPermissions
     attr_reader :name, :permissions

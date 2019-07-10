@@ -25,11 +25,9 @@ module Carto
         end
 
         def to_public_hash
-          if @user
-            oauth_app_user = @oauth_app.oauth_app_users.where(user: @user).first
-            scopes = Carto::OauthProvider::Scopes.scopes_by_category(oauth_app_user&.all_scopes)
-          end
-          @oauth_app.slice(*PUBLIC_ATTRIBUTES).merge(scopes: scopes || [])
+          oauth_app_user = @oauth_app.oauth_app_users.where(user: @user).first
+          scopes = Carto::OauthProvider::Scopes.scopes_by_category(oauth_app_user&.all_scopes)
+          @oauth_app.slice(*PUBLIC_ATTRIBUTES).merge(scopes: scopes)
         end
 
       end

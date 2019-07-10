@@ -14,8 +14,8 @@ module Carto
           @user = user
         end
 
-        def to_hash(public: false)
-          public ? to_public_hash : to_private_hash
+        def to_hash(private_data: false)
+          private_data ? to_private_hash : to_public_hash
         end
 
         private
@@ -27,9 +27,9 @@ module Carto
         def to_public_hash
           if @user
             oauth_app_user = @oauth_app.oauth_app_users.where(user: @user).first
-            scopes = Carto::OauthProvider::Scopes.scopes_by_category(oauth_app_user.all_scopes)
+            scopes = Carto::OauthProvider::Scopes.scopes_by_category(oauth_app_user&.all_scopes)
           end
-          @oauth_app.slice(*PUBLIC_ATTRIBUTES).merge(scopes: scopes)
+          @oauth_app.slice(*PUBLIC_ATTRIBUTES).merge(scopes: scopes || [])
         end
 
       end

@@ -154,5 +154,13 @@ module Carto
       query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
       execute_in_user_database(query).first['org_member_role']
     end
+
+    def create_oauth_reassign_ownership_event_trigger
+      @user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+    end
+
+    def drop_oauth_reassign_ownership_event_trigger
+      @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
+    end
   end
 end

@@ -645,7 +645,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.28.1'
+          cdb_extension_target_version = '0.29.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1411,6 +1411,14 @@ module CartoDB
 
       def drop_ghost_tables_event_trigger
         @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
+      end
+
+      def create_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      end
+
+      def drop_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableOAuthReassignTablesTrigger()')
       end
 
       private

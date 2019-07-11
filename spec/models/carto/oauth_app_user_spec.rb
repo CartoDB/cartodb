@@ -1,28 +1,11 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
+require 'helpers/database_connection_helper'
 
 module Carto
   describe OauthAppUser do
     include_context 'organization with users helper'
     include CartoDB::Factories
-
-    def with_connection_from_api_key(api_key)
-      user = api_key.user
-
-      options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-        'database' => user.database_name,
-        'username' => api_key.db_role,
-        'password' => api_key.db_password,
-        'host' => user.database_host
-      )
-      connection = ::Sequel.connect(options)
-      begin
-        yield connection
-      ensure
-        connection.disconnect
-      end
-    end
+    include DatabaseConnectionHelper
 
     describe 'validation' do
       before(:all) do
@@ -743,28 +726,11 @@ module Carto
       it 'reassigns the ownership of created tables to the master role' do
         with_connection_from_api_key(@api_key) { |db| db.execute('CREATE TABLE puxa()') }
         find_owner_query = "SELECT tableowner FROM pg_tables WHERE tablename = 'puxa'"
-        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @api_key.db_role
+        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @app_user.ownership_role_name
 
         @app_user.destroy
 
         @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @user.database_username
-      end
-    end
-
-    def with_connection_from_api_key(api_key)
-      user = api_key.user
-
-      options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-        'database' => user.database_name,
-        'username' => api_key.db_role,
-        'password' => api_key.db_password,
-        'host' => user.database_host
-      )
-      connection = ::Sequel.connect(options)
-      begin
-        yield connection
-      ensure
-        connection.disconnect
       end
     end
 

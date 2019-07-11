@@ -162,7 +162,7 @@ module Carto
       user.in_database(as: :superuser).execute(queries.join)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.error(message: 'Error reassigning owners', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+      raise OauthProvider::Errors::ServerError.new("Error reassigning owners: #{e.message}")
     end
 
     def drop_roles
@@ -176,7 +176,7 @@ module Carto
       user.in_database(as: :superuser).execute(queries.join)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.error(message: 'Error dropping roles', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+      raise OauthProvider::Errors::ServerError.new("Error dropping roles: #{e.message}")
     end
 
     def enable_schema_triggers

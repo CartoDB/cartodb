@@ -58,7 +58,6 @@ module Carto
         end
 
         def revoke
-          byebug
           oauth_app_user = @oauth_app.oauth_app_users.where(user_id: @user.id).first
           oauth_app_user.destroy!
           head :no_content

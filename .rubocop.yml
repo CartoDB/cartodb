@@ -632,6 +632,8 @@ Style/VariableInterpolation:
   Enabled: false
 Style/WhenThen:
   Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false  
 Metrics/BlockNesting:
   Enabled: false
 Metrics/ClassLength:

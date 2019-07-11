@@ -157,8 +157,7 @@ module Carto
     end
 
     def reassign_owners
-      roles = oauth_access_tokens.map { |token| token.api_key.db_role }
-      roles << dataset_role_name << ownership_role_name
+      roles = [dataset_role_name, ownership_role_name]
       queries = roles.map do |role|
         "REASSIGN OWNED BY \"#{role}\" TO \"#{user.database_username}\";"
       end

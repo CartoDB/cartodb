@@ -1,30 +1,13 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
+require 'helpers/database_connection_helper'
 
 module Carto
   describe OauthAppUser do
     include_context 'organization with users helper'
     include CartoDB::Factories
+    include DatabaseConnectionHelper
 
-    def with_connection_from_api_key(api_key)
-      user = api_key.user
-
-      options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-        'database' => user.database_name,
-        'username' => api_key.db_role,
-        'password' => api_key.db_password,
-        'host' => user.database_host
-      )
-      connection = ::Sequel.connect(options)
-      begin
-        yield connection
-      ensure
-        connection.disconnect
-      end
-    end
-
-    describe '#validation' do
+    describe 'validation' do
       before(:all) do
         user = FactoryGirl.create(:valid_user)
         @user = Carto::User.find(user.id)
@@ -715,5 +698,41 @@ module Carto
         expect(oau.all_scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
       end
     end
+
+    describe '#destroy' do
+      before(:each) do
+        @user = FactoryGirl.create(:valid_user)
+        @app = FactoryGirl.create(:oauth_app, user_id: @user.id)
+        @app_user = Carto::OauthAppUser.create!(user_id: @user.id, oauth_app: @app)
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: ["schemas:c:#{@user.database_schema}"])
+        @api_key = access_token.api_key
+      end
+
+      after(:each) do
+        @app.destroy
+        @user.destroy
+      end
+
+      it 'drops the created roles' do
+        find_role_query = "SELECT * FROM pg_roles WHERE rolname LIKE '%#{@app_user.id}'"
+        @user.in_database.fetch(find_role_query).count.should eq 2
+
+        @app_user.destroy
+
+        @user.in_database.fetch(find_role_query).count.should eq 0
+      end
+
+      it 'reassigns the ownership of created tables to the master role' do
+        with_connection_from_api_key(@api_key) { |db| db.execute('CREATE TABLE puxa()') }
+        find_owner_query = "SELECT tableowner FROM pg_tables WHERE tablename = 'puxa'"
+        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @app_user.ownership_role_name
+
+        @app_user.destroy
+
+        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @user.database_username
+      end
+    end
+
   end
 end

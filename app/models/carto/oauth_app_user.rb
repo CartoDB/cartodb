@@ -6,6 +6,7 @@ require_dependency 'carto/oauth_provider/errors'
 module Carto
   class OauthAppUser < ActiveRecord::Base
     include OauthProvider::Scopes
+
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
@@ -20,7 +21,7 @@ module Carto
 
     after_create :create_roles, :enable_schema_triggers, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_dataset_role, :disable_schema_triggers, unless: :skip_role_setup
+    after_destroy :reassign_owners, :drop_roles, :disable_schema_triggers, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 
@@ -153,15 +154,23 @@ module Carto
       scopes
     end
 
-    def drop_dataset_role
-      queries = %{
-        DROP OWNED BY \"#{dataset_role_name}\";
-        DROP ROLE \"#{dataset_role_name}\";
-      }
-      user.in_database(as: :superuser).execute(queries)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error dropping dataset role', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+    def reassign_owners
+      roles = [dataset_role_name, ownership_role_name]
+      queries = roles.map do |role|
+        "REASSIGN OWNED BY \"#{role}\" TO \"#{user.database_username}\";"
+      end
+      db_run(queries.join, error_title: 'Error reassigning owners')
+    end
+
+    def drop_roles
+      roles = [dataset_role_name, ownership_role_name]
+      queries = roles.map do |role|
+        %{
+          DROP OWNED BY "#{role}";
+          DROP ROLE IF EXISTS "#{role}";
+        }
+      end
+      db_run(queries.join, error_title: 'Error dropping roles')
     end
 
     def enable_schema_triggers
@@ -213,11 +222,11 @@ module Carto
       "carto_oauth_app_#{id}"
     end
 
-    def db_run(query, connection = db_connection)
+    def db_run(query, connection = db_connection, error_title: 'Error running SQL command')
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error running SQL command', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+      CartoDB::Logger.error(message: error_title, exception: e)
+      raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 
     def db_connection
@@ -226,6 +235,7 @@ module Carto
 
     def oauth_users_in_organization
       return 0 unless user.organization_user?
+
       Carto::OauthAppUser.joins(:user).where('organization_id = ?', user.organization_id).count
     end
   end

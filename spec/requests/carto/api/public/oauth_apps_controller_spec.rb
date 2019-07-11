@@ -640,7 +640,7 @@ describe Carto::Api::Public::OauthAppsController do
     before(:each) do
       @app = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id)
       @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
-      Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
+      @oauth_app_user = Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
 
       @params = { id: @app.id, api_key: @carto_org_user_1.api_key }
     end
@@ -693,6 +693,17 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
+    end
+
+    it 'returns 500 if there is an error reassigning owners' do
+      Carto::OauthAppUser.any_instance.stubs(:dataset_role_name).returns('wrong')
+
+      post_json api_v4_oauth_apps_revoke_url(@params) do |response|
+        expect(response.status).to eq(500)
+        expect(response.body[:errors]).to include 'Error reassigning owners: PG::UndefinedObject'
+      end
+
+      Carto::OauthAppUser.any_instance.unstub(:dataset_role_name)
     end
 
     it 'returns 204 if everything is ok' do

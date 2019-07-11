@@ -1,27 +1,10 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
+require 'helpers/database_connection_helper'
 
 module Carto
   describe OauthAccessToken do
     include_context 'organization with users helper'
-
-    def with_connection_from_api_key(api_key)
-      user = api_key.user
-
-      options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-        'database' => user.database_name,
-        'username' => api_key.db_role,
-        'password' => api_key.db_password,
-        'host' => user.database_host
-      )
-      connection = ::Sequel.connect(options)
-      begin
-        yield connection
-      ensure
-        connection.disconnect
-      end
-    end
+    include DatabaseConnectionHelper
 
     describe '#validation' do
       before(:all) do

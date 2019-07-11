@@ -17,6 +17,7 @@ module Carto
         before_action :engine_required
 
         setup_default_rescues
+        rescue_from OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = [:name, :updated_at, :restricted, :user_id].freeze
 
@@ -117,6 +118,10 @@ module Carto
           ) { |params| yield(params) }
 
           render_jsonp(enriched_response, 200)
+        end
+
+        def rescue_oauth_errors(exception)
+          render json: { errors: exception.parameters[:error_description] }, status: 500
         end
       end
     end

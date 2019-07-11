@@ -7,8 +7,6 @@ module Carto
   class OauthAppUser < ActiveRecord::Base
     include OauthProvider::Scopes
 
-    before_destroy :reassign_owners, unless: :skip_role_setup
-
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
@@ -23,7 +21,7 @@ module Carto
 
     after_create :create_roles, :enable_schema_triggers, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_roles, :disable_schema_triggers, unless: :skip_role_setup
+    after_destroy :reassign_owners, :drop_roles, :disable_schema_triggers, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 

@@ -6,6 +6,9 @@ require_dependency 'carto/oauth_provider/errors'
 module Carto
   class OauthAppUser < ActiveRecord::Base
     include OauthProvider::Scopes
+
+    before_destroy :reassign_owners, unless: :skip_role_setup
+
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
@@ -20,7 +23,7 @@ module Carto
 
     after_create :create_roles, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_dataset_role, unless: :skip_role_setup
+    after_destroy :drop_roles, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 
@@ -153,14 +156,29 @@ module Carto
       scopes
     end
 
-    def drop_dataset_role
-      queries = %{
-        DROP OWNED BY \"#{dataset_role_name}\";
-        DROP ROLE \"#{dataset_role_name}\";
-      }
-      user.in_database(as: :superuser).execute(queries)
+    def reassign_owners
+      roles = oauth_access_tokens.map { |token| token.api_key.db_role }
+      roles << dataset_role_name << ownership_role_name
+      queries = roles.map do |role|
+        "REASSIGN OWNED BY \"#{role}\" TO \"#{user.database_username}\";"
+      end
+      user.in_database(as: :superuser).execute(queries.join)
     rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error dropping dataset role', exception: e)
+      CartoDB::Logger.error(message: 'Error reassigning owners', exception: e)
+      raise OauthProvider::Errors::ServerError.new
+    end
+
+    def drop_roles
+      roles = [dataset_role_name, ownership_role_name]
+      queries = roles.map do |role|
+        %{
+          DROP OWNED BY "#{role}";
+          DROP ROLE IF EXISTS "#{role}";
+        }
+      end
+      user.in_database(as: :superuser).execute(queries.join)
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: 'Error dropping roles', exception: e)
       raise OauthProvider::Errors::ServerError.new
     end
 

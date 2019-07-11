@@ -159,10 +159,7 @@ module Carto
       queries = roles.map do |role|
         "REASSIGN OWNED BY \"#{role}\" TO \"#{user.database_username}\";"
       end
-      user.in_database(as: :superuser).execute(queries.join)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error reassigning owners', exception: e)
-      raise OauthProvider::Errors::ServerError.new("Error reassigning owners: #{e.message}")
+      db_run(queries.join, error_title: 'Error reassigning owners')
     end
 
     def drop_roles
@@ -173,10 +170,7 @@ module Carto
           DROP ROLE IF EXISTS "#{role}";
         }
       end
-      user.in_database(as: :superuser).execute(queries.join)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error dropping roles', exception: e)
-      raise OauthProvider::Errors::ServerError.new("Error dropping roles: #{e.message}")
+      db_run(queries.join, error_title: 'Error dropping roles')
     end
 
     def enable_schema_triggers
@@ -228,11 +222,11 @@ module Carto
       "carto_oauth_app_#{id}"
     end
 
-    def db_run(query, connection = db_connection)
+    def db_run(query, connection = db_connection, error_title: 'Error running SQL command')
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error running SQL command', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+      CartoDB::Logger.error(message: error_title, exception: e)
+      raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 
     def db_connection

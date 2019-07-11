@@ -1,4 +1,5 @@
 require_relative '../paged_searcher'
+require_dependency 'carto/oauth_provider/errors'
 
 module Carto
   module Api
@@ -17,7 +18,7 @@ module Carto
         before_action :engine_required
 
         setup_default_rescues
-        rescue_from OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
+        rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = [:name, :updated_at, :restricted, :user_id].freeze
 
@@ -57,6 +58,7 @@ module Carto
         end
 
         def revoke
+          byebug
           oauth_app_user = @oauth_app.oauth_app_users.where(user_id: @user.id).first
           oauth_app_user.destroy!
           head :no_content

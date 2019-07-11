@@ -25,10 +25,11 @@ module Carto
 
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
-        @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
-        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
+        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
       end
 
       after(:all) do
@@ -232,10 +233,11 @@ module Carto
 
     describe 'cdb_conf_info' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
-        @app_user = OauthAppUser.create!(user: @user, oauth_app: @app)
-        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app_user = OauthAppUser.create!(user: @carto_user, oauth_app: @app)
+        @user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user.id)
         @db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
         Carto::ApiKey.any_instance.stubs(:db_role).returns(@db_role)
       end

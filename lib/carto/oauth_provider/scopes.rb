@@ -302,7 +302,7 @@ module Carto
         result
       end
 
-      def self.scopes_by_category(new_scopes, previous_scopes)
+      def self.scopes_by_category(new_scopes, previous_scopes = [])
         # If we had previous scopes, DEFAULT was already granted.
         previous_scopes = previous_scopes.blank? ? [] : previous_scopes + [SCOPE_DEFAULT]
 

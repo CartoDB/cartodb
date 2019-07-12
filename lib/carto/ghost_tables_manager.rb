@@ -64,8 +64,6 @@ module Carto
     end
 
     def sync
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage start', user: user)
-
       cartodbfied_tables = fetch_cartodbfied_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
@@ -79,8 +77,6 @@ module Carto
 
       # Unlink tables that have been created through the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
-
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage end', user: user)
     end
 
     # Any UserTable that has been renamed or regenerated.

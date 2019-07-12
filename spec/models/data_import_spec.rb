@@ -566,6 +566,21 @@ describe DataImport do
       data_import.state.should eq 'complete'
     end
 
+    it 'fail with error 1020 if timeout' do
+      Typhoeus::Response.any_instance.stubs(:timed_out?).returns(true)
+      stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'))
+
+      data_import = DataImport.create(
+        user_id:    @user.id,
+        service_name: 'arcgis',
+        service_item_id: 'https://wtf.com/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer/2'
+      )
+      data_import.run_import!
+      data_import.state.should eq 'failure'
+      data_import.error_code.should eq 1020
+      Typhoeus::Response.unstub(:timed_out?)
+    end
+
     it 'should import files with missing ogc_fid' do
       stub_arcgis_response_with_file(File.expand_path('spec/fixtures/arcgis_response_missing_ogc_fid.json'))
 

@@ -573,6 +573,12 @@ CartoDB::Application.routes.draw do
       delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
       put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
       get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
+
+      # OAuth apps
+      resources :oauth_apps, only: [:index, :show, :create, :update, :destroy], constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps
+      post 'oauth_apps/:id/regenerate_secret', to: 'oauth_apps#regenerate_secret', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_regenerate_secret
+      get 'granted_oauth_apps', to: 'oauth_apps#index_granted', as: :api_v4_oauth_apps_index_granted
+      post 'oauth_apps/:id/revoke', to: 'oauth_apps#revoke', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_revoke
     end
 
     scope 'v3/' do

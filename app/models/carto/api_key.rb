@@ -82,7 +82,7 @@ module Carto
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
-    after_destroy :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_destroy :reassign_owner, :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
@@ -513,6 +513,12 @@ module Carto
     def drop_db_role
       db_run("DROP OWNED BY \"#{db_role}\"")
       db_run("DROP ROLE \"#{db_role}\"")
+    end
+
+    def reassign_owner
+      # The other type of keys are reassigned in oauth_app_user for example
+      return unless regular?
+      db_run("REASSIGN OWNED BY \"#{db_role}\" TO \"#{user.database_username}\";")
     end
 
     def schemas_from_granted_tables

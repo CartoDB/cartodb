@@ -32,6 +32,10 @@ module Carto
           {
             type: 'database',
             tables: table_permissions_for_api_key
+          },
+          {
+            type: 'schema',
+            tables: schema_permissions_for_api_key
           }
         ]
 
@@ -51,6 +55,17 @@ module Carto
         @api_key.table_permissions_from_db.map do |p|
           {
             schema: p.schema,
+            name: p.name,
+            permissions: p.permissions
+          }
+        end
+      end
+
+      def schema_permissions_for_api_key
+        return [] if @api_key.master? || @api_key.default_public?
+
+        @api_key.schema_permissions_from_db.map do |p|
+          {
             name: p.name,
             permissions: p.permissions
           }

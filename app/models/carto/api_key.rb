@@ -277,7 +277,7 @@ module Carto
     def role_permission_queries
       queries = [
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
-        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}",
       ]
 
       # This is GRANTED to the organizational role for organization users, and the PUBLIC users for non-orgs
@@ -287,6 +287,9 @@ module Carto
       # This works for now, but if you are adding new permissions, please reconsider this decision.
       if user.organization_user?
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
+      end
+      if regular?
+        queries << "GRANT \"#{db_role}\" TO \"#{user.database_username}\""
       end
       queries
     end

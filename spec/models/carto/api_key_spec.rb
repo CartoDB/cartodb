@@ -166,6 +166,20 @@ describe Carto::ApiKey do
       end
     end
 
+    it 'master role is able to drop the table created by regular api with schema grants' do
+      grants = [schema_grant(@carto_user1.database_schema), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_by_master', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
+        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
+          result[0]['count'].should eq '1'
+        end
+      end
+
+      @carto_user1.in_database.execute("drop table test_table")
+    end
+
     it 'reassign created table ownership after delete the api key' do
       grants = [schema_grant(@carto_user1.database_schema), apis_grant]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_test', grants: grants)

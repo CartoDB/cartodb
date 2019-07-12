@@ -1,11 +1,13 @@
 scss:
   enabled: false
-ruby:
+rubocop:
   enabled: true
   config_file: .rubocop.yml
-javascript:
+  version: 0.71.0
+jshint:
   enabled: false
 eslint:
   enabled: true
   config_file: .eslintrc.json
   ignore_file: .eslintignore
+  version: 5.16.0

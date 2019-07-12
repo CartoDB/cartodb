@@ -166,6 +166,26 @@ describe Carto::ApiKey do
       end
     end
 
+    it 'reassign created table ownership after delete the api key' do
+      grants = [schema_grant(@carto_user1.database_schema), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_test', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
+        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
+          result[0]['count'].should eq '1'
+        end
+      end
+
+      api_key.destroy
+
+      ownership_query = "select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'"
+      @carto_user1.in_database.execute(ownership_query) do |result|
+        result[0]['owner'].should eq @carto_user1.database_username
+      end
+      @carto_user1.in_database.execute("drop table test_table")
+    end
+
     it 'fails to grant to a non-existent schema' do
       expect {
         grants = [schema_grant('not-exists'), apis_grant]

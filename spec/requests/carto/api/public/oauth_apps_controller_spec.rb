@@ -14,8 +14,6 @@ describe Carto::Api::Public::OauthAppsController do
         @app1 = FactoryGirl.create(:oauth_app, user_id: @user1.id, name: 'ZZZ', restricted: false)
         @app2 = FactoryGirl.create(:oauth_app, user_id: @user1.id, name: 'ABC', restricted: true)
         @app3 = FactoryGirl.create(:oauth_app, user_id: @user2.id, name: 'ABC', restricted: true)
-
-        OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       end
 
       after(:all) do
@@ -365,6 +363,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -421,6 +420,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@user1.username}.localhost.lan"
       end
 
@@ -497,6 +497,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@organization.name}.localhost.lan"
       end
 
@@ -521,6 +522,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -589,6 +591,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -657,6 +660,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@carto_org_user_1.username}.localhost.lan"
     end
 

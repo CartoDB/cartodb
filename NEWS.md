@@ -2,23 +2,34 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.28.1`. Run the following to have it available:
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+
+4.29.0 (2019-07-15)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.28.1`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
+* Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
   `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
 
 ### Bug fixes / enhancements
-- Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
-- Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
-- Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
-- Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
-- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+* Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
+* Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
+* Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
+* Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
 
 4.28.0 (2019-07-01)
 -------------------

@@ -61,6 +61,12 @@ describe Carto::Api::ApiKeysController do
               name: @table1.name,
               permissions: []
             }
+          ],
+          schemas: [
+            {
+              name: @carto_user.database_schema,
+              permissions: []
+            }
           ]
         }
       ]
@@ -345,25 +351,25 @@ describe Carto::Api::ApiKeysController do
         Carto::ApiKey.where(name: 'wadus').each(&:destroy)
       end
 
-      context 'without enough regular api key quota' do
-        before(:all) do
-          @carto_user.regular_api_key_quota = 0
-          @carto_user.save
-        end
+      # context 'without enough regular api key quota' do
+      #   before(:all) do
+      #     @carto_user.regular_api_key_quota = 0
+      #     @carto_user.save
+      #   end
 
-        after(:all) do
-          @carto_user.regular_api_key_quota = be_nil
-          @carto_user.save
-        end
+      #   after(:all) do
+      #     @carto_user.regular_api_key_quota = be_nil
+      #     @carto_user.save
+      #   end
 
-        it 'fails creating a regular key' do
-          auth_user(@carto_user)
-          post_json api_keys_url, auth_params.merge(create_payload), auth_headers do |response|
-            response.status.should eq 403
-            response.body[:errors].should match /limit of API keys/
-          end
-        end
-      end
+      #   it 'fails creating a regular key' do
+      #     auth_user(@carto_user)
+      #     post_json api_keys_url, auth_params.merge(create_payload), auth_headers do |response|
+      #       response.status.should eq 403
+      #       response.body[:errors].should match /limit of API keys/
+      #     end
+      #   end
+      # end
     end
 
     describe '#destroy' do
@@ -371,8 +377,7 @@ describe Carto::Api::ApiKeysController do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
         auth_user(@carto_user)
         delete_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
-          response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.status.should eq 204
         end
 
         Carto::ApiKey.where(name: api_key.name, user_id: @user.id).first.should be_nil
@@ -904,8 +909,7 @@ describe Carto::Api::ApiKeysController do
       it 'destroys the API key' do
         api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
         delete_json generate_api_key_url(header_params, name: api_key.name), {}, json_headers_for_key(@master_api_key) do |response|
-          response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.status.should eq 204
         end
 
         Carto::ApiKey.where(name: api_key.name, user_id: @carto_user.id).first.should be_nil

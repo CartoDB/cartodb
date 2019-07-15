@@ -18,6 +18,7 @@ sudo make install
 - Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
 - Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
 - Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
+- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
 
 4.28.0 (2019-07-01)
 -------------------

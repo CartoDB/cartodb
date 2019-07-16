@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Send notification on oauth_app deletion (#15016)
 
 ### Bug fixes / enhancements
 - None yet

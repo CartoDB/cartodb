@@ -921,16 +921,6 @@ describe 'UserMigration' do
       user.should be
       user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
-
-      with_connection_from_api_key(uapi_key) do |connection|
-        connection.execute("select count(1) from #{schema_table}") do |result|
-          result[0]['count'].should eq '0'
-        end
-
-        expect {
-          connection.execute("insert into #{schema_table} (name) values ('wadus')")
-        }.to raise_exception /permission denied/
-      end
     end
 
     it 'api keys keeps the grants and you can drop tables after migration' do

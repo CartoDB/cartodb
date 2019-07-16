@@ -2,23 +2,41 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.28.1`. Run the following to have it available:
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.29.0 (2019-07-15)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.28.1`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
+* Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
   `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
+- OAuth:
+  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+  - Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
+  - Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
+- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
-- Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
-- Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
-- Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
-- Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
-- Add new parameters to send via GTM ([#15021](https://github.com/CartoDB/cartodb/pull/15021))
+* Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
+* Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
+* Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
+* Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
+* Add new parameters to send via GTM ([#15021](https://github.com/CartoDB/cartodb/pull/15021))
 
 4.28.0 (2019-07-01)
 -------------------

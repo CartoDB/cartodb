@@ -3,11 +3,13 @@ require_relative '../../../app/models/carto/user_migration_import'
 require_relative '../../../app/models/carto/user_migration_export'
 require_relative '../../support/factories/tables'
 require_relative '../../factories/organizations_contexts'
+require 'helpers/database_connection_helper'
 require 'factories/carto_visualizations'
 
 describe 'UserMigration' do
   include Carto::Factories::Visualizations
   include CartoDB::Factories
+  include DatabaseConnectionHelper
 
   let(:records) do
     [
@@ -853,6 +855,12 @@ describe 'UserMigration' do
                                                                    name: @table.name,
                                                                    permissions: ['select']
                                                                  }
+                                                               ],
+                                                               schemas: [
+                                                                 {
+                                                                   name: @carto_user.database_schema,
+                                                                   permissions: ['create']
+                                                                 }
                                                                ]
                                                              }
                                                            ])
@@ -913,6 +921,75 @@ describe 'UserMigration' do
       user.should be
       user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
+
+      with_connection_from_api_key(uapi_key) do |connection|
+        connection.execute("select count(1) from #{schema_table}") do |result|
+          result[0]['count'].should eq '0'
+        end
+
+        expect {
+          connection.execute("insert into #{schema_table} (name) values ('wadus')")
+        }.to raise_exception /permission denied/
+      end
+    end
+
+    it 'api keys keeps the grants and you can drop tables after migration' do
+      regular_api_key = @carto_user.api_keys.regular.first
+      with_connection_from_api_key(regular_api_key) do |connection|
+        connection.execute("create table test_table(id INT)")
+        connection.execute("insert into test_table values (999)")
+        connection.execute("select id from test_table") do |result|
+          result[0]['id'].should eq '999'
+        end
+      end
+
+      user_attributes = @carto_user.attributes
+      export = Carto::UserMigrationExport.create(
+        user: @carto_user,
+        export_metadata: true
+      )
+      export.run_export
+
+      puts export.log.entries if export.state != Carto::UserMigrationExport::STATE_COMPLETE
+      expect(export.state).to eq(Carto::UserMigrationExport::STATE_COMPLETE)
+
+      @carto_user.client_applications.each(&:destroy)
+      @master_api_key.destroy
+      @table.destroy
+      @map.destroy
+      @table_visualization.destroy
+      @visualization.destroy
+      @carto_user.destroy
+      @regular_api_key.destroy
+      drop_user_database(@user)
+
+      import = Carto::UserMigrationImport.create(
+        exported_file: export.exported_file,
+        database_host: user_attributes['database_host'],
+        org_import: false,
+        json_file: export.json_file,
+        import_metadata: true,
+        dry: false
+      )
+
+      import.stubs(:assert_organization_does_not_exist)
+      import.stubs(:assert_user_does_not_exist)
+      import.run_import
+
+      puts import.log.entries if import.state != Carto::UserMigrationImport::STATE_COMPLETE
+      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
+
+      user = Carto::User.find(user_attributes['id'])
+      user.should be
+      user.api_keys.each(&:table_permissions_from_db) # to make sure DB can be queried without exceptions
+      user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
+
+      with_connection_from_api_key(user.api_keys.master.first) do |connection|
+        connection.execute("drop table test_table")
+        connection.execute("select relname from pg_class where relname = 'test_table'") do |result|
+          result.count eq 0
+        end
+      end
     end
   end
 

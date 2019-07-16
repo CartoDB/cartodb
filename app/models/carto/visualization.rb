@@ -788,6 +788,7 @@ class Carto::Visualization < ActiveRecord::Base
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
   end
 
+  # FIXME: temporary log to solve this issue: https://github.com/CartoDB/support/issues/2102
   def log_privacy_change
     return unless privacy_changed? && privacy == Carto::Visualization::PRIVACY_PRIVATE
 

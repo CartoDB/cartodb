@@ -19,6 +19,7 @@ describe Carto::ApiKey do
   end
 
   def database_grant(database_schema = 'wadus', table_name = 'wadus',
+                     owner = false,
                      permissions: ['insert', 'select', 'update', 'delete'],
                      schema_permissions: ['create'])
     {
@@ -27,6 +28,7 @@ describe Carto::ApiKey do
         {
           schema: database_schema,
           name: table_name,
+          owner: owner,
           permissions: permissions
         }
       ],
@@ -39,7 +41,7 @@ describe Carto::ApiKey do
     }
   end
 
-  def table_grant(database_schema = 'wadus', table_name = 'wadus',
+  def table_grant(database_schema = 'wadus', table_name = 'wadus', owner = false,
                   permissions: ['insert', 'select', 'update', 'delete'])
     {
       type: "database",
@@ -47,6 +49,7 @@ describe Carto::ApiKey do
         {
           schema: database_schema,
           name: table_name,
+          owner: owner,
           permissions: permissions
         }
       ]
@@ -311,6 +314,26 @@ describe Carto::ApiKey do
 
       @user1.in_database.run(drop_query)
       api_key.destroy
+    end
+
+    it 'show ownership of the tables for the user' do
+      grants = [schema_grant(@carto_user1.database_schema), apis_grant]
+      api_key = @carto_user1.api_keys.create_regular_key!(name: 'table_owner_test', grants: grants)
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
+        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
+          result[0]['count'].should eq '1'
+        end
+      end
+
+      permissions = api_key.table_permissions_from_db
+
+      permissions.each do |p|
+        if p.name == 'test_table'
+          p.owner.should eq true
+        end
+      end
     end
 
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }

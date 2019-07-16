@@ -192,21 +192,41 @@ module Carto
 
     def table_permissions_from_db
       query = %{
-        SELECT
-          table_schema,
-          table_name,
-          string_agg(DISTINCT lower(privilege_type),',') privilege_types
-        FROM
-          information_schema.table_privileges tp
-        WHERE
-          tp.grantee = '#{db_role}'
-        GROUP BY
-          table_schema,
-          table_name;
+          WITH permissions AS (
+            SELECT
+                table_schema,
+                table_name,
+                string_agg(DISTINCT lower(privilege_type),',') privilege_types
+            FROM
+                information_schema.table_privileges tp
+            WHERE
+                tp.grantee = '#{db_role}'
+            GROUP BY
+                table_schema,
+                table_name
+          ),
+          ownership AS (
+            SELECT
+                n.nspname as table_schema,
+                relname as table_name
+            FROM pg_class
+            JOIN pg_catalog.pg_namespace n ON n.oid = pg_class.relnamespace
+            WHERE pg_catalog.pg_get_userbyid(relowner) = '#{db_role}'
+          )
+          SELECT
+              p.table_name,
+              p.table_schema,
+              p.privilege_types,
+              CASE WHEN o.table_name IS NULL THEN false
+                  ELSE true
+              END AS owner
+          FROM permissions p
+          LEFT JOIN ownership o ON (p.table_name = o.table_name AND p.table_schema = o.table_schema)
         }
       db_run(query).map do |line|
         TablePermissions.new(schema: line['table_schema'],
                              name: line['table_name'],
+                             owner: line['owner'] == 't' ? true : false,
                              permissions: line['privilege_types'].split(','))
       end
     end

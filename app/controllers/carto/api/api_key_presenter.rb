@@ -56,6 +56,7 @@ module Carto
           {
             schema: p.schema,
             name: p.name,
+            owner: p.owner,
             permissions: p.permissions
           }
         end

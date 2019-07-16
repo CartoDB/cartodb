@@ -25,9 +25,12 @@ module Carto
     after_update :update_central, if: :sync_with_central?
     after_destroy :delete_central, if: :sync_with_central?
 
+    before_destroy :collect_users, unless: :avoid_send_notification, prepend: true
+    after_destroy :send_destroy_notification, unless: :avoid_send_notification
+
     ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris icon_url restricted].freeze
 
-    attr_accessor :avoid_sync_central
+    attr_accessor :avoid_sync_central, :avoid_send_notification
 
     # this should be exactly the same method as in Central
     # mostly used for testing the Superadmin API
@@ -41,6 +44,26 @@ module Carto
     end
 
     private
+
+    def collect_users
+      @user_ids = oauth_app_users.collect { |u| u.user.id }
+    end
+
+    def send_destroy_notification
+      return if @user_ids.empty?
+      notification = Carto::Notification.create!(body: notification_body, icon: Notification::ICON_ALERT)
+      ::Resque.enqueue(::Resque::UserJobs::Notifications::Send, @user_ids, notification.id)
+    rescue StandardError => e
+      CartoDB::Logger.warning(
+        message: "Couldn't notify users about oauth_app '#{name}' deletion",
+        notification_id: notification&.id,
+        exception: e)
+        raise e
+    end
+
+    def notification_body
+      "The app #{name} has signed off. You may find more information in their [website](#{website_url})."
+    end
 
     def ensure_keys_generated
       self.client_id ||= SecureRandom.urlsafe_base64(CLIENT_ID_RANDOM_BYTES)

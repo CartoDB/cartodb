@@ -37,6 +37,13 @@ module Carto
         expect(app.errors[:icon_url]).to(include("can't be blank"))
       end
 
+      it 'rejected if icon_url invalid' do
+        app = OauthApp.new
+        app.icon_url = 'carto.com'
+        expect(app).to_not(be_valid)
+        expect(app.errors[:icon_url]).to(include("must be a valid URL"))
+      end
+
       describe 'redirection uri' do
         it 'rejected if empty' do
           app = OauthApp.new
@@ -84,7 +91,11 @@ module Carto
       end
 
       it 'accepts if valid' do
-        app = OauthApp.new(user: @user, name: 'name', redirect_uris: ['https://re.dir'], icon_url: 'some.png')
+        app = OauthApp.new(user: @user,
+                           name: 'name',
+                           redirect_uris: ['https://re.dir'],
+                           icon_url: 'http://localhost/some.png',
+                           website_url: 'http://localhost')
         expect(app).to(be_valid)
       end
 
@@ -92,7 +103,8 @@ module Carto
         Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
         app = OauthApp.new(name: 'name',
                            redirect_uris: ['https://re.dir'],
-                           icon_url: 'some.png',
+                           icon_url: 'http://localhost/some.png',
+                           website_url: 'http://localhost',
                            avoid_sync_central: true)
         expect(app).to(be_valid)
         Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
@@ -125,7 +137,9 @@ module Carto
           params = { id: '26da639b-0b8c-4e81-aeb4-33b81fd0cacb',
                      name: 'name1',
                      redirect_uris: ['https://re.dir'],
-                     icon_url: 'some.png',
+                     icon_url: 'http://localhost/some.png',
+                     website_url: 'http://localhost',
+                     description: nil,
                      client_id: '1234',
                      client_secret: '5678',
                      restricted: false }
@@ -150,7 +164,8 @@ module Carto
           expect {
             @oauth_app2 = OauthApp.create!(name: 'name1',
                                            redirect_uris: ['https://re.dir'],
-                                           icon_url: 'some.png',
+                                           icon_url: 'http://localhost/some.png',
+                                           website_url: 'http://localhost',
                                            avoid_sync_central: true)
           }.to change { OauthApp.count }.by(1)
         end
@@ -163,7 +178,8 @@ module Carto
             @oauth_app2 = OauthApp.create!(user: @user_oauth,
                                            name: 'name1',
                                            redirect_uris: ['https://re.dir'],
-                                           icon_url: 'some.png')
+                                           website_url: 'http://localhost',
+                                           icon_url: 'http://localhost/some.png')
           }.to change { OauthApp.count }.by(1)
 
         end
@@ -175,7 +191,8 @@ module Carto
           expect {
             @oauth_app2 = OauthApp.create!(name: 'name1',
                                            redirect_uris: ['https://re.dir'],
-                                           icon_url: 'some.png')
+                                           website_url: 'http://localhost',
+                                           icon_url: 'http://localhost/some.png')
           }.to raise_error
         end
       end
@@ -193,6 +210,8 @@ module Carto
                                 client_secret: @oauth_app.client_secret,
                                 redirect_uris: @oauth_app.redirect_uris,
                                 icon_url: @oauth_app.icon_url,
+                                website_url: @oauth_app.website_url,
+                                description: @oauth_app.description,
                                 restricted: @oauth_app.restricted)
                           .returns({})
                           .once

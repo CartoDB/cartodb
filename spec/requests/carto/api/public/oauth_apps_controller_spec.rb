@@ -342,7 +342,7 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.body[:name]).to eq @app.name
         expect(response.body[:client_secret]).to eq @app.client_secret
         expect(response.body[:username]).to eq @user1.username
-        expect(response.body.size).to eq 11
+        expect(response.body.size).to eq 13
       end
     end
   end
@@ -350,7 +350,12 @@ describe Carto::Api::Public::OauthAppsController do
   describe 'create' do
     before(:all) do
       @params = { api_key: @user1.api_key }
-      @payload = { name: 'my app', redirect_uris: ['https://example.com'], icon_url: 'https://example.com/icon.png' }
+      @payload = {
+        name: 'my app',
+        redirect_uris: ['https://example.com'],
+        icon_url: 'https://example.com/icon.png',
+        website_url: 'https://example.com'
+      }
     end
 
     after(:each) do
@@ -358,6 +363,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -414,6 +420,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@user1.username}.localhost.lan"
       end
 
@@ -490,6 +497,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@organization.name}.localhost.lan"
       end
 
@@ -514,6 +522,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -588,6 +597,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -686,6 +696,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@carto_org_user_1.username}.localhost.lan"
     end
 

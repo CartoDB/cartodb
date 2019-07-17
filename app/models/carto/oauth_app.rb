@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require_dependency 'carto/helpers/url_validator'
+
 module Carto
   class OauthApp < ActiveRecord::Base
     # Multiple of 3 for pretty base64
@@ -12,10 +14,11 @@ module Carto
 
     validates :user, presence: true, if: -> { sync_with_central? || !central_enabled? }
     validates :name, presence: true
+    validates :website_url, presence: true, url: true
     validates :client_id, presence: true
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
-    validates :icon_url, presence: true
+    validates :icon_url, presence: true, url: true
     validates :oauth_app_organizations, absence: true, unless: :restricted?
     validate :validate_uris
 
@@ -28,7 +31,8 @@ module Carto
     before_destroy :collect_users, unless: :avoid_send_notification, prepend: true
     after_destroy :send_destroy_notification, unless: :avoid_send_notification
 
-    ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris icon_url restricted].freeze
+    ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris
+      icon_url restricted description website_url].freeze
 
     attr_accessor :avoid_sync_central, :avoid_send_notification
 

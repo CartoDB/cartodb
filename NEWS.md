@@ -8,7 +8,7 @@ Development
 - Send notification on oauth_app deletion (#15016)
 
 ### Bug fixes / enhancements
-- None yet
+- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
 
 4.29.0 (2019-07-15)
 -------------------

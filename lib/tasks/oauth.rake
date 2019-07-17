@@ -53,9 +53,6 @@ namespace :cartodb do
 
           oau.create_ownership_role
           oau.grant_ownership_role_privileges
-          oau.oauth_access_tokens.find_each do |token|
-            token.api_key.grant_ownership_role_privileges
-          end
         rescue StandardError => e
           CartoDB::Logger.error(message: 'Could not create ownership role', exception: e)
         end

@@ -31,11 +31,8 @@ module Carto
           },
           {
             type: 'database',
-            tables: table_permissions_for_api_key
-          },
-          {
-            type: 'schema',
-            tables: schema_permissions_for_api_key
+            tables: table_permissions_for_api_key,
+            schemas: schema_permissions_for_api_key
           }
         ]
 

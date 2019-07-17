@@ -1,11 +1,13 @@
 require 'spec_helper_min'
 require 'support/helpers'
 require 'factories/carto_visualizations'
+require 'helpers/database_connection_helper'
 require 'base64'
 
 describe Carto::Api::ApiKeysController do
   include CartoDB::Factories
   include HelperMethods
+  include DatabaseConnectionHelper
 
   def response_grants_should_include_request_permissions(reponse_grants, table_permissions)
     table_permissions.each do |stp|
@@ -457,11 +459,69 @@ describe Carto::Api::ApiKeysController do
 
     describe '#show' do
       it 'returns requested API key' do
-        api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+        grants = [
+          {
+            'type' => 'database',
+            'tables' => [
+              'schema' => @table1.database_schema,
+              :name => @table1.name,
+              'permissions' => ['select']
+            ]
+          },
+          {
+            'type' => 'apis',
+            'apis' => ['maps', 'sql']
+          }
+        ]
         auth_user(@carto_user)
+        api_key = nil
+        post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
+          response.status.should eq 201
+          api_key = Carto::ApiKey.where(user_id: @carto_user.id, name: response.body[:name]).user_visible.first
+        end
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 200
-          response.body[:name].should eq api_key.name
+          response.body[:grants][1][:tables][0][:owner] = false
+        end
+        api_key.destroy
+      end
+
+      it 'returns requested API key with owner true for the created table' do
+        grants = [
+          {
+            'type' => 'database',
+            'tables' => [
+              'schema' => @table1.database_schema,
+              :name => @table1.name,
+              'permissions' => ['select']
+            ],
+            'schemas' => [
+              'name': @carto_user.database_schema,
+              'permissions' => ['create']
+            ]
+          },
+          {
+            'type' => 'apis',
+            'apis' => ['maps', 'sql']
+          }
+        ]
+        auth_user(@carto_user)
+        api_key = nil
+        post_json api_keys_url, auth_params.merge(name: 'wadus', grants: grants), auth_headers do |response|
+          response.status.should eq 201
+          api_key = Carto::ApiKey.where(user_id: @carto_user.id, name: response.body[:name]).user_visible.first
+        end
+        with_connection_from_api_key(api_key) do |connection|
+          connection.execute("create table test_table(id INT)")
+          connection.execute("insert into test_table values (999)")
+          connection.execute("select id from test_table") do |result|
+            result[0]['id'].should eq '999'
+          end
+          get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
+            response.status.should eq 200
+            response.body[:grants][1][:tables][0][:owner] = true
+          end
+          connection.execute("drop table test_table")
         end
         api_key.destroy
       end

@@ -42,5 +42,23 @@ namespace :cartodb do
       :destroy_expired_refresh_tokens,
       :destroy_expired_authorization_codes
     ]
+
+    # Since ownership_role creation is already handled in oauth_app_user
+    # this task is meant to run just once for existing oauth_app_users in every cloud
+    desc 'Create ownership roles for oauth_app_users missing it.'
+    task create_ownership_role: :environment do
+      Carto::OauthAppUser.find_each do |oau|
+        begin
+          next if oau.exists_ownership_role?
+          oau.create_ownership_role
+          oau.grant_ownership_role_privileges
+          oau.oauth_access_tokens.find_each do |token|
+            token.api_key.grant_ownership_role_privileges
+          end
+        rescue StandardError => e
+          CartoDB::Logger.error(message: 'Could not create ownership role', exception: e)
+        end
+      end
+    end
   end
 end

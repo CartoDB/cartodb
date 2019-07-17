@@ -325,6 +325,10 @@ module Carto
       ownership_role_name || oauth_access_token.try(:ownership_role_name)
     end
 
+    def grant_ownership_role_privileges
+      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -461,10 +465,6 @@ module Carto
       setup_table_permissions
       setup_schema_permissions
       grant_ownership_role_privileges
-    end
-
-    def grant_ownership_role_privileges
-      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
     end
 
     def setup_table_permissions

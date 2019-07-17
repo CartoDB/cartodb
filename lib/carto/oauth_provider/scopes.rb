@@ -12,6 +12,11 @@ module Carto
 
         def add_to_api_key_grants(grants, user); end
 
+        def ensure_grant_section(grants, section)
+          grants.reject! { |i| i[:type] == section[:type] }
+          grants << section
+        end
+
         def ensure_includes_apis(grants, apis)
           return if apis.blank?
           apis_section = grants.find { |i| i[:type] == 'apis' }
@@ -35,6 +40,7 @@ module Carto
       CATEGORY_USER = Category.new('User and personal data').freeze
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
       CATEGORY_DATASETS = Category.new('Access to your datasets')
+      CATEGORY_SCHEMA = Category.new('Create tables')
 
       class DefaultScope < Scope
         def initialize(type, service, category, description)
@@ -47,13 +53,14 @@ module Carto
           section = grants.find { |i| i[:type] == @type }
           unless section
             section = { type: @type, @grant_key => [] }
-            grants << section
           end
           section
         end
 
         def add_to_api_key_grants(grants, _user = nil)
-          grant_section(grants)[@grant_key] << @service
+          section = grant_section(grants)
+          section[@grant_key] << @service
+          ensure_grant_section(grants, section)
         end
       end
 
@@ -76,8 +83,88 @@ module Carto
         end
       end
 
-      class DatasetsScope < DefaultScope
+      class SchemasScope < DefaultScope
+        CREATE_PERMISSIONS = ['create'].freeze
 
+        PERMISSIONS = {
+          c: CREATE_PERMISSIONS
+        }.freeze
+
+        DESCRIPTIONS = {
+          c: "%<schema_name>s schema (create tables)"
+        }.freeze
+
+        attr_reader :schema
+
+        def initialize(scope)
+          _, permission, @schema = self.class.schema_permission(scope)
+          super('database', permission, CATEGORY_SCHEMA, description(permission.to_sym))
+          @grant_key = :schemas
+          @permission = permission.to_sym
+        end
+
+        def name
+          return "schemas:#{@permission}:#{@schema}" if @schema
+          "schemas:#{@permission}"
+        end
+
+        def description(permission = @permission, schema = @schema)
+          DESCRIPTIONS[permission] % { schema_name: schema }
+        end
+
+        def permission
+          PERMISSIONS[@permission]
+        end
+
+        def add_to_api_key_grants(grants, user)
+          ensure_includes_apis(grants, ['sql'])
+          database_section = grant_section(grants)
+
+          schema_section = {
+            name: schema || user.database_schema,
+            permissions: permission
+          }
+
+          database_section[@grant_key] = [] unless database_section.key?(@grant_key)
+          database_section[@grant_key] << schema_section
+
+          ensure_grant_section(grants, database_section)
+        end
+
+        def self.schema_permission(scope)
+          scope.split(':')
+        end
+
+        def self.is_a?(scope)
+          scope =~ /^schemas:(?:c)(:(?:[a-z0-9_]+$|[a-z0-9-]+))?/
+        end
+
+        def self.valid_scopes(scopes)
+          scopes.select { |scope| SchemasScope.is_a?(scope) }
+        end
+
+        def self.valid_scopes_with_schema(scopes, user)
+          schema_scopes = valid_scopes(scopes)
+
+          return [] unless schema_scopes.any?
+
+          allowed = user.db_service.all_schemas_granted_hashed
+
+          valid_scopes = []
+          schema_scopes.each do |s|
+            scope = Scopes.build(s)
+            schema = scope.schema || user.database_schema
+
+            if !allowed[schema].nil? &&
+               (scope.permission - allowed[schema]).empty?
+              valid_scopes << s
+            end
+          end
+          valid_scopes
+        end
+      end
+
+      class DatasetsScope < DefaultScope
         READ_PERMISSIONS = ['select'].freeze
         WRITE_PERMISSIONS = ['insert', 'update', 'delete'].freeze
 
@@ -126,6 +213,8 @@ module Carto
           }
 
           database_section[@grant_key] << table_section
+
+          ensure_grant_section(grants, database_section)
         end
 
         def self.is_a?(scope)
@@ -148,13 +237,14 @@ module Carto
           allowed = user.db_service.all_tables_granted_hashed
 
           valid_scopes = []
-          dataset_scopes.each do |scope|
-            table, schema, permissions = table_schema_permission(scope)
-            schema = user.database_schema if schema.nil?
+          dataset_scopes.each do |s|
+            scope = Scopes.build(s)
+            table = scope.table
+            schema = scope.schema || user.database_schema
 
             if !allowed[schema].nil? && !allowed[schema][table].nil? &&
-               (PERMISSIONS[permissions.to_sym] - allowed[schema][table]).empty?
-              valid_scopes << scope
+               (scope.permission - allowed[schema][table]).empty?
+              valid_scopes << s
             end
           end
           valid_scopes
@@ -193,17 +283,21 @@ module Carto
       SUPPORTED_SCOPES = (SCOPES.map(&:name) - [SCOPE_DEFAULT]).freeze
 
       def self.invalid_scopes(scopes)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes(scopes) - SchemasScope.valid_scopes(scopes)
       end
 
       def self.invalid_scopes_and_tables(scopes, user)
-        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, user)
+        scopes - SUPPORTED_SCOPES - DatasetsScope.valid_scopes_with_table(scopes, user) - SchemasScope.valid_scopes_with_schema(scopes, user)
       end
 
       def self.build(scope)
         result = SCOPES_BY_NAME[scope]
-        if !result && DatasetsScope.is_a?(scope)
-          result = DatasetsScope.new(scope)
+        if !result
+          if DatasetsScope.is_a?(scope)
+            result = DatasetsScope.new(scope)
+          elsif SchemasScope.is_a?(scope)
+            result = SchemasScope.new(scope)
+          end
         end
         result
       end

@@ -50,6 +50,7 @@ namespace :cartodb do
       Carto::OauthAppUser.find_each do |oau|
         begin
           next if oau.exists_ownership_role?
+
           oau.create_ownership_role
           oau.grant_ownership_role_privileges
           oau.oauth_access_tokens.find_each do |token|

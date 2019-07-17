@@ -12,7 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fixes migrations for users with OAuth related data (#14600)
 
 4.29.0 (2019-07-15)
 -------------------

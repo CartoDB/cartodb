@@ -1113,7 +1113,8 @@ describe Carto::UserMetadataExportService do
               "dataservices:isolines",
               "dataservices:observatory",
               "dataservices:geocoding",
-              "datasets:r:test1"
+              "datasets:r:test1",
+              "schemas:c"
             ],
             created_at: "2018-11-16T14:31:46+00:00"
           }],

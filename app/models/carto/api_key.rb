@@ -348,6 +348,10 @@ module Carto
       ownership_role_name || oauth_access_token.try(:ownership_role_name)
     end
 
+    def grant_ownership_role_privileges
+      db_run("GRANT \"#{effective_ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
+    end
+
     private
 
     PASSWORD_LENGTH = 40
@@ -486,10 +490,6 @@ module Carto
       grant_ownership_role_privileges
     end
 
-    def grant_ownership_role_privileges
-      db_run("GRANT \"#{ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
-    end
-
     def setup_table_permissions
       setup_permissions(table_permissions) do |tp|
         Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
@@ -535,7 +535,7 @@ module Carto
 
     def drop_db_role
       db_run("DROP OWNED BY \"#{db_role}\"")
-      db_run("DROP ROLE \"#{db_role}\"")
+      db_run("DROP ROLE IF EXISTS \"#{db_role}\"")
     end
 
     def reassign_owner
@@ -580,6 +580,7 @@ module Carto
     def db_run(query, connection = db_connection)
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
+      return if e.message =~ /OWNED BY/
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
       raise_unprocessable_entity_error(e)
     end

@@ -510,8 +510,6 @@ module CartoDB
         Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
           k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
           k.grant_ownership_role_privileges
-          # we are saving cdb_conf_info here because we need to make sure the ownership role is saved
-          k.save_cdb_conf_info
         end
       end
 

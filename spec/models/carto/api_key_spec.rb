@@ -322,6 +322,9 @@ describe Carto::ApiKey do
           p.owner.should eq true
         end
       end
+
+      @user1.in_database.run("DROP TABLE test_table")
+      api_key.destroy
     end
 
     let (:grants) { [database_grant(@table1.database_schema, @table1.name), apis_grant] }

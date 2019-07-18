@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 
 4.29.0 (2019-07-15)
 -------------------

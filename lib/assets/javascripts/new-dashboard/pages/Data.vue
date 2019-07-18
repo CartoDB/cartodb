@@ -50,6 +50,12 @@ export default {
       selectedDatasets: []
     };
   },
+  beforeMount () {
+    if (this.$store.getters['user/isViewer']) {
+      // Redirect to shared datasets page if user is viewer
+      return this.$router.replace({ name: 'datasets', params: { filter: 'shared' } });
+    }
+  },
   mounted () {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);

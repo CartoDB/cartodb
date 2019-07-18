@@ -237,8 +237,8 @@ module Carto
     def db_run(query, connection = db_connection, error_title: 'Error running SQL command')
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
-      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped
       CartoDB::Logger.error(message: error_title, exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
       raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 

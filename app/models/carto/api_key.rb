@@ -580,8 +580,8 @@ module Carto
     def db_run(query, connection = db_connection)
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
-      return if e.message =~ /OWNED BY/
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
       raise_unprocessable_entity_error(e)
     end
 

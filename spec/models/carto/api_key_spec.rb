@@ -334,6 +334,10 @@ describe Carto::ApiKey do
           p.owner.should eq true
         end
       end
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("drop table \"#{@carto_user1.database_schema}\".test_table")
+      end
     end
 
     it 'regular key owner with creation permission can cartodbfy tables' do
@@ -341,13 +345,14 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'table_owner_test', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table(id int) ")
+        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table(id int)")
         connection.execute("select cdb_cartodbfytable('#{@carto_user1.database_schema}', 'test_table')")
         connection.execute("insert into \"#{@carto_user1.database_schema}\".test_table(the_geom, id) values ('0103000020E610000001000000040000009A99999999C9524048E17A14AE873D4000000000004053400000000000003D4066666666666653400000000000803D409A99999999C9524048E17A14AE873D40'::geometry, 1)")
         connection.execute("select * from \"#{@carto_user1.database_schema}\".test_table") do |result|
           result[0]['cartodb_id'].should eq '1'
           result[0]['id'].should eq '1'
         end
+        connection.execute("drop table \"#{@carto_user1.database_schema}\".test_table")
       end
     end
 

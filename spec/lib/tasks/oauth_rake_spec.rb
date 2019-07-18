@@ -98,7 +98,7 @@ describe 'oauth.rake' do
       Rake::Task['cartodb:oauth:create_ownership_role'].invoke
     end
 
-    it 'creates ownership roles + grants + cdb_conf_info for oauth app users missing it' do
+    it 'creates ownership roles + grants for oauth app users missing it' do
       drop_role_query = %{ DROP ROLE "#{@oauth_app_user.ownership_role_name}" }
       @developer.in_database(as: :superuser).execute(drop_role_query)
       expect(@oauth_app_user.exists_ownership_role?).to(be_false)

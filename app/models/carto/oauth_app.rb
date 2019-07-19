@@ -29,7 +29,7 @@ module Carto
     after_destroy :delete_central, if: :sync_with_central?
 
     before_destroy :collect_users, unless: :avoid_send_notification, prepend: true
-    after_destroy :send_destroy_notification, unless: :avoid_send_notification
+    after_destroy :send_app_removal_notification, unless: :avoid_send_notification
 
     ALLOWED_SYNC_ATTRIBUTES = %i[id name client_id client_secret redirect_uris
       icon_url restricted description website_url].freeze
@@ -53,7 +53,7 @@ module Carto
       @user_ids = oauth_app_users.collect { |u| u.user.id }
     end
 
-    def send_destroy_notification
+    def send_app_removal_notification
       return if @user_ids.empty?
       notification = Carto::Notification.create!(body: notification_body, icon: Notification::ICON_ALERT)
       ::Resque.enqueue(::Resque::UserJobs::Notifications::Send, @user_ids, notification.id)

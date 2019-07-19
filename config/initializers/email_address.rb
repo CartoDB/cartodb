@@ -1,0 +1,1 @@
+EmailAddress::Config.configure(local_format: :conventional)

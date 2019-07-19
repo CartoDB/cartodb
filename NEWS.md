@@ -13,6 +13,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
+- Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 
 4.29.0 (2019-07-15)
 -------------------

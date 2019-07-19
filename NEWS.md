@@ -12,7 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
 
 4.29.0 (2019-07-15)
 -------------------

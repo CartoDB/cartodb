@@ -158,7 +158,7 @@ module Carto
       }
 
       result = @user.in_database(as: :superuser).execute(query)
-      result&.count > 0
+      result.count > 0
     end
 
     def organization_member_group_role_member_name

@@ -460,7 +460,7 @@ module CartoDB
         }
 
         result = @user.in_database(as: :superuser).fetch(query)
-        result&.count > 0
+        result.count > 0
       end
 
       def drop_owned_by_user(conn, role)

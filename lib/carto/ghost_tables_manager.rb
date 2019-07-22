@@ -147,7 +147,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -172,7 +172,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN ('cartodb_id', 'the_raster_webmercator') AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'

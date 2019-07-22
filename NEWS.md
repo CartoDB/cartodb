@@ -9,7 +9,8 @@ sudo make install
 ```
 
 ### Features
-- None yet
+- OAuth:
+  - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
 
 ### Bug fixes / enhancements
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))

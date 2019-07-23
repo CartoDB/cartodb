@@ -2,13 +2,18 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.30.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
-- None yet
+- OAuth:
+  - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
 
 ### Bug fixes / enhancements
-- None yet
+- Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 
 4.29.0 (2019-07-15)
 -------------------

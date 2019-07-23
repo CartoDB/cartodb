@@ -38,7 +38,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     raise Carto::UnauthorizedError.new unless @viewed_api_key.can_be_deleted?
 
     @viewed_api_key.destroy
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
+    head :no_content
   end
 
   def regenerate_token

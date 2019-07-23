@@ -10,7 +10,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   before_filter :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
-  before_filter :check_engine_enabled
+  before_filter :engine_required
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
@@ -38,7 +38,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     raise Carto::UnauthorizedError.new unless @viewed_api_key.can_be_deleted?
 
     @viewed_api_key.destroy
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
+    head :no_content
   end
 
   def regenerate_token
@@ -72,10 +72,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   end
 
   private
-
-  def check_engine_enabled
-    render_404 unless current_viewer.try(:engine_enabled?)
-  end
 
   def load_api_key
     name = params[:id]

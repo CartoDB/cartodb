@@ -64,8 +64,6 @@ module Carto
     end
 
     def sync
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage start', user: user)
-
       cartodbfied_tables = fetch_cartodbfied_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
@@ -79,8 +77,6 @@ module Carto
 
       # Unlink tables that have been created through the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
-
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage end', user: user)
     end
 
     # Any UserTable that has been renamed or regenerated.
@@ -151,7 +147,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -176,7 +172,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN ('cartodb_id', 'the_raster_webmercator') AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'

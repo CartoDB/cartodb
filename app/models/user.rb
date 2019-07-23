@@ -52,18 +52,6 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
-  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
-                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
-                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
-                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
-                'Transportation and Logistics'].freeze
-
-  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
-               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
-
-  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
-                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
-
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
@@ -1859,6 +1847,10 @@ class User < Sequel::Model
     state == STATE_LOCKED
   end
 
+  def maintenance_mode?
+    maintenance_mode == true
+  end
+
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
   def destroy_account
@@ -1917,6 +1909,12 @@ class User < Sequel::Model
 
   def trial_user?
     TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private

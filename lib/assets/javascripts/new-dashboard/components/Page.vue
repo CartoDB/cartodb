@@ -10,7 +10,7 @@ export default {
   name: 'Page',
   computed: {
     isNotificationVisible () {
-      return this.$store.getters['user/isNotificationVisible'];
+      return this.$store && this.$store.getters['user/isNotificationVisible'];
     }
   }
 }

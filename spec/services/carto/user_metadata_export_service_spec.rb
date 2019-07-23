@@ -189,11 +189,17 @@ describe Carto::UserMetadataExportService do
       test_import_user_from_export(full_export)
     end
 
-    it 'imports 1.0.11 (without company_employees and use_case)' do
-      user = test_import_user_from_export(full_export_one_zero_eleven)
+    it 'imports 1.0.12 (without company_employees and use_case)' do
+      user = test_import_user_from_export(full_export_one_zero_twelve)
 
       expect(user.company_employees).to be_nil
       expect(user.use_case).to be_nil
+    end
+
+    it 'imports 1.0.11 (without maintenance_mode)' do
+      user = test_import_user_from_export(full_export_one_zero_eleven)
+
+      expect(user.maintenance_mode).to eq false
     end
 
     it 'imports 1.0.10 (without regular_api_key_quota)' do
@@ -756,7 +762,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.10",
+      version: "1.0.12",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -764,6 +770,7 @@ describe Carto::UserMetadataExportService do
         username: "user00000001",
         state: 'active',
         admin: nil,
+        maintenance_mode: true,
         enabled: true,
         invite_token: nil,
         invite_token_date: nil,
@@ -1130,10 +1137,15 @@ describe Carto::UserMetadataExportService do
     }
   end
 
-  let(:full_export_one_zero_eleven) do
+  let(:full_export_one_zero_twelve) do
     user_hash = full_export[:user].except!(:use_case, :company_employees)
-
+    
     full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_eleven) do
+    full_export[:user][:maintenance_mode] = false
     full_export
   end
 

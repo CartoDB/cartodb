@@ -31,6 +31,7 @@ export default {
       });
 
       visModel.on('change', model => {
+        this.$store.dispatch('user/updateData');
         this.$emit('updateVisualization', model);
         this.$emit('deselectAll');
       });

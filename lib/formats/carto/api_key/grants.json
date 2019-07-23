@@ -26,6 +26,35 @@
           ]
         }
       },
+      "schemas": {
+        "type": "array",
+        "additionalProperties": false,
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "permissions"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "create"
+                ]
+              }
+            }
+          }
+        }
+      },
       "tables": {
         "type": "array",
         "additionalProperties": false,
@@ -43,6 +72,9 @@
             },
             "name": {
               "type": "string"
+            },
+            "owner": {
+              "type": "boolean"
             },
             "permissions": {
               "type": "array",

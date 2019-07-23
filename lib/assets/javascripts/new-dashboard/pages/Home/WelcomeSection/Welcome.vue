@@ -4,7 +4,7 @@
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
         <span v-html="trialTimeLeft" class="title is-small"></span>
-        <a class="title is-small" :href="`//${ accountUpdateURL }`" v-if="accountUpdateURL">
+        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
           {{ $t('HomePage.WelcomeSection.subscribeNow') }}
         </a>
       </template>
@@ -30,7 +30,7 @@ export default {
   computed: {
     ...mapState({
       isFirst: state => state.config.isFirstTimeViewingDashboard,
-      accountUpdateURL: state => state.config.account_update_url,
+      accountUpgradeURL: state => state.config.upgrade_url,
       trialEndDate: state => state.user.trial_ends_at,
       user: state => state.user,
       name: state => state.user.name || state.user.username,

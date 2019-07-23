@@ -1,0 +1,8 @@
+<%= content_for(:css) do %>
+  <%= stylesheet_link_tag 'new_dashboard', 'maintenance' %>
+<% end %>
+<%= content_for(:js) do %>
+  <%= javascript_include_tag 'common', 'common_vendor', 'maintenance' -%>
+<% end %>
+
+<div id="root"></div>

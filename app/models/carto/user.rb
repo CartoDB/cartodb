@@ -50,7 +50,7 @@ class Carto::User < ActiveRecord::Base
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
-                   "users.public_map_quota".freeze
+                   "users.public_map_quota, users.maintenance_mode".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -88,6 +88,7 @@ class Carto::User < ActiveRecord::Base
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
+  has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
   delegate [
     :database_username, :database_password, :in_database,
@@ -774,6 +775,12 @@ class Carto::User < ActiveRecord::Base
 
   def trial_user?
     TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private

@@ -9,7 +9,8 @@ sudo make install
 ```
 
 ### Features
-- None yet
+- OAuth:
+  - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
 
 ### Bug fixes / enhancements
 - Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))

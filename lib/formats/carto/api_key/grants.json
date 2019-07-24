@@ -73,6 +73,9 @@
             "name": {
               "type": "string"
             },
+            "owner": {
+              "type": "boolean"
+            },
             "permissions": {
               "type": "array",
               "items": {

@@ -12,7 +12,7 @@
           <ul>
             <li v-for="app in apps" :key="app.id" class="oauthapps__item">
               <div class="oauthapps__icon u-mr--20">
-                <img svg-inline src="../assets/icons/apps/default.svg">
+                <img svg-inline src="../../assets/icons/apps/default.svg">
               </div>
               <div class="oauthapps__item-info">
                 <span class="text is-small is-semibold oauthapps__item-title">{{ app.name }}</span>
@@ -31,7 +31,7 @@
       <!-- Form -->
       <div class="oauthapps__container grid-cell--col8" :class="{'is-active': isFormActive}">
         <div class="oauthapps__title u-flex__justify--start">
-          <img class="oauthapps__back" @click="toggleActiveForm" svg-inline src="../assets/icons/apps/back-arrow.svg" />
+          <img class="oauthapps__back" @click="toggleActiveForm" svg-inline src="../../assets/icons/apps/back-arrow.svg" />
           <h2 class="text is-small is-semibold u-ml--12">{{ $t(`OauthAppsPage.form.newTitle`) }}</h2>
         </div>
 
@@ -55,7 +55,7 @@
                 <input class="form__input" type="text" name="appWebsite" id="appWebsite" v-model="appWebsite">
                 <span class="form__input-desc">{{ $t(`OauthAppsPage.form.webUrlDesc`) }}</span>
               </div>
-              
+
               <div class="form__block">
                 <label class="form__label" for="appDescription">{{ $t(`OauthAppsPage.form.description`) }}<span class="form__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
                 <textarea class="form__input form__input--textarea" type="text" name="appDescription" id="appDescription" v-model="appDescription"></textarea>
@@ -80,7 +80,7 @@
                 <label class="form__label" for="appDescription">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="form__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
                 <div class="form__block form__block--logo">
                   <div class="form__logo">
-                    <img svg-inline src="../assets/icons/apps/logo-default.svg">
+                    <img svg-inline src="../../assets/icons/apps/logo-default.svg">
                   </div>
                   <div class="u-flex u-flex__direction--column">
                     <span class="form__link">{{ $t(`OauthAppsPage.form.logoUploadLink`) }}</span>
@@ -98,21 +98,13 @@
       </div>
     </div>
 
-
-
-
-
-
-
-
-
     <!-- Delete Modal -->
     <Modal :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="oauthapps__modal">
         <div class="oauthapps__modal-inner">
           <div class="oauthapps__icon u-mb--24">
-            <img svg-inline src="../assets/icons/apps/default.svg">
-            <img class="oauthapps__badge" svg-inline src="../assets/icons/apps/trash.svg">
+            <img svg-inline src="../../assets/icons/apps/default.svg">
+            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
           </div>
           <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: selectedApp.name })"></span>
           <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
@@ -129,8 +121,8 @@
       <div class="oauthapps__modal">
         <div class="oauthapps__modal-inner">
           <div class="oauthapps__icon u-mb--24">
-            <img svg-inline src="../assets/icons/apps/default.svg">
-            <img class="oauthapps__badge" svg-inline src="../assets/icons/apps/key.svg">
+            <img svg-inline src="../../assets/icons/apps/default.svg">
+            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
           </div>
           <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: selectedApp.name })"></span>
           <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
@@ -141,14 +133,12 @@
         </div>
       </div>
     </Modal>
-
-    
   </Page>
 </template>
 
 <script>
 import Page from 'new-dashboard/components/Page';
-import SettingsSidebar from 'new-dashboard/components/App/SettingsSidebar';
+import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
 import Modal from 'new-dashboard/components/Modal';
 import { mapState } from 'vuex';
 
@@ -165,7 +155,7 @@ export default {
       selectedApp: {},
       isFormActive: true,
       appName: '',
-      appWebsite : '',
+      appWebsite: '',
       appDescription: '',
       callbackUrls: [
         { name: '' }
@@ -185,10 +175,10 @@ export default {
       user: state => state.user,
       baseUrl: state => state.user.base_url,
       apps: state => state.apps.apps,
+      error: state => state.apps.error,
       hasOauthApps () {
         return !this.isFetchingApps && (this.apps.length > 0);
-      },
-      error: state => state.apps.error,
+      }
     })
    },
   methods: {
@@ -198,7 +188,7 @@ export default {
     },
     closeModal () {
       this.isModalOpen = false;
-      this.selectedApp = {}
+      this.selectedApp = {};
     },
     toggleActiveForm () {
       this.isFormActive = !this.isFormActive;
@@ -210,27 +200,24 @@ export default {
       });
     },
     checkForm (e) {
-
       const app = {
-       name: this.appName,
+        name: this.appName,
         redirect_uris: this.callbackUrls.map(callbackUrl => callbackUrl.name),
         icon_url: 'https://www.google.com/'
-      }
+      };
       this.$store.dispatch('apps/create', {
         apiKey: this.$store.state.user.api_key,
         app
       });
       e.preventDefault();
-      debugger;
     },
-    addCallbackUrl(index) {
+    addCallbackUrl (index) {
       this.callbackUrls.push({ name: '' });
     },
-    removeCallbackUrl(index) {
+    removeCallbackUrl (index) {
       this.callbackUrls.splice(index, 1);
     }
-   }
-
+  }
 };
 </script>
 

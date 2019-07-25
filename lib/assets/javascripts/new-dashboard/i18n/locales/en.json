@@ -649,5 +649,52 @@
   "MaintenancePage": {
     "title": "We’ll be up and running soon",
     "text": "Your account is under maintenance. Sorry for the inconvenience!"
+  },
+  "OauthAppsPage": {
+    "title": "Apps",
+    "description": "Build your app allowing users to authenticate through CARTO to share specific data with your app. You can read more in our <a href=''>developer documentation</a>",
+    "emptyDescription": "Want to build something that integrates with and extends CARTO?",
+    "newAppButton": "New OAuth App",
+    "editButton": "Edit",
+    "deleteModal": {
+      "title": "You are about to delete <span class='is-bold'>{name}</span> app.",
+      "subtitle": "The datasets created by the app won't be deleted.</br>The deleted app cannot be recovered, be sure before proceeding.",
+      "cancelButton": "Cancel",
+      "deleteButton": "OK, delete"
+    },
+    "regenerateModal": {
+      "title": "You are about to reset the client secret of your <span class='is-bold'>{name}</span> app.",
+      "subtitle": "The existing secret will be revoked immediately, and the new secret immediately available. This cannot be undone.",
+      "cancelButton": "Cancel",
+      "regenerateButton": "Regenerate client secret"
+    },
+    "form": {
+      "newTitle": "New OAuth App",
+      "optional": "(optional)",
+      "appName": "App name",
+      "appNameDesc": "The name of your OAuth app",
+      "webUrl": "Website URL",
+      "webUrlDesc": "The homepage URL of your website",
+      "description": "Description",
+      "descriptionDesc": "This is displayed to users of your OAuth app.</br>e.g: Find the neighborhood of your dreams",
+      "callbackUrls": "Callback URLs",
+      "callbackUrlsDesc": "The full URL to redirect to after a user authorizes an installation.</br>More than one can be setup for development purposes.",
+      "callbackUrlDelete": "Delete",
+      "callbackUrlAddMore": "Add More",
+      "logoUpload": "Upload a logo",
+      "logoUploadLink": "Upload a picture from your computer",
+      "logoUploadDesc": "Maximum size is 1MB",
+      "cancelButton": "Cancel",
+      "saveButton": "Save Changes",
+      "editTitle": "About your app",
+      "ownedby": "Owned by:",
+      "clientId": "Client ID:",
+      "clientSecret": "Client Secret:",
+      "clientSecretWarning": "Client secret must be kept secret",
+      "clientSecretButton": "Reset client secret",
+      "clientSecretDesc": "OAuth apps can use OAuth credentials to identify users. Learn more about identifying users by reading our <a href''>integration developer documentation.</a>",
+      "appInformationTitle": "App Information",
+      "deleteAppButton": "Delete my app"
+    }
   }
 }

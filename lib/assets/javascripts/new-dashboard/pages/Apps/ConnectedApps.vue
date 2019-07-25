@@ -1,0 +1,224 @@
+<template>
+  <Page>
+    <div class="connectedapps grid">
+      <SettingsSidebar class="grid-cell--col4" :userModel="user" :baseUrl="baseUrl" />
+      <div class="conectedapps__container grid-cell--col8">
+        <div class="connectedapps__title">
+          <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.title`) }}</h2>
+        </div>
+        <p v-if="hasConnectedApps" class="text is-small">{{ $t(`ConnectedAppsPage.description`) }}</p>
+        <p v-else v-html="$t(`ConnectedAppsPage.emptyDescription`)" class="text is-small"></p>
+        <div v-if="hasConnectedApps" class="connectedapps__list">
+          <div class="connectedapps__list-title">
+            <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
+          </div>
+          <ul>
+            <li v-for="app in apps" :key="app.id" class="connectedapps__item">
+              <div class="connectedapps__icon u-mr--20">
+                <img svg-inline src="../assets/icons/apps/default.svg">
+              </div>
+              <div class="connectedapps__item-info">
+                <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ app.name }}</span>
+                <span class="text is-small connectedapps__item-description">{{ app.description }}</span>
+              </div>
+              <button class="connectedapps__button button button--ghost" @click="openModal(app)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
+
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+    
+    <Modal :isOpen="isModalOpen" @closeModal="closeModal">
+      <div class="connectedapps__modal">
+        <div class="connectedapps__modal-inner">
+          <div class="connectedapps__icon u-mb--24">
+            <img svg-inline src="../assets/icons/apps/default.svg">
+            <img class="connectedapps__badge" svg-inline src="../assets/icons/apps/trash.svg">
+          </div>
+          <span class="text is-caption u-mb--8" v-html="$t(`ConnectedAppsPage.removeModal.title`, { name: selectedApp.name })"></span>
+          <span class="text is-small is-txtSoftGrey">{{ $t(`ConnectedAppsPage.removeModal.subtitle`) }}</span>
+          <div class="connectedapps__modal-actions">
+            <button class="connectedapps__button button button--ghost is-primary u-mr--12" @click="closeModal">{{ $t(`ConnectedAppsPage.removeModal.cancelButton`) }}</button>
+            <button class="connectedapps__button button button--alert text is-small" @click="revokeAccess(selectedApp)">{{ $t(`ConnectedAppsPage.removeModal.removeButton`) }}</button>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  </Page>
+</template>
+
+<script>
+import Page from 'new-dashboard/components/Page';
+import SettingsSidebar from 'new-dashboard/components/App/SettingsSidebar';
+import Modal from 'new-dashboard/components/Modal';
+import { mapState } from 'vuex';
+
+export default {
+  name: 'ConnectedApps',
+  components: {
+    Page,
+    SettingsSidebar,
+    Modal
+  },
+  data () {
+    return {
+      isModalOpen: false,
+      selectedApp: {}
+    };
+  },
+  beforeMount: function () {
+    this.$store.dispatch('apps/fetch', {
+      apiKey: this.$store.state.user.api_key
+    });
+  },
+  computed: {
+    ...mapState({
+      isFetchingApps: state => state.apps.isFetching,
+      user: state => state.user,
+      baseUrl: state => state.user.base_url,
+      apps: state => state.apps.apps,
+      hasConnectedApps () {
+        return !this.isFetchingApps && (this.apps.length > 0);
+      }
+    })
+   },
+  methods: {
+    openModal (selectedApp) {
+      this.isModalOpen = true;
+      this.selectedApp = selectedApp;
+    },
+    closeModal () {
+      this.isModalOpen = false;
+      this.selectedApp = {}
+    },
+    revokeAccess (selectedApp) {
+      this.$store.dispatch('apps/revokeAccess', {
+        apiKey: this.$store.state.user.api_key,
+        id: selectedApp.id
+      });
+    }
+   }
+
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.connectedapps {
+  display: flex;
+  width: 940px;
+  margin: 0 auto;
+  padding: 0;
+
+  &__container {
+    display: flex;
+    width: 100;
+    padding-left: 82px;
+  }
+
+  &__title {
+    margin-bottom: 16px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid $neutral--300;
+  }
+
+  &__list {
+    margin-top: 36px;
+  }
+
+  &__list-title {
+    padding-bottom: 24px;
+    border-bottom: 1px solid $neutral--300;
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid $neutral--300;
+  }
+
+  &__item-info {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  &__item-title {
+    max-width: 356px;
+    line-height: 22px;
+  }
+
+  &__item-description {
+    max-width: 356px;
+  }
+
+  &__icon {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid $neutral--300;
+    border-radius: 2px;
+  }
+
+  &__badge {
+    display: block;
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    animation: fade-and-bounce-up 0.6s 0.35s ease-in-out backwards;
+  }
+}
+
+.connectedapps__button {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.button--ghost {
+  padding: 8px 12px;
+  border: 1px solid $blue--500;
+  background: none;
+  color: $blue--500;
+}
+
+.button--uppercase {
+  text-transform: uppercase;
+}
+
+.connectedapps__modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+}
+
+.connectedapps__modal-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 960px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.connectedapps__modal-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 54px;
+  padding-top: 38px;
+  border-top: 1px solid $neutral--300;
+}
+
+</style>

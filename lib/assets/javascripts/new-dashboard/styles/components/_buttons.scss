@@ -61,6 +61,15 @@ a {
   }
 }
 
+.button--alert {
+  background: $button-alert__bg-color;
+
+  &:hover,
+  &:focus {
+    background: $button-alert__bg-color--hover;
+  }
+}
+
 .button-icon {
   width: 14px;
   height: 14px;

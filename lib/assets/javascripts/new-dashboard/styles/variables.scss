@@ -25,6 +25,7 @@ $yellow--300: #FEE600;
 $yellow--500: #FFC300;
 $yellow--700: #F90;
 
+$red--400: #F15743;
 $red--500: #FA1414;
 $red--600: #E20703;
 
@@ -76,6 +77,9 @@ $button-ghost__color: $color-primary;
 $button-cta__color: $neutral--800;
 $button-cta__bg-color: $yellow--300;
 $button-cta__bg-color--hover: $yellow--100;
+
+$button-alert__bg-color: $red--400;
+$button-alert__bg-color--hover: $red--600;
 
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;

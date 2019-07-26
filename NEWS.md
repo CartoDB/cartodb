@@ -15,6 +15,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
+- Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
 
 4.29.0 (2019-07-15)
 -------------------

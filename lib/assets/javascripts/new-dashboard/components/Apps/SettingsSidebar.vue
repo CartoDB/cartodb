@@ -1,33 +1,65 @@
 <template>
     <ul class="settingssidebar">
       <li class="settingssidebar-item">
-        <a :href="`${ baseUrl }/profile`" class="text is-txtPrimary settingssidebar-link">Profile</a>
+        <a :href="`${ baseUrl }/profile`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.profile`) }}</a>
       </li>
       <li class="settingssidebar-item">
-        <a :href="`${ baseUrl }/account`" class="text is-txtPrimary settingssidebar-link">Account</a>
+        <a :href="`${ baseUrl }/account`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.account`) }}</a>
       </li>
       <li class="settingssidebar-item">
-        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :staticRoute="'/dashboard/connected_apps'">
-          Connected Apps
+        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">
+          {{ $t(`SettingsPages.sidebar.connectedApps`) }} 
         </router-link>
       </li>
-      <li class="settingssidebar-item">
-        <a :href="`https://carto-staging.com/account/${ userModel.name }/plan`" class="text is-txtPrimary settingssidebar-link">Billing</a>
+      <li v-if="isOrgAdmin || !isInsideOrg" class="settingssidebar-item">
+        <a :href="planUrl" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.billing`) }}</a>
+      </li>
+      <li v-if="isOrgAdmin" class="settingssidebar-item">
+        <a :href="`${ baseUrl }/organization`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.organizationSettings`) }}</a>
       </li>
       <span class="settingssidebar-separator"></span>
       <li class="settingssidebar-item">
-        <a :href="`${ baseUrl }/billing`" class="text is-txtPrimary settingssidebar-link">Developer Settings</a>
+        <a :href="`${ baseUrl }/your_apps`" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isDevelopersSettingsPage()}">{{ $t(`SettingsPages.sidebar.developerSettings`) }}</a>
       </li>
    </ul>
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'SettingsSidebar',
-  props: {
-    baseUrl: { type: String, default: '' },
-    userModel: Object
+  data () {
+    return {
+      developerSettingsPages: [
+        'oauth_apps',
+        'oauth_app_new',
+        'oauth_app_edit',
+        'oauth_apps_list'
+      ]
+    };
   },
+  computed: {
+    ...mapState({
+      baseUrl: state => state.user.base_url,
+      user: state => state.user,
+      planUrl: state => state.config.plan_url,
+      isOrgAdmin () {
+        return this.user.org_admin
+      },
+      isInsideOrg () {
+        return Boolean(this.user.organization);
+      }
+    })
+  },
+  methods: {
+    isConnectedAppsPage () {
+      return (this.$route || {}).name === 'connected_apps';
+    },
+    isDevelopersSettingsPage () {
+      return this.developerSettingsPages.includes((this.$route || {}).name);
+    }
+  }
 };
 </script>
 
@@ -43,6 +75,11 @@ export default {
 
   &:hover {
     text-decoration: underline;
+  }
+
+  &.is-active {
+    color: #333;
+    font-weight: 700;
   }
 }
 

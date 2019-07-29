@@ -127,7 +127,11 @@ CartoDB::Application.routes.draw do
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
-    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth:apps' => 'visualizations#index', as: :oauth_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
+
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 

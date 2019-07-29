@@ -25,7 +25,8 @@ export default {
   padding: 128px 0 120px;
   border-bottom: 1px solid $border-color;
 
-  &--welcome {
+  &--welcome,
+  &--settings {
     padding-top: 64px;
   }
 

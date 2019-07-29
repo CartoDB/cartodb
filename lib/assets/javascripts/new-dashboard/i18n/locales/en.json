@@ -696,5 +696,33 @@
       "appInformationTitle": "App Information",
       "deleteAppButton": "Delete my app"
     }
+  },
+  "ConnectedAppsPage": {
+    "title": "Apps",
+    "description": "These are the apps you gave access to some of your CARTO information.",
+    "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data. <a href=''>Learn more about third party apps in our documentation.</a>",
+    "listTitle": "Connected Apps",
+    "removeAccessButton": "Remove Access",
+    "removeModal": {
+      "title": "You are about to remove access <span class='is-bold'>{name}</span> app to your account data.",
+      "subtitle": "The datasets of your account won’t be affected.",
+      "cancelButton": "Cancel",
+      "removeButton": "OK, remove"
+    }
+  },
+  "SettingsPages":{
+    "sidebar": {
+      "profile": "Profile",
+      "account": "Account",
+      "connectedApps": "Connected Apps",
+      "billing": "Billing",
+      "organizationSettings": "Organization Settings",
+      "developerSettings": "Developer Settings"
+    },
+    "tabs": {
+      "apiKeys": "API Keys",
+      "oAuthApps": "OAuth Apps",
+      "mobileApps": "Mobile Apps"
+    }
   }
 }

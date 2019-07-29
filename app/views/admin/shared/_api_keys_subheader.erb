@@ -11,6 +11,11 @@
             </a>
           </li>
           <li class="Filters-typeItem">
+            <a href="<%= CartoDB.base_url_from_user(current_user) %>/dashboard/oauth_apps" class="CDB-Text CDB-Size-medium Filters-typeLink">
+              Oauth apps
+            </a>
+          </li>
+          <li class="Filters-typeItem">
             <a href="<%= CartoDB.url(self, 'mobile_apps', user: current_user) %>" class="CDB-Text CDB-Size-medium Filters-typeLink <%= 'is-selected' if "#{params[:controller]}" == "carto/admin/mobile_apps" %>">
               Mobile apps
             </a>

@@ -103,7 +103,6 @@ class Carto::Visualization < ActiveRecord::Base
   before_create :set_random_id, :set_default_permission
 
   before_save :remove_password_if_unprotected
-  before_update :log_privacy_change
   after_save :propagate_attribution_change
   after_save :propagate_privacy_and_name_to, if: :table
 
@@ -786,15 +785,6 @@ class Carto::Visualization < ActiveRecord::Base
 
   def invalidation_service
     @invalidation_service ||= Carto::VisualizationInvalidationService.new(self)
-  end
-
-  # FIXME: temporary log to solve this issue: https://github.com/CartoDB/support/issues/2102
-  def log_privacy_change
-    return unless privacy_changed? && privacy == Carto::Visualization::PRIVACY_PRIVATE
-
-    CartoDB::Logger.debug(message: 'Visualization privacy changed to private',
-                          previous_value: privacy_was,
-                          attributes: attributes)
   end
 
   class Watcher

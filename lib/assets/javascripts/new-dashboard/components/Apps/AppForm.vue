@@ -146,7 +146,9 @@ export default {
       defaultLogoPath: require('../../assets/icons/apps/logo-default.svg'),
       isDeleteModalOpen: false,
       isRegenerateModalOpen: false,
-      editedCallbacks: [{ name: '' }]
+      editedCallbacks: [{ name: '' }],
+      isLogoFetching: false,
+      logoError: ''
     };
   },
   computed: {
@@ -154,7 +156,6 @@ export default {
       isFetchingApps: state => state.apps.isFetching,
       connectedApps: state => state.apps.connectedApps,
       error: state => state.apps.error,
-      isLogoFetching: state => state.apps.isLogoFetching,
       isEditMode () {
         return this.$route.name === 'oauth_app_edit';
       },
@@ -163,7 +164,7 @@ export default {
       },
       tempLogoUrl: state => state.apps.tempLogoUrl,
       displayLogo () {
-        return this.tempLogoUrl || this.defaultLogoPath;
+        return this.app.icon_url || this.defaultLogoPath;
       },
       app () {
         if (!this.isEditMode || this.isFetchingApps) {
@@ -177,13 +178,22 @@ export default {
   },
   methods: {
     changeLogo (event, app) {
-      this.logoUrl = event.target.files[0];
-      if (this.logoUrl) {
+      const logo = event.target.files[0];
+      if (logo) {
+        this.isLogoFetching = true;
         this.$store.dispatch('apps/uploadLogo', {
           apiKey: this.$store.state.user.api_key,
           userId: this.$store.state.user.id,
-          filename: event.target.files[0]
-        });
+          filename: logo
+        }).then(logoUrl => {
+          this.app.icon_url = logoUrl;
+          this.isLogoFetching = false;
+        },
+        error => {
+          console.log(error);
+          this.logoError = error;
+          this.isLogoFetching = false;
+          });
       }
     },
     checkForm (event) {
@@ -191,8 +201,7 @@ export default {
 
       const app = {
         ...this.app,
-        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
-        icon_url: this.tempLogoUrl
+        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks)
       };
 
       if (this.isEditMode) {
@@ -205,8 +214,10 @@ export default {
       this.$store.dispatch('apps/create', {
         apiKey: this.$store.state.user.api_key,
         app
-      });
-      // this.$router.push({name: 'oauth_app_edit', params: { id: app.id }});
+      })
+      .then(createdApp =>
+        this.$router.push({name: 'oauth_app_edit', params: { id: createdApp.id }})
+      );
     },
     updateApp (app) {
       this.$store.dispatch('apps/update', {

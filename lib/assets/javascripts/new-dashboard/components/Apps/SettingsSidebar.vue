@@ -7,9 +7,7 @@
         <a :href="`${ baseUrl }/account`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.account`) }}</a>
       </li>
       <li class="settingssidebar-item">
-        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">
-          {{ $t(`SettingsPages.sidebar.connectedApps`) }} 
-        </router-link>
+        <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">{{ $t(`SettingsPages.sidebar.connectedApps`) }} </router-link>
       </li>
       <li v-if="isOrgAdmin || !isInsideOrg" class="settingssidebar-item">
         <a :href="planUrl" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.billing`) }}</a>

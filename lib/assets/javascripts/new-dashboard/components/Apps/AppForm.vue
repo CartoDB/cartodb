@@ -46,7 +46,7 @@
             <input class="appform__input" type="text" name="app.website" id="app.website" v-model="app.website">
             <span class="appform__input-desc">{{ $t(`OauthAppsPage.form.webUrlDesc`) }}</span>
           </div>
-          
+
           <div class="appform__block">
             <label class="appform__label" for="app.description">{{ $t(`OauthAppsPage.form.description`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
             <textarea class="appform__input appform__input--textarea" type="text" name="app.description" id="app.description" v-model="app.description"></textarea>

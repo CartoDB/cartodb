@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="form__title">
+    <div class="appform__title">
       <router-link :to="{ name: 'oauth_apps_list' }">
         <img class="oauthapps__back" svg-inline src="../../assets/icons/apps/back-arrow.svg" />
       </router-link>
@@ -9,15 +9,15 @@
 
     <div v-if="isEditMode" class="u-mb--64">
       <div class="u-mb--16">
-        <span class="form__label">{{ $t(`OauthAppsPage.form.ownedby`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OauthAppsPage.form.ownedby`) }}</span>&nbsp;
         <span class="text is-small">{{ app.username }}</span>
       </div>
       <div class="u-mb--16">
-        <span class="form__label">{{ $t(`OauthAppsPage.form.clientId`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OauthAppsPage.form.clientId`) }}</span>&nbsp;
         <span class="text is-small">{{ app.client_id }}</span>
       </div>
       <div class="u-mb--16">
-        <span class="form__label">{{ $t(`OauthAppsPage.form.clientSecret`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OauthAppsPage.form.clientSecret`) }}</span>&nbsp;
         <span class="text is-small">{{ app.client_secret }}</span>
       </div>
       <div class="u-flex u-mb--24">
@@ -28,61 +28,61 @@
       <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.form.clientSecretDesc`)"></span>
     </div>
 
-    <div v-if="isEditMode" class="form__title u-mb--24">
+    <div v-if="isEditMode" class="appform__title u-mb--24">
       <h2 class="text is-caption">{{ $t(`OauthAppsPage.form.appInformationTitle`) }}</h2>
     </div>
 
     <div>
       <form id="app" @submit="checkForm" v-if="(!isEditMode || !isFetchingApps)">
-          <div class="form__block">
-            <label class="form__label" for="app.name">{{ $t(`OauthAppsPage.form.appName`) }}</label>
-            <input class="form__input" :class="{'has-error': !!error.name}" type="text" name="app.name" id="app.name" v-model="app.name">
-            <span class="form__input-desc">{{ $t(`OauthAppsPage.form.appNameDesc`) }}</span>
-            <span v-if="error.name" class="form__error">{{ $t(`OauthAppsPage.form.appName`) }}&nbsp;{{error.name}}</span>
+          <div class="appform__block">
+            <label class="appform__label" for="app.name">{{ $t(`OauthAppsPage.form.appName`) }}</label>
+            <input class="appform__input" :class="{'has-error': !!error.name}" type="text" name="app.name" id="app.name" v-model="app.name">
+            <span class="appform__input-desc">{{ $t(`OauthAppsPage.form.appNameDesc`) }}</span>
+            <span v-if="error.name" class="appform__error">{{ $t(`OauthAppsPage.form.appName`) }}&nbsp;{{error.name}}</span>
           </div>
 
-          <div class="form__block">
-            <label class="form__label" for="app.website">{{ $t(`OauthAppsPage.form.webUrl`) }}</label>
-            <input class="form__input" type="text" name="app.website" id="app.website" v-model="app.website">
-            <span class="form__input-desc">{{ $t(`OauthAppsPage.form.webUrlDesc`) }}</span>
+          <div class="appform__block">
+            <label class="appform__label" for="app.website">{{ $t(`OauthAppsPage.form.webUrl`) }}</label>
+            <input class="appform__input" type="text" name="app.website" id="app.website" v-model="app.website">
+            <span class="appform__input-desc">{{ $t(`OauthAppsPage.form.webUrlDesc`) }}</span>
           </div>
           
-          <div class="form__block">
-            <label class="form__label" for="app.description">{{ $t(`OauthAppsPage.form.description`) }}<span class="form__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
-            <textarea class="form__input form__input--textarea" type="text" name="app.description" id="app.description" v-model="app.description"></textarea>
-            <span class="form__input-desc" v-html="$t(`OauthAppsPage.form.descriptionDesc`)"></span>
+          <div class="appform__block">
+            <label class="appform__label" for="app.description">{{ $t(`OauthAppsPage.form.description`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
+            <textarea class="appform__input appform__input--textarea" type="text" name="app.description" id="app.description" v-model="app.description"></textarea>
+            <span class="appform__input-desc" v-html="$t(`OauthAppsPage.form.descriptionDesc`)"></span>
           </div>
 
-          <div class="form__block">
-            <label class="form__label" for="appCallbacks">{{ $t(`OauthAppsPage.form.callbackUrls`) }}</label>
+          <div class="appform__block">
+            <label class="appform__label" for="appCallbacks">{{ $t(`OauthAppsPage.form.callbackUrls`) }}</label>
             <ul>
               <li v-for="(callbackUrl, k) in editedCallbacks" :key="k">
-                <input class="form__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name">
-                <span v-show="k || ( !k && editedCallbacks.length > 1)" class="form__link u-ml--16 form__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
-                <span v-show="k == editedCallbacks.length-1" class="form__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlAddMore`) }}</span>
+                <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name">
+                <span v-show="k || ( !k && editedCallbacks.length > 1)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
+                <span v-show="k == editedCallbacks.length-1" class="appform__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlAddMore`) }}</span>
               </li>
             </ul>
-            <span v-if="!!error.redirect_uris" class="form__error">{{ $t(`OauthAppsPage.form.callbackUrls`) }}&nbsp;{{error.redirect_uris}}</span>
+            <span v-if="!!error.redirect_uris" class="appform__error">{{ $t(`OauthAppsPage.form.callbackUrls`) }}&nbsp;{{error.redirect_uris}}</span>
 
-            <span class="form__input-desc" v-html="$t(`OauthAppsPage.form.callbackUrlsDesc`)"></span>
+            <span class="appform__input-desc" v-html="$t(`OauthAppsPage.form.callbackUrlsDesc`)"></span>
           </div>
 
-          <div class="form__block">
-            <label class="form__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="form__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
-            <div class="form__block u-flex__direction--row">
-              <div class="form__logo">
+          <div class="appform__block">
+            <label class="appform__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
+            <div class="appform__block u-flex__direction--row">
+              <div class="appform__logo">
                 <img ref="displayLogo" svg-inline v-bind:src="tempLogourl">
               </div>
-              <div class="form__block--file">
-                <input type="file" class="form__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
-                <span class="form__link">{{ $t(`OauthAppsPage.form.logoUploadLink`) }}</span>
-                <span class="form__input-desc form__input-desc--12" v-html="$t(`OauthAppsPage.form.logoUploadDesc`)"></span>
+              <div class="appform__block--file">
+                <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
+                <span class="appform__link">{{ $t(`OauthAppsPage.form.logoUploadLink`) }}</span>
+                <span class="appform__input-desc appform__input-desc--12" v-html="$t(`OauthAppsPage.form.logoUploadDesc`)"></span>
                 <input hidden type="text" name="logoUrl" id="logoUrl" v-model="app.logoUrl">
               </div>
             </div>
           </div>
 
-          <div class="form__toolbar"  :class="{'u-flex__justify--between': isEditMode}">
+          <div class="appform__toolbar"  :class="{'u-flex__justify--between': isEditMode}">
             <button v-if="isEditMode" class="form_button button button--ghost u-mr--48" @click="openDeleteAppModal">{{ $t(`OauthAppsPage.form.deleteAppButton`) }}</button>
             <div class="u-flex">
               <router-link :to="{ name: 'oauth_apps_list' }" class="form_button button button--ghost u-mr--48">
@@ -268,7 +268,7 @@ export default {
   color: $blue--500;
 }
 
-.form__title {
+.appform__title {
   display: flex;
   align-items: center;
   justify-content: start;
@@ -277,13 +277,13 @@ export default {
   border-bottom: 1px solid $neutral--300;
 }
 
-.form__block {
+.appform__block {
   display: flex;
   flex-direction: column;
   margin-bottom: 24px;
 }
 
-.form__label {
+.appform__label {
   margin-bottom: 8px;
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -295,7 +295,7 @@ export default {
   }
 }
 
-.form__input {
+.appform__input {
   box-sizing: border-box;
   width: 300px;
   min-height: 32px;
@@ -337,7 +337,7 @@ export default {
   }
 }
 
-.form__link {
+.appform__link {
   color: $color-primary;
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -353,7 +353,7 @@ export default {
   }
 }
 
-.form__button {
+.appform__button {
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -364,7 +364,7 @@ export default {
   }
 }
 
-.form__logo {
+.appform__logo {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,7 +375,7 @@ export default {
   border-radius: 4px;
 }
 
-.form__toolbar {
+.appform__toolbar {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -384,16 +384,16 @@ export default {
   border-top: 1px solid $neutral--400;
 }
 
-.form__error {
+.appform__error {
   color: $danger__color;
 }
 
-.form__block--file {
+.appform__block--file {
   display: flex;
   position: relative;
   flex-direction: column;
 
-  .form__input--file {
+  .appform__input--file {
     position: relative;
     z-index: 2;
     -moz-opacity: 0;
@@ -402,7 +402,7 @@ export default {
     cursor: pointer;
   }
 
-  .form__link {
+  .appform__link {
     position: absolute;
     z-index: 1;
     top: 0;
@@ -415,52 +415,6 @@ export default {
   width: 940px;
   margin: 20px auto 0;
   padding: 0;
-
-  &__container {
-    display: none;
-  }
-
-  &__container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding-left: 82px;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid $neutral--300;
-  }
-
-  &__list {
-    margin-top: 36px;
-  }
-
-  &__item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 20px 0;
-    border-bottom: 1px solid $neutral--300;
-  }
-
-  &__item-info {
-    display: flex;
-    flex-grow: 1;
-  }
-
-  &__item-title {
-    max-width: 356px;
-    line-height: 22px;
-  }
-
-  &__item-description {
-    max-width: 356px;
-  }
 
   &__icon {
     display: flex;
@@ -518,6 +472,5 @@ export default {
   padding-top: 38px;
   border-top: 1px solid $neutral--300;
 }
-
 
 </style>

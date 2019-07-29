@@ -82,7 +82,7 @@ module Carto
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
-    after_destroy :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_destroy :reassign_owner, :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
@@ -192,21 +192,41 @@ module Carto
 
     def table_permissions_from_db
       query = %{
-        SELECT
-          table_schema,
-          table_name,
-          string_agg(DISTINCT lower(privilege_type),',') privilege_types
-        FROM
-          information_schema.table_privileges tp
-        WHERE
-          tp.grantee = '#{db_role}'
-        GROUP BY
-          table_schema,
-          table_name;
+          WITH permissions AS (
+            SELECT
+                table_schema,
+                table_name,
+                string_agg(DISTINCT lower(privilege_type),',') privilege_types
+            FROM
+                information_schema.table_privileges tp
+            WHERE
+                tp.grantee = '#{db_role}'
+            GROUP BY
+                table_schema,
+                table_name
+          ),
+          ownership AS (
+            SELECT
+                n.nspname as table_schema,
+                relname as table_name
+            FROM pg_class
+            JOIN pg_catalog.pg_namespace n ON n.oid = pg_class.relnamespace
+            WHERE pg_catalog.pg_get_userbyid(relowner) = '#{db_role}'
+          )
+          SELECT
+              p.table_name,
+              p.table_schema,
+              p.privilege_types,
+              CASE WHEN o.table_name IS NULL THEN false
+                  ELSE true
+              END AS owner
+          FROM permissions p
+          LEFT JOIN ownership o ON (p.table_name = o.table_name AND p.table_schema = o.table_schema)
         }
       db_run(query).map do |line|
         TablePermissions.new(schema: line['table_schema'],
                              name: line['table_name'],
+                             owner: line['owner'] == 't' ? true : false,
                              permissions: line['privilege_types'].split(','))
       end
     end
@@ -277,7 +297,7 @@ module Carto
     def role_permission_queries
       queries = [
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
-        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}",
       ]
 
       # This is GRANTED to the organizational role for organization users, and the PUBLIC users for non-orgs
@@ -287,6 +307,9 @@ module Carto
       # This works for now, but if you are adding new permissions, please reconsider this decision.
       if user.organization_user?
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
+      end
+      if regular?
+        queries << "GRANT \"#{db_role}\" TO \"#{user.database_username}\""
       end
       queries
     end
@@ -513,6 +536,12 @@ module Carto
     def drop_db_role
       db_run("DROP OWNED BY \"#{db_role}\"")
       db_run("DROP ROLE \"#{db_role}\"")
+    end
+
+    def reassign_owner
+      # The other type of keys are reassigned in oauth_app_user for example
+      return unless regular?
+      db_run("REASSIGN OWNED BY \"#{db_role}\" TO \"#{user.database_username}\";")
     end
 
     def schemas_from_granted_tables

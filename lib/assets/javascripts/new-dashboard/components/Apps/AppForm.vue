@@ -71,7 +71,7 @@
             <label class="appform__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
             <div class="appform__block u-flex__direction--row">
               <div class="appform__logo">
-                <img ref="displayLogo" svg-inline v-bind:src="tempLogourl">
+                <img ref="displayLogo" svg-inline v-bind:src="displayLogo">
               </div>
               <div class="appform__block--file">
                 <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
@@ -165,8 +165,9 @@ export default {
       formTitle () {
         return this.isEditMode ? this.$t(`OauthAppsPage.form.editTitle`) : this.$t(`OauthAppsPage.form.newTitle`);
       },
-      tempLogourl (state) {
-        return state.apps.tempLogoUrl || this.defaultLogoPath;
+      tempLogoUrl: state => state.apps.tempLogoUrl,
+      displayLogo () {
+        return this.tempLogoUrl || this.defaultLogoPath;
       },
       app () {
         if (!this.isEditMode || this.isFetchingApps) {
@@ -195,8 +196,8 @@ export default {
       const app = {
         ...this.app,
         redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
-        icon_url: this.app.logoUrl,
-      }
+        icon_url: this.tempLogoUrl
+      };
 
       if (this.isEditMode) {
         this.updateApp(app);
@@ -231,14 +232,14 @@ export default {
       });
       this.isRegenerateModalOpen = false;
     },
-    addCallbackUrl(index) {
+    addCallbackUrl (index) {
       this.editedCallbacks.push({ name: '' });
     },
-    removeCallbackUrl(index) {
+    removeCallbackUrl (index) {
       this.editedCallbacks.splice(index, 1);
     },
     redirectUrisToArrayObjects (redirectUris) {
-      return redirectUris.map( r => ({ name: r }));
+      return redirectUris.map(r => ({ name: r }));
     },
     redirectUrisToArrayStrings (redirectUris) {
       return redirectUris.map(r => r.name);
@@ -253,8 +254,8 @@ export default {
       this.isDeleteModalOpen = false;
       this.isRegenerateModalOpen = false;
     }
-   }
-}
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -22,12 +22,10 @@
                 <span class="text is-small connectedapps__item-description">{{ app.description }}</span>
               </div>
               <button class="connectedapps__button button button--ghost" @click="openModal(app)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
-
             </li>
           </ul>
         </div>
       </div>
-
     </div>
     
     <Modal :isOpen="isModalOpen" @closeModal="closeModal">
@@ -83,7 +81,7 @@ export default {
         return !this.isFetchingApps && (this.apps.length > 0);
       }
     })
-   },
+  },
   methods: {
     openModal (selectedApp) {
       this.isModalOpen = true;
@@ -91,7 +89,7 @@ export default {
     },
     closeModal () {
       this.isModalOpen = false;
-      this.selectedApp = {}
+      this.selectedApp = {};
     },
     revokeAccess (selectedApp) {
       this.$store.dispatch('apps/revokeAccess', {
@@ -99,8 +97,7 @@ export default {
         id: selectedApp.id
       });
     }
-   }
-
+  }
 };
 </script>
 

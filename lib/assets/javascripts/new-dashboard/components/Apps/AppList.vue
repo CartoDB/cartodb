@@ -44,7 +44,7 @@ export default {
       error: state => state.apps.error,
       hasConnectedApps: state => !state.apps.isFetchingApps && state.apps.connectedApps
     })
-   }
+  }
 };
 </script>
 

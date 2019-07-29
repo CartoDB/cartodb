@@ -45,7 +45,7 @@ export default {
       user: state => state.user,
       planUrl: state => state.config.plan_url,
       isOrgAdmin () {
-        return this.user.org_admin
+        return this.user.org_admin;
       },
       isInsideOrg () {
         return Boolean(this.user.organization);

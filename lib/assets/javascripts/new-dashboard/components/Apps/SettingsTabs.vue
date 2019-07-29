@@ -61,7 +61,6 @@ export default {
 }
 
 .settingstabs-link {
-
   &.is-active {
     color: $text__color;
   }
@@ -70,13 +69,5 @@ export default {
     text-decoration: underline;
   }
 }
-
-// .settingstabs-separator {
-//   display: flex;
-//   width: 240px;
-//   height: 1px;
-//   margin: 14px 0;
-//   background-color: rgba(0, 0, 0, 0.1);
-// }
 
 </style>

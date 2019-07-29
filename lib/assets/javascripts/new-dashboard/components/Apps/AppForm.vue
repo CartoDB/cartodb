@@ -95,59 +95,55 @@
     </div>
 
     <!-- Delete Modal -->
-  <Modal :isOpen="isDeleteModalOpen" name="DeleteApp">
-    <div class="oauthapps__modal">
-      <div class="oauthapps__modal-inner">
-        <div class="oauthapps__icon u-mb--24">
-          <img svg-inline src="../../assets/icons/apps/default.svg">
-          <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
-        </div>
-        <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.deleteModal.title`, { name: app.name })"></span>
-        <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.deleteModal.subtitle`)"></span>
-        <div class="oauthapps__modal-actions">
-          <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.deleteModal.cancelButton`) }}</button>
-          <button class="oauthapps__button button button--alert" @click="deleteApp">{{ $t(`OauthAppsPage.deleteModal.deleteButton`) }}</button>
-        </div>
-      </div>
-    </div>
-  </Modal>
-
-  <!-- Regenerate Modal -->
-  <Modal :isOpen="isRegenerateModalOpen" name="RegenerateClientSecret">
-    <div class="oauthapps__modal">
-      <div class="oauthapps__modal-inner">
-        <div class="oauthapps__icon u-mb--24">
-          <img svg-inline src="../../assets/icons/apps/default.svg">
-          <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
-        </div>
-        <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: app.name })"></span>
-        <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
-        <div class="oauthapps__modal-actions">
-          <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.regenerateModal.cancelButton`) }}</button>
-          <button class="oauthapps__button button button--alert" @click="regenerateClientSecret">{{ $t(`OauthAppsPage.regenerateModal.regenerateButton`) }}</button>
+    <Modal :isOpen="isDeleteModalOpen" name="DeleteApp">
+      <div class="oauthapps__modal">
+        <div class="oauthapps__modal-inner">
+          <div class="oauthapps__icon u-mb--24">
+            <img svg-inline src="../../assets/icons/apps/default.svg">
+            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
+          </div>
+          <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.deleteModal.title`, { name: app.name })"></span>
+          <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.deleteModal.subtitle`)"></span>
+          <div class="oauthapps__modal-actions">
+            <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.deleteModal.cancelButton`) }}</button>
+            <button class="oauthapps__button button button--alert" @click="deleteApp">{{ $t(`OauthAppsPage.deleteModal.deleteButton`) }}</button>
+          </div>
         </div>
       </div>
-    </div>
-  </Modal>
-    
+    </Modal>
 
+    <!-- Regenerate Modal -->
+    <Modal :isOpen="isRegenerateModalOpen" name="RegenerateClientSecret">
+      <div class="oauthapps__modal">
+        <div class="oauthapps__modal-inner">
+          <div class="oauthapps__icon u-mb--24">
+            <img svg-inline src="../../assets/icons/apps/default.svg">
+            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
+          </div>
+          <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: app.name })"></span>
+          <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
+          <div class="oauthapps__modal-actions">
+            <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.regenerateModal.cancelButton`) }}</button>
+            <button class="oauthapps__button button button--alert" @click="regenerateClientSecret">{{ $t(`OauthAppsPage.regenerateModal.regenerateButton`) }}</button>
+          </div>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import DeleteAppModal from 'new-dashboard/components/Apps/DeleteAppModal';
 import Modal from 'new-dashboard/components/Modal';
 
 export default {
   name: 'AppForm',
   components: {
-    DeleteAppModal,
     Modal
   },
   data () {
     return {
-      defaultLogoPath: require("../../assets/icons/apps/logo-default.svg"),
+      defaultLogoPath: require('../../assets/icons/apps/logo-default.svg'),
       isDeleteModalOpen: false,
       isRegenerateModalOpen: false,
       editedCallbacks: [{ name: '' }]
@@ -171,14 +167,14 @@ export default {
       },
       app () {
         if (!this.isEditMode || this.isFetchingApps) {
-          return {}
+          return {};
         }
         const selectedApp = this.connectedApps[this.$route.params.id];
-        this.editedCallbacks = this.redirectUrisToArrayObjects(selectedApp.redirect_uris)
+        this.editedCallbacks = this.redirectUrisToArrayObjects(selectedApp.redirect_uris);
         return selectedApp;
       }
     })
-   },
+  },
   methods: {
     changeLogo (event, app) {
       this.logoUrl = event.target.files[0];

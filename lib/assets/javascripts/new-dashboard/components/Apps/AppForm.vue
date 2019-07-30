@@ -71,7 +71,7 @@
             <label class="appform__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
             <div class="appform__block u-flex__direction--row">
               <div class="appform__logo">
-                <img ref="displayLogo" svg-inline v-bind:src="displayLogo">
+                <img ref="displayLogo" :src="displayLogo">
               </div>
               <div class="appform__block--file">
                 <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
@@ -147,8 +147,10 @@ export default {
       isDeleteModalOpen: false,
       isRegenerateModalOpen: false,
       editedCallbacks: [{ name: '' }],
-      isLogoFetching: false,
-      logoError: ''
+      logo: {
+        error: '',
+        isFetching: false
+      }
     };
   },
   computed: {
@@ -189,12 +191,13 @@ export default {
           filename: logo
         }).then(logoUrl => {
           this.app.icon_url = logoUrl;
-          this.isLogoFetching = false;
+          this.$refs.displayLogo.src = logoUrl;
+          this.logo.isFetching = false;
         },
         error => {
           console.log(error);
-          this.logoError = error;
-          this.isLogoFetching = false;
+          this.logo.error = error;
+          this.logo.isFetching = false;
           });
       }
     },

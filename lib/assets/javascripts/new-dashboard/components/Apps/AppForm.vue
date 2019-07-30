@@ -24,7 +24,7 @@
         <img src="../../assets/icons/apps/warning.svg" />
         <span class="text is-small is-txtSoftGrey u-ml--8">{{ $t(`OauthAppsPage.form.clientSecretWarning`) }}</span>
       </div>
-      <button class="form_button button button--ghost u-mb--24" @click="openRegenerateAppModal">{{ $t(`OauthAppsPage.form.clientSecretButton`) }}</button>
+      <button class="appform__button appform__button--regenerate u-mb--24" @click="openRegenerateAppModal">{{ $t(`OauthAppsPage.form.clientSecretButton`) }}</button>
       <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.form.clientSecretDesc`)"></span>
     </div>
 
@@ -57,7 +57,7 @@
             <label class="appform__label" for="appCallbacks">{{ $t(`OauthAppsPage.form.callbackUrls`) }}</label>
             <ul>
               <li v-for="(callbackUrl, k) in editedCallbacks" :key="k">
-                <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name">
+                <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name" :placeholder="$t(`OauthAppsPage.form.callbackUrlPlaceholder`)">
                 <span v-show="k || ( !k && editedCallbacks.length > 1)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
                 <span v-show="k == editedCallbacks.length-1" class="appform__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlAddMore`) }}</span>
               </li>
@@ -83,12 +83,12 @@
           </div>
 
           <div class="appform__toolbar"  :class="{'u-flex__justify--between': isEditMode}">
-            <button v-if="isEditMode" class="form_button button button--ghost u-mr--48" @click="openDeleteAppModal">{{ $t(`OauthAppsPage.form.deleteAppButton`) }}</button>
+            <button v-if="isEditMode" class="appform__button appform__button--delete u-mr--48" @click="openDeleteAppModal">{{ $t(`OauthAppsPage.form.deleteAppButton`) }}</button>
             <div class="u-flex">
-              <router-link :to="{ name: 'oauth_apps_list' }" class="form_button button button--ghost u-mr--48">
+              <router-link :to="{ name: 'oauth_apps_list' }" class="appform__button appform__button--cancel u-mr--48">
                 {{ $t(`OauthAppsPage.form.cancelButton`) }}
               </router-link>
-              <button class="form_button button" type="submit" value="Submit">{{ $t(`OauthAppsPage.form.saveButton`) }}</button>
+              <button class="appform__button" type="submit" value="Submit">{{ $t(`OauthAppsPage.form.saveButton`) }}</button>
             </div>
           </div>
         </form>
@@ -105,8 +105,8 @@
           <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.deleteModal.title`, { name: app.name })"></span>
           <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.deleteModal.subtitle`)"></span>
           <div class="oauthapps__modal-actions">
-            <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.deleteModal.cancelButton`) }}</button>
-            <button class="oauthapps__button button button--alert" @click="deleteApp">{{ $t(`OauthAppsPage.deleteModal.deleteButton`) }}</button>
+            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.deleteModal.cancelButton`) }}</button>
+            <button class="oauthapps__modal-button oauthapps__modal-button--delete" @click="deleteApp">{{ $t(`OauthAppsPage.deleteModal.deleteButton`) }}</button>
           </div>
         </div>
       </div>
@@ -123,8 +123,8 @@
           <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: app.name })"></span>
           <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
           <div class="oauthapps__modal-actions">
-            <button class="oauthapps__button button button--ghost u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.regenerateModal.cancelButton`) }}</button>
-            <button class="oauthapps__button button button--alert" @click="regenerateClientSecret">{{ $t(`OauthAppsPage.regenerateModal.regenerateButton`) }}</button>
+            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.regenerateModal.cancelButton`) }}</button>
+            <button class="oauthapps__modal-button oauthapps__modal-button--regenerate" @click="regenerateClientSecret">{{ $t(`OauthAppsPage.regenerateModal.regenerateButton`) }}</button>
           </div>
         </div>
       </div>
@@ -269,12 +269,12 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.button--ghost {
-  padding: 8px 12px;
-  border: 1px solid $blue--500;
-  background: none;
-  color: $blue--500;
-}
+//  {
+//   padding: 8px 12px;
+//   border: 1px solid $blue--500;
+//   background: none;
+//   color: $blue--500;
+// }
 
 .appform__title {
   display: flex;
@@ -361,16 +361,6 @@ export default {
   }
 }
 
-.appform__button {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-
-  &__small {
-    font-size: 10px;
-  }
-}
 
 .appform__logo {
   display: flex;
@@ -448,13 +438,6 @@ export default {
   }
 }
 
-.button--ghost {
-  padding: 8px 12px;
-  border: 1px solid $blue--500;
-  background: none;
-  color: $blue--500;
-}
-
 .oauthapps__modal {
   display: flex;
   flex-direction: column;
@@ -479,6 +462,75 @@ export default {
   margin-top: 54px;
   padding-top: 38px;
   border-top: 1px solid $neutral--300;
+}
+
+.oauthapps__modal-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid $color-primary;
+  border-radius: 4px;
+  background-color: transparent;
+  color: $color-primary;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &--regenerate,
+  &--delete {
+    border: none;
+    background-color: $red--600;
+    color: $white;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.appform__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: $color-primary;
+  color: $white;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &--cancel {
+    border: none;
+    background: transparent;
+    color: $color-primary;
+    text-transform: none;
+  }
+
+  &--delete {
+    border: 1px solid $red--600;
+    background: transparent;
+    color: $red--600;
+    text-transform: none;
+  }
+
+  &--regenerate {
+    border: 1px solid $color-primary;
+    background-color: transparent;
+    color: $color-primary;
+    text-transform: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 </style>

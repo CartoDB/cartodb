@@ -7,7 +7,16 @@
           <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.title`) }}</h2>
         </div>
         <p v-if="hasConnectedApps" class="text is-small">{{ $t(`ConnectedAppsPage.description`) }}</p>
-        <p v-else v-html="$t(`ConnectedAppsPage.emptyDescription`)" class="text is-small"></p>
+        <p v-else class="text is-small u-mb--96">{{ $t(`ConnectedAppsPage.emptyDescription`) }}</p>
+
+        <div v-if="!hasConnectedApps" class="u-mt--16">
+          <div class="connectedapps__title">
+            <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.emptyTipTitle`) }}</h2>
+          </div>
+          <p class="text is-small" v-html="$t(`ConnectedAppsPage.emptyTipDescription`)"></p>
+        </div>
+
+        </div>
         <div v-if="hasConnectedApps" class="connectedapps__list">
           <div class="connectedapps__list-title">
             <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
@@ -108,6 +117,7 @@ export default {
 .connectedapps {
   display: flex;
   width: 940px;
+  min-height: 585px;
   margin: 20px auto 0;
   padding: 0;
 

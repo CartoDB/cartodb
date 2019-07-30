@@ -43,6 +43,7 @@ export default {
 .oauthapps {
   display: flex;
   width: 940px;
+  min-height: 585px;
   margin: 20px auto 0;
   padding: 0;
 

@@ -681,6 +681,7 @@
       "callbackUrlsDesc": "The full URL to redirect to after a user authorizes an installation.</br>More than one can be setup for development purposes.",
       "callbackUrlDelete": "Delete",
       "callbackUrlAddMore": "Add More",
+      "callbackUrlPlaceholder": "https://",
       "logoUpload": "Upload a logo",
       "logoUploadLink": "Upload a picture from your computer",
       "logoUploadDesc": "Maximum size is 1MB",
@@ -698,9 +699,11 @@
     }
   },
   "ConnectedAppsPage": {
-    "title": "Apps",
+    "title": "Apps connected to your account",
     "description": "These are the apps you gave access to some of your CARTO information.",
-    "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data. <a href=''>Learn more about third party apps in our documentation.</a>",
+    "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data.",
+    "emptyTipTitle": "Are your looking to create an OAuth application",
+    "emptyTipDescription": "You can do it from the <a href='/dashboard/oauth_apps'>developer settings</a>",
     "listTitle": "Connected Apps",
     "removeAccessButton": "Remove Access",
     "removeModal": {

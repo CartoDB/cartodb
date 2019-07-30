@@ -1,29 +1,29 @@
 <template>
   <div>
     <div class="applist__title">
-      <h2 class="text is-small is-semibold">{{ $t(`OauthAppsPage.title`) }}</h2>
+      <h2 class="text is-small is-semibold">{{ $t(`OAuthAppsPage.title`) }}</h2>
       <router-link :to="{ name: 'oauth_app_new' }">
-        <button class="applist__button">{{ $t(`OauthAppsPage.newAppButton`) }}</button>
+        <button class="applist__button">{{ $t(`OAuthAppsPage.newAppButton`) }}</button>
       </router-link >
     </div>
-    <p v-if="!hasConnectedApps" v-html="$t(`OauthAppsPage.emptyDescription`)" class="text is-caption"></p>
+    <p v-if="!hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
     <div v-else class="applist__list">
       <ul>
-        <li v-for="connectedApp in connectedApps" :key="connectedApp.id" class="applist__item">
+        <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="applist__item">
           <div class="applist__icon u-mr--20">
             <img svg-inline src="../../assets/icons/apps/default.svg">
           </div>
           <div class="applist__item-info">
-            <span class="text is-small is-semibold applist__item-title">{{ connectedApp.name }}</span>
-            <span class="text is-small applist__item-description">{{ connectedApp.description }}</span>
+            <span class="text is-small is-semibold applist__item-title">{{ oAuthApp.name }}</span>
+            <span class="text is-small applist__item-description">{{ oAuthApp.description }}</span>
           </div>
-          <router-link :to="{ name: 'oauth_app_edit', params: {id: connectedApp.id } }" class="applist__button applist__button--edit">
-            {{ $t(`OauthAppsPage.editButton`) }}
+          <router-link :to="{ name: 'oauth_app_edit', params: {id: oAuthApp.id } }" class="applist__button applist__button--edit">
+            {{ $t(`OAuthAppsPage.editButton`) }}
           </router-link>
         </li>
       </ul>
     </div>
-    <p class="text is-small u-mt--32" v-html="$t(`OauthAppsPage.description`)"></p>
+    <p class="text is-small u-mt--20" v-html="$t(`OAuthAppsPage.description`)"></p>
   </div>
 </template>
 
@@ -39,10 +39,10 @@ export default {
   },
   computed: {
     ...mapState({
-      isFetchingApps: state => state.apps.isFetching,
-      connectedApps: state => state.apps.connectedApps,
-      error: state => state.apps.error,
-      hasConnectedApps: state => !state.apps.isFetchingApps && state.apps.connectedApps
+      isFetchingApps: state => state.oAuthApps.isFetching,
+      oAuthApps: state => state.oAuthApps.list,
+      error: state => state.oAuthApps.error,
+      hasOAuthApps: state => !state.oAuthApps.isFetching && !!Object.keys(state.oAuthApps.list).length
     })
   }
 };
@@ -103,7 +103,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 12px;
+    padding: 12px 18px;
     border-radius: 4px;
     background-color: $color-primary;
     color: $white;

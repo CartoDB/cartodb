@@ -650,7 +650,7 @@
     "title": "We’ll be up and running soon",
     "text": "Your account is under maintenance. Sorry for the inconvenience!"
   },
-  "OauthAppsPage": {
+  "OAuthAppsPage": {
     "title": "Apps",
     "description": "Build your app allowing users to authenticate through CARTO to share specific data with your app. You can read more in our <a href=''>developer documentation</a>",
     "emptyDescription": "Want to build something that integrates with and extends CARTO?",

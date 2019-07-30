@@ -21,7 +21,7 @@ import SettingsTabs from 'new-dashboard/components/Apps/SettingsTabs';
 import { mapState } from 'vuex';
 
 export default {
-  name: 'OauthApps',
+  name: 'OAuthApps',
   components: {
     Page,
     SettingsSidebar,

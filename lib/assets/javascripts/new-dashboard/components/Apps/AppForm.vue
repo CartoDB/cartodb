@@ -9,86 +9,88 @@
 
     <div v-if="isEditMode" class="u-mb--64">
       <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OauthAppsPage.form.ownedby`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OAuthAppsPage.form.ownedby`) }}</span>&nbsp;
         <span class="text is-small">{{ app.username }}</span>
       </div>
       <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OauthAppsPage.form.clientId`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientId`) }}</span>&nbsp;
         <span class="text is-small">{{ app.client_id }}</span>
       </div>
       <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OauthAppsPage.form.clientSecret`) }}</span>&nbsp;
+        <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientSecret`) }}</span>&nbsp;
         <span class="text is-small">{{ app.client_secret }}</span>
       </div>
       <div class="u-flex u-mb--24">
         <img src="../../assets/icons/apps/warning.svg" />
-        <span class="text is-small is-txtSoftGrey u-ml--8">{{ $t(`OauthAppsPage.form.clientSecretWarning`) }}</span>
+        <span class="text is-small is-txtSoftGrey u-ml--8">{{ $t(`OAuthAppsPage.form.clientSecretWarning`) }}</span>
       </div>
-      <button class="appform__button appform__button--regenerate u-mb--24" @click="openRegenerateAppModal">{{ $t(`OauthAppsPage.form.clientSecretButton`) }}</button>
-      <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.form.clientSecretDesc`)"></span>
+      <button class="appform__button appform__button--regenerate u-mb--24" @click="openRegenerateAppModal">{{ $t(`OAuthAppsPage.form.clientSecretButton`) }}</button>
+      <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.form.clientSecretDesc`)"></span>
     </div>
 
     <div v-if="isEditMode" class="appform__title u-mb--24">
-      <h2 class="text is-caption">{{ $t(`OauthAppsPage.form.appInformationTitle`) }}</h2>
+      <h2 class="text is-caption">{{ $t(`OAuthAppsPage.form.appInformationTitle`) }}</h2>
     </div>
 
     <div>
-      <form id="app" @submit="checkForm" v-if="(!isEditMode || !isFetchingApps)">
+      <form id="app" @submit="checkForm" v-if="(!isEditMode || !isFetchingOAuthApps)">
           <div class="appform__block">
-            <label class="appform__label" for="app.name">{{ $t(`OauthAppsPage.form.appName`) }}</label>
+            <label class="appform__label" for="app.name">{{ $t(`OAuthAppsPage.form.appName`) }}</label>
             <input class="appform__input" :class="{'has-error': !!error.name}" type="text" name="app.name" id="app.name" v-model="app.name">
-            <span class="appform__input-desc">{{ $t(`OauthAppsPage.form.appNameDesc`) }}</span>
-            <span v-if="error.name" class="appform__error">{{ $t(`OauthAppsPage.form.appName`) }}&nbsp;{{error.name}}</span>
+            <span class="appform__input-desc">{{ $t(`OAuthAppsPage.form.appNameDesc`) }}</span>
+            <span v-if="error.name" class="appform__error">{{ $t(`OAuthAppsPage.form.appName`) }}&nbsp;{{error.name}}</span>
           </div>
 
           <div class="appform__block">
-            <label class="appform__label" for="app.website">{{ $t(`OauthAppsPage.form.webUrl`) }}</label>
+            <label class="appform__label" for="app.website">{{ $t(`OAuthAppsPage.form.webUrl`) }}</label>
             <input class="appform__input" type="text" name="app.website" id="app.website" v-model="app.website">
-            <span class="appform__input-desc">{{ $t(`OauthAppsPage.form.webUrlDesc`) }}</span>
+            <span class="appform__input-desc">{{ $t(`OAuthAppsPage.form.webUrlDesc`) }}</span>
           </div>
 
           <div class="appform__block">
-            <label class="appform__label" for="app.description">{{ $t(`OauthAppsPage.form.description`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
+            <label class="appform__label" for="app.description">{{ $t(`OAuthAppsPage.form.description`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OAuthAppsPage.form.optional`) }}</span></label>
             <textarea class="appform__input appform__input--textarea" type="text" name="app.description" id="app.description" v-model="app.description"></textarea>
-            <span class="appform__input-desc" v-html="$t(`OauthAppsPage.form.descriptionDesc`)"></span>
+            <span class="appform__input-desc" v-html="$t(`OAuthAppsPage.form.descriptionDesc`)"></span>
           </div>
 
           <div class="appform__block">
-            <label class="appform__label" for="appCallbacks">{{ $t(`OauthAppsPage.form.callbackUrls`) }}</label>
+            <label class="appform__label" for="appCallbacks">{{ $t(`OAuthAppsPage.form.callbackUrls`) }}</label>
             <ul>
               <li v-for="(callbackUrl, k) in editedCallbacks" :key="k">
-                <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name" :placeholder="$t(`OauthAppsPage.form.callbackUrlPlaceholder`)">
-                <span v-show="showDelete(k, editedCallbacks)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
-                <span v-show="k == editedCallbacks.length-1" class="appform__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlAddMore`) }}</span>
+                <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name" :placeholder="$t(`OAuthAppsPage.form.callbackUrlPlaceholder`)">
+                <span v-show="showDelete(k, editedCallbacks)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OAuthAppsPage.form.callbackUrlDelete`) }}</span>
+                <span v-show="k == editedCallbacks.length-1" class="appform__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OAuthAppsPage.form.callbackUrlAddMore`) }}</span>
               </li>
             </ul>
-            <span v-if="!!error.redirect_uris" class="appform__error">{{ $t(`OauthAppsPage.form.callbackUrls`) }}&nbsp;{{error.redirect_uris}}</span>
+            <span v-if="!!error.redirect_uris" class="appform__error">{{ $t(`OAuthAppsPage.form.callbackUrls`) }}&nbsp;{{error.redirect_uris}}</span>
 
-            <span class="appform__input-desc" v-html="$t(`OauthAppsPage.form.callbackUrlsDesc`)"></span>
+            <span class="appform__input-desc" v-html="$t(`OAuthAppsPage.form.callbackUrlsDesc`)"></span>
           </div>
 
           <div class="appform__block">
-            <label class="appform__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
+            <label class="appform__label" for="app.logoUrl">{{ $t(`OAuthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OAuthAppsPage.form.optional`) }}</span></label>
             <div class="appform__block u-flex__direction--row">
-              <div class="appform__logo">
-                <img class="appform__logo-image" ref="displayLogo" :src="displayLogo">
+              <div class="appform__logo" :class="{'has-error': !!logo.error.length}">
+                <img v-if="logo.isFetching" svg-inline src="../../assets/icons/apps/spinner.svg">
+                <img v-else class="appform__logo-image" ref="displayLogo" :src="displayLogo">
               </div>
               <div class="appform__block--file">
                 <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
-                <span class="appform__link">{{ $t(`OauthAppsPage.form.logoUploadLink`) }}</span>
-                <span class="appform__input-desc appform__input-desc--12" v-html="$t(`OauthAppsPage.form.logoUploadDesc`)"></span>
+                <span class="appform__link">{{ $t(`OAuthAppsPage.form.logoUploadLink`) }}</span>
+                <span v-if="!!logo.error.length" class="appform__error u-mt--4">{{logo.error}}</span>
+                <span v-else class="appform__input-desc appform__input-desc--12" v-html="$t(`OAuthAppsPage.form.logoUploadDesc`)"></span>
                 <input hidden type="text" name="logoUrl" id="logoUrl" v-model="app.logoUrl">
               </div>
             </div>
           </div>
 
           <div class="appform__toolbar"  :class="{'u-flex__justify--between': isEditMode}">
-            <button v-if="isEditMode" class="appform__button appform__button--delete u-mr--48" @click="openDeleteAppModal">{{ $t(`OauthAppsPage.form.deleteAppButton`) }}</button>
+            <button v-if="isEditMode" class="appform__button appform__button--delete u-mr--48" @click="openDeleteAppModal">{{ $t(`OAuthAppsPage.form.deleteAppButton`) }}</button>
             <div class="u-flex">
-              <router-link :to="{ name: 'oauth_apps_list' }" class="appform__button appform__button--cancel u-mr--48">
-                {{ $t(`OauthAppsPage.form.cancelButton`) }}
+              <router-link :to="{ name: 'oauth_apps_list' }" class="appform__button appform__button--cancel u-mr--28">
+                {{ $t(`OAuthAppsPage.form.cancelButton`) }}
               </router-link>
-              <button class="appform__button" type="submit" value="Submit">{{ $t(`OauthAppsPage.form.saveButton`) }}</button>
+              <button :disabled="isFetchingOAuthApps || logo.isFetching" class="appform__button" type="submit" value="Submit">{{ $t(`OAuthAppsPage.form.saveButton`) }}</button>
             </div>
           </div>
         </form>
@@ -102,11 +104,11 @@
             <img svg-inline src="../../assets/icons/apps/default.svg">
             <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
           </div>
-          <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.deleteModal.title`, { name: app.name })"></span>
-          <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.deleteModal.subtitle`)"></span>
+          <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.deleteModal.title`, { name: app.name })"></span>
+          <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.deleteModal.subtitle`)"></span>
           <div class="oauthapps__modal-actions">
-            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.deleteModal.cancelButton`) }}</button>
-            <button class="oauthapps__modal-button oauthapps__modal-button--delete" @click="deleteApp">{{ $t(`OauthAppsPage.deleteModal.deleteButton`) }}</button>
+            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.deleteModal.cancelButton`) }}</button>
+            <button class="oauthapps__modal-button oauthapps__modal-button--delete" @click="deleteApp">{{ $t(`OAuthAppsPage.deleteModal.deleteButton`) }}</button>
           </div>
         </div>
       </div>
@@ -120,11 +122,11 @@
             <img svg-inline src="../../assets/icons/apps/default.svg">
             <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
           </div>
-          <span class="text is-caption u-mb--8" v-html="$t(`OauthAppsPage.regenerateModal.title`, { name: app.name })"></span>
-          <span class="text is-small is-txtSoftGrey" v-html="$t(`OauthAppsPage.regenerateModal.subtitle`)"></span>
+          <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.regenerateModal.title`, { name: app.name })"></span>
+          <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.regenerateModal.subtitle`)"></span>
           <div class="oauthapps__modal-actions">
-            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OauthAppsPage.regenerateModal.cancelButton`) }}</button>
-            <button class="oauthapps__modal-button oauthapps__modal-button--regenerate" @click="regenerateClientSecret">{{ $t(`OauthAppsPage.regenerateModal.regenerateButton`) }}</button>
+            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.regenerateModal.cancelButton`) }}</button>
+            <button class="oauthapps__modal-button oauthapps__modal-button--regenerate" @click="regenerateClientSecret">{{ $t(`OAuthAppsPage.regenerateModal.regenerateButton`) }}</button>
           </div>
         </div>
       </div>
@@ -148,30 +150,30 @@ export default {
       isRegenerateModalOpen: false,
       editedCallbacks: [{ name: '' }],
       logo: {
-        error: '',
+        error: [],
         isFetching: false
       }
     };
   },
   computed: {
     ...mapState({
-      isFetchingApps: state => state.apps.isFetching,
-      connectedApps: state => state.apps.connectedApps,
-      error: state => state.apps.error,
+      isFetchingOAuthApps: state => state.oAuthApps.isFetching,
+      oAuthApps: state => state.oAuthApps.list,
+      error: state => state.oAuthApps.error,
       isEditMode () {
         return this.$route.name === 'oauth_app_edit';
       },
       formTitle () {
-        return this.isEditMode ? this.$t(`OauthAppsPage.form.editTitle`) : this.$t(`OauthAppsPage.form.newTitle`);
+        return this.isEditMode ? this.$t(`OAuthAppsPage.form.editTitle`) : this.$t(`OAuthAppsPage.form.newTitle`);
       },
       displayLogo () {
         return this.app.icon_url || this.defaultLogoPath;
       },
       app () {
-        if (!this.isEditMode || this.isFetchingApps) {
+        if (!this.isEditMode || this.isFetchingOAuthApps) {
           return {};
         }
-        const selectedApp = this.connectedApps[this.$route.params.id];
+        const selectedApp = this.oAuthApps[this.$route.params.id];
         this.editedCallbacks = this.redirectUrisToArrayObjects(selectedApp.redirect_uris);
         return selectedApp;
       }
@@ -184,8 +186,8 @@ export default {
     changeLogo (event, app) {
       const logo = event.target.files[0];
       if (logo) {
-        this.isLogoFetching = true;
-        this.$store.dispatch('apps/uploadLogo', {
+        this.logo.isFetching = true;
+        this.$store.dispatch('oAuthApps/uploadLogo', {
           apiKey: this.$store.state.user.api_key,
           userId: this.$store.state.user.id,
           filename: logo
@@ -195,7 +197,6 @@ export default {
           this.logo.isFetching = false;
         },
         error => {
-          console.log(error);
           this.logo.error = error;
           this.logo.isFetching = false;
           });
@@ -203,12 +204,11 @@ export default {
     },
     checkForm (event) {
       event.preventDefault();
-
       const app = {
         ...this.app,
-        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks)
+        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
+        icon_url: 'hey'
       };
-
       if (this.isEditMode) {
         this.updateApp(app);
       } else {
@@ -216,29 +216,30 @@ export default {
       }
     },
     createApp (app) {
-      this.$store.dispatch('apps/create', {
+      this.$store.dispatch('oAuthApps/create', {
         apiKey: this.$store.state.user.api_key,
         app
       })
-      .then(createdApp =>
-        this.$router.push({name: 'oauth_app_edit', params: { id: createdApp.id }})
+      .then(
+        createdApp => this.$router.push({name: 'oauth_app_edit', params: { id: createdApp.id }}),
+        () => window.scrollTo(0, 0)
       );
     },
     updateApp (app) {
-      this.$store.dispatch('apps/update', {
+      this.$store.dispatch('oAuthApps/update', {
         apiKey: this.$store.state.user.api_key,
         app
       });
     },
     deleteApp () {
-      this.$store.dispatch('apps/delete', {
+      this.$store.dispatch('oAuthApps/delete', {
         apiKey: this.$store.state.user.api_key,
         app: this.app
       });
       this.$router.push({ name: 'oauth_apps_list' });
     },
     regenerateClientSecret () {
-      this.$store.dispatch('apps/regenerateClientSecret', {
+      this.$store.dispatch('oAuthApps/regenerateClientSecret', {
         apiKey: this.$store.state.user.api_key,
         app: this.app
       });
@@ -368,6 +369,10 @@ export default {
   margin-right: 20px;
   border: 1px solid $neutral--400;
   border-radius: 4px;
+
+  &.has-error {
+    border: 1px solid  $danger__color;
+  }
 }
 
 .appform__logo-image {
@@ -471,7 +476,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 12px 18px;
   border: 1px solid $color-primary;
   border-radius: 4px;
   background-color: transparent;
@@ -499,7 +504,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
+  padding: 12px 18px;
   border-radius: 4px;
   background-color: $color-primary;
   color: $white;

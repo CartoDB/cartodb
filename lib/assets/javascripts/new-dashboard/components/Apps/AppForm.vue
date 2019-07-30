@@ -58,7 +58,7 @@
             <ul>
               <li v-for="(callbackUrl, k) in editedCallbacks" :key="k">
                 <input class="appform__input" :class="{'has-error': !!error.redirect_uris}" type="text" name="callbackUrl" id="callbackUrl" v-model="callbackUrl.name" :placeholder="$t(`OauthAppsPage.form.callbackUrlPlaceholder`)">
-                <span v-show="k || ( !k && editedCallbacks.length > 1)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
+                <span v-show="showDelete(k, editedCallbacks)" class="appform__link u-ml--16 appform__link--delete" @click="removeCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlDelete`) }}</span>
                 <span v-show="k == editedCallbacks.length-1" class="appform__link u-ml--16" @click="addCallbackUrl(k)">{{ $t(`OauthAppsPage.form.callbackUrlAddMore`) }}</span>
               </li>
             </ul>
@@ -162,7 +162,6 @@ export default {
       formTitle () {
         return this.isEditMode ? this.$t(`OauthAppsPage.form.editTitle`) : this.$t(`OauthAppsPage.form.newTitle`);
       },
-      tempLogoUrl: state => state.apps.tempLogoUrl,
       displayLogo () {
         return this.app.icon_url || this.defaultLogoPath;
       },
@@ -177,6 +176,9 @@ export default {
     })
   },
   methods: {
+    showDelete (index, editedCallbacks) {
+      return (index < editedCallbacks.length-1) && (editedCallbacks.length > 1);
+    },
     changeLogo (event, app) {
       const logo = event.target.files[0];
       if (logo) {
@@ -201,7 +203,7 @@ export default {
 
       const app = {
         ...this.app,
-        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks)
+        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
       };
 
       if (this.isEditMode) {
@@ -249,7 +251,7 @@ export default {
       return redirectUris.map(r => ({ name: r }));
     },
     redirectUrisToArrayStrings (redirectUris) {
-      return redirectUris.map(r => r.name);
+      return redirectUris.map(r => r.name).filter(Boolean);
     },
     openDeleteAppModal () {
       this.isDeleteModalOpen = true;
@@ -268,13 +270,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-//  {
-//   padding: 8px 12px;
-//   border: 1px solid $blue--500;
-//   background: none;
-//   color: $blue--500;
-// }
 
 .appform__title {
   display: flex;

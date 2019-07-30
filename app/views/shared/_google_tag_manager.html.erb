@@ -1,14 +1,15 @@
 <!-- Google Tag Manager -->
 <%# Tags for GTM are being included in VendorScripts templates for static pages as well.
    # So if you change anything here, please make sure that you change it there too. %>
-
 <% if current_user %>
   <script>
     window.dataLayer = window.dataLayer || [];
     dataLayer.push({
       'userId': '<%= current_user.id %>',
       'userAccountType': '<%= current_user.account_type %>',
-      'userSignUpDate': '<%= current_user.created_at.to_s %>'
+      'userSignUpDate': '<%= current_user.created_at.to_s %>',
+      'userJobRole': '<%= current_user.job_role %>',
+      'userInTrialPeriod': '<%= current_user.remaining_trial_days > 0 %>'
     });
   </script>
 <% end %>

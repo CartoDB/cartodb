@@ -57,6 +57,12 @@ export default {
   created: function () {
     this.loadUserConfiguration();
   },
+  beforeMount () {
+    if (this.$store.getters['user/isViewer']) {
+      // Redirect to shared maps page if user is viewer
+      return this.$router.replace({ name: 'maps', params: { filter: 'shared' } });
+    }
+  },
   mounted () {
     this.stickyScrollPosition = this.getHeaderBottomPageOffset();
     this.$onScrollChange = this.onScrollChange.bind(this);

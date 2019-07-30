@@ -50,7 +50,7 @@ class Carto::User < ActiveRecord::Base
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
-                   "users.public_map_quota, users.maintenance_mode".freeze
+                   "users.public_map_quota, users.maintenance_mode, users.company_employees, users.use_case".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -775,6 +775,12 @@ class Carto::User < ActiveRecord::Base
 
   def trial_user?
     TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private

@@ -1911,6 +1911,12 @@ class User < Sequel::Model
     TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
+  end
+
   private
 
   def password_rate_limit_configured?

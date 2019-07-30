@@ -12,7 +12,7 @@
         },
         "works_with": {
             "dataservices-api-client-extension": "0.26.2",
-            "carto_postgresql_ext": "0.27.1",
+            "carto_postgresql_ext": "0.29.0",
             "odbc_fdw": "0.4.0",
             "carto_windshaft": ">=6.2.0",
             "carto_sql_api": ">=2.1.0",

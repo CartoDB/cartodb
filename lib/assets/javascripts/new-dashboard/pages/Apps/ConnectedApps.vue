@@ -15,28 +15,27 @@
           </div>
           <p class="text is-small" v-html="$t(`ConnectedAppsPage.emptyTipDescription`)"></p>
         </div>
+      </div>
 
+      <div v-if="hasConnectedApps" class="connectedapps__list">
+        <div class="connectedapps__list-title">
+          <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
         </div>
-        <div v-if="hasConnectedApps" class="connectedapps__list">
-          <div class="connectedapps__list-title">
-            <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
-          </div>
-          <ul>
-            <li v-for="app in apps" :key="app.id" class="connectedapps__item">
-              <div class="connectedapps__icon u-mr--20">
-                <img svg-inline src="../../assets/icons/apps/default.svg">
-              </div>
-              <div class="connectedapps__item-info">
-                <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ app.name }}</span>
-                <span class="text is-small connectedapps__item-description">{{ app.description }}</span>
-              </div>
-              <button class="connectedapps__button button button--ghost" @click="openModal(app)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
-            </li>
-          </ul>
-        </div>
+        <ul>
+          <li v-for="app in apps" :key="app.id" class="connectedapps__item">
+            <div class="connectedapps__icon u-mr--20">
+              <img svg-inline src="../../assets/icons/apps/default.svg">
+            </div>
+            <div class="connectedapps__item-info">
+              <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ app.name }}</span>
+              <span class="text is-small connectedapps__item-description">{{ app.description }}</span>
+            </div>
+            <button class="connectedapps__button button button--ghost" @click="openModal(app)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
+          </li>
+        </ul>
       </div>
     </div>
-    
+
     <Modal :isOpen="isModalOpen" @closeModal="closeModal">
       <div class="connectedapps__modal">
         <div class="connectedapps__modal-inner">

@@ -71,7 +71,7 @@
             <label class="appform__label" for="app.logoUrl">{{ $t(`OauthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OauthAppsPage.form.optional`) }}</span></label>
             <div class="appform__block u-flex__direction--row">
               <div class="appform__logo">
-                <img ref="displayLogo" :src="displayLogo">
+                <img class="appform__logo-image" ref="displayLogo" :src="displayLogo">
               </div>
               <div class="appform__block--file">
                 <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
@@ -179,7 +179,7 @@ export default {
   },
   methods: {
     showDelete (index, editedCallbacks) {
-      return (index < editedCallbacks.length-1) && (editedCallbacks.length > 1);
+      return (index < editedCallbacks.length - 1) && (editedCallbacks.length > 1);
     },
     changeLogo (event, app) {
       const logo = event.target.files[0];
@@ -206,7 +206,7 @@ export default {
 
       const app = {
         ...this.app,
-        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
+        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks)
       };
 
       if (this.isEditMode) {
@@ -359,7 +359,6 @@ export default {
   }
 }
 
-
 .appform__logo {
   display: flex;
   align-items: center;
@@ -369,6 +368,11 @@ export default {
   margin-right: 20px;
   border: 1px solid $neutral--400;
   border-radius: 4px;
+}
+
+.appform__logo-image {
+  max-width: 100px;
+  max-height: 100px;
 }
 
 .appform__toolbar {
@@ -382,6 +386,7 @@ export default {
 
 .appform__error {
   color: $danger__color;
+  font-size: 10px;
 }
 
 .appform__block--file {

@@ -4,10 +4,11 @@ module Carto
       class OauthAppPresenter
 
         PRIVATE_ATTRIBUTES = %i(
-          id user_id name created_at updated_at client_id client_secret redirect_uris icon_url restricted
+          id user_id name created_at updated_at client_id client_secret
+          redirect_uris icon_url restricted description website_url
         ).freeze
 
-        PUBLIC_ATTRIBUTES = %i(id name created_at updated_at).freeze
+        PUBLIC_ATTRIBUTES = %i(id name created_at updated_at description website_url icon_url).freeze
 
         def initialize(oauth_app, user: nil)
           @oauth_app = oauth_app

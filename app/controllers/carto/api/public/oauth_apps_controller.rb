@@ -101,7 +101,7 @@ module Carto
         end
 
         def permitted_params
-          params.permit(:name, :icon_url, redirect_uris: [])
+          params.permit(:name, :icon_url, :description, :website_url, redirect_uris: [])
         end
 
         def render_paged(oauth_apps, private_data: false)

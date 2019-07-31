@@ -15,24 +15,24 @@
           </div>
           <p class="text is-small" v-html="$t(`ConnectedAppsPage.emptyTipDescription`)"></p>
         </div>
-      </div>
 
-      <div v-if="hasConnectedApps" class="connectedapps__list">
-        <div class="connectedapps__list-title">
-          <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
+        <div v-if="hasConnectedApps" class="connectedapps__list">
+          <div class="connectedapps__list-title">
+            <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
+          </div>
+          <ul>
+            <li v-for="connectedApp in connectedApps" :key="connectedApp.id" class="connectedapps__item">
+              <div class="connectedapps__icon u-mr--20">
+                <img svg-inline src="../../assets/icons/apps/default.svg">
+              </div>
+              <div class="connectedapps__item-info">
+                <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ connectedApp.name }}</span>
+                <span class="text is-small connectedapps__item-description">{{ connectedApp.description }}</span>
+              </div>
+              <button class="connectedapps__button button button--ghost" @click="openModal(connectedApp)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
+            </li>
+          </ul>
         </div>
-        <ul>
-          <li v-for="app in apps" :key="app.id" class="connectedapps__item">
-            <div class="connectedapps__icon u-mr--20">
-              <img svg-inline src="../../assets/icons/apps/default.svg">
-            </div>
-            <div class="connectedapps__item-info">
-              <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ app.name }}</span>
-              <span class="text is-small connectedapps__item-description">{{ app.description }}</span>
-            </div>
-            <button class="connectedapps__button button button--ghost" @click="openModal(app)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
-          </li>
-        </ul>
       </div>
     </div>
 
@@ -75,18 +75,19 @@ export default {
     };
   },
   beforeMount: function () {
-    this.$store.dispatch('apps/fetch', {
+    this.$store.dispatch('connectedApps/fetch', {
       apiKey: this.$store.state.user.api_key
     });
   },
   computed: {
     ...mapState({
-      isFetchingApps: state => state.apps.isFetching,
+      isFetchingConnectedApps: state => state.connectedApps.isFetching,
       user: state => state.user,
       baseUrl: state => state.user.base_url,
-      connectedApps: state => state.apps.connectedApps,
-      hasConnectedApps () {
-        return !this.isFetchingApps && (this.apps.length > 0);
+      connectedApps: state => state.connectedApps.list,
+      hasConnectedApps (state) {
+        debugger;
+        return !this.connectedApps.isFetching && !!Object.keys(state.connectedApps.list).length
       }
     })
   },
@@ -100,7 +101,7 @@ export default {
       this.selectedApp = {};
     },
     revokeAccess (selectedApp) {
-      this.$store.dispatch('apps/revokeAccess', {
+      this.$store.dispatch('connectdApps/revokeAccess', {
         apiKey: this.$store.state.user.api_key,
         id: selectedApp.id
       });

@@ -27,7 +27,8 @@ $yellow--700: #F90;
 
 $red--400: #F15743;
 $red--500: #FA1414;
-$red--600: #E20703;
+$red--600: #EB1510;
+$red--700: #E20703;
 
 $green--500: #74FFA8;
 $green--700: #72EEA8;
@@ -60,7 +61,7 @@ $border-color--dark: $neutral--300;
 $success__bg-color: $green--700;
 $warning__bg-color: $yellow--500;
 $danger__bg-color: $red--500;
-$danger__color: $red--600;
+$danger__color: $red--700;
 
 /* buttons */
 $button__color: $white;
@@ -79,7 +80,7 @@ $button-cta__bg-color: $yellow--300;
 $button-cta__bg-color--hover: $yellow--100;
 
 $button-alert__bg-color: $red--400;
-$button-alert__bg-color--hover: $red--600;
+$button-alert__bg-color--hover: $red--700;
 
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;

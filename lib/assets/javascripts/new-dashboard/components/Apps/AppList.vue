@@ -2,8 +2,8 @@
   <div>
     <div class="applist__title">
       <h2 class="text is-small is-semibold">{{ $t(`OAuthAppsPage.title`) }}</h2>
-      <router-link :to="{ name: 'oauth_app_new' }">
-        <button class="applist__button">{{ $t(`OAuthAppsPage.newAppButton`) }}</button>
+      <router-link  class="applist__button" :to="{ name: 'oauth_app_new' }">
+        {{ $t(`OAuthAppsPage.newAppButton`) }}
       </router-link >
     </div>
     <p v-if="!hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
@@ -105,7 +105,7 @@ export default {
     justify-content: center;
     padding: 12px 18px;
     border-radius: 4px;
-    background-color: $color-primary;
+    background-color: $button__bg-color;
     color: $white;
     font-family: 'Open Sans', sans-serif;
     font-size: 10px;
@@ -114,17 +114,25 @@ export default {
     text-transform: uppercase;
     cursor: pointer;
 
-    &--edit {
-      border: 1px solid $color-primary;
-      background-color: transparent;
-      color: $color-primary;
-      font-size: 12px;
-    }
-
     &:hover,
     &:focus {
-      text-decoration: underline;
+      background-color: $button__bg-color--hover;
+      text-decoration: none;
     }
+
+    &--edit {
+      border: 1px solid $button-outline__border-color;
+      background-color: transparent;
+      color: $button-outline__color;
+      font-size: 12px;
+
+      &:hover,
+      &:focus {
+        background-color: transparent;
+        text-decoration: underline;
+      }
+    }
+
   }
 }
 </style>

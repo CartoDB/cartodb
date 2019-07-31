@@ -90,47 +90,47 @@
               <router-link :to="{ name: 'oauth_apps_list' }" class="appform__button appform__button--cancel u-mr--28">
                 {{ $t(`OAuthAppsPage.form.cancelButton`) }}
               </router-link>
-              <button :disabled="isFetchingOAuthApps || logo.isFetching" class="appform__button" type="submit" value="Submit">{{ $t(`OAuthAppsPage.form.saveButton`) }}</button>
+              <button class="appform__button" type="submit" value="Submit">{{ $t(`OAuthAppsPage.form.saveButton`) }}</button>
             </div>
           </div>
         </form>
-    </div>
+      </div>
 
-    <!-- Delete Modal -->
-    <Modal :isOpen="isDeleteModalOpen" name="DeleteApp">
-      <div class="oauthapps__modal">
-        <div class="oauthapps__modal-inner">
-          <div class="oauthapps__icon u-mb--24">
-            <img svg-inline src="../../assets/icons/apps/default.svg">
-            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
-          </div>
-          <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.deleteModal.title`, { name: app.name })"></span>
-          <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.deleteModal.subtitle`)"></span>
-          <div class="oauthapps__modal-actions">
-            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.deleteModal.cancelButton`) }}</button>
-            <button class="oauthapps__modal-button oauthapps__modal-button--delete" @click="deleteApp">{{ $t(`OAuthAppsPage.deleteModal.deleteButton`) }}</button>
+      <!-- Delete Modal -->
+      <Modal :isOpen="isDeleteModalOpen" name="DeleteApp">
+        <div class="oauthapps__modal">
+          <div class="oauthapps__modal-inner">
+            <div class="oauthapps__icon u-mb--24">
+              <img svg-inline src="../../assets/icons/apps/default.svg">
+              <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/trash.svg">
+            </div>
+            <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.deleteModal.title`, { name: app.name })"></span>
+            <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.deleteModal.subtitle`)"></span>
+            <div class="oauthapps__modal-actions">
+              <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.deleteModal.cancelButton`) }}</button>
+              <button class="oauthapps__modal-button oauthapps__modal-button--delete" @click="deleteApp">{{ $t(`OAuthAppsPage.deleteModal.deleteButton`) }}</button>
+            </div>
           </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
 
-    <!-- Regenerate Modal -->
-    <Modal :isOpen="isRegenerateModalOpen" name="RegenerateClientSecret">
-      <div class="oauthapps__modal">
-        <div class="oauthapps__modal-inner">
-          <div class="oauthapps__icon u-mb--24">
-            <img svg-inline src="../../assets/icons/apps/default.svg">
-            <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
-          </div>
-          <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.regenerateModal.title`, { name: app.name })"></span>
-          <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.regenerateModal.subtitle`)"></span>
-          <div class="oauthapps__modal-actions">
-            <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.regenerateModal.cancelButton`) }}</button>
-            <button class="oauthapps__modal-button oauthapps__modal-button--regenerate" @click="regenerateClientSecret">{{ $t(`OAuthAppsPage.regenerateModal.regenerateButton`) }}</button>
+      <!-- Regenerate Modal -->
+      <Modal :isOpen="isRegenerateModalOpen" name="RegenerateClientSecret">
+        <div class="oauthapps__modal">
+          <div class="oauthapps__modal-inner">
+            <div class="oauthapps__icon u-mb--24">
+              <img svg-inline src="../../assets/icons/apps/default.svg">
+              <img class="oauthapps__badge" svg-inline src="../../assets/icons/apps/key.svg">
+            </div>
+            <span class="text is-caption u-mb--8" v-html="$t(`OAuthAppsPage.regenerateModal.title`, { name: app.name })"></span>
+            <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.regenerateModal.subtitle`)"></span>
+            <div class="oauthapps__modal-actions">
+              <button class="oauthapps__modal-button u-mr--12" @click="closeModal">{{ $t(`OAuthAppsPage.regenerateModal.cancelButton`) }}</button>
+              <button class="oauthapps__modal-button oauthapps__modal-button--regenerate" @click="regenerateClientSecret">{{ $t(`OAuthAppsPage.regenerateModal.regenerateButton`) }}</button>
+            </div>
           </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
   </div>
 </template>
 
@@ -206,8 +206,7 @@ export default {
       event.preventDefault();
       const app = {
         ...this.app,
-        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks),
-        icon_url: 'hey'
+        redirect_uris: this.redirectUrisToArrayStrings(this.editedCallbacks)
       };
       if (this.isEditMode) {
         this.updateApp(app);
@@ -229,7 +228,11 @@ export default {
       this.$store.dispatch('oAuthApps/update', {
         apiKey: this.$store.state.user.api_key,
         app
-      });
+      })
+      .then(
+        () => window.scrollTo(0, 0),
+        () => window.scrollTo(0, 0)
+      );
     },
     deleteApp () {
       this.$store.dispatch('oAuthApps/delete', {
@@ -488,15 +491,21 @@ export default {
   text-transform: uppercase;
   cursor: pointer;
 
+  &:hover {
+    background-color: $button-alert__bg-color--hover;
+    text-decoration: none;
+  }
+
   &--regenerate,
   &--delete {
     border: none;
-    background-color: $red--600;
+    background-color: $button-alert__bg-color;
     color: $white;
-  }
 
-  &:hover {
-    text-decoration: underline;
+    &:hover {
+      background-color: $button-alert__bg-color--hover;
+      text-decoration: none;
+    }
   }
 }
 
@@ -506,7 +515,7 @@ export default {
   justify-content: center;
   padding: 12px 18px;
   border-radius: 4px;
-  background-color: $color-primary;
+  background-color: $button__bg-color;
   color: $white;
   font-family: 'Open Sans', sans-serif;
   font-size: 12px;
@@ -515,11 +524,21 @@ export default {
   text-transform: uppercase;
   cursor: pointer;
 
+  &:hover {
+    background-color: $button__bg-color--hover;
+    text-decoration: none;
+  }
+
   &--cancel {
     border: none;
     background: transparent;
     color: $color-primary;
     text-transform: none;
+
+    &:hover {
+      background-color: transparent;
+      text-decoration: underline;
+    }
   }
 
   &--delete {
@@ -527,18 +546,26 @@ export default {
     background: transparent;
     color: $red--600;
     text-transform: none;
+
+    &:hover {
+      background-color: transparent;
+      text-decoration: underline;
+    }
   }
 
   &--regenerate {
-    border: 1px solid $color-primary;
+    border: 1px solid $button-outline__color;
     background-color: transparent;
-    color: $color-primary;
+    color: $button-outline__border-color;
     text-transform: none;
+
+    &:hover {
+      background-color: transparent;
+      text-decoration: underline;
+    }
   }
 
-  &:hover {
-    text-decoration: underline;
-  }
+
 }
 
 </style>

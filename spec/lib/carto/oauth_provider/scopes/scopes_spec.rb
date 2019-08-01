@@ -1,6 +1,6 @@
 require 'spec_helper_min'
-require 'carto/oauth_provider/scopes'
-require_relative '../../../factories/organizations_contexts'
+require_dependency 'carto/oauth_provider/scopes/scopes'
+require_relative '../../../../factories/organizations_contexts'
 
 describe Carto::OauthProvider::Scopes do
   include_context 'organization with users helper'

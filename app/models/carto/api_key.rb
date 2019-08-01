@@ -1,7 +1,7 @@
 require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator

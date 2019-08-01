@@ -85,10 +85,7 @@ export default {
       user: state => state.user,
       baseUrl: state => state.user.base_url,
       connectedApps: state => state.connectedApps.list,
-      hasConnectedApps (state) {
-        debugger;
-        return !this.connectedApps.isFetching && !!Object.keys(state.connectedApps.list).length
-      }
+      hasConnectedApps: state => !state.connectedApps.isFetching && !!Object.keys(state.connectedApps.list).length
     })
   },
   methods: {
@@ -104,7 +101,7 @@ export default {
       this.$store.dispatch('connectdApps/revokeAccess', {
         apiKey: this.$store.state.user.api_key,
         id: selectedApp.id
-      });
+      }).then(()=> this.$router.push({ name: 'connected_apps' }));
     }
   }
 };

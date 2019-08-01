@@ -28,7 +28,7 @@
       <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.form.clientSecretDesc`)"></span>
     </div>
 
-    <div v-if="isEditMode" class="appform__title u-mb--24">
+    <div ref="formScroll" v-if="isEditMode" class="appform__title u-mb--24">
       <h2 class="text is-caption">{{ $t(`OAuthAppsPage.form.appInformationTitle`) }}</h2>
     </div>
 
@@ -72,7 +72,7 @@
             <div class="appform__block u-flex__direction--row">
               <div class="appform__logo" :class="{'has-error': !!logo.error.length}">
                 <img v-if="logo.isFetching" svg-inline src="../../assets/icons/apps/spinner.svg">
-                <img v-else class="appform__logo-image" ref="displayLogo" :src="displayLogo">
+                <img class="appform__logo-image" :class="{'is-hidden': logo.isFetching}" ref="displayLogo" :src="displayLogo">
               </div>
               <div class="appform__block--file">
                 <input type="file" class="appform__input--file" @change="changeLogo" accept="image/jpeg,image/jpg,image/png,image/gif">
@@ -149,6 +149,7 @@ export default {
       isDeleteModalOpen: false,
       isRegenerateModalOpen: false,
       editedCallbacks: [{ name: '' }],
+      error: {},
       logo: {
         error: [],
         isFetching: false
@@ -159,7 +160,6 @@ export default {
     ...mapState({
       isFetchingOAuthApps: state => state.oAuthApps.isFetching,
       oAuthApps: state => state.oAuthApps.list,
-      error: state => state.oAuthApps.error,
       isEditMode () {
         return this.$route.name === 'oauth_app_edit';
       },
@@ -220,26 +220,34 @@ export default {
         app
       })
       .then(
-        createdApp => this.$router.push({name: 'oauth_app_edit', params: { id: createdApp.id }}),
-        () => window.scrollTo(0, 0)
-      );
-    },
+        createdApp => {
+          this.$router.push({name: 'oauth_app_edit', params: { id: createdApp.id }})
+        },
+        error => {
+          this.error = error;
+          window.scrollTo(0, 0)
+        })
+      },
     updateApp (app) {
       this.$store.dispatch('oAuthApps/update', {
         apiKey: this.$store.state.user.api_key,
         app
       })
       .then(
-        () => window.scrollTo(0, 0),
-        () => window.scrollTo(0, 0)
+        () => this.$router.push({ name: 'oauth_apps_list' }),
+        (error) => {
+          this.error = error;
+          window.scrollTo(0, this.$refs.formScroll.offsetTop)
+        }
       );
     },
     deleteApp () {
       this.$store.dispatch('oAuthApps/delete', {
         apiKey: this.$store.state.user.api_key,
         app: this.app
-      });
-      this.$router.push({ name: 'oauth_apps_list' });
+      }).then(
+        () => this.$router.push({ name: 'oauth_apps_list' })
+      );
     },
     regenerateClientSecret () {
       this.$store.dispatch('oAuthApps/regenerateClientSecret', {
@@ -381,6 +389,10 @@ export default {
 .appform__logo-image {
   max-width: 100px;
   max-height: 100px;
+
+  .is-hidden {
+    visibility: hidden;
+  }
 }
 
 .appform__toolbar {
@@ -492,8 +504,8 @@ export default {
   cursor: pointer;
 
   &:hover {
-    background-color: $button-alert__bg-color--hover;
-    text-decoration: none;
+    background-color: transparent;
+    text-decoration: underline;
   }
 
   &--regenerate,

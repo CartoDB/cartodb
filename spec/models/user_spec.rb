@@ -433,6 +433,34 @@ describe User do
     user.dashboard_viewed?.should be_true
   end
 
+  describe "email validation" do
+    before(:all) do
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :mx)
+    end
+
+    after(:all) do
+      EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
+    end
+
+    it "disallows wrong domains" do
+      invalid_emails = ['pimpam@example.com',
+                        'pimpam@ageval.dr',
+                        'pimpam@qq.ocm',
+                        'pimpam@aa.ww',
+                        'pimpam@iu.eduy',
+                        'pimpam@gmail.como',
+                        'pimpam@namr.cim',
+                        'pimpam@buffalo.edi']
+
+      invalid_emails.each do |email|
+        user = ::User.new(email: email)
+
+        user.valid?.should be_false
+        user.errors.should include :email
+      end
+    end
+  end
+
   it "should validate that password is present if record is new and crypted_password is blank" do
     user = ::User.new
     user.username = "adminipop"

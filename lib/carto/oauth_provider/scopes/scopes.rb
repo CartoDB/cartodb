@@ -3,6 +3,7 @@ require_relative './scope'
 require_relative './default_scope'
 require_relative './dataservices_scope'
 require_relative './datasets_scope'
+require_relative './datasets_metadata_scope'
 require_relative './schemas_scope'
 require_relative './user_scope'
 require_relative './scopes_validator'
@@ -18,19 +19,19 @@ module Carto
       CATEGORY_MONEY = Category.new('Features that consume credits', 'money')
       CATEGORY_DATASETS = Category.new('Access to your datasets')
       CATEGORY_SCHEMA = Category.new('Create tables')
+      CATEGORY_DATASETS_METADATA = Category.new('List your datasets')
 
       SCOPES = [
         Scope.new(SCOPE_DEFAULT, CATEGORY_USER, 'Username and organization name').freeze,
         Scope.new(SCOPE_OFFLINE, CATEGORY_OFFLINE, 'Access CARTO in the background').freeze,
 
-        # Dataservices
         DataservicesScope.new('geocoding', 'Geocoding').freeze,
         DataservicesScope.new('isolines', 'Isolines').freeze,
         DataservicesScope.new('routing', 'Routing').freeze,
         DataservicesScope.new('observatory', 'Data Observatory').freeze,
 
-        # User data
-        UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze
+        UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze,
+        DatasetsMetadataScope.new('Table names').freeze
       ].freeze
 
       SCOPES_BY_NAME = SCOPES.map { |s| [s.name, s] }.to_h.freeze

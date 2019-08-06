@@ -1,30 +1,38 @@
 <template>
-  <div>
-    <div class="applist__title">
+  <section class="apps">
+    <div class="apps__title">
       <h2 class="text is-small is-semibold">{{ $t(`OAuthAppsPage.title`) }}</h2>
-      <router-link  class="applist__button" :to="{ name: 'oauth_app_new' }">
+
+      <router-link class="button button--small" :to="{ name: 'oauth_app_new' }">
         {{ $t(`OAuthAppsPage.newAppButton`) }}
-      </router-link >
+      </router-link>
     </div>
+
     <p v-if="!hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
-    <div v-else class="applist__list">
+
+    <div v-else class="apps__list">
       <ul>
-        <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="applist__item">
-          <div class="applist__icon u-mr--20">
+        <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="apps__item">
+          <div class="apps__icon u-mr--20">
             <img svg-inline src="../../assets/icons/apps/default.svg">
           </div>
-          <div class="applist__item-info">
-            <span class="text is-small is-semibold applist__item-title">{{ oAuthApp.name }}</span>
-            <span class="text is-small applist__item-description">{{ oAuthApp.description }}</span>
+
+          <div class="apps__item-info">
+            <span class="text is-small is-semibold apps__item-title">{{ oAuthApp.name }}</span>
+            <span class="text is-small apps__item-description">{{ oAuthApp.description || 'No description provided' }}</span>
           </div>
-          <router-link :to="{ name: 'oauth_app_edit', params: {id: oAuthApp.id } }" class="applist__button applist__button--edit">
-            {{ $t(`OAuthAppsPage.editButton`) }}
+
+          <router-link
+            class="button button--outline button--edit"
+            :to="{ name: 'oauth_app_edit', params: {id: oAuthApp.id } }">
+            {{ $t('OAuthAppsPage.editButton') }}
           </router-link>
         </li>
       </ul>
     </div>
+
     <p class="text is-small u-mt--20" v-html="$t(`OAuthAppsPage.description`)"></p>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -32,11 +40,6 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'AppList',
-  data () {
-    return {
-      selectedApp: {}
-    };
-  },
   computed: {
     ...mapState({
       isFetchingApps: state => state.oAuthApps.isFetching,
@@ -52,40 +55,42 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.applist {
+.apps {
   &__title {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
-    padding-bottom: 28px;
+    padding-bottom: 16px;
     border-bottom: 1px solid $neutral--300;
-  }
-
-  &__list {
-    margin-top: 36px;
   }
 
   &__item {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 20px 0;
+    padding: 28px 0;
     border-bottom: 1px solid $neutral--300;
   }
 
   &__item-info {
     display: flex;
+    flex-direction: column;
     flex-grow: 1;
   }
 
+  &__item-title,
+  &__item-description {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &__item-title {
-    max-width: 356px;
     line-height: 22px;
   }
 
   &__item-description {
-    max-width: 356px;
+    color: $neutral--600;
   }
 
   &__icon {
@@ -98,41 +103,10 @@ export default {
     border: 1px solid $neutral--300;
     border-radius: 2px;
   }
+}
 
-  &__button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 18px;
-    border-radius: 4px;
-    background-color: $button__bg-color;
-    color: $white;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    cursor: pointer;
-
-    &:hover,
-    &:focus {
-      background-color: $button__bg-color--hover;
-      text-decoration: none;
-    }
-
-    &--edit {
-      border: 1px solid $button-outline__border-color;
-      background-color: transparent;
-      color: $button-outline__color;
-      font-size: 12px;
-
-      &:hover,
-      &:focus {
-        background-color: transparent;
-        text-decoration: underline;
-      }
-    }
-
-  }
+.button--edit {
+  align-self: center;
+  text-transform: uppercase;
 }
 </style>

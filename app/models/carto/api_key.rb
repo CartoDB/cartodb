@@ -191,6 +191,10 @@ module Carto
       @schema_permissions_cache.values
     end
 
+    def dataset_metadata_permissions
+      @dataset_metadata_permissions ||= process_dataset_metadata_permissions
+    end
+
     def table_permissions_from_db
       query = %{
           WITH permissions AS (
@@ -422,6 +426,11 @@ module Carto
       return nil unless user_data_grants.present?
 
       user_data_grants[:data]
+    end
+
+    def process_dataset_metadata_permissions
+      dataset_metadata_grants = grants.find { |v| v[:type] == 'database' }
+      dataset_metadata_grants.try(:[], :table_metadata)
     end
 
     def check_permissions

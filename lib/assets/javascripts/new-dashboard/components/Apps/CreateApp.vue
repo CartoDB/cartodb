@@ -32,7 +32,7 @@ import DeleteAppModal from './modals/DeleteAppModal';
 import RegenerateCredentialsModal from './modals/RegenerateCredentialsModal';
 
 export default {
-  name: 'AppForm',
+  name: 'CreateApp',
   components: {
     FormComponent,
     DeleteAppModal,

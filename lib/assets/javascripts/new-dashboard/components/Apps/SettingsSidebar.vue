@@ -69,7 +69,7 @@ export default {
 }
 
 .settingssidebar-link {
-  font-size: 12px;
+  font-size: 14px;
 
   &:hover {
     text-decoration: underline;

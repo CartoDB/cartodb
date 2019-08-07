@@ -15,7 +15,7 @@
     <button type="button" class="CDB-Button CDB-Button--secondary cancel">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Cancel</span>
     </button>
-    <button type="submit" class="CDB-Button CDB-Button--error js-ok">
+    <button type="submit" class="CDB-Button CDB-Button--error js-ok js-save">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">Delete this application</span>
     </button>
   </div>

@@ -12,6 +12,7 @@ sudo make install
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
   - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
+  - API endpoint to list datasets metadata ([#15013](https://github.com/CartoDB/cartodb/issues/15013))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements

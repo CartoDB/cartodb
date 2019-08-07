@@ -80,7 +80,8 @@ export default {
       return new Promise((resolve, reject) => {
         this.client.uploadLogo(this.apiKey, this.userId, filename, function (err, _, data) {
           if (err) {
-            return reject(data.responseJSON.error);
+            const error = data.responseJSON && data.responseJSON.errors || [data.statusText];
+            return reject(error);
           }
           resolve(data.public_url);
         });

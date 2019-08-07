@@ -12,8 +12,11 @@
     </div>
 
     <div class="appform__block">
-      <label class="appform__label" for="app.website">{{ $t(`OAuthAppsPage.form.webUrl`) }}</label>
-      <input class="appform__input" type="text" name="app.website" id="app.website" v-model="app.website">
+      <label class="appform__label" for="app.website_url">{{ $t(`OAuthAppsPage.form.webUrl`) }}</label>
+      <input class="appform__input" type="text" name="app.website_url" id="app.website_url" v-model="app.website_url">
+      <span v-if="error.website_url" class="appform__error u-mt--4">
+        {{ getStringErrorFromArray(error.website_url, $t(`OAuthAppsPage.form.webUrl`)) }}
+      </span>
       <span class="appform__input-desc">{{ $t(`OAuthAppsPage.form.webUrlDesc`) }}</span>
     </div>
 

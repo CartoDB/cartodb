@@ -9,9 +9,7 @@
         <AppTabs></AppTabs>
         <router-view></router-view>
       </div>
-
     </div>
-
   </Page>
 </template>
 

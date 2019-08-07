@@ -80,7 +80,7 @@ export default {
   watch: {
     oAuthApplication (newApplication) {
       this.app = newApplication;
-      this.app.redirect_uris = this.redirectUrisToArrayObjects(this.app.redirect_uris)
+      this.app.redirect_uris = this.redirectUrisToArrayObjects(this.app.redirect_uris);
     }
   },
   data () {

@@ -44,9 +44,11 @@
     </div>
 
     <div class="appform__block">
-      <label class="appform__label" for="app.logoUrl">{{ $t(`OAuthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OAuthAppsPage.form.optional`) }}</span></label>
+      <label class="appform__label" for="app.logoUrl">
+        {{ $t(`OAuthAppsPage.form.logoUpload`) }}<span class="appform__label--optional">&nbsp;{{ $t(`OAuthAppsPage.form.optional`) }}</span>
+      </label>
 
-      <UploadImage :currentImage="app.icon_src" @imageUpload="onImageUploaded">
+      <UploadImage :currentImage="app.icon_url" @imageUpload="onImageUploaded">
         <p class="appform__input-desc appform__input-desc--12" v-html="$t(`OAuthAppsPage.form.logoUploadDesc`)"></p>
         <p v-if="error.icon_url" class="appform__error u-mt--4">
           {{ getStringErrorFromArray(error.icon_url, $t(`OAuthAppsPage.form.logo`)) }}

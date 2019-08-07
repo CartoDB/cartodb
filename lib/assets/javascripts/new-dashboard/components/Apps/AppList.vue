@@ -110,8 +110,14 @@ export default {
     justify-content: center;
     width: 56px;
     height: 56px;
+    overflow: hidden;
     border: 1px solid $neutral--300;
     border-radius: 2px;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
   }
 }
 

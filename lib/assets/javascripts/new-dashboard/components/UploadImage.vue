@@ -31,9 +31,7 @@ import { mapState } from 'vuex';
 export default {
   name: 'UploadImage',
   props: {
-    currentImage: {
-      type: String
-    }
+    currentImage: String
   },
   data () {
     return {
@@ -107,6 +105,7 @@ export default {
   width: 100px;
   height: 100px;
   margin-right: 20px;
+  overflow: hidden;
   border: 1px solid $neutral--400;
   border-radius: 4px;
 

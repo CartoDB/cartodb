@@ -65,11 +65,11 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .settingssidebar-item {
-  line-height: 35px;
+  margin-bottom: 20px;
 }
 
 .settingssidebar-link {
-  font-size: 14px;
+  font-size: 12px;
 
   &:hover {
     text-decoration: underline;

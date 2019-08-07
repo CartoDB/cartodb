@@ -2,9 +2,13 @@
   <form id="app" @submit="onSubmit">
     <div class="appform__block">
       <label class="appform__label" for="app.name">{{ $t(`OAuthAppsPage.form.appName`) }}</label>
+
       <input class="appform__input" :class="{'has-error': !!error.name}" type="text" name="app.name" id="app.name" v-model="app.name">
+      <span v-if="error.name" class="appform__error u-mt--4">
+        {{ getStringErrorFromArray(error.name, $t(`OAuthAppsPage.form.appName`)) }}
+      </span>
+
       <span class="appform__input-desc">{{ $t(`OAuthAppsPage.form.appNameDesc`) }}</span>
-      <span v-if="error.name" class="appform__error">{{ $t(`OAuthAppsPage.form.appName`) }}&nbsp;{{error.name}}</span>
     </div>
 
     <div class="appform__block">
@@ -41,6 +45,9 @@
 
       <UploadImage :currentImage="app.icon_src" @imageUpload="onImageUploaded">
         <p class="appform__input-desc appform__input-desc--12" v-html="$t(`OAuthAppsPage.form.logoUploadDesc`)"></p>
+        <p v-if="error.icon_url" class="appform__error u-mt--4">
+          {{ getStringErrorFromArray(error.icon_url, $t(`OAuthAppsPage.form.logo`)) }}
+        </p>
       </UploadImage>
     </div>
 

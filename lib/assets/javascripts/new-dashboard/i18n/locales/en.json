@@ -683,6 +683,7 @@
       "callbackUrlDelete": "Delete",
       "callbackUrlAddMore": "Add More",
       "callbackUrlPlaceholder": "https://",
+      "logo": "Logo",
       "logoUpload": "Upload a logo",
       "logoUploadLink": "Upload a picture from your computer",
       "logoUploadDesc": "Maximum size is 1MB",

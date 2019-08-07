@@ -1,3 +1,4 @@
+<!-- Base Component for OAuth pages -->
 <template>
   <Page class="page--settings">
     <div class="oauthapps grid">
@@ -5,7 +6,7 @@
 
       <!-- Form -->
       <div class="oauthapps__container grid-cell--col8">
-        <SettingsTabs></SettingsTabs>
+        <AppTabs></AppTabs>
         <router-view></router-view>
       </div>
 
@@ -17,7 +18,7 @@
 <script>
 import Page from 'new-dashboard/components/Page';
 import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
-import SettingsTabs from 'new-dashboard/components/Apps/SettingsTabs';
+import AppTabs from 'new-dashboard/components/Apps/AppTabs';
 import { mapState } from 'vuex';
 
 export default {
@@ -25,14 +26,14 @@ export default {
   components: {
     Page,
     SettingsSidebar,
-    SettingsTabs
+    AppTabs
   },
   computed: {
     ...mapState({
       user: state => state.user,
       baseUrl: state => state.user.base_url
     })
-   }
+  }
 };
 </script>
 
@@ -44,7 +45,7 @@ export default {
   display: flex;
   width: 940px;
   min-height: 585px;
-  margin: 20px auto 0;
+  margin: 48px auto 0;
   padding: 0;
 
   &__container {

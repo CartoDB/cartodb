@@ -98,10 +98,8 @@ export default {
       this.selectedApp = {};
     },
     revokeAccess (selectedApp) {
-      this.$store.dispatch('connectdApps/revokeAccess', {
-        apiKey: this.$store.state.user.api_key,
-        id: selectedApp.id
-      }).then(()=> this.$router.push({ name: 'connected_apps' }));
+      this.$store.dispatch('connectdApps/revokeAccess', selectedApp.id)
+        .then(() => this.$router.push({ name: 'connected_apps' }));
     }
   }
 };

@@ -8,9 +8,11 @@
       </router-link>
     </div>
 
-    <p v-if="!hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
+    <Spinner v-if="isFetchingApps" class="apps__spinner"/>
 
+    <p v-if="!isFetchingApps && !hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
     <div v-else class="apps__list">
+
       <ul>
         <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="apps__item">
           <div class="apps__icon u-mr--20">
@@ -37,9 +39,13 @@
 
 <script>
 import { mapState } from 'vuex';
+import Spinner from '../Spinner';
 
 export default {
   name: 'AppList',
+  components: {
+    Spinner
+  },
   computed: {
     ...mapState({
       isFetchingApps: state => state.oAuthApps.isFetching,
@@ -56,6 +62,10 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .apps {
+  &__spinner {
+    margin: 120px auto;
+  }
+
   &__title {
     display: flex;
     align-items: center;

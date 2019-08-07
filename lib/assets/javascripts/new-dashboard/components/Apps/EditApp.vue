@@ -10,60 +10,64 @@
       </h2>
     </div>
 
-    <div class="u-mb--64">
-      <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OAuthAppsPage.form.ownedby`) }}</span>&nbsp;
-        <span class="text is-small">{{ app.username }}</span>
-      </div>
+    <Spinner v-if="isFetchingOAuthApps" class="apps__spinner"/>
 
-      <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientId`) }}</span>&nbsp;
-        <span class="text is-small">{{ app.client_id }}</span>
-      </div>
+    <section class="appform__content" v-if="!isFetchingOAuthApps">
+      <div class="u-mb--64">
+        <div class="u-mb--16">
+          <span class="appform__label">{{ $t(`OAuthAppsPage.form.ownedby`) }}</span>&nbsp;
+          <span class="text is-small">{{ app.username }}</span>
+        </div>
 
-      <div class="u-mb--16">
-        <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientSecret`) }}</span>&nbsp;
-        <span class="text is-small">{{ app.client_secret }}</span>
-      </div>
+        <div class="u-mb--16">
+          <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientId`) }}</span>&nbsp;
+          <span class="text is-small">{{ app.client_id }}</span>
+        </div>
 
-      <div class="u-flex u-mb--24">
-        <img src="../../assets/icons/apps/warning.svg" />
-        <span class="text is-small is-txtSoftGrey u-ml--8">{{ $t(`OAuthAppsPage.form.clientSecretWarning`) }}</span>
-      </div>
+        <div class="u-mb--16">
+          <span class="appform__label">{{ $t(`OAuthAppsPage.form.clientSecret`) }}</span>&nbsp;
+          <span class="text is-small">{{ app.client_secret }}</span>
+        </div>
 
-      <button class="button button--outline u-mb--24" @click="openRegenerateCredentialsModal">
-        {{ $t(`OAuthAppsPage.form.clientSecretButton`) }}
-      </button>
+        <div class="u-flex u-mb--24">
+          <img src="../../assets/icons/apps/warning.svg" />
+          <span class="text is-small is-txtSoftGrey u-ml--8">{{ $t(`OAuthAppsPage.form.clientSecretWarning`) }}</span>
+        </div>
 
-      <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.form.clientSecretDesc`)"></span>
-    </div>
-
-    <div ref="formScroll" class="appform__title u-mb--24">
-      <h2 class="text is-caption">{{ $t(`OAuthAppsPage.form.appInformationTitle`) }}</h2>
-    </div>
-
-    <FormComponent
-      v-if="!isFetchingOAuthApps"
-      :oAuthApplication="app"
-      :formTitle="$t(`OAuthAppsPage.form.editTitle`)"
-      :error="error"
-      @submit="onSubmit">
-      <div class="appform__toolbar u-flex__justify--between">
-        <button type="button" class="button button--outline button--delete u-mr--48" @click="openDeleteAppModal">
-          {{ $t(`OAuthAppsPage.form.deleteAppButton`) }}
+        <button class="button button--outline u-mb--24" @click="openRegenerateCredentialsModal">
+          {{ $t(`OAuthAppsPage.form.clientSecretButton`) }}
         </button>
 
-        <div class="u-flex">
-          <router-link :to="{ name: 'oauth_apps_list' }" class="button button--ghost u-mr--28">
-            {{ $t(`OAuthAppsPage.form.cancelButton`) }}
-          </router-link>
-
-          <button class="button button--primary" type="submit" value="Submit">
-            {{ $t(`OAuthAppsPage.form.saveButton`) }}
-          </button>
-        </div>
+        <span class="text is-small is-txtSoftGrey" v-html="$t(`OAuthAppsPage.form.clientSecretDesc`)"></span>
       </div>
-    </FormComponent>
+
+      <div ref="formScroll" class="appform__title u-mb--24">
+        <h2 class="text is-caption">{{ $t(`OAuthAppsPage.form.appInformationTitle`) }}</h2>
+      </div>
+
+      <FormComponent
+        v-if="!isFetchingOAuthApps"
+        :oAuthApplication="app"
+        :formTitle="$t(`OAuthAppsPage.form.editTitle`)"
+        :error="error"
+        @submit="onSubmit">
+        <div class="appform__toolbar u-flex__justify--between">
+          <button type="button" class="button button--outline button--delete u-mr--48" @click="openDeleteAppModal">
+            {{ $t(`OAuthAppsPage.form.deleteAppButton`) }}
+          </button>
+
+          <div class="u-flex">
+            <router-link :to="{ name: 'oauth_apps_list' }" class="button button--ghost u-mr--28">
+              {{ $t(`OAuthAppsPage.form.cancelButton`) }}
+            </router-link>
+
+            <button class="button button--primary" type="submit" value="Submit">
+              {{ $t(`OAuthAppsPage.form.saveButton`) }}
+            </button>
+          </div>
+        </div>
+      </FormComponent>
+    </section>
 
     <DeleteAppModal ref="deleteAppModal" :app="app"/>
     <RegenerateCredentialsModal ref="regenerateCredentialsModal" :app="app"/>
@@ -73,6 +77,7 @@
 <script>
 import { mapState } from 'vuex';
 import FormComponent from './FormComponent';
+import Spinner from '../Spinner';
 import DeleteAppModal from './modals/DeleteAppModal';
 import RegenerateCredentialsModal from './modals/RegenerateCredentialsModal';
 
@@ -81,7 +86,8 @@ export default {
   components: {
     FormComponent,
     DeleteAppModal,
-    RegenerateCredentialsModal
+    RegenerateCredentialsModal,
+    Spinner
   },
   data () {
     return {
@@ -140,6 +146,10 @@ export default {
   margin-bottom: 16px;
   padding-bottom: 28px;
   border-bottom: 1px solid $neutral--300;
+}
+
+.appform_spinner {
+  margin: 120px auto;
 }
 
 .appform__label {

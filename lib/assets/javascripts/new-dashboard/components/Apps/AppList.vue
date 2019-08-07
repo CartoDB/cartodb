@@ -16,7 +16,7 @@
       <ul>
         <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="apps__item">
           <div class="apps__icon u-mr--20">
-            <img svg-inline src="../../assets/icons/apps/default.svg">
+            <img :src="oAuthApp.icon_url || require('../../assets/icons/apps/default.svg')">
           </div>
 
           <div class="apps__item-info">

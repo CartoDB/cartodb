@@ -2,7 +2,7 @@
   <section class="image-uploader">
     <div class="image-uploader__preview" :class="{'has-error': error.length}">
       <img v-if="isUploading" svg-inline src="new-dashboard/assets/icons/apps/spinner.svg">
-      <img v-else class="image-uploader__placeholder" ref="displayLogo" :src="imageSrc || currentImage">
+      <img v-else class="image-uploader__placeholder" :src="imageSrc || currentImage || defaultImage">
     </div>
 
     <div class="image-uploader__upload">
@@ -38,7 +38,8 @@ export default {
   data () {
     return {
       isUploading: false,
-      imageSrc: require('new-dashboard/assets/icons/apps/logo-default.svg'),
+      imageSrc: null,
+      defaultImage: require('new-dashboard/assets/icons/apps/logo-default.svg'),
       error: []
     };
   },

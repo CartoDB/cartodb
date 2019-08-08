@@ -12,24 +12,14 @@
 
     <p v-if="!isFetchingApps && !hasOAuthApps" v-html="$t(`OAuthAppsPage.emptyDescription`)" class="text is-caption u-mt--32"></p>
     <div v-else class="apps__list">
-
       <ul>
-        <li v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" class="apps__item">
-          <div class="apps__icon u-mr--20">
-            <img :src="oAuthApp.icon_url || require('../../assets/icons/apps/default.svg')">
-          </div>
-
-          <div class="apps__item-info">
-            <span class="text is-small is-semibold apps__item-title">{{ oAuthApp.name }}</span>
-            <span class="text is-small apps__item-description">{{ oAuthApp.description || 'No description provided' }}</span>
-          </div>
-
+        <AppElement v-for="oAuthApp in oAuthApps" :key="oAuthApp.id" :oAuthApp="oAuthApp">
           <router-link
             class="button button--outline button--edit"
             :to="{ name: 'oauth_app_edit', params: {id: oAuthApp.id } }">
             {{ $t('OAuthAppsPage.editButton') }}
           </router-link>
-        </li>
+        </AppElement>
       </ul>
     </div>
 
@@ -39,11 +29,13 @@
 
 <script>
 import { mapState } from 'vuex';
+import AppElement from './AppElement';
 import Spinner from '../Spinner';
 
 export default {
   name: 'AppList',
   components: {
+    AppElement,
     Spinner
   },
   computed: {
@@ -72,52 +64,6 @@ export default {
     justify-content: space-between;
     padding-bottom: 16px;
     border-bottom: 1px solid $neutral--300;
-  }
-
-  &__item {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 28px 0;
-    border-bottom: 1px solid $neutral--300;
-  }
-
-  &__item-info {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
-
-  &__item-title,
-  &__item-description {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &__item-title {
-    line-height: 22px;
-  }
-
-  &__item-description {
-    color: $neutral--600;
-  }
-
-  &__icon {
-    display: flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    overflow: hidden;
-    border: 1px solid $neutral--300;
-    border-radius: 2px;
-
-    img {
-      max-width: 100%;
-      max-height: 100%;
-    }
   }
 }
 

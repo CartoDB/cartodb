@@ -50,7 +50,7 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-left: 82px;
+    padding-left: 14px;
   }
 }
 

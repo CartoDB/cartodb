@@ -6,6 +6,7 @@
         <div class="connectedapps__title">
           <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.title`) }}</h2>
         </div>
+
         <p v-if="hasConnectedApps" class="text is-small">{{ $t(`ConnectedAppsPage.description`) }}</p>
         <p v-else class="text is-small u-mb--96">{{ $t(`ConnectedAppsPage.emptyDescription`) }}</p>
 
@@ -23,18 +24,11 @@
             <h3 class="text is-small is-semibold">{{ $t(`ConnectedAppsPage.listTitle`) }}</h3>
           </div>
           <ul>
-            <li v-for="connectedApp in connectedApps" :key="connectedApp.id" class="connectedapps__item">
-              <div class="connectedapps__icon u-mr--20">
-                <img svg-inline src="../../assets/icons/apps/default.svg">
-              </div>
-              <div class="connectedapps__item-info">
-                <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ connectedApp.name }}</span>
-                <span class="text is-small connectedapps__item-description">{{ connectedApp.description }}</span>
-              </div>
-              <button class="connectedapps__button button button--ghost" @click="openModal(connectedApp)">
+            <AppElement v-for="connectedApp in connectedApps" :key="connectedApp.id" :oAuthApp="connectedApp">
+              <button class="connectedapps__button connectedapps__button--revoke button button--ghost" @click="openModal(connectedApp)">
                 {{ $t(`ConnectedAppsPage.removeAccessButton`) }}
               </button>
-            </li>
+            </AppElement>
           </ul>
         </div>
       </div>
@@ -61,6 +55,7 @@
 
 <script>
 import Page from 'new-dashboard/components/Page';
+import AppElement from '../../components/Apps/AppElement';
 import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
 import Modal from 'new-dashboard/components/Modal';
 import { mapState } from 'vuex';
@@ -68,6 +63,7 @@ import { mapState } from 'vuex';
 export default {
   name: 'ConnectedApps',
   components: {
+    AppElement,
     Page,
     SettingsSidebar,
     Modal
@@ -102,7 +98,7 @@ export default {
       this.selectedApp = {};
     },
     revokeAccess (selectedApp) {
-      this.$store.dispatch('connectdApps/revokeAccess', selectedApp.id)
+      this.$store.dispatch('connectedApps/revoke', selectedApp)
         .then(() => this.$router.push({ name: 'connected_apps' }));
     }
   }
@@ -188,6 +184,10 @@ export default {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
+
+  &.connectedapps__button--revoke {
+    align-self: center;
+  }
 }
 
 .button--ghost {

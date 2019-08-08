@@ -7,9 +7,6 @@ all:
 	cat python_requirements.txt | grep -v gdal | sudo pip install -r /dev/stdin
 	npm install
 
-WORKING_SPECS_INTEGRATIONS = \
-	$(NULL)
-
 WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
@@ -267,7 +264,6 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/models/carto/rate_limit_spec.rb \
 	spec/models/carto/received_notification_spec.rb \
 	spec/models/carto/user_db_service_spec.rb \
-	spec/models/carto/user_migration_spec.rb \
 	spec/models/carto/user_multifactor_auth_spec.rb \
 	spec/models/table_registrar_spec.rb \
 	spec/models/carto/user_migration_import_spec.rb \
@@ -364,6 +360,10 @@ WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
 	$(NULL)
 
+WORKING_SPECS_MIGRATIONS = \
+	spec/models/carto/user_migration_spec.rb \
+	$(NULL)
+
 CDB_PATH=lib/assets/javascripts/cdb
 
 prepare-test-db:
@@ -394,15 +394,15 @@ check-spec-helper-min:
 	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
 	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
-check-integrations:
-	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_INTEGRATIONS)
+check-migrations:
+	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_MIGRATIONS)
 
 check-gear/%: %
 	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
 
 check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 
-check-external: prepare-test-db check-integrations
+check-external: prepare-test-db check-migrations
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 

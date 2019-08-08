@@ -742,15 +742,28 @@ describe Carto::Api::Public::OauthAppsController do
       end
     end
 
-    it 'returns 500 if there is an error reassigning owners' do
+    it 'returns 204 if role does not exist when reassigning' do
       Carto::OauthAppUser.any_instance.stubs(:dataset_role_name).returns('wrong')
 
       post_json api_v4_oauth_apps_revoke_url(@params) do |response|
-        expect(response.status).to eq(500)
-        expect(response.body[:errors]).to include 'Error reassigning owners: PG::UndefinedObject'
+        expect(response.status).to eq(204)
       end
 
       Carto::OauthAppUser.any_instance.unstub(:dataset_role_name)
+    end
+
+    it 'returns 500 role does not exist when reassigning' do
+      mock = OpenStruct.new
+      mock.stubs(:execute).raises(ActiveRecord::StatementInvalid, 'Error reassigning owners')
+      Carto::User.any_instance.stubs(:in_database).returns(mock)
+
+      post_json api_v4_oauth_apps_revoke_url(@params) do |response|
+        expect(response.status).to eq(500)
+        expect(response.body[:errors]).to include 'Error reassigning owners'
+      end
+
+      Carto::OauthAppUser.any_instance.unstub(:dataset_role_name)
+      Carto::User.any_instance.unstub(:in_database)
     end
 
     it 'returns 204 if everything is ok' do

@@ -21,6 +21,10 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Inline Resque for queue handling
 Resque.inline = true
 
+# host_validation is set to support `example.com` emails in specs
+# in production we do check for the existance of mx records associated to the domain
+EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
+
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include CartoDB::Factories

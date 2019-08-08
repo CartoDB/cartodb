@@ -85,7 +85,7 @@ export default {
   display: flex;
   width: 240px;
   height: 1px;
-  margin: 14px 0;
+  margin: 20px 0;
   background-color: rgba(0, 0, 0, 0.1);
 }
 

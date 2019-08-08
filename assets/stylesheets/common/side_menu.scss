@@ -39,12 +39,11 @@
 .SideMenu-list {
   align-items: center;
   justify-content: space-between;
-  margin: 25px 0;
 }
 
 .SideMenu-typeItem {
   position: relative;
-  line-height: 35px;
+  margin-bottom: 20px;
 
   &:first-child {
     margin-left: 0;
@@ -102,6 +101,6 @@
   display: flex;
   width: 240px;
   height: 1px;
-  margin: 14px 0;
+  margin: 20px 0;
   background-color: rgba(0, 0, 0, 0.1);
 }

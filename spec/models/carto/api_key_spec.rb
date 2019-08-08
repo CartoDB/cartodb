@@ -162,10 +162,7 @@ describe Carto::ApiKey do
 
       table1.destroy
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table \"#{table1.database_schema}\".#{table1.name} as select 1 as test")
-        connection.execute("select count(1) from \"#{table1.database_schema}\".#{table1.name}") do |result|
-          result[0]['count'].should eq '1'
-        end
+        create_select_drop_check(connection, table1.database_schema, table1.name)
       end
     end
 
@@ -174,10 +171,7 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_by_master', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
-        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
-          result[0]['count'].should eq '1'
-        end
+        create_select_drop_check(connection, @carto_user1.database_schema, 'test_table', false)
       end
 
       @carto_user1.in_database.execute("drop table test_table")
@@ -188,10 +182,7 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_test', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
-        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
-          result[0]['count'].should eq '1'
-        end
+        create_select_drop_check(connection, @carto_user1.database_schema, 'test_table', false)
       end
 
       api_key.destroy
@@ -321,10 +312,7 @@ describe Carto::ApiKey do
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'table_owner_test', grants: grants)
 
       with_connection_from_api_key(api_key) do |connection|
-        connection.execute("create table \"#{@carto_user1.database_schema}\".test_table as select 1 as test")
-        connection.execute("select count(1) from \"#{@carto_user1.database_schema}\".test_table") do |result|
-          result[0]['count'].should eq '1'
-        end
+        create_select_drop_check(connection, @carto_user1.database_schema, 'test_table', false)
       end
 
       permissions = api_key.table_permissions_from_db
@@ -1019,5 +1007,13 @@ describe Carto::ApiKey do
   def drop_schema(schema_name = 'test')
     sql = "DROP SCHEMA IF EXISTS \"#{schema_name}\" CASCADE"
     @carto_user1.in_database(as: :superuser).execute(sql)
+  end
+
+  def create_select_drop_check(connection, schema, table_name, drop = true)
+    connection.execute("create table \"#{schema}\".#{table_name} as select 1 as test")
+    connection.execute("select count(1) from \"#{schema}\".#{table_name}") do |result|
+      result[0]['count'].should eq '1'
+    end
+    connection.execute("drop table \"#{schema}\".#{table_name}") if drop
   end
 end

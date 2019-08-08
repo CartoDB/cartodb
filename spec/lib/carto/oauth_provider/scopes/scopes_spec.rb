@@ -604,7 +604,7 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes_by_category).to(eq(expected))
     end
 
-    it 'shows create table permission' do
+    it 'shows datasets metadata permission' do
       scope = ["datasets:metadata"]
       expected = [
         {

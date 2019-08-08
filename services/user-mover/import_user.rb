@@ -443,7 +443,7 @@ module CartoDB
 
       def toc_file(file)
         toc_file = "#{@path}user_#{@target_username}.list"
-        command = "pg_restore -l #{file} --file='#{toc_file}'"
+        command = "#{pg_restore_bin_path(file)} -l #{file} --file='#{toc_file}'"
         run_command(command)
         clean_toc_file(toc_file)
         toc_file

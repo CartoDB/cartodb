@@ -928,6 +928,7 @@ describe 'UserMigration' do
       oauth_app = Carto::OauthApp.create!(name: 'test',
                                           user_id: @carto_user.id,
                                           redirect_uris: ['https://example.com'],
+                                          website_url: 'http://localhost',
                                           icon_url: 'https://example.com')
       oauth_app_user = oauth_app.oauth_app_users.create!(user_id: @carto_user.id)
       access_token = oauth_app_user.oauth_access_tokens.create!(scopes: ['schemas:c'])

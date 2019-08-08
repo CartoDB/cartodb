@@ -13,7 +13,9 @@
           <div class="connectedapps__title">
             <h2 class="text is-caption">{{ $t(`ConnectedAppsPage.emptyTipTitle`) }}</h2>
           </div>
-          <p class="text is-small" v-html="$t(`ConnectedAppsPage.emptyTipDescription`)"></p>
+          <p class="text is-small"
+             v-html="$t('ConnectedAppsPage.emptyTipDescription', { url: this.$router.resolve({ name: 'oauth_apps_list' }).href })">
+          </p>
         </div>
 
         <div v-if="hasConnectedApps" class="connectedapps__list">
@@ -29,7 +31,9 @@
                 <span class="text is-small is-semibold is-txtPrimary connectedapps__item-title">{{ connectedApp.name }}</span>
                 <span class="text is-small connectedapps__item-description">{{ connectedApp.description }}</span>
               </div>
-              <button class="connectedapps__button button button--ghost" @click="openModal(connectedApp)">{{ $t(`ConnectedAppsPage.removeAccessButton`) }}</button>
+              <button class="connectedapps__button button button--ghost" @click="openModal(connectedApp)">
+                {{ $t(`ConnectedAppsPage.removeAccessButton`) }}
+              </button>
             </li>
           </ul>
         </div>
@@ -113,7 +117,7 @@ export default {
   display: flex;
   width: 940px;
   min-height: 585px;
-  margin: 20px auto 0;
+  margin: 48px auto 0;
   padding: 0;
 
   &__container {

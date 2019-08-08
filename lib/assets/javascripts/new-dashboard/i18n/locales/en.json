@@ -705,7 +705,7 @@
     "description": "These are the apps you gave access to some of your CARTO information.",
     "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data.",
     "emptyTipTitle": "Are your looking to create an OAuth application",
-    "emptyTipDescription": "You can do it from the <a href='/dashboard/oauth_apps'>developer settings</a>",
+    "emptyTipDescription": "You can do it from the <a href='{url}'>developer settings</a>",
     "listTitle": "Connected Apps",
     "removeAccessButton": "Remove Access",
     "removeModal": {

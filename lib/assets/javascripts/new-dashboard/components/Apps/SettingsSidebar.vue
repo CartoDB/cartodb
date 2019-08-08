@@ -9,7 +9,7 @@
       <li class="settingssidebar-item">
         <router-link :to="{ name: 'connected_apps' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isConnectedAppsPage()}">{{ $t(`SettingsPages.sidebar.connectedApps`) }} </router-link>
       </li>
-      <li v-if="isOrgAdmin || !isInsideOrg" class="settingssidebar-item">
+      <li v-if="!isLocallyHosted && (isOrgAdmin || !isInsideOrg)" class="settingssidebar-item">
         <a :href="planUrl" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.billing`) }}</a>
       </li>
       <li v-if="isOrgAdmin" class="settingssidebar-item">
@@ -42,13 +42,14 @@ export default {
       baseUrl: state => state.user.base_url,
       user: state => state.user,
       planUrl: state => state.config.plan_url,
-      isOrgAdmin () {
-        return this.user.org_admin;
-      },
-      isInsideOrg () {
-        return Boolean(this.user.organization);
-      }
-    })
+      isLocallyHosted: state => state.config.cartodb_com_hosted
+    }),
+    isInsideOrg () {
+      return this.$store.getters['user/isOrganizationUser'];
+    },
+    isOrgAdmin () {
+      return this.user.org_admin;
+    }
   },
   methods: {
     isConnectedAppsPage () {

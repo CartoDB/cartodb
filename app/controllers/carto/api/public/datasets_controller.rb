@@ -20,6 +20,7 @@ module Carto
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = %i(name type).freeze
+        VALID_TYPE_PARAMS = %w(table view matview).freeze
 
         def index
           tables = @user.in_database[select_tables_query].all
@@ -40,7 +41,14 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'name', default_order_direction: 'asc'
           )
           @offset = (@page - 1) * @per_page
-          @types = %w(table view matview)
+          @types = load_type
+        end
+
+        def load_type
+          types = params[:type]&.split(',').to_a
+          raise Carto::ParamInvalidError.new(:type, VALID_TYPE_PARAMS) if (types - VALID_TYPE_PARAMS).any?
+
+          types.empty? ? VALID_TYPE_PARAMS : types
         end
 
         def check_permissions

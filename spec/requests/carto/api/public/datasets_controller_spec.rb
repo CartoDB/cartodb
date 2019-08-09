@@ -148,6 +148,51 @@ describe Carto::Api::Public::DatasetsController do
       end
     end
 
+    context 'filtering by type' do
+      before(:all) do
+        @user1.in_database.execute('CREATE VIEW my_view AS SELECT 5')
+      end
+
+      after(:all) do
+        @user1.in_database.execute('DROP VIEW my_view')
+      end
+
+      it 'filters results by table type' do
+        get_json api_v4_datasets_url(@params.merge(type: 'table')) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 3
+        end
+      end
+
+      it 'filters results by view type' do
+        get_json api_v4_datasets_url(@params.merge(type: 'view')) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 1
+        end
+      end
+
+      it 'filters results by table + view type' do
+        get_json api_v4_datasets_url(@params.merge(type: 'table,view')) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 4
+        end
+      end
+
+      it 'returns all the types by default' do
+        get_json api_v4_datasets_url(@params) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 4
+        end
+      end
+
+      it 'raises an error when type is not valid' do
+        get_json api_v4_datasets_url(@params.merge(type: 'wadus')) do |response|
+          expect(response.status).to eq(400)
+          expect(response.body[:errors]).to include("Wrong 'type' parameter")
+        end
+      end
+    end
+
     context 'ordering' do
       it 'orders results by name ascending by default' do
         get_json api_v4_datasets_url(@params) do |response|

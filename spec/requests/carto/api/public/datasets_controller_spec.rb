@@ -169,6 +169,20 @@ describe Carto::Api::Public::DatasetsController do
         end
       end
 
+      it 'orders results by type descending' do
+        @user1.in_database.execute('CREATE VIEW my_view AS SELECT 5')
+
+        get_json api_v4_datasets_url(@params.merge(order: 'type', order_direction: 'desc')) do |response|
+          expect(response.status).to eq(200)
+          expect(response.body[:total]).to eq 4
+          expect(response.body[:count]).to eq 4
+          expect(response.body[:result][0][:type]).to eq 'view'
+          expect(response.body[:result][1][:type]).to eq 'table'
+        end
+
+        @user1.in_database.execute('DROP VIEW my_view')
+      end
+
       it 'returns 400 if the ordering param is invalid' do
         get_json api_v4_datasets_url(@params.merge(order: 'wadus')) do |response|
           expect(response.status).to eq(400)

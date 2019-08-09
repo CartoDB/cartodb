@@ -19,7 +19,7 @@ module Carto
         setup_default_rescues
         rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
-        VALID_ORDER_PARAMS = [:name].freeze
+        VALID_ORDER_PARAMS = %i(name type).freeze
 
         def index
           tables = @user.in_database[select_tables_query].all

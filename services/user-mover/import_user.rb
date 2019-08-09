@@ -89,6 +89,19 @@ module CartoDB
 
       private
 
+      def for_each_oauth_app_user(user_id)
+        Carto::User.find(user_id).oauth_app_users.each do |oau|
+          yield superuser_user_pg_conn, oau
+        end
+      rescue PG::Error => e
+        # Ignore role already exists errors
+        if e.message =~ /already exists/
+          @logger.warn "Warning: Oauth app user role already exists"
+        else
+          throw e
+        end
+      end
+
       def process_user
         @target_username = @pack_config['user']['username']
         @target_userid = @pack_config['user']['id']
@@ -443,7 +456,7 @@ module CartoDB
 
       def toc_file(file)
         toc_file = "#{@path}user_#{@target_username}.list"
-        command = "pg_restore -l #{file} --file='#{toc_file}'"
+        command = "#{pg_restore_bin_path(file)} -l #{file} --file='#{toc_file}'"
         run_command(command)
         clean_toc_file(toc_file)
         toc_file
@@ -496,6 +509,7 @@ module CartoDB
       def grant_user_api_key_roles(user_id)
         Carto::User.find(user_id).api_keys.select(&:needs_setup?).each do |k|
           k.role_permission_queries.each { |q| superuser_user_pg_conn.query(q) }
+          k.grant_ownership_role_privileges
         end
       end
 
@@ -504,15 +518,13 @@ module CartoDB
       end
 
       def create_user_oauth_app_user_roles(user_id)
-        Carto::User.find(user_id).oauth_app_users.each do |oau|
-          superuser_user_pg_conn.query(oau.create_dataset_role_query)
+        for_each_oauth_app_user(user_id) do |conn, oau|
+          conn.query(oau.create_dataset_role_query)
         end
-      rescue PG::Error => e
-        # Ignore role already exists errors
-        if e.message =~ /already exists/
-          @logger.warn "Warning: Oauth app user role already exists"
-        else
-          throw e
+
+        # different loops to avoid failing to create ownership role due to an error in the dataset role
+        for_each_oauth_app_user(user_id) do |conn, oau|
+          conn.query(oau.create_ownership_role_query)
         end
       end
 
@@ -521,10 +533,21 @@ module CartoDB
       end
 
       def grant_user_oauth_app_user_roles(user_id)
-        Carto::User.find(user_id).oauth_app_users.each(&:grant_dataset_role_privileges)
-      rescue Carto::OauthProvider::Errors::InvalidScope => e
-        # Ignore managed oauth_app_user errors
-        @logger.error "Error granting permissions to dataset role: #{e}"
+        Carto::User.find(user_id).oauth_app_users.each do |oau|
+          begin
+            oau.grant_dataset_role_privileges
+          rescue Carto::OauthProvider::Errors::InvalidScope => e
+            # Ignore managed oauth_app_user errors
+            @logger.error "Error granting permissions to dataset role: #{e}"
+          end
+
+          begin
+            oau.grant_ownership_role_privileges
+          rescue Carto::OauthProvider::Errors::InvalidScope => e
+            # Ignore managed oauth_app_user errors
+            @logger.error "Error granting permissions to ownership role: #{e}"
+          end
+        end
       end
 
       def org_role_name(database_name)

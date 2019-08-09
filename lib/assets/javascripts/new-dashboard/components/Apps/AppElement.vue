@@ -1,6 +1,6 @@
 <template>
   <li class="apps__item">
-    <div class="apps__icon u-mr--20">
+    <div class="apps__icon">
       <img :src="oAuthApp.icon_url || require('../../assets/icons/apps/default.svg')">
     </div>
 
@@ -39,13 +39,12 @@ export default {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    padding: 0 20px;
   }
 
   &__item-title,
   &__item-description {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-all;
   }
 
   &__item-title {
@@ -59,6 +58,7 @@ export default {
   &__icon {
     display: flex;
     position: relative;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
     width: 56px;

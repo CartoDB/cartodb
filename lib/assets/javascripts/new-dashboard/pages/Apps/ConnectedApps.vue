@@ -98,8 +98,12 @@ export default {
       this.selectedApp = {};
     },
     revokeAccess (selectedApp) {
-      this.$store.dispatch('connectedApps/revoke', selectedApp)
-        .then(() => this.$router.push({ name: 'connected_apps' }));
+      this.$store
+        .dispatch('connectedApps/revoke', selectedApp)
+        .then(() => {
+          this.closeModal();
+          this.$router.push({ name: 'connected_apps' });
+        });
     }
   }
 };

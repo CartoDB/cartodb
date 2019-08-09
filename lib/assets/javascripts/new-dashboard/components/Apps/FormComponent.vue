@@ -189,7 +189,6 @@ export default {
 
   &:focus {
     border: 1px solid $neutral--400;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
   }
 
   &--textarea {

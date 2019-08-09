@@ -22,8 +22,8 @@ module Carto
         VALID_ORDER_PARAMS = [:name].freeze
 
         def index
-          result = @user.in_database[select_user_tables_query].all
-          total = @user.in_database[count_user_tables_query].first[:count]
+          result = @user.in_database[select_tables_query].all
+          total = @user.in_database[count_tables_query].first[:count]
 
           render_paged(result, total)
         end
@@ -39,6 +39,7 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'name', default_order_direction: 'asc'
           )
           @offset = (@page - 1) * @per_page
+          @types = %w(table view matview)
         end
 
         def check_permissions
@@ -46,17 +47,28 @@ module Carto
           raise UnauthorizedError unless api_key.master? || api_key.dataset_metadata_permissions
         end
 
-        def select_user_tables_query
+        def select_tables_query
           %{
-            SELECT cdb_usertables AS name FROM cartodb.CDB_UserTables()
+            SELECT * FROM (#{tables_and_views_query}) AS tables_and_views
             ORDER BY #{@order} #{@direction}
             LIMIT #{@per_page}
             OFFSET #{@offset}
           }.squish
         end
 
-        def count_user_tables_query
-          'SELECT COUNT(*) FROM cartodb.CDB_UserTables()'
+        def count_tables_query
+          "SELECT COUNT(*) FROM (#{tables_and_views_query}) AS tables_and_views"
+        end
+
+        def tables_and_views_query
+          @types.map { |type|
+            %{
+              SELECT #{type}name AS name, '#{type}' AS type
+              FROM pg_#{type}s
+              WHERE schemaname = '#{@user.database_schema}'
+              AND #{type}owner <> 'postgres'
+            }
+          }.join(' UNION ').squish
         end
 
         def render_paged(result, total)

@@ -22,19 +22,47 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:total]).to eq 3
         expect(response.body[:count]).to eq 3
         expect(response.body[:result][0][:name]).to eq 'table_a'
+        expect(response.body[:result][0][:type]).to eq 'table'
       end
     end
 
     it 'includes non-cartodbfied tables' do
-      @user1.in_database.execute('create table non_cartodbfied_table()')
+      @user1.in_database.execute('CREATE TABLE non_cartodbfied_table()')
 
       get_json api_v4_datasets_url(@params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:total]).to eq 4
         expect(response.body[:result][0][:name]).to eq 'non_cartodbfied_table'
+        expect(response.body[:result][0][:type]).to eq 'table'
       end
 
-      @user1.in_database.execute('drop table non_cartodbfied_table')
+      @user1.in_database.execute('DROP TABLE non_cartodbfied_table')
+    end
+
+    it 'includes views' do
+      @user1.in_database.execute('CREATE VIEW my_view AS SELECT 5')
+
+      get_json api_v4_datasets_url(@params) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq 4
+        expect(response.body[:result][0][:name]).to eq 'my_view'
+        expect(response.body[:result][0][:type]).to eq 'view'
+      end
+
+      @user1.in_database.execute('DROP VIEW my_view')
+    end
+
+    it 'includes materialized views' do
+      @user1.in_database.execute('CREATE MATERIALIZED VIEW my_mat_view AS SELECT 5')
+
+      get_json api_v4_datasets_url(@params) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq 4
+        expect(response.body[:result][0][:name]).to eq 'my_mat_view'
+        expect(response.body[:result][0][:type]).to eq 'matview'
+      end
+
+      @user1.in_database.execute('DROP MATERIALIZED VIEW my_mat_view')
     end
 
     it 'returns 200 with an empty array if the current user does not have datasets' do

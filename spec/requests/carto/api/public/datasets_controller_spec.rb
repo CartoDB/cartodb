@@ -23,6 +23,8 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:count]).to eq 3
         expect(response.body[:result][0][:name]).to eq 'table_a'
         expect(response.body[:result][0][:type]).to eq 'table'
+        expect(response.body[:result][0][:privacy]).to eq 'private'
+        expect(response.body[:result][0][:cartodbfied]).to eq true
       end
     end
 
@@ -34,6 +36,8 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:total]).to eq 4
         expect(response.body[:result][0][:name]).to eq 'non_cartodbfied_table'
         expect(response.body[:result][0][:type]).to eq 'table'
+        expect(response.body[:result][0][:privacy]).to be_nil
+        expect(response.body[:result][0][:cartodbfied]).to eq false
       end
 
       @user1.in_database.execute('DROP TABLE non_cartodbfied_table')
@@ -47,6 +51,8 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:total]).to eq 4
         expect(response.body[:result][0][:name]).to eq 'my_view'
         expect(response.body[:result][0][:type]).to eq 'view'
+        expect(response.body[:result][0][:privacy]).to be_nil
+        expect(response.body[:result][0][:cartodbfied]).to eq false
       end
 
       @user1.in_database.execute('DROP VIEW my_view')
@@ -60,6 +66,8 @@ describe Carto::Api::Public::DatasetsController do
         expect(response.body[:total]).to eq 4
         expect(response.body[:result][0][:name]).to eq 'my_mat_view'
         expect(response.body[:result][0][:type]).to eq 'matview'
+        expect(response.body[:result][0][:privacy]).to be_nil
+        expect(response.body[:result][0][:cartodbfied]).to eq false
       end
 
       @user1.in_database.execute('DROP MATERIALIZED VIEW my_mat_view')

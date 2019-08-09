@@ -22,7 +22,8 @@ module Carto
         VALID_ORDER_PARAMS = [:name].freeze
 
         def index
-          result = @user.in_database[select_tables_query].all
+          tables = @user.in_database[select_tables_query].all
+          result = enrich_tables(tables)
           total = @user.in_database[count_tables_query].first[:count]
 
           render_paged(result, total)
@@ -47,6 +48,30 @@ module Carto
           raise UnauthorizedError unless api_key.master? || api_key.dataset_metadata_permissions
         end
 
+        def enrich_tables(tables)
+          table_names = tables.map { |table| table[:name] }
+          visualizations = table_visualizations(table_names)
+          tables.map do |table|
+            visualizations.find { |visualization| visualization[:name] == table[:name] } || table
+          end
+        end
+
+        def table_visualizations(names)
+          visualizations = Carto::VisualizationQueryBuilder.new
+                                                           .with_user_id(@user.id)
+                                                           .with_name(names)
+                                                           .with_type(Carto::Visualization::TYPE_CANONICAL)
+                                                           .build.all
+          visualizations.map do |visualization|
+            {
+              name: visualization.name,
+              cartodbfied: true,
+              type: 'table',
+              privacy: visualization.privacy
+            }
+          end
+        end
+
         def select_tables_query
           %{
             SELECT * FROM (#{tables_and_views_query}) AS tables_and_views
@@ -63,7 +88,7 @@ module Carto
         def tables_and_views_query
           @types.map { |type|
             %{
-              SELECT #{type}name AS name, '#{type}' AS type
+              SELECT #{type}name AS name, '#{type}' AS type, false AS cartodbfied, NULL AS privacy
               FROM pg_#{type}s
               WHERE schemaname = '#{@user.database_schema}'
               AND #{type}owner <> 'postgres'

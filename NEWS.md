@@ -11,6 +11,7 @@ sudo make install
 ### Features
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
+  - Send notification on oauth_app deletion (#15016)
   - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
   - Fixes migrations for users with OAuth related data (#14600)
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))

@@ -11,13 +11,18 @@ sudo make install
 ### Features
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
+  - Send notification on oauth_app deletion (#15016)
+  - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+  - Fixes migrations for users with OAuth related data (#14600)
+  - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements
-- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+- Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 - Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
 - Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
+- Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
 
 4.29.0 (2019-07-15)
 -------------------

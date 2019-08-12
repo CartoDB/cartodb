@@ -144,9 +144,11 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'includes all user model attributes' do
+      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit]
+
       export = service.export_user_json_hash(@user)
 
-      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit])
+      expect(export[:user].keys).to include(*expected_attrs)
     end
   end
 
@@ -185,6 +187,13 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.12 (without company_employees and use_case)' do
+      user = test_import_user_from_export(full_export_one_zero_twelve)
+
+      expect(user.company_employees).to be_nil
+      expect(user.use_case).to be_nil
     end
 
     it 'imports 1.0.11 (without maintenance_mode)' do
@@ -1113,7 +1122,8 @@ describe Carto::UserMetadataExportService do
               "dataservices:isolines",
               "dataservices:observatory",
               "dataservices:geocoding",
-              "datasets:r:test1"
+              "datasets:r:test1",
+              "schemas:c"
             ],
             created_at: "2018-11-16T14:31:46+00:00"
           }],
@@ -1128,13 +1138,20 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_twelve) do
+    user_hash = full_export[:user].except!(:use_case, :company_employees)
+    
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_eleven) do
     full_export[:user][:maintenance_mode] = false
     full_export
   end
 
   let(:full_export_one_zero_ten) do
-    user_hash = full_export[:user].except!(:regular_api_key_quota)
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
 
     full_export[:user] = user_hash
     full_export

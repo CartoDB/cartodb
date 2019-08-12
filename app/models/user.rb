@@ -1,6 +1,7 @@
 # encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
+require 'email_address'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -159,6 +160,14 @@ class User < Sequel::Model
   ## Validations
   def validate
     super
+    validate_username
+    validate_email
+    validate_password
+    validate_organization
+    validate_quotas
+  end
+
+  def validate_username
     validates_presence :username
     validates_unique   :username
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
@@ -166,24 +175,32 @@ class User < Sequel::Model
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
     validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
+  end
 
+  def validate_email
     validates_presence :email
-    validates_unique   :email, :message => 'is already taken'
-    validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+    validates_unique   :email, message: 'is already taken'
+    errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)
+  end
 
+  def validate_password
     validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
+  end
 
+  def validate_organization
     if organization.present?
       organization_validation
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
+  end
 
+  def validate_quotas
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
@@ -1909,6 +1926,12 @@ class User < Sequel::Model
 
   def trial_user?
     TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private

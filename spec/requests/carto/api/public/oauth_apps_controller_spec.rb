@@ -342,7 +342,7 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.body[:name]).to eq @app.name
         expect(response.body[:client_secret]).to eq @app.client_secret
         expect(response.body[:username]).to eq @user1.username
-        expect(response.body.size).to eq 11
+        expect(response.body.size).to eq 13
       end
     end
   end
@@ -350,7 +350,12 @@ describe Carto::Api::Public::OauthAppsController do
   describe 'create' do
     before(:all) do
       @params = { api_key: @user1.api_key }
-      @payload = { name: 'my app', redirect_uris: ['https://example.com'], icon_url: 'https://example.com/icon.png' }
+      @payload = {
+        name: 'my app',
+        redirect_uris: ['https://example.com'],
+        icon_url: 'https://example.com/icon.png',
+        website_url: 'https://example.com'
+      }
     end
 
     after(:each) do
@@ -358,6 +363,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -414,6 +420,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@user1.username}.localhost.lan"
       end
 
@@ -490,6 +497,7 @@ describe Carto::Api::Public::OauthAppsController do
       end
 
       before(:each) do
+        Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
         host! "#{@organization.name}.localhost.lan"
       end
 
@@ -514,6 +522,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -573,15 +582,22 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'destroy' do
     before(:each) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Carto::OauthAppUser.any_instance.stubs(:reassign_owners).returns(true)
+      Carto::OauthAppUser.any_instance.stubs(:drop_roles).returns(true)
       @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
       @params = { id: @app.id, api_key: @user1.api_key }
     end
 
     after(:each) do
+      ::Resque.unstub(:enqueue)
       @app.try(:destroy)
+      Carto::OauthAppUser.any_instance.unstub(:reassign_owners)
+      Carto::OauthAppUser.any_instance.unstub(:drop_roles)
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@user1.username}.localhost.lan"
     end
 
@@ -634,13 +650,43 @@ describe Carto::Api::Public::OauthAppsController do
         expect(@carto_user1.reload.oauth_apps.size).to eq 0
       end
     end
+
+    it 'sends notification if everything is ok' do
+      @app_user = Carto::OauthAppUser.create!(user_id: @app.user.id, oauth_app: @app)
+      ::Resque.expects(:enqueue)
+              .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
+              .once
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(204)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 0
+      end
+    end
+
+    it 'does not send notification if no users' do
+      ::Resque.expects(:enqueue)
+              .with(::Resque::UserJobs::Notifications::Send, anything, anything)
+              .never
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(204)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 0
+      end
+    end
+
+    it 'returns server error on error in notification when destroying app with users' do
+      @app_user = Carto::OauthAppUser.create!(user_id: @app.user.id, oauth_app: @app)
+      ::Resque.stubs(:enqueue).raises('unknown error')
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(500)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 1
+      end
+    end
   end
 
   describe 'revoke' do
     before(:each) do
       @app = FactoryGirl.create(:oauth_app, user_id: @carto_org_user_2.id)
       @app.oauth_app_organizations.create!(organization: @carto_organization, seats: 1)
-      Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
+      @oauth_app_user = Carto::OauthAppUser.create!(user: @carto_org_user_1, oauth_app: @app)
 
       @params = { id: @app.id, api_key: @carto_org_user_1.api_key }
     end
@@ -650,6 +696,7 @@ describe Carto::Api::Public::OauthAppsController do
     end
 
     before(:each) do
+      Carto::OauthApp.any_instance.stubs(:sync_with_central?).returns(false)
       host! "#{@carto_org_user_1.username}.localhost.lan"
     end
 
@@ -693,6 +740,30 @@ describe Carto::Api::Public::OauthAppsController do
         expect(response.status).to eq(404)
         expect(response.body[:errors]).to eq 'Record not found'
       end
+    end
+
+    it 'returns 204 if role does not exist when reassigning' do
+      Carto::OauthAppUser.any_instance.stubs(:dataset_role_name).returns('wrong')
+
+      post_json api_v4_oauth_apps_revoke_url(@params) do |response|
+        expect(response.status).to eq(204)
+      end
+
+      Carto::OauthAppUser.any_instance.unstub(:dataset_role_name)
+    end
+
+    it 'returns 500 role does not exist when reassigning' do
+      mock = OpenStruct.new
+      mock.stubs(:execute).raises(ActiveRecord::StatementInvalid, 'Error reassigning owners')
+      Carto::User.any_instance.stubs(:in_database).returns(mock)
+
+      post_json api_v4_oauth_apps_revoke_url(@params) do |response|
+        expect(response.status).to eq(500)
+        expect(response.body[:errors]).to include 'Error reassigning owners'
+      end
+
+      Carto::OauthAppUser.any_instance.unstub(:dataset_role_name)
+      Carto::User.any_instance.unstub(:in_database)
     end
 
     it 'returns 204 if everything is ok' do

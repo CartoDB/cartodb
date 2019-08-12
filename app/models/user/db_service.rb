@@ -358,14 +358,7 @@ module CartoDB
       end
 
       def all_tables_granted(role = nil)
-        roles = []
-        if role.present?
-          roles << role
-        else
-          roles = all_user_roles
-        end
-        roles_str = roles.map { |r| "'#{r}'" }.join(',')
-
+        roles_str = role ? "'#{role}'" : all_user_roles.map { |r| "'#{r}'" }.join(',')
         query = %{
           SELECT
             s.nspname as schema,
@@ -399,6 +392,75 @@ module CartoDB
         end
 
         privileges_hashed
+      end
+
+      def all_schemas_granted(role)
+        roles_str = role ? role : all_user_roles.join(',')
+        permissions = 'create,usage'
+        query = %{
+          WITH
+          roles AS (
+            SELECT unnest('{#{roles_str}}'::text[]) AS rname
+          ),
+          permissions AS (
+            SELECT 'SCHEMA' AS ptype, unnest('{#{permissions}}'::text[]) AS pname
+          ),
+          schemas AS (
+            SELECT schema_name AS sname
+            FROM information_schema.schemata
+            WHERE schema_name !~ '^pg_'
+              AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ),
+          schemas_roles_permissions AS (
+          SELECT
+              permissions.ptype,
+              schemas.sname AS obj_name,
+              roles.rname,
+              permissions.pname,
+              has_schema_privilege(roles.rname, schemas.sname, permissions.pname) AS has_permission
+          FROM
+            schemas
+            CROSS JOIN roles
+            CROSS JOIN permissions
+          WHERE
+            permissions.ptype = 'SCHEMA'
+          ),
+          schemas_and_grants AS (
+            SELECT obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            FROM schemas_roles_permissions
+            GROUP BY 1
+            ORDER BY 1
+          )
+          SELECT
+            object_name, granted_permissions
+          FROM
+            schemas_and_grants
+          WHERE
+            granted_permissions is not null and granted_permissions <> '';
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_schemas_granted_hashed(role = nil)
+        results = all_schemas_granted(role)
+        return {} if results.nil?
+
+        results.map { |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
+      end
+
+      def exists_role?(rolname)
+        query = %{
+          SELECT 1
+          FROM   pg_catalog.pg_roles
+          WHERE  rolname = '#{rolname}'
+        }
+
+        result = @user.in_database(as: :superuser).fetch(query)
+        result.count > 0
       end
 
       def drop_owned_by_user(conn, role)
@@ -594,7 +656,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.28.1'
+          cdb_extension_target_version = '0.30.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -1360,6 +1422,14 @@ module CartoDB
 
       def drop_ghost_tables_event_trigger
         @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
+      end
+
+      def create_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      end
+
+      def drop_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableOAuthReassignTablesTrigger()')
       end
 
       private

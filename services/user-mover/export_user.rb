@@ -211,7 +211,7 @@ module CartoDB
       end
 
       def dump_role_grants(role)
-        roles = user_pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member');")
+        roles = user_pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member') AND rolname not similar to '(carto_role|carto_oauth_app)_%';")
         roles.map { |q| q['rolname'] }.reject { |r| r == role }
       end
 

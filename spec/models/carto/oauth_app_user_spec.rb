@@ -1,15 +1,16 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
+require 'helpers/database_connection_helper'
 
 module Carto
   describe OauthAppUser do
     include_context 'organization with users helper'
     include CartoDB::Factories
+    include DatabaseConnectionHelper
 
-    describe '#validation' do
+    describe 'validation' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
+        user = FactoryGirl.create(:valid_user)
+        @user = Carto::User.find(user.id)
         @app = FactoryGirl.create(:oauth_app, user: @user)
       end
 
@@ -121,18 +122,20 @@ module Carto
       it 'is authorized only if all requested scopes are already granted' do
         o1 = "datasets:rw:#{@carto_user.database_schema}.#{@t1.name}"
         o2 = "datasets:rw:#{@carto_user.database_schema}.#{@t2.name}"
+        o3 = "schemas:c:#{@carto_user.database_schema}"
 
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2, o3])
 
         expect(oau).to(be_authorized([o1]))
         expect(oau).to(be_authorized([o2]))
-        expect(oau).to(be_authorized([o1, o2]))
+        expect(oau).to(be_authorized([o3]))
+        expect(oau).to(be_authorized([o1, o2, o3]))
 
         expect(oau).not_to(be_authorized(['not_allowed']))
         expect(oau).not_to(be_authorized([o1, 'not_allowed']))
       end
 
-      it 'should be authenticated if requesting read permission having read-write' do
+      it 'should be authorized if requesting read permission having read-write' do
         write_read = "datasets:rw:#{@t1.name}"
         read = "datasets:r:#{@t1.name}"
 
@@ -141,7 +144,7 @@ module Carto
         expect(oau).to(be_authorized([read]))
       end
 
-      it 'should NOT be authenticated if requesting read-write permission having only read' do
+      it 'should NOT be authorized if requesting read-write permission having only read' do
         write_read = "datasets:rw:#{@t1.name}"
         read = "datasets:r:#{@t1.name}"
 
@@ -177,6 +180,7 @@ module Carto
         o2 = "datasets:rw:#{@t2.name}"
         o3 = "datasets:rw:#{@t3.name}"
         o4 = "datasets:rw:#{@t4.name}"
+        o5 = "schemas:c:#{@carto_user.database_schema}"
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
@@ -194,10 +198,136 @@ module Carto
 
         oau.upgrade!([])
         expect(oau.scopes).to(eq([o1, o2, o3, o4]))
+
+        oau.upgrade!([o5])
+        expect(oau.scopes).to(eq([o1, o2, o3, o4, o5]))
       end
     end
 
     describe 'datasets scope' do
+      before(:each) do
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @table1 = create_table(user_id: @carto_user.id)
+      end
+
+      after(:each) do
+        @table1.destroy
+        @app.destroy
+        @user.destroy
+        @carto_user.destroy
+      end
+
+      it 'creation and update' do
+        table2 = create_table(user_id: @carto_user.id)
+        dataset_scope1 = "datasets:rw:#{@table1.name}"
+        dataset_scope2 = "datasets:r:#{table2.name}"
+        scopes = ['user:profile', dataset_scope1, dataset_scope2]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+
+        oau.upgrade!([])
+        expect(oau.scopes).to(eq(scopes))
+
+        oau.upgrade!([dataset_scope1])
+        expect(oau.scopes).to(eq(scopes))
+
+        table2.destroy
+        oau.destroy
+      end
+
+      it 'rename table and check how it affects the scopes' do
+        scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+
+        @table1.name = 'table_renamed_' + @table1.name
+        @table1.save
+
+        expect(oau.all_scopes).to_not(eq(scopes_before))
+
+        scopes_after = ['user:profile', "datasets:rw:#{@table1.name}"]
+        expect(oau.all_scopes).to(eq(scopes_after))
+
+        oau.destroy
+      end
+
+      it 'write on table with the proper permissions' do
+        scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        oau.destroy
+      end
+
+      it 'should fail if we change the write permissions and we try to write in the table' do
+        scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
+        scopes_after = ['offline', 'user:profile']
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
+        access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: scopes_after)[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          expect {
+            connection.execute("insert into #{@table1.name} (cartodb_id) values (1000)")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
+        end
+
+        oau.destroy
+      end
+
+      it 'should let downgrade scope for datasets from rw to r scope' do
+        scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
+        scopes_after = ['offline', 'user:profile', "datasets:r:#{@table1.name}"]
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
+        expect(oau.all_scopes).to(eq(scopes_before))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
+        access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: scopes_after)[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          connection.execute("select cartodb_id from #{@table1.name}") do |result|
+            result[0]['cartodb_id'].should eq '999'
+          end
+          expect {
+            connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for (relation|table) #{@table1.name}/)
+        end
+
+        oau.destroy
+      end
+
+    end
+
+    describe 'schemas scope' do
       before(:all) do
         @user = FactoryGirl.create(:valid_user)
         @carto_user = Carto::User.find(@user.id)
@@ -215,8 +345,9 @@ module Carto
       end
 
       it 'creation and update' do
+        table2 = create_table(user_id: @carto_user.id)
         dataset_scope1 = "datasets:rw:#{@table1.name}"
-        dataset_scope2 = "datasets:r:#{@table2.name}"
+        dataset_scope2 = "datasets:r:#{table2.name}"
         scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
@@ -228,23 +359,129 @@ module Carto
         oau.upgrade!([dataset_scope1])
         expect(oau.scopes).to(eq(scopes))
 
+        table2.destroy
         oau.destroy
       end
 
-      it 'rename table' do
-        scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
-        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
-        expect(oau.all_scopes).to(eq(scopes_before))
+      it 'create table with permissions should work and assign it to the owner_role' do
+        schemas_scope = "schemas:c"
+        scopes = ['user:profile', schemas_scope]
 
-        @table1.name = 'table_renamed_' + @table1.name
-        @table1.save
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
-        expect(oau.all_scopes).to_not(eq(scopes_before))
-
-        scopes_after = ['user:profile', "datasets:rw:#{@table1.name}"]
-        expect(oau.all_scopes).to(eq(scopes_after))
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
+            result[0]['count'].should eq '1'
+          end
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
+            result[0]['owner'].should eq oau.ownership_role_name
+          end
+          connection.execute("drop table test_table")
+        end
 
         oau.destroy
+      end
+
+      it 'create table without permissions should fail' do
+        scopes = ['user:profile']
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          expect {
+            connection.execute("create table test_table as select 1 as test")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
+        end
+
+        oau.destroy
+      end
+
+      it 'create table with permission, then refresh token and drop the table with the new db role' do
+        schemas_scope = "schemas:c"
+        scopes = ['offline', 'user:profile', schemas_scope]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
+        access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
+            result[0]['count'].should eq '1'
+          end
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
+            result[0]['owner'].should eq oau.ownership_role_name
+          end
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: scopes)[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          connection.execute("drop table test_table")
+        end
+
+        oau.destroy
+      end
+
+      it 'create table with permission, then refresh token and remove permission, then try to create another table and get exception' do
+        schemas_scope = "schemas:c"
+        scopes = ['offline', 'user:profile', schemas_scope]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
+        access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
+            result[0]['count'].should eq '1'
+          end
+          connection.execute("select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'test_table'") do |result|
+            result[0]['owner'].should eq oau.ownership_role_name
+          end
+          connection.execute("drop table test_table")
+        end
+
+        access_token_new = refresh_token.exchange!(requested_scopes: ['offline', 'user:profile'])[0]
+        expect(access_token.api_key.db_role).to_not(eq(access_token_new.api_key.db_role))
+        with_connection_from_api_key(access_token_new.api_key) do |connection|
+          expect {
+            connection.execute("create table test_table_without_permissions as select 1 as test")
+          }.to raise_exception(Sequel::DatabaseError, /permission denied for schema public/)
+        end
+
+        oau.destroy
+      end
+
+      it 'master role can drop tables created with access token API key' do
+        schemas_scope = "schemas:c"
+        scopes = ['offline', 'user:profile', schemas_scope]
+
+        oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
+        expect(oau.scopes).to(eq(scopes))
+        refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
+        access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
+
+        with_connection_from_api_key(access_token.api_key) do |connection|
+          connection.execute("create table test_table as select 1 as test")
+          connection.execute("select count(1) from test_table") do |result|
+            result[0]['count'].should eq '1'
+          end
+        end
+
+        with_connection_from_api_key(@carto_user.api_keys.master.first) do |connection|
+          connection.execute("drop table test_table")
+          connection.execute("select * from pg_class where relname = 'test_table'") do |result|
+            result.count.should eq 0
+          end
+        end
       end
     end
 
@@ -461,5 +698,41 @@ module Carto
         expect(oau.all_scopes).to(eq(["datasets:r:#{@materialized_view_name}"]))
       end
     end
+
+    describe '#destroy' do
+      before(:each) do
+        @user = FactoryGirl.create(:valid_user)
+        @app = FactoryGirl.create(:oauth_app, user_id: @user.id)
+        @app_user = Carto::OauthAppUser.create!(user_id: @user.id, oauth_app: @app)
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user,
+                                                scopes: ["schemas:c:#{@user.database_schema}"])
+        @api_key = access_token.api_key
+      end
+
+      after(:each) do
+        @app.destroy
+        @user.destroy
+      end
+
+      it 'drops the created roles' do
+        find_role_query = "SELECT * FROM pg_roles WHERE rolname LIKE '%#{@app_user.id}'"
+        @user.in_database.fetch(find_role_query).count.should eq 2
+
+        @app_user.destroy
+
+        @user.in_database.fetch(find_role_query).count.should eq 0
+      end
+
+      it 'reassigns the ownership of created tables to the master role' do
+        with_connection_from_api_key(@api_key) { |db| db.execute('CREATE TABLE puxa()') }
+        find_owner_query = "SELECT tableowner FROM pg_tables WHERE tablename = 'puxa'"
+        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @app_user.ownership_role_name
+
+        @app_user.destroy
+
+        @user.in_database.fetch(find_owner_query).first[:tableowner].should eql @user.database_username
+      end
+    end
+
   end
 end

@@ -40,6 +40,12 @@ export default {
     this.$store.dispatch('maps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
+    // If user is viewer, show shared maps and datasets
+    if (this.$store.getters['user/isViewer']) {
+      this.$store.dispatch('maps/filter', 'shared');
+      this.$store.dispatch('datasets/filter', 'shared');
+    }
+
     this.$store.dispatch('maps/fetch');
     this.$store.dispatch('datasets/fetch');
   },

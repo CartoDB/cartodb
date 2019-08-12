@@ -99,6 +99,8 @@
         "company_name": "Company Name",
         "role": "Your Role",
         "industry": "Industry",
+        "company_employees": "Number of employees",
+        "use_case": "Use case",
         "phone": "Phone Number",
         "user_type": "User type",
         "viewer": "VIEWER",

@@ -1,4 +1,5 @@
 require_relative '../paged_searcher'
+require_dependency 'carto/oauth_provider/errors'
 
 module Carto
   module Api
@@ -17,6 +18,7 @@ module Carto
         before_action :engine_required
 
         setup_default_rescues
+        rescue_from Carto::OauthProvider::Errors::ServerError, with: :rescue_oauth_errors
 
         VALID_ORDER_PARAMS = [:name, :updated_at, :restricted, :user_id].freeze
 
@@ -99,7 +101,7 @@ module Carto
         end
 
         def permitted_params
-          params.permit(:name, :icon_url, redirect_uris: [])
+          params.permit(:name, :icon_url, :description, :website_url, redirect_uris: [])
         end
 
         def render_paged(oauth_apps, private_data: false)
@@ -117,6 +119,10 @@ module Carto
           ) { |params| yield(params) }
 
           render_jsonp(enriched_response, 200)
+        end
+
+        def rescue_oauth_errors(exception)
+          render json: { errors: exception.parameters[:error_description] }, status: 500
         end
       end
     end

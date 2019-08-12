@@ -17,6 +17,24 @@ describe Carto::OauthProvider::Scopes do
       @user.destroy
     end
 
+    it 'detects invalid dataset and schemas scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(
+        [
+          "datasets:r:twf",
+          "datasets:rw:twf",
+          "datasets:rw:a.twf",
+          "datasets:rw:a.a.twf",
+          "datasets:c:a.twf",
+          "schemas:c",
+          "schemas:c:public",
+          "schemas:c:a",
+          'schemas:c:a.a',
+          "schemas:w:a"
+        ]
+      )
+      expect(scopes).to eq ["datasets:rw:a.a.twf", "datasets:c:a.twf", "schemas:w:a"]
+    end
+
     it 'validates supported scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
         Carto::OauthProvider::Scopes::SUPPORTED_SCOPES,
@@ -30,13 +48,33 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes).to eq(['datasets:r:wtf'])
     end
 
+    it 'returns non existent schemas scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(['schemas:c:wtf'], @user)
+      expect(scopes).to eq(['schemas:c:wtf'])
+    end
+
     it 'validates non existent datasets scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes(['datasets:r:wtf'])
       expect(scopes).to be_empty
     end
 
+    it 'validates non existent schemas scopes' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes(['schemas:c:wtf'])
+      expect(scopes).to be_empty
+    end
+
     it 'validates existing datasets scopes' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user_table.name}"], @user)
+      expect(scopes).to be_empty
+    end
+
+    it 'validates user schema scope' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["schemas:c:#{@user.database_schema}"], @user)
+      expect(scopes).to be_empty
+    end
+
+    it 'validates empty schema scope' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["schemas:c"], @user)
       expect(scopes).to be_empty
     end
 
@@ -64,6 +102,11 @@ describe Carto::OauthProvider::Scopes do
     it 'returns datasets scopes with non existent permissions' do
       scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:f:#{@user_table.name}"], @user)
       expect(scopes).to eq(["datasets:f:#{@user_table.name}"])
+    end
+
+    it 'returns schemas scopes with non existent permissions' do
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["schemas:c:pg_catalog"], @user)
+      expect(scopes).to eq(["schemas:c:pg_catalog"])
     end
 
     it 'returns invalid datasets scopes' do
@@ -108,6 +151,62 @@ describe Carto::OauthProvider::Scopes do
           @user
         )
         expect(scopes).to be_empty
+      end
+    end
+
+    # org schemas
+    describe 'org schemas' do
+      it 'validates own user schema' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["schemas:c:#{@carto_org_user_2.database_schema}"], @carto_org_user_2
+        )
+        expect(scopes).to be_empty
+      end
+
+      it 'returns scopes for other user schema' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          ["schemas:c:#{@carto_org_user_1.database_schema}"], @carto_org_user_2
+        )
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}"
+          ]
+        )
+      end
+
+      it 'returns scopes for same org users schemas' do
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@carto_org_user_2.database_schema}",
+            "schemas:c:#{@carto_org_user_owner.database_schema}"
+          ], @carto_org_user_2
+        )
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@carto_org_user_owner.database_schema}"
+          ]
+        )
+      end
+
+      it 'returns scopes for non-user org schema' do
+        @helper = TestUserFactory.new
+        @org_user_owner2 = @helper.create_owner(@organization_2)
+
+        scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@carto_org_user_2.database_schema}",
+            "schemas:c:#{@org_user_owner2.database_schema}"
+          ], @carto_org_user_2
+        )
+        expect(scopes).to eq(
+          [
+            "schemas:c:#{@carto_org_user_1.database_schema}",
+            "schemas:c:#{@org_user_owner2.database_schema}"
+          ]
+        )
       end
     end
 
@@ -232,8 +331,9 @@ describe Carto::OauthProvider::Scopes do
 
   describe Carto::OauthProvider::Scopes::DatasetsScope do
     describe '#add_to_api_key_grants' do
-      let(:full_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:rw:untitled_table') }
-      let(:read_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:r:untitled_table') }
+      let(:full_dataset_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:rw:untitled_table') }
+      let(:read_dataset_scope) { Carto::OauthProvider::Scopes::DatasetsScope.new('datasets:r:untitled_table') }
+      let(:schema_scope) { Carto::OauthProvider::Scopes::SchemasScope.new('schemas:c') }
       let(:full_table_grants) do
         [
           {
@@ -254,6 +354,14 @@ describe Carto::OauthProvider::Scopes do
                   'delete'
                 ],
                 schema: 'wadus'
+              }
+            ],
+            schemas: [
+              {
+                name: 'wadus',
+                permissions: [
+                  'create'
+                ]
               }
             ],
             type: 'database'
@@ -291,13 +399,14 @@ describe Carto::OauthProvider::Scopes do
 
       it 'adds full access permissions' do
         grants = [{ type: 'apis', apis: [] }]
-        full_scope.add_to_api_key_grants(grants, @user)
+        full_dataset_scope.add_to_api_key_grants(grants, @user)
+        schema_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(full_table_grants))
       end
 
       it 'does not add write permissions' do
         grants = [{ type: 'apis', apis: [] }]
-        read_scope.add_to_api_key_grants(grants, @user)
+        read_dataset_scope.add_to_api_key_grants(grants, @user)
         expect(grants).to(eq(read_table_grants))
       end
     end
@@ -370,6 +479,13 @@ describe Carto::OauthProvider::Scopes do
     it 'profile - profile' do
       scopes1 = ['user:profile']
       scopes2 = ['user:profile']
+      scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
+      expect(scopes).to be_empty
+    end
+
+    it 'schema - schena' do
+      scopes1 = ['schemas:c']
+      scopes2 = ['schemas:c']
       scopes = Carto::OauthProvider::Scopes.subtract_scopes(scopes1, scopes2, nil)
       expect(scopes).to be_empty
     end
@@ -464,6 +580,25 @@ describe Carto::OauthProvider::Scopes do
       ]
 
       scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(new_scopes, previous_scopes)
+      expect(scopes_by_category).to(eq(expected))
+    end
+
+    it 'shows create table permission' do
+      create_scope = ["schemas:c:public"]
+      expected = [
+        {
+          description: "User and personal data",
+          icon: nil,
+          scopes: [{ description: "Username and organization name", new: true }]
+        },
+        {
+          description: "Create tables",
+          icon: nil,
+          scopes: [{ description: "public schema (create tables)", new: true }]
+        }
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(create_scope, [])
       expect(scopes_by_category).to(eq(expected))
     end
   end

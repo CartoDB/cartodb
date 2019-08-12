@@ -153,6 +153,8 @@ module CartoDB
         available_for_hire: available_for_hire,
         location: location,
         industry: industry,
+        company_employees: company_employees,
+        use_case: use_case,
         company: company,
         phone: phone,
         job_role: job_role

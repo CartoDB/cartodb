@@ -2,6 +2,7 @@ require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
@@ -18,27 +19,6 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-  class TablePermissions
-    WRITE_PERMISSIONS = ['insert', 'update', 'delete', 'truncate'].freeze
-
-    attr_reader :schema, :name, :permissions
-
-    def initialize(schema:, name:, permissions: [])
-      @schema = schema
-      @name = name
-      @permissions = permissions
-    end
-
-    def merge!(permissions)
-      down_permissions = permissions.map(&:downcase)
-      @permissions += down_permissions.reject { |p| @permissions.include?(p) }
-    end
-
-    def write?
-      !(@permissions & WRITE_PERMISSIONS).empty?
-    end
-  end
-
   class ApiKey < ActiveRecord::Base
 
     include Carto::AuthTokenGenerator
@@ -92,7 +72,7 @@ module Carto
     validates :name, presence: true, uniqueness: { scope: :user_id }
 
     validate :valid_name_for_type
-    validate :check_table_permissions, unless: :skip_role_setup
+    validate :check_permissions, unless: :skip_role_setup
     validate :valid_master_key, if: :master?
     validate :valid_default_public_key, if: :default_public?
 
@@ -102,7 +82,7 @@ module Carto
     after_save :add_to_redis, if: :valid_user?
     after_save :save_cdb_conf_info, unless: :skip_cdb_conf_info?
 
-    after_destroy :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
+    after_destroy :reassign_owner, :drop_db_role, if: ->(k) { k.needs_setup? && !k.skip_role_setup }
     after_destroy :remove_from_redis
     after_destroy :invalidate_cache
     after_destroy :remove_cdb_conf_info, unless: :skip_cdb_conf_info?
@@ -114,7 +94,7 @@ module Carto
     scope :by_type, ->(types) { types.blank? ? user_visible : where(type: types) }
     scope :order_weighted_by_type, -> { order(TYPE_WEIGHTED_ORDER) }
 
-    attr_accessor :skip_role_setup
+    attr_accessor :skip_role_setup, :ownership_role_name
     attr_writer :skip_cdb_conf_info
 
     private_class_method :new, :create, :create!
@@ -155,12 +135,13 @@ module Carto
       )
     end
 
-    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:)
+    def self.create_oauth_key!(user: Carto::User.find(scope_attributes['user_id']), name:, grants:, ownership_role_name:)
       create!(
         user: user,
         type: TYPE_OAUTH,
         name: name,
-        grants: grants
+        grants: grants,
+        ownership_role_name: ownership_role_name
       )
     end
 
@@ -204,24 +185,55 @@ module Carto
       @table_permissions_cache.values
     end
 
+    def schema_permissions
+      @schema_permissions_cache ||= process_schema_permissions
+      @schema_permissions_cache.values
+    end
+
     def table_permissions_from_db
       query = %{
-        SELECT
-          table_schema,
-          table_name,
-          string_agg(DISTINCT lower(privilege_type),',') privilege_types
-        FROM
-          information_schema.table_privileges tp
-        WHERE
-          tp.grantee = '#{db_role}'
-        GROUP BY
-          table_schema,
-          table_name;
+          WITH permissions AS (
+            SELECT
+                table_schema,
+                table_name,
+                string_agg(DISTINCT lower(privilege_type),',') privilege_types
+            FROM
+                information_schema.table_privileges tp
+            WHERE
+                tp.grantee = '#{db_role}'
+            GROUP BY
+                table_schema,
+                table_name
+          ),
+          ownership AS (
+            SELECT
+                n.nspname as table_schema,
+                relname as table_name
+            FROM pg_class
+            JOIN pg_catalog.pg_namespace n ON n.oid = pg_class.relnamespace
+            WHERE pg_catalog.pg_get_userbyid(relowner) = '#{db_role}'
+          )
+          SELECT
+              p.table_name,
+              p.table_schema,
+              p.privilege_types,
+              CASE WHEN o.table_name IS NULL THEN false
+                  ELSE true
+              END AS owner
+          FROM permissions p
+          LEFT JOIN ownership o ON (p.table_name = o.table_name AND p.table_schema = o.table_schema)
         }
       db_run(query).map do |line|
         TablePermissions.new(schema: line['table_schema'],
                              name: line['table_name'],
+                             owner: line['owner'] == 't' ? true : false,
                              permissions: line['privilege_types'].split(','))
+      end
+    end
+
+    def schema_permissions_from_db
+      user.db_service.all_schemas_granted_hashed(db_role).map do |schema, permissions|
+        SchemaPermissions.new(name: schema, permissions: permissions)
       end
     end
 
@@ -285,7 +297,7 @@ module Carto
     def role_permission_queries
       queries = [
         "GRANT \"#{user.service.database_public_username}\" TO \"#{db_role}\"",
-        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}"
+        "ALTER ROLE \"#{db_role}\" SET search_path TO #{user.db_service.build_search_path}",
       ]
 
       # This is GRANTED to the organizational role for organization users, and the PUBLIC users for non-orgs
@@ -296,6 +308,9 @@ module Carto
       if user.organization_user?
         queries << "GRANT ALL ON FUNCTION \"#{user.database_schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\""
       end
+      if regular?
+        queries << "GRANT \"#{db_role}\" TO \"#{user.database_username}\""
+      end
       queries
     end
 
@@ -305,16 +320,19 @@ module Carto
     end
 
     def save_cdb_conf_info
-      info = {
-        username: user.username,
-        permissions: data_services || []
-      }
-
-      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{info.to_json}');")
+      db_run("SELECT cartodb.cdb_conf_setconf('#{CDB_CONF_KEY_PREFIX}#{db_role}', '#{cdb_conf_info.to_json}');")
     end
 
     def remove_cdb_conf_info
       db_run("SELECT cartodb.CDB_Conf_RemoveConf('#{CDB_CONF_KEY_PREFIX}#{db_role}');")
+    end
+
+    def cdb_conf_info
+      {
+        username: user.username,
+        permissions: data_services || [],
+        ownership_role_name: effective_ownership_role_name || ''
+      }
     end
 
     def skip_cdb_conf_info
@@ -323,6 +341,15 @@ module Carto
 
     def skip_cdb_conf_info?
       skip_cdb_conf_info.present?
+    end
+
+    def effective_ownership_role_name
+      return if schema_permissions.all? { |s| s.permissions.empty? }
+      ownership_role_name || oauth_access_token.try(:ownership_role_name)
+    end
+
+    def grant_ownership_role_privileges
+      db_run("GRANT \"#{effective_ownership_role_name}\" TO \"#{db_role}\"") if effective_ownership_role_name.present?
     end
 
     private
@@ -360,7 +387,7 @@ module Carto
       table_permissions = {}
 
       databases = grants.find { |v| v[:type] == 'database' }
-      return table_permissions unless databases.present?
+      return table_permissions unless databases.try(:[], :tables).present?
 
       databases[:tables].each do |table|
         table_id = "#{table[:schema]}.#{table[:name]}"
@@ -369,6 +396,21 @@ module Carto
       end
 
       table_permissions
+    end
+
+    def process_schema_permissions
+      schema_permissions = {}
+
+      databases = grants.find { |v| v[:type] == 'database' }
+      return schema_permissions unless databases.try(:[], :schemas).present?
+
+      databases[:schemas].each do |schema|
+        schema_id = schema[:name]
+        schema_permissions[schema_id] ||= Carto::SchemaPermissions.new(name: schema[:name])
+        schema_permissions[schema_id].merge!(schema[:permissions])
+      end
+
+      schema_permissions
     end
 
     def process_data_services
@@ -385,16 +427,27 @@ module Carto
       user_data_grants[:data]
     end
 
-    def check_table_permissions
+    def check_permissions
       # Only checks if no previous errors in JSON definition
+      check_table_permissions
+      check_schema_permissions
+    end
+
+    def check_table_permissions
       if errors[:grants].empty? && invalid_tables_permissions.any?
-        errors.add(:grants, 'can only grant permissions you have')
+        errors.add(:grants, 'can only grant table permissions you have')
+      end
+    end
+
+    def check_schema_permissions
+      if errors[:grants].empty? && invalid_schemas_permissions.any?
+        errors.add(:grants, 'can only grant schema permissions you have')
       end
     end
 
     def invalid_tables_permissions
       databases = grants.find { |v| v[:type] == 'database' }
-      return [] unless databases.present?
+      return [] unless databases.try(:[], :tables).present?
 
       allowed = user.db_service.all_tables_granted_hashed
 
@@ -409,6 +462,20 @@ module Carto
       invalid
     end
 
+    def invalid_schemas_permissions
+      databases = grants.find { |v| v[:type] == 'database' }
+      return [] unless databases.try(:[], :schemas).present?
+
+      allowed = user.db_service.all_schemas_granted_hashed
+
+      invalid = []
+      databases[:schemas].each do |schema|
+        invalid_schema = (schema[:permissions] - allowed[schema[:name]].to_a).any?
+        invalid << schema if invalid_schema
+      end
+      invalid
+    end
+
     def create_db_config
       begin
         self.db_role = Carto::DB::Sanitize.sanitize_identifier("carto_role_#{SecureRandom.hex}")
@@ -418,32 +485,48 @@ module Carto
 
     def setup_db_role
       create_role
+      setup_table_permissions
+      setup_schema_permissions
+      grant_ownership_role_privileges
+    end
 
-      non_existent_tables = []
-      errors = []
-      table_permissions.each do |tp|
-        unless tp.permissions.empty?
-          begin
-            # here we catch exceptions to show a proper error to the user request
-            # this is because we allow OAuth requests to include a `datasets` scope with a user defined table
-            # which may or may not exists
-            Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
-              db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
-              sequences_for_table(schema, table_name).each do |seq|
-                db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
-              end
-            end
-          rescue Carto::UnprocesableEntityError => e
-            raise e unless e.message =~ /does not exist/
-            non_existent_tables << tp.name
-            errors << e.message
+    def setup_table_permissions
+      setup_permissions(table_permissions) do |tp|
+        Carto::TableAndFriends.apply(db_connection, tp.schema, tp.name) do |schema, table_name, qualified_name|
+          db_run("GRANT #{tp.permissions.join(', ')} ON TABLE #{qualified_name} TO \"#{db_role}\"")
+          sequences_for_table(schema, table_name).each do |seq|
+            db_run("GRANT USAGE, SELECT ON SEQUENCE #{seq} TO \"#{db_role}\"")
           end
         end
       end
 
-      raise Carto::RelationDoesNotExistError.new(errors, non_existent_tables) unless non_existent_tables.empty?
+      schemas_from_granted_tables.each { |s| grant_usage_privileges_for_schema(s) }
+    end
 
-      affected_schemas.each { |s| grant_aux_write_privileges_for_schema(s) }
+    def setup_schema_permissions
+      setup_permissions(schema_permissions) do |sp|
+        db_run("GRANT #{sp.permissions.join(', ')} ON SCHEMA \"#{sp.name}\" TO \"#{db_role}\"")
+      end
+    end
+
+    def setup_permissions(permissions)
+      non_existent = []
+      errors = []
+      permissions.each do |api_key_permission|
+        next if api_key_permission.permissions.empty?
+        begin
+          # here we catch exceptions to show a proper error to the user request
+          # this is because we allow OAuth requests to include a `datasets` or `schemas` scope with
+          # tables or schema that may or may not exist
+          yield api_key_permission
+        rescue Carto::UnprocesableEntityError => e
+          raise e unless e.message =~ /does not exist/
+          non_existent << api_key_permission.name
+          errors << e.message
+        end
+      end
+
+      raise Carto::RelationDoesNotExistError.new(errors, non_existent) unless non_existent.empty?
     end
 
     def create_role
@@ -451,11 +534,17 @@ module Carto
     end
 
     def drop_db_role
-      db_run("DROP OWNED BY  \"#{db_role}\"")
-      db_run("DROP ROLE \"#{db_role}\"")
+      db_run("DROP OWNED BY \"#{db_role}\"")
+      db_run("DROP ROLE IF EXISTS \"#{db_role}\"")
     end
 
-    def affected_schemas
+    def reassign_owner
+      # The other type of keys are reassigned in oauth_app_user for example
+      return unless regular?
+      db_run("REASSIGN OWNED BY \"#{db_role}\" TO \"#{user.database_username}\";")
+    end
+
+    def schemas_from_granted_tables
       # assume table friends don't introduce new schemas
       table_permissions.map(&:schema).uniq
     end
@@ -492,6 +581,7 @@ module Carto
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.warning(message: 'Error running SQL command', exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
       raise_unprocessable_entity_error(e)
     end
 
@@ -517,9 +607,9 @@ module Carto
       $users_metadata
     end
 
-    def grant_aux_write_privileges_for_schema(s)
-      db_run("GRANT USAGE ON SCHEMA \"#{s}\" TO \"#{db_role}\"")
-      db_run("GRANT ALL ON FUNCTION \"#{s}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\"")
+    def grant_usage_privileges_for_schema(schema)
+      db_run("GRANT USAGE ON SCHEMA \"#{schema}\" TO \"#{db_role}\"")
+      db_run("GRANT ALL ON FUNCTION \"#{schema}\"._CDB_UserQuotaInBytes() TO \"#{db_role}\"")
     end
 
     def valid_master_key

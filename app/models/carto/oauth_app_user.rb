@@ -6,6 +6,7 @@ require_dependency 'carto/oauth_provider/errors'
 module Carto
   class OauthAppUser < ActiveRecord::Base
     include OauthProvider::Scopes
+
     belongs_to :user, inverse_of: :oauth_app_users
     belongs_to :oauth_app, inverse_of: :oauth_app_users
     belongs_to :api_key, inverse_of: :oauth_app_user
@@ -18,9 +19,9 @@ module Carto
     validates :scopes, scopes: true
     validate  :validate_user_authorizable, on: :create
 
-    after_create :create_dataset_role, :grant_dataset_role_privileges, unless: :skip_role_setup
+    after_create :create_roles, :enable_schema_triggers, :ensure_role_grants, unless: :skip_role_setup
     before_update :grant_dataset_role_privileges
-    after_destroy :drop_dataset_role, unless: :skip_role_setup
+    after_destroy :reassign_owners, :drop_roles, :disable_schema_triggers, unless: :skip_role_setup
 
     attr_accessor :skip_role_setup
 
@@ -51,15 +52,34 @@ module Carto
       end
     end
 
+    def create_roles
+      create_dataset_role
+      create_ownership_role
+    end
+
     def create_dataset_role
-      user.in_database(as: :superuser).execute(create_dataset_role_query)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error creating dataset role', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+      db_run(create_dataset_role_query)
+    end
+
+    def create_ownership_role
+      db_run(create_ownership_role_query)
     end
 
     def create_dataset_role_query
       "CREATE ROLE \"#{dataset_role_name}\" CREATEROLE"
+    end
+
+    def create_ownership_role_query
+      "CREATE ROLE \"#{ownership_role_name}\""
+    end
+
+    def ensure_role_grants
+      grant_dataset_role_privileges
+      grant_ownership_role_privileges
+    end
+
+    def grant_ownership_role_privileges
+      db_run("GRANT \"#{ownership_role_name}\" TO \"#{user.database_username}\"")
     end
 
     def grant_dataset_role_privileges
@@ -97,6 +117,14 @@ module Carto
       end
 
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
+    end
+
+    def ownership_role_name
+      "carto_oauth_app_o_#{id}"
+    end
+
+    def exists_ownership_role?
+      user.db_service.exists_role?(ownership_role_name)
     end
 
     private
@@ -138,15 +166,45 @@ module Carto
       scopes
     end
 
-    def drop_dataset_role
-      queries = %{
-        DROP OWNED BY \"#{dataset_role_name}\";
-        DROP ROLE \"#{dataset_role_name}\";
-      }
-      user.in_database(as: :superuser).execute(queries)
-    rescue ActiveRecord::StatementInvalid => e
-      CartoDB::Logger.error(message: 'Error dropping dataset role', exception: e)
-      raise OauthProvider::Errors::ServerError.new
+    def reassign_owners
+      roles = [dataset_role_name, ownership_role_name]
+      queries = roles.map do |role|
+        "REASSIGN OWNED BY \"#{role}\" TO \"#{user.database_username}\";"
+      end
+      db_run(queries.join, error_title: 'Error reassigning owners')
+    end
+
+    def drop_roles
+      roles = [dataset_role_name, ownership_role_name]
+      queries = roles.map do |role|
+        %{
+          DROP OWNED BY "#{role}";
+          DROP ROLE IF EXISTS "#{role}";
+        }
+      end
+      db_run(queries.join, error_title: 'Error dropping roles')
+    end
+
+    def enable_schema_triggers
+      return if user.organization_user? && oauth_users_in_organization > 1
+      user.db_service.create_oauth_reassign_ownership_event_trigger
+    rescue StandardError => e
+      CartoDB::Logger.error(
+        message:    "Error enabling schema trigger",
+        exception:  e,
+        user:       self
+      )
+    end
+
+    def disable_schema_triggers
+      return if user.organization_user? && oauth_users_in_organization >= 1
+      user.db_service.drop_oauth_reassign_ownership_event_trigger
+    rescue StandardError => e
+      CartoDB::Logger.error(
+        message:    "Error disabling schema trigger",
+        exception:  e,
+        user:       self
+      )
     end
 
     def validate_scopes
@@ -174,6 +232,24 @@ module Carto
 
     def dataset_role_name
       "carto_oauth_app_#{id}"
+    end
+
+    def db_run(query, connection = db_connection, error_title: 'Error running SQL command')
+      connection.execute(query)
+    rescue ActiveRecord::StatementInvalid => e
+      CartoDB::Logger.error(message: error_title, exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
+      raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
+    end
+
+    def db_connection
+      @db_connection ||= user.in_database(as: :superuser)
+    end
+
+    def oauth_users_in_organization
+      return 0 unless user.organization_user?
+
+      Carto::OauthAppUser.joins(:user).where('organization_id = ?', user.organization_id).count
     end
   end
 end

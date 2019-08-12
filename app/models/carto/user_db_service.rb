@@ -56,14 +56,7 @@ module Carto
     end
 
     def all_tables_granted(role = nil)
-      roles = []
-      if role.present?
-        roles << role
-      else
-        roles = all_user_roles
-      end
-      roles_str = roles.map { |r| "'#{r}'" }.join(',')
-
+      roles_str = role ? "'#{role}'" : all_user_roles.map { |r| "'#{r}'" }.join(',')
       query = %{
         SELECT
           s.nspname as schema,
@@ -99,9 +92,86 @@ module Carto
       privileges_hashed
     end
 
+    def all_schemas_granted(role)
+      roles_str = role ? role : all_user_roles.join(',')
+      permissions = 'create,usage'
+      query = %{
+        WITH
+          roles AS (
+            SELECT unnest('{#{roles_str}}'::text[]) AS rname
+          ),
+          permissions AS (
+            SELECT 'SCHEMA' AS ptype, unnest('{#{permissions}}'::text[]) AS pname
+          ),
+          schemas AS (
+            SELECT schema_name AS sname
+            FROM information_schema.schemata
+            WHERE schema_name !~ '^pg_'
+              AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ),
+          schemas_roles_permissions AS (
+          SELECT
+              permissions.ptype,
+              schemas.sname AS obj_name,
+              roles.rname,
+              permissions.pname,
+              has_schema_privilege(roles.rname, schemas.sname, permissions.pname) AS has_permission
+          FROM
+            schemas
+            CROSS JOIN roles
+            CROSS JOIN permissions
+          WHERE
+            permissions.ptype = 'SCHEMA'
+          ),
+          schemas_and_grants AS (
+            SELECT obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            FROM schemas_roles_permissions
+            GROUP BY 1
+            ORDER BY 1
+          )
+          SELECT
+            object_name, granted_permissions
+          FROM
+            schemas_and_grants
+          WHERE
+            granted_permissions is not null and granted_permissions <> '';
+      }
+
+      @user.in_database(as: :superuser) do |database|
+        database.execute(query)
+      end
+    end
+
+    def all_schemas_granted_hashed(role = nil)
+      results = all_schemas_granted(role)
+      return {} if results.nil?
+
+      results.map { |row| [row['object_name'], row['granted_permissions'].split(',')] }.to_h
+    end
+
+    def exists_role?(rolname)
+      query = %{
+        SELECT 1
+        FROM   pg_catalog.pg_roles
+        WHERE  rolname = '#{rolname}'
+      }
+
+      result = @user.in_database(as: :superuser).execute(query)
+      result.count > 0
+    end
+
     def organization_member_group_role_member_name
       query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
       execute_in_user_database(query).first['org_member_role']
+    end
+
+    def create_oauth_reassign_ownership_event_trigger
+      @user.in_database(as: :superuser).execute('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+    end
+
+    def drop_oauth_reassign_ownership_event_trigger
+      @user.in_database(as: :superuser).execute('SELECT CDB_DisableOAuthReassignTablesTrigger()')
     end
   end
 end

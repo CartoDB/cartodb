@@ -15,6 +15,7 @@ sudo make install
   - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
   - Fixes migrations for users with OAuth related data (#14600)
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+  - Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements
@@ -39,12 +40,12 @@ sudo make install
 * Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
   `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
-- OAuth:
-  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
-  - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
-  - Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
-  - Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
-- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+* OAuth:
+  * Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  * Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+  * Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
+  * Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
+* Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
 * Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))

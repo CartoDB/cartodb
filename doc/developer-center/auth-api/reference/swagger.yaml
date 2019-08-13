@@ -45,9 +45,10 @@ info:
                     ]
               }
         ```
-        - `database`: Describes to which tables and schemas and which privleges on them this API Key grants access to through `tables` and `schemas` attributes.
+        - `database`: Describes to which tables and schemas and which privileges on them this API Key grants access to through `tables`, `schemas` and `table_metadata` attributes.
           You can grant read (`select`) or write (`insert`, `update`, `delete`) permissions on tables.
-          For the case of `schemas` once granted the `create` permission on a schema you'll be able to run SQL queries such as `CREATE TABLE AS...`, `CREATE VIEW AS...` etc. to create entities on it.
+          For the case of `schemas`, once granted the `create` permission on a schema, you'll be able to run SQL queries such as `CREATE TABLE AS...`, `CREATE VIEW AS...` etc. to create entities on it.
+          Also, you can allow to list all tables metadata (like name or privacy) with the `table_metadata` attribute.
         ```{
               {
                     "type": "database",
@@ -69,7 +70,8 @@ info:
                                 "create"
                             ]
                         }
-                    ]
+                    ],
+                    "table_meadata" : []
               }
         ```
         - `dataservices`: Describes to which data services this API Key grants access to though `services` attribute:
@@ -302,6 +304,7 @@ components:
               - type: database
                 tables: []
                 schemas: []
+                table_metadata: []
               - type: dataservices
                 services:
                   - geocoding
@@ -333,6 +336,7 @@ components:
                   - name: public
                     permissions:
                       - create
+                table_metadata: []
               - type: dataservices
                 services:
                   - geocoding
@@ -418,6 +422,7 @@ components:
               - name: public
                 permissions:
                   - create
+            table_metadata: []
           - type: dataservices
             services:
               - geocoding
@@ -464,6 +469,7 @@ components:
               - name: public
                 permissions:
                   - create
+            table_metadata: []
           - type: dataservices
             services:
               - geocoding
@@ -506,9 +512,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SchemaGrant'
+        table_metadata:
+          type: array
       required:
         - type
-        - tables
     TableGrant:
       type: object
       properties:

@@ -75,7 +75,8 @@ module Carto
               name: visualization.name,
               cartodbfied: true,
               type: 'table',
-              privacy: visualization.privacy
+              privacy: visualization.privacy,
+              updated_at: visualization.updated_at
             }
           end
         end
@@ -96,7 +97,7 @@ module Carto
         def tables_and_views_query
           @types.map { |type|
             %{
-              SELECT #{type}name AS name, '#{type}' AS type, false AS cartodbfied, NULL AS privacy
+              SELECT #{type}name AS name, '#{type}' AS type, false AS cartodbfied, NULL AS privacy, NULL AS updated_at
               FROM pg_#{type}s
               WHERE schemaname = '#{@user.database_schema}'
               AND #{type}owner <> 'postgres'

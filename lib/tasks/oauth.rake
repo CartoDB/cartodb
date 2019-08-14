@@ -58,5 +58,32 @@ namespace :cartodb do
         end
       end
     end
+
+    desc 'Track existing OauthApps and OauthAppUsers in Segment'
+    task track_oauth_apps: :environment do
+      Carto::OauthApp.find_each do |app|
+        begin
+          app_properties = {
+            user_id: app.user_id,
+            app_id: app.id,
+            app_name: app.name,
+            timestamp: app.created_at
+          }
+          Carto::Tracking::Events::CreatedOauthApp.new(app.user_id, app_properties).report
+
+          app.oauth_app_users.find_each do |app_user|
+            app_user_properties = {
+              user_id: app_user.user_id,
+              app_id: app.id,
+              app_name: app.name,
+              timestamp: app_user.created_at
+            }
+            Carto::Tracking::Events::CreatedOauthAppUser.new(app_user.user_id, app_user_properties).report
+          end
+        rescue StandardError => e
+          CartoDB::Logger.error(message: 'Could not track event', exception: e)
+        end
+      end
+    end
   end
 end

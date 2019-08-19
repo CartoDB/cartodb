@@ -10,7 +10,7 @@ module CartoDB
       THE_GEOM = 'the_geom'.freeze
       OVERWRITE_ERROR = 2013
 
-      def initialize(table_name, runner, database, user, overviews_creator)
+      def initialize(table_name, runner, database, user, overviews_creator, synchronization_id)
         @table_name   = table_name
         @runner       = runner
         @database     = database
@@ -23,6 +23,7 @@ module CartoDB
           log: runner.log
         )
         @error_code = nil
+        @synchronization_id = synchronization_id
       end
 
       def run(&tracker)
@@ -35,13 +36,21 @@ module CartoDB
             data_for_exception << "1st result:#{runner.results.first.inspect}"
             raise data_for_exception
           end
-          move_to_schema(result)
-          geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
-          import_cleanup(user.database_schema, result.table_name)
-          @table_setup.cartodbfy(result.table_name)
-          overwrite(user.database_schema, table_name, result, geo_type)
-          setup_table(table_name, geo_type)
-          @table_setup.recreate_overviews(table_name)
+
+          Carto::GhostTablesManager.run_synchronized(
+            user.id, attempts: 10, timeout: 3000,
+            message: "Couldn't acquire bolt to register. Registering sync without bolt",
+            user: user,
+            synchronization_id: @synchronization_id
+          ) do
+            move_to_schema(result)
+            geo_type = fix_the_geom_type!(user.database_schema, result.table_name)
+            import_cleanup(user.database_schema, result.table_name)
+            @table_setup.cartodbfy(result.table_name)
+            overwrite(user.database_schema, table_name, result, geo_type)
+            setup_table(table_name, geo_type)
+            @table_setup.recreate_overviews(table_name)
+          end
         end
         self
       rescue => exception

@@ -19,6 +19,7 @@ sudo make install
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements
+- Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
 - Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 - Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))

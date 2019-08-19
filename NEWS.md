@@ -25,6 +25,7 @@ sudo make install
 - Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
 - Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
 - Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
+- Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))
 
 4.29.0 (2019-07-15)
 -------------------

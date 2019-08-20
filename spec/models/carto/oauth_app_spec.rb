@@ -264,6 +264,59 @@ module Carto
       end
 
       describe '#destroy' do
+        after(:each) do
+          ::Resque.unstub(:enqueue)
+        end
+
+        it 'does not send notification if destroying app with no users' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          ::Resque.expects(:enqueue)
+                  .with(::Resque::UserJobs::Notifications::Send, anything, anything)
+                  .never
+
+          expect {
+            @oauth_app.destroy!
+          }.to change { OauthApp.count }.by(-1)
+        end
+
+        it 'sends notification if destroying app with users' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
+          ::Resque.expects(:enqueue)
+                  .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
+                  .once
+
+          expect {
+            @oauth_app.destroy!
+          }.to change { OauthApp.count }.by(-1)
+        end
+
+        it 'does not send notification if avoid_send_notification' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
+          ::Resque.expects(:enqueue)
+                  .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
+                  .never
+
+          expect {
+            @oauth_app.avoid_send_notification = true
+            @oauth_app.destroy!
+          }.to change { OauthApp.count }.by(-1)
+        end
+
+        it 'logs notification errors on destroy' do
+          Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+          @app_user = Carto::OauthAppUser.create!(user_id: @oauth_app.user.id, oauth_app: @oauth_app)
+          error_message = "Couldn't notify users about oauth_app '#{@oauth_app.name}' deletion"
+          ::Resque.stubs(:enqueue).raises('unknown error')
+          CartoDB::Logger.expects(:warning)
+                         .with(has_entry(message: error_message))
+                         .at_least_once
+          expect {
+            @oauth_app.destroy!
+          }.to raise_error(/unknown error/)
+        end
+
         it 'deletes app in clouds from Central' do
           Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
           Cartodb::Central.any_instance

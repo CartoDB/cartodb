@@ -12,14 +12,22 @@ sudo make install
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
   - Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
+  - Send notification on oauth_app deletion (#15016)
+  - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+  - Fixes migrations for users with OAuth related data (#14600)
+  - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+  - Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements
+- Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
 - Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
-- Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 - Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
 - Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
+- Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
+- Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
+- Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
 
 4.29.0 (2019-07-15)
 -------------------
@@ -35,12 +43,12 @@ sudo make install
 * Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
   `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
   ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
-- OAuth:
-  - Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
-  - Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
-  - Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
-  - Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
-- Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+* OAuth:
+  * Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  * Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+  * Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
+  * Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
+* Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
 
 ### Bug fixes / enhancements
 * Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))

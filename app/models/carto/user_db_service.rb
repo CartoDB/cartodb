@@ -150,6 +150,17 @@ module Carto
       results.map { |row| [row['object_name'], row['granted_permissions'].split(',')] }.to_h
     end
 
+    def exists_role?(rolname)
+      query = %{
+        SELECT 1
+        FROM   pg_catalog.pg_roles
+        WHERE  rolname = '#{rolname}'
+      }
+
+      result = @user.in_database(as: :superuser).execute(query)
+      result.count > 0
+    end
+
     def organization_member_group_role_member_name
       query = "SELECT cartodb.CDB_Organization_Member_Group_Role_Member_Name() as org_member_role;"
       execute_in_user_database(query).first['org_member_role']

@@ -452,6 +452,17 @@ module CartoDB
         results.map { |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
       end
 
+      def exists_role?(rolname)
+        query = %{
+          SELECT 1
+          FROM   pg_catalog.pg_roles
+          WHERE  rolname = '#{rolname}'
+        }
+
+        result = @user.in_database(as: :superuser).fetch(query)
+        result.count > 0
+      end
+
       def drop_owned_by_user(conn, role)
         conn.run("DROP OWNED BY \"#{role}\"")
       end

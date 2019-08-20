@@ -71,7 +71,7 @@ info:
                             ]
                         }
                     ],
-                    "table_meadata" : []
+                    "table_metadata" : []
               }
         ```
         - `dataservices`: Describes to which data services this API Key grants access to though `services` attribute:

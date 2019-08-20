@@ -9,7 +9,7 @@ In CARTO, you can find 3 types of API Keys:
 
 #### Regular
 
-Regular API Keys are the most common type of API Keys. They provide access to APIs and database tables (aka datasets) in a granular and flexible manner.
+Regular API Keys are the most common type of API Keys. They provide access to APIs and database tables (AKA datasets) in a granular and flexible manner.
 
 For example one API key can provide access to:
   
@@ -47,8 +47,8 @@ For example one Default Public API Key can provide access to
 
 - the SQL API 
 - the Maps API 
-- the world_population dataset with read permission 
-- the liked_cities dataset with read permission 
+- the `world_population` dataset with read permission 
+- the `liked_cities` dataset with read permission 
 
 As you can see, API and read-only selected datasets access are possible.
 

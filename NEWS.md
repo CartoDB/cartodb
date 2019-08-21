@@ -18,7 +18,7 @@ sudo make install
   - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
   - Fixes migrations for users with OAuth related data (#14600)
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
-  - Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
+  - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements

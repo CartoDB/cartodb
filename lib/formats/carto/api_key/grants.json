@@ -111,6 +111,9 @@
             "profile"
           ]
         }
+      },
+      "table_metadata": {
+        "type": "array"
       }
     }
   }

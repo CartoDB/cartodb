@@ -17,8 +17,9 @@ For example one API key can provide access to:
 - the SQL API 
 - the World_Population dataset with select permission 
 - the Liked_Cities dataset with select/insert permissions 
+- the privilege of creating new datasets in the user account
   
-With this API Key you can access the SQL API but not the Maps API. You also can run a `SELECT SQL` query to the `World_Population` dataset, but not an `UPDATE`, `DELETE` or `INSERT`. Nevertheless, you can run an `INSERT` to the `Liked_Cities` dataset. Access to the dataset `National_Incomes` is denied.
+With this API Key you can access the SQL API but not the Maps API. You also can run a `SELECT SQL` query to the `World_Population` dataset, but not an `UPDATE`, `DELETE` or `INSERT`. Nevertheless, you can run an `INSERT` to the `Liked_Cities` dataset. Access to the dataset `National_Incomes` is denied. Last but not least you can run `CREATE TABLE AS...` SQL queries to create new tables in the user account. As the owner of the tables created you'll be able to `DROP` and `ALTER` the created tables with the API key.
 
 It's possible to create as many regular API Keys as you want. Moreover, to enforce security, we encourage you to create as many regular API Keys as apps/maps you produce. Since regular API Keys can be independently revoked, you have complete control of the lifecycle of your API credentials.
 

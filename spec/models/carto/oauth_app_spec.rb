@@ -6,7 +6,7 @@ module Carto
   describe OauthApp do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.build(:carto_user)
+        @user = FactoryGirl.create(:carto_user)
       end
 
       it 'requires user' do
@@ -27,17 +27,7 @@ module Carto
         expect(app.errors[:name]).to(include("can't be blank"))
       end
 
-      it 'requires icon_url' do
-        app = OauthApp.new
-        expect(app).to_not(be_valid)
-        expect(app.errors[:icon_url]).to(include("can't be blank"))
-
-        app.icon_url = ''
-        expect(app).to_not(be_valid)
-        expect(app.errors[:icon_url]).to(include("can't be blank"))
-      end
-
-      it 'rejected if icon_url invalid' do
+      it 'rejects if icon_url invalid' do
         app = OauthApp.new
         app.icon_url = 'carto.com'
         expect(app).to_not(be_valid)
@@ -45,19 +35,19 @@ module Carto
       end
 
       describe 'redirection uri' do
-        it 'rejected if empty' do
+        it 'rejects if empty' do
           app = OauthApp.new
           expect(app).to_not(be_valid)
           expect(app.errors[:redirect_uris]).to(include("can't be blank"))
         end
 
-        it 'rejected if invalid' do
+        it 'rejects if invalid' do
           app = OauthApp.new(redirect_uris: ['"invalid"'])
           expect(app).to_not(be_valid)
           expect(app.errors[:redirect_uris]).to(include('must be valid'))
         end
 
-        it 'rejected if non-absolute' do
+        it 'rejects if non-absolute' do
           app = OauthApp.new(redirect_uris: ['//wadus.com/path'])
           expect(app).to_not(be_valid)
           expect(app.errors[:redirect_uris]).to(include('must be absolute'))
@@ -67,7 +57,7 @@ module Carto
           expect(app.errors[:redirect_uris]).to(include('must be absolute'))
         end
 
-        it 'rejected if non-https' do
+        it 'rejects if non-https' do
           app = OauthApp.new(redirect_uris: ['http://wadus.com/path'])
           expect(app).to_not(be_valid)
           expect(app.errors[:redirect_uris]).to(include('must be https'))
@@ -77,13 +67,13 @@ module Carto
           expect(app.errors[:redirect_uris]).to(include('must be https'))
         end
 
-        it 'rejected if has fragment' do
+        it 'rejects if has fragment' do
           app = OauthApp.new(redirect_uris: ['https://wad.us/?query#fragment'])
           expect(app).to_not(be_valid)
           expect(app.errors[:redirect_uris]).to(include('must not contain a fragment'))
         end
 
-        it 'accepted if valid' do
+        it 'accepts if valid' do
           app = OauthApp.new(redirect_uris: ['https://wad.us/path?query=value'])
           app.valid?
           expect(app.errors[:redirect_uris]).to(be_empty)
@@ -96,6 +86,14 @@ module Carto
                            redirect_uris: ['https://re.dir'],
                            icon_url: 'http://localhost/some.png',
                            website_url: 'http://localhost')
+        expect(app).to(be_valid)
+      end
+
+      it 'accepts without icon_url' do
+        app = OauthApp.create(user: @user,
+                              name: 'name',
+                              redirect_uris: ['https://re.dir'],
+                              website_url: 'http://localhost')
         expect(app).to(be_valid)
       end
 

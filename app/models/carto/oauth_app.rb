@@ -18,7 +18,7 @@ module Carto
     validates :client_id, presence: true
     validates :client_secret, presence: true
     validates :redirect_uris, presence: true
-    validates :icon_url, presence: true, url: true
+    validates :icon_url, url: true, if: -> { icon_url.present? }
     validates :oauth_app_organizations, absence: true, unless: :restricted?
     validate :validate_uris
 

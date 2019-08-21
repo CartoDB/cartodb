@@ -1,12 +1,13 @@
 require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
+    return record.errors[attribute] = ['grants has to be an array'] unless value&.is_a?(Array)
+
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
 
     max_one_sections = ['database', 'dataservices', 'user']

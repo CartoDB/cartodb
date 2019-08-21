@@ -11,21 +11,25 @@ sudo make install
 ### Features
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
+  - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
+  - Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
   - Send notification on oauth_app deletion (#15016)
   - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
   - Fixes migrations for users with OAuth related data (#14600)
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
-  - Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
   - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
+  - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 
 ### Bug fixes / enhancements
+- Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
 - Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
 - Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
 - Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
 - Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
 - Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
 - Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
+- Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
 
 4.29.0 (2019-07-15)
 -------------------

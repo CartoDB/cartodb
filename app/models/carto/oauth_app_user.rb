@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/oauth_provider/errors'
 
 module Carto

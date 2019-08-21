@@ -1,5 +1,5 @@
 require_dependency 'carto/oauth_provider/token_presenter'
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
   module OauthProvider

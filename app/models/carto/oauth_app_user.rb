@@ -53,7 +53,15 @@ module Carto
     end
 
     def create_roles
+      create_dataset_role
+      create_ownership_role
+    end
+
+    def create_dataset_role
       db_run(create_dataset_role_query)
+    end
+
+    def create_ownership_role
       db_run(create_ownership_role_query)
     end
 
@@ -113,6 +121,10 @@ module Carto
 
     def ownership_role_name
       "carto_oauth_app_o_#{id}"
+    end
+
+    def exists_ownership_role?
+      user.db_service.exists_role?(ownership_role_name)
     end
 
     private
@@ -226,6 +238,7 @@ module Carto
       connection.execute(query)
     rescue ActiveRecord::StatementInvalid => e
       CartoDB::Logger.error(message: error_title, exception: e)
+      return if e.message =~ /OWNED BY/ # role might not exist becuase it has been already dropped      
       raise OauthProvider::Errors::ServerError.new("#{error_title}: #{e.message}")
     end
 

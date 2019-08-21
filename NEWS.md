@@ -18,6 +18,7 @@ sudo make install
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
   - Update Auth API swagger spec to include schemas grant ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+- Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

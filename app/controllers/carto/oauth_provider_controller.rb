@@ -219,8 +219,7 @@ module Carto
       properties = {
         user_id: @oauth_app_user.user_id,
         app_id: @oauth_app_user.oauth_app.id,
-        app_name: @oauth_app_user.oauth_app.name,
-        timestamp: @oauth_app_user.created_at
+        app_name: @oauth_app_user.oauth_app.name
       }
       Carto::Tracking::Events::CreatedOauthAppUser.new(current_viewer.id, properties).report
     end

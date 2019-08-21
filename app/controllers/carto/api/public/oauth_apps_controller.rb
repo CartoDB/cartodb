@@ -132,8 +132,7 @@ module Carto
           properties = {
             user_id: @user.id,
             app_id: @oauth_app.id,
-            app_name: @oauth_app.name,
-            timestamp: @oauth_app.created_at
+            app_name: @oauth_app.name
           }
           event_class = "Carto::Tracking::Events::#{event_name}".constantize
           event_class.new(@user.id, properties).report

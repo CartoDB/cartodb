@@ -21,8 +21,8 @@ module AccountTypeHelper
 
   PUBLIC_PLAN_NAME = {
     'FREE' => 'Free',
-    'Professional' => 'Professional',
-    'Annual Professional' => 'Annual Professional',
+    'Individual' => 'Individual',
+    'Annual Individual' => 'Annual Individual',
     'PERSONAL30' => 'Professional Trial',
     'BASIC' => 'Professional',
     'BASIC LUMP-SUM' => 'Professional Lump-Sum',
@@ -31,8 +31,8 @@ module AccountTypeHelper
 
   PLAN_NAME_BY_ACCOUNT_TYPE = {
     'FREE' => 'Free',
-    'Professional' => 'Professional',
-    'Annual Professional' => 'Annual Professional',
+    'Individual' => 'Individual',
+    'Annual Individual' => 'Annual Individual',
     'PERSONAL30' => 'Professional Trial',
     'BASIC' => 'Professional',
     'BASIC LUMP-SUM' => 'Professional',

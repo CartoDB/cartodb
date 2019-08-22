@@ -34,12 +34,12 @@ class Carto::User < ActiveRecord::Base
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
-  PROFESSIONAL_TRIAL_DAYS = 14
-  TRIAL_PLANS = ['personal30', 'professional'].freeze
+  INDIVIDUAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -492,8 +492,8 @@ class Carto::User < ActiveRecord::Base
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('professional').zero?
-      created_at + PROFESSIONAL_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('individual').zero?
+      created_at + INDIVIDUAL_TRIAL_DAYS.days
     end
   end
 

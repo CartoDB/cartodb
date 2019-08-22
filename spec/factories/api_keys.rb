@@ -32,4 +32,12 @@ FactoryGirl.define do
     name { unique_name('internal api key') }
     grants [{ type: "apis", apis: [] }, { type: 'user', data: ['profile'] }]
   end
+
+  factory :oauth_api_key_datasets_metadata_grant, class: Carto::ApiKey do
+    initialize_with { Carto::ApiKey.send :new }
+
+    type Carto::ApiKey::TYPE_OAUTH
+    name { unique_name('internal api key') }
+    grants [{ type: "apis", apis: [] }, { type: 'database', table_metadata: [] }]
+  end
 end

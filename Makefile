@@ -353,6 +353,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
+	spec/requests/carto/api/public/datasets_controller_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	$(NULL)
 

@@ -67,6 +67,7 @@ module Carto
         @oauth_app_user = @oauth_app.oauth_app_users.new(user_id: current_viewer.id, scopes: @scopes)
         validate_oauth_app_user(@oauth_app_user)
         @oauth_app_user.save!
+        track_event
       end
 
       create_authorization_code
@@ -212,6 +213,15 @@ module Carto
 
     def allow_silent_flow_iframe
       response.headers.except! 'X-Frame-Options'
+    end
+
+    def track_event
+      properties = {
+        user_id: @oauth_app_user.user_id,
+        app_id: @oauth_app_user.oauth_app.id,
+        app_name: @oauth_app_user.oauth_app.name
+      }
+      Carto::Tracking::Events::CreatedOauthAppUser.new(current_viewer.id, properties).report
     end
   end
 end

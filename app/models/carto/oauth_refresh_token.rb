@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_dependency 'carto/oauth_provider/errors'
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
   class OauthRefreshToken < ActiveRecord::Base

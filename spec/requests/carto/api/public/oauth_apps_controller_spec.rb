@@ -582,12 +582,18 @@ describe Carto::Api::Public::OauthAppsController do
 
   describe 'destroy' do
     before(:each) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
+      Carto::OauthAppUser.any_instance.stubs(:reassign_owners).returns(true)
+      Carto::OauthAppUser.any_instance.stubs(:drop_roles).returns(true)
       @app = FactoryGirl.create(:oauth_app, user_id: @user1.id)
       @params = { id: @app.id, api_key: @user1.api_key }
     end
 
     after(:each) do
+      ::Resque.unstub(:enqueue)
       @app.try(:destroy)
+      Carto::OauthAppUser.any_instance.unstub(:reassign_owners)
+      Carto::OauthAppUser.any_instance.unstub(:drop_roles)
     end
 
     before(:each) do
@@ -642,6 +648,36 @@ describe Carto::Api::Public::OauthAppsController do
       delete_json api_v4_oauth_app_url(@params) do |response|
         expect(response.status).to eq(204)
         expect(@carto_user1.reload.oauth_apps.size).to eq 0
+      end
+    end
+
+    it 'sends notification if everything is ok' do
+      @app_user = Carto::OauthAppUser.create!(user_id: @app.user.id, oauth_app: @app)
+      ::Resque.expects(:enqueue)
+              .with(::Resque::UserJobs::Notifications::Send, [@app_user.user.id], anything)
+              .once
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(204)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 0
+      end
+    end
+
+    it 'does not send notification if no users' do
+      ::Resque.expects(:enqueue)
+              .with(::Resque::UserJobs::Notifications::Send, anything, anything)
+              .never
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(204)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 0
+      end
+    end
+
+    it 'returns server error on error in notification when destroying app with users' do
+      @app_user = Carto::OauthAppUser.create!(user_id: @app.user.id, oauth_app: @app)
+      ::Resque.stubs(:enqueue).raises('unknown error')
+      delete_json api_v4_oauth_app_url(@params) do |response|
+        expect(response.status).to eq(500)
+        expect(@carto_user1.reload.oauth_apps.size).to eq 1
       end
     end
   end

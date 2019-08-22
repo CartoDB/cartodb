@@ -311,7 +311,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
-	spec/lib/carto/oauth_provider/scopes_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/scopes_spec.rb \
 	spec/models/carto/legend_spec.rb \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
@@ -353,15 +353,13 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
+	spec/requests/carto/api/public/datasets_controller_spec.rb \
+	spec/models/carto/user_migration_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace
 WORKING_SPECS_carto_db_class = \
 	spec/helpers/carto_db_spec.rb \
-	$(NULL)
-
-WORKING_SPECS_MIGRATIONS = \
-	spec/models/carto/user_migration_spec.rb \
 	$(NULL)
 
 CDB_PATH=lib/assets/javascripts/cdb
@@ -394,15 +392,13 @@ check-spec-helper-min:
 	CHECK_SPEC=50 RAILS_ENV=test bundle exec rspec $(SPEC_HELPER_MIN_SPECS)
 check-carto-db-class:
 	CHECK_SPEC=51 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_carto_db_class)
-check-migrations:
-	CHECK_SPEC=52 RAILS_ENV=test bundle exec rspec $(WORKING_SPECS_MIGRATIONS)
 
 check-gear/%: %
 	cd $< && bundle install && RAILS_ENV=test bundle exec rspec
 
 check-gears: $(addprefix check-gear/, $(wildcard gears/*))
 
-check-external: prepare-test-db check-migrations
+check-external: prepare-test-db
 
 check-prepared: check-1 check-2 check-4 check-5 check-7 check-9 check-spec-helper-min check-carto-db-class
 

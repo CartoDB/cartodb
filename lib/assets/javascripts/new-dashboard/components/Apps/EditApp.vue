@@ -96,13 +96,14 @@ export default {
   },
   computed: {
     ...mapState({
+      list: state => state.oAuthApps.list,
       isFetchingOAuthApps: state => state.oAuthApps.isFetching,
       app (state) {
         if (this.isFetchingOAuthApps) {
           return {};
         }
 
-        return state.oAuthApps.list[this.$route.params.id];
+        return this.list[this.$route.params.id];
       }
     })
   },

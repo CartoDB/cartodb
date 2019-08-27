@@ -311,7 +311,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/lib/carto/styles/presenters/cartocss_spec.rb \
 	spec/lib/carto/forms_definition_spec.rb \
 	spec/lib/carto/form_spec.rb \
-	spec/lib/carto/oauth_provider/scopes_spec.rb \
+	spec/lib/carto/oauth_provider/scopes/scopes_spec.rb \
 	spec/models/carto/legend_spec.rb \
 	spec/requests/carto/api/legends_controller_spec.rb \
 	spec/lib/carto/legend_definition_validator_spec.rb \
@@ -353,6 +353,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/queries/carto/dashboard_preview_searcher_spec.rb \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
+	spec/requests/carto/api/public/datasets_controller_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
 	$(NULL)
 

@@ -444,6 +444,17 @@ describe Carto::ApiKey do
         }.to_not raise_error
       end
 
+      it 'validates tables_metadata grant' do
+        database_grants = {
+          type: "database",
+          table_metadata: []
+        }
+        grants = [apis_grant, database_grants]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+        }.to_not raise_error
+      end
+
       it 'fails with several apis sections' do
         two_apis_grant = [apis_grant, apis_grant, database_grant]
         expect {

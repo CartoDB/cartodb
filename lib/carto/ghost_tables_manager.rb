@@ -44,6 +44,24 @@ module Carto
       Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
     end
 
+    # run a block of code exclusively with GhostTablesManager (using Bolt lock)
+    # if warning_params is provided (with paramters for Logger.warning) then
+    # the code is executed even if the lock is not acquired (in which case
+    # a warning is emmitted)
+    def self.run_synchronized(user_id, attempts: 10, timeout: 30000, **warning_params)
+      gtm = new(user_id)
+      bolt = gtm.get_bolt
+      rerun_func = lambda { gtm.send(:sync) }
+      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout, rerun_func: rerun_func) do
+        yield
+      end
+      if !lock_acquired && warning_params.present?
+        # run even if lock wasn't aquired
+        CartoDB::Logger.warning(warning_params)
+        yield
+      end
+    end
+
     private
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block

@@ -10,10 +10,10 @@ These API Keys can be provisioned, revoked and regenerated through the [Auth API
 And here you can see the process of creating a new API key, managing its name and resources in terms of APIs and Datasets, including its permissions.
 
 It requires to add a name and grant permission for at least one of these: 
-* SQL API: you will have to include Create datasets or specific permissions on any table.
-* MAPS API: you will have to specify Select permissions on any table.
-* Create datasets: allows you to create tables in the user schema by using the SQL API, and also modify or delete the tables previously created.
-* Listing datasets: allows to read the metadata from the existing tables, views and materialized views in the user schema by using the endpoint: `api/v4/datasets`
+* SQL API: you will have to include CREATE datasets or specific permissions on any table.
+* MAPS API: you will have to specify SELECT permissions on any table.
+* CREATE datasets: allows you to create tables in the user schema by using the SQL API, and also modify or delete the tables previously created.
+* LISTING datasets: allows to read the metadata from the existing tables, views and materialized views in the user schema by using the endpoint: `api/v4/datasets`
 
 ![Authorization dashboard image 2](../img/capture-auth-new-apikey.png)
 

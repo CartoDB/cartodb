@@ -428,6 +428,10 @@ a.Filters-cleanSearch {
   font-size: 6px;
 }
 
+.Filters--margin-fix {
+  margin-top: -28px;
+}
+
 @media only screen and (max-width: 500px) {
   .Filters-searchEnabler {
     min-width: 0;

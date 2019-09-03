@@ -34,6 +34,7 @@ sudo make install
 - Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
 - Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
 - The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
+- Add developer center links to OAuth apps texts ([#15081](https://github.com/CartoDB/cartodb/pull/15081))
 
 4.29.0 (2019-07-15)
 -------------------

@@ -10,7 +10,7 @@
   <ul class="ImportOptions-tabsList js-menu CDB-Text CDB-Size-medium u-altTextColor"></ul>
   <div class="ImportOptions-feedback">
     <p class="CDB-Text CDB-Size-medium u-mainTextColor">
-      Is your data somewhere else?
+      Is your data somewhere else? Please let us know!
     </p>
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform" target="_blank">
       <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-fileButton">

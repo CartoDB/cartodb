@@ -28,13 +28,20 @@ module Carto
           {
             type: 'apis',
             apis: @api_key.granted_apis
-          },
-          {
-            type: 'database',
-            tables: table_permissions_for_api_key,
-            schemas: schema_permissions_for_api_key
           }
         ]
+
+        type_database = {
+          type: 'database',
+          tables: table_permissions_for_api_key,
+          schemas: schema_permissions_for_api_key
+        }
+
+        if @api_key.dataset_metadata_permissions
+          type_database['table_metadata'] = []
+        end
+
+        grants << type_database
 
         if @api_key.data_services?
           grants << {

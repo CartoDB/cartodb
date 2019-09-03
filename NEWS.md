@@ -12,12 +12,15 @@ sudo make install
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
   - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
+  - API endpoint to list datasets metadata ([#15013](https://github.com/CartoDB/cartodb/issues/15013))
   - Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
   - Send notification on oauth_app deletion (#15016)
   - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
   - Fixes migrations for users with OAuth related data (#14600)
   - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+  - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
   - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
+  - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
 
@@ -31,6 +34,7 @@ sudo make install
 - Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
 - Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
 - Rename "Professional" Plan to "Individual" Plan ([#15069](https://github.com/CartoDB/cartodb/pull/15069))
+- The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
 
 4.29.0 (2019-07-15)
 -------------------

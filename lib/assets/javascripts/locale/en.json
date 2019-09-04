@@ -2396,7 +2396,7 @@
       "code-mirror": {
         "tip": "CMD + S to apply your query. CTRL + Space to autocomplete.",
         "quota-data-services-warning": "You're about to execute a Data Services function that will consume several credits. Therefore, we discourage its usage here",
-        "quota-data-services-warning-link": "You can read more about the Data Services API <a href='https://carto.com/developers/data-services-api/reference/#geocoding-functions' target='_blank'>here</a>"
+        "quota-data-services-warning-link": "You can read more about the Data Services API in our <a href='https://carto.com/developers/data-services-api/reference/#geocoding-functions' target='_blank'>guides</a>"
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",

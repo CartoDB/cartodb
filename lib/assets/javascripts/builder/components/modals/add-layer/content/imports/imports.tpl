@@ -10,11 +10,11 @@
   <ul class="ImportOptions-tabsList js-menu CDB-Text CDB-Size-medium u-altTextColor"></ul>
   <div class="ImportOptions-feedback">
     <p class="CDB-Text CDB-Size-medium u-mainTextColor">
-      Is your data somewhere else? Please let us know!
+       <%- _t('components.modals.add-layer.imports.feedback.text') %>
     </p>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform" target="_blank">
+    <a href="<%- _t('components.modals.add-layer.imports.feedback.url') %>" target="_blank">
       <span class="CDB-Button CDB-Button--primary Form-fileButton CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase js-fileButton">
-        Request data source
+        <%- _t('components.modals.add-layer.imports.feedback.button') %>
       </span>
     </a>
   </div>

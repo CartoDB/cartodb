@@ -308,3 +308,69 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
   }
 }
+
+/* Embed banner for free users */
+
+.CDB-Embed-banner {
+  position: absolute;
+  z-index: 1;
+  right: 16px;
+  bottom: 16px;
+}
+
+.CDB-Embed-banner--inner {
+  display: flex;
+  position: absolute;
+  z-index: 10;
+  right: 0;
+  bottom: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 104px;
+  height: 104px;
+  padding: 20px 24px 12px;
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 2px 4px 0;
+}
+
+.CDB-Embed-banner {
+  &--title {
+    margin-bottom: 12px;
+    font-family: 'Montserrat';
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 15px;
+    text-align: center;
+  }
+
+  &--button {
+    position: relative;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    padding: 8px 20px;
+    transition: background, 300ms;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px #EB1510;
+    color: #EB1510;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(235, 21, 16, 0.08);
+    }
+  }
+
+  &--link {
+    color: #2E3C43;
+    font-family: 'Montserrat';
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 16px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

@@ -4,7 +4,7 @@ module FrontendConfigHelper
   include AvatarHelper
   include FullstoryHelper
 
-  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'professional'].freeze
+  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'individual'].freeze
 
   def frontend_config_hash(user = current_user)
     config = {

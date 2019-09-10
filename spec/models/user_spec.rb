@@ -1332,7 +1332,7 @@ describe User do
     @user.trial_ends_at.should_not be_nil
     @user.stubs(:account_type).returns('PERSONAL30')
     @user.trial_ends_at.should_not be_nil
-    @user.stubs(:account_type).returns('Professional')
+    @user.stubs(:account_type).returns('Individual')
     @user.trial_ends_at.should_not be_nil
   end
 

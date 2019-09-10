@@ -35,6 +35,7 @@ sudo make install
 - Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
 - Rename "Professional" Plan to "Individual" Plan ([#15069](https://github.com/CartoDB/cartodb/pull/15069))
 - The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
+- Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
 
 4.29.0 (2019-07-15)
 -------------------

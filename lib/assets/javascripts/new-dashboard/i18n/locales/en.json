@@ -652,7 +652,7 @@
   },
   "OAuthAppsPage": {
     "title": "Apps",
-    "description": "Build your app allowing users to authenticate through CARTO to share specific data with your app. You can read more in our <a href=''>developer documentation</a>.",
+    "description":  "Build your app allowing users to authenticate through CARTO to share specific data with your app. You can read more in our <a href='https://carto.com/developers/fundamentals/oauth-apps/' target='_blank'>developer documentation</a>.",
 
     "emptyDescription": "Want to build something that integrates with and extends CARTO?",
     "newAppButton": "New OAuth App",
@@ -695,7 +695,7 @@
       "clientSecret": "Client Secret:",
       "clientSecretWarning": "Client secret must be kept secret",
       "clientSecretButton": "Reset client secret",
-      "clientSecretDesc": "OAuth apps can use OAuth credentials to identify users. Learn more about identifying users by reading our <a href''>integration developer documentation.</a>",
+      "clientSecretDesc": "OAuth apps can use OAuth credentials to identify users. Learn more about identifying users by reading our <a href'https://carto.com/developers/fundamentals/oauth-apps/#oauth-flow' target='_blank'>integration developer documentation.</a>",
       "appInformationTitle": "App Information",
       "deleteAppButton": "Delete my app"
     }

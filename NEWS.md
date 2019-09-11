@@ -38,6 +38,7 @@ sudo make install
 - The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
 - Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
 - Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
+- Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
 
 4.29.0 (2019-07-15)
 -------------------

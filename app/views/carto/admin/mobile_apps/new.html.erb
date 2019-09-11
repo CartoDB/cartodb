@@ -14,24 +14,25 @@
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
+<%= render :partial => 'admin/shared/trial_notification' %>
 
 <div class="FormAccount-Section u-inner">
   <%= render :partial => 'admin/shared/pages_subheader' %>
 
   <div class="CDB-Text FormAccount-Content">
 
-    <div class="Filters is-relative">
+    <div class="Filters is-relative Filters__margin-fix">
       <div class="Filters-inner">
         <span class="Filters-separator"></span>
         <div class="Filters-row">
           <ul class="Filters-group">
             <li class="u-flex u-alignCenter">
-              <a href="<%= current_user_url('mobile_apps') %>" class="u-actionTextColor u-flex u-alignCenter">
+              <a href="<%= current_user_url('mobile_apps') %>" class="u-actionTextColor u-flex u-alignCenter Filters-typeLink">
                 <i class="CDB-IconFont CDB-IconFont-arrowPrev u-rSpace--xl"></i>
               </a>
             </li>
             <li class="Filters-typeItem">
-              <div class="FormAccount-title">
+              <div class="u-iblock">
                 <p class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New application</p>
               </div>
             </li>

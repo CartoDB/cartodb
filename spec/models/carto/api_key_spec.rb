@@ -455,6 +455,17 @@ describe Carto::ApiKey do
         }.to_not raise_error
       end
 
+      it 'validates service_account grant' do
+        user_grants = {
+          type: "user",
+          data: ["service_account"]
+        }
+        grants = [apis_grant, user_grants]
+        expect {
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+        }.to_not raise_error
+      end
+
       it 'fails with several apis sections' do
         two_apis_grant = [apis_grant, apis_grant, database_grant]
         expect {

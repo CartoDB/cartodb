@@ -108,7 +108,8 @@
         "items": {
           "type": "string",
           "enum": [
-            "profile"
+            "profile",
+            "service_account"
           ]
         }
       },

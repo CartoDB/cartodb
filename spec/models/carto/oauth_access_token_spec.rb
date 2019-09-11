@@ -232,6 +232,26 @@ module Carto
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end
+
+      it 'includes service account permission for user scopes' do
+        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: []
+            },
+            {
+              type: 'user',
+              data: ['data_observatory_token']
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['user:data_observatory_token'])
+
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
     end
 
     describe 'cdb_conf_info' do

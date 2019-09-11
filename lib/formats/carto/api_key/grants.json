@@ -109,7 +109,7 @@
           "type": "string",
           "enum": [
             "profile",
-            "service_account"
+            "data_observatory_token"
           ]
         }
       },

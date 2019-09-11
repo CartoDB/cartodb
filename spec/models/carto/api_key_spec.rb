@@ -455,10 +455,10 @@ describe Carto::ApiKey do
         }.to_not raise_error
       end
 
-      it 'validates service_account grant' do
+      it 'validates data_observatory_token grant' do
         user_grants = {
           type: "user",
-          data: ["service_account"]
+          data: ["data_observatory_token"]
         }
         grants = [apis_grant, user_grants]
         expect {

@@ -243,11 +243,11 @@ module Carto
             },
             {
               type: 'user',
-              data: ['service_account']
+              data: ['data_observatory_token']
             }
           ]
 
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['user:service_account'])
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['user:data_observatory_token'])
 
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))

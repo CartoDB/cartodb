@@ -328,11 +328,11 @@ describe Carto::OauthProvider::Scopes do
         expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['profile'] }]))
       end
 
-      it 'adds user scope with service_account subset' do
-        scope = Carto::OauthProvider::Scopes::UserScope.new('service_account', 'Service account')
+      it 'adds user scope with data_observatory_token subset' do
+        scope = Carto::OauthProvider::Scopes::UserScope.new('data_observatory_token', 'DO token')
         grants = [{ type: 'apis', apis: [] }]
         scope.add_to_api_key_grants(grants, nil)
-        expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['service_account'] }]))
+        expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['data_observatory_token'] }]))
       end
     end
   end
@@ -630,13 +630,13 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'shows user service account permission' do
-      scope = ["user:service_account"]
+      scope = ["user:data_observatory_token"]
       expected = [
         {
           description: "User and personal data",
           icon: nil,
           scopes: [{ description: "Username and organization name", new: true },
-                   { description: "Service account to use Google APIs", new: true }]
+                   { description: "User token for Data Observatory", new: true }]
         }
       ]
 

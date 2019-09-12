@@ -38,7 +38,7 @@
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
     var baseURL = '<%= @viz_owner_base_url %>';
     var geocoderConfiguration = <%= safe_js_object geocoder_config.to_json %>;
-    var userData = <%= safe_js_object current_user.data({ show_api_calls: false }).to_json %>;
+    var userData = <%= safe_js_object @viz_owner.to_json %>;
   </script>
   <%= javascript_include_tag 'common', 'common_vendor', 'builder_embed' %>
 

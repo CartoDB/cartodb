@@ -36,7 +36,6 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
-    var baseURL = '<%= @viz_owner_base_url %>';
     var geocoderConfiguration = <%= safe_js_object geocoder_config.to_json %>;
     var userData = <%= safe_js_object @viz_owner.to_json %>;
   </script>

@@ -23,6 +23,7 @@ sudo make install
   - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
+- Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

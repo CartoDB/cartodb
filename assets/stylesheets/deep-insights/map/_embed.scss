@@ -313,26 +313,27 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-banner {
   position: absolute;
-  z-index: 1;
-  right: 16px;
-  bottom: 16px;
+  z-index: 10;
+  right: 24px;
+  bottom: 24px;
+  box-sizing: border-box;
+  width: 140px;
+  height: auto;
+  padding: 16px 18px 12px;
+  border-radius: 4px;
+  background: white;
+  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+
+  @media (max-width: $sMedia-xl) {
+    bottom: 54px;
+  }
 }
 
 .CDB-Embed-banner--inner {
   display: flex;
-  position: absolute;
-  z-index: 10;
-  right: 0;
-  bottom: 0;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 104px;
-  height: 104px;
-  padding: 20px 24px 12px;
-  border-radius: 4px;
-  background: white;
-  box-shadow: 0 2px 4px 0;
 }
 
 .CDB-Embed-banner {
@@ -346,30 +347,72 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   }
 
   &--button {
+    display: flex;
     position: relative;
-    box-sizing: border-box;
     margin-bottom: 16px;
-    padding: 8px 20px;
-    transition: background, 300ms;
+    padding: 8px 16px;
+    overflow: hidden;
     border-radius: 4px;
     box-shadow: inset 0 0 0 1px #EB1510;
     color: #EB1510;
+    font-family: 'Montserrat';
     font-size: 12px;
     font-weight: 600;
     line-height: 16px;
-    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: background-color 0.1s linear;
+      background-color: transparent;
+    }
+
+    span {
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: -1px;
+        width: 100%;
+        height: 1px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        background: currentColor;
+      }
+    }
 
     &:hover {
-      background: rgba(235, 21, 16, 0.08);
+      text-decoration: none;
+
+      span {
+        &::before {
+          transform: translateX(0);
+        }
+      }
+    }
+
+    > span {
+      position: relative;
     }
   }
 
   &--link {
-    color: #2E3C43;
+    color: #162945;
     font-family: 'Montserrat';
     font-size: 10px;
     font-weight: 600;
+    letter-spacing: -0.08px;
     line-height: 16px;
+    text-align: center;
     text-decoration: underline;
     cursor: pointer;
   }

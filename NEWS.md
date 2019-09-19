@@ -24,6 +24,7 @@ sudo make install
   - Scope for data_observatory_token ([#15089](https://github.com/CartoDB/cartodb/pull/15089))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
+- Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

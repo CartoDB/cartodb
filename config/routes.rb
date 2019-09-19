@@ -585,6 +585,10 @@ CartoDB::Application.routes.draw do
       post 'oauth_apps/:id/revoke', to: 'oauth_apps#revoke', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_revoke
 
       get 'datasets', to: 'datasets#index', as: :api_v4_datasets
+
+      scope 'do' do
+        get 'token' => 'data_observatory#token', as: :api_v4_do_token
+      end
     end
 
     scope 'v3/' do

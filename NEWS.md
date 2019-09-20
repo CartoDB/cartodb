@@ -40,6 +40,7 @@ sudo make install
 - Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
 - Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
 - Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
+- Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
 
 4.29.0 (2019-07-15)
 -------------------

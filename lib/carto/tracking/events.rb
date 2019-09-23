@@ -320,7 +320,7 @@ module Carto
 
         include Carto::Tracking::Validators::User
 
-        required_properties :user_id, :app_id, :app_name, :timestamp
+        required_properties :user_id, :app_id, :app_name
       end
 
       class CreatedOauthApp < OauthAppEvent; end

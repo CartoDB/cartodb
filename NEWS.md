@@ -41,6 +41,7 @@ sudo make install
 - Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
 - Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
 - Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
+- Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
 
 4.29.0 (2019-07-15)
 -------------------

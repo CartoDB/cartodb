@@ -169,6 +169,7 @@ module.exports = {
     resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('assets/stylesheets/deep-insights/entry.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 

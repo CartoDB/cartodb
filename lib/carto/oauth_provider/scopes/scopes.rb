@@ -31,6 +31,7 @@ module Carto
         DataservicesScope.new('observatory', 'Data Observatory').freeze,
 
         UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze,
+        UserScope.new('data_observatory_token', 'User token for Data Observatory').freeze,
         DatasetsMetadataScope.new('Table names').freeze
       ].freeze
 

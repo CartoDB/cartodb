@@ -21,6 +21,7 @@ sudo make install
   - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
   - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
   - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
+  - Scope for data_observatory_token ([#15089](https://github.com/CartoDB/cartodb/pull/15089))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
 - Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
@@ -38,6 +39,9 @@ sudo make install
 - The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
 - Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
 - Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
+- Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
+- Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
+- Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
 
 4.29.0 (2019-07-15)
 -------------------

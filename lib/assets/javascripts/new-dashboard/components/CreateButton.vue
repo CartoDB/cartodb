@@ -1,5 +1,5 @@
 <template>
-  <button class="button button--small is-primary" @click="openCreateModal" :class="{'u-is-disabled': disabled}">
+  <button class="button is-primary" @click="openCreateModal" :class="{'u-is-disabled': disabled}">
     <slot />
   </button>
 </template>

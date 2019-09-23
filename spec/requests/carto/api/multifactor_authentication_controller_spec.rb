@@ -58,7 +58,7 @@ describe Carto::Api::MultifactorAuthenticationController do
       login(@organization.owner)
       @organization.owner.reload
 
-      post api_v2_organization_users_mfa_create_url(
+      get api_v2_organization_users_mfa_show_url(
         id_or_name: @organization.name,
         u_username: @org_user_1.username,
         type: 'totp'

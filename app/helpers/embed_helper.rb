@@ -1,8 +1,8 @@
 module EmbedHelper
-  def get_user_data(user)
+  def get_owner_data(owner)
     {
-      base_url: user.public_url,
-      account_type: user.account_type
+      base_url: owner.public_url,
+      account_type: owner.account_type
     }
   end
 end

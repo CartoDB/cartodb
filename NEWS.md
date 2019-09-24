@@ -25,6 +25,7 @@ sudo make install
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
 - Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
+- Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
@@ -40,6 +41,9 @@ sudo make install
 - Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
 - Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
 - Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
+- Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
+- Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
+- Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
 
 4.29.0 (2019-07-15)
 -------------------

@@ -48,15 +48,3 @@ $w: 780px;
   margin: 0 $sMargin-formRow 0 0;
   text-align: center;
 }
-
-.ImportOptions-feedback {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 50px;
-  margin-top: 20px;
-  padding: 0 16px 0 64px;
-  border: 1px solid #DDD;
-  border-radius: 4px;
-  background: url($assetsDir + '/images/layout/connectors.svg') no-repeat 28px #F3F3F3;
-}

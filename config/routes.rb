@@ -664,6 +664,7 @@ CartoDB::Application.routes.draw do
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
 
+        get 'users/:u_username/mfa/:type', to: 'multifactor_authentication#show', as: :api_v2_organization_users_mfa_show
         post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
         delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end

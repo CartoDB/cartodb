@@ -17,7 +17,7 @@
 <script>
 
 export default {
-  name: 'SecondaryNavigation',
+  name: 'SecondaryNavigation'
 };
 </script>
 

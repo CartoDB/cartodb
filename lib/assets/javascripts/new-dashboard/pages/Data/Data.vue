@@ -15,7 +15,7 @@ export default {
     Page,
     SecondaryNavigation
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

@@ -327,17 +327,15 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
   @media (max-width: $sMedia-xl) {
     bottom: 54px;
   }
-}
 
-.CDB-Embed-banner--inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+  &--inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-.CDB-Embed-banner {
-  &--title {
+  &__title {
     margin-bottom: 12px;
     font-family: 'Montserrat';
     font-size: 12px;
@@ -346,7 +344,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     text-align: center;
   }
 
-  &--button {
+  &__button {
     display: flex;
     position: relative;
     margin-bottom: 16px;
@@ -405,7 +403,7 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     }
   }
 
-  &--link {
+  &__link {
     color: #162945;
     font-family: 'Open Sans';
     font-size: 10px;

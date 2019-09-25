@@ -12,5 +12,5 @@
       </g>
     </svg>
   </div>
-  <div><%= _t('editor.data.code-mirror.quota-data-services-warning') %>. <%= _t('editor.data.code-mirror.quota-data-services-warning-link') %></div>
+  <div><%= _t('editor.data.code-mirror.quota-data-services-warning') %> <%= _t('editor.data.code-mirror.quota-data-services-warning-link') %></div>
 </div>

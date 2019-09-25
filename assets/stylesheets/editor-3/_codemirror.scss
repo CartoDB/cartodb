@@ -47,7 +47,8 @@
   color: $cError;
 }
 
-.CodeMirror-error a {
+.CodeMirror-error a,
+.CodeMirror-warning a {
   color: $cWhite;
 }
 
@@ -57,22 +58,20 @@
 
 .CodeMirror-warning {
   display: flex;
-  padding: $baseSize 16px;
-  border-top: 1px solid #3A484E;
-  background-color: #FDFFB2;
-  color: #2B3D43;
-  line-height: 16px;
-  text-align: left;
-  margin: 0 0 24px 0;
-  border-radius: $halfBaseSize;
   align-items: self-start;
   justify-content: flex-start;
+  margin: 0 0 24px;
+  padding: $baseSize 16px;
+  background-color: #27333A;
+  color: #FEB714;
+  line-height: 16px;
+  text-align: left;
 }
 
 .CodeMirror-warning-icon__wrapper {
+  display: block;
   width: 16px;
   height: 16px;
-  display: block;
   margin-right: 8px;
 }
 

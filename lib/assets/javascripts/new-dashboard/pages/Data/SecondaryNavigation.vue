@@ -3,7 +3,7 @@
       <div class="secondarynavigation__content">
         <div class="secondarynavigation__title title is-caption">{{ $t('SecondaryNavigation.data') }}</div>
         <div class="secondarynavigation__tabs">
-          <router-link :to="{ name: 'datasets' }" exact class="secondarynavigation__tab title is-small" active-class="is-active">
+          <router-link :to="{ name: 'datasets' }" class="secondarynavigation__tab title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
             <span>{{ $t('SecondaryNavigation.yourDatasets') }}</span>
           </router-link>
           <router-link :to="{ name: 'location_data_streams' }" class="secondarynavigation__tab title is-small" active-class="is-active">
@@ -15,10 +15,18 @@
 </template>
 
 <script>
+import { isAllowed } from 'new-dashboard/core/configuration/filters';
 
 export default {
-  name: 'SecondaryNavigation'
+  name: 'SecondaryNavigation',
+  computed: {
+    isDatasetPage () {
+      return isAllowed(this.$route.params.filter);
+    },
+  }
 };
+
+
 </script>
 
 <style scoped lang="scss">

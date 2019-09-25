@@ -127,6 +127,10 @@ CartoDB::Application.routes.draw do
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
@@ -581,6 +585,10 @@ CartoDB::Application.routes.draw do
       post 'oauth_apps/:id/revoke', to: 'oauth_apps#revoke', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_revoke
 
       get 'datasets', to: 'datasets#index', as: :api_v4_datasets
+
+      scope 'do' do
+        get 'token' => 'data_observatory#token', as: :api_v4_do_token
+      end
     end
 
     scope 'v3/' do
@@ -660,6 +668,7 @@ CartoDB::Application.routes.draw do
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
 
+        get 'users/:u_username/mfa/:type', to: 'multifactor_authentication#show', as: :api_v2_organization_users_mfa_show
         post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
         delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end

@@ -355,6 +355,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
 	spec/requests/carto/api/public/datasets_controller_spec.rb \
 	spec/models/carto/user_migration_spec.rb \
+	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

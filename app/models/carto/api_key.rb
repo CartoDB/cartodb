@@ -57,6 +57,8 @@ module Carto
 
     CDB_CONF_KEY_PREFIX = 'api_keys_'.freeze
 
+    DATA_OBSERVATORY_TOKEN_GRANT = 'data_observatory_token'.freeze
+
     self.inheritance_column = :_type
 
     belongs_to :user
@@ -193,6 +195,10 @@ module Carto
 
     def dataset_metadata_permissions
       @dataset_metadata_permissions ||= process_dataset_metadata_permissions
+    end
+
+    def data_observatory_token_permissions?
+      process_user_data_grants&.include?(DATA_OBSERVATORY_TOKEN_GRANT)
     end
 
     def table_permissions_from_db

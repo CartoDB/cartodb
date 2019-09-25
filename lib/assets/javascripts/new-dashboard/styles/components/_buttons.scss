@@ -61,6 +61,21 @@ a {
   }
 }
 
+.button--small {
+  padding: 8px 12px;
+  font: 600 10px/14px "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.button--alert {
+  background: $button-alert__bg-color;
+
+  &:hover,
+  &:focus {
+    background: $button-alert__bg-color--hover;
+  }
+}
+
 .button-icon {
   width: 14px;
   height: 14px;
@@ -70,6 +85,7 @@ a {
 .button--last {
   padding-right: 0;
 }
+
 
 .buttonLink {
   display: inline-block;

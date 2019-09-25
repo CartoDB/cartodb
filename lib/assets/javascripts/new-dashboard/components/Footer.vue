@@ -33,7 +33,7 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.TechSupport.description`) }}</p>
         </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isProUser">
+        <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DedicatedSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -70,9 +70,9 @@ export default {
       return this.userAccountType === 'free';
     },
 
-    isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noProUsers.includes(this.userAccountType) || this.user.organization);
+    isIndividualUser () {
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
+      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization);
     },
 
     isOrganizationUser () {

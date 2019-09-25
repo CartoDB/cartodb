@@ -1,6 +1,4 @@
 <div class="CDB-Text Editor-formInner">
-  <label class="CDB-Legend u-upperCase CDB-Text is-semibold CDB-Size-small">Datasets</label>
-
   <div class="CDB-Box-modal ApiKeysForm-box-modal">
     <% if (showSearch) { %>
       <div class="CDB-Box-modalHeader">

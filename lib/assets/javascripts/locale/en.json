@@ -1340,6 +1340,11 @@
           "salesforce": {
             "fallback-desc": "Contact us to learn more about %{brand} integration",
             "input-placeholder": "Paste your %{brand} URL here"
+          },
+          "feedback": {
+            "text": "Is your data somewhere else? Please let us know!",
+            "button": "Request data source",
+            "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
           }
         },
         "datasets": {

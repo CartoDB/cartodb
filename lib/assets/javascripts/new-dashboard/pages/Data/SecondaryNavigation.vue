@@ -22,11 +22,9 @@ export default {
   computed: {
     isDatasetPage () {
       return isAllowed(this.$route.params.filter);
-    },
+    }
   }
 };
-
-
 </script>
 
 <style scoped lang="scss">

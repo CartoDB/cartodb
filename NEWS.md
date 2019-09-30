@@ -9,6 +9,7 @@ sudo make install
 ```
 
 ### Features
+- Add warning in the code editor when using a Data Services function ([CartoDB/support#2046](https://github.com/CartoDB/support/issues/2046))
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
   - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))

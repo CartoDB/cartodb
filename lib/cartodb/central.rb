@@ -95,6 +95,11 @@ module Cartodb
       send_request("api/users/#{username}/do_token", nil, :get, [200, 403, 404])
     end
 
+    def create_do_datasets(username:, datasets:)
+      body = { username: username, datasets: datasets }
+      send_request("api/do/datasets", body, :post, [201, 403, 404])
+    end
+
     ############################################################################
     # Organizations
 

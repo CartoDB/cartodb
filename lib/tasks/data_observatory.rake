@@ -24,7 +24,7 @@ namespace :cartodb do
       Cartodb::Central.new.create_do_datasets(username: username, datasets: datasets)
 
       redis_key = "do:#{username}:datasets"
-      redis_value = ["bq", bq_datasets, "spanner", spanner_datasets]
+      redis_value = ["bq", bq_datasets.to_json, "spanner", spanner_datasets.to_json]
       $users_metadata.hmset(redis_key, redis_value)
 
       puts 'Task finished succesfully!'

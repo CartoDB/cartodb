@@ -59,11 +59,11 @@ describe 'data_observatory.rake' do
       redis_key = "do:fulano:datasets"
       bq_datasets = [
         { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
-      ].to_s
+      ].to_json
       spanner_datasets = [
         { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
         { dataset_id: 'dataset2', expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
-      ].to_s
+      ].to_json
 
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
 

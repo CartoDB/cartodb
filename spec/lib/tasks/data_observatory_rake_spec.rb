@@ -67,8 +67,8 @@ describe 'data_observatory.rake' do
 
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
 
-      $users_metadata.hmget(redis_key, 'bq').should eq [bq_datasets]
-      $users_metadata.hmget(redis_key, 'spanner').should eq [spanner_datasets]
+      $users_metadata.hget(redis_key, 'bq').should eq bq_datasets
+      $users_metadata.hget(redis_key, 'spanner').should eq spanner_datasets
     end
 
   end

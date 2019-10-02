@@ -8,7 +8,7 @@ describe Carto::Api::Public::DataObservatoryController do
   before(:all) do
     @master = @user1.api_key
     @not_granted_token = @user1.api_keys.create_regular_key!(name: 'not_do', grants: [{ type: 'apis', apis: [] }]).token
-    do_grants = [{ type: 'apis', apis: [] }, { type: 'user', data: ['data_observatory_token'] }]
+    do_grants = [{ type: 'apis', apis: ['data_observatory_v2'] }]
     @granted_token = @user1.api_keys.create_regular_key!(name: 'do', grants: do_grants).token
     @headers = { 'CONTENT_TYPE' => 'application/json' }
   end

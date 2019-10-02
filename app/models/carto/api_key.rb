@@ -35,8 +35,9 @@ module Carto
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
+    API_DO        = 'data_observatory_v2'.freeze
 
-    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
+    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS, API_DO] }.freeze
     GRANTS_ALL_DATA_SERVICES = {
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']
@@ -56,8 +57,6 @@ module Carto
                           "ELSE 0 END DESC".freeze
 
     CDB_CONF_KEY_PREFIX = 'api_keys_'.freeze
-
-    DATA_OBSERVATORY_TOKEN_GRANT = 'data_observatory_token'.freeze
 
     self.inheritance_column = :_type
 
@@ -197,8 +196,8 @@ module Carto
       @dataset_metadata_permissions ||= process_dataset_metadata_permissions
     end
 
-    def data_observatory_token_permissions?
-      process_user_data_grants&.include?(DATA_OBSERVATORY_TOKEN_GRANT)
+    def data_observatory_permissions?
+      granted_apis&.include?(API_DO)
     end
 
     def table_permissions_from_db

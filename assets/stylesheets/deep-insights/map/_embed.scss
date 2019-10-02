@@ -328,6 +328,10 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
     bottom: 54px;
   }
 
+  @media (max-width: $sMedia-s) {
+    display: none;
+  }
+
   &--inner {
     display: flex;
     flex-direction: column;

@@ -1,0 +1,26 @@
+.lds-column--main-info,
+.lds-column--extra-info,
+.lds-column--status,
+.lds-column--share {
+  @extend .grid;
+  @extend .grid--no-wrap;
+}
+
+.lds-column--main-info,
+.lds-column--share {
+  @extend .grid-cell--col4;
+  @extend .grid--align-center;
+}
+
+.lds-column--extra-info,
+.lds-column--status {
+  @extend .grid-cell--col5;
+}
+
+.lds-column--status {
+  @extend .grid--align-center;
+}
+
+.lds-column--share {
+  @extend .grid--justify-end;
+}

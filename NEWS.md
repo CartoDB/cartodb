@@ -28,6 +28,7 @@ sudo make install
 - Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
 - LDS page:
   - Add structre for new LDS page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  - Add Data Observatory catalog - PAGE ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

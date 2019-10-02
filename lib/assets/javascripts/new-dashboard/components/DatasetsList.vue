@@ -280,7 +280,7 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 64px;
+  top: 128px;
 }
 
 .grid__head--sticky.is-user-notification {

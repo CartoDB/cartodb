@@ -30,17 +30,20 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.secondarynavigation__content {
-  display: flex;
-  align-items: center;
-  max-width: 940px;
-  margin: 0 auto;
-  padding: 0;
-}
-
 .secondarynavigation {
-  position: relative;
+  position: sticky;
+  z-index: 5;
+  top: 64px;
   border-bottom: 1px solid $neutral--300;
+  background-color: $white;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 0;
+  }
 
   &__title {
     margin-right: 48px;
@@ -64,4 +67,5 @@ export default {
     }
   }
 }
+
 </style>

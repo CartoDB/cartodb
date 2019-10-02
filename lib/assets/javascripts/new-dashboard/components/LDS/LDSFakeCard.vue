@@ -29,8 +29,8 @@
 
 <script>
 export default {
-  name: 'LDSFakeCard',
-}
+  name: 'LDSFakeCard'
+};
 </script>
 
 <style scoped lang="scss">

@@ -53,7 +53,7 @@ export default {
   beforeRouteUpdate (to, from, next) {
     checkFilters('location_data_streams', 'lds', to, from, next);
   },
-  beforeMount() {
+  beforeMount () {
     this.$store.dispatch('lds/fetch');
   },
   computed: {
@@ -65,7 +65,7 @@ export default {
       numResults: state => state.lds.numResults,
       resultsPerPage: state => state.lds.resultsPerPage,
       appliedOrder: state => state.lds.order,
-      appliedOrderDirection: state => state.lds.orderDirection,
+      appliedOrderDirection: state => state.lds.orderDirection
 
     }),
     shouldShowPagination () {
@@ -82,7 +82,7 @@ export default {
       this.$router.push({
         name: 'location_data_streams',
         params: this.$route.params,
-        query: {...this.$route.query, page}
+        query: { ...this.$route.query, page }
       });
     },
     applyOrder (orderParams) {

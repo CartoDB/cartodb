@@ -38,23 +38,10 @@
 </template>
 
 <script>
-import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
-import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
-import * as Visualization from 'new-dashboard/core/models/visualization';
-import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
-import SharedBrief from 'new-dashboard/components/SharedBrief';
-import countCharsArray from 'new-dashboard/utils/count-chars-array';
-import * as Formatter from 'new-dashboard/utils/formatter';
-
 export default {
   name: 'LDSCard',
-  components: {
-    DatasetQuickActions,
-    FeaturesDropdown,
-    SharedBrief
-  },
   props: {
-    dataset: Object,
+    dataset: Object
   }
 };
 </script>

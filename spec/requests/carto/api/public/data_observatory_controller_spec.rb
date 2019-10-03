@@ -29,6 +29,18 @@ describe Carto::Api::Public::DataObservatoryController do
         expect(response.status).to eq(403)
       end
     end
+
+    it 'returns 200 when using the master API key' do
+      get_json endpoint_url(api_key: @master), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+    end
+
+    it 'returns 200 when using a regular API key with DO grant' do
+      get_json endpoint_url(api_key: @granted_token), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+    end
   end
 
   def endpoint_url(params = {})
@@ -41,6 +53,10 @@ describe Carto::Api::Public::DataObservatoryController do
       @expected_body = [{ 'access_token' => 'tokenuco' }]
     end
 
+    before(:each) do
+      Cartodb::Central.any_instance.stubs(:get_do_token).returns(@expected_body.to_json)
+    end
+
     after(:each) do
       Cartodb::Central.any_instance.unstub(:get_do_token)
     end
@@ -50,23 +66,13 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'calls Central to request the token' do
       Cartodb::Central.any_instance.expects(:get_do_token).with(@user1.username).once.returns(@expected_body.to_json)
 
-      get_json api_v4_do_token_url(api_key: @master), @headers
+      get_json endpoint_url(api_key: @master), @headers
     end
 
-    it 'returns 200 with an access token when using the master API key' do
-      Cartodb::Central.any_instance.stubs(:get_do_token).returns(@expected_body.to_json)
-
-      get_json api_v4_do_token_url(api_key: @master), @headers do |response|
+    it 'returns 200 with an access token' do
+      get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         expect(response.body).to eq @expected_body
-      end
-    end
-
-    it 'returns 200 when using a regular API key with DO grant' do
-      Cartodb::Central.any_instance.stubs(:get_do_token).returns(@expected_body.to_json)
-
-      get_json api_v4_do_token_url(api_key: @granted_token), @headers do |response|
-        expect(response.status).to eq(200)
       end
     end
 
@@ -74,7 +80,7 @@ describe Carto::Api::Public::DataObservatoryController do
       central_error = CentralCommunicationFailure.new('boom')
       Cartodb::Central.any_instance.stubs(:get_do_token).raises(central_error)
 
-      get_json api_v4_do_token_url(api_key: @master), @headers do |response|
+      get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
       end
     end
@@ -100,8 +106,8 @@ describe Carto::Api::Public::DataObservatoryController do
 
     it_behaves_like 'an endpoint validating a DO API key'
 
-    it 'returns 200 with the non expired datasets when using the master API key' do
-      get_json api_v4_do_datasets_url(api_key: @master), @headers do |response|
+    it 'returns 200 with the non expired datasets' do
+      get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:datasets]
         expect(datasets.count).to eq 3
@@ -109,25 +115,33 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 200 when using a regular API key with DO grant' do
-      get_json api_v4_do_datasets_url(api_key: @granted_token), @headers do |response|
-        expect(response.status).to eq(200)
-      end
-    end
-
     it 'returns 200 with an empty array if the user does not have datasets' do
       host! "#{@user2.username}.localhost.lan"
 
-      get_json api_v4_do_datasets_url(api_key: @user2.api_key), @headers do |response|
+      get_json endpoint_url(api_key: @user2.api_key), @headers do |response|
         expect(response.status).to eq(200)
         datasets = response.body[:datasets]
         expect(datasets.count).to eq 0
       end
     end
 
+    it 'returns 500 if the stored metadata is wrong' do
+      host! "#{@user2.username}.localhost.lan"
+      redis_key = "do:#{@user2.username}:datasets"
+      wrong_datasets = [{ dataset_id: 'wrong', expires_at: 'wrong' }]
+      $users_metadata.hset(redis_key, 'bq', wrong_datasets.to_json)
+
+      get_json endpoint_url(api_key: @user2.api_key), @headers do |response|
+        expect(response.status).to eq(500)
+        expect(response.body).to eq(errors: "no time information in \"wrong\"")
+      end
+
+      $users_metadata.del(redis_key)
+    end
+
     context 'ordering' do
       it 'orders by id ascending by default' do
-        get_json api_v4_do_datasets_url(api_key: @master), @headers do |response|
+        get_json endpoint_url(api_key: @master), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:datasets]
           expect(datasets.count).to eq 3
@@ -137,7 +151,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
 
       it 'orders by id descending' do
-        get_json api_v4_do_datasets_url(api_key: @master, order_direction: 'desc'), @headers do |response|
+        get_json endpoint_url(api_key: @master, order_direction: 'desc'), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:datasets]
           expect(datasets.count).to eq 3
@@ -148,7 +162,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       it 'orders by project descending' do
         params = { api_key: @master, order: 'project', order_direction: 'desc' }
-        get_json api_v4_do_datasets_url(params), @headers do |response|
+        get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:datasets]
           expect(datasets.count).to eq 3
@@ -158,7 +172,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       it 'orders by dataset ascending' do
         params = { api_key: @master, order: 'dataset', order_direction: 'asc' }
-        get_json api_v4_do_datasets_url(params), @headers do |response|
+        get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:datasets]
           expect(datasets.count).to eq 3
@@ -169,7 +183,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       it 'orders by table descending' do
         params = { api_key: @master, order: 'table', order_direction: 'desc' }
-        get_json api_v4_do_datasets_url(params), @headers do |response|
+        get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
           datasets = response.body[:datasets]
           expect(datasets.count).to eq 3

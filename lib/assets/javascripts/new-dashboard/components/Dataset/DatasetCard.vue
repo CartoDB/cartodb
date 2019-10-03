@@ -31,6 +31,9 @@
           <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
+          <span v-if="showInteractiveElements" class="card-favorite" @click.prevent="copyName" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <img svg-inline src="../../assets/icons/common/copy.svg">
+          </span>
         </div>
         <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -224,6 +227,23 @@ export default {
       } else {
         this.likeDataset(this.$props.dataset);
       }
+    },
+    copyName () {
+      var textArea = document.createElement('textarea');
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = 0;
+      textArea.style.height = 0;
+      textArea.style.width = 0;
+      textArea.value = this.dataset.name;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        var copySuccess = document.execCommand('copy');
+      } catch (err) {
+        //fail
+      }
+      document.body.removeChild(textArea);
     },
     isLastTag (index) {
       return index === this.numberTags - 1;

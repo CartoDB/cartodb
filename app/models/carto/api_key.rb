@@ -37,7 +37,7 @@ module Carto
     API_MAPS      = 'maps'.freeze
     API_DO        = 'data_observatory_v2'.freeze
 
-    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS, API_DO] }.freeze
+    GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
     GRANTS_ALL_DATA_SERVICES = {
       type: 'dataservices',
       services: ['geocoding', 'routing', 'isolines', 'observatory']

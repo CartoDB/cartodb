@@ -32,7 +32,7 @@ module Carto
         DataservicesScope.new('routing', 'Routing').freeze,
         DataservicesScope.new('observatory', 'Data Observatory').freeze,
 
-        ApisScope.new('data_observatory_v2', 'Data Observatory API').freeze,
+        ApisScope.new('do', 'Data Observatory API').freeze,
 
         UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze,
         DatasetsMetadataScope.new('Table names').freeze

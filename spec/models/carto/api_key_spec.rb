@@ -455,10 +455,10 @@ describe Carto::ApiKey do
         }.to_not raise_error
       end
 
-      it 'validates data_observatory_v2 API grant' do
+      it 'validates do API grant' do
         apis_grants = {
           type: "apis",
-          apis: ["data_observatory_v2"]
+          apis: ["do"]
         }
         expect {
           @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
@@ -842,17 +842,17 @@ describe Carto::ApiKey do
     end
 
     describe '#data_observatory_permissions?' do
-      it 'returns true when it has the data_observatory_v2 api grant' do
+      it 'returns true when it has the do api grant' do
         apis_grants = {
           type: "apis",
-          apis: ["data_observatory_v2"]
+          apis: ["do"]
         }
         api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
 
         expect(api_key.data_observatory_permissions?).to eq true
       end
 
-      it 'returns false when it does not have the data_observatory_v2 api grant' do
+      it 'returns false when it does not have the do api grant' do
         apis_grants = {
           type: "apis",
           apis: ["sql"]

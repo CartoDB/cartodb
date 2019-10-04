@@ -239,11 +239,11 @@ module Carto
           [
             {
               type: 'apis',
-              apis: ['data_observatory_v2']
+              apis: ['do']
             }
           ]
 
-        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['apis:data_observatory_v2'])
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['apis:do'])
 
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))

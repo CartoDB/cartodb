@@ -23,7 +23,7 @@
           "enum": [
             "sql",
             "maps",
-            "data_observatory_v2"
+            "do"
           ]
         }
       },

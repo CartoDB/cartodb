@@ -332,11 +332,11 @@ describe Carto::OauthProvider::Scopes do
 
   describe Carto::OauthProvider::Scopes::ApisScope do
     describe '#add_to_api_key_grants' do
-      it 'adds apis scope with data_observatory_v2 subset' do
-        scope = Carto::OauthProvider::Scopes::ApisScope.new('data_observatory_v2', 'Data Observatory API')
+      it 'adds apis scope with do subset' do
+        scope = Carto::OauthProvider::Scopes::ApisScope.new('do', 'Data Observatory API')
         grants = [{ type: 'apis', apis: [] }]
         scope.add_to_api_key_grants(grants, nil)
-        expect(grants).to(eq([{ type: 'apis', apis: ['data_observatory_v2'] }]))
+        expect(grants).to(eq([{ type: 'apis', apis: ['do'] }]))
       end
     end
   end
@@ -634,7 +634,7 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'shows Data Observatory API permission' do
-      scope = ["apis:data_observatory_v2"]
+      scope = ["apis:do"]
       expected = [
         {
           description: "User and personal data",

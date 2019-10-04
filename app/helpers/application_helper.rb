@@ -9,7 +9,6 @@ module ApplicationHelper
   include TrackjsHelper
   include GoogleAnalyticsHelper
   include GoogleTagManagerHelper
-  include HubspotHelper
   include FrontendConfigHelper
   include AppAssetsHelper
   include MapsApiHelper

@@ -39,6 +39,8 @@
     </div>
   <% } %>
 
+  <%= accountFormExtension %>
+
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">

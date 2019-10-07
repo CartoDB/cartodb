@@ -455,14 +455,13 @@ describe Carto::ApiKey do
         }.to_not raise_error
       end
 
-      it 'validates data_observatory_token grant' do
-        user_grants = {
-          type: "user",
-          data: ["data_observatory_token"]
+      it 'validates do API grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["do"]
         }
-        grants = [apis_grant, user_grants]
         expect {
-          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: grants)
+          @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
         }.to_not raise_error
       end
 
@@ -839,6 +838,28 @@ describe Carto::ApiKey do
       it 'filters all if nil type' do
         api_keys = @carto_user1.api_keys.by_type(nil)
         api_keys.count.should eq 2
+      end
+    end
+
+    describe '#data_observatory_permissions?' do
+      it 'returns true when it has the do api grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["do"]
+        }
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
+
+        expect(api_key.data_observatory_permissions?).to eq true
+      end
+
+      it 'returns false when it does not have the do api grant' do
+        apis_grants = {
+          type: "apis",
+          apis: ["sql"]
+        }
+        api_key = @carto_user1.api_keys.create_regular_key!(name: 'x', grants: [apis_grants])
+
+        expect(api_key.data_observatory_permissions?).to eq false
       end
     end
   end

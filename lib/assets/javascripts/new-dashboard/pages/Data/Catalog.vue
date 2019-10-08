@@ -85,8 +85,8 @@ export default {
   data () {
     return {
       dropdownCountriesDisabled: true,
-      dropdownCountriesOpen: false,
-    }
+      dropdownCountriesOpen: false
+    };
   },
   computed: {
     ...mapState({
@@ -142,7 +142,7 @@ export default {
       this.$store.dispatch('catalog/fetchDatasets', {
         category: this.$refs.dropdownCategories.selected,
         country
-      })
+      });
       window.scroll({ top: 0, left: 0 });
     },
     resetDatasets () {

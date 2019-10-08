@@ -41,8 +41,8 @@ export default {
     placeholder: String,
     options: {
       type: Array,
-      default() {
-        return []
+      default () {
+        return [];
       }
     },
     open: {

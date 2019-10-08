@@ -20,7 +20,7 @@
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
         <li
-          v-for="(option, index) in filteredOptions" :key="option"  
+          v-for="(option, index) in filteredOptions" :key="option"
           @click="selectOption(option)"
           class="catalogDropdown__option text is-caption"
           :class="{'catalogDropdown__option--active': activeOptionIndex === index + 1}"
@@ -41,7 +41,9 @@ export default {
     placeholder: String,
     options: {
       type: Array,
-      default: []
+      default() {
+        return []
+      }
     },
     open: {
       type: Boolean,
@@ -64,18 +66,18 @@ export default {
       searchFilter: '',
       isOpen: this.open,
       isDisabled: this.disabled
-    }
+    };
   },
   computed: {
-    filteredOptions() {
+    filteredOptions () {
       const filtered = [];
       const regOption = new RegExp(this.searchFilter, 'ig');
       for (const option of this.options) {
-        if (this.searchFilter.length < 1 || option.match(regOption)){
+        if (this.searchFilter.length < 1 || option.match(regOption)) {
           filtered.push(option);
         }
       }
-      return filtered.length > 0 ? filtered : this.options ;
+      return filtered.length > 0 ? filtered : this.options;
     }
   },
   methods: {
@@ -124,10 +126,10 @@ export default {
     }
   },
   watch: {
-    disabled() {
+    disabled () {
       this.isDisabled = this.disabled;
     },
-    open() {
+    open () {
       this.isOpen = this.open;
     }
   }

@@ -7,7 +7,6 @@ module ApplicationHelper
   include CartoDB::ConfigUtils
   include SafeJsObject
   include TrackjsHelper
-  include GoogleAnalyticsHelper
   include GoogleTagManagerHelper
   include FrontendConfigHelper
   include AppAssetsHelper

@@ -9,7 +9,6 @@ module CartoGearsApi
       include SafeJsObject
       include CartoDB::ConfigUtils
       include TrackjsHelper
-      include GoogleAnalyticsHelper
       include FrontendConfigHelper
       include AppAssetsHelper
       include MapsApiHelper

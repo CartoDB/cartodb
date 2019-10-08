@@ -13,7 +13,6 @@
     <%= insert_google_tag_manager_no_script('primary') %>
     <%= yield %>
     <%= yield :js -%>
-    <%= insert_google_analytics('primary') -%>
     <%= render 'admin/shared/intercom' %>
   </body>
 </html>

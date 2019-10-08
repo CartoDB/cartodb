@@ -22,7 +22,8 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps"
+            "maps",
+            "do"
           ]
         }
       },
@@ -108,8 +109,7 @@
         "items": {
           "type": "string",
           "enum": [
-            "profile",
-            "data_observatory_token"
+            "profile"
           ]
         }
       },

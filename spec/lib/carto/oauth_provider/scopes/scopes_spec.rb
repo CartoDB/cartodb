@@ -327,12 +327,16 @@ describe Carto::OauthProvider::Scopes do
         scope.add_to_api_key_grants(grants, nil)
         expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['profile'] }]))
       end
+    end
+  end
 
-      it 'adds user scope with data_observatory_token subset' do
-        scope = Carto::OauthProvider::Scopes::UserScope.new('data_observatory_token', 'DO token')
+  describe Carto::OauthProvider::Scopes::ApisScope do
+    describe '#add_to_api_key_grants' do
+      it 'adds apis scope with do subset' do
+        scope = Carto::OauthProvider::Scopes::ApisScope.new('do', 'Data Observatory API')
         grants = [{ type: 'apis', apis: [] }]
         scope.add_to_api_key_grants(grants, nil)
-        expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['data_observatory_token'] }]))
+        expect(grants).to(eq([{ type: 'apis', apis: ['do'] }]))
       end
     end
   end
@@ -629,14 +633,18 @@ describe Carto::OauthProvider::Scopes do
       expect(scopes_by_category).to(eq(expected))
     end
 
-    it 'shows user service account permission' do
-      scope = ["user:data_observatory_token"]
+    it 'shows Data Observatory API permission' do
+      scope = ["apis:do"]
       expected = [
         {
           description: "User and personal data",
           icon: nil,
-          scopes: [{ description: "Username and organization name", new: true },
-                   { description: "User token for Data Observatory", new: true }]
+          scopes: [{ description: "Username and organization name", new: true }]
+        },
+        {
+          description: "Access to CARTO APIs",
+          icon: nil,
+          scopes: [{ description: "Data Observatory API", new: true }]
         }
       ]
 

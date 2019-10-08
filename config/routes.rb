@@ -589,6 +589,7 @@ CartoDB::Application.routes.draw do
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
+        get 'datasets' => 'data_observatory#datasets', as: :api_v4_do_datasets
       end
     end
 

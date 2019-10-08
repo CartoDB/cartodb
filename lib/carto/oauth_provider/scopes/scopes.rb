@@ -1,6 +1,7 @@
 require_relative './category'
 require_relative './scope'
 require_relative './default_scope'
+require_relative './apis_scope'
 require_relative './dataservices_scope'
 require_relative './datasets_scope'
 require_relative './datasets_metadata_scope'
@@ -20,6 +21,7 @@ module Carto
       CATEGORY_DATASETS = Category.new('Access to your datasets')
       CATEGORY_SCHEMA = Category.new('Create tables')
       CATEGORY_DATASETS_METADATA = Category.new('List your datasets')
+      CATEGORY_APIS = Category.new('Access to CARTO APIs')
 
       SCOPES = [
         Scope.new(SCOPE_DEFAULT, CATEGORY_USER, 'Username and organization name').freeze,
@@ -30,8 +32,9 @@ module Carto
         DataservicesScope.new('routing', 'Routing').freeze,
         DataservicesScope.new('observatory', 'Data Observatory').freeze,
 
+        ApisScope.new('do', 'Data Observatory API').freeze,
+
         UserScope.new('profile', 'User profile (avatar, name, org. owner)').freeze,
-        UserScope.new('data_observatory_token', 'User token for Data Observatory').freeze,
         DatasetsMetadataScope.new('Table names').freeze
       ].freeze
 

@@ -97,7 +97,6 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 1px;
   padding: 16px;
   overflow: hidden;
   border-bottom: 1px solid $softblue;
@@ -128,24 +127,6 @@ export default {
   &:hover {
     color: $text__color;
     cursor: pointer;
-
-    &::after {
-      content: '';
-      position: absolute;
-      width: 14px;
-      height: 100%;
-      margin-left: 4px;
-      transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-      background-image: url('../../assets/icons/datasets/chevron.svg');
-      background-repeat: no-repeat;
-      background-position: center;
-    }
-
-    &.is-reversed {
-      &::after {
-        transform: rotate(180deg);
-      }
-    }
   }
 }
 </style>

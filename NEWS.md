@@ -32,6 +32,7 @@ sudo make install
 - Catalog page:
   - Add structure for new Catalog page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
   - Add list of datasets for new Catalog page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
+  - Add interactivity/filtering section to new Catalog page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

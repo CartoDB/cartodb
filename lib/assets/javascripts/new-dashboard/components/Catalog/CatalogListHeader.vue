@@ -1,48 +1,48 @@
 <template>
-  <div class="lds-list-row">
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--start">
+  <div class="catalog-list-row">
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--start">
       </div>
-      <div class="lds-list-cell cell cell--main" @click="changeOrder('name')">
+      <div class="catalog-list-cell cell cell--main" @click="changeOrder('name')">
         <span class="text is-small is-txtSoftGrey element-sort"
           :class="{
             'is-active': isOrderApplied('name'),
             'is-reversed': isReverseOrderApplied('name'),
           }">
-          Name
+          {{ $t('CatalogListHeader.name') }}
         </span>
       </div>
     </div>
 
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--large" @click="changeOrder('spatial_aggregations')">
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--large" @click="changeOrder('spatial_aggregations')">
         <span class="text is-small is-txtSoftGrey element-sort"
         :class="{
             'is-active': isOrderApplied('spatial_aggregations'),
             'is-reversed': isReverseOrderApplied('spatial_aggregations'),
           }">
-          Aggregation
+          {{ $t('CatalogListHeader.aggregation') }}
         </span>
       </div>
     </div>
 
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--large" @click="changeOrder('frequency')">
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--large" @click="changeOrder('frequency')">
         <span class="text is-small is-txtSoftGrey element-sort"
           :class="{
             'is-active': isOrderApplied('frequency'),
             'is-reversed': isReverseOrderApplied('frequency'),
           }">
-          Frequency
+          {{ $t('CatalogListHeader.frequency') }}
         </span>
       </div>
-      <div class="lds-list-cell cell cell--large" @click="changeOrder('source')">
+      <div class="catalog-list-cell cell cell--large" @click="changeOrder('source')">
         <span class="text is-small is-txtSoftGrey element-sort"
           :class="{
             'is-active': isOrderApplied('source'),
             'is-reversed': isReverseOrderApplied('source'),
           }">
-          Source
+          {{ $t('CatalogListHeader.source') }}
         </span>
       </div>
     </div>
@@ -51,7 +51,7 @@
 
 <script>
 export default {
-  name: 'LDSListHeader',
+  name: 'CatalogListHeader',
   props: {
     order: String,
     orderDirection: String
@@ -93,7 +93,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.lds-list-row {
+.catalog-list-row {
   display: flex;
   align-items: center;
   width: 100%;

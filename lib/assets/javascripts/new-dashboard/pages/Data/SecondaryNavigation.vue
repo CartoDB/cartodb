@@ -6,8 +6,8 @@
           <router-link :to="{ name: 'datasets' }" class="secondarynavigation__tab title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
             <span>{{ $t('SecondaryNavigation.yourDatasets') }}</span>
           </router-link>
-          <router-link :to="{ name: 'location_data_streams' }" class="secondarynavigation__tab title is-small" active-class="is-active">
-            <span>{{ $t('SecondaryNavigation.lds') }}</span>
+          <router-link :to="{ name: 'catalog' }" class="secondarynavigation__tab title is-small" active-class="is-active">
+            <span>{{ $t('SecondaryNavigation.catalog') }}</span>
           </router-link>
         </div>
       </div>

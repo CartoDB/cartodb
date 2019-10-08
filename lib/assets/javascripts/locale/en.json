@@ -2399,7 +2399,9 @@
         "tooltip": "Switch to SQL view"
       },
       "code-mirror": {
-        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete.",
+        "quota-data-services-warning": "You're about to execute a function that will consume several Data Services credits, so we advise you to be mindful of your quota consumption when using this function here.",
+        "quota-data-services-warning-link": "You can read more about our Data Services API in our <a href='https://carto.com/developers/data-services-api/reference/#geocoding-functions' target='_blank'>guides</a>."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",

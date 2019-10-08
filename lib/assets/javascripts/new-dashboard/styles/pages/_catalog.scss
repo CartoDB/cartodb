@@ -1,0 +1,26 @@
+.catalog-column--main-info,
+.catalog-column--extra-info,
+.catalog-column--status,
+.catalog-column--share {
+  @extend .grid;
+  @extend .grid--no-wrap;
+}
+
+.catalog-column--main-info,
+.catalog-column--share {
+  @extend .grid-cell--col4;
+  @extend .grid--align-center;
+}
+
+.catalog-column--extra-info,
+.catalog-column--status {
+  @extend .grid-cell--col5;
+}
+
+.catalog-column--status {
+  @extend .grid--align-center;
+}
+
+.catalog-column--share {
+  @extend .grid--justify-end;
+}

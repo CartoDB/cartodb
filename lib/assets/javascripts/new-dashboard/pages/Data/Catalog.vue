@@ -1,30 +1,29 @@
 <template>
-  <section class="lds-section">
-    <div class="container grid lds-title">
-      <div class="grid-cell grid-cell--col8">
+  <section class="catalog-section">
+    <div class="container grid">
+      <div class="full-width">
         <SectionTitle class="grid-cell">
           <template slot="icon">
-            <img src="../../assets/icons/section-title/lds.svg" width="16" height="20" />
+            <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
           </template>
           <template slot="title">
-              <span>{{ $t('LDSPage.header.title') }}</span>
+              <span>{{ $t('CatalogPage.header') }}</span>
           </template>
         </SectionTitle>
-        <h3 class="text is-body">{{ $t('LDSPage.header.desc') }}</h3>
       </div>
     </div>
     <div class="container grid">
       <div class="grid-cell grid-cell--col12">
-        <LDSListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></LDSListHeader>
+        <CatalogListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></CatalogListHeader>
         <ul v-if="!isFetchingDatasets" >
           <li v-for="(dataset) in currentPageDatasets" :key="dataset.id">
-            <LDSCard :dataset="dataset"></LDSCard>
+            <CatalogCard :dataset="dataset"></CatalogCard>
           </li>
         </ul>
 
         <ul v-else>
           <li v-for="(n) in resultsPerPage" :key="n">
-            <LDSFakeCard />
+            <CatalogFakeCard />
           </li>
         </ul>
       </div>
@@ -36,36 +35,36 @@
 import { mapState } from 'vuex';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import LDSListHeader from 'new-dashboard/components/LDS/LDSListHeader';
-import LDSCard from 'new-dashboard/components/LDS/LDSCard';
-import LDSFakeCard from 'new-dashboard/components/LDS/LDSFakeCard';
+import CatalogListHeader from 'new-dashboard/components/Catalog/CatalogListHeader';
+import CatalogCard from 'new-dashboard/components/Catalog/CatalogCard';
+import CatalogFakeCard from 'new-dashboard/components/Catalog/CatalogFakeCard';
 import Pagination from 'new-dashboard/components/Pagination';
 
 export default {
-  name: 'LDSPage',
+  name: 'CatalogPage',
   components: {
     SectionTitle,
-    LDSListHeader,
-    LDSCard,
-    LDSFakeCard,
+    CatalogListHeader,
+    CatalogCard,
+    CatalogFakeCard,
     Pagination
   },
   beforeRouteUpdate (to, from, next) {
-    checkFilters('location_data_streams', 'lds', to, from, next);
+    checkFilters('catalog', 'catalog', to, from, next);
   },
   beforeMount () {
-    this.$store.dispatch('lds/fetch');
+    this.$store.dispatch('catalog/fetch');
   },
   computed: {
     ...mapState({
-      numPages: state => state.lds.numPages,
-      currentPage: state => state.lds.page,
-      datasets: state => state.lds.list,
-      isFetchingDatasets: state => state.lds.isFetching,
-      numResults: state => state.lds.numResults,
-      resultsPerPage: state => state.lds.resultsPerPage,
-      appliedOrder: state => state.lds.order,
-      appliedOrderDirection: state => state.lds.orderDirection
+      numPages: state => state.catalog.numPages,
+      currentPage: state => state.catalog.page,
+      datasets: state => state.catalog.list,
+      isFetchingDatasets: state => state.catalog.isFetching,
+      numResults: state => state.catalog.numResults,
+      resultsPerPage: state => state.catalog.resultsPerPage,
+      appliedOrder: state => state.catalog.order,
+      appliedOrderDirection: state => state.catalog.orderDirection
 
     }),
     shouldShowPagination () {
@@ -80,14 +79,14 @@ export default {
       window.scroll({ top: 0, left: 0 });
 
       this.$router.push({
-        name: 'location_data_streams',
+        name: 'catalog',
         params: this.$route.params,
         query: { ...this.$route.query, page }
       });
     },
     applyOrder (orderParams) {
       this.$router.push({
-        name: 'location_data_streams',
+        name: 'catalog',
         params: this.$route.params,
         query: {
           ...this.$route.query,
@@ -96,7 +95,7 @@ export default {
           order_direction: orderParams.direction
         }
       });
-      this.$store.dispatch('lds/order', orderParams);
+      this.$store.dispatch('catalog/order', orderParams);
     }
   }
 };
@@ -105,11 +104,11 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.lds-section {
+.catalog-section {
   margin-top: 64px;
 }
 
-.lds-title {
-  margin-bottom: 40px;
+.full-width {
+  width: 100%;
 }
 </style>

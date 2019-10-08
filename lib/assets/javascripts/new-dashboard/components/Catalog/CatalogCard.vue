@@ -1,34 +1,34 @@
 <template>
   <a href=""
      target="_blank"
-     class="lds-row">
+     class="catalog-row">
 
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--start">
-        <div class="lds-categoryIcon"></div>
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--start">
+        <div class="catalog-categoryIcon"></div>
       </div>
-      <div class="lds-list-cell cell cell--main u-flex u-flex__direction--column">
+      <div class="catalog-list-cell cell cell--main u-flex u-flex__direction--column">
         <span class="text is-caption is-semibold is-txtGrey row-title u-ellipsis">
           {{dataset.name}}
         </span>
       </div>
     </div>
 
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--xlarge u-flex">
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--xlarge u-flex">
         <span class="text is-small is-txtSoftGrey u-ellipsis">
           {{dataset.spatial_aggregations}}
         </span>
       </div>
     </div>
 
-    <div class="lds-column--main-info">
-      <div class="lds-list-cell cell cell--large">
-        <span class="text is-small is-txtSoftGrey lds-text-frequency">
+    <div class="catalog-column--main-info">
+      <div class="catalog-list-cell cell cell--large">
+        <span class="text is-small is-txtSoftGrey catalog-text-frequency">
           {{dataset.frequency}}
         </span>
       </div>
-      <div class="lds-list-cell cell cell--large">
+      <div class="catalog-list-cell cell cell--large">
         <span class="text is-small is-txtSoftGrey">
           {{dataset.source}}
         </span>
@@ -39,7 +39,7 @@
 
 <script>
 export default {
-  name: 'LDSCard',
+  name: 'CatalogCard',
   props: {
     dataset: Object
   }
@@ -49,7 +49,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.lds-row {
+.catalog-row {
   display: flex;
   align-items: center;
   width: 100%;
@@ -76,7 +76,7 @@ export default {
   }
 }
 
-.lds-categoryIcon {
+.catalog-categoryIcon {
   width: 36px;
   height: 36px;
   margin-right: 6px;
@@ -87,7 +87,7 @@ export default {
   background-color: #EBEEF5;
 }
 
-.lds-text-frequency {
+.catalog-text-frequency {
   text-transform: capitalize;
 }
 

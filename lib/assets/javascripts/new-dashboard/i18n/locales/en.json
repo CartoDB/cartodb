@@ -733,12 +733,9 @@
   "SecondaryNavigation": {
     "data": "Data",
     "yourDatasets": "Your Datasets",
-    "lds": "Location Data Streams"
+    "catalog": "Catalog"
   },
-  "LDSPage": {
-    "header": {
-      "title": "Location Data Streams",
-      "desc": "Augment your own data and broaden your analysis with the most up to date third party premium data available."
-    }
+  "CatalogPage": {
+    "header": "Catalog"
   }
 }

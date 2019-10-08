@@ -1,16 +1,15 @@
 <template>
-  <section class="lds-section">
+  <section class="catalog-section">
     <div class="container grid">
-      <div class="grid-cell grid-cell--col8">
+      <div class="full-width">
         <SectionTitle class="grid-cell">
           <template slot="icon">
-            <img src="../../assets/icons/section-title/lds.svg" width="18" height="20" />
+            <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
           </template>
           <template slot="title">
-              <span>{{ $t('LDSPage.header.title') }}</span>
+              <span>{{ $t('CatalogPage.header') }}</span>
           </template>
         </SectionTitle>
-        <h3 class="text is-body">{{ $t('LDSPage.header.desc') }}</h3>
       </div>
     </div>
   </section>
@@ -19,7 +18,7 @@
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 
 export default {
-  name: 'LDSPage',
+  name: 'CatalogPage',
   components: {
     SectionTitle
   }
@@ -29,8 +28,12 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.lds-section {
+.catalog-section {
   margin-top: 64px;
+}
+
+.full-width {
+  width: 100%;
 }
 
 </style>

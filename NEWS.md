@@ -22,13 +22,14 @@ sudo make install
   - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
   - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
   - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
-  - Scope for data_observatory_token ([#15089](https://github.com/CartoDB/cartodb/pull/15089))
+  - Scope to access DO API ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
 - Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
 - Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
 - Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
-- Remove Hubspot tracking from cartodb because of GDPR issues ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
+- Endpoint to list purchased Data Observatory datasets ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
+- Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

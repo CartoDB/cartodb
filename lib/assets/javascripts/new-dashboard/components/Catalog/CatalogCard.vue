@@ -1,34 +1,34 @@
 <template>
   <a href=""
      target="_blank"
-     class="catalog-row">
+     class="catalogCard">
 
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--start">
-        <div class="catalog-categoryIcon"></div>
+    <div class="catalogCard__column">
+      <div class="catalogCard__cell cell">
+        <div class="catalogCard__icon"></div>
       </div>
-      <div class="catalog-list-cell cell cell--main u-flex u-flex__direction--column">
-        <span class="text is-caption is-semibold is-txtGrey row-title u-ellipsis">
+      <div class="cell cell--main u-flex u-flex__align--center">
+        <span class="text is-caption is-semibold is-txtGrey row-title u-ellipsis catalogCard__title">
           {{dataset.name}}
         </span>
       </div>
     </div>
 
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--xlarge u-flex">
+    <div class="catalogCard__column">
+      <div class="cell cell--xlarge">
         <span class="text is-small is-txtSoftGrey u-ellipsis">
           {{dataset.spatial_aggregations}}
         </span>
       </div>
     </div>
 
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--large">
-        <span class="text is-small is-txtSoftGrey catalog-text-frequency">
+    <div class="catalogCard__column">
+      <div class="cell cell--large">
+        <span class="text is-small is-txtSoftGrey">
           {{dataset.frequency}}
         </span>
       </div>
-      <div class="catalog-list-cell cell cell--large">
+      <div class="cell cell--large">
         <span class="text is-small is-txtSoftGrey">
           {{dataset.source}}
         </span>
@@ -49,11 +49,10 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalog-row {
+.catalogCard {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 1px;
   padding: 16px;
   overflow: hidden;
   border-bottom: 1px solid $softblue;
@@ -62,33 +61,35 @@ export default {
   &:hover {
     background-color: $softblue;
     text-decoration: none;
-
-    .row-title {
-      color: $primary-color;
-      text-decoration: underline;
-    }
   }
 
-  .cell--start {
+  &__title {
+    color: $primary-color;
+    text-decoration: underline;
+  }
+
+  &__column {
+    display: flex;
+    flex: 0 0 33.3334%;
+    justify-content: center;
+    max-width: 33.3334%;
+  }
+
+  &__cell {
     width: 58px;
     height: 100%;
     padding-left: 0;
   }
-}
 
-.catalog-categoryIcon {
-  width: 36px;
-  height: 36px;
-  margin-right: 6px;
-  padding: 9px;
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-  border-radius: 2px;
-  background-color: #EBEEF5;
+  &__icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 6px;
+    padding: 9px;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+    border-radius: 2px;
+    background-color: $softblue;
+  }
 }
-
-.catalog-text-frequency {
-  text-transform: capitalize;
-}
-
 </style>

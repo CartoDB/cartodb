@@ -1,8 +1,8 @@
 <template>
-  <div class="lds-fake-row">
+  <div class="catalogCardFake">
 
-    <div class="lds-column--main-info">
-      <div class="cell-placeholder cell cell--start thumbnail">
+    <div class="catalogCardFake__column u-flex u-flex__align--center">
+      <div class="catalogCardFake__cell cell-placeholder cell thumbnail">
         <div class="icon-placeholder"/>
       </div>
       <div class="cell-placeholder cell cell--main">
@@ -10,13 +10,13 @@
       </div>
     </div>
 
-    <div class="lds-column--main-info">
+    <div class="catalogCardFake__column">
       <div class="cell-placeholder cell cell--xlarge">
         <div class="text-placeholder"/>
       </div>
     </div>
 
-    <div class="lds-column--main-info">
+    <div class="catalogCardFake__column">
       <div class="cell-placeholder cell cell--large">
         <div class="text-placeholder"/>
       </div>
@@ -29,53 +29,53 @@
 
 <script>
 export default {
-  name: 'LDSFakeCard'
+  name: 'CatalogCardFake'
 };
 </script>
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.lds-fake-row {
+.catalogCardFake {
   display: flex;
   align-items: center;
   width: 100%;
   height: 81px;
   padding: 22px 14px;
   background-color: $white;
-}
 
-.cell--start {
-  width: 58px;
-  height: 100%;
-  padding-left: 0;
-}
+  &__column {
+    display: flex;
+    flex: 0 0 33.3334%;
+    justify-content: center;
+    max-width: 33.3334%;
+  }
 
-.icon-placeholder {
-  width: 36px;
-  height: 36px;
-  border-radius: 2px;
-  background-color: $softblue;
-}
+  &__cell {
+    width: 58px;
+    height: 100%;
+    padding-left: 0;
+  }
 
-.text-placeholder {
-  height: 24px;
-  background-color: $softblue;
-}
+  .icon-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 2px;
+    background-color: $softblue;
+  }
 
-.cell-placeholder {
-  padding: 0 10px;
-}
+  .text-placeholder {
+    height: 24px;
+    background-color: $softblue;
+  }
 
-.cell--main {
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-width: 200px;
-}
+  .cell-placeholder {
+    padding: 0 10px;
+  }
 
-.thumbnail {
-  padding-right: 16px;
-  padding-left: 6px;
+  .thumbnail {
+    padding-right: 16px;
+    padding-left: 6px;
+  }
 }
-
 </style>

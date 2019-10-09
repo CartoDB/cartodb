@@ -1,10 +1,10 @@
 <template>
-  <div class="catalog-list-row">
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--start">
+  <div class="catalogListHeader">
+    <div class="catalogListHeader__column">
+      <div class="catalogListHeader__cell cell">
       </div>
-      <div class="catalog-list-cell cell cell--main" @click="changeOrder('name')">
-        <span class="text is-small is-txtSoftGrey element-sort"
+      <div class="cell cell--main" @click="changeOrder('name')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('name'),
             'is-reversed': isReverseOrderApplied('name'),
@@ -14,9 +14,9 @@
       </div>
     </div>
 
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--large" @click="changeOrder('spatial_aggregations')">
-        <span class="text is-small is-txtSoftGrey element-sort"
+    <div class="catalogListHeader__column">
+      <div class="cell cell--large" @click="changeOrder('spatial_aggregations')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
         :class="{
             'is-active': isOrderApplied('spatial_aggregations'),
             'is-reversed': isReverseOrderApplied('spatial_aggregations'),
@@ -26,9 +26,9 @@
       </div>
     </div>
 
-    <div class="catalog-column--main-info">
-      <div class="catalog-list-cell cell cell--large" @click="changeOrder('frequency')">
-        <span class="text is-small is-txtSoftGrey element-sort"
+    <div class="catalogListHeader__column">
+      <div class="cell cell--large" @click="changeOrder('frequency')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('frequency'),
             'is-reversed': isReverseOrderApplied('frequency'),
@@ -36,8 +36,8 @@
           {{ $t('CatalogListHeader.frequency') }}
         </span>
       </div>
-      <div class="catalog-list-cell cell cell--large" @click="changeOrder('source')">
-        <span class="text is-small is-txtSoftGrey element-sort"
+      <div class="ccell cell--large" @click="changeOrder('source')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('source'),
             'is-reversed': isReverseOrderApplied('source'),
@@ -93,7 +93,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalog-list-row {
+.catalogListHeader {
   display: flex;
   align-items: center;
   width: 100%;
@@ -103,15 +103,21 @@ export default {
   border-bottom: 1px solid $softblue;
   background-color: $white;
   cursor: default;
+
+  &__column {
+    display: flex;
+    flex: 0 0 33.3334%;
+    max-width: 33.3334%;
+  }
+
+  &__cell {
+    width: 58px;
+    height: 100%;
+    padding-left: 0;
+  }
 }
 
-.cell--start {
-  width: 58px;
-  height: 100%;
-  padding-left: 0;
-}
-
-.element-sort {
+.catalogListHeader__sort {
   &.is-active,
   &:hover {
     color: $text__color;

@@ -36,41 +36,20 @@ describe 'data_observatory.rake' do
       }.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
     end
 
-    it 'calls create_do_datasets from Central with the expected parameters' do
+    it 'calls purchase from Carto::DoLicensingService with the expected parameters' do
       File.stubs(:open).returns(csv_example)
-      central_mock = mock
-      Cartodb::Central.stubs(:new).returns(central_mock)
-
       expected_datasets = [
         { dataset_id: 'dataset1', available_in: ['bq', 'spanner'], price: 100,
           expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
         { dataset_id: 'dataset2', available_in: ['spanner'], price: 200,
           expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
       ]
-      central_mock.expects(:create_do_datasets).once.with(username: 'fulano', datasets: expected_datasets)
+      service_mock = mock
+      service_mock.expects(:purchase).once.with(expected_datasets)
+      Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
 
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
     end
-
-    it 'stores the metadata in Redis' do
-      File.stubs(:open).returns(csv_example)
-      Cartodb::Central.any_instance.stubs(:create_do_datasets)
-
-      redis_key = "do:fulano:datasets"
-      bq_datasets = [
-        { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
-      ].to_json
-      spanner_datasets = [
-        { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset2', expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
-      ].to_json
-
-      Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
-
-      $users_metadata.hget(redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(redis_key, 'spanner').should eq spanner_datasets
-    end
-
   end
 
   def csv_example

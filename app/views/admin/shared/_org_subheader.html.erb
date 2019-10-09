@@ -35,6 +35,7 @@
             <a href="<%= current_user.plan_url(request.protocol) %>" class="Filters-typeLink">Billing</a>
           </li>
         <% end %>
+        <%= render :partial => 'admin/shared/org_subheader_extension' %>
       </ul>
     </div>
   </div>

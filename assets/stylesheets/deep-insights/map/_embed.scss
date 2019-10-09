@@ -313,16 +313,9 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
 .CDB-Embed-banner {
   position: absolute;
-  z-index: 10;
+  z-index: 2;
   right: 24px;
   bottom: 24px;
-  box-sizing: border-box;
-  width: 140px;
-  height: auto;
-  padding: 16px 20px 12px;
-  border-radius: 4px;
-  background: white;
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
 
   @media (max-width: $sMedia-xl) {
     bottom: 54px;
@@ -334,9 +327,50 @@ $cEmbedTabs-Shadow: rgba(0, 0, 0, 0.24);
 
   &--inner {
     display: flex;
+    position: relative;
+    box-sizing: border-box;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 140px;
+    height: auto;
+    padding: 16px 20px 12px;
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.24), 0 4px 8px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  &__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    opacity: 0.3;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &::before,
+    &::after {
+      content: ' ';
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      width: 1px;
+      height: 10px;
+      background-color: #162945;
+    }
+
+    &::before {
+      transform: rotate(45deg);
+    }
+
+    &::after {
+      transform: rotate(-45deg);
+    }
   }
 
   &__title {

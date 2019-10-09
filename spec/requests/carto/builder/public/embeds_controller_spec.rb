@@ -180,10 +180,7 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
@@ -204,10 +201,7 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
 

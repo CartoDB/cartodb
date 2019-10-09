@@ -1,7 +1,6 @@
 <template>
   <section class="secondarynavigation">
       <div class="secondarynavigation__content">
-        <div class="secondarynavigation__title title is-caption">{{ $t('SecondaryNavigation.data') }}</div>
         <div class="secondarynavigation__tabs">
           <router-link :to="{ name: 'datasets' }" class="secondarynavigation__tab title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
             <span>{{ $t('SecondaryNavigation.yourDatasets') }}</span>
@@ -41,10 +40,6 @@ export default {
 .secondarynavigation {
   position: relative;
   border-bottom: 1px solid $neutral--300;
-
-  &__title {
-    margin-right: 48px;
-  }
 
   &__tabs {
     display: flex;

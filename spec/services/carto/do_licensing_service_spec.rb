@@ -4,6 +4,7 @@ describe Carto::DoLicensingService do
 
   before(:all) do
     @user = FactoryGirl.create(:valid_user, username: 'fulano')
+    @redis_key = "do:fulano:datasets"
     @service = Carto::DoLicensingService.new('fulano')
     @datasets = [
       { dataset_id: 'dataset1', available_in: ['bq', 'spanner'], price: 100,
@@ -35,19 +36,36 @@ describe Carto::DoLicensingService do
 
     it 'stores the metadata in Redis' do
       @central_mock.stubs(:create_do_datasets)
-      redis_key = "do:fulano:datasets"
+
       bq_datasets = [
-        { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
+        { dataset_id: 'dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
       ].to_json
       spanner_datasets = [
-        { dataset_id: 'dataset1', expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset2', expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
+        { dataset_id: 'dataset1', expires_at: '2020-09-27 08:00:00 +0000' },
+        { dataset_id: 'dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
       ].to_json
 
       @service.purchase(@datasets)
 
-      $users_metadata.hget(redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(redis_key, 'spanner').should eq spanner_datasets
+      $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
+      $users_metadata.hget(@redis_key, 'spanner').should eq spanner_datasets
+    end
+
+    it 'allows to add more data in the same Redis key' do
+      @central_mock.stubs(:create_do_datasets)
+
+      more_datasets = [
+        { dataset_id: 'dataset3', available_in: ['bq'], price: 300,
+          expires_at: '2020-09-27 08:00:00 +0000' }
+      ]
+
+      @service.purchase(@datasets)
+      @service.purchase(more_datasets)
+
+      bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
+      spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))
+      bq_datasets.count.should eq 2
+      spanner_datasets.count.should eq 2
     end
   end
 

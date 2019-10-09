@@ -3,24 +3,32 @@ module Carto
 
     def initialize(username)
       @username = username
+      @redis_key = "do:#{@username}:datasets"
     end
 
     def purchase(datasets)
       Cartodb::Central.new.create_do_datasets(username: @username, datasets: datasets)
-
-      bq_datasets = filter_datasets(datasets, 'bq')
-      spanner_datasets = filter_datasets(datasets, 'spanner')
-      redis_key = "do:#{@username}:datasets"
-      redis_value = ["bq", bq_datasets.to_json, "spanner", spanner_datasets.to_json]
-      # TODO: merge values, not replace
-      $users_metadata.hmset(redis_key, redis_value)
+      update_redis(datasets)
     end
 
     private
 
+    def update_redis(datasets)
+      value = ["bq", merge_redis_value(datasets, 'bq'), "spanner", merge_redis_value(datasets, 'spanner')]
+      $users_metadata.hmset(@redis_key, value)
+    end
+
+    def merge_redis_value(datasets, storage)
+      redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
+      new_datasets = filter_datasets(datasets, storage)
+      (redis_value + new_datasets).uniq.to_json
+    end
+
     def filter_datasets(datasets, storage)
       filtered_datasets = datasets.select { |dataset| dataset[:available_in].include?(storage) }
-      filtered_datasets.map { |dataset| dataset.slice(:dataset_id, :expires_at) }
+      filtered_datasets.map do |dataset|
+        { "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }
+      end
     end
 
   end

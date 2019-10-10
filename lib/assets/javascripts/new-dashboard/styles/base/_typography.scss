@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,600,700|Open+Sans:400,600');
 
 .text {
-  font-family: 'Open Sans', sans-serif;
+  font-family: $base__font-family;
 }
 
 .title {
-  font-family: 'Montserrat', sans-serif;
+  font-family: $title__font-family;
   font-weight: 600;
 }
 
@@ -16,7 +16,7 @@
 
 .is-subheader {
   font-size: 32px;
-  line-height: 48px;
+  line-height: 40px;
 }
 
 .is-body {

@@ -448,20 +448,18 @@
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
       "tags": ["Python", "CARTOframes"],
       "sections": {
-        "summary": "Summary",
-        "howto": "How To",
-        "extras": "Extras",
-        "learnmore": "Learn more"
+        "summary": "CARTOframes tries to help you at:",
+        "howto": "Here it’s an example that illustrates the points above:"
       },
       "jupyter": {
         "in" : "In:",
         "out": "Out:"
       },
       "step1": {
-        "summary": "Integrate spatial analysis in your Python scripts.",
-        "text1": "CARTOframes is a Python library that allows data scientists to integrate spatial analysis in their workflows. It integrates seemingly with <a href='https://jupyter.org/' target='_blank'>Jupyter Notebooks</a> and <a href='http://geopandas.org/' target='_blank'>GeoPandas</a>.",
-        "text2": "In this guide, you will learn how to connect to a CARTO account, list and explore datasets, and create a basic interactive map in a Jupyter notebook.",
-        "text3": "Interested in other libraries or APIs? Visit our <a href='https://carto.com/developers/' target='_blank'>Developer Center</a>."
+        "title": "Integrate spatial analysis in your Python notebooks with CARTOframes",
+        "text1": "Removing context switching by visualizing your data without leaving your notebook.",
+        "text2": "Reducing your time in data preparation thanks to our data observatory.",
+        "text3": "Sharing your work right away publicly or privately."
       },
       "step2": {
         "summary": "Install CARTOframes and Jupyter Notebook.",

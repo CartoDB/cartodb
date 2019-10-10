@@ -86,9 +86,9 @@ describe Carto::Api::Public::DataObservatoryController do
     end
   end
 
-  describe 'datasets' do
+  describe 'subscriptions' do
     before(:all) do
-      @url_helper = 'api_v4_do_datasets_url'
+      @url_helper = 'api_v4_do_subscriptions_show_url'
 
       next_year = Time.now + 1.year
       dataset1 = { dataset_id: 'carto.zzz.table1', expires_at: next_year }
@@ -106,12 +106,13 @@ describe Carto::Api::Public::DataObservatoryController do
 
     it_behaves_like 'an endpoint validating a DO API key'
 
-    it 'returns 200 with the non expired datasets' do
+    it 'returns 200 with the non expired subscriptions' do
+      expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset' }
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(200)
-        datasets = response.body[:datasets]
+        datasets = response.body[:subscriptions]
         expect(datasets.count).to eq 3
-        expect(datasets.first).to eq(project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2')
+        expect(datasets.first).to eq expected_dataset
       end
     end
 
@@ -120,7 +121,7 @@ describe Carto::Api::Public::DataObservatoryController do
 
       get_json endpoint_url(api_key: @user2.api_key), @headers do |response|
         expect(response.status).to eq(200)
-        datasets = response.body[:datasets]
+        datasets = response.body[:subscriptions]
         expect(datasets.count).to eq 0
       end
     end
@@ -143,7 +144,7 @@ describe Carto::Api::Public::DataObservatoryController do
       it 'orders by id ascending by default' do
         get_json endpoint_url(api_key: @master), @headers do |response|
           expect(response.status).to eq(200)
-          datasets = response.body[:datasets]
+          datasets = response.body[:subscriptions]
           expect(datasets.count).to eq 3
           expect(datasets[0][:id]).to eq 'carto.abc.table2'
           expect(datasets[1][:id]).to eq 'carto.zzz.table1'
@@ -153,7 +154,7 @@ describe Carto::Api::Public::DataObservatoryController do
       it 'orders by id descending' do
         get_json endpoint_url(api_key: @master, order_direction: 'desc'), @headers do |response|
           expect(response.status).to eq(200)
-          datasets = response.body[:datasets]
+          datasets = response.body[:subscriptions]
           expect(datasets.count).to eq 3
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
           expect(datasets[1][:id]).to eq 'carto.zzz.table1'
@@ -164,7 +165,7 @@ describe Carto::Api::Public::DataObservatoryController do
         params = { api_key: @master, order: 'project', order_direction: 'desc' }
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
-          datasets = response.body[:datasets]
+          datasets = response.body[:subscriptions]
           expect(datasets.count).to eq 3
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
         end
@@ -174,7 +175,7 @@ describe Carto::Api::Public::DataObservatoryController do
         params = { api_key: @master, order: 'dataset', order_direction: 'asc' }
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
-          datasets = response.body[:datasets]
+          datasets = response.body[:subscriptions]
           expect(datasets.count).to eq 3
           expect(datasets[0][:id]).to eq 'carto.abc.table2'
           expect(datasets[1][:id]).to eq 'opendata.tal.table3'
@@ -185,7 +186,7 @@ describe Carto::Api::Public::DataObservatoryController do
         params = { api_key: @master, order: 'table', order_direction: 'desc' }
         get_json endpoint_url(params), @headers do |response|
           expect(response.status).to eq(200)
-          datasets = response.body[:datasets]
+          datasets = response.body[:subscriptions]
           expect(datasets.count).to eq 3
           expect(datasets[0][:id]).to eq 'opendata.tal.table3'
           expect(datasets[1][:id]).to eq 'carto.abc.table2'

@@ -184,7 +184,6 @@ describe Carto::Builder::Public::EmbedsController do
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-        response.body.should include("https://www.googletagmanager.com/gtm.js")
         response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end
@@ -205,7 +204,6 @@ describe Carto::Builder::Public::EmbedsController do
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
 
-        response.body.should_not include("https://www.googletagmanager.com/gtm.js")
         response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end

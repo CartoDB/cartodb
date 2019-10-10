@@ -36,7 +36,7 @@
 
 <script>
 export default {
-  name: 'CatalogFakeCard'
+  name: 'DatasetCardFake'
 };
 </script>
 

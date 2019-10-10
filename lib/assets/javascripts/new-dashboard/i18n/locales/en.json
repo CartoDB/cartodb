@@ -729,5 +729,12 @@
       "oAuthApps": "OAuth apps",
       "mobileApps": "Mobile apps"
     }
+  },
+  "SecondaryNavigation": {
+    "yourDatasets": "Your Datasets",
+    "catalog": "Catalog"
+  },
+  "CatalogPage": {
+    "header": "Catalog"
   }
 }

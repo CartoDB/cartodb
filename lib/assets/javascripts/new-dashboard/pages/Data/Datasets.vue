@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <section class="datasets-section">
     <StickySubheader :is-visible="Boolean(selectedDatasets.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedDatasets.length}) }}
@@ -21,25 +21,23 @@
       @applyOrder="applyOrder"
       @selectionChange="updateSelected" />
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </Page>
+  </section>
 </template>
 
 <script>
 
 import { mapState } from 'vuex';
 import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
-import Page from 'new-dashboard/components/Page';
 import Pagination from 'new-dashboard/components/Pagination';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
-import StickySubheader from '../components/StickySubheader';
+import StickySubheader from '../../components/StickySubheader';
 import DatasetsList from 'new-dashboard/components/DatasetsList.vue';
 
 export default {
-  name: 'DataPage',
+  name: 'DatasetsPage',
   components: {
     DatasetBulkActions,
     StickySubheader,
-    Page,
     Pagination,
     DatasetsList
   },
@@ -133,3 +131,12 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.datasets-section {
+  margin-top: 64px;
+}
+
+</style>

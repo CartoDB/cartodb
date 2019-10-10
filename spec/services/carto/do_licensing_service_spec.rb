@@ -18,7 +18,7 @@ describe Carto::DoLicensingService do
     @user.destroy
   end
 
-  describe '#purchase' do
+  describe '#subscribe' do
     before(:each) do
       @central_mock = mock
       Cartodb::Central.stubs(:new).returns(@central_mock)
@@ -31,7 +31,7 @@ describe Carto::DoLicensingService do
     it 'calls create_do_datasets from Central with the expected parameters' do
       @central_mock.expects(:create_do_datasets).once.with(username: 'fulano', datasets: @datasets)
 
-      @service.purchase(@datasets)
+      @service.subscribe(@datasets)
     end
 
     it 'stores the metadata in Redis' do
@@ -45,7 +45,7 @@ describe Carto::DoLicensingService do
         { dataset_id: 'dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
       ].to_json
 
-      @service.purchase(@datasets)
+      @service.subscribe(@datasets)
 
       $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
       $users_metadata.hget(@redis_key, 'spanner').should eq spanner_datasets
@@ -59,8 +59,8 @@ describe Carto::DoLicensingService do
           expires_at: '2020-09-27 08:00:00 +0000' }
       ]
 
-      @service.purchase(@datasets)
-      @service.purchase(more_datasets)
+      @service.subscribe(@datasets)
+      @service.subscribe(more_datasets)
 
       bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
       spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))

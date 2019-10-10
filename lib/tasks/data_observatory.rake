@@ -17,7 +17,7 @@ namespace :cartodb do
         datasets << dataset
       end
 
-      Carto::DoLicensingService.new(username).purchase(datasets)
+      Carto::DoLicensingService.new(username).subscribe(datasets)
 
       puts 'Task finished succesfully!'
     end

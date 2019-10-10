@@ -6,19 +6,20 @@ module Carto
       @redis_key = "do:#{@username}:datasets"
     end
 
-    def purchase(datasets)
+    def subscribe(datasets)
       Cartodb::Central.new.create_do_datasets(username: @username, datasets: datasets)
-      update_redis(datasets)
+      add_to_redis(datasets)
     end
 
     private
 
-    def update_redis(datasets)
-      value = ["bq", merge_redis_value(datasets, 'bq'), "spanner", merge_redis_value(datasets, 'spanner')]
+    def add_to_redis(datasets)
+      value = ["bq", insert_redis_value(datasets, 'bq'), "spanner", insert_redis_value(datasets, 'spanner')]
+
       $users_metadata.hmset(@redis_key, value)
     end
 
-    def merge_redis_value(datasets, storage)
+    def insert_redis_value(datasets, storage)
       redis_value = JSON.parse($users_metadata.hget(@redis_key, storage) || '[]')
       new_datasets = filter_datasets(datasets, storage)
       (redis_value + new_datasets).uniq.to_json

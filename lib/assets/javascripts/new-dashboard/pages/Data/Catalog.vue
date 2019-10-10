@@ -21,7 +21,7 @@
           :placeholder="'Search...'"
           :options="categories"
           @selected="getCountries"
-          @reset="resetDatasets">
+          @reset="resetCategory">
         </CatalogDropdown>
       </div>
       <div class="grid-cell grid-cell--col5 catalog__filter--dropdown">
@@ -32,7 +32,9 @@
           :disabled="dropdownCountriesDisabled"
           :limitHeight="true"
           @open="dropdownCountriesOpen"
-          @selected="getDatasets"></CatalogDropdown>
+          @selected="getDatasets"
+          @reset="resetCountry">
+        </CatalogDropdown>
       </div>
     </div>
 
@@ -133,7 +135,7 @@ export default {
       this.$store.dispatch('catalog/order', orderParams);
     },
     getCountries (category) {
-      this.$refs.dropdownCountries.resetInput();
+      this.$refs.dropdownCountries.clearInput();
       this.dropdownCountriesDisabled = false;
       this.$store.dispatch('catalog/fetchCountries', category)
       window.scroll({ top: 0, left: 0 });
@@ -145,11 +147,20 @@ export default {
       });
       window.scroll({ top: 0, left: 0 });
     },
-    resetDatasets () {
-      this.$refs.dropdownCountries.resetInput();
-      this.$refs.dropdownCountries.closeDropdown();
+    resetCategory () {
+      this.$refs.dropdownCountries.clearInput();
       this.dropdownCountriesDisabled = true;
+      this.clearList();
+    },
+
+    resetCountry () {
+      this.clearList();
+    },
+
+    clearList () {
+      this.$store.dispatch('catalog/clearList')
     }
+
   }
 };
 </script>

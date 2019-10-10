@@ -15,7 +15,7 @@
         @click="openDropdown"
         @keyup.enter="onKeyEnter"
         :disabled="isDisabled">
-        <button v-if="searchFilter" class="catalogDropdown__close" @click="resetInput"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+        <button v-if="searchFilter" class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       <ul class="catalogDropdown__list" 
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
@@ -114,14 +114,18 @@ export default {
     },
     selectOption (option) {
       this.selected = option;
-      this.isOpen = false;
       this.searchFilter = this.selected;
+      this.closeDropdown()
       this.$emit('selected', this.selected);
     },
-    resetInput () {
+    clearInput () {
       this.searchFilter = '';
       this.selected = {};
       this.$refs.catalogDropdownInput.value = '';
+      this.closeDropdown();
+    },
+    reset () {
+      this.clearInput();
       this.$emit('reset');
     }
   },

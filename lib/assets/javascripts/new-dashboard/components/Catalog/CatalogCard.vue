@@ -8,14 +8,14 @@
         <div class="catalogCard__icon"></div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
-        <span class="text is-caption is-semibold is-txtGrey row-title u-ellipsis catalogCard__title">
+        <span class="text is-caption is-semibold is-txtGrey u-ellipsis catalogCard__title">
           {{dataset.name}}
         </span>
       </div>
     </div>
 
     <div class="catalogCard__column">
-      <div class="cell cell--xlarge">
+      <div class="cell catalogCard__cell--large">
         <span class="text is-small is-txtSoftGrey u-ellipsis">
           {{dataset.spatial_aggregations}}
         </span>
@@ -79,6 +79,12 @@ export default {
     width: 58px;
     height: 100%;
     padding-left: 0;
+
+    &--large {
+      flex-grow: 1;
+      flex-shrink: 1;
+      width: 280px;
+    }
   }
 
   &__icon {

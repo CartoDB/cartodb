@@ -15,7 +15,7 @@
     </div>
 
     <div class="catalogListHeader__column">
-      <div class="cell cell--large" @click="changeOrder('spatial_aggregations')">
+      <div class="cell catalogCard__cell--large" @click="changeOrder('spatial_aggregations')">
         <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
         :class="{
             'is-active': isOrderApplied('spatial_aggregations'),
@@ -36,7 +36,7 @@
           {{ $t('CatalogListHeader.frequency') }}
         </span>
       </div>
-      <div class="ccell cell--large" @click="changeOrder('source')">
+      <div class="cell cell--large" @click="changeOrder('source')">
         <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('source'),
@@ -114,6 +114,12 @@ export default {
     width: 58px;
     height: 100%;
     padding-left: 0;
+
+    &--large {
+      flex-grow: 1;
+      flex-shrink: 1;
+      width: 280px;
+    }
   }
 }
 

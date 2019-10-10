@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.30.0`. Run the following to have it available:
+- This release upgrades the CartoDB PostgreSQL extension to `0.31.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
@@ -29,9 +29,9 @@ sudo make install
 - Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
 - Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
 - Endpoint to list purchased Data Observatory datasets ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
-- LDS page:
-  - Add structre for new LDS page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
-  - Add Data Observatory catalog - PAGE ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
+- Catalog page:
+  - Add structure for new Catalog page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  - Add list of datasets for new Catalog page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
@@ -50,6 +50,7 @@ sudo make install
 - Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
 - Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
 - Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
+- Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
 
 4.29.0 (2019-07-15)
 -------------------

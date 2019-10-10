@@ -1,12 +1,11 @@
 <template>
-  <section class="secondarynavigation">
-      <div class="secondarynavigation__content">
-        <div class="secondarynavigation__title title is-caption">{{ $t('SecondaryNavigation.data') }}</div>
-        <div class="secondarynavigation__tabs">
-          <router-link :to="{ name: 'datasets' }" class="secondarynavigation__tab title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
+  <section class="secondaryNavigation">
+      <div class="secondaryNavigation__content">
+        <div class="secondaryNavigation__tabs">
+          <router-link :to="{ name: 'datasets' }" class="secondaryNavigation__tab title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
             <span>{{ $t('SecondaryNavigation.yourDatasets') }}</span>
           </router-link>
-          <router-link :to="{ name: 'catalog' }" class="secondarynavigation__tab title is-small" active-class="is-active">
+          <router-link :to="{ name: 'catalog' }" class="secondaryNavigation__tab title is-small" active-class="is-active">
             <span>{{ $t('SecondaryNavigation.catalog') }}</span>
           </router-link>
         </div>
@@ -30,7 +29,7 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.secondarynavigation {
+.secondaryNavigation {
   position: sticky;
   z-index: 5;
   top: 64px;
@@ -43,10 +42,6 @@ export default {
     max-width: 940px;
     margin: 0 auto;
     padding: 0;
-  }
-
-  &__title {
-    margin-right: 48px;
   }
 
   &__tabs {
@@ -62,7 +57,7 @@ export default {
     text-transform: none;
 
     &.is-active {
-      border-color: $black;
+      border-color: currentColor;
       color: $black;
     }
   }

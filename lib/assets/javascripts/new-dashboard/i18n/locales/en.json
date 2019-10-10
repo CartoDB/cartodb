@@ -736,5 +736,11 @@
   },
   "CatalogPage": {
     "header": "Catalog"
+  },
+  "CatalogListHeader": {
+    "name": "Name",
+    "aggregation": "Aggregation",
+    "frequency": "Frequency",
+    "source": "Source"
   }
 }

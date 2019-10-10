@@ -94,7 +94,7 @@
 
     <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
       <li v-for="n in maxVisibleDatasets" :key="n" class="dataset-item">
-        <DatasetCardFake></DatasetCardfake>
+        <DatasetCardFake></DatasetCardFake>
       </li>
     </ul>
 

@@ -30,7 +30,8 @@ sudo make install
 - Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
 - Endpoint to list purchased Data Observatory datasets ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
 - Catalog page:
-  - Add structre for new Catalog page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  - Add structure for new Catalog page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  - Add list of datasets for new Catalog page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

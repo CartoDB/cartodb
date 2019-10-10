@@ -1,0 +1,151 @@
+<template>
+  <div class="catalogListHeader">
+    <div class="catalogListHeader__column">
+      <div class="catalogListHeader__cell cell">
+      </div>
+      <div class="cell cell--main" @click="changeOrder('name')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
+          :class="{
+            'is-active': isOrderApplied('name'),
+            'is-reversed': isReverseOrderApplied('name'),
+          }">
+          {{ $t('CatalogListHeader.name') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="catalogListHeader__column">
+      <div class="cell catalogCard__cell--large" @click="changeOrder('spatial_aggregations')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
+        :class="{
+            'is-active': isOrderApplied('spatial_aggregations'),
+            'is-reversed': isReverseOrderApplied('spatial_aggregations'),
+          }">
+          {{ $t('CatalogListHeader.aggregation') }}
+        </span>
+      </div>
+    </div>
+
+    <div class="catalogListHeader__column">
+      <div class="cell cell--large" @click="changeOrder('frequency')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
+          :class="{
+            'is-active': isOrderApplied('frequency'),
+            'is-reversed': isReverseOrderApplied('frequency'),
+          }">
+          {{ $t('CatalogListHeader.frequency') }}
+        </span>
+      </div>
+      <div class="cell cell--large" @click="changeOrder('source')">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
+          :class="{
+            'is-active': isOrderApplied('source'),
+            'is-reversed': isReverseOrderApplied('source'),
+          }">
+          {{ $t('CatalogListHeader.source') }}
+        </span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'CatalogListHeader',
+  props: {
+    order: String,
+    orderDirection: String
+  },
+  methods: {
+    changeOrder (order) {
+      if (this.order === order) {
+        return this.setOrder(
+          order,
+          this.getOppositeOrderDirection(this.orderDirection)
+        );
+      }
+
+      this.setOrder(order);
+    },
+    getOppositeOrderDirection (order) {
+      if (order === 'desc') {
+        return 'asc';
+      }
+
+      if (order === 'asc') {
+        return 'desc';
+      }
+    },
+    isOrderApplied (order) {
+      return order === this.order;
+    },
+
+    isReverseOrderApplied (order) {
+      return order === this.order && this.orderDirection === 'asc';
+    },
+    setOrder (order, direction = 'desc') {
+      this.$emit('changeOrder', { order, direction });
+    }
+  }
+};
+</script>
+
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.catalogListHeader {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1px;
+  padding: 16px;
+  overflow: hidden;
+  border-bottom: 1px solid $softblue;
+  background-color: $white;
+  cursor: default;
+
+  &__column {
+    display: flex;
+    flex: 0 0 33.3334%;
+    max-width: 33.3334%;
+  }
+
+  &__cell {
+    width: 58px;
+    height: 100%;
+    padding-left: 0;
+
+    &--large {
+      flex-grow: 1;
+      flex-shrink: 1;
+      width: 280px;
+    }
+  }
+}
+
+.catalogListHeader__sort {
+  &.is-active,
+  &:hover {
+    color: $text__color;
+    cursor: pointer;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 100%;
+      margin-left: 4px;
+      transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
+      background-image: url('../../assets/icons/datasets/chevron.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    &.is-reversed {
+      &::after {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+</style>

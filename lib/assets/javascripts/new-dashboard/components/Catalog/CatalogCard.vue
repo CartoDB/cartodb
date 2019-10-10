@@ -64,7 +64,7 @@ export default {
       if (!this.categories.includes(this.dataset.category)) {
         return 'default';
       }
-      return this.dataset.category.replace(/ /g,'-').toLowerCase();
+      return this.dataset.category.replace(/ /g, '-').toLowerCase();
     }
   }
 };

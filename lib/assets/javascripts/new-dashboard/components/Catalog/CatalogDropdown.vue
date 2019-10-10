@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="catalogDropdown"
     @keydown.down.prevent="onKeydownDown"
     @keydown.up.prevent="onKeydownUp"
@@ -16,7 +16,7 @@
         @keyup.enter="onKeyEnter"
         :disabled="isDisabled">
         <button v-if="searchFilter" class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
-      <ul class="catalogDropdown__list" 
+      <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
         <li
@@ -87,6 +87,12 @@ export default {
     closeDropdown () {
       this.isOpen = false;
     },
+    disableDropdown () {
+      this.isDisabled = true;
+    },
+    enableDropdown () {
+      this.isDisabled = false;
+    },
     onInputFocus () {
       this.isInputFocused = true;
     },
@@ -115,7 +121,7 @@ export default {
     selectOption (option) {
       this.selected = option;
       this.searchFilter = this.selected;
-      this.closeDropdown()
+      this.closeDropdown();
       this.$emit('selected', this.selected);
     },
     clearInput () {
@@ -166,6 +172,10 @@ export default {
     padding: 16px 24px;
     border: 1px solid $neutral--300;
     border-radius: 4px;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   &__close {

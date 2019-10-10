@@ -29,9 +29,9 @@
           :title="'Choose a country'"
           :placeholder="'Choose one'"
           :options="countries"
-          :disabled="dropdownCountriesDisabled"
+          :disabled="true"
           :limitHeight="true"
-          @open="dropdownCountriesOpen"
+          @open="false"
           @selected="getDatasets"
           @reset="resetCountry">
         </CatalogDropdown>
@@ -84,12 +84,6 @@ export default {
   beforeMount () {
     this.$store.dispatch('catalog/fetch');
   },
-  data () {
-    return {
-      dropdownCountriesDisabled: true,
-      dropdownCountriesOpen: false
-    };
-  },
   computed: {
     ...mapState({
       numPages: state => state.catalog.numPages,
@@ -136,8 +130,8 @@ export default {
     },
     getCountries (category) {
       this.$refs.dropdownCountries.clearInput();
-      this.dropdownCountriesDisabled = false;
-      this.$store.dispatch('catalog/fetchCountries', category)
+      this.$refs.dropdownCountries.enableDropdown()
+      this.$store.dispatch('catalog/fetchCountries', category);
       window.scroll({ top: 0, left: 0 });
     },
     getDatasets (country) {
@@ -149,7 +143,7 @@ export default {
     },
     resetCategory () {
       this.$refs.dropdownCountries.clearInput();
-      this.dropdownCountriesDisabled = true;
+      this.$refs.dropdownCountries.disableDropdown()
       this.clearList();
     },
 
@@ -158,7 +152,7 @@ export default {
     },
 
     clearList () {
-      this.$store.dispatch('catalog/clearList')
+      this.$store.dispatch('catalog/clearList');
     }
 
   }

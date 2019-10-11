@@ -26,7 +26,7 @@ module Carto
         DATASET_REGEX = /[\w\-]+\.[\w\-]+\.[\w\-]+/.freeze
         VALID_ORDER_PARAMS = %i(id table dataset project type).freeze
         METADATA_FIELDS = %i(id estimated_delivery_days subscription_list_price tos tos_link licenses licenses_link
-                             rights).freeze
+                             rights type).freeze
         TABLES_BY_TYPE = { 'dataset' => 'datasets', 'geography' => 'geographies' }.freeze
 
         def token
@@ -120,7 +120,7 @@ module Carto
           metadata_user = ::User.where(username: 'do-metadata').first
           raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
 
-          query = "SELECT * FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
+          query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
           result = metadata_user.in_database[query].first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 

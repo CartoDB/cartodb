@@ -273,7 +273,8 @@ describe Carto::Api::Public::DataObservatoryController do
           rights: 'rights',
           subscription_list_price: '100.0',
           tos: 'tos',
-          tos_link: 'tos_link'
+          tos_link: 'tos_link',
+          type: 'dataset'
         }
         expect(response.body).to eq expected_response
       end
@@ -290,7 +291,8 @@ describe Carto::Api::Public::DataObservatoryController do
           rights: 'rights',
           subscription_list_price: '90.0',
           tos: 'tos',
-          tos_link: 'tos_link'
+          tos_link: 'tos_link',
+          type: 'geography'
         }
         expect(response.body).to eq expected_response
       end
@@ -372,7 +374,8 @@ describe Carto::Api::Public::DataObservatoryController do
             rights: 'rights',
             subscription_list_price: '100.0',
             tos: 'tos',
-            tos_link: 'tos_link'
+            tos_link: 'tos_link',
+            type: 'dataset'
           }
           expect(response.body).to eq expected_response
         end
@@ -393,7 +396,8 @@ describe Carto::Api::Public::DataObservatoryController do
             rights: 'rights',
             subscription_list_price: '90.0',
             tos: 'tos',
-            tos_link: 'tos_link'
+            tos_link: 'tos_link',
+            type: 'geography'
           }
           expect(response.body).to eq expected_response
         end

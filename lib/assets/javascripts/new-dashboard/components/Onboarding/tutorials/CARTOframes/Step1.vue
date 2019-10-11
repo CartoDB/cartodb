@@ -74,7 +74,7 @@ vector.vmap([
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-@import 'new-dashboard/styles/hangar/variables';
+@import 'new-dashboard/styles/hangar/_variables';
 
 .circle {
   position: absolute;

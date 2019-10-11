@@ -16,17 +16,20 @@
     <div class="catalog__filter container grid" action="">
       <div class="grid-cell grid-cell--col5 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCategories"
-          :title="'Choose a category'"
+          :title="'Select a category'"
           :open="true"
           :placeholder="'Search...'"
           :options="categories"
           @selected="getCountries"
           @reset="resetCategory">
+          <template slot="extra">
+            <span class="text is-small">Interested in a different data category? <a href="">Contact Us</a></span>
+          </template>
         </CatalogDropdown>
       </div>
       <div class="grid-cell grid-cell--col5 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCountries"
-          :title="'Choose a country'"
+          :title="'Select a country'"
           :placeholder="'Choose one'"
           :options="countries"
           :disabled="true"
@@ -34,6 +37,9 @@
           @open="false"
           @selected="getDatasets"
           @reset="resetCountry">
+          <template slot="extra">
+            <span class="text is-small">Interested in data from a non-listed country? <a href="">Contact Us</a></span>
+          </template>
         </CatalogDropdown>
       </div>
     </div>
@@ -130,7 +136,7 @@ export default {
     },
     getCountries (category) {
       this.$refs.dropdownCountries.clearInput();
-      this.$refs.dropdownCountries.enableDropdown()
+      this.$refs.dropdownCountries.enableDropdown();
       this.$store.dispatch('catalog/fetchCountries', category);
       window.scroll({ top: 0, left: 0 });
     },
@@ -143,7 +149,7 @@ export default {
     },
     resetCategory () {
       this.$refs.dropdownCountries.clearInput();
-      this.$refs.dropdownCountries.disableDropdown()
+      this.$refs.dropdownCountries.disableDropdown();
       this.clearList();
     },
 

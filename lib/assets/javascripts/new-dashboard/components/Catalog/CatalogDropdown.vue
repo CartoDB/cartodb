@@ -28,7 +28,9 @@
           {{ option }}
         </li>
       </ul>
-      <div class="catalogDropdown__extra"><span class="catalogDropdown__extra--text text is-small">Your country is not listed <a href="">Contact Us</a></span></div>
+      <div class="catalogDropdown__extra">
+        <slot name="extra"></slot>
+      </div>
     </div>
   </div>
 </template>

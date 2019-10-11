@@ -1,5 +1,5 @@
 <template>
-  <div class="u-width--100 u-pt--32 u-pr--10 u-pl--10">
+  <div class="u-width--100 u-pt--32 u-pr--10 u-pb--80 u-pl--10">
     <div class="circle"></div>
     <div class="placeholder">
       <img class="placeholder__img" src="../../../../assets/images/onboarding/cartoframes@2x.png"/>
@@ -73,6 +73,7 @@ vector.vmap([
 </script>
 
 <style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
 @import 'new-dashboard/styles/hangar/variables';
 
 .circle {
@@ -90,17 +91,23 @@ vector.vmap([
 .placeholder {
   position: absolute;
   left: 50%;
+  transform: translate(-70px, -10px);
 
   &__img {
     width: 460px;
     height: auto;
-    transform: translate(-70px, 10px);
   }
 
   &__shadow {
+    position: absolute;
+    z-index: -1;
     top: 24px;
+    left: 24px;
     width: 412px;
     height: 326px;
+    opacity: 0.24;
+    background: $neutral--800;
+    filter: blur(24px);
   }
 }
 
@@ -111,6 +118,7 @@ vector.vmap([
 
   &__item {
     display: inline-block;
+    position: relative;
     margin-right: 16px;
     padding: 7px 16px;
     border-radius: 18px;
@@ -118,6 +126,19 @@ vector.vmap([
     color: $cartoframes;
     font-size: 10px;
     text-transform: uppercase;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      background-color: #FFF;
+    }
   }
 }
 

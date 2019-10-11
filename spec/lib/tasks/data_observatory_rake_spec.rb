@@ -36,16 +36,16 @@ describe 'data_observatory.rake' do
       }.to raise_error(RuntimeError, 'USAGE: data_observatory:purchase_datasets["username","path/datasets.csv"]')
     end
 
-    it 'calls purchase from Carto::DoLicensingService with the expected parameters' do
+    it 'calls subscribe from Carto::DoLicensingService with the expected parameters' do
       File.stubs(:open).returns(csv_example)
       expected_datasets = [
-        { dataset_id: 'dataset1', available_in: ['bq', 'spanner'], price: 100,
+        { dataset_id: 'dataset1', available_in: ['bq', 'spanner'], price: 100.0,
           expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset2', available_in: ['spanner'], price: 200,
+        { dataset_id: 'dataset2', available_in: ['spanner'], price: 200.0,
           expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
       ]
       service_mock = mock
-      service_mock.expects(:purchase).once.with(expected_datasets)
+      service_mock.expects(:subscribe).once.with(expected_datasets)
       Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
 
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')

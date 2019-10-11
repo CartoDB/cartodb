@@ -13,9 +13,9 @@ module Carto
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
         before_action :load_id, only: [:subscription_info, :subscribe]
-        before_action :load_type, only: [:subscription_info]
+        before_action :load_type, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_organization, only: [:subscription_info, :subscribe]
+        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe]
 
         setup_default_rescues
 
@@ -49,15 +49,15 @@ module Carto
           metadata = subscription_metadata
           response = metadata.slice(*METADATA_FIELDS)
 
-          return render(json: response) unless metadata[:estimated_delivery_days] == "0"
+          return render(json: response) if metadata[:estimated_delivery_days].positive?
 
           license_info = {
-            dataset_id: dataset[:id],
-            available_in: dataset[:available_in],
-            price: dataset[:subscription_list_price],
-            expires_at: Time.now + 1.year
+            dataset_id: metadata[:id],
+            available_in: metadata[:available_in],
+            price: metadata[:subscription_list_price],
+            expires_at: Time.now.round + 1.year
           }
-          Carto::DoLicensingService.new(username).subscribe([license_info])
+          Carto::DoLicensingService.new(@user.username).subscribe([license_info])
 
           render(json: response)
         end
@@ -77,14 +77,14 @@ module Carto
 
         def load_id
           @id = params[:id]
-          raise 'id must be in the format project.schema.table' unless @id =~ DATASET_REGEX
+          raise ParamInvalidError.new(:id) unless @id =~ DATASET_REGEX
         end
 
         def load_type(required: true)
           @type = params[:type]
           return if @type.nil? && !required
 
-          raise "type must be 'dataset' or 'geography'" unless VALID_TYPES.include?(@type)
+          raise ParamInvalidError.new(:type, VALID_TYPES.join(', ')) unless VALID_TYPES.include?(@type)
         end
 
         def check_api_key_permissions
@@ -92,8 +92,8 @@ module Carto
           raise UnauthorizedError unless api_key&.master? || api_key&.data_observatory_permissions?
         end
 
-        def check_organization
-          raise UnauthorizedError unless @user.organization&.name == 'team'
+        def check_licensing_enabled
+          raise UnauthorizedError.new('DO licensing not enabled') unless @user.has_feature_flag?('do-licensing')
         end
 
         def bq_subscriptions
@@ -116,12 +116,12 @@ module Carto
         end
 
         def subscription_metadata
-          metadata_user = User.where(username: 'do-metadata').first
-          raise 'No Data Observatory metadata found' unless metadata_user
+          metadata_user = ::User.where(username: 'do-metadata').first
+          raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
 
           query = "SELECT * FROM #{metadata_table} WHERE id = '#{@id}'"
           result = metadata_user.in_database[query].first
-          raise "No metadata found for #{@id}" unless result
+          raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
           result
         end

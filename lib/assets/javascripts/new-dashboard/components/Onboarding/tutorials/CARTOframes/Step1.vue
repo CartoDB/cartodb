@@ -13,7 +13,7 @@
     <h1 v-html="$t(`Wizards.cartoframes.step1.title`)" class="heading title is-subheader"></h1>
 
     <div class="block">
-      <StepTitle :title="$t(`Wizards.cartoframes.sections.summary`)">
+      <StepTitle :title="$t(`Wizards.cartoframes.step1.sections.summary`)">
         <template slot="icon">
             <img svg-inline src="../../../../assets/icons/onboarding/summary.svg"/>
         </template>
@@ -26,7 +26,7 @@
     </div>
 
     <div class="block">
-      <StepTitle :title="$t(`Wizards.cartoframes.sections.howto`)">
+      <StepTitle :title="$t(`Wizards.cartoframes.step1.sections.howto`)">
         <template slot="icon">
             <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
         </template>
@@ -173,31 +173,4 @@ vector.vmap([
   align-items: center;
   justify-content: space-between;
 }
-
-/*.button {
-    display: inline-block;
-    border-radius: 8px;
-    font: 600 16px/24px Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    padding: 16px 24px;
-    text-align: center;
-    white-space: nowrap;
-    position: relative;
-    overflow: hidden;
-    background-color: $cartoframes;
-}
-
-.button--arrow span:after {
-  content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAyMCAxMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTS0yLTdoMjR2MjRILTJ6Ii8+CiAgICA8cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTQuNzA3LjI5M2wtMS40MTQgMS40MTRMMTUuNTg2IDRIMHYyaDE1LjU4NmwtMi4yOTMgMi4yOTMgMS40MTQgMS40MTRMMTkuNDE0IDV6Ii8+CiAgPC9nPgo8L3N2Zz4=");
-  margin-left: 12px;
-}
-
-.button--link {
-  display: inline-block;
-  padding: 16px 0;
-  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 24px;
-  color: $cartoframes;
-}*/
 </style>

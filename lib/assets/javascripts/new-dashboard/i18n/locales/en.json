@@ -447,90 +447,15 @@
       "title": "Add spatial data to your data science workflow",
       "subtitle": "Integrate spatial data into your data science models using our Python library.",
       "tags": ["Python", "CARTOframes"],
-      "sections": {
-        "summary": "CARTOframes tries to help you at:",
-        "howto": "Here it’s an example that illustrates the points above:"
-      },
-      "jupyter": {
-        "in" : "In:",
-        "out": "Out:"
-      },
       "step1": {
         "title": "Integrate spatial analysis in your Python notebooks with CARTOframes",
+        "sections": {
+          "summary": "CARTOframes tries to help you at:",
+          "howto": "Here it’s an example that illustrates the points above:"
+        },
         "text1": "Removing context switching by visualizing your data without leaving your notebook.",
         "text2": "Reducing your time in data preparation thanks to our data observatory.",
         "text3": "Sharing your work right away publicly or privately."
-      },
-      "step2": {
-        "summary": "Install CARTOframes and Jupyter Notebook.",
-        "howto": {
-          "instruction1":"Install CARTOframes with pip. Simply type the following in the command in your terminal.",
-          "instruction2":"Install Jupyter Notebook with pip. Type the following comand in your terminal.",
-          "instruction3":"Start Jupyter Notebook. Type the following command in your terminal."
-        },
-        "extras": {
-          "resource1": "There are <a href='https://cartoframes.readthedocs.io/en/v0.8.3/#install-instructions' target='_blank'>other ways to install CARTOframes</a>."
-        }
-      },
-      "step3": {
-        "summary": "Import <code>cartoframes</code> package and connect to CARTO account using a username and API key. In this example, we’re using an account named public and the default public API key.",
-        "howto": {
-          "instruction1":"Use <code>cartoframes.Credentials</code> to connect to a CARTO account. In this example, we’re using a test account and a test access key."
-        },
-        "extras": {
-          "resource1": "Want to use your own account? Learn about API Authorization <a href='https://carto.com/developers/fundamentals/authorization/' target='_blank'>here</a>."
-        }
-      },
-      "step4": {
-        "summary": "List all of the datasets in the given account.",
-        "howto": {
-          "instruction1":"List all of the available tables in the account:"
-        }
-      },
-      "step5": {
-        "summary": "Read one of the datasets into a pandas DataFrame.",
-        "howto": {
-          "instruction1":"Read and list the first rows of the <code>world_ports</code> datasets."
-        }
-      },
-      "step6": {
-        "summary": "Visualize <code>world_ports</code> as an interactive vector map.",
-        "howto": {
-          "instruction1":"Use <code>vector.vmap</code> and <code>vector.Layer</code> to visualize the dataset as an interactive vector map."
-        },
-        "extras": {
-          "resource1": "Learn more about <a href='https://cartoframes.readthedocs.io/en/stable/contrib.html#module-cartoframes.contrib.vector' target='_blank'>working with vector maps in CARTOframes</a>."
-        }
-      },
-      "step7": {
-        "congrats": {
-          "title": "Congratulations!",
-          "message1": "You've just created your first Jupyter Notebook with CARTOframes!",
-          "message2": "<a href='{url}' class='is-bold'>Download</a> the notebook example."
-        },
-        "extras": {
-          "resource1":"Learn more with the following examples from our <a href='https://carto.com/developers/cartoframes/' target='_blank'>Developer Center</a>."
-        },
-        "cards": {
-          "card1": {
-            "title": "Basic example",
-            "subtitle": "Learn more about the basics",
-            "button": "Go to example",
-            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Basic%20Usage.ipynb"
-          },
-          "card2": {
-            "title": "CARTOframes with GeoPandas",
-            "subtitle": "Learn how to use CARTOframes with GeoPandas",
-            "button": "Go to example",
-            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Shapely%2C%20Geopandas%2C%20and%20Cartoframes.ipynb"
-          },
-          "card3": {
-            "title": "Using CARTOframes to explore the Citibike system",
-            "subtitle": "Learn how to process data from Citibike, upload it to your account, and create some maps",
-            "button": "Go to example",
-            "link": "https://github.com/CartoDB/cartoframes/blob/master/examples/Citibike%20Example.ipynb"
-          }
-        }
       }
     },
     "builder" : {

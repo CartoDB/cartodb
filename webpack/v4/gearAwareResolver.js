@@ -3,12 +3,12 @@ const fs = require('fs');
 
 // Detect existing gears
 const gearPaths = [
-join(__dirname, '../../gears'),
-join(__dirname, '../../private_gears'),
+  join(__dirname, '../../gears'),
+  join(__dirname, '../../private_gears'),
 ]
-  .filter(gearPath=>fs.existsSync(gearPath))
-  .reduce((gears, gearsDir)=>{
-    fs.readdirSync(gearsDir).forEach((gearName)=> {gears[gearName] = resolve(gearsDir, gearName)});
+  .filter(gearPath => fs.existsSync(gearPath))
+  .reduce((gears, gearsDir) => {
+    fs.readdirSync(gearsDir).forEach((gearName) => { gears[gearName] = resolve(gearsDir, gearName); });
     return gears;
   }, {})
 ;
@@ -17,10 +17,10 @@ const fileCache = {};
 const gearResolved = new Set();
 const ROOT_DIR = resolve(__dirname, '../../');
 
-function rootDir(file, opts = {}){
+function rootDir (file, opts = {}) {
   if (fileCache[file] === undefined || opts.skipCache){
     // Try to find the file in gears
-    for (let [gearName, gearPath] of Object.entries(gearPaths)){
+    for (let [gearName, gearPath] of Object.entries(gearPaths)) {
       let fileGearPath = join(gearPath, file);
       let fileExistsAndBoundedToGear =
           fs.existsSync(fileGearPath) &&
@@ -29,10 +29,10 @@ function rootDir(file, opts = {}){
           // PE, using ../..
           resolve(fileGearPath).startsWith(gearPath)
       ;
-      if (fileExistsAndBoundedToGear){
+      if (fileExistsAndBoundedToGear) {
         fileCache[file] = {
-            path: resolve(gearPath, file),
-            gear: gearName
+          path: resolve(gearPath, file),
+          gear: gearName
         };
         gearResolved.add(fileCache[file].path);
         break;
@@ -40,10 +40,10 @@ function rootDir(file, opts = {}){
     }
 
     // Find the file in project path if not in gear
-    if (fileCache[file] === undefined){
+    if (fileCache[file] === undefined) {
       fileCache[file] = {
-          path: resolve(ROOT_DIR, file),
-          gear: null
+        path: resolve(ROOT_DIR, file),
+        gear: null
       };
       gearResolved.add(fileCache[file].path);
     }
@@ -51,26 +51,24 @@ function rootDir(file, opts = {}){
 
   file = fileCache[file];
 
-  if(!opts.includeGear){
-      file = file.path;
+  if (!opts.includeGear) {
+    file = file.path;
   }
 
   return file;
-
 }
 
 // See https://github.com/webpack/webpack/blob/8a7597aa6eb2eef66a8f9db3a0c49bcb96022a94/lib/NormalModuleReplacementPlugin.js
 // See https://webpack.js.org/plugins/normal-module-replacement-plugin/
 class GearResolverPlugin {
-
-  _resolve(result, attrName){
+  _resolve (result, attrName) {
     if (!result) return;
 
     if (/^!/.test(result[attrName])) return result;
 
     let path = result[attrName].startsWith('/')
-        ? result[attrName]
-        : join(result.context, result[attrName])
+      ? result[attrName]
+      : join(result.context, result[attrName])
     ;
 
     let relPath = result.context
@@ -78,28 +76,25 @@ class GearResolverPlugin {
       : result[attrName]
     ;
 
-    if (gearResolved.has(relPath)){
+    if (gearResolved.has(relPath)) {
       return result;
     } else {
-      const file = rootDir(relPath, {includeGear: true});
+      const file = rootDir(relPath, { includeGear: true });
 
-      if (file.gear !== null){ // The file has been overridden by a gear
-        result[attrName] = file.path
+      if (file.gear !== null) { // The file has been overridden by a gear
+        result[attrName] = file.path;
       }
 
       return result;
     }
   }
 
-  apply(compiler) {
+  apply (compiler) {
     compiler.hooks.normalModuleFactory.tap(
-      "GearResolverPlugin",
+      'GearResolverPlugin',
       nmf => {
-        // nmf.hooks.beforeResolve.tap("GearResolverPlugin", result => {
-        //   return this._resolve(result, 'request');
-        // });
 
-        nmf.hooks.afterResolve.tap("NormalModuleReplacementPlugin", result => {
+        nmf.hooks.afterResolve.tap('NormalModuleReplacementPlugin', result => {
           if (!result) return;
           return this._resolve(result, 'resource');
         });
@@ -108,6 +103,6 @@ class GearResolverPlugin {
 }
 
 module.exports = {
-    rootDir: rootDir,
-    GearResolverPlugin: GearResolverPlugin
+  rootDir: rootDir,
+  GearResolverPlugin: GearResolverPlugin
 };

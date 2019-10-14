@@ -28,7 +28,7 @@ sudo make install
 - Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
 - Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
 - Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
-- Endpoint to list purchased Data Observatory datasets ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
+- Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
 - Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
 
 ### Bug fixes / enhancements

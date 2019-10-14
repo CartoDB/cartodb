@@ -57,6 +57,7 @@ function rootDir (file, opts = {}) {
 
   return file;
 }
+
 // See https://github.com/webpack/webpack/blob/8a7597aa6eb2eef66a8f9db3a0c49bcb96022a94/lib/NormalModuleReplacementPlugin.js
 // See https://webpack.js.org/plugins/normal-module-replacement-plugin/
 class GearResolverPlugin {
@@ -87,6 +88,7 @@ class GearResolverPlugin {
       return result;
     }
   }
+
   apply (compiler) {
     compiler.hooks.normalModuleFactory.tap(
       'GearResolverPlugin',
@@ -96,7 +98,8 @@ class GearResolverPlugin {
           if (!result) return;
           return this._resolve(result, 'resource');
         });
-      });
+      })
+    ;
   }
 }
 

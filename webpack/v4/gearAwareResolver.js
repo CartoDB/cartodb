@@ -4,7 +4,7 @@ const fs = require('fs');
 // Detect existing gears
 const gearPaths = [
   join(__dirname, '../../gears'),
-  join(__dirname, '../../private_gears'),
+  join(__dirname, '../../private_gears')
 ]
   .filter(gearPath => fs.existsSync(gearPath))
   .reduce((gears, gearsDir) => {
@@ -18,7 +18,7 @@ const gearResolved = new Set();
 const ROOT_DIR = resolve(__dirname, '../../');
 
 function rootDir (file, opts = {}) {
-  if (fileCache[file] === undefined || opts.skipCache){
+  if (fileCache[file] === undefined || opts.skipCache) {
     // Try to find the file in gears
     for (let [gearName, gearPath] of Object.entries(gearPaths)) {
       let fileGearPath = join(gearPath, file);

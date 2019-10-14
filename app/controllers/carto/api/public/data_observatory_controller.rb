@@ -41,14 +41,14 @@ module Carto
         end
 
         def subscription_info
-          response = subscription_metadata.slice(*METADATA_FIELDS)
+          response = present_metadata(subscription_metadata)
 
           render(json: response)
         end
 
         def subscribe
           metadata = subscription_metadata
-          response = metadata.slice(*METADATA_FIELDS)
+          response = present_metadata(subscription_metadata)
 
           return render(json: response) if metadata[:estimated_delivery_days].positive?
 
@@ -114,6 +114,12 @@ module Carto
           enriched_subscriptions.select! { |subscription| subscription[:type] == @type } if @type
           ordered_subscriptions = enriched_subscriptions.sort_by { |subscription| subscription[@order] }
           @direction == :asc ? ordered_subscriptions : ordered_subscriptions.reverse
+        end
+
+        def present_metadata(metadata)
+          metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days].to_f
+          metadata[:subscription_list_price] = metadata[:subscription_list_price].to_f
+          metadata.slice(*METADATA_FIELDS)
         end
 
         def subscription_metadata

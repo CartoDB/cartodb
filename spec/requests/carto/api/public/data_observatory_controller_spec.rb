@@ -266,12 +266,12 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
         expected_response = {
-          estimated_delivery_days: '0.0',
+          estimated_delivery_days: 0.0,
           id: 'carto.abc.dataset1',
           licenses: 'licenses',
           licenses_link: 'licenses_link',
           rights: 'rights',
-          subscription_list_price: '100.0',
+          subscription_list_price: 100.0,
           tos: 'tos',
           tos_link: 'tos_link',
           type: 'dataset'
@@ -284,12 +284,12 @@ describe Carto::Api::Public::DataObservatoryController do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.geography1', type: 'geography'), @headers do |response|
         expect(response.status).to eq(200)
         expected_response = {
-          estimated_delivery_days: '3.0',
+          estimated_delivery_days: 3.0,
           id: 'carto.abc.geography1',
           licenses: 'licenses',
           licenses_link: 'licenses_link',
           rights: 'rights',
-          subscription_list_price: '90.0',
+          subscription_list_price: 90.0,
           tos: 'tos',
           tos_link: 'tos_link',
           type: 'geography'
@@ -367,12 +367,12 @@ describe Carto::Api::Public::DataObservatoryController do
         post_json endpoint_url(api_key: @master), @payload do |response|
           expect(response.status).to eq(200)
           expected_response = {
-            estimated_delivery_days: '0.0',
+            estimated_delivery_days: 0.0,
             id: 'carto.abc.dataset1',
             licenses: 'licenses',
             licenses_link: 'licenses_link',
             rights: 'rights',
-            subscription_list_price: '100.0',
+            subscription_list_price: 100.0,
             tos: 'tos',
             tos_link: 'tos_link',
             type: 'dataset'
@@ -389,12 +389,12 @@ describe Carto::Api::Public::DataObservatoryController do
         post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
           expect(response.status).to eq(200)
           expected_response = {
-            estimated_delivery_days: '3.0',
+            estimated_delivery_days: 3.0,
             id: 'carto.abc.geography1',
             licenses: 'licenses',
             licenses_link: 'licenses_link',
             rights: 'rights',
-            subscription_list_price: '90.0',
+            subscription_list_price: 90.0,
             tos: 'tos',
             tos_link: 'tos_link',
             type: 'geography'

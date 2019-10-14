@@ -26,6 +26,7 @@ describe Carto::DoLicensingService do
 
     after(:each) do
       Cartodb::Central.unstub(:new)
+      $users_metadata.del(@redis_key)
     end
 
     it 'calls create_do_datasets from Central with the expected parameters' do
@@ -55,8 +56,7 @@ describe Carto::DoLicensingService do
       @central_mock.stubs(:create_do_datasets)
 
       more_datasets = [
-        { dataset_id: 'dataset3', available_in: ['bq'], price: 300,
-          expires_at: '2020-09-27 08:00:00 +0000' }
+        { dataset_id: 'dataset3', available_in: ['bq'], price: 300, expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
       ]
 
       @service.subscribe(@datasets)
@@ -66,6 +66,22 @@ describe Carto::DoLicensingService do
       spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))
       bq_datasets.count.should eq 2
       spanner_datasets.count.should eq 2
+    end
+
+    it 'does not store anything in Redis if available_in is empty or nil' do
+      @central_mock.stubs(:create_do_datasets)
+
+      datasets = [
+        { dataset_id: 'dataset_nil', available_in: nil, price: 300, expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
+        { dataset_id: 'dataset_empty', available_in: [], price: 300, expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
+      ]
+
+      @service.subscribe(datasets)
+
+      bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
+      spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))
+      bq_datasets.count.should eq 0
+      spanner_datasets.count.should eq 0
     end
   end
 

@@ -2,13 +2,14 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.30.0`. Run the following to have it available:
+- This release upgrades the CartoDB PostgreSQL extension to `0.31.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
+- Add warning in the code editor when using a Data Services function ([CartoDB/support#2046](https://github.com/CartoDB/support/issues/2046))
 - OAuth:
   - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
   - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
@@ -21,9 +22,14 @@ sudo make install
   - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
   - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
   - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
-  - Scope for data_observatory_token ([#15089](https://github.com/CartoDB/cartodb/pull/15089))
+  - Scope to access DO API ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
 - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
 - Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
+- Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
+- Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
+- Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
+- Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
+- Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
 - Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
 
 ### Bug fixes / enhancements
@@ -42,6 +48,9 @@ sudo make install
 - Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
 - Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
 - Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
+- Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
+- Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
+- Update Dataservices API client default version to `0.27.0` (#15134)
 
 4.29.0 (2019-07-15)
 -------------------

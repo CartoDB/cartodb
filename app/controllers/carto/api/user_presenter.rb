@@ -73,6 +73,7 @@ module Carto
 
         presentation.delete(:id)
         presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
+        presentation[:api_key] = @user.api_key
 
         presentation
       end

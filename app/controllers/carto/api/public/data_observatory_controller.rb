@@ -48,7 +48,7 @@ module Carto
 
         def subscribe
           metadata = subscription_metadata
-          response = present_metadata(subscription_metadata)
+          response = present_metadata(metadata)
 
           return render(json: response) if metadata[:estimated_delivery_days].positive?
 

@@ -9,13 +9,15 @@
       <input type="text"
         ref="catalogDropdownInput"
         class="text is-caption catalogDropdown__input"
+        :class="{ 'has-error': !!error }"
         :placeholder="placeholder"
         v-model="searchFilter"
         @focus="onInputFocus"
         @click="openDropdown"
         @keyup.enter="onKeyEnter"
-        :disabled="isDisabled">
+        :disabled="isDisabled || error">
         <button v-if="searchFilter" class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+        <p class="catalogDropdown__error text is-small" v-if="error">{{error}}</p>
       <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
@@ -67,7 +69,8 @@ export default {
       activeOptionIndex: -1,
       searchFilter: '',
       isOpen: this.open,
-      isDisabled: this.disabled
+      isDisabled: this.disabled,
+      error: ''
     };
   },
   computed: {
@@ -134,7 +137,11 @@ export default {
     },
     reset () {
       this.clearInput();
+      this.error = '';
       this.$emit('reset');
+    },
+    setError (error) {
+      this.error = error;
     }
   },
   watch: {
@@ -165,7 +172,7 @@ export default {
   &__container {
     position: absolute;
     top: 48px;
-    width: 100%;
+    width: calc(100% - 20px);
   }
 
   &__input {
@@ -177,6 +184,32 @@ export default {
 
     &:hover {
       cursor: pointer;
+    }
+
+    &.has-error {
+      border: 1px solid $warning__border-color;
+    }
+  }
+
+  &__error {
+    position: relative;
+    margin-top: 4px;
+    padding-left: 24px;
+    font-size: 12px;
+    line-height: 16px;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: -2px;
+      left: 0;
+      width: 18px;
+      height: 18px;
+      background-image: url(../../assets/icons/common/warning-icon.svg);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 18px;
     }
   }
 

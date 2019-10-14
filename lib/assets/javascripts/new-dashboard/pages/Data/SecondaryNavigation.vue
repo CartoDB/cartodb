@@ -41,7 +41,7 @@ export default {
     align-items: center;
     max-width: 940px;
     margin: 0 auto;
-    padding: 0;
+    padding: 0 20px;
   }
 
   &__tabs {

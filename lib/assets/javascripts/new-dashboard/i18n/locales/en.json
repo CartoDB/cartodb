@@ -742,5 +742,17 @@
     "aggregation": "Aggregation",
     "frequency": "Frequency",
     "source": "Source"
+  },
+  "CatalogDropdown" : {
+    "category": {
+      "title": "Select a category",
+      "placeholder": "Search...",
+      "extra": "Interested in a different data category? <a href=''>Contact Us</a>"
+    },
+    "country": {
+      "title": "Select a country",
+      "placeholder": "Choose one",
+      "extra": "Interested in data from a non-listed country? <a href=''>Contact Us</a>"
+    }
   }
 }

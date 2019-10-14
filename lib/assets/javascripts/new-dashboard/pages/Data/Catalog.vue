@@ -14,23 +14,23 @@
     </div>
 
     <div class="catalog__filter container grid" action="">
-      <div class="grid-cell grid-cell--col5 catalog__filter--dropdown">
+      <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCategories"
-          :title="'Select a category'"
-          :open="true"
-          :placeholder="'Search...'"
+          :title="$t('CatalogDropdown.category.title')"
+          :placeholder="$t('CatalogDropdown.category.placeholder')"
           :options="categories"
+          :disabled="true"
           @selected="getCountries"
           @reset="resetCategory">
           <template slot="extra">
-            <span class="text is-small">Interested in a different data category? <a href="">Contact Us</a></span>
+            <span v-html="$t('CatalogDropdown.category.extra')" class="text is-small"></span>
           </template>
         </CatalogDropdown>
       </div>
-      <div class="grid-cell grid-cell--col5 catalog__filter--dropdown">
+      <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCountries"
-          :title="'Select a country'"
-          :placeholder="'Choose one'"
+          :title="$t('CatalogDropdown.country.title')"
+          :placeholder="$t('CatalogDropdown.country.placeholder')"
           :options="countries"
           :disabled="true"
           :limitHeight="true"
@@ -38,7 +38,7 @@
           @selected="getDatasets"
           @reset="resetCountry">
           <template slot="extra">
-            <span class="text is-small">Interested in data from a non-listed country? <a href="">Contact Us</a></span>
+            <span v-html="$t('CatalogDropdown.country.extra')" class="text is-small"></span>
           </template>
         </CatalogDropdown>
       </div>
@@ -88,7 +88,17 @@ export default {
     checkFilters('catalog', 'catalog', to, from, next);
   },
   beforeMount () {
-    this.$store.dispatch('catalog/fetch');
+    this.$store.dispatch('catalog/fetchCategories')
+      .then(
+        () => {
+          this.$refs.dropdownCategories.enableDropdown();
+          this.$refs.dropdownCategories.openDropdown();
+        },
+        (err) => {
+          this.$refs.dropdownCategories.enableDropdown();
+          this.$refs.dropdownCategories.setError(err);
+        }
+      );
   },
   computed: {
     ...mapState({
@@ -102,7 +112,6 @@ export default {
       resultsPerPage: state => state.catalog.resultsPerPage,
       appliedOrder: state => state.catalog.order,
       appliedOrderDirection: state => state.catalog.orderDirection
-
     }),
     shouldShowPagination () {
       return !this.isFetchingDatasets && this.numPages > 1;
@@ -114,7 +123,6 @@ export default {
   methods: {
     goToPage (page) {
       window.scroll({ top: 0, left: 0 });
-
       this.$router.push({
         name: 'catalog',
         params: this.$route.params,
@@ -135,10 +143,18 @@ export default {
       this.$store.dispatch('catalog/order', orderParams);
     },
     getCountries (category) {
-      this.$refs.dropdownCountries.clearInput();
-      this.$refs.dropdownCountries.enableDropdown();
-      this.$store.dispatch('catalog/fetchCountries', category);
-      window.scroll({ top: 0, left: 0 });
+      this.$store.dispatch('catalog/fetchCountries', category)
+        .then(
+          () => {
+            this.$refs.dropdownCountries.clearInput();
+            this.$refs.dropdownCountries.enableDropdown();
+            window.scroll({ top: 0, left: 0 })
+          },
+          (err) => {
+            this.$refs.dropdownCountries.enableDropdown();
+            this.$refs.dropdownCountries.setError(err);
+          }
+        )
     },
     getDatasets (country) {
       this.$store.dispatch('catalog/fetchDatasets', {
@@ -175,6 +191,7 @@ export default {
   &__filter {
     justify-content: space-between;
     height: 168px;
+    padding: 0;
 
     &--dropdown {
       position: relative;

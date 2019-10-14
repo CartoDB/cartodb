@@ -6,7 +6,7 @@
     <div class="catalogCard__column">
       <div class="catalogCard__cell cell">
         <div class="catalogCard__cell--category">
-          <div class="catalogCard__iconCategory" :class="`catalogCard__iconCategory--${formattedCategory}`"></div>
+          <div class="catalogCard__iconCategory" :class="`iconCategory--${formattedCategory}`"></div>
         </div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
@@ -17,8 +17,8 @@
     </div>
 
     <div class="catalogCard__column">
-      <div class="cell catalogCard__cell--large">
-        <span class="text is-small is-txtSoftGrey u-ellipsis">
+      <div class="cell catalogCard__cell--large u-ellipsis">
+        <span class="text is-small is-txtSoftGrey">
           {{ formattedSpatialAggregations}}
         </span>
       </div>
@@ -163,16 +163,5 @@ export default {
       background-image: url("../../assets/icons/catalog/global-boundaries.svg");
     }
   }
-
-  // &__icon {
-  //   width: 36px;
-  //   height: 36px;
-  //   margin-right: 6px;
-  //   padding: 9px;
-  //   overflow: hidden;
-  //   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
-  //   border-radius: 2px;
-  //   background-color: $softblue;
-  // }
 }
 </style>

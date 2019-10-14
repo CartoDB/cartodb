@@ -30,6 +30,7 @@ sudo make install
 - Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
 - Endpoint to list purchased Data Observatory datasets ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
 - Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
+- Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
 
 ### Bug fixes / enhancements
 - Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))

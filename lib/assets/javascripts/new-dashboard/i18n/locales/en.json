@@ -349,7 +349,7 @@
     "footer": {
       "back": "Back",
       "next": "Next: {nextStep}",
-      "goToDashboard": "Go to dashboard"
+      "goToDashboard": "Go to your dashboard"
     },
     "cartovl": {
       "title": "Develop an interactive custom web map",
@@ -455,7 +455,11 @@
         },
         "text1": "No more⁠ context switching—visualize your data straight out of your notebook",
         "text2": "Spend less time in data preparation using Data Observatory, our location data repository",
-        "text3": "Share your work right away—publicly or privately"
+        "text3": "Share your work right away—publicly or privately",
+        "footer": {
+          "returnToDashboard": "Return to your dashboard",
+          "learnMore": "Learn more"
+        }
       }
     },
     "builder" : {

@@ -36,8 +36,12 @@
     </div>
 
     <div class="footer hangar">
-      <button class="underlined-link title is-caption is-txtCartoframes js-goToDashboard" @click="goToDashboard"><span>Go to dashboard</span></button>
-      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes js-goToDashboard" target="_blank" @click="goToDashboard"><span>Check the documentation</span></a>
+      <button class="underlined-link title is-caption is-txtCartoframes js-goToDashboard" @click="goToDashboard">
+        <span>{{ $t('Wizards.cartoframes.step1.footer.returnToDashboard') }}</span>
+      </button>
+      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes js-goToDashboard" target="_blank" @click="goToDashboard">
+        <span>{{ $t('Wizards.cartoframes.step1.footer.learnMore') }}</span>
+      </a>
     </div>
   </div>
 </template>

@@ -1,6 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Header.vue should render properly 1`] = `
+exports[`Header.vue should render properly when the tutorial has only one step 1`] = `
+<div class="header">
+  <div class="container">
+    <ul class="breadcrumbs u-flex__justify--center">
+      <li class="breadcrumbs__item current"><a href="javascript:void 0" class="step-1"><span class="breadcrumbs__checkpoint current"><span class="breadcrumbs__text u-hideMobile">Fake Step 1</span></span></a></li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`Header.vue should render properly when the tutorial has several steps 1`] = `
 <div class="header">
   <div class="container">
     <ul class="breadcrumbs u-flex__justify--between">

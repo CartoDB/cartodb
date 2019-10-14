@@ -2,7 +2,7 @@
   <div class="u-width--100 u-pt--32 u-pr--10 u-pb--80 u-pl--10">
     <div class="circle"></div>
     <div class="placeholder">
-      <img class="placeholder__img" src="../../../../assets/images/onboarding/cartoframes@2x.png"/>
+      <div class="placeholder__img"></div>
       <div class="placeholder__shadow"></div>
     </div>
 
@@ -37,7 +37,7 @@
 
     <div class="footer hangar">
       <button class="underlined-link title is-caption is-txtCartoframes js-goToDashboard" @click="goToDashboard"><span>Go to dashboard</span></button>
-      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes" target="_blank"><span>Check the documentation</span></a>
+      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes js-goToDashboard" target="_blank" @click="goToDashboard"><span>Check the documentation</span></a>
     </div>
   </div>
 </template>
@@ -100,7 +100,10 @@ vector.vmap([
 
   &__img {
     width: 460px;
-    height: auto;
+    height: 330px;
+    border-radius: 4px;
+    background-image: url('../../../../assets/images/onboarding/cartoframes@2x.png');
+    background-size: cover;
   }
 
   &__shadow {

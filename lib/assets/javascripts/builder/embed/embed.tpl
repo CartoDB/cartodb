@@ -16,3 +16,6 @@
     <div class="CDB-Embed-tab CDB-Embed-legends js-embed-legends"></div>
   <% } %>
 </div>
+<% if (showBanner) { %>
+<div class="CDB-Embed-banner js-embed-banner"></div>
+<% } %>

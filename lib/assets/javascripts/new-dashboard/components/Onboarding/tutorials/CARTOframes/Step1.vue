@@ -62,7 +62,7 @@ export default {
       map
     };
   },
-   methods: {
+  methods: {
     goToDashboard () {
       this.$router.push({ name: 'home' });
     }

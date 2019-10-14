@@ -148,13 +148,13 @@ export default {
           () => {
             this.$refs.dropdownCountries.clearInput();
             this.$refs.dropdownCountries.enableDropdown();
-            window.scroll({ top: 0, left: 0 })
+            window.scroll({ top: 0, left: 0 });
           },
           (err) => {
             this.$refs.dropdownCountries.enableDropdown();
             this.$refs.dropdownCountries.setError(err);
           }
-        )
+        );
     },
     getDatasets (country) {
       this.$store.dispatch('catalog/fetchDatasets', {

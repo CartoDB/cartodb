@@ -12,7 +12,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const isVendor = name => name.indexOf('node_modules') >= 0;
 const isJavascript = name => name.endsWith('.js');
 
-const {rootDir, GearResolverPlugin} = require('./gearAwareResolver')
+const { rootDir, GearResolverPlugin } = require('./gearAwareResolver');
 
 module.exports = {
   entry: entryPoints,
@@ -94,7 +94,7 @@ module.exports = {
     }),
 
     new VueLoaderPlugin(),
-    new GearResolverPlugin(),
+    new GearResolverPlugin()
   ],
   optimization: {
     splitChunks: {

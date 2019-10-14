@@ -26,7 +26,7 @@ module Carto
     end
 
     def filter_datasets(datasets, storage)
-      filtered_datasets = datasets.select { |dataset| dataset[:available_in]&.include?(storage) }
+      filtered_datasets = datasets.select { |dataset| dataset[:available_in].include?(storage) }
       filtered_datasets.map do |dataset|
         { "dataset_id" => dataset[:dataset_id], "expires_at" => dataset[:expires_at].to_s }
       end

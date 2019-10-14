@@ -127,8 +127,20 @@ module Carto
           raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
 
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
+
           result = metadata_user.in_database[query].first
+          validate_metadata(result)
+        end
+
+        def validate_metadata(result)
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
+
+          valid_data = result[:available_in].present? && result[:estimated_delivery_days].present? &&
+                       result[:subscription_list_price].present?
+          unless valid_data
+            CartoDB::Logger.info(message: 'Incomplete DO metadata', id: @id)
+            raise Carto::LoadError.new("Incomplete metadata found for #{@id}")
+          end
 
           result
         end

@@ -67,22 +67,6 @@ describe Carto::DoLicensingService do
       bq_datasets.count.should eq 2
       spanner_datasets.count.should eq 2
     end
-
-    it 'does not store anything in Redis if available_in is empty or nil' do
-      @central_mock.stubs(:create_do_datasets)
-
-      datasets = [
-        { dataset_id: 'dataset_nil', available_in: nil, price: 300, expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset_empty', available_in: [], price: 300, expires_at: Time.new(2020, 9, 27, 8, 0, 0) }
-      ]
-
-      @service.subscribe(datasets)
-
-      bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
-      spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))
-      bq_datasets.count.should eq 0
-      spanner_datasets.count.should eq 0
-    end
   end
 
 end

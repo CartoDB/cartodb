@@ -9,15 +9,15 @@
       <input type="text"
         ref="catalogDropdownInput"
         class="text is-caption catalogDropdown__input"
-        :class="{ 'has-error': !!error }"
+        :class="{ 'has-error': hasError }"
         :placeholder="placeholder"
         v-model="searchFilter"
         @focus="onInputFocus"
         @click="openDropdown"
         @keyup.enter="onKeyEnter"
-        :disabled="isDisabled || error">
+        :disabled="isDisabled || hasError">
         <button v-if="searchFilter" class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
-        <p class="catalogDropdown__error text is-small" v-if="error">{{error}}</p>
+        <p class="catalogDropdown__error text is-small" v-if="hasError">{{error}}</p>
       <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
@@ -83,6 +83,9 @@ export default {
         }
       }
       return filtered.length > 0 ? filtered : this.options;
+    },
+    hasError () {
+      return this.error.length > 0;
     }
   },
   methods: {

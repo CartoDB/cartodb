@@ -29,7 +29,7 @@
         </div>
 
         <p class='CDB-Text CDB-Size-large'>
-          Map or dataset not found, or with restricted access. Please <a href="https://carto.com/login" target="_blank">login</a> to your account and try again
+          Map or dataset not found, or with restricted access. Please <%= link_to "login", login_url(after: request.original_url) %> to your account and try again
         </p>
       </div>
     </div>

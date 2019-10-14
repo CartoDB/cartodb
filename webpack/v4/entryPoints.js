@@ -1,7 +1,7 @@
 const glob = require('glob');
 const { resolve } = require('path');
 
-const {rootDir} = require('./gearAwareResolver')
+const { rootDir } = require('./gearAwareResolver');
 const removeDuplicated = array => Array.from(new Set(array));
 
 module.exports = {

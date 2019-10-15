@@ -413,6 +413,39 @@ describe Carto::Api::Public::DataObservatoryController do
 
   end
 
+  describe 'unsubscribe' do
+    before(:all) do
+      @url_helper = 'api_v4_do_subscriptions_destroy_url'
+      @params = { api_key: @master, id: 'carto.abc.dataset1' }
+    end
+
+    it 'returns 400 if the id param is not valid' do
+      delete_json endpoint_url(@params.merge(id: 'wrong')) do |response|
+        expect(response.status).to eq(400)
+        expect(response.body).to eq(errors: "Wrong 'id' parameter value.", errors_cause: nil)
+      end
+    end
+
+    it 'returns 403 if the feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'do-licensing', false do
+        delete_json endpoint_url(@params) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "DO licensing not enabled", errors_cause: nil)
+        end
+      end
+    end
+
+    it 'returns 204 calls the DoLicensingService with the expected params' do
+      mock_service = mock
+      mock_service.expects(:unsubscribe).with('carto.abc.dataset1').once
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+
+      delete_json endpoint_url(@params) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+  end
+
   def populate_do_metadata
     metadata_user = FactoryGirl.create(:user, username: 'do-metadata')
     db_seed = %{

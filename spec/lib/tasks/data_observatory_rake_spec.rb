@@ -20,8 +20,6 @@ describe 'data_observatory.rake' do
 
     after(:each) do
       File.unstub(:open)
-      Cartodb::Central.unstub(:new)
-      Cartodb::Central.any_instance.unstub(:create_do_datasets)
     end
 
     it 'throws an error if username is not provided' do
@@ -49,6 +47,32 @@ describe 'data_observatory.rake' do
       Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
 
       Rake::Task['cartodb:data_observatory:purchase_datasets'].invoke('fulano', 'datasets.csv')
+    end
+  end
+
+  describe '#remove_purchase' do
+    before(:each) do
+      Rake::Task['cartodb:data_observatory:remove_purchase'].reenable
+    end
+
+    it 'throws an error if username is not provided' do
+      expect {
+        Rake::Task['cartodb:data_observatory:remove_purchase'].invoke
+      }.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
+    end
+
+    it 'throws an error if dataset_id is not provided' do
+      expect {
+        Rake::Task['cartodb:data_observatory:remove_purchase'].invoke('fulano')
+      }.to raise_error(RuntimeError, 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]')
+    end
+
+    it 'calls unsubscribe from Carto::DoLicensingService with the expected parameters' do
+      service_mock = mock
+      service_mock.expects(:unsubscribe).once.with('carto.abc.dataset')
+      Carto::DoLicensingService.expects(:new).once.with('fulano').returns(service_mock)
+
+      Rake::Task['cartodb:data_observatory:remove_purchase'].invoke('fulano', 'carto.abc.dataset')
     end
   end
 

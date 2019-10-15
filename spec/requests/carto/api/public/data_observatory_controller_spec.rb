@@ -90,12 +90,14 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 500 if the central call fails' do
-      central_error = CentralCommunicationFailure.new('boom')
+    it 'returns 500 with an explicit message if the central call fails' do
+      central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
+      central_error = CartoDB::CentralCommunicationFailure.new(central_response)
       Cartodb::Central.any_instance.stubs(:get_do_token).raises(central_error)
 
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
+        expect(response.body).to eq(errors: ["boom"])
       end
     end
   end
@@ -355,6 +357,17 @@ describe Carto::Api::Public::DataObservatoryController do
       post_json endpoint_url(api_key: @master), id: 'carto.abc.incomplete', type: 'dataset' do |response|
         expect(response.status).to eq(404)
         expect(response.body).to eq(errors: "Incomplete metadata found for carto.abc.incomplete", errors_cause: nil)
+      end
+    end
+
+    it 'returns 500 with an explicit message if the central call fails' do
+      central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
+      central_error = CartoDB::CentralCommunicationFailure.new(central_response)
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.raises(central_error)
+
+      post_json endpoint_url(api_key: @master), @payload do |response|
+        expect(response.status).to eq(500)
+        expect(response.body).to eq(errors: ["boom"])
       end
     end
 

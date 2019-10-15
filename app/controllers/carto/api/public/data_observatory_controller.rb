@@ -101,6 +101,10 @@ module Carto
           raise UnauthorizedError.new('DO licensing not enabled') unless @user.has_feature_flag?('do-licensing')
         end
 
+        def rescue_from_central_error(exception)
+          render_jsonp({ errors: exception.errors }, 500)
+        end
+
         def bq_subscriptions
           redis_key = "do:#{@user.username}:datasets"
           redis_value = $users_metadata.hget(redis_key, BIGQUERY_KEY) || '[]'

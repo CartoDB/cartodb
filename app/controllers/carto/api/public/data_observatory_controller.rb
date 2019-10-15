@@ -1,5 +1,3 @@
-# require_dependency 'carto/controller_helper'
-
 module Carto
   module Api
     module Public
@@ -12,10 +10,10 @@ module Carto
 
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
-        before_action :load_id, only: [:subscription_info, :subscribe]
+        before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
         before_action :load_type, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe]
+        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe, :unsubscribe]
 
         setup_default_rescues
 
@@ -61,6 +59,12 @@ module Carto
           Carto::DoLicensingService.new(@user.username).subscribe([license_info])
 
           render(json: response)
+        end
+
+        def unsubscribe
+          Carto::DoLicensingService.new(@user.username).unsubscribe(@id)
+
+          head :no_content
         end
 
         private

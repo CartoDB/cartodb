@@ -97,7 +97,7 @@ module Cartodb
 
     def create_do_datasets(username:, datasets:)
       body = { username: username, datasets: datasets }
-      send_request("api/do/datasets", body, :post, [201, 403, 404])
+      send_request("api/do/datasets", body, :post, [201])
     end
 
     ############################################################################

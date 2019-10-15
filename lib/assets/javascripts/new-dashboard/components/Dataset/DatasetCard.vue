@@ -24,15 +24,18 @@
       </div>
 
       <div class="cell cell--main">
-        <div class="title-container">
+        <div class="title-container" @mouseover="showCopyDropdown" @mouseleave="hideCopyDropdown">
           <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
             {{ dataset.name }}
           </h3>
+          <div class="dropdown-container" v-if="copyDropdownVisible">
+            <div class="dropdown" @click.prevent="copyName" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+              <span class="text is-small copy-text" v-if="!copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy.svg">Copy name</span>
+              <span class="text is-small is-txtGrey" v-if="copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy-success.svg">Name Copied!</span>
+            </div>
+          </div>
           <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
-          </span>
-          <span v-if="showInteractiveElements" class="card-favorite" @click.prevent="copyName" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img svg-inline src="../../assets/icons/common/copy.svg">
           </span>
         </div>
         <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
@@ -144,6 +147,9 @@ export default {
     return {
       areQuickActionsOpen: false,
       activeHover: true,
+      copyDropdownVisible: false,
+      copySuccessful: false,
+      hideDropdownTimeout: null,
       maxTags: 3,
       maxTagChars: 30
     };
@@ -239,9 +245,12 @@ export default {
       textArea.focus();
       textArea.select();
       try {
-        var copySuccess = document.execCommand('copy');
+        this.copySuccessful = document.execCommand('copy');
+        if (this.copySuccessful) {
+          this.hideDropdownTimeout = setTimeout(this.hideCopyDropdown, 2000);
+        }
       } catch (err) {
-        //fail
+        this.copySuccessful = false;
       }
       document.body.removeChild(textArea);
     },
@@ -253,6 +262,16 @@ export default {
     },
     mouseOutChildElement () {
       this.activeHover = true;
+    },
+    showCopyDropdown () {
+      this.copyDropdownVisible = true;
+    },
+    hideCopyDropdown () {
+      this.copyDropdownVisible = false;
+      this.copySuccessful = false;
+      if (this.hideDropdownTimeout) {
+        clearTimeout(this.hideDropdownTimeout);
+      }
     },
     openQuickActions () {
       this.areQuickActionsOpen = true;
@@ -437,7 +456,48 @@ export default {
 
 .title-container {
   display: flex;
+  position: relative;
   align-items: center;
+}
+
+.dropdown-container {
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  padding-bottom: 8px;
+}
+
+.dropdown {
+  position: relative;
+  margin-left: 32px;
+  padding: 12px 16px 8px;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  background-color: #FFF;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 24px;
+    width: 14px;
+    height: 14px;
+    transform: rotate(45deg);
+    border: 1px solid #EBEEF5;
+    border-top: none;
+    border-left: none;
+    border-radius: 2px;
+    background-color: #FFF;
+  }
+}
+
+.copy-text {
+  text-decoration: underline;
+}
+
+.copy-icon {
+  margin-right: 8px;
+  margin-bottom: -2px;
 }
 
 .card-favorite {

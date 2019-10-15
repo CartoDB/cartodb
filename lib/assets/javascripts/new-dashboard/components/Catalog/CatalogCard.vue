@@ -1,7 +1,5 @@
 <template>
-  <a href=""
-     target="_blank"
-     class="catalogCard">
+  <a class="catalogCard" @click="onClick">
 
     <div class="catalogCard__column">
       <div class="catalogCard__cell cell">
@@ -66,6 +64,21 @@ export default {
       }
       return this.dataset.category.replace(/ /g, '-').toLowerCase();
     }
+  },
+  methods: {
+    onClick (event) {
+      event.preventDefault();
+      this.$router.push({
+        name: 'catalog_detail',
+        params: {
+          id: this.dataset.id
+        },
+        query: {
+          category: this.dataset.category,
+          country: this.dataset.country
+        }
+      });
+    }
   }
 };
 </script>
@@ -81,6 +94,7 @@ export default {
   overflow: hidden;
   border-bottom: 1px solid $softblue;
   background-color: $white;
+  cursor: pointer;
 
   &:hover {
     background-color: $softblue;

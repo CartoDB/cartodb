@@ -96,8 +96,12 @@ module Cartodb
     end
 
     def create_do_datasets(username:, datasets:)
-      body = { username: username, datasets: datasets }
-      send_request("api/do/datasets", body, :post, [201])
+      body = { datasets: datasets }
+      send_request("api/users/#{username}/do/datasets", body, :post, [201])
+    end
+
+    def remove_do_dataset(username:, id:)
+      send_request("api/users/#{username}/do/datasets/#{id}", nil, :delete, [204])
     end
 
     ############################################################################

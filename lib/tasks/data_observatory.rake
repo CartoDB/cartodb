@@ -21,5 +21,17 @@ namespace :cartodb do
 
       puts 'Task finished succesfully!'
     end
+
+    desc "Removes access to a DO dataset for a user and updates the metadata in Central and Redis"
+    task :remove_purchase, [:username, :dataset_id] => [:environment] do |_, args|
+      username = args[:username]
+      dataset_id = args[:dataset_id]
+      usage = 'USAGE: data_observatory:remove_purchase["username","project.schema.table"]'
+      raise usage unless username.present? && dataset_id.present?
+
+      Carto::DoLicensingService.new(username).unsubscribe(dataset_id)
+
+      puts 'Task finished succesfully!'
+    end
   end
 end

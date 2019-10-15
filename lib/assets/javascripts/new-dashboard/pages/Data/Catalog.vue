@@ -161,6 +161,13 @@ export default {
         category: this.$refs.dropdownCategories.selected,
         country
       });
+      this.$router.push({
+        name: 'catalog',
+        query: {
+          category:  this.$refs.dropdownCategories.selected,
+          country
+        }
+      })
       window.scroll({ top: 0, left: 0 });
     },
     resetCategory () {

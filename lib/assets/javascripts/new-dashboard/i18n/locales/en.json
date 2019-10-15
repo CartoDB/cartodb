@@ -133,6 +133,8 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "copy": "Copy name",
+    "copySuccess": "Name copied!",
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
     "numberRows": "0 rows | 1 row | {count} rows",

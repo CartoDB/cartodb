@@ -30,8 +30,8 @@
           </h3>
           <div class="dropdown-container" v-if="copyDropdownVisible">
             <div class="dropdown" @click.prevent="copyName" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-              <span class="text is-small copy-text" v-if="!copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy.svg">Copy name</span>
-              <span class="text is-small is-txtGrey" v-if="copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy-success.svg">Name Copied!</span>
+              <span class="text is-small copy-text" v-if="!copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy.svg">{{$t(`DatasetCard.copy`)}}</span>
+              <span class="text is-small is-txtGrey" v-if="copySuccessful"><img svg-inline class="copy-icon" src="../../assets/icons/common/copy-success.svg">{{$t(`DatasetCard.copySuccess`)}}</span>
             </div>
           </div>
           <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">

@@ -6,7 +6,7 @@
     <div class="catalogCard__column">
       <div class="catalogCard__cell cell">
         <div class="catalogCard__cell--category">
-          <div class="catalogCard__iconCategory" :class="`iconCategory--${formattedCategory}`"></div>
+          <div class="catalogCard__iconCategory" :class="`catalogCard__iconCategory--${formattedCategory}`"></div>
         </div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
@@ -25,12 +25,12 @@
     </div>
 
     <div class="catalogCard__column">
-      <div class="cell cell--large">
+      <div class="cell cell--large u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ formattedFrequency }}
         </span>
       </div>
-      <div class="cell cell--large">
+      <div class="cell cell--large u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ formattedSource }}
         </span>

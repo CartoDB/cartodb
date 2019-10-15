@@ -31,7 +31,7 @@ export default {
 
 .secondaryNavigation {
   position: sticky;
-  z-index: 4;
+  z-index: $z-index__subheader;
   top: 64px;
   border-bottom: 1px solid $neutral--300;
   background-color: $white;

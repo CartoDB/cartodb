@@ -454,8 +454,9 @@
           "howto": "What does it look like?"
         },
         "text1": "No more⁠ context switching—visualize your data straight out of your notebook",
-        "text2": "Spend less time in data preparation using Data Observatory, our location data repository",
-        "text3": "Share your work right away—publicly or privately",
+        "text2": "Share your work right away—publicly or privately",
+        "text3": "Spend less time in data preparation using Data Observatory, our location data repository",
+        "text4": "(Coming soon)",
         "footer": {
           "returnToDashboard": "Return to your dashboard",
           "learnMore": "Learn more"

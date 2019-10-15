@@ -19,9 +19,15 @@
         </template>
       </StepTitle>
       <ul class="list">
-        <li class="list__item text" v-html="$t(`Wizards.cartoframes.step1.text1`)"></li>
-        <li class="list__item text" v-html="$t(`Wizards.cartoframes.step1.text2`)"></li>
-        <li class="list__item text" v-html="$t(`Wizards.cartoframes.step1.text3`)"></li>
+        <li class="list__item text">
+          <span>{{ $t(`Wizards.cartoframes.step1.text1`) }}</span>
+        </li>
+        <li class="list__item text">
+          <span>{{ $t(`Wizards.cartoframes.step1.text2`) }}</span>
+        </li>
+        <li class="list__item text">
+          <span>{{ $t(`Wizards.cartoframes.step1.text3`) }}</span><span class="u-ml--4 is-italic">{{ $t(`Wizards.cartoframes.step1.text4`) }}</span>
+        </li>
       </ul>
     </div>
 
@@ -31,15 +37,15 @@
             <img svg-inline src="../../../../assets/icons/onboarding/howto.svg"/>
         </template>
       </StepTitle>
-      <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" :theme="'default'"></CodeBlock>
+      <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" theme="default"></CodeBlock>
       <InjectableIframe :content="map" width="100%" height="416"></InjectableIframe>
     </div>
 
     <div class="footer hangar">
-      <button class="underlined-link title is-caption is-txtCartoframes js-goToDashboard" @click="goToDashboard">
+      <button class="underlined-link title is-caption is-txtCartoframes" @click="goToDashboard">
         <span>{{ $t('Wizards.cartoframes.step1.footer.returnToDashboard') }}</span>
       </button>
-      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes js-goToDashboard" target="_blank" @click="goToDashboard">
+      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes" target="_blank" @click="goToDashboard">
         <span>{{ $t('Wizards.cartoframes.step1.footer.learnMore') }}</span>
       </a>
     </div>
@@ -74,10 +80,19 @@ export default {
 };
 
 const codeBlock1 =
-`from cartoframes.contrib import vector
-vector.vmap([
-  vector.Layer('world_ports', strokeWidth=0.5, strokeColor='black', size=3, color='#0ab96b')
-], context=cc)`;
+`from cartoframes.auth import set_default_credentials
+from cartoframes.viz import Map
+from cartoframes.viz.helpers import color_bins_layer
+
+set_default_credentials('johnsmith', '1a2b3c4d5e6f7g8h9i0j')
+
+masters_map = Map(color_bins_layer(
+    'higher_edu_by_county',
+    'pct_higher_ed',
+    '% Population with Masters degree')
+)
+
+masters_map.publish('higher_edu_by_county_map')`;
 
 </script>
 

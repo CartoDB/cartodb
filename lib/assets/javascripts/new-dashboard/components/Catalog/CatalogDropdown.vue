@@ -6,18 +6,23 @@
     :class="{'is-disabled': isDisabled, 'is-open': isOpen}">
     <span class="title is-caption catalogDropdown__label">{{ title }}</span>
     <div class="catalogDropdown__container">
-      <input type="text"
-        ref="catalogDropdownInput"
-        class="text is-caption catalogDropdown__input"
-        :class="{ 'has-error': hasError }"
-        :placeholder="placeholder"
-        v-model="searchFilter"
-        @focus="onInputFocus"
-        @click="openDropdown"
-        @keyup.enter="onKeyEnter"
-        :disabled="isDisabled || hasError">
-        <button v-if="searchFilter" class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
-        <p class="catalogDropdown__error text is-small" v-if="hasError">{{error}}</p>
+      <div v-if="!searchFilter">
+        <input type="text"
+          class="text is-caption catalogDropdown__input"
+          :class="{ 'has-error': hasError }"
+          :placeholder="placeholder"
+          v-model="searchFilter"
+          @focus="onInputFocus"
+          @click="openDropdown"
+          @keyup.enter="onKeyEnter"
+          :disabled="isDisabled || hasError">
+      </div>
+      <div v-if="searchFilter"
+        class="text is-caption catalogDropdown__input">
+        <CatalogueDropdownItem :option="searchFilter"/>
+        <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+      </div>
+      <p class="catalogDropdown__error text is-small" v-if="hasError">{{error}}</p>
       <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
@@ -27,7 +32,7 @@
           class="catalogDropdown__option text is-caption"
           :class="{'catalogDropdown__option--active': activeOptionIndex === index + 1}"
           @mouseover="updateActiveOption(index + 1)">
-          {{ option }}
+          <CatalogueDropdownItem :option="option"/>
         </li>
       </ul>
       <div class="catalogDropdown__extra">
@@ -38,8 +43,13 @@
 </template>
 
 <script>
+import CatalogueDropdownItem from './CatalogueDropdownItem';
+
 export default {
   name: 'CatalogDropdown',
+  components: {
+    CatalogueDropdownItem
+  },
   props: {
     title: String,
     placeholder: String,
@@ -135,7 +145,6 @@ export default {
     clearInput () {
       this.searchFilter = '';
       this.selected = {};
-      this.$refs.catalogDropdownInput.value = '';
       this.closeDropdown();
     },
     reset () {
@@ -279,7 +288,7 @@ export default {
   display: block;
   position: relative;
   width: 100%;
-  padding: 12px 16px 12px 36px;
+  padding: 12px 16px 12px 24px;
   overflow: hidden;
   color: $primary-color;
   text-decoration: none;

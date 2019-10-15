@@ -16,7 +16,8 @@ $colors: (
 
 $bgcolors: (
   'White': $white,
-  'SoftBlue': $color-primary--soft
+  'SoftBlue': $color-primary--soft,
+  'Alert': $danger__color,
 );
 
 @each $name, $color in $bgcolors {

@@ -1,6 +1,6 @@
 require 'spec_helper_min'
-require 'carto/oauth_provider/scopes'
-require_relative '../../../factories/organizations_contexts'
+require_dependency 'carto/oauth_provider/scopes/scopes'
+require_relative '../../../../factories/organizations_contexts'
 
 describe Carto::OauthProvider::Scopes do
   include_context 'organization with users helper'
@@ -29,7 +29,8 @@ describe Carto::OauthProvider::Scopes do
           "schemas:c:public",
           "schemas:c:a",
           'schemas:c:a.a',
-          "schemas:w:a"
+          "schemas:w:a",
+          "datasets:metadata"
         ]
       )
       expect(scopes).to eq ["datasets:rw:a.a.twf", "datasets:c:a.twf", "schemas:w:a"]
@@ -64,7 +65,8 @@ describe Carto::OauthProvider::Scopes do
     end
 
     it 'validates existing datasets scopes' do
-      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(["datasets:r:#{@user_table.name}"], @user)
+      scopes_to_validate = ["datasets:r:#{@user_table.name}", "datasets:metadata"]
+      scopes = Carto::OauthProvider::Scopes.invalid_scopes_and_tables(scopes_to_validate, @user)
       expect(scopes).to be_empty
     end
 
@@ -319,12 +321,22 @@ describe Carto::OauthProvider::Scopes do
 
   describe Carto::OauthProvider::Scopes::UserScope do
     describe '#add_to_api_key_grants' do
-      let(:scope) { Carto::OauthProvider::Scopes::UserScope.new('profile', 'User public profile') }
-
       it 'adds user scope with profile subset' do
+        scope = Carto::OauthProvider::Scopes::UserScope.new('profile', 'User public profile')
         grants = [{ type: 'apis', apis: [] }]
         scope.add_to_api_key_grants(grants, nil)
         expect(grants).to(eq([{ type: 'apis', apis: [] }, { type: 'user', data: ['profile'] }]))
+      end
+    end
+  end
+
+  describe Carto::OauthProvider::Scopes::ApisScope do
+    describe '#add_to_api_key_grants' do
+      it 'adds apis scope with do subset' do
+        scope = Carto::OauthProvider::Scopes::ApisScope.new('do', 'Data Observatory API')
+        grants = [{ type: 'apis', apis: [] }]
+        scope.add_to_api_key_grants(grants, nil)
+        expect(grants).to(eq([{ type: 'apis', apis: ['do'] }]))
       end
     end
   end
@@ -599,6 +611,44 @@ describe Carto::OauthProvider::Scopes do
       ]
 
       scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(create_scope, [])
+      expect(scopes_by_category).to(eq(expected))
+    end
+
+    it 'shows datasets metadata permission' do
+      scope = ["datasets:metadata"]
+      expected = [
+        {
+          description: "User and personal data",
+          icon: nil,
+          scopes: [{ description: "Username and organization name", new: true }]
+        },
+        {
+          description: "List your datasets",
+          icon: nil,
+          scopes: [{ description: "Table names", new: true }]
+        }
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(scope, [])
+      expect(scopes_by_category).to(eq(expected))
+    end
+
+    it 'shows Data Observatory API permission' do
+      scope = ["apis:do"]
+      expected = [
+        {
+          description: "User and personal data",
+          icon: nil,
+          scopes: [{ description: "Username and organization name", new: true }]
+        },
+        {
+          description: "Access to CARTO APIs",
+          icon: nil,
+          scopes: [{ description: "Data Observatory API", new: true }]
+        }
+      ]
+
+      scopes_by_category = Carto::OauthProvider::Scopes.scopes_by_category(scope, [])
       expect(scopes_by_category).to(eq(expected))
     end
   end

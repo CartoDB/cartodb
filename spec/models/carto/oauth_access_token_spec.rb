@@ -123,6 +123,26 @@ module Carto
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end
 
+      it 'includes listing metadata permission for datasets scopes' do
+        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['sql']
+            },
+            {
+              type: 'database',
+              table_metadata: []
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['datasets:metadata'])
+
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
+
       it 'api key includes read permissions for datasets scopes' do
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
         expected_grants =
@@ -209,6 +229,22 @@ module Carto
                                                   "datasets:rw:#{user_table2.name}"
                                                 ])
         expect(access_token.api_key).to(be)
+        expect(access_token.api_key.type).to(eq('oauth'))
+        expect(access_token.api_key.grants).to(eq(expected_grants))
+      end
+
+      it 'includes service account permission for user scopes' do
+        FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @user.id)
+        expected_grants =
+          [
+            {
+              type: 'apis',
+              apis: ['do']
+            }
+          ]
+
+        access_token = OauthAccessToken.create!(oauth_app_user: @app_user, scopes: ['apis:do'])
+
         expect(access_token.api_key.type).to(eq('oauth'))
         expect(access_token.api_key.grants).to(eq(expected_grants))
       end

@@ -38,8 +38,9 @@ module Carto
 
         def create
           create_params = permitted_params.merge(user: @user)
-          oauth_app = OauthApp.create!(create_params)
-          render_jsonp(OauthAppPresenter.new(oauth_app).to_hash(private_data: true), 201)
+          @oauth_app = OauthApp.create!(create_params)
+          track_event('CreatedOauthApp')
+          render_jsonp(OauthAppPresenter.new(@oauth_app).to_hash(private_data: true), 201)
         end
 
         def update
@@ -54,12 +55,14 @@ module Carto
 
         def destroy
           @oauth_app.destroy!
+          track_event('DeletedOauthApp')
           head :no_content
         end
 
         def revoke
           oauth_app_user = @oauth_app.oauth_app_users.where(user_id: @user.id).first
           oauth_app_user.destroy!
+          track_event('DeletedOauthAppUser')
           head :no_content
         end
 
@@ -123,6 +126,16 @@ module Carto
 
         def rescue_oauth_errors(exception)
           render json: { errors: exception.parameters[:error_description] }, status: 500
+        end
+
+        def track_event(event_name)
+          properties = {
+            user_id: @user.id,
+            app_id: @oauth_app.id,
+            app_name: @oauth_app.name
+          }
+          event_class = "Carto::Tracking::Events::#{event_name}".constantize
+          event_class.new(@user.id, properties).report
         end
       end
     end

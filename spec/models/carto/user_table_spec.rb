@@ -33,6 +33,13 @@ describe Carto::UserTable do
     end
   end
 
+  describe 'table_id column' do
+    it 'supports values larger than 2^31-1' do
+      column = Carto::UserTable.columns.find{|c| c.name=='table_id'}
+      expect { column.type_cast_for_database(2164557046) }.to_not raise_error
+    end
+  end
+
   describe 'canonical visualization' do
     it 'contains 1 data layer and creates a named map template if default basemap supports labels on top' do
       Carto::LayerFactory.build_default_base_layer(@user).supports_labels_layer?.should be_true

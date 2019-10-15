@@ -11,16 +11,18 @@
     <p class="Dialog-headerText">Remember, once you delete it there is no going back</p>
   </div>
 
-  <div class="CDB-Text Dialog-body">
-    <div class="Form-row Form-row--centered has-label">
-      <div class="Form-rowLabel">
-        <label class="Form-label">Your password</label>
-      </div>
-      <div class="Form-rowData">
-        <input type="password" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+  <% if (passwordNeeded) { %>
+    <div class="CDB-Text Dialog-body">
+      <div class="Form-row Form-row--centered has-label">
+        <div class="Form-rowLabel">
+          <label class="Form-label">Your password</label>
+        </div>
+        <div class="Form-rowData">
+          <input type="password" id="deletion_password_confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+        </div>
       </div>
     </div>
-  </div>
+  <% } %>
 
   <div class="Dialog-footer u-inner">
     <button type="button" class="CDB-Button CDB-Button--secondary js-cancel">

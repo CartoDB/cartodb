@@ -466,7 +466,8 @@ describe Carto::Api::ApiKeysController do
               'schema' => @table1.database_schema,
               :name => @table1.name,
               'permissions' => ['select']
-            ]
+            ],
+            'table_metadata' => []
           },
           {
             'type' => 'apis',
@@ -482,6 +483,7 @@ describe Carto::Api::ApiKeysController do
         get_json api_key_url(id: api_key.name), auth_params, auth_headers do |response|
           response.status.should eq 200
           response.body[:grants][1][:tables][0][:owner] = false
+          response.body[:grants][1][:table_metadata] = []
         end
         api_key.destroy
       end

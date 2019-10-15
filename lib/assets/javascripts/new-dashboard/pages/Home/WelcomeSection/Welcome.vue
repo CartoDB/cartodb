@@ -52,8 +52,8 @@ export default {
         return 'organizationUser';
       }
 
-      if (this.isProUser()) {
-        return 'professional';
+      if (this.isIndividualUser()) {
+        return 'individual';
       }
 
       if (this.isPersonal30()) {
@@ -76,9 +76,9 @@ export default {
       const freeUser = ['FREE'];
       return freeUser.includes(this.user.account_type);
     },
-    isProUser () {
-      const proUsers = ['Professional'];
-      return proUsers.includes(this.user.account_type);
+    isIndividualUser () {
+      const individualUsers = ['Individual'];
+      return individualUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

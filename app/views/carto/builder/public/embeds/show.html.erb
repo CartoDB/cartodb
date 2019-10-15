@@ -9,7 +9,7 @@
 <%= content_for(:facebook_card) do %><%= Carto::StaticMapsURLHelper.new.url_for_static_map(request, @visualization, 1200, 630) %><% end %>
 
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'builder_embed', 'deep_insights_new', media: 'all' %>
+  <%= stylesheet_link_tag 'builder_embed', media: 'all' %>
   <style type="text/css">
     html, body {
       height: 100%;
@@ -36,8 +36,8 @@
     var layersData = <%= safe_js_object @layers_data.to_json %>;
     var stateJSON = <%= safe_js_object @state.to_json %>;
     var authTokens = <%= safe_js_object @auth_tokens.to_json %>;
-    var baseURL = '<%= @viz_owner_base_url %>';
     var geocoderConfiguration = <%= safe_js_object geocoder_config.to_json %>;
+    var ownerData = <%= safe_js_object get_owner_data(@viz_owner).to_json %>;
   </script>
   <%= javascript_include_tag 'common', 'common_vendor', 'builder_embed' %>
 
@@ -57,5 +57,4 @@
     }());
   </script>
 
-  <%= insert_google_analytics('embeds', true) %>
 <% end %>

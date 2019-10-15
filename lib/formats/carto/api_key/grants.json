@@ -22,7 +22,8 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps"
+            "maps",
+            "do"
           ]
         }
       },
@@ -111,6 +112,9 @@
             "profile"
           ]
         }
+      },
+      "table_metadata": {
+        "type": "array"
       }
     }
   }

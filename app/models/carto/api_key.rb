@@ -1,12 +1,13 @@
 require 'securerandom'
 require_dependency 'carto/errors'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'carto/oauth_provider/scopes'
+require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/api_key_permissions'
 
 class ApiKeyGrantsValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    return record.errors[attribute] = ['grants has to be an array'] unless value && value.is_a?(Array)
+    return record.errors[attribute] = ['grants has to be an array'] unless value&.is_a?(Array)
+
     record.errors[attribute] << 'only one apis section is allowed' unless value.count { |v| v[:type] == 'apis' } == 1
 
     max_one_sections = ['database', 'dataservices', 'user']
@@ -34,6 +35,7 @@ module Carto
 
     API_SQL       = 'sql'.freeze
     API_MAPS      = 'maps'.freeze
+    API_DO        = 'do'.freeze
 
     GRANTS_ALL_APIS = { type: "apis", apis: [API_SQL, API_MAPS] }.freeze
     GRANTS_ALL_DATA_SERVICES = {
@@ -188,6 +190,14 @@ module Carto
     def schema_permissions
       @schema_permissions_cache ||= process_schema_permissions
       @schema_permissions_cache.values
+    end
+
+    def dataset_metadata_permissions
+      @dataset_metadata_permissions ||= process_dataset_metadata_permissions
+    end
+
+    def data_observatory_permissions?
+      granted_apis&.include?(API_DO)
     end
 
     def table_permissions_from_db
@@ -425,6 +435,11 @@ module Carto
       return nil unless user_data_grants.present?
 
       user_data_grants[:data]
+    end
+
+    def process_dataset_metadata_permissions
+      dataset_metadata_grants = grants.find { |v| v[:type] == 'database' }
+      dataset_metadata_grants.try(:[], :table_metadata)
     end
 
     def check_permissions

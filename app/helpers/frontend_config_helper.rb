@@ -4,7 +4,7 @@ module FrontendConfigHelper
   include AvatarHelper
   include FullstoryHelper
 
-  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'professional'].freeze
+  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'individual'].freeze
 
   def frontend_config_hash(user = current_user)
     config = {
@@ -17,10 +17,7 @@ module FrontendConfigHelper
       trackjs_customer:           Cartodb.get_config(:trackjs, 'customer'),
       trackjs_enabled:            Cartodb.get_config(:trackjs, 'enabled'),
       trackjs_app_key:            Cartodb.get_config(:trackjs, 'app_keys', 'editor'),
-      google_analytics_ua:        Cartodb.get_config(:google_analytics, 'primary'),
-      google_analytics_domain:    Cartodb.get_config(:google_analytics, 'domain'),
       google_tag_manager_id:      Cartodb.get_config(:google_tag_manager, 'primary'),
-      hubspot_enabled:            CartoDB::Hubspot::instance.enabled?,
       intercom_app_id:            Cartodb.get_config(:intercom, 'app_id'),
       fullstory_enabled:          fullstory_enabled?(user),
       fullstory_org:              Cartodb.get_config(:fullstory, 'org'),

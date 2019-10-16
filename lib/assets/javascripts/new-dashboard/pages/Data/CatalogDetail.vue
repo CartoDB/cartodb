@@ -2,8 +2,10 @@
   <Page class="page--data">
     <section class="secondaryNavigation">
       <div class="secondaryNavigation__content">
-        <a class="secondaryNavigation__back title is-small" href="">{{ $t('CatalogDetailPage.back') }}</a>
-
+        <a class="secondaryNavigation__back title is-small" href="">
+          <img class="secondaryNavigation__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+          <span>{{ $t('CatalogDetailPage.back') }}</span>
+        </a>
       </div>
     </section>
 
@@ -122,7 +124,15 @@ export default {
   }
 
   &__back {
+    display: flex;
+    align-items: center;
     padding: 24px 0 20px;
+
+    &--icon {
+      width: 7px;
+      height: 12px;
+      margin-right: 8px;
+    }
   }
 }
 

@@ -64,7 +64,7 @@ export default {
   data: function () {
     return {
       hasBeenSuccesfullyRequested: false
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -83,13 +83,12 @@ export default {
   },
   methods: {
     requestDataset () {
-      this.$store.dispatch('catalog/requestDataset',
-      { user: this.user, dataset: this.dataset })
-        .then(
-          () => {
-            this.hasBeenSuccesfullyRequested = true;
-          }
-        );
+      this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
+      .then(
+        () => {
+          this.hasBeenSuccesfullyRequested = true;
+        }
+      );
     }
   }
 };

@@ -67,29 +67,29 @@ export default {
     }
   },
   computed: {
-  ...mapState({
-    user: state => state.user,
-    datasets: state => state.catalog.list,
-    isFetchingDatasets: state => state.catalog.isFetching,
-    dataset (state) {
-      if (this.isFetchingDatasets) {
-        return {};
+    ...mapState({
+      user: state => state.user,
+      datasets: state => state.catalog.list,
+      isFetchingDatasets: state => state.catalog.isFetching,
+      dataset (state) {
+        if (this.isFetchingDatasets) {
+          return {};
+        }
+
+        const datasetList = toObject(this.datasets, 'id');
+        return datasetList[this.$route.params.id];
       }
-      
-      const datasetList = toObject(this.datasets, 'id');
-      return datasetList[this.$route.params.id];
-    }
-  })
+    })
   },
   methods: {
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset',
       { user: this.user, dataset: this.dataset })
-      .then(
-        () => {
-          this.hasBeenSuccesfullyRequested = true;
-        }
-      )
+        .then(
+          () => {
+            this.hasBeenSuccesfullyRequested = true;
+          }
+        );
     }
   }
 };

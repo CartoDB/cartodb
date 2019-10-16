@@ -2,7 +2,7 @@
   <Page class="page--data">
     <section class="secondaryNavigation">
       <div class="secondaryNavigation__content">
-        <a class="secondaryNavigation__back title is-small" href="">Back</a>
+        <a class="secondaryNavigation__back title is-small" href="">{{ $t('CatalogDetailPage.back') }}</a>
 
       </div>
     </section>
@@ -19,7 +19,8 @@
             </template>
 
             <template slot="actionButton">
-              <button class="button is-primary" @click="requestDataset">Request Dataset</button>
+              <span v-if="hasBeenSuccesfullyRequested">BIEN</span>
+              <button v-else class="button is-primary" @click="requestDataset">{{ $t('CatalogDetailPage.requestDataset') }}</button>
             </template>
           </SectionTitle>
 
@@ -28,24 +29,19 @@
               {{ dataset.description }}
             </span>
           </div>
-
-
-
         </div>
-
-
         <div class="grid-cell grid-cell--col6">
-          <h4 class="catalogDetail__label title is-caption">Variable Groups</h4>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.variableGroups') }}</h4>
           <ul v-for="variable in dataset.variable_name" :key="variable" class="catalogDetail__list">
             <li class="text is-caption catalogDetail__list--item">{{variable}}</li>
           </ul>
         </div>
         <div class="grid-cell grid-cell--col3">
-          <h4 class="catalogDetail__label title is-caption">Category</h4>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.category') }}</h4>
           <p class="text is-caption">{{ dataset.category }}</p>
         </div>
         <div class="grid-cell grid-cell--col3">
-          <h4 class="catalogDetail__label title is-caption">Country</h4>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.country') }}</h4>
           <p class="text is-caption">{{ dataset.country }}</p>
         </div>
       </div>
@@ -65,8 +61,14 @@ export default {
     Page,
     SectionTitle
   },
+  data: function () {
+    return {
+      hasBeenSuccesfullyRequested: false
+    }
+  },
   computed: {
   ...mapState({
+    user: state => state.user,
     datasets: state => state.catalog.list,
     isFetchingDatasets: state => state.catalog.isFetching,
     dataset (state) {
@@ -81,7 +83,13 @@ export default {
   },
   methods: {
     requestDataset () {
-      this.$store.dispatch('catalog/requestDataset');
+      this.$store.dispatch('catalog/requestDataset',
+      { user: this.user, dataset: this.dataset })
+      .then(
+        () => {
+          this.hasBeenSuccesfullyRequested = true;
+        }
+      )
     }
   }
 };

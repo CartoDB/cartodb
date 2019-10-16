@@ -754,5 +754,12 @@
       "placeholder": "Choose one",
       "extra": "Interested in data from a non-listed country? <a href=''>Contact Us</a>"
     }
+  },
+  "CatalogDetailPage": {
+    "back": "Back",
+    "requestDataset": "Request Dataset",
+    "variableGroups": "Variable Groups",
+    "category": "Category",
+    "country": "Country"
   }
 }

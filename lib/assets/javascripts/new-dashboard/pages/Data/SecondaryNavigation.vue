@@ -31,7 +31,7 @@ export default {
 
 .secondaryNavigation {
   position: sticky;
-  z-index: 5;
+  z-index: $z-index__subheader;
   top: 64px;
   border-bottom: 1px solid $neutral--300;
   background-color: $white;
@@ -41,7 +41,7 @@ export default {
     align-items: center;
     max-width: 940px;
     margin: 0 auto;
-    padding: 0;
+    padding: 0 20px;
   }
 
   &__tabs {

@@ -1,0 +1,38 @@
+.iconCategory {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  &--financial {
+    background-image: url("../../assets/icons/catalog/financial.svg");
+  }
+
+  &--human-mobility {
+    background-image: url("../../assets/icons/catalog/human-mobility.svg");
+  }
+
+  &--demographics {
+    background-image: url("../../assets/icons/catalog/demographics.svg");
+  }
+
+  &--housing {
+    background-image: url("../../assets/icons/catalog/housing.svg");
+  }
+
+  &--road-traffic {
+    background-image: url("../../assets/icons/catalog/road-traffic.svg");
+  }
+
+  &--points-of-interest {
+    background-image: url("../../assets/icons/catalog/points-of-interest.svg");
+  }
+
+  &--environmental {
+    background-image: url("../../assets/icons/catalog/environmental.svg");
+  }
+
+  &--global-boundaries {
+    background-image: url("../../assets/icons/catalog/global-boundaries.svg");
+  }
+}

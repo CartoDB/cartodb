@@ -38,7 +38,7 @@
         </template>
       </StepTitle>
       <CodeBlock :code="codeBlock1" language="python" :lineNumbers="false" theme="default"></CodeBlock>
-      <InjectableIframe :content="map" width="100%" height="416"></InjectableIframe>
+      <InjectableIframe :content="map" width="100%" height="436"></InjectableIframe>
     </div>
 
     <div class="footer hangar">

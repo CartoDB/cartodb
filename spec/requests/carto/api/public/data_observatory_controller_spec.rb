@@ -353,6 +353,13 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
+    it 'returns 404 if the dataset metadata is incomplete' do
+      post_json endpoint_url(api_key: @master), id: 'carto.abc.incomplete', type: 'dataset' do |response|
+        expect(response.status).to eq(404)
+        expect(response.body).to eq(errors: "Incomplete metadata found for carto.abc.incomplete", errors_cause: nil)
+      end
+    end
+
     it 'returns 500 with an explicit message if the central call fails' do
       central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
       central_error = CartoDB::CentralCommunicationFailure.new(central_response)
@@ -459,6 +466,8 @@ describe Carto::Api::Public::DataObservatoryController do
                             tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
       INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', '{bq}');
+      INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                   'rights', NULL);
       CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
       INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',

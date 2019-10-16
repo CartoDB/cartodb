@@ -31,6 +31,7 @@ describe Carto::DoLicensingService do
 
     after(:each) do
       Cartodb::Central.unstub(:new)
+      $users_metadata.del(@redis_key)
     end
 
     it 'calls create_do_datasets from Central with the expected parameters' do

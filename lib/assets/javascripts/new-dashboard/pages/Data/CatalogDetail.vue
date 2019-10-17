@@ -1,13 +1,11 @@
 <template>
   <Page class="page--data">
-    <section class="secondaryNavigation">
-      <div class="secondaryNavigation__content">
-        <a class="secondaryNavigation__back title is-small" href="javascript:history.back()">
-          <img class="secondaryNavigation__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-          <span>{{ $t('CatalogDetailPage.back') }}</span>
-        </a>
-      </div>
-    </section>
+    <SecondaryNavigation>
+      <a class="catalogDetail__back title is-small" href="javascript:history.back()">
+        <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+        <span>{{ $t('CatalogDetailPage.back') }}</span>
+      </a>
+    </SecondaryNavigation>>
 
     <section class="catalogDetail">
       <div class="container grid">
@@ -53,6 +51,7 @@
 
 <script>
 import Page from 'new-dashboard/components/Page';
+import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CatalogRequestSuccess from 'new-dashboard/components/catalog/CatalogRequestSuccess';
 import toObject from 'new-dashboard/utils/to-object';
@@ -62,6 +61,7 @@ export default {
   name: 'CatalogDetail',
   components: {
     Page,
+    SecondaryNavigation,
     SectionTitle,
     CatalogRequestSuccess
   },
@@ -109,21 +109,8 @@ export default {
   width: 100%;
 }
 
-.secondaryNavigation {
-  position: sticky;
-  z-index: 4;
-  top: 64px;
-  height: 64px;
-  border-bottom: 1px solid $neutral--300;
-  background-color: $white;
-
-  &__content {
-    display: flex;
-    align-items: center;
-    max-width: 940px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
+.catalogDetail {
+  margin-top: 64px;
 
   &__back {
     display: flex;
@@ -136,10 +123,6 @@ export default {
       margin-right: 8px;
     }
   }
-}
-
-.catalogDetail {
-  margin-top: 64px;
 
   &__description {
     margin-bottom: 64px;

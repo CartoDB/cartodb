@@ -138,16 +138,16 @@ export default {
     getCategories () {
       this.clearList();
       this.$store.dispatch('catalog/fetchCategories')
-      .then(
-        () => {
-          this.$refs.dropdownCategories.enableDropdown();
-          this.$refs.dropdownCategories.openDropdown();
-        },
-        (err) => {
-          this.$refs.dropdownCategories.enableDropdown();
-          this.$refs.dropdownCategories.setError(err);
-        }
-      );
+        .then(
+          () => {
+            this.$refs.dropdownCategories.enableDropdown();
+            this.$refs.dropdownCategories.openDropdown();
+          },
+          (err) => {
+            this.$refs.dropdownCategories.enableDropdown();
+            this.$refs.dropdownCategories.setError(err);
+          }
+        );
     },
     getCountries (category) {
       this.clearList();
@@ -190,28 +190,29 @@ export default {
       this.$store.dispatch('catalog/clearList');
     },
     setUrlOptions () {
-    const category = this.$route.query.category;
-    const country = this.$route.query.country;
-    const promiseDatasets = this.$store.dispatch('catalog/fetchDatasets', {
-        category: category,
-        country: country
-      });
-    const promiseCategories =  this.$store.dispatch('catalog/fetchCategories');
-    const promiseCountires = this.$store.dispatch('catalog/fetchCountries', category);
-    Promise.all([promiseDatasets, promiseCategories, promiseCountires]).then(
-        () => {
-          if (this.datasets.length > 0 ) {
-            this.$refs.dropdownCategories.setInput(category);
-            this.$refs.dropdownCountries.setInput(country);
-          } else {
-            this.getCategories();
+      const category = this.$route.query.category;
+      const country = this.$route.query.country;
+      const promiseDatasets = this.$store.dispatch('catalog/fetchDatasets', {
+          category: category,
+          country: country
+        });
+      const promiseCategories =  this.$store.dispatch('catalog/fetchCategories');
+      const promiseCountires = this.$store.dispatch('catalog/fetchCountries', category);
+      Promise.all([promiseDatasets, promiseCategories, promiseCountires])
+        .then(
+          () => {
+            if (this.datasets.length > 0 ) {
+              this.$refs.dropdownCategories.setInput(category);
+              this.$refs.dropdownCountries.setInput(country);
+            } else {
+              this.getCategories();
+              this.$router.push({ name: 'catalog' });
+            }
+          },
+          () => {
             this.$router.push({ name: 'catalog' });
           }
-        },
-        () => {
-          this.$router.push({ name: 'catalog' });
-        }
-      );
+        );
     }
   }
 };

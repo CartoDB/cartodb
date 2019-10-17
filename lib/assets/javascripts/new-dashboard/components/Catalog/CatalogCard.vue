@@ -4,7 +4,7 @@
     <div class="catalogCard__column">
       <div class="catalogCard__cell cell">
         <div class="catalogCard__cell--category">
-          <div class="catalogCard__iconCategory" :class="`catalogCard__iconCategory--${formattedCategory}`"></div>
+          <div class="catalogue__icon" :class="`catalogue__icon--${formattedCategory}`"></div>
         </div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
@@ -131,50 +131,11 @@ export default {
       width: 36px;
       height: 36px;
       margin-right: 6px;
-      padding: 9px;
+      padding: 6px;
       overflow: hidden;
       transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
       border-radius: 2px;
       background-color: $softblue;
-    }
-  }
-
-  &__iconCategory {
-    width: 100%;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-
-    &--financial {
-      background-image: url("../../assets/icons/catalog/financial.svg");
-    }
-
-    &--human-mobility {
-      background-image: url("../../assets/icons/catalog/human-mobility.svg");
-    }
-
-    &--demographics {
-      background-image: url("../../assets/icons/catalog/demographics.svg");
-    }
-
-    &--housing {
-      background-image: url("../../assets/icons/catalog/housing.svg");
-    }
-
-    &--road-traffic {
-      background-image: url("../../assets/icons/catalog/road-traffic.svg");
-    }
-
-    &--points-of-interest {
-      background-image: url("../../assets/icons/catalog/points-of-interest.svg");
-    }
-
-    &--environmental {
-      background-image: url("../../assets/icons/catalog/environmental.svg");
-    }
-
-    &--global-boundaries {
-      background-image: url("../../assets/icons/catalog/global-boundaries.svg");
     }
   }
 }

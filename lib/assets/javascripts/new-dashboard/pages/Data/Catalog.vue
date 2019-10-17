@@ -201,7 +201,7 @@ export default {
       Promise.all([promiseDatasets, promiseCategories, promiseCountires])
         .then(
           () => {
-            if (this.datasets.length > 0 ) {
+            if (this.datasets.length > 0) {
               this.$refs.dropdownCategories.setInput(category);
               this.$refs.dropdownCountries.setInput(country);
             } else {

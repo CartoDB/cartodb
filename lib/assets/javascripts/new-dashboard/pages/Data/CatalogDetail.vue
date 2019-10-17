@@ -53,7 +53,7 @@
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import CatalogRequestSuccess from 'new-dashboard/components/catalog/CatalogRequestSuccess';
+import CatalogRequestSuccess from 'new-dashboard/components/Catalog/CatalogRequestSuccess';
 import toObject from 'new-dashboard/utils/to-object';
 import { mapState } from 'vuex';
 

@@ -107,7 +107,7 @@
 
 <script>
 import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
-import CopyDropdown from 'new-dashboard/components/Dropdowns/copyDropdown';
+import CopyDropdown from 'new-dashboard/components/Dropdowns/CopyDropdown';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/models/visualization';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';

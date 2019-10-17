@@ -6,7 +6,7 @@
     :class="{'is-disabled': isDisabled, 'is-open': isOpen}">
     <span class="title is-caption catalogDropdown__label">{{ title }}</span>
     <div class="catalogDropdown__container">
-      <div v-if="!searchFilter">
+      <div v-if="showInput">
         <input type="text"
           class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
@@ -17,7 +17,7 @@
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
       </div>
-      <div v-if="searchFilter"
+      <div v-if="!showInput"
         class="text is-caption catalogDropdown__input">
         <CatalogueDropdownItem :option="searchFilter"/>
         <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
@@ -96,6 +96,9 @@ export default {
     },
     hasError () {
       return this.error.length > 0;
+    },
+    showInput () {
+      return Object.keys(this.selected).length === 0;
     }
   },
   methods: {

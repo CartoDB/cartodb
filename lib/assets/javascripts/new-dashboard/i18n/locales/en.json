@@ -747,12 +747,12 @@
     "category": {
       "title": "Select a category",
       "placeholder": "Search...",
-      "extra": "Interested in a different data category? <a href=''>Contact Us</a>"
+      "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     },
     "country": {
       "title": "Select a country",
       "placeholder": "Choose one",
-      "extra": "Interested in data from a non-listed country? <a href=''>Contact Us</a>"
+      "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     }
   },
   "CatalogDetailPage": {

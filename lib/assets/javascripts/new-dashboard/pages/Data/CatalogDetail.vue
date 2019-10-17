@@ -5,7 +5,7 @@
         <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
         <span>{{ $t('CatalogDetailPage.back') }}</span>
       </a>
-    </SecondaryNavigation>>
+    </SecondaryNavigation>
 
     <section class="catalogDetail">
       <div class="container grid">

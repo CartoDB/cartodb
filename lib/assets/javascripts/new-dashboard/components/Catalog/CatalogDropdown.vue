@@ -127,7 +127,7 @@ export default {
       this.activeOptionIndex = -1;
     },
     selectOption (option) {
-      this.setInput(option)
+      this.setInput(option);
       this.$emit('selected', this.selected);
     },
     setInput (option) {

@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: 'CatalogRequestSuccess',
+  name: 'CatalogRequestSuccess'
 };
 </script>
 

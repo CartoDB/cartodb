@@ -193,10 +193,10 @@ export default {
       const category = this.$route.query.category;
       const country = this.$route.query.country;
       const promiseDatasets = this.$store.dispatch('catalog/fetchDatasets', {
-          category: category,
-          country: country
-        });
-      const promiseCategories =  this.$store.dispatch('catalog/fetchCategories');
+        category: category,
+        country: country
+      });
+      const promiseCategories = this.$store.dispatch('catalog/fetchCategories');
       const promiseCountires = this.$store.dispatch('catalog/fetchCountries', category);
       Promise.all([promiseDatasets, promiseCategories, promiseCountires])
         .then(

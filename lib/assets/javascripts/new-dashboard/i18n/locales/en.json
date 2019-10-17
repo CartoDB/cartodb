@@ -758,6 +758,7 @@
   "CatalogDetailPage": {
     "back": "Back",
     "requestDataset": "Request Dataset",
+    "requestSuccess": "We have received your request correctly, we will contact you shortly.",
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"

@@ -2,7 +2,7 @@
   <Page class="page--data">
     <section class="secondaryNavigation">
       <div class="secondaryNavigation__content">
-        <a class="secondaryNavigation__back title is-small" href="">
+        <a class="secondaryNavigation__back title is-small" href="javascript:history.back()">
           <img class="secondaryNavigation__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
           <span>{{ $t('CatalogDetailPage.back') }}</span>
         </a>
@@ -21,7 +21,7 @@
             </template>
 
             <template slot="actionButton">
-              <span v-if="hasBeenSuccesfullyRequested">BIEN</span>
+              <CatalogRequestSuccess v-if="hasBeenSuccesfullyRequested"></CatalogRequestSuccess>
               <button v-else class="button is-primary" @click="requestDataset">{{ $t('CatalogDetailPage.requestDataset') }}</button>
             </template>
           </SectionTitle>
@@ -54,6 +54,7 @@
 <script>
 import Page from 'new-dashboard/components/Page';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
+import CatalogRequestSuccess from 'new-dashboard/components/catalog/CatalogRequestSuccess';
 import toObject from 'new-dashboard/utils/to-object';
 import { mapState } from 'vuex';
 
@@ -61,7 +62,8 @@ export default {
   name: 'CatalogDetail',
   components: {
     Page,
-    SectionTitle
+    SectionTitle,
+    CatalogRequestSuccess
   },
   data: function () {
     return {
@@ -86,11 +88,11 @@ export default {
   methods: {
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
-      .then(
-        () => {
-          this.hasBeenSuccesfullyRequested = true;
-        }
-      );
+        .then(
+          () => {
+            this.hasBeenSuccesfullyRequested = true;
+          }
+        );
     }
   }
 };
@@ -156,5 +158,4 @@ export default {
     }
   }
 }
-
 </style>

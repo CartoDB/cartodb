@@ -8,12 +8,12 @@
         :class="getStepGTMString(step)"
         :stepNum="step"
         :key="step"
-        :fullWidth="step === stepNames.length">
+        :fullWidth="step === stepNames.length && stepNames.length > 1">
         <component :is="stepComponent"></component>
       </Step>
     </template>
 
-    <Footer
+    <Footer v-if="showFooter"
       :stepNames="stepNames"
       :currentStep="step"
       @goToStep="goToStep"

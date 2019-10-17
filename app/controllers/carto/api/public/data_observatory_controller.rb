@@ -1,5 +1,3 @@
-# require_dependency 'carto/controller_helper'
-
 module Carto
   module Api
     module Public
@@ -12,10 +10,10 @@ module Carto
 
         before_action :load_user
         before_action :load_filters, only: [:subscriptions]
-        before_action :load_id, only: [:subscription_info, :subscribe]
+        before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
         before_action :load_type, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe]
+        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe, :unsubscribe]
 
         setup_default_rescues
 
@@ -63,6 +61,12 @@ module Carto
           render(json: response)
         end
 
+        def unsubscribe
+          Carto::DoLicensingService.new(@user.username).unsubscribe(@id)
+
+          head :no_content
+        end
+
         private
 
         def load_user
@@ -97,6 +101,10 @@ module Carto
           raise UnauthorizedError.new('DO licensing not enabled') unless @user.has_feature_flag?('do-licensing')
         end
 
+        def rescue_from_central_error(exception)
+          render_jsonp({ errors: exception.errors }, 500)
+        end
+
         def bq_subscriptions
           redis_key = "do:#{@user.username}:datasets"
           redis_value = $users_metadata.hget(redis_key, BIGQUERY_KEY) || '[]'
@@ -127,8 +135,20 @@ module Carto
           raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
 
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
+
           result = metadata_user.in_database[query].first
+          validate_metadata(result)
+        end
+
+        def validate_metadata(result)
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
+
+          valid_data = result[:available_in].present? && result[:estimated_delivery_days].present? &&
+                       result[:subscription_list_price].present?
+          unless valid_data
+            CartoDB::Logger.info(message: 'Incomplete DO metadata', id: @id)
+            raise Carto::LoadError.new("Incomplete metadata found for #{@id}")
+          end
 
           result
         end

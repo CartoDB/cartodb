@@ -1,0 +1,151 @@
+
+//name: bg-color, font-color
+$button-colors: (
+  is-cartoframes: ($cartoframes, $white)
+);
+
+.button {
+  display: inline-block;
+  position: relative;
+  padding: 16px 24px;
+  overflow: hidden;
+  border-radius: 8px;
+  font: 600 16px/24px $title__font-family;
+  text-align: center;
+  white-space: nowrap;
+
+  &.is-outline {
+    padding: 14px 22px;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    transition: background-color 0.1s linear;
+  }
+
+  span {
+    position: relative;
+    display: inline-flex;
+    overflow: hidden;
+    &:before {
+      content: '';
+      position: absolute;
+      transition: transform .3s ease;
+      left: -1px;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transform:  translateX(-100%);
+    }
+  }
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+
+    span {
+      &:before {
+        transform:  translateX(0);
+      }
+    }
+  }
+
+  > span {
+    position: relative;
+  }
+
+  @each $name, $color in $button-colors {
+    &.#{$name} {
+      background-color: nth($color, 1);
+      color: nth($color, 2);
+      &.is-outline {
+        background-color: transparent;
+        color: nth($color, 1);
+        border: 2px solid nth($color, 1);
+      }
+      &.is-disabled {
+        pointer-events: none;
+
+        span {
+          opacity: .5;
+        }
+      }
+    }
+  }
+}
+
+.button--arrow {
+  span {
+    &:after{
+      content: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAyMCAxMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZD0iTS0yLTdoMjR2MjRILTJ6Ii8+CiAgICA8cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTQuNzA3LjI5M2wtMS40MTQgMS40MTRMMTUuNTg2IDRIMHYyaDE1LjU4NmwtMi4yOTMgMi4yOTMgMS40MTQgMS40MTRMMTkuNDE0IDV6Ii8+CiAgPC9nPgo8L3N2Zz4=");
+      margin-left: 12px;
+    }
+  }
+}
+
+.underlined-link {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    transition: transform .3s ease;
+    left: -1px;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transform:  translateX(-100%);
+  }
+
+  &.reversed {
+    &:before {
+      left: unset;
+      right: -1px;
+      transform:  translateX(100%);
+    }
+  }
+
+  &:hover:before {
+    transform:  translateX(0);
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &.f12 {
+    &:before {
+      height: 1px;
+    }
+  }
+}
+
+.button--small {
+  font: 600 12px/16px $title__font-family;
+  padding: 8px 16px;
+  border-radius: 4px;
+
+  &.is-outline {
+    padding: 6px 14px;
+  }
+
+  span {
+    &:before {
+      height: 1px;
+    }
+  }
+}
+
+.button--large {
+  font: 600 16px/24px $title__font-family;
+}

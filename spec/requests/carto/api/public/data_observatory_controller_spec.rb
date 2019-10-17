@@ -90,12 +90,14 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 500 if the central call fails' do
-      central_error = CentralCommunicationFailure.new('boom')
+    it 'returns 500 with an explicit message if the central call fails' do
+      central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
+      central_error = CartoDB::CentralCommunicationFailure.new(central_response)
       Cartodb::Central.any_instance.stubs(:get_do_token).raises(central_error)
 
       get_json endpoint_url(api_key: @master), @headers do |response|
         expect(response.status).to eq(500)
+        expect(response.body).to eq(errors: ["boom"])
       end
     end
   end
@@ -351,6 +353,24 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
+    it 'returns 404 if the dataset metadata is incomplete' do
+      post_json endpoint_url(api_key: @master), id: 'carto.abc.incomplete', type: 'dataset' do |response|
+        expect(response.status).to eq(404)
+        expect(response.body).to eq(errors: "Incomplete metadata found for carto.abc.incomplete", errors_cause: nil)
+      end
+    end
+
+    it 'returns 500 with an explicit message if the central call fails' do
+      central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
+      central_error = CartoDB::CentralCommunicationFailure.new(central_response)
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.raises(central_error)
+
+      post_json endpoint_url(api_key: @master), @payload do |response|
+        expect(response.status).to eq(500)
+        expect(response.body).to eq(errors: ["boom"])
+      end
+    end
+
     it 'returns 200 with the dataset metadata and calls the DoLicensingService with the expected params' do
       expected_params = [{
         dataset_id: 'carto.abc.dataset1',
@@ -406,6 +426,39 @@ describe Carto::Api::Public::DataObservatoryController do
 
   end
 
+  describe 'unsubscribe' do
+    before(:all) do
+      @url_helper = 'api_v4_do_subscriptions_destroy_url'
+      @params = { api_key: @master, id: 'carto.abc.dataset1' }
+    end
+
+    it 'returns 400 if the id param is not valid' do
+      delete_json endpoint_url(@params.merge(id: 'wrong')) do |response|
+        expect(response.status).to eq(400)
+        expect(response.body).to eq(errors: "Wrong 'id' parameter value.", errors_cause: nil)
+      end
+    end
+
+    it 'returns 403 if the feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'do-licensing', false do
+        delete_json endpoint_url(@params) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "DO licensing not enabled", errors_cause: nil)
+        end
+      end
+    end
+
+    it 'returns 204 calls the DoLicensingService with the expected params' do
+      mock_service = mock
+      mock_service.expects(:unsubscribe).with('carto.abc.dataset1').once
+      Carto::DoLicensingService.expects(:new).with(@user1.username).once.returns(mock_service)
+
+      delete_json endpoint_url(@params) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+  end
+
   def populate_do_metadata
     metadata_user = FactoryGirl.create(:user, username: 'do-metadata')
     db_seed = %{
@@ -413,6 +466,8 @@ describe Carto::Api::Public::DataObservatoryController do
                             tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
       INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', '{bq}');
+      INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                   'rights', NULL);
       CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
       INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',

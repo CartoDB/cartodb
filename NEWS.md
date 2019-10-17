@@ -31,6 +31,7 @@ sudo make install
 - Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
 - Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
 - Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
+- Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
 
 ### Bug fixes / enhancements
@@ -52,6 +53,7 @@ sudo make install
 - Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
 - Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
 - Update Dataservices API client default version to `0.27.0` (#15134)
+- Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
 
 4.29.0 (2019-07-15)
 -------------------

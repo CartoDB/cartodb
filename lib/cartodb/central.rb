@@ -92,12 +92,16 @@ module Cartodb
     end
 
     def get_do_token(username)
-      send_request("api/users/#{username}/do_token", nil, :get, [200, 403, 404])
+      send_request("api/users/#{username}/do_token", nil, :get, [200])
     end
 
     def create_do_datasets(username:, datasets:)
-      body = { username: username, datasets: datasets }
-      send_request("api/do/datasets", body, :post, [201])
+      body = { datasets: datasets }
+      send_request("api/users/#{username}/do/datasets", body, :post, [201])
+    end
+
+    def remove_do_dataset(username:, id:)
+      send_request("api/users/#{username}/do/datasets/#{id}", nil, :delete, [204])
     end
 
     ############################################################################

@@ -17,12 +17,11 @@
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
       </div>
-      <div v-if="!showInput"
-        class="text is-caption catalogDropdown__input">
+      <div v-else class="text is-caption catalogDropdown__input">
         <CatalogueDropdownItem :option="searchFilter"/>
         <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       </div>
-      <p class="catalogDropdown__error text is-small" v-if="hasError">{{error}}</p>
+      <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">

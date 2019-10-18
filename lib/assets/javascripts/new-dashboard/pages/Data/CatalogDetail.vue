@@ -38,11 +38,17 @@
         </div>
         <div class="grid-cell grid-cell--col3">
           <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.category') }}</h4>
-          <p class="text is-caption">{{ dataset.category }}</p>
+          <div class="u-flex">
+            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.category)}`"></div>
+            <p class="text is-caption">{{ dataset.category }}</p>
+          </div>
         </div>
         <div class="grid-cell grid-cell--col3">
           <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.country') }}</h4>
-          <p class="text is-caption">{{ dataset.country }}</p>
+          <div class="u-flex">
+            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.country)}`"></div>
+            <p class="text is-caption">{{ dataset.country }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -54,6 +60,7 @@ import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CatalogRequestSuccess from 'new-dashboard/components/Catalog/CatalogRequestSuccess';
+import methods from 'new-dashboard/components/Catalog//icon-methods';
 import toObject from 'new-dashboard/utils/to-object';
 import { mapState } from 'vuex';
 
@@ -86,6 +93,7 @@ export default {
     })
   },
   methods: {
+    ...methods,
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
         .then(
@@ -115,7 +123,7 @@ export default {
   &__back {
     display: flex;
     align-items: center;
-    padding: 24px 0 20px;
+    padding: 24px 0;
 
     &--icon {
       width: 7px;
@@ -140,5 +148,12 @@ export default {
       margin-bottom: 16px;
     }
   }
+}
+
+.catalogue__icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  background-size: 24px;
 }
 </style>

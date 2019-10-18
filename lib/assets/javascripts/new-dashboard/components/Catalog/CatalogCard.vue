@@ -8,7 +8,7 @@
         </div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
-        <span class="text is-caption is-semibold is-txtGrey u-ellipsis catalogCard__title">
+        <span class="text is-caption is-txtGrey u-ellipsis catalogCard__title">
           {{ dataset.name }}
         </span>
       </div>
@@ -99,11 +99,11 @@ export default {
   &:hover {
     background-color: $softblue;
     text-decoration: none;
-  }
 
-  &__title {
-    color: $primary-color;
-    text-decoration: underline;
+    .catalogCard__title {
+      color: $primary-color;
+      text-decoration: underline;
+    }
   }
 
   &__column {
@@ -135,7 +135,7 @@ export default {
       overflow: hidden;
       transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
       border-radius: 2px;
-      background-color: $softblue;
+      background-color: $thumbnail__bg-color;
     }
   }
 }

@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
 
 ### Bug fixes / enhancements
 - None yet

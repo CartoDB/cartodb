@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CopyDropdown.vue properties should handle an error in execCommand 1`] = `
+<div class="dropdown"><span class="text is-small copy-text"><img svg-inline="" src="../../assets/icons/common/copy.svg" class="copy-icon">DatasetCard.copy</span>
+  <!---->
+</div>
+`;
+
+exports[`CopyDropdown.vue properties should hide the dropdown if isVisible is set to false 1`] = ``;
+
+exports[`CopyDropdown.vue properties should not show confirmation message if data is not copied 1`] = `
+<div class="dropdown"><span class="text is-small copy-text"><img svg-inline="" src="../../assets/icons/common/copy.svg" class="copy-icon">DatasetCard.copy</span>
+  <!---->
+</div>
+`;
+
+exports[`CopyDropdown.vue properties should render correct contents 1`] = `
+<div class="dropdown"><span class="text is-small copy-text"><img svg-inline="" src="../../assets/icons/common/copy.svg" class="copy-icon">DatasetCard.copy</span>
+  <!---->
+</div>
+`;
+
+exports[`CopyDropdown.vue properties should show confirmation message when data is copied 1`] = `
+<div class="dropdown">
+  <!----> <span class="text is-small is-txtGrey"><img svg-inline="" src="../../assets/icons/common/copy-success.svg" class="copy-icon">DatasetCard.copySuccess</span></div>
+`;
+
+exports[`CopyDropdown.vue properties should show copy message again after the method resetDropdown is called 1`] = `
+<div class="dropdown"><span class="text is-small copy-text"><img svg-inline="" src="../../assets/icons/common/copy.svg" class="copy-icon">DatasetCard.copy</span>
+  <!---->
+</div>
+`;

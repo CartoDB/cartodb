@@ -75,7 +75,7 @@ export default {
     width: 14px;
     height: 14px;
     transform: rotate(45deg);
-    border: 1px solid #EBEEF5;
+    border: 1px solid $neutral--200;
     border-top: none;
     border-left: none;
     border-radius: 2px;

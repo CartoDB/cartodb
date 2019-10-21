@@ -83,7 +83,7 @@ export default {
 
         const datasetList = toObject(this.datasets, 'id');
         const selectedDataset = datasetList[this.$route.params.id]
-        sendCustomEvent('selectDataset', {
+        sendCustomEvent('catalogueSelectDataset', {
           catalogueSelectedDataset: selectedDataset.name
         })
         return selectedDataset;

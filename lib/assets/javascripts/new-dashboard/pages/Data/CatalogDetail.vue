@@ -82,10 +82,10 @@ export default {
         }
 
         const datasetList = toObject(this.datasets, 'id');
-        const selectedDataset = datasetList[this.$route.params.id]
+        const selectedDataset = datasetList[this.$route.params.id];
         sendCustomEvent('catalogueSelectDataset', {
           catalogueSelectedDataset: selectedDataset.name
-        })
+        });
         return selectedDataset;
       }
     })
@@ -96,20 +96,20 @@ export default {
         .then(
           () => {
             this.hasBeenSuccesfullyRequested = true;
-            this.sendCustomCatalogEvents(this.dataset)
+            this.sendCustomCatalogEvents(this.dataset);
           }
         );
     },
     sendCustomCatalogEvents (dataset) {
       sendCustomEvent('catalogueRequestDataset', {
         catalogueRequestedDataset: dataset.name
-      })
+      });
       sendCustomEvent('catalogueRequestCountry', {
         catalogueRequestedCountry: dataset.country
-      })
+      });
       sendCustomEvent('catalogueRequestCategory', {
         catalogueRequestedCategory: dataset.category
-      })
+      });
     }
   }
 };

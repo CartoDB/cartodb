@@ -85,10 +85,10 @@ export default {
     Pagination
   },
   beforeRouteUpdate (to, from, next) {
-    sendCustomEvent("selectCategory", {
+    sendCustomEvent("catalogueSelectCategory", {
       catalogueSelectedCategory: to.query.category
     });
-    sendCustomEvent("selectCountry", {
+    sendCustomEvent("catalogueSelectCountry", {
       catalogueSelectedCountry: to.query.country
     });
   },

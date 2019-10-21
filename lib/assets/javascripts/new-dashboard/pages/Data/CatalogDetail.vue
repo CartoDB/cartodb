@@ -154,6 +154,6 @@ export default {
   width: 24px;
   height: 24px;
   margin-right: 12px;
-  background-size: 24px;
+  background-size: contain;
 }
 </style>

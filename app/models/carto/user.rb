@@ -525,9 +525,10 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
+    return true unless needs_password_confirmation?
+
     Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
-                                            secret: Cartodb.config[:password_secret]) ||
-      (oauth_signin? && last_password_change_date.nil?)
+                                            secret: Cartodb.config[:password_secret])
   end
 
   def valid_password_confirmation(password)

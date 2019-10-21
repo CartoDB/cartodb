@@ -17,7 +17,7 @@
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
       </div>
-      <div v-else class="text is-caption catalogDropdown__input">
+      <div v-else class="text is-caption catalogDropdown__input" @click="openDropdown">
         <CatalogueDropdownItem :option="searchFilter"/>
         <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       </div>

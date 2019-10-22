@@ -96,11 +96,11 @@ export default {
     getCSSModifier,
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
-      .then(
-        () => {
-          this.hasBeenSuccesfullyRequested = true;
-        }
-      );
+        .then(
+          () => {
+            this.hasBeenSuccesfullyRequested = true;
+          }
+        );
     }
   }
 };

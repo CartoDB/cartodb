@@ -169,8 +169,8 @@ CartoDB::Application.routes.draw do
 
     # Datasets for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'visualizations#index', as: :datasets_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog'                      => 'visualizations#index', as: :datasets_catalog_index
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog/:id'                  => 'visualizations#index', as: :ddatasets_catalog_show
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalogue'                    => 'visualizations#index', as: :datasets_catalogue_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalogue/:id'                => 'visualizations#index', as: :ddatasets_catalogue_show
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page

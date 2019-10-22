@@ -80,7 +80,7 @@
     },
     "tabs": {
       "yourDatasets": "Your Datasets",
-      "catalog": "Catalog"
+      "catalogue": "Catalogue"
     }
   },
   "MapsPage": {
@@ -734,16 +734,16 @@
       "mobileApps": "Mobile apps"
     }
   },
-  "CatalogPage": {
-    "header": "Catalog"
+  "CataloguePage": {
+    "header": "Catalogue"
   },
-  "CatalogListHeader": {
+  "CatalogueListHeader": {
     "name": "Name",
     "aggregation": "Aggregation",
     "frequency": "Frequency",
     "source": "Source"
   },
-  "CatalogDropdown" : {
+  "CatalogueDropdown" : {
     "placeholder": "Search...",
     "category": {
       "title": "Select a category",
@@ -756,7 +756,7 @@
       "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     }
   },
-  "CatalogDetailPage": {
+  "CatalogueDetailPage": {
     "back": "Back",
     "requestDataset": "Request Dataset",
     "requestSuccess": "We have received your request correctly, we will contact you shortly.",

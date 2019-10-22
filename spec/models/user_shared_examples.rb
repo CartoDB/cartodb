@@ -1034,5 +1034,14 @@ shared_examples_for "user models" do
 
       result.should be_false
     end
+
+    it 'returns true if SAML is enabled' do
+      organization = FactoryGirl.create(:saml_organization)
+      @user.organization_id = organization.id
+
+      result = @user.valid_password_confirmation('wrong_pass')
+
+      result.should be_true
+    end
   end
 end

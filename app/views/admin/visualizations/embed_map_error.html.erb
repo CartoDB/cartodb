@@ -28,7 +28,9 @@
           </svg>
         </div>
 
-        <p class='CDB-Text CDB-Size-large'>Looks like this map is set as private or no longer exists</p>
+        <p class='CDB-Text CDB-Size-large'>
+          Map or dataset not found, or with restricted access. Please <%= link_to "login", login_url(after: request.original_url), target: "_blank" %> to your account and try again
+        </p>
       </div>
     </div>
 

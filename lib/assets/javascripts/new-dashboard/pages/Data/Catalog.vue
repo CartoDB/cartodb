@@ -66,7 +66,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import { checkFilters } from 'new-dashboard/router/hooks/check-navigation';
+import sendCustomEvent from 'new-dashboard/utils/send-custom-event';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CatalogListHeader from 'new-dashboard/components/Catalog/CatalogListHeader';
 import CatalogCard from 'new-dashboard/components/Catalog/CatalogCard';
@@ -83,6 +83,14 @@ export default {
     CatalogFakeCard,
     CatalogDropdown,
     Pagination
+  },
+  beforeRouteUpdate (to, from, next) {
+    sendCustomEvent('catalogueSelectCategory', {
+      catalogueSelectedCategory: to.query.category
+    });
+    sendCustomEvent('catalogueSelectCountry', {
+      catalogueSelectedCountry: to.query.country
+    });
   },
   mounted () {
     const category = this.$route.query.category;

@@ -3,7 +3,7 @@
       <div class="catalogRequestSuccess__icon">
          <img svg-inline src="../../assets/icons/catalog/request-success.svg" />
       </div>
-      <p class="catalogRequestSuccess__text text is-small">{{ $t('CatalogDetailPage.requestSuccess')}}</p>
+      <p ref="catalogRequestSuccessText" class="catalogRequestSuccess__text text is-small">{{ $t('CatalogDetailPage.requestSuccess')}}</p>
     </div>
 </template>
 
@@ -11,7 +11,7 @@
 export default {
   name: 'CatalogRequestSuccess',
   mounted () {
-    this.$el.querySelector('.catalogRequestSuccess__text').classList.add('animate');
+    this.$refs.catalogRequestSuccessText.classList.add('animate');
   }
 };
 </script>

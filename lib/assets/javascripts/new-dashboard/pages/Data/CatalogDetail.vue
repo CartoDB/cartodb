@@ -7,7 +7,7 @@
       </a>
     </SecondaryNavigation>
 
-    <section class="catalogDetail">
+    <section v-if="!isFetchingDatasets" class="catalogDetail">
       <div class="container grid">
         <div class="full-width">
           <SectionTitle class="grid-cell">
@@ -60,7 +60,7 @@ import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CatalogRequestSuccess from 'new-dashboard/components/Catalog/CatalogRequestSuccess';
-import methods from 'new-dashboard/components/Catalog//icon-methods';
+import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
 import toObject from 'new-dashboard/utils/to-object';
 import { mapState } from 'vuex';
 
@@ -93,14 +93,14 @@ export default {
     })
   },
   methods: {
-    ...methods,
+    getCSSModifier,
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
-        .then(
-          () => {
-            this.hasBeenSuccesfullyRequested = true;
-          }
-        );
+      .then(
+        () => {
+          this.hasBeenSuccesfullyRequested = true;
+        }
+      );
     }
   }
 };

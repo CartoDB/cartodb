@@ -6,14 +6,16 @@
 </template>
 
 <script>
-import methods from './icon-methods';
+import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
 
 export default {
   name: 'CatalogueDropdownItem',
   props: {
     option: String
   },
-  methods
+  methods: {
+    getCSSModifier
+  }
 };
 </script>
 

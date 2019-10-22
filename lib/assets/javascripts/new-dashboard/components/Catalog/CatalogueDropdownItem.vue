@@ -6,18 +6,15 @@
 </template>
 
 <script>
+import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
+
 export default {
   name: 'CatalogueDropdownItem',
   props: {
     option: String
   },
   methods: {
-    getCSSModifier (option) {
-      return this.replaceAll(option, ' ', '-').toLowerCase();
-    },
-    replaceAll (str, find, replace) {
-      return str.replace(new RegExp(find, 'g'), replace);
-    }
+    getCSSModifier
   }
 };
 </script>
@@ -28,5 +25,6 @@ export default {
   width: 24px;
   height: 24px;
   margin-right: 12px;
+  background-size: contain;
 }
 </style>

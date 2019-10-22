@@ -236,7 +236,6 @@ export default {
   &__filter {
     justify-content: space-between;
     height: 168px;
-    padding: 0;
 
     &--dropdown {
       position: relative;

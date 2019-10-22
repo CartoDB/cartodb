@@ -10,14 +10,14 @@
         <input type="text"
           class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
-          :placeholder="placeholder"
+          :placeholder="[isOpen ?  $t('CatalogDropdown.placeholder') : placeholder]"
           v-model="searchFilter"
           @focus="onInputFocus"
           @click="openDropdown"
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
       </div>
-      <div v-else class="text is-caption catalogDropdown__input">
+      <div v-else class="text is-caption catalogDropdown__input" @click="openDropdown">
         <CatalogueDropdownItem :option="searchFilter"/>
         <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       </div>
@@ -157,6 +157,7 @@ export default {
       this.clearInput();
       this.error = '';
       this.$emit('reset');
+      this.openDropdown();
     },
     setError (error) {
       this.error = error;
@@ -202,6 +203,10 @@ export default {
 
     &:hover {
       cursor: pointer;
+
+      .catalogDropdown__close {
+        display: block;
+      }
     }
 
     &.has-error {
@@ -232,6 +237,7 @@ export default {
   }
 
   &__close {
+    display: none;
     position: absolute;
     top: 18px;
     right: 24px;
@@ -247,11 +253,11 @@ export default {
 
   &.is-open {
     .catalogDropdown__input {
-      border-top: transparent;
-      border-right: transparent;
-      border-left: transparent;
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
+      border-top-color: transparent;
+      border-right-color: transparent;
+      border-left-color: transparent;
     }
 
     .catalogDropdown__list {
@@ -259,14 +265,20 @@ export default {
     }
 
     .catalogDropdown__container {
-      border: 2px solid $primary-color;
       border-radius: 4px;
+      box-shadow: 0 0 0 2px $primary-color;
     }
 
     .catalogDropdown__extra {
       visibility: visible;
       opacity: 1;
       pointer-events: auto;
+    }
+  }
+
+  &:not(.is-open) {
+    .catalogDropdown__input:hover {
+      border-color: $text__color;
     }
   }
 }
@@ -316,6 +328,8 @@ export default {
   visibility: hidden;
   padding: 16px 24px;
   border-top: 1px solid $softblue;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
   opacity: 0;
   background-color: $white;
   pointer-events: none;

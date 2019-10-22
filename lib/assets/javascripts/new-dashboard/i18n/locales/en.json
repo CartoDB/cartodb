@@ -744,6 +744,7 @@
     "source": "Source"
   },
   "CatalogDropdown" : {
+    "placeholder": "Search...",
     "category": {
       "title": "Select a category",
       "placeholder": "Search...",
@@ -751,7 +752,7 @@
     },
     "country": {
       "title": "Select a country",
-      "placeholder": "Choose one",
+      "placeholder": "Select a country",
       "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     }
   },

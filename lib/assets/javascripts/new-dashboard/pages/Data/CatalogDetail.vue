@@ -7,7 +7,7 @@
       </a>
     </SecondaryNavigation>
 
-    <section class="catalogDetail">
+    <section v-if="!isFetchingDatasets" class="catalogDetail">
       <div class="container grid">
         <div class="full-width">
           <SectionTitle class="grid-cell">
@@ -38,11 +38,17 @@
         </div>
         <div class="grid-cell grid-cell--col3">
           <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.category') }}</h4>
-          <p class="text is-caption">{{ dataset.category }}</p>
+          <div class="u-flex">
+            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.category)}`"></div>
+            <p class="text is-caption">{{ dataset.category }}</p>
+          </div>
         </div>
         <div class="grid-cell grid-cell--col3">
           <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.country') }}</h4>
-          <p class="text is-caption">{{ dataset.country }}</p>
+          <div class="u-flex">
+            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.country)}`"></div>
+            <p class="text is-caption">{{ dataset.country }}</p>
+          </div>
         </div>
       </div>
     </section>
@@ -52,6 +58,7 @@
 <script>
 import { mapState } from 'vuex';
 import toObject from 'new-dashboard/utils/to-object';
+import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
 import sendCustomEvent from 'new-dashboard/utils/send-custom-event';
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
@@ -91,6 +98,7 @@ export default {
     })
   },
   methods: {
+    getCSSModifier,
     requestDataset () {
       this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
         .then(
@@ -132,7 +140,7 @@ export default {
   &__back {
     display: flex;
     align-items: center;
-    padding: 24px 0 20px;
+    padding: 24px 0;
 
     &--icon {
       width: 7px;
@@ -157,5 +165,12 @@ export default {
       margin-bottom: 16px;
     }
   }
+}
+
+.catalogue__icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  background-size: contain;
 }
 </style>

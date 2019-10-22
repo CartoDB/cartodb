@@ -17,7 +17,10 @@
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
       </div>
-      <div v-else class="text is-caption catalogueDropdown__input" @click="openDropdown">
+      <div v-else
+        class="text is-caption catalogueDropdown__input"
+        :class="{ 'has-error': hasError }"
+        @click="openDropdown">
         <CatalogueDropdownItem :option="searchFilter"/>
         <button class="catalogueDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       </div>

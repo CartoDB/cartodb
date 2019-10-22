@@ -46,6 +46,7 @@ sudo make install
 * Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
 
 ### Bug fixes / enhancements
+* Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))
 * Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
 * Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
 * Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))

@@ -1,5 +1,6 @@
 <template>
   <div
+    v-click-outside="closeDropdown"
     class="catalogueDropdown"
     @keydown.down.prevent="onKeydownDown"
     @keydown.up.prevent="onKeydownUp"

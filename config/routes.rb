@@ -590,7 +590,10 @@ CartoDB::Application.routes.draw do
 
       scope 'do' do
         get 'token' => 'data_observatory#token', as: :api_v4_do_token
-        get 'datasets' => 'data_observatory#datasets', as: :api_v4_do_datasets
+        get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
+        post 'subscriptions' => 'data_observatory#subscribe', as: :api_v4_do_subscriptions_create
+        delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
+        get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
       end
     end
 

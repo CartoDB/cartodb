@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="container">
-      <ul class="breadcrumbs">
+      <ul class="breadcrumbs" :class="[stepNames.length > 1 ? 'u-flex__justify--between' : 'u-flex__justify--center']">
         <li class="breadcrumbs__item"
           :class="{ 'current' : isCurrentStep(index) }"
           v-for="(stepName, index) in stepNames" :key="stepName">
@@ -59,7 +59,6 @@ $transition__timing-function: cubic-bezier(0.4, 0.01, 0.165, 0.99);
 
 .breadcrumbs {
   display: flex;
-  justify-content: space-between;
   max-width: 90%;
   margin: 0 auto 1.5em;
 

@@ -192,20 +192,22 @@ const entries = {
   path.join(__dirname, '../../gears'),
   path.join(__dirname, '../../private_gears')
 ].forEach((gearsDir) => {
-  fs.readdirSync(gearsDir).forEach((gearName) => {
-    // Find HtmlWebpackPlugin extensions and overrides
-    let gearWebpackFilesPath = path.join(gearsDir, gearName, 'webpack/v4/entryPoints.js');
-    if (fs.existsSync(gearWebpackFilesPath)) {
-      let gearWebpackFiles = require(gearWebpackFilesPath);
-      Object.entries(gearWebpackFiles).forEach(([entryName, entry]) => {
-        if (entries[entryName] !== undefined){
-          entries[entryName].concat(entry);
-        } else {
-          entries[entryName] = entry;
-        }
-      });
-    }
-  });
+  if (fs.existsSync(gearsDir)) {
+    fs.readdirSync(gearsDir).forEach((gearName) => {
+      // Find HtmlWebpackPlugin extensions and overrides
+      let gearWebpackFilesPath = path.join(gearsDir, gearName, 'webpack/v4/entryPoints.js');
+      if (fs.existsSync(gearWebpackFilesPath)) {
+        let gearWebpackFiles = require(gearWebpackFilesPath);
+        Object.entries(gearWebpackFiles).forEach(([entryName, entry]) => {
+          if (entries[entryName] !== undefined) {
+            entries[entryName].concat(entry);
+          } else {
+            entries[entryName] = entry;
+          }
+        });
+      }
+    });
+  }
 });
 
 module.exports = entries;

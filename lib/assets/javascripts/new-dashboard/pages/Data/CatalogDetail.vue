@@ -56,13 +56,14 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import toObject from 'new-dashboard/utils/to-object';
+import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
+import sendCustomEvent from 'new-dashboard/utils/send-custom-event';
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import CatalogRequestSuccess from 'new-dashboard/components/Catalog/CatalogRequestSuccess';
-import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
-import toObject from 'new-dashboard/utils/to-object';
-import { mapState } from 'vuex';
 
 export default {
   name: 'CatalogDetail',
@@ -88,7 +89,11 @@ export default {
         }
 
         const datasetList = toObject(this.datasets, 'id');
-        return datasetList[this.$route.params.id];
+        const selectedDataset = datasetList[this.$route.params.id];
+        sendCustomEvent('catalogueSelectDataset', {
+          catalogueSelectedDataset: selectedDataset.name
+        });
+        return selectedDataset;
       }
     })
   },
@@ -99,8 +104,20 @@ export default {
         .then(
           () => {
             this.hasBeenSuccesfullyRequested = true;
+            this.sendCustomCatalogEvents(this.dataset);
           }
         );
+    },
+    sendCustomCatalogEvents (dataset) {
+      sendCustomEvent('catalogueRequestDataset', {
+        catalogueRequestedDataset: dataset.name
+      });
+      sendCustomEvent('catalogueRequestCountry', {
+        catalogueRequestedCountry: dataset.country
+      });
+      sendCustomEvent('catalogueRequestCategory', {
+        catalogueRequestedCategory: dataset.category
+      });
     }
   }
 };

@@ -91,6 +91,7 @@ export default {
     sendCustomEvent('catalogueSelectCountry', {
       catalogueSelectedCountry: to.query.country
     });
+    next();
   },
   mounted () {
     const category = this.$route.query.category;
@@ -176,16 +177,22 @@ export default {
       this.$store.dispatch('catalogue/fetchDatasets', {
         category: this.$refs.dropdownCategories.selected,
         country
-      }).then(()=> {
-        this.$router.push({
-          name: 'catalogue',
-          query: {
-            category: this.$refs.dropdownCategories.selected,
-            country
-          }
-        });
-        window.scroll({ top: 0, left: 0 });
-      })
+      }).then(
+        () => {
+          this.$router.push({
+            name: 'catalogue',
+            query: {
+              category: this.$refs.dropdownCategories.selected,
+              country
+            }
+          });
+          window.scroll({ top: 0, left: 0 });
+        },
+        (err) => {
+          this.$refs.dropdownCategories.setError(err);
+          this.$refs.dropdownCountries.setError(err);
+        }
+      );
     },
     resetCategory () {
       this.$refs.dropdownCountries.clearInput();
@@ -215,11 +222,11 @@ export default {
               this.$refs.dropdownCountries.setInput(country);
             } else {
               this.getCategories();
-              this.$router.push({ name: 'catalogue'});
+              this.$router.push({ name: 'catalogue' });
             }
           },
           () => {
-            this.$router.push({ name: 'catalogue'});
+            this.$router.push({ name: 'catalogue' });
           }
         );
     }

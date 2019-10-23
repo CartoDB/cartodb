@@ -66,7 +66,10 @@
     <div
         v-if="shouldShowHeader"
         class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-        :class="{ 'is-user-notification': isNotificationVisible }">
+        :class="{
+          'has-userNotification': isNotificationVisible,
+          'in-homePage': isHomePage,
+        }">
 
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
@@ -212,6 +215,9 @@ export default {
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
+    },
+    isHomePage () {
+      return this.$router.currentRoute.name === 'home';
     }
   },
   methods: {
@@ -281,10 +287,14 @@ export default {
 
 .grid__head--sticky {
   top: 128px;
-}
 
-.grid__head--sticky.is-user-notification {
-  top: 128px + $notification-warning__height;
+  &.in-homePage {
+    top: 64px;
+  }
+
+  &.has-userNotification {
+    top: 128px + $notification-warning__height;
+  }
 }
 
 .pagination-element {

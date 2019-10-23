@@ -1,17 +1,17 @@
 <template>
   <div
     v-click-outside="closeDropdown"
-    class="catalogueDropdown"
+    class="catalogDropdown"
     @keydown.down.prevent="onKeydownDown"
     @keydown.up.prevent="onKeydownUp"
     :class="{'is-disabled': isDisabled, 'is-open': isOpen}">
-    <span class="title is-caption catalogueDropdown__label">{{ title }}</span>
-    <div class="catalogueDropdown__container">
+    <span class="title is-caption catalogDropdown__label">{{ title }}</span>
+    <div class="catalogDropdown__container">
       <div v-if="showInput">
         <input type="text"
-          class="text is-caption catalogueDropdown__input"
+          class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
-          :placeholder="[isOpen ?  $t('CatalogueDropdown.placeholder') : placeholder]"
+          :placeholder="[isOpen ?  $t('CatalogDropdown.placeholder') : placeholder]"
           v-model="searchFilter"
           @focus="onInputFocus"
           @click="openDropdown"
@@ -19,26 +19,26 @@
           :disabled="isDisabled || hasError">
       </div>
       <div v-else
-        class="text is-caption catalogueDropdown__input"
+        class="text is-caption catalogDropdown__input"
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
-        <CatalogueDropdownItem :option="searchFilter"/>
-        <button class="catalogueDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+        <CatalogDropdownItem :option="searchFilter"/>
+        <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
       </div>
-      <p class="catalogueDropdown__error text is-small" v-if="hasError">{{ error }}</p>
-      <ul class="catalogueDropdown__list"
+      <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
+      <ul class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
         <li
           v-for="(option, index) in filteredOptions" :key="option"
           @click="selectOption(option)"
-          class="catalogueDropdown__option text is-caption"
-          :class="{'catalogueDropdown__option--active': activeOptionIndex === index + 1}"
+          class="catalogDropdown__option text is-caption"
+          :class="{'catalogDropdown__option--active': activeOptionIndex === index + 1}"
           @mouseover="updateActiveOption(index + 1)">
-          <CatalogueDropdownItem :option="option"/>
+          <CatalogDropdownItem :option="option"/>
         </li>
       </ul>
-      <div class="catalogueDropdown__extra">
+      <div class="catalogDropdown__extra">
         <slot name="extra"></slot>
       </div>
     </div>
@@ -46,12 +46,12 @@
 </template>
 
 <script>
-import CatalogueDropdownItem from './CatalogueDropdownItem';
+import CatalogDropdownItem from './CatalogDropdownItem';
 
 export default {
-  name: 'CatalogueDropdown',
+  name: 'CatalogDropdown',
   components: {
-    CatalogueDropdownItem
+    CatalogDropdownItem
   },
   props: {
     title: String,
@@ -131,7 +131,7 @@ export default {
       }
     },
     onKeyEnter () {
-      const optionSelected = this.$el.querySelector('.catalogueDropdown__option--active');
+      const optionSelected = this.$el.querySelector('.catalogDropdown__option--active');
       if (optionSelected) {
         optionSelected.click();
       }
@@ -181,7 +181,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalogueDropdown {
+.catalogDropdown {
   display: flex;
   position: absolute;
   z-index: 2;
@@ -208,7 +208,7 @@ export default {
     &:hover {
       cursor: pointer;
 
-      .catalogueDropdown__close {
+      .catalogDropdown__close {
         display: block;
       }
     }
@@ -250,13 +250,13 @@ export default {
   &.is-disabled {
     opacity: 0.24;
 
-    .catalogueDropdown__close {
+    .catalogDropdown__close {
       display: none;
     }
   }
 
   &.is-open {
-    .catalogueDropdown__input {
+    .catalogDropdown__input {
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
       border-top-color: transparent;
@@ -264,16 +264,16 @@ export default {
       border-left-color: transparent;
     }
 
-    .catalogueDropdown__list {
+    .catalogDropdown__list {
       border: transparent;
     }
 
-    .catalogueDropdown__container {
+    .catalogDropdown__container {
       border-radius: 4px;
       box-shadow: 0 0 0 2px $primary-color;
     }
 
-    .catalogueDropdown__extra {
+    .catalogDropdown__extra {
       visibility: visible;
       opacity: 1;
       pointer-events: auto;
@@ -281,13 +281,13 @@ export default {
   }
 
   &:not(.is-open) {
-    .catalogueDropdown__input:hover {
+    .catalogDropdown__input:hover {
       border-color: $text__color;
     }
   }
 }
 
-.catalogueDropdown__list {
+.catalogDropdown__list {
   visibility: hidden;
   border: 1px solid $softblue;
   opacity: 0;
@@ -306,7 +306,7 @@ export default {
   }
 }
 
-.catalogueDropdown__option {
+.catalogDropdown__option {
   display: block;
   position: relative;
   width: 100%;
@@ -328,7 +328,7 @@ export default {
   }
 }
 
-.catalogueDropdown__extra {
+.catalogDropdown__extra {
   visibility: hidden;
   padding: 16px 24px;
   border-top: 1px solid $softblue;

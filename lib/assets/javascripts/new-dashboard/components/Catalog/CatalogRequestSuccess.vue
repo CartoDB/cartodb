@@ -1,17 +1,17 @@
 <template>
-    <div class="catalogueRequestSuccess">
-      <div class="catalogueRequestSuccess__icon">
-         <img svg-inline src="../../assets/icons/catalogue/request-success.svg" />
+    <div class="catalogRequestSuccess">
+      <div class="catalogRequestSuccess__icon">
+         <img svg-inline src="../../assets/icons/catalog/request-success.svg" />
       </div>
-      <p ref="catalogueRequestSuccessText" class="catalogueRequestSuccess__text text is-small">{{ $t('CatalogueDetailPage.requestSuccess')}}</p>
+      <p ref="catalogRequestSuccessText" class="catalogRequestSuccess__text text is-small">{{ $t('CatalogDetailPage.requestSuccess')}}</p>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'CatalogueRequestSuccess',
+  name: 'CatalogRequestSuccess',
   mounted () {
-    this.$refs.catalogueRequestSuccessText.classList.add('animate');
+    this.$refs.catalogRequestSuccessText.classList.add('animate');
   }
 };
 </script>
@@ -19,7 +19,7 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.catalogueRequestSuccess {
+.catalogRequestSuccess {
   display: flex;
   align-items: center;
   width: 290px;

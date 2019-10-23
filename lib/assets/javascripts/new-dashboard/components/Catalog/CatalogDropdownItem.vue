@@ -1,6 +1,6 @@
 <template>
   <div class="u-flex">
-    <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(option)}`"></div>
+    <div :class="`catalog__icon catalog__icon--${getCSSModifier(option)}`"></div>
     <span>{{ option }}</span>
   </div>
 </template>
@@ -9,7 +9,7 @@
 import getCSSModifier from 'new-dashboard/utils/get-css-modifier';
 
 export default {
-  name: 'CatalogueDropdownItem',
+  name: 'CatalogDropdownItem',
   props: {
     option: String
   },
@@ -21,7 +21,7 @@ export default {
 
 <style scoped lang="scss">
 
-.catalogue__icon {
+.catalog__icon {
   width: 24px;
   height: 24px;
   margin-right: 12px;

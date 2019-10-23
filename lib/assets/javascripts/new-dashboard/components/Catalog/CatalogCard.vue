@@ -1,28 +1,28 @@
 <template>
-  <a class="catalogueCard" @click="onClick">
+  <a class="catalogCard" @click="onClick">
 
-    <div class="catalogueCard__column">
-      <div class="catalogueCard__cell cell">
-        <div class="catalogueCard__cell--category">
-          <div class="catalogue__icon" :class="`catalogue__icon--${formattedCategory}`"></div>
+    <div class="catalogCard__column">
+      <div class="catalogCard__cell cell">
+        <div class="catalogCard__cell--category">
+          <div class="catalog__icon" :class="`catalog__icon--${formattedCategory}`"></div>
         </div>
       </div>
       <div class="cell cell--main u-flex u-flex__align--center">
-        <span class="text is-caption is-txtGrey u-ellipsis catalogueCard__title">
+        <span class="text is-caption is-txtGrey u-ellipsis catalogCard__title">
           {{ dataset.name }}
         </span>
       </div>
     </div>
 
-    <div class="catalogueCard__column">
-      <div class="cell catalogueCard__cell--large u-ellipsis">
+    <div class="catalogCard__column">
+      <div class="cell catalogCard__cell--large u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ formattedSpatialAggregations}}
         </span>
       </div>
     </div>
 
-    <div class="catalogueCard__column">
+    <div class="catalogCard__column">
       <div class="cell cell--large u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ formattedFrequency }}
@@ -41,13 +41,13 @@
 import { mapState } from 'vuex';
 
 export default {
-  name: 'CatalogueCard',
+  name: 'CatalogCard',
   props: {
     dataset: Object
   },
   computed: {
     ...mapState({
-      categories: state => state.catalogue.categories
+      categories: state => state.catalog.categories
     }),
     formattedSpatialAggregations () {
       return this.dataset.spatial_aggregations.join(', ');
@@ -69,7 +69,7 @@ export default {
     onClick (event) {
       event.preventDefault();
       this.$router.push({
-        name: 'catalogue_detail',
+        name: 'catalog_detail',
         params: {
           id: this.dataset.id
         },
@@ -86,7 +86,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalogueCard {
+.catalogCard {
   display: flex;
   align-items: center;
   width: 100%;
@@ -100,7 +100,7 @@ export default {
     background-color: $softblue;
     text-decoration: none;
 
-    .catalogueCard__title {
+    .catalogCard__title {
       color: $primary-color;
       text-decoration: underline;
     }

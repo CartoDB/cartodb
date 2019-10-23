@@ -554,8 +554,6 @@ module Carto
     end
 
     def reassign_owner
-      # The other type of keys are reassigned in oauth_app_user for example
-      return unless regular?
       db_run("REASSIGN OWNED BY \"#{db_role}\" TO \"#{user.database_username}\";")
     end
 

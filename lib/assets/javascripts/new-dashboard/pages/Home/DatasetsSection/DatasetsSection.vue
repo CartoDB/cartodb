@@ -1,5 +1,5 @@
 <template>
-  <section class="datasets-section">
+  <section>
     <DatasetsList
       :hasBulkActions="false"
       :canHoverCard="false"
@@ -62,10 +62,8 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.datasets-section {
-  .full-width {
-    width: 100%;
-  }
+.full-width {
+  width: 100%;
 }
 
 .viewall-link {
@@ -74,9 +72,5 @@ export default {
   letter-spacing: 1px;
   text-align: center;
   text-transform: uppercase;
-}
-
-.full-width {
-  width: 100%;
 }
 </style>

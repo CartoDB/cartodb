@@ -77,6 +77,10 @@
     "emptyCase": {
       "default": "There are no datasets here.",
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
+    },
+    "tabs": {
+      "yourDatasets": "Your Datasets",
+      "catalogue": "Catalogue"
     }
   },
   "MapsPage": {
@@ -659,5 +663,35 @@
       "oAuthApps": "OAuth apps",
       "mobileApps": "Mobile apps"
     }
+  },
+  "CataloguePage": {
+    "header": "Catalogue"
+  },
+  "CatalogueListHeader": {
+    "name": "Name",
+    "aggregation": "Aggregation",
+    "frequency": "Frequency",
+    "source": "Source"
+  },
+  "CatalogueDropdown" : {
+    "placeholder": "Search...",
+    "category": {
+      "title": "Select a category",
+      "placeholder": "Search...",
+      "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
+    },
+    "country": {
+      "title": "Select a country",
+      "placeholder": "Select a country",
+      "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
+    }
+  },
+  "CatalogueDetailPage": {
+    "back": "Back",
+    "requestDataset": "Request Dataset",
+    "requestSuccess": "We have received your request correctly, we will contact you shortly.",
+    "variableGroups": "Variable Groups",
+    "category": "Category",
+    "country": "Country"
   }
 }

@@ -94,7 +94,7 @@
 
     <ul v-if="isFetchingDatasets" class="grid-cell grid-cell--col12">
       <li v-for="n in maxVisibleDatasets" :key="n" class="dataset-item">
-        <DatasetCardFake></DatasetCardfake>
+        <DatasetCardFake></DatasetCardFake>
       </li>
     </ul>
 
@@ -280,11 +280,11 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 64px;
+  top: 128px;
 }
 
 .grid__head--sticky.is-user-notification {
-  top: 64px + $notification-warning__height;
+  top: 128px + $notification-warning__height;
 }
 
 .pagination-element {

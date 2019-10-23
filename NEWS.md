@@ -44,6 +44,11 @@ sudo make install
 * Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
 * Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
 * Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
+* Catalogue page:
+  * Add structure for new Catalogue page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  * Add list of datasets for new Catalogue page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
+  * Add interactivity/filtering section to new Catalogue page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
+  * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
 
 ### Bug fixes / enhancements
 * Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))

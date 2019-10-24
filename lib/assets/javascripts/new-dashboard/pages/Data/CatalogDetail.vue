@@ -1,13 +1,13 @@
 <template>
   <Page class="page--data">
     <SecondaryNavigation>
-      <a class="catalogueDetail__back title is-small" href="javascript:history.back()">
-        <img class="catalogueDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
-        <span>{{ $t('CatalogueDetailPage.back') }}</span>
+      <a class="catalogDetail__back title is-small" href="javascript:history.back()">
+        <img class="catalogDetail__back--icon" svg-inline src="../../assets/icons/common/back.svg"/>
+        <span>{{ $t('CatalogDetailPage.back') }}</span>
       </a>
     </SecondaryNavigation>
 
-    <section v-if="!isFetchingDatasets" class="catalogueDetail">
+    <section v-if="!isFetchingDatasets" class="catalogDetail">
       <div class="container grid">
         <div class="full-width">
           <SectionTitle class="grid-cell">
@@ -19,34 +19,34 @@
             </template>
 
             <template slot="actionButton">
-              <CatalogueRequestSuccess v-if="hasBeenSuccesfullyRequested"></CatalogueRequestSuccess>
-              <button v-else class="button is-primary" @click="requestDataset">{{ $t('CatalogueDetailPage.requestDataset') }}</button>
+              <CatalogRequestSuccess v-if="hasBeenSuccesfullyRequested"></CatalogRequestSuccess>
+              <button v-else class="button is-primary" @click="requestDataset">{{ $t('CatalogDetailPage.requestDataset') }}</button>
             </template>
           </SectionTitle>
 
-          <div class="catalogueDetail__description grid-cell">
+          <div class="catalogDetail__description grid-cell">
             <span class="text is-caption">
               {{ dataset.description }}
             </span>
           </div>
         </div>
         <div class="grid-cell grid-cell--col6">
-          <h4 class="catalogueDetail__label title is-caption">{{ $t('CatalogueDetailPage.variableGroups') }}</h4>
-          <ul v-for="variable in dataset.variable_name" :key="variable" class="catalogueDetail__list">
-            <li class="text is-caption catalogueDetail__list--item">{{variable}}</li>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.variableGroups') }}</h4>
+          <ul v-for="variable in dataset.variable_name" :key="variable" class="catalogDetail__list">
+            <li class="text is-caption catalogDetail__list--item">{{variable}}</li>
           </ul>
         </div>
         <div class="grid-cell grid-cell--col3">
-          <h4 class="catalogueDetail__label title is-caption">{{ $t('CatalogueDetailPage.category') }}</h4>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.category') }}</h4>
           <div class="u-flex">
-            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.category)}`"></div>
+            <div :class="`catalog__icon catalog__icon--${getCSSModifier(dataset.category)}`"></div>
             <p class="text is-caption">{{ dataset.category }}</p>
           </div>
         </div>
         <div class="grid-cell grid-cell--col3">
-          <h4 class="catalogueDetail__label title is-caption">{{ $t('CatalogueDetailPage.country') }}</h4>
+          <h4 class="catalogDetail__label title is-caption">{{ $t('CatalogDetailPage.country') }}</h4>
           <div class="u-flex">
-            <div :class="`catalogue__icon catalogue__icon--${getCSSModifier(dataset.country)}`"></div>
+            <div :class="`catalog__icon catalog__icon--${getCSSModifier(dataset.country)}`"></div>
             <p class="text is-caption">{{ dataset.country }}</p>
           </div>
         </div>
@@ -63,15 +63,15 @@ import sendCustomEvent from 'new-dashboard/utils/send-custom-event';
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import CatalogueRequestSuccess from 'new-dashboard/components/Catalogue/CatalogueRequestSuccess';
+import CatalogRequestSuccess from 'new-dashboard/components/Catalog/CatalogRequestSuccess';
 
 export default {
-  name: 'CatalogueDetail',
+  name: 'CatalogDetail',
   components: {
     Page,
     SecondaryNavigation,
     SectionTitle,
-    CatalogueRequestSuccess
+    CatalogRequestSuccess
   },
   data: function () {
     return {
@@ -81,8 +81,8 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
-      datasets: state => state.catalogue.list,
-      isFetchingDatasets: state => state.catalogue.isFetching,
+      datasets: state => state.catalog.list,
+      isFetchingDatasets: state => state.catalog.isFetching,
       dataset (state) {
         if (this.isFetchingDatasets) {
           return {};
@@ -90,8 +90,8 @@ export default {
 
         const datasetList = toObject(this.datasets, 'id');
         const selectedDataset = datasetList[this.$route.params.id];
-        sendCustomEvent('catalogueSelectDataset', {
-          catalogueSelectedDataset: selectedDataset.name
+        sendCustomEvent('catalogSelectDataset', {
+          catalogSelectedDataset: selectedDataset.name
         });
         return selectedDataset;
       }
@@ -100,23 +100,23 @@ export default {
   methods: {
     getCSSModifier,
     requestDataset () {
-      this.$store.dispatch('catalogue/requestDataset', { user: this.user, dataset: this.dataset })
+      this.$store.dispatch('catalog/requestDataset', { user: this.user, dataset: this.dataset })
         .then(
           () => {
             this.hasBeenSuccesfullyRequested = true;
-            this.sendCustomCatalogueEvents(this.dataset);
+            this.sendCustomCatalogEvents(this.dataset);
           }
         );
     },
-    sendCustomCatalogueEvents (dataset) {
-      sendCustomEvent('catalogueRequestDataset', {
-        catalogueRequestedDataset: dataset.name
+    sendCustomCatalogEvents (dataset) {
+      sendCustomEvent('catalogRequestDataset', {
+        catalogRequestedDataset: dataset.name
       });
-      sendCustomEvent('catalogueRequestCountry', {
-        catalogueRequestedCountry: dataset.country
+      sendCustomEvent('catalogRequestCountry', {
+        catalogRequestedCountry: dataset.country
       });
-      sendCustomEvent('catalogueRequestCategory', {
-        catalogueRequestedCategory: dataset.category
+      sendCustomEvent('catalogRequestCategory', {
+        catalogRequestedCategory: dataset.category
       });
     }
   }
@@ -134,7 +134,7 @@ export default {
   width: 100%;
 }
 
-.catalogueDetail {
+.catalogDetail {
   margin-top: 64px;
 
   &__back {
@@ -167,7 +167,7 @@ export default {
   }
 }
 
-.catalogue__icon {
+.catalog__icon {
   width: 24px;
   height: 24px;
   margin-right: 12px;

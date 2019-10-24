@@ -1,8 +1,8 @@
 <template>
-  <div class="catalogueCardFake">
+  <div class="catalogCardFake">
 
-    <div class="catalogueCardFake__column u-flex u-flex__align--center">
-      <div class="catalogueCardFake__cell cell-placeholder cell thumbnail">
+    <div class="catalogCardFake__column u-flex u-flex__align--center">
+      <div class="catalogCardFake__cell cell-placeholder cell thumbnail">
         <div class="icon-placeholder"/>
       </div>
       <div class="cell-placeholder cell cell--main">
@@ -10,13 +10,13 @@
       </div>
     </div>
 
-    <div class="catalogueCardFake__column">
+    <div class="catalogCardFake__column">
       <div class="cell-placeholder cell cell--xlarge">
         <div class="text-placeholder"/>
       </div>
     </div>
 
-    <div class="catalogueCardFake__column">
+    <div class="catalogCardFake__column">
       <div class="cell-placeholder cell cell--large">
         <div class="text-placeholder"/>
       </div>
@@ -29,14 +29,14 @@
 
 <script>
 export default {
-  name: 'CatalogueCardFake'
+  name: 'CatalogCardFake'
 };
 </script>
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalogueCardFake {
+.catalogCardFake {
   display: flex;
   align-items: center;
   width: 100%;

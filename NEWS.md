@@ -72,6 +72,7 @@ sudo make install
 * Update Dataservices API client default version to `0.27.0` (#15134)
 * Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
 * Fix password validation for SAML ([#15147](https://github.com/CartoDB/cartodb/pull/15147))
+* Dashboard: Rename catalogue to catalog ([#15158](https://github.com/CartoDB/cartodb/issues/15158))
 
 4.29.0 (2019-07-15)
 -------------------

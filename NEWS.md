@@ -8,7 +8,7 @@ Development
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
 
 ### Bug fixes / enhancements
-- None yet
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
 
 4.30.0 (2019-10-18)
 -------------------

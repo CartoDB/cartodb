@@ -631,6 +631,7 @@ module CartoDB
         cdb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb'")
         superuser_user_pg_conn.query("CREATE SCHEMA cdb") if cdb_schema.count == 0
         superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb")
+        superuser_user_pg_conn.query("SELECT CDB_DisableGhostTablesTrigger()")
       rescue PG::Error => e
         @logger.error "Error: Cannot setup DB"
         raise e

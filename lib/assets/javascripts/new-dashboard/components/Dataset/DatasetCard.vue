@@ -24,10 +24,13 @@
       </div>
 
       <div class="cell cell--main">
-        <div class="title-container">
+        <div class="title-container" @mouseover="showCopyDropdown" @mouseleave="hideCopyDropdown">
           <h3 class="text is-caption is-txtGrey u-ellipsis row-title" :title="dataset.name">
             {{ dataset.name }}
           </h3>
+          <div class="dropdown-container" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+            <CopyDropdown :textToCopy="dataset.name" :isVisible="copyDropdownVisible" @hideDropdown="hideCopyDropdown"></CopyDropdown>
+          </div>
           <span v-if="showInteractiveElements" class="card-favorite" :class="{'is-favorite': dataset.liked}" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
@@ -104,6 +107,7 @@
 
 <script>
 import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
+import CopyDropdown from 'new-dashboard/components/Dropdowns/CopyDropdown';
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
 import * as Visualization from 'new-dashboard/core/models/visualization';
 import FeaturesDropdown from '../Dropdowns/FeaturesDropdown';
@@ -116,7 +120,8 @@ export default {
   components: {
     DatasetQuickActions,
     FeaturesDropdown,
-    SharedBrief
+    SharedBrief,
+    CopyDropdown
   },
   props: {
     dataset: Object,
@@ -141,6 +146,7 @@ export default {
     return {
       areQuickActionsOpen: false,
       activeHover: true,
+      copyDropdownVisible: false,
       maxTags: 3,
       maxTagChars: 30
     };
@@ -233,6 +239,12 @@ export default {
     },
     mouseOutChildElement () {
       this.activeHover = true;
+    },
+    showCopyDropdown () {
+      this.copyDropdownVisible = true;
+    },
+    hideCopyDropdown () {
+      this.copyDropdownVisible = false;
     },
     openQuickActions () {
       this.areQuickActionsOpen = true;
@@ -417,7 +429,16 @@ export default {
 
 .title-container {
   display: flex;
+  position: relative;
   align-items: center;
+}
+
+.dropdown-container {
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  margin-left: 32px;
+  padding-bottom: 8px;
 }
 
 .card-favorite {

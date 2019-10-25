@@ -2,57 +2,77 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.31.0`. Run the following to have it available:
+- None yet
+
+### Features
+- Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
+
+### Bug fixes / enhancements
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+
+4.30.0 (2019-10-18)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.31.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Add warning in the code editor when using a Data Services function ([CartoDB/support#2046](https://github.com/CartoDB/support/issues/2046))
-- OAuth:
-  - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
-  - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
-  - API endpoint to list datasets metadata ([#15013](https://github.com/CartoDB/cartodb/issues/15013))
-  - Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
-  - Send notification on oauth_app deletion (#15016)
-  - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
-  - Fixes migrations for users with OAuth related data (#14600)
-  - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
-  - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
-  - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
-  - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
-  - Scope to access DO API ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
-- Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
-- Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
-- Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
-- Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
-- Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
-- Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
-- Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
-- Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
-- Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
+* Add warning in the code editor when using a Data Services function ([CartoDB/support#2046](https://github.com/CartoDB/support/issues/2046))
+* OAuth:
+  * Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
+  * Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
+  * API endpoint to list datasets metadata ([#15013](https://github.com/CartoDB/cartodb/issues/15013))
+  * Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
+  * Send notification on oauth_app deletion (#15016)
+  * Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+  * Fixes migrations for users with OAuth related data (#14600)
+  * Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+  * Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
+  * Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
+  * Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
+  * Scope to access DO API ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
+* Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+* Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
+* Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
+* Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
+* Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
+* Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
+* Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
+* Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
+* Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
+* Catalogue page:
+  * Add structure for new Catalogue page ([#15109](https://github.com/CartoDB/cartodb/pull/15109))
+  * Add list of datasets for new Catalogue page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
+  * Add interactivity/filtering section to new Catalogue page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
+  * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
 
 ### Bug fixes / enhancements
-- Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
-- Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
-- Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
-- Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
-- Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
-- Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
-- Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
-- Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
-- Rename "Professional" Plan to "Individual" Plan ([#15069](https://github.com/CartoDB/cartodb/pull/15069))
-- The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
-- Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
-- Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
-- Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
-- Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
-- Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
-- Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
-- Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
-- Update Dataservices API client default version to `0.27.0` (#15134)
-- Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
+* Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))
+* Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
+* Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
+* Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
+* Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
+* Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
+* Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
+* Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
+* Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
+* Rename "Professional" Plan to "Individual" Plan ([#15069](https://github.com/CartoDB/cartodb/pull/15069))
+* The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
+* Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
+* Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
+* Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
+* Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
+* Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
+* Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
+* Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
+* Update Dataservices API client default version to `0.27.0` (#15134)
+* Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
+* Fix password validation for SAML ([#15147](https://github.com/CartoDB/cartodb/pull/15147))
+* Dashboard: Rename catalogue to catalog ([#15158](https://github.com/CartoDB/cartodb/issues/15158))
 
 4.29.0 (2019-07-15)
 -------------------

@@ -77,6 +77,10 @@
     "emptyCase": {
       "default": "There are no datasets here.",
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
+    },
+    "tabs": {
+      "yourDatasets": "Your Datasets",
+      "catalog": "Catalog"
     }
   },
   "MapsPage": {
@@ -133,6 +137,8 @@
       "PRIVATE": "Private",
       "PASSWORD": "Password"
     },
+    "copy": "Copy name",
+    "copySuccess": "Name copied!",
     "lastSynced": "Synced {date} ago",
     "lastUpdated": "Updated {date} ago",
     "numberRows": "0 rows | 1 row | {count} rows",
@@ -632,8 +638,8 @@
     "title": "Apps connected to your account",
     "description": "These are the apps you gave access to some of your CARTO information.",
     "emptyDescription": "You don’t have given permission to any app to access to your CARTO account data.",
-    "emptyTipTitle": "Are your looking to create an OAuth application",
-    "emptyTipDescription": "You can do it from the <a href='{url}'>developer settings</a>",
+    "emptyTipTitle": "Are you looking to create an OAuth application?",
+    "emptyTipDescription": "You can do it from your <a href='{url}'>developer settings</a>.",
     "listTitle": "Connected Apps",
     "removeAccessButton": "Remove Access",
     "removeModal": {
@@ -657,5 +663,35 @@
       "oAuthApps": "OAuth apps",
       "mobileApps": "Mobile apps"
     }
+  },
+  "CatalogPage": {
+    "header": "Catalog"
+  },
+  "CatalogListHeader": {
+    "name": "Name",
+    "aggregation": "Aggregation",
+    "frequency": "Frequency",
+    "source": "Source"
+  },
+  "CatalogDropdown" : {
+    "placeholder": "Search...",
+    "category": {
+      "title": "Select a category",
+      "placeholder": "Search...",
+      "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
+    },
+    "country": {
+      "title": "Select a country",
+      "placeholder": "Select a country",
+      "extra": "Interested in data from a non-listed country? <a href='mailto:sdr@carto.com'>Contact Us</a>"
+    }
+  },
+  "CatalogDetailPage": {
+    "back": "Back",
+    "requestDataset": "Request Dataset",
+    "requestSuccess": "We have received your request correctly, we will contact you shortly.",
+    "variableGroups": "Variable Groups",
+    "category": "Category",
+    "country": "Country"
   }
 }

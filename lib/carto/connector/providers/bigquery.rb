@@ -9,11 +9,7 @@ module Carto
     # {
     #   "provider": "bigquery",
     #   "connection": {
-    #     "Driver": "Google BigQuery 64",
-    #     "OAuthMechanism": 1,
-    #     "Catalog": "eternal-ship-170218",
-    #     "SQLDialect": 1,
-    #     "RefreshToken": "1/FyCbmKonlYAwx7FMjfow9QO5mdiOG3u9dfpi0ktYxOux_fFDF6ip-PERQkXYKiDc"
+    #     "Catalog": "eternal-ship-170218"
     #   },
     #   "table": "destination_table",
     #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
@@ -22,55 +18,51 @@ module Carto
 
       private
 
-      DRIVER_NAME       = 'Google BigQuery 64'
-      SQL_DIALECT       = 1
-      USER_AUTH         = 1
-      SERVICE_AUTH      = 0
+      # Class constants
+      DATASOURCE_NAME              = 'bigquery'
+
+      # Driver constants
+      DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
+      SQL_DIALECT                  = 1
+      OAUTH_MECHANISM              = 1
+      LRESULTS                     = 0
+      LRESULTS_DATASET_ID          = '{_bqodbc_temp_tables}'
+      LRESULTS_TEMP_TABLE_EXP_TIME = '3600000'
 
       def initialize(context, params)
         super
-        @oauth_config = Cartodb.get_config(:oauth, 'bigquery')
+        @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
+        raise 'OAuth configuration not found for BigQuery provider' if @oauth_config.nil?
+        raise 'Client Id and Client Secret MUST be defined' if @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
         validate_config!(context)
       end
 
       def validate_config!(context)
-        raise 'OAuth configuration not found for bigquery provider' if @oauth_config.nil?
-        if @oauth_config['oauth_mechanism'] === SERVICE_AUTH \
-            and @oauth_config['email'].nil? \
-            and @oauth_config['key'].nil?
-          raise 'bigquery provider configured in SERVICE_AUTH mode but email or key not present'
-        else
-          begin
-          @token = context.user.oauths.select('bigquery').token
-          raise 'OAuth Token not found for bigquery provider' if @token.nil?
-          rescue => e
-            CartoDB::Logger.error(exception: e,
-                                    message: 'OAuth Token not found for "bigquery" provider',
-                                    user_id: context.user.id)
-          end
+        refreshTokenErrMsg = 'BigQuery refresh token not found for the user'
+        begin
+          @token = context.user.oauths.select(DATASOURCE_NAME).token
+          raise refreshTokenErrMsg if @token.nil?
+        rescue => e
+          CartoDB::Logger.error(exception: e,
+                                  message: refreshTokenErrMsg,
+                                  user_id: context.user.id)
         end
       end
 
       def fixed_connection_attributes
-        oauth_mechanism = @oauth_config['oauth_mechanism']
         proxy_conf = create_proxy_conf
 
-        if oauth_mechanism === SERVICE_AUTH
-          conf = {
-            Driver:         DRIVER_NAME,
-            SQLDialect:     SQL_DIALECT,
-            OAuthMechanism: oauth_mechanism,
-            Email:          @oauth_config['email'],
-            KeyFilePath:    @oauth_config['key']
-          }
-        else
-          conf = {
-            Driver:         DRIVER_NAME,
-            SQLDialect:     SQL_DIALECT,
-            OAuthMechanism: oauth_mechanism,
-            RefreshToken:   @token
-          }
-        end
+        conf = {
+          Driver:         DRIVER_NAME,
+          SQLDialect:     SQL_DIALECT,
+          OAuthMechanism: OAUTH_MECHANISM,
+          RefreshToken:   @token,
+          ClientId: @oauth_config['client_id'],
+          ClientSecret: @oauth_config['client_secret'],
+          AllowLargeResults: LRESULTS,
+          LargeResultsDataSetId: LRESULTS_DATASET_ID,
+          LargeResultsTempTableExpirationTime: LRESULTS_TEMP_TABLE_EXP_TIME
+        }
 
         if !proxy_conf.nil?
           conf = conf.merge(proxy_conf)

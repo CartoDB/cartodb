@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'google/api_client'
+require 'signet/oauth_2/client'
 require_relative '../../../../../lib/carto/http/client'
 
 module CartoDB
@@ -10,10 +10,6 @@ module CartoDB
 
         # Required for all providers
         DATASOURCE_NAME = 'bigquery'
-
-        OAUTH_SCOPE = 'https://www.googleapis.com/auth/bigquery'
-        # For when using authorization code instead of callback with token
-        REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
         # Constructor (hidden)
         # @param config
@@ -28,23 +24,23 @@ module CartoDB
         def initialize(config, user)
           super(config, user, %w{ application_name client_id client_secret callback_url }, DATASOURCE_NAME)
 
-          raise UninitializedError.new('missing user instance', DATASOURCE_NAME)            if user.nil?
-
-          self.filter=[]
-          @refresh_token = nil
+          raise UninitializedError.new('missing user instance', DATASOURCE_NAME) if user.nil?
 
           @user = user
-          @callback_url = config.fetch('callback_url')
-          @client = Google::APIClient.new ({
-              application_name: config.fetch('application_name')
-          })
-          @drive = @client.discovered_api('drive', 'v2')
 
-          @client.authorization.client_id = config.fetch('client_id')
-          @client.authorization.client_secret = config.fetch('client_secret')
-          @client.authorization.scope = OAUTH_SCOPE
-          # By default assume callback with token flow
-          @client.authorization.redirect_uri = @callback_url
+          self.filter = []
+          @refresh_token = nil
+
+          @client = Signet::OAuth2::Client.new(
+            authorization_uri: config.fetch('authorization_uri'),
+            token_credential_uri:  config.fetch('token_credential_uri'),
+            client_id: config.fetch('client_id'),
+            client_secret: config.fetch('client_secret'),
+            scope: config.fetch('scope'),
+            redirect_uri: config.fetch('callback_url'),
+            access_type: :offline
+          )
+          @revoke_uri = config.fetch('revoke_auth_uri')
         end
 
         # Factory method
@@ -62,38 +58,11 @@ module CartoDB
         end
 
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
-        # @param use_callback_flow : bool
         # @return string | nil
-        def get_auth_url(use_callback_flow=true)
-          if use_callback_flow
-            service_name = service_name_for_user(DATASOURCE_NAME, @user)
-            @client.authorization.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
-                                                                         .sub('service', service_name)
-          else
-            @client.authorization.redirect_uri = REDIRECT_URI
-          end
-          @client.authorization.authorization_uri.to_s
-        end
-
-        # Validate authorization code and store token
-        # @param auth_code : string
-        # @param use_callback_flow : bool
-        # @return string : Access token
-        # @throws AuthError
-        def validate_auth_code(auth_code, use_callback_flow = true)
-          unless use_callback_flow
-            @client.authorization.redirect_uri = REDIRECT_URI
-          end
-          @client.authorization.code = auth_code
-          @client.authorization.fetch_access_token!
-          if @client.authorization.refresh_token.nil?
-            raise AuthError.new(
-              "Error validating auth token. Is this Google account linked to another CARTO account?",
-              DATASOURCE_NAME)
-          end
-          @refresh_token = @client.authorization.refresh_token
-        rescue Google::APIClient::InvalidIDTokenError, Signet::AuthorizationError => ex
-          raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
+        def get_auth_url()
+          # service_name = service_name_for_user(DATASOURCE_NAME, @user)
+          @client.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
+          @client.authorization_uri.to_s
         end
 
         # Validates the authorization callback
@@ -110,18 +79,36 @@ module CartoDB
           end
         end
 
-        # Store token
+        # Validate authorization code and store token
+        # @param auth_code : string
+        # @return string : Access token
+        # @throws AuthError
+        def validate_auth_code(auth_code)
+          @client.code = auth_code
+          @client.fetch_access_token!
+          if @client.refresh_token.nil?
+            raise AuthError.new(
+              "Error validating auth token. Is this Google account linked to another CARTO account?",
+              DATASOURCE_NAME
+            )
+          end
+          @refresh_token = @client.refresh_token
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
+          raise AuthError.new("validating auth code: #{ex.message}", DATASOURCE_NAME)
+        end
+
+        # Store the refresh token
         # Triggers generation of a valid access token for the lifetime of this instance
         # @param token string
         # @throws AuthError
         def token=(token)
           @refresh_token = token
-          @client.authorization.update_token!( { refresh_token: @refresh_token } )
-          @client.authorization.fetch_access_token!
-        rescue Signet::AuthorizationError, Google::APIClient::InvalidIDTokenError => ex
+          @client.update_token!(refresh_token: @refresh_token)
+          @client.fetch_access_token!
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError => ex
           raise TokenExpiredOrInvalidError.new("Invalid token: #{ex.message}", DATASOURCE_NAME)
-        rescue Google::APIClient::ClientError, \
-               Google::APIClient::ServerError, Google::APIClient::BatchError, Google::APIClient::TransmissionError => ex
+        rescue Google::Apis::ClientError, \
+               Google::Apis::ServerError, Google::Apis::BatchError, Google::Apis::TransmissionError => ex
           raise AuthError.new("setting token: #{ex.message}", DATASOURCE_NAME)
         end
 
@@ -190,23 +177,22 @@ module CartoDB
         # @return bool
         # @throws AuthError
         def token_valid?
-          # Any call would do, we just want to see if communicates or refuses the token
-          result = @client.execute( api_method: @drive.about.get )
-          !result.nil?
-        rescue Google::APIClient::InvalidIDTokenError
+          @client.fetch_access_token!
+          true
+        rescue Google::Apis::AuthorizationError, Signet::AuthorizationError
           false
-        rescue Google::APIClient::BatchError, Google::APIClient::TransmissionError, Google::APIClient::ClientError, \
-               Google::APIClient::ServerError => ex
-          raise AuthError.new("token_valid?() #{id}: #{ex.message}", DATASOURCE_NAME)
+        rescue Google::Apis::BatchError, Google::Apis::TransmissionError, Google::Apis::ClientError, \
+               Google::Apis::ServerError => ex
+          raise AuthError.new("token_valid?(): #{ex.message}", DATASOURCE_NAME)
         end
 
         # Revokes current set token
         def revoke_token
-          http_client = Carto::Http::Client.get('gdrive',
+          http_client = Carto::Http::Client.get(DATASOURCE_NAME,
             connecttimeout: 60,
             timeout: 600
-            )
-          response = http_client.get("https://accounts.google.com/o/oauth2/revoke?token=#{token}")
+          )
+          response = http_client.get("#{@revoke_uri}?token=#{token}")
           if response.code == 200
             true
           end

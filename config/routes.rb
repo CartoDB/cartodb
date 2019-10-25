@@ -44,11 +44,6 @@ CartoDB::Application.routes.draw do
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/sent'        => 'password_resets#sent',     as: :sent_password_reset
   get '(/user/:user_domain)(/u/:user_domain)/password_resets/changed'     => 'password_resets#changed',  as: :changed_password_reset
 
-  # Explore
-  get   '(/user/:user_domain)(/u/:user_domain)/explore'         => 'explore#index',     as: :explore_index
-  get   '(/user/:user_domain)(/u/:user_domain)/search'          => 'explore#search',    as: :explore_search
-  get   '(/user/:user_domain)(/u/:user_domain)/search/:q'       => 'explore#search',    as: :explore_search_query
-
   # Data library
   get   '(/user/:user_domain)(/u/:user_domain)/data-library'           => 'data_library#index',     as: :data_library_index
 
@@ -92,6 +87,13 @@ CartoDB::Application.routes.draw do
     get  '/oauth2/authorize', to: 'oauth_provider#consent', as: :oauth_provider_authorize
     post '/oauth2/authorize', to: 'oauth_provider#authorize'
     post '/oauth2/token',     to: 'oauth_provider#token', as: :oauth_provider_token
+
+    namespace :kuviz, path: '/' do
+      # Custom Visualizations
+      match '/kuviz/:id', to: 'visualizations#show', via: :get, as: :show
+      match '/kuviz/:id/protected', to: 'visualizations#show_protected', via: :post, as: :password_protected
+      match '/kuviz/:id/protected', to: 'visualizations#show', via: :get
+    end
   end
 
   # Internally, some of this methods will forcibly rewrite to the org-url if user belongs to an organization
@@ -125,12 +127,20 @@ CartoDB::Application.routes.draw do
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
 
+    # Maintenance Mode
+    get '(/user/:user_domain)(/u/:user_domain)/maintenance_mode' => 'users#maintenance', as: :maintenance_mode
+
     # search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q'               => 'visualizations#index', as: :search
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/tag/:q'           => 'visualizations#index', as: :tag_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/search/:q/:page'         => 'visualizations#index', as: :search_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q'        => 'visualizations#index', as: :search_shared
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/shared/search/:q/:page'  => 'visualizations#index', as: :search_shared_page
@@ -269,9 +279,6 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q'        => 'visualizations#index', as: :maps_shared_locked_search
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/maps/shared/locked/search/:q/:page'  => 'visualizations#index', as: :maps_shared_locked_search_page
 
-    # Tags
-    get '(/user/:user_domain)(/u/:user_domain)/dashboard/tag/:tag'  => 'visualizations#index', as: :tags
-
     # Private dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/'                  => 'visualizations#index', as: :dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard'                   => 'visualizations#index', as: :dashboard_bis
@@ -281,6 +288,8 @@ CartoDB::Application.routes.draw do
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/notifications'     => 'visualizations#index', as: :notifications_bis
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions/'        => 'visualizations#index', as: :solutions
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/solutions'         => 'visualizations#index', as: :solutions_bis
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started'       => 'visualizations#index', as: :get_started
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/get-started/:id'   => 'visualizations#index', as: :get_started_onboarding
 
     # Public dashboard
     # root also goes to 'pages#public', as: public_visualizations_home
@@ -562,6 +571,28 @@ CartoDB::Application.routes.draw do
       match '*path', via: [:OPTIONS], to: 'application#options'
 
       get 'me', to: 'users#me_public', as: :api_v4_users_me
+
+      # Custom visualizations
+      post 'kuviz', to: 'custom_visualizations#create', as: :api_v4_kuviz_create_viz
+      delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
+      put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
+      get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
+
+      # OAuth apps
+      resources :oauth_apps, only: [:index, :show, :create, :update, :destroy], constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps
+      post 'oauth_apps/:id/regenerate_secret', to: 'oauth_apps#regenerate_secret', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_regenerate_secret
+      get 'granted_oauth_apps', to: 'oauth_apps#index_granted', as: :api_v4_oauth_apps_index_granted
+      post 'oauth_apps/:id/revoke', to: 'oauth_apps#revoke', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_revoke
+
+      get 'datasets', to: 'datasets#index', as: :api_v4_datasets
+
+      scope 'do' do
+        get 'token' => 'data_observatory#token', as: :api_v4_do_token
+        get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
+        post 'subscriptions' => 'data_observatory#subscribe', as: :api_v4_do_subscriptions_create
+        delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
+        get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
+      end
     end
 
     scope 'v3/' do
@@ -627,6 +658,7 @@ CartoDB::Application.routes.draw do
       end
 
       get 'tags' => 'tags#index', as: :api_v3_users_tags
+      get 'search_preview/:q' => 'search_preview#index', as: :api_v3_search_preview
     end
 
     scope 'v2/' do
@@ -640,6 +672,7 @@ CartoDB::Application.routes.draw do
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
 
+        get 'users/:u_username/mfa/:type', to: 'multifactor_authentication#show', as: :api_v2_organization_users_mfa_show
         post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
         delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end

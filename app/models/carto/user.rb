@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'active_record'
+require 'cartodb-common'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -33,10 +34,12 @@ class Carto::User < ActiveRecord::Base
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  INDIVIDUAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -46,7 +49,8 @@ class Carto::User < ActiveRecord::Base
                    "users.builder_enabled, users.private_tables_enabled, users.private_maps_enabled, " \
                    "users.org_admin, users.last_name, users.google_maps_private_key, users.website, " \
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
-                   "users.no_map_logo, users.industry, users.company, users.phone, users.job_role".freeze
+                   "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
+                   "users.public_map_quota, users.maintenance_mode, users.company_employees, users.use_case".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -84,11 +88,13 @@ class Carto::User < ActiveRecord::Base
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
+  has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
 
   delegate [
     :database_username, :database_password, :in_database,
     :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
-    :visualization_count, :owned_visualization_count, :twitter_imports_count
+    :visualization_count, :owned_visualization_count, :twitter_imports_count,
+    :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count
   ] => :service
 
   attr_reader :password
@@ -122,10 +128,6 @@ class Carto::User < ActiveRecord::Base
   end
   alias_method_chain :static_notifications, :creation
 
-  def self.columns
-    super.reject { |c| c.name == "arcgis_datasource_enabled" }
-  end
-
   def name_or_username
     name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
   end
@@ -142,8 +144,8 @@ class Carto::User < ActiveRecord::Base
     return if !value.nil? && password_validator.validate(value, value, self).any?
 
     @password = value
-    self.salt = new_record? ? service.class.make_token : ::User.filter(id: id).select(:salt).first.salt
-    self.crypted_password = service.class.password_digest(value, salt)
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
   end
 
   def reset_password_rate_limit
@@ -490,6 +492,8 @@ class Carto::User < ActiveRecord::Base
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('individual').zero?
+      created_at + INDIVIDUAL_TRIAL_DAYS.days
     end
   end
 
@@ -521,7 +525,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && service.class.password_digest(old_password, salt) == crypted_password) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -533,24 +538,24 @@ class Carto::User < ActiveRecord::Base
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, service.class.password_digest(value, salt), key)
+    validate_password_not_in_use(nil, value, key)
 
     errors[key].empty?
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    unless different_passwords?(old_password, new_password)
+  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
+    if password_in_use?(old_password, new_password)
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
   end
 
-  def different_passwords?(old_password = nil, new_password = nil)
-    return true if new_record? || (@changing_passwords && !old_password)
-    old_password = crypted_password_was unless old_password.present?
-    new_password = crypted_password unless old_password.present? && new_password.present?
+  def password_in_use?(old_password = nil, new_password = nil)
+    return false if new_record?
+    return old_password == new_password if old_password
 
-    old_password.present? && old_password != new_password
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: crypted_password_was,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   alias_method :should_display_old_password?, :needs_password_confirmation?
@@ -765,6 +770,21 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
+  end
+
   private
 
   def password_rate_limit_configured?
@@ -780,7 +800,7 @@ class Carto::User < ActiveRecord::Base
   end
 
   def generate_api_key
-    self.api_key ||= service.class.make_token
+    self.api_key ||= make_token
   end
 
   def generate_token(column)
@@ -794,5 +814,9 @@ class Carto::User < ActiveRecord::Base
     date_to = (options[:to] ? options[:to].to_date : Date.today)
     orgwise = options.fetch(:orgwise, true)
     [date_from, date_to, orgwise]
+  end
+
+  def make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

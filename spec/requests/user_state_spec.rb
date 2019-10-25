@@ -48,11 +48,13 @@ describe "UserState" do
                               "/api/v1/users/#{@locked_user.id}"]
     @headers = {}
     @api_headers = { 'CONTENT_TYPE' => 'application/json', :format => "json" }
+    @maintenance_mode_user = FactoryGirl.create(:valid_user, maintenance_mode: true)
   end
 
   after(:all) do
     @locked_user.destroy
     @non_locked_user.destroy
+    @maintenance_mode_user.destroy
   end
 
   context 'locked state' do
@@ -226,6 +228,172 @@ describe "UserState" do
       delete api_v3_users_delete_me_url, deletion_password_confirmation: 'pwd123'
 
       expect(User.find(id: to_be_deleted_user.id)).to be_nil
+    end
+  end
+
+  context 'maintenance mode' do
+    shared_examples "maintenance mode" do
+      it 'redirects to maintenance_mode for admin endpoints' do
+        @admin_endpoints.each do |endpoint|
+          login(@maintenance_mode_user)
+          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+
+          get endpoint, {}, @headers
+
+          response.status.should == 302
+          follow_redirects
+
+          request.path.should include '/maintenance_mode'
+          response.status.should == 200
+        end
+      end
+
+      it 'returns 403 for private api endpoints' do
+        @private_api_endpoints.each do |endpoint|
+          login(@maintenance_mode_user)
+          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+
+          get "#{endpoint}?api_key=#{@maintenance_mode_user.api_key}", {}, @api_headers
+
+          response.status.should == 403
+        end
+      end
+
+      it 'returns 403 for public api viz endpoints' do
+        @public_api_viz_endpoints.each do |endpoint|
+          login(@maintenance_mode_user)
+          endpoint = "/user/#{@maintenance_mode_user.username}/#{endpoint}" unless host.include?(@maintenance_mode_user.username)
+
+          get endpoint, {}, @api_headers
+
+          response.status.should == 403
+        end
+      end
+    end
+
+    context 'with subdomainless' do
+      before(:each) do
+        stub_subdomainless
+      end
+
+      context 'organizational user' do
+        before(:each) do
+          @maintenance_mode_user.organization = @organization
+          @maintenance_mode_user.account_type = @org_account_type
+          @maintenance_mode_user.save
+        end
+
+        after(:each) do
+          @maintenance_mode_user.organization = nil
+          @maintenance_mode_user.account_type = 'FREE'
+          @maintenance_mode_user.save
+        end
+
+        it_behaves_like 'maintenance mode'
+      end
+
+      context 'regular user' do
+        it_behaves_like 'maintenance mode'
+      end
+    end
+
+    context 'with domainful' do
+      context 'organizational user' do
+        before(:each) do
+          stub_domainful(@organization.name)
+        end
+
+        before(:each) do
+          @maintenance_mode_user.organization = @organization
+          @maintenance_mode_user.account_type = @org_account_type
+          @maintenance_mode_user.save
+        end
+
+        after(:each) do
+          @maintenance_mode_user.organization = nil
+          @maintenance_mode_user.account_type = 'FREE'
+          @maintenance_mode_user.save
+        end
+
+        it_behaves_like 'maintenance mode'
+      end
+
+      context 'regular user' do
+        before(:each) do
+          stub_domainful(@maintenance_mode_user.username)
+        end
+
+        it_behaves_like 'maintenance mode'
+
+        it 'returns 403 for public api me endpoint' do
+          @public_api_me_endpoint.each do |endpoint|
+            login(@maintenance_mode_user)
+
+            get endpoint, {}, @api_headers
+
+            request.path.should == endpoint
+            response.status.should == 403
+          end
+        end
+
+        it 'user accessing a maintenance mode user resources' do
+          login(@non_locked_user)
+          host! "#{@maintenance_mode_user.username}.localhost.lan"
+          @user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @tables_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @viz_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_api_endpoints.each do |endpoint|
+            get endpoint, {}, @api_headers
+            request.path.should == endpoint
+            response.status.should == 404
+          end
+        end
+        it 'non-logged user accessing a maintenance mode user resources' do
+          host! "#{@maintenance_mode_user.username}.localhost.lan"
+          @public_user_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @tables_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @viz_endpoints.each do |endpoint|
+            get endpoint, {}, @headers
+            response.status.should == 404
+          end
+          @public_api_endpoints.each do |endpoint|
+            get endpoint, {}, @api_headers
+            request.path.should == endpoint
+            response.status.should == 404
+          end
+        end
+      end
+    end
+
+    it 'maintenance mode user cannot delete their own account' do
+      to_be_deleted_user = FactoryGirl.create(:valid_user, maintenance_mode: true)
+      to_be_deleted_user.password = 'pwd123'
+      to_be_deleted_user.password_confirmation = 'pwd123'
+      to_be_deleted_user.save
+
+      login(to_be_deleted_user)
+      delete api_v3_users_delete_me_url, deletion_password_confirmation: 'pwd123'
+
+      expect(User.find(id: to_be_deleted_user.id)).to_not be_nil
     end
   end
 

@@ -1,4 +1,5 @@
 require 'active_record'
+require 'cartodb-common'
 require_relative '../visualization/stats'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
@@ -33,14 +34,13 @@ class Carto::Visualization < ActiveRecord::Base
   include Carto::VisualizationDependencies
   include Carto::VisualizationBackupService
 
-  AUTH_DIGEST = '1211b3e77138f6e1724721f1ab740c9c70e66ba6fec5e989bb6640c4541ed15d06dbd5fdcbd3052b'.freeze
-
   TYPE_CANONICAL = 'table'.freeze
   TYPE_DERIVED = 'derived'.freeze
   TYPE_SLIDE = 'slide'.freeze
   TYPE_REMOTE = 'remote'.freeze
+  TYPE_KUVIZ = 'kuviz'.freeze
 
-  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE].freeze
+  VALID_TYPES = [TYPE_CANONICAL, TYPE_DERIVED, TYPE_SLIDE, TYPE_REMOTE, TYPE_KUVIZ].freeze
 
   KIND_GEOM   = 'geom'.freeze
   KIND_RASTER = 'raster'.freeze
@@ -77,6 +77,8 @@ class Carto::Visualization < ActiveRecord::Base
   belongs_to :active_layer, class_name: Carto::Layer
 
   belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
+
+  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
 
   has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
 
@@ -309,6 +311,10 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_REMOTE
   end
 
+  def kuviz?
+    type == TYPE_KUVIZ
+  end
+
   def layers
     map ? map.layers : []
   end
@@ -342,7 +348,9 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def password_valid?(password)
-    password_protected? && has_password? && (password_digest(password, password_salt) == encrypted_password)
+    password_protected? &&
+      Carto::Common::EncryptionService.verify(password: password, secure_password: encrypted_password,
+                                              salt: password_salt, secret: Cartodb.config[:password_secret])
   end
 
   def organization?
@@ -609,8 +617,9 @@ class Carto::Visualization < ActiveRecord::Base
 
   def password=(value)
     if value.present?
-      self.password_salt = generate_salt if password_salt.nil?
-      self.encrypted_password = password_digest(value, password_salt)
+      self.password_salt = ""
+      self.encrypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                         secret: Cartodb.config[:password_secret])
     end
   end
 
@@ -631,10 +640,6 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   private
-
-  def generate_salt
-    secure_digest(Time.now, (1..10).map { rand.to_s })
-  end
 
   def remove_password
     self.password_salt = nil
@@ -720,18 +725,6 @@ class Carto::Visualization < ActiveRecord::Base
     self.permission ||= Carto::Permission.create(owner: user, owner_username: user.username)
   end
 
-  def password_digest(password, salt)
-    digest = AUTH_DIGEST
-    10.times do
-      digest = secure_digest(digest, salt, password, AUTH_DIGEST)
-    end
-    digest
-  end
-
-  def secure_digest(*args)
-    Digest::SHA256.hexdigest(args.flatten.join)
-  end
-
   def has_private_tables?
     !related_tables.index { |table| table.private? }.nil?
   end
@@ -773,8 +766,14 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    if derived? && is_privacy_private? && privacy_changed? && !user.try(:private_maps_enabled?)
+    return unless privacy_changed? && derived?
+
+    if is_privacy_private? && !user.try(:private_maps_enabled?)
       errors.add(:privacy, 'cannot be set to private')
+    elsif (privacy_was == Carto::Visualization::PRIVACY_PRIVATE ||
+          (!privacy_was && privacy != Carto::Visualization::PRIVACY_PRIVATE)) &&
+          CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+      errors.add(:privacy, 'over account public map quota')
     end
   end
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid container footer">
+  <div class="container grid footer">
     <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo">
       <a href="https://carto.com">
         <img class="carto-logo" src="../assets/icons/common/cartoLogo.svg">
@@ -33,7 +33,7 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.TechSupport.description`) }}</p>
         </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isProUser">
+        <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DedicatedSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -70,9 +70,9 @@ export default {
       return this.userAccountType === 'free';
     },
 
-    isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noProUsers.includes(this.userAccountType) || this.user.organization);
+    isIndividualUser () {
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
+      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization);
     },
 
     isOrganizationUser () {
@@ -94,75 +94,5 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-.footer {
-  padding-top: 64px;
-  padding-bottom: 100px;
-
-  @media (max-width: $layout-mobile) {
-    flex-direction: column-reverse;
-  }
-}
-
-.footer-block {
-  display: flex;
-  justify-content: space-between;
-
-  @media (max-width: $layout-mobile) {
-    flex-direction: column-reverse;
-  }
-
-  .footer-link:first-child {
-    padding-right: 42px;
-  }
-}
-
-.footer-link {
-  display: block;
-  width: 50%;
-  margin-bottom: 48px;
-
-  @media (max-width: $layout-mobile) {
-    width: unset;
-    margin-bottom: 36px;
-  }
-
-  &:hover {
-    text-decoration: none;
-
-    .title-link {
-      color: $primary-color;
-    }
-
-    .chevron .chevron-path {
-      fill: $primary-color;
-    }
-  }
-
-  .chevron {
-    display: inline-block;
-    margin-left: 8px;
-  }
-}
-
-.title-link {
-  margin-bottom: 4px;
-  white-space: nowrap;
-}
-
-.footer-logo {
-  @media (max-width: $layout-mobile) {
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.carto-logo {
-  width: 92px;
-
-  @media (max-width: $layout-mobile) {
-    width: 64px;
-    margin: 28px 0 16px;
-  }
-}
+@import 'new-dashboard/styles/components/_footer';
 </style>

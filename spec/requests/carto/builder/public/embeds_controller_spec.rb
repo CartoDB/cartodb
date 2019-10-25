@@ -171,7 +171,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'includes 3rd party scripts for analytics' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {
@@ -179,14 +180,10 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id)
 
-        response.body.should include("www.google-analytics.com/analytics")
         response.body.should include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end
@@ -194,7 +191,8 @@ describe Carto::Builder::Public::EmbedsController do
     it 'does not include 3rd party scripts if cookies=0 query param is present' do
       Cartodb.with_config(
         trackjs: {
-          'customer' => 'fake_trackjs_customer'
+          'customer' => 'fake_trackjs_customer',
+          'frequency' => 1
         },
         metrics: {
           'hubspot': {
@@ -202,14 +200,10 @@ describe Carto::Builder::Public::EmbedsController do
             'token' => 'fake_hubspot_token'
           }
         },
-        google_analytics: {
-          'embeds' => 'fake_embed_id',
-          'domain' => 'carto-test.com'
-        }
+        google_tag_manager_id: 'google_tag_manager_id'
       ) do
         get builder_visualization_public_embed_url(visualization_id: @visualization.id, cookies: '0')
 
-        response.body.should_not include("www.google-analytics.com/analytics")
         response.body.should_not include("d2zah9y47r7bi2.cloudfront.net/releases/current/tracker.js")
       end
     end

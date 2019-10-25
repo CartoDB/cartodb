@@ -1,19 +1,22 @@
 # encoding: utf-8
 
-require_dependency 'carto/assets_service'
-require_dependency 'carto/organization_assets_service'
+require_dependency 'carto/assets/image_assets_service'
+require_dependency 'carto/assets/organization_image_assets_service'
+require_dependency 'carto/assets/kuviz_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
     belongs_to :user, class_name: Carto::User
     belongs_to :organization, class_name: Carto::Organization
+    belongs_to :visualization, class_name: Carto::Visualization
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true
 
-    validates :user,         presence: true, unless: :organization
-    validates :organization, presence: true, unless: :user
-    validates :storage_info, presence: true, if: :organization
+    validates :user,         presence: true, unless: -> { organization.present? || visualization.present? }
+    validates :organization, presence: true, unless: -> { user.present? || visualization.present? }
+    validates :visualization, presence: true, unless: -> { user.present? || organization.present? }
+    validates :storage_info, presence: true, if: -> { organization.present? || visualization.present? }
     validates :public_url,   presence: true
 
     validate :validate_storage_info, if: :storage_info
@@ -21,12 +24,28 @@ module Carto
     before_destroy :remove_asset_from_storage, if: :storage_info
 
     def self.for_organization(organization:, resource:)
-      storage_info, url = OrganizationAssetsService.instance.upload(organization, resource)
+      storage_info, url = OrganizationImageAssetsService.instance.upload(organization, resource)
 
       new(organization: organization,
           public_url: url,
           storage_info: storage_info,
           kind: 'organization_asset')
+    end
+
+    def self.for_visualization(visualization:, resource:)
+      storage_info, url = KuvizAssetsService.instance.upload(visualization, resource)
+
+      new(visualization: visualization,
+          public_url: url,
+          storage_info: storage_info,
+          kind: 'kuviz_asset')
+    end
+
+    def update_visualization_resource(resource)
+      storage_info, url = KuvizAssetsService.instance.upload(visualization, resource)
+      self.public_url = url
+      self.storage_info = storage_info
+      save
     end
 
     def absolute_public_url
@@ -51,6 +70,9 @@ module Carto
     end
 
     def base_domain
+      if visualization.present?
+        return CartoDB.base_domain_from_name(visualization.user.subdomain)
+      end
       CartoDB.base_domain_from_name(user ? user.subdomain : organization.name)
     end
   end

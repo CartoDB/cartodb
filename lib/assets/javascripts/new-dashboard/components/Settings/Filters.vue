@@ -124,7 +124,7 @@ export default {
 .element,
 .element--inline {
   &.element--selected {
-    color: $text-color;
+    color: $text__color;
     pointer-events: none;
   }
 }

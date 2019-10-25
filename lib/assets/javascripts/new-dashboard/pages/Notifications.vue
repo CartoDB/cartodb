@@ -1,11 +1,12 @@
 <template>
-  <section class="page">
-    <div class="notifications-list-container container grid">
+  <Page>
+    <div class="notifications-list-container container grid grid__content">
       <div class="full-width">
-        <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
+        <SectionTitle class="grid-cell" :showActionButton="false" ref="headerContainer">
           <template slot="icon">
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
+          <template slot="title">{{ pageTitle }}</template>
         </SectionTitle>
         <ul v-if="!emptyState" class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
           <li class="notification-item" v-for="notification in notifications" :key="notification.id">
@@ -22,10 +23,11 @@
         <LoadingState v-if="isFetching" :text="loadingStateText" class="loading-state"></LoadingState>
       </div>
     </div>
-  </section>
+  </Page>
 </template>
 
 <script>
+import Page from 'new-dashboard/components/Page';
 import EmptyState from '../components/States/EmptyState';
 import LoadingState from '../components/States/LoadingState';
 import NotificationCard from '../components/NotificationCard';
@@ -34,6 +36,7 @@ import SectionTitle from '../components/SectionTitle';
 export default {
   name: 'NotificationsPage',
   components: {
+    Page,
     EmptyState,
     LoadingState,
     NotificationCard,

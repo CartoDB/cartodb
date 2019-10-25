@@ -70,7 +70,8 @@ module Carto
           show_permission: params[:show_permission] == 'true',
           show_stats: params[:show_stats] == 'true',
           show_auth_tokens: params[:show_auth_tokens] == 'true',
-          password: params[:password]
+          password: params[:password],
+          with_dependent_visualizations: params[:with_dependent_visualizations].to_i || 0
         )
 
         render_jsonp(::JSON.dump(presenter.to_poro))
@@ -227,6 +228,7 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error creating visualization", visualization_id: vis.try(:id), exception: e)
+        raise e if e.is_a?(Carto::UnauthorizedError)
         render_jsonp({ errors: vis.try(:errors).try(:full_messages) }, 400)
       end
 
@@ -271,7 +273,9 @@ module Carto
         render_jsonp(Carto::Api::VisualizationPresenter.new(vis, current_viewer, self).to_poro)
       rescue => e
         CartoDB::Logger.error(message: "Error updating visualization", visualization_id: vis.id, exception: e)
-        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages }, 400)
+        error_code = vis.errors.include?(:privacy) ? 403 : 400
+        render_jsonp({ errors: vis.errors.full_messages.empty? ? ['Error updating'] : vis.errors.full_messages },
+                     error_code)
       end
 
       def destroy
@@ -454,8 +458,7 @@ module Carto
       end
 
       def link_ghost_tables
-        return unless current_user.present?
-        return unless current_user.has_feature_flag?('ghost_tables')
+        return unless current_user && current_user.has_feature_flag?('ghost_tables')
 
         # This call will trigger ghost tables synchronously if there's risk of displaying a stale table
         # or asynchronously otherwise.

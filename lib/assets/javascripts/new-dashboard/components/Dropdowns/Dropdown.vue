@@ -41,7 +41,7 @@ export default {
   margin-top: 8px;
   overflow: hidden;
   transition: all 0.25s linear;
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   border-radius: 2px;
   opacity: 0;
   pointer-events: none;

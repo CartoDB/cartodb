@@ -18,6 +18,17 @@ describe Carto::Api::UsersController do
   before(:each) do
     ::User.any_instance.stubs(:create_in_central).returns(true)
     ::User.any_instance.stubs(:update_in_central).returns(true)
+    user = @organization.owner
+    carto_user = Carto::User.where(id: user.id).first
+    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
+    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
+    FactoryGirl.create(:carto_visualization, user: carto_user,
+                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
+    FactoryGirl.create(:carto_visualization, user: carto_user,
+                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
+    FactoryGirl.create(:carto_visualization, user: carto_user,
+                       privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'a')
   end
 
   describe 'me' do
@@ -67,6 +78,9 @@ describe Carto::Api::UsersController do
         expect(response.body[:plan_name]).to eq('ORGANIZATION USER')
         expect(response.body[:services]).to eq(user.get_oauth_services.map(&:symbolize_keys))
         expect(response.body[:google_sign_in]).to eq(user.google_sign_in)
+        expect(response.body[:user_data][:public_privacy_map_count]).to eq 1
+        expect(response.body[:user_data][:link_privacy_map_count]).to eq 2
+        expect(response.body[:user_data][:password_privacy_map_count]).to eq 3
       end
     end
 

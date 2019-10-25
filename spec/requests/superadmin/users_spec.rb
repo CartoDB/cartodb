@@ -44,7 +44,6 @@ feature "Superadmin's users API" do
 
   scenario "user create with password success" do
     @user_atts.delete(:crypted_password)
-    @user_atts.delete(:salt)
     @user_atts.merge!(password: "this_is_a_password")
 
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
@@ -53,7 +52,6 @@ feature "Superadmin's users API" do
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
       response.body.should_not have_key(:crypted_password)
-      response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
       user = ::User.filter(email: @user_atts[:email]).first
@@ -64,14 +62,13 @@ feature "Superadmin's users API" do
     ::User.where(username: @user_atts[:username]).first.destroy
   end
 
-  scenario "user create with crypted_password and salt success" do
+  scenario "user create with crypted_password success" do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     post_json superadmin_users_path, { user: @user_atts }, superadmin_headers do |response|
       response.status.should == 201
       response.body[:email].should == @user_atts[:email]
       response.body[:username].should == @user_atts[:username]
       response.body.should_not have_key(:crypted_password)
-      response.body.should_not have_key(:salt)
 
       # Double check that the user has been created properly
       user = ::User.filter(email: @user_atts[:email]).first
@@ -94,6 +91,8 @@ feature "Superadmin's users API" do
       response.status.should == 201
       response.body[:quota_in_bytes].should == 104857600
       response.body[:table_quota].should == 5
+      response.body[:public_map_quota].should == nil
+      response.body[:regular_api_key_quota].should == nil
       response.body[:account_type].should == 'FREE'
       response.body[:private_tables_enabled].should == false
       response.body[:sync_tables_enabled].should == false
@@ -103,6 +102,8 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.quota_in_bytes.should == 104857600
       user.table_quota.should == 5
+      user.public_map_quota.should == nil
+      user.regular_api_key_quota.should == nil
       user.account_type.should == 'FREE'
       user.private_tables_enabled.should == false
       user.upgraded_at.should.to_s == t.to_s
@@ -131,8 +132,10 @@ feature "Superadmin's users API" do
 
   scenario "user create non-default account settings" do
     @user_atts[:quota_in_bytes] = 2000
-    @user_atts[:table_quota]    = 20
-    @user_atts[:account_type]   = 'Juliet'
+    @user_atts[:table_quota] = 20
+    @user_atts[:public_map_quota] = 20
+    @user_atts[:regular_api_key_quota] = 20
+    @user_atts[:account_type] = 'Juliet'
     @user_atts[:private_tables_enabled] = true
     @user_atts[:sync_tables_enabled] = true
     @user_atts[:map_view_block_price] = 15
@@ -151,6 +154,8 @@ feature "Superadmin's users API" do
       response.status.should == 201
       response.body[:quota_in_bytes].should == 2000
       response.body[:table_quota].should == 20
+      response.body[:public_map_quota].should == 20
+      response.body[:regular_api_key_quota].should == 20
       response.body[:account_type].should == 'Juliet'
       response.body[:private_tables_enabled].should == true
       response.body[:sync_tables_enabled].should == true
@@ -170,6 +175,8 @@ feature "Superadmin's users API" do
       user = ::User.filter(email: @user_atts[:email]).first
       user.quota_in_bytes.should == 2000
       user.table_quota.should == 20
+      user.public_map_quota.should == 20
+      user.regular_api_key_quota.should == 20
       user.account_type.should == 'Juliet'
       user.private_tables_enabled.should == true
       user.sync_tables_enabled.should == true
@@ -192,6 +199,8 @@ feature "Superadmin's users API" do
     t = Time.now
     @update_atts = { quota_in_bytes: 2000,
                      table_quota: 20,
+                     public_map_quota: 20,
+                     regular_api_key_quota: 20,
                      max_layers: 10,
                      user_timeout: 100000,
                      database_timeout: 200000,
@@ -220,6 +229,8 @@ feature "Superadmin's users API" do
     user = ::User[user.id]
     user.quota_in_bytes.should == 2000
     user.table_quota.should == 20
+    user.public_map_quota.should == 20
+    user.regular_api_key_quota.should == 20
     user.account_type.should == 'Juliet'
     user.private_tables_enabled.should == true
     user.sync_tables_enabled.should == true
@@ -424,11 +435,15 @@ feature "Superadmin's users API" do
     before do
       @user  = create_user
       @user2 = create_user
+      @user3 = create_user
+      @user4 = create_user
     end
 
     after do
       @user.destroy
       @user2.destroy
+      @user3.destroy
+      @user4.destroy
     end
 
     it "gets all users" do
@@ -446,6 +461,31 @@ feature "Superadmin's users API" do
         response.status.should == 200
         response.body[0]["username"].should == @user.username
         response.body.length.should == 1
+      end
+    end
+
+    it "gets active Juliet users" do
+      @user3.account_type = 'Juliet'
+      @user3.state = 'active'
+      @user3.save
+
+      @user4.account_type = 'Juliet'
+      @user4.state = 'locked'
+      @user4.save
+
+      get_json superadmin_users_path, { account_type: 'Juliet', state: 'active' }, superadmin_headers do |response|
+        response.status.should == 200
+        response.body.length.should eq 1
+        response.body[0]["username"].should == @user3.username
+        response.body[0].has_key?('table_count').should eq true
+        response.body[0].has_key?('public_map_count').should eq true
+        response.body[0].has_key?('map_count').should eq true
+        response.body[0].has_key?('geocoding_credits_count').should eq true
+        response.body[0].has_key?('routing_credits_count').should eq true
+        response.body[0].has_key?('isolines_credits_count').should eq true
+        response.body[0].has_key?('billing_period').should eq true
+        response.body[0].has_key?('regular_api_key_count').should eq true
+        response.body[0].has_key?('map_views').should eq true
       end
     end
 
@@ -589,6 +629,8 @@ feature "Superadmin's users API" do
       update_attrs = {
         quota_in_bytes: 2000,
         table_quota: 20,
+        public_map_quota: 20,
+        regular_api_key_quota: 20,
         max_layers: 10,
         user_timeout: 100000,
         database_timeout: 200000,

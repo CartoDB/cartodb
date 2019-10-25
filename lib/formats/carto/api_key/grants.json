@@ -22,8 +22,38 @@
           "type": "string",
           "enum": [
             "sql",
-            "maps"
+            "maps",
+            "do"
           ]
+        }
+      },
+      "schemas": {
+        "type": "array",
+        "additionalProperties": false,
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "permissions"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "schema": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "create"
+                ]
+              }
+            }
+          }
         }
       },
       "tables": {
@@ -43,6 +73,9 @@
             },
             "name": {
               "type": "string"
+            },
+            "owner": {
+              "type": "boolean"
             },
             "permissions": {
               "type": "array",
@@ -79,6 +112,9 @@
             "profile"
           ]
         }
+      },
+      "table_metadata": {
+        "type": "array"
       }
     }
   }

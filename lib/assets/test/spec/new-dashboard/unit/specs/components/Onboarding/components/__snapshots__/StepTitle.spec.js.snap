@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StepTitle.vue should render properly 1`] = `
+<h2 class="title is-body u-mb--24 u-flex u-flex__align--center"><span class="icon icon--large"><img src="/fake-icon-url"></span>
+
+  Fake step title
+</h2>
+`;

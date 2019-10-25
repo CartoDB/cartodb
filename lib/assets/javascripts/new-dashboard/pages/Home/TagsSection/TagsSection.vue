@@ -1,10 +1,12 @@
 <template>
   <section class="tags-section is-bgSoftBlue">
     <div class="container">
-      <SectionTitle class="grid-cell" :title="$t('HomePage.TagsSection.title')">
+      <SectionTitle class="grid-cell">
         <template slot="icon">
           <img src="../../../assets/icons/section-title/tags.svg">
         </template>
+
+        <template slot="title">{{ $t('HomePage.TagsSection.title') }}</template>
 
         <template slot="actionButton">
           <button class="button button--small is-primary button--ghost button--last" @click="goToRecentSection">
@@ -35,7 +37,7 @@
 
 <script>
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import TagCard from 'new-dashboard/components/TagCard';
+import TagCard from 'new-dashboard/components/Tag/TagCard';
 import Pagination from 'new-dashboard/components/Pagination';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import LoadingState from 'new-dashboard/components/States/LoadingState';

@@ -65,7 +65,9 @@ module Carto
         end
 
         unless visualization.save
-          raise "Errors saving imported visualization: #{visualization.errors.full_messages}"
+          error_message = "Errors saving imported visualization: #{visualization.errors.full_messages}"
+          raise Carto::UnauthorizedError.new(error_message) if visualization.errors.include?(:privacy)
+          raise error_message
         end
 
         # Save permissions after visualization, in order to be able to regenerate shared_entities

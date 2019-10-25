@@ -6,9 +6,16 @@ module Carto
   describe OauthAuthorizationCode do
     describe '#validation' do
       before(:all) do
-        @user = FactoryGirl.build(:carto_user)
-        @app = FactoryGirl.build(:oauth_app, user: @user)
-        @app_user = OauthAppUser.new(user: @user, oauth_app: @app)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.build(:oauth_app, user: @carto_user)
+        @app_user = OauthAppUser.new(user: @carto_user, oauth_app: @app)
+      end
+
+      after(:all) do
+        @app_user.destroy
+        @app.destroy
+        @user.destroy
       end
 
       it 'does not accept invalid scopes' do
@@ -32,15 +39,16 @@ module Carto
 
     describe '#exchange!' do
       before(:all) do
-        @user = FactoryGirl.create(:carto_user)
-        @app = FactoryGirl.create(:oauth_app, user: @user)
-        @app_user = OauthAppUser.create(user: @user, oauth_app: @app)
+        @user = FactoryGirl.create(:valid_user)
+        @carto_user = Carto::User.find(@user.id)
+        @app = FactoryGirl.create(:oauth_app, user: @carto_user)
+        @app_user = OauthAppUser.create(user: @carto_user, oauth_app: @app)
       end
 
       after(:all) do
         @app_user.destroy
-        @user.destroy
         @app.destroy
+        @user.destroy
       end
 
       before(:each) do

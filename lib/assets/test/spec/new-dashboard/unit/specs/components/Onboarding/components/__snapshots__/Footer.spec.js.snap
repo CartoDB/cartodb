@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer.vue should render go to dashboard button in last step 1`] = `
+<div class="footer">
+  <div class="container u-flex u-flex__justify--end"><button class="button button--ghost js-prev">
+      Wizards.footer.back
+    </button>
+    <!----> <button class="button is-primary js-goToDashboard">
+      Wizards.footer.goToDashboard
+    </button></div>
+</div>
+`;
+
+exports[`Footer.vue should render properly 1`] = `
+<div class="footer">
+  <div class="container u-flex u-flex__justify--end"><button class="button button--ghost js-prev">
+      Wizards.footer.back
+    </button> <button class="button is-primary js-next">
+      Wizards.footer.next
+    </button>
+    <!---->
+  </div>
+</div>
+`;

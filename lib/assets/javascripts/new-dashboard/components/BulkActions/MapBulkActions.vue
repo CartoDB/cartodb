@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import BulkActions from 'new-dashboard/components/BulkActions/BulkActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Visualization from 'new-dashboard/core/models/visualization';
@@ -23,6 +24,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+    }),
     actions () {
       return {
         single: [
@@ -34,11 +38,13 @@ export default {
           {
             name: this.$t('BulkActions.maps.changePrivacy'),
             event: 'changePrivacy',
+            shouldBeDisabled: !this.canChangePrivacy,
             shouldBeHidden: this.isAnyShared || this.isAnyLocked
           },
           {
             name: this.$t('BulkActions.maps.duplicate'),
-            event: 'duplicateMap'
+            event: 'duplicateMap',
+            shouldBeDisabled: !this.canDuplicate
           },
           {
             name: this.$t('BulkActions.maps.lock'),
@@ -103,6 +109,15 @@ export default {
     },
     areAllLocked () {
       return this.selectedMaps.every(map => map.locked);
+    },
+    isSelectedMapPrivate () {
+      return this.selectedMaps.some(map => ['PRIVATE'].includes(map.privacy));
+    },
+    canChangePrivacy () {
+      return !this.isOutOfPublicMapsQuota || !this.isSelectedMapPrivate;
+    },
+    canDuplicate () {
+      return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
     }
   },
   methods: {

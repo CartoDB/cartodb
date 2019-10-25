@@ -405,6 +405,7 @@ module.exports = function (grunt) {
     's3:flash',
     's3:favicons',
     's3:unversioned',
+    's3:unversioned_onboarding',
     's3:static_pages',
     'invalidate'
   ]);

@@ -1,14 +1,8 @@
 @import "../variables";
-@import "../reset";
-@import "../colors";
-@import "../typography";
-@import "../utilities";
-
-#app,
-.FormAccount-Section,
-.FlashMessage-container {
-  padding-top: 64px;
-}
+@import "../base/reset";
+@import "../base/typography";
+@import "../helpers/colors";
+@import "../helpers/utilities";
 
 .navbar-placeholder {
   display: flex;
@@ -25,4 +19,12 @@
 .navbar-placeholder-logo {
   width: 24px;
   height: 24px;
+}
+
+#header {
+  padding-top: 64px;
+
+  &.is-user-notification {
+    padding-top: 124px;
+  }
 }

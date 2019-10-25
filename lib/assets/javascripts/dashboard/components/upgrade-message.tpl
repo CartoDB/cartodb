@@ -1,8 +1,8 @@
 <% if (closeToLimits && canUpgrade) { %>
   <div class="UpgradeElement">
-    <div class="u-inner u-flex u-alignCenter u-justifySpace">
+    <div class="u-inner u-flex u-alignCenter u-justifyCenter">
       <div class="UpgradeElement-info">
-        <p class="UpgradeElement-infoText u-ellipsLongText CDB-Text">
+        <p class="UpgradeElement-infoText u-ellipsLongText">
           <% if (quotaPer <= 0) { %>
             You have reached your limits.
           <% } else { %>
@@ -14,23 +14,18 @@
           <% } %>
         </p>
       </div>
-      <div class="UpgradeElement-actions">
-        <% if (showTrial) { %>
-          <div class="UpgradeElement-trial">
-            <i class="CDB-IconFont CDB-IconFont-gift UpgradeElement-trialIcon"></i>
-            <p class="UpgradeElement-trialText u-ellipsLongText CDB-Text">14 days Free trial</p>
-          </div>
-        <% } %>
-        <% if (upgradeableWithoutContactingSales) { %>
-          <a href="<%- upgradeUrl %>" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton CDB-Text">
-            <span>upgrade your plan</span>
-          </a>
-        <% } else { %>
-          <a href="mailto:sales@carto.com" class="Button Button--secondary UpgradeElement-button ChangePrivacy-upgradeActionButton CDB-Text">
-            <span>Contact Sales</span>
-          </a>
-        <% } %>
-      </div>
+
+      <% if (upgradeableWithoutContactingSales) { %>
+        &nbsp;
+        <a href="<%- upgradeUrl %>" class="UpgradeElement-infoText">
+          <span>Upgrade your plan.</span>
+        </a>
+      <% } else { %>
+        &nbsp;
+        <a href="mailto:sales@carto.com" class="UpgradeElement-infoText">
+          <span>Talk to Sales.</span>
+        </a>
+      <% } %>
     </div>
   </div>
 <% } %>

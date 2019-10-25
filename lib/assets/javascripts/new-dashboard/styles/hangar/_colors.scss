@@ -1,0 +1,12 @@
+$colors: (
+  'Cartoframes': $cartoframes,
+);
+
+@each $name, $color in $colors {
+  .is-bg#{$name} {
+    background: #{$color};
+  }
+  .is-txt#{$name} {
+    color: #{$color};
+  }
+}

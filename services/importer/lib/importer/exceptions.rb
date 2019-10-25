@@ -71,6 +71,12 @@ module CartoDB
       end
     end
 
+    class MapQuotaExceededError < BaseImportError
+      def initialize(message = "Public map quota exceeded")
+        super(message, 8007)
+      end
+    end
+
     class InstallError                          < StandardError; end
     class EmptyFileError                        < StandardError; end
     class ExtractionError                       < StandardError; end
@@ -171,6 +177,7 @@ module CartoDB
       StuckImportJobError                   => 6671,
       StorageQuotaExceededError             => 8001,
       TableQuotaExceededError               => 8002,
+      MapQuotaExceededError                 => 8007,
       UnknownError                          => 99999,
       CartoDB::Datasources::DatasourceBaseError                   => 1012,
       CartoDB::Datasources::AuthError                             => 1012,

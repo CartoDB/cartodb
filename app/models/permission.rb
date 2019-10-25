@@ -318,6 +318,8 @@ module CartoDB
         self.notify_permissions_change(CartoDB::Permission.compare_new_acl(@old_acl, self.acl))
       end
       update_shared_entities
+      # Notify change, caches should be invalidated
+      entity.table.update_cdb_tablemetadata if entity && entity.table
     end
 
     def after_destroy

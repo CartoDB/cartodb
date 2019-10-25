@@ -144,9 +144,11 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'includes all user model attributes' do
+      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit]
+
       export = service.export_user_json_hash(@user)
 
-      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit])
+      expect(export[:user].keys).to include(*expected_attrs)
     end
   end
 
@@ -185,6 +187,31 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.12 (without company_employees and use_case)' do
+      user = test_import_user_from_export(full_export_one_zero_twelve)
+
+      expect(user.company_employees).to be_nil
+      expect(user.use_case).to be_nil
+    end
+
+    it 'imports 1.0.11 (without maintenance_mode)' do
+      user = test_import_user_from_export(full_export_one_zero_eleven)
+
+      expect(user.maintenance_mode).to eq false
+    end
+
+    it 'imports 1.0.10 (without regular_api_key_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_ten)
+
+      expect(user.regular_api_key_quota).to be_nil
+    end
+
+    it 'imports 1.0.9 (without public_map_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_nine)
+
+      expect(user.public_map_quota).to be_nil
     end
 
     it 'imports 1.0.8 (without oauth_apps and oauth_app_users)' do
@@ -735,21 +762,23 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.9",
+      version: "1.0.12",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
-        salt: "kkkkkkkkk",
         database_name: "cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db",
         username: "user00000001",
         state: 'active',
         admin: nil,
+        maintenance_mode: true,
         enabled: true,
         invite_token: nil,
         invite_token_date: nil,
         map_enabled: true,
         quota_in_bytes: 5000000,
         table_quota: nil,
+        public_map_quota: 20,
+        regular_api_key_quota: 20,
         account_type: "FREE",
         private_tables_enabled: false,
         period_end_date: nil,
@@ -1093,7 +1122,8 @@ describe Carto::UserMetadataExportService do
               "dataservices:isolines",
               "dataservices:observatory",
               "dataservices:geocoding",
-              "datasets:r:test1"
+              "datasets:r:test1",
+              "schemas:c"
             ],
             created_at: "2018-11-16T14:31:46+00:00"
           }],
@@ -1108,8 +1138,34 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_twelve) do
+    user_hash = full_export[:user].except!(:use_case, :company_employees)
+    
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_eleven) do
+    full_export[:user][:maintenance_mode] = false
+    full_export
+  end
+
+  let(:full_export_one_zero_ten) do
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_nine) do
+    user_hash = full_export_one_zero_ten[:user].except!(:public_map_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_eight) do
-    user_hash = full_export[:user].except!(:oauth_app_users)
+    user_hash = full_export_one_zero_nine[:user].except!(:oauth_app_users)
 
     full_export[:user] = user_hash
     full_export

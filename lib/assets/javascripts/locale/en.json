@@ -3,8 +3,8 @@
     "trial_notification": {
       "views": {
         "trial_notification": {
-          "message": "You're currently under your 30-day Trial Period. Add your billing info to keep using our platform.",
-          "add_payment": "Add payment method"
+          "message": "%{trial_days} days left in your trial.",
+          "add_payment": "Subscribe now to keep using our platform."
         }
       }
     }
@@ -99,6 +99,8 @@
         "company_name": "Company Name",
         "role": "Your Role",
         "industry": "Industry",
+        "company_employees": "Number of employees",
+        "use_case": "Use case",
         "phone": "Phone Number",
         "user_type": "User type",
         "viewer": "VIEWER",
@@ -733,10 +735,20 @@
           "info": "Keep your data and get a larger quota by upgrading your plan",
           "title": "Your quota has run out"
         },
+        "8002": {
+          "description": "You have reached the limit of datasets for your plan",
+          "info": "Remove some of your datasets or upgrade your account to get unlimited datasets",
+          "title": "Your dataset couldn't be created"
+        },
         "8005": {
           "description": "Remove any layer or upgrade your account",
           "info": "Keep your maps and get more layer count quota by upgrading your plan",
           "title": "You have reached your layer count limit"
+        },
+        "8007": {
+          "description": "You have reached the limit of public maps for your plan",
+          "info": "Make some of your maps private or upgrade your account to get unlimited public maps",
+          "title": "Your map couldn't be created or updated"
         },
         "upgrade": "upgrade"
       },
@@ -1328,6 +1340,11 @@
           "salesforce": {
             "fallback-desc": "Contact us to learn more about %{brand} integration",
             "input-placeholder": "Paste your %{brand} URL here"
+          },
+          "feedback": {
+            "text": "Is your data somewhere else? Please let us know!",
+            "button": "Request data source",
+            "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
           }
         },
         "datasets": {
@@ -1625,7 +1642,7 @@
       "option": "Duplicate dataset",
       "query": "applied query",
       "customOption": "Create Dataset from query",
-      "error": "There was an error duplicating %{name}",
+      "error": "Your dataset couldn't be created",
       "loading": "Duplicating your dataset %{name}..."
     },
     "lock": {
@@ -2382,7 +2399,9 @@
         "tooltip": "Switch to SQL view"
       },
       "code-mirror": {
-        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete."
+        "tip": "CMD + S to apply your query. CTRL + Space to autocomplete.",
+        "quota-data-services-warning": "You're about to execute a function that will consume several Data Services credits, so we advise you to be mindful of your quota consumption when using this function here.",
+        "quota-data-services-warning-link": "You can read more about our Data Services API in our <a href='https://carto.com/developers/data-services-api/reference/#geocoding-functions' target='_blank'>guides</a>."
       },
       "notifier": {
         "sql-alter-loading": "Modifying table…",

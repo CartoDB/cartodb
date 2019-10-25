@@ -2,7 +2,164 @@ Development
 -----------
 
 ### NOTICES
-- For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
+- This release upgrades the CartoDB PostgreSQL extension to `0.31.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+- Add warning in the code editor when using a Data Services function ([CartoDB/support#2046](https://github.com/CartoDB/support/issues/2046))
+- OAuth:
+  - Regular api keys are now able to create tables ([#14978](https://github.com/CartoDB/cartodb/issues/14978))
+  - Scope to list datasets metadata ([#15041](https://github.com/CartoDB/cartodb/pull/15041))
+  - API endpoint to list datasets metadata ([#15013](https://github.com/CartoDB/cartodb/issues/15013))
+  - Do not require icon_url ([#15039](https://github.com/CartoDB/cartodb/pull/15039))
+  - Send notification on oauth_app deletion (#15016)
+  - Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+  - Fixes migrations for users with OAuth related data (#14600)
+  - Add more columns to oauth_app ([#15015](https://github.com/CartoDB/cartodb/issues/15015))
+  - Track OauthApp and OauthAppUser events in Segment ([#15055](https://github.com/CartoDB/cartodb/pull/15055))
+  - Update Auth API swagger spec to include schemas and table_metadata grants ([#14998](https://github.com/CartoDB/cartodb/issues/14998))
+  - Allow developers to manage their OAuth apps in the dashboard ([#15031](https://github.com/CartoDB/cartodb/pull/15031))
+  - Scope to access DO API ([CartoDB/cartodb#15119](https://github.com/CartoDB/cartodb/issues/15119))
+- Add number of employees and use case to user profile ([#14966](https://github.com/CartoDB/cartodb/pull/14966))
+- Add CARTO Data Source Request link ([CartoDB/product#441](https://github.com/CartoDB/product/issues/441))
+- Data Observatory token endpoint ([#15097](https://github.com/CartoDB/cartodb/pull/15097))
+- Add GET MFA status to EUMAPI ([CartoDB/cartodb#15101](https://github.com/CartoDB/cartodb/issues/15101))
+- Rake task to purchase Data Observatory datasets ([CartoDB/cartodb#15076](https://github.com/CartoDB/cartodb/issues/15076))
+- Data Observatory licensing API ([#15136](https://github.com/CartoDB/cartodb/pull/15136))
+- Remove Hubspot tracking from cartodb. All the tracking will be managed from Google Tag Manager ([#15128](https://github.com/CartoDB/cartodb/pull/15128))
+- Display banner in embed for free users ([CartoDB/product#409](https://github.com/CartoDB/product/issues/409))
+- Simplify CARTOframes tutorial([15133](https://github.com/CartoDB/cartodb/issues/15133))
+
+### Bug fixes / enhancements
+- Fix API keys page when tables had certain reserved names ([#15059](https://github.com/CartoDB/cartodb/pull/15059))
+- Stricter email domain validation ([#15030](https://github.com/CartoDB/cartodb/pull/15030))
+- Redirect viewer users to shared visualizations page, and show shared visualizations in Home ([CartoDB/support#2032](https://github.com/CartoDB/support/issues/2032))
+- Fix user presenter ([#15033](https://github.com/CartoDB/cartodb/pull/15033))
+- Remove CARTO logo option ([CartoDB/support#2091](https://github.com/CartoDB/support/issues/2091))
+- Change embeds attribution character ([#14914](https://github.com/CartoDB/cartodb/issues/14914))
+- Fix disabled privacy button in Builder when there are no other public maps ([CartoDB/support#2163](https://github.com/CartoDB/support/issues/2163))
+- Include password confirmation in the delete mobile app modal ([CartoDB/support#2155](https://github.com/CartoDB/support/issues/2155))([#15061](https://github.com/CartoDB/cartodb/pull/15061))
+- Rename "Professional" Plan to "Individual" Plan ([#15069](https://github.com/CartoDB/cartodb/pull/15069))
+- The type of the tables_id column of user_tables has changed from integer to oid ([#15068](https://github.com/CartoDB/cartodb/issues/15068))
+- Revamp link to DB connectors feedback ([#1614](https://github.com/CartoDB/design/issues/1614))
+- Fix schema name in create API key permission ([#15082](https://github.com/CartoDB/cartodb/pull/15082))
+- Minor CSS fixes in Mobile Apps page ([#15090](https://github.com/CartoDB/cartodb/pull/15090))
+- Revert connectors link to previous version ([#15096](https://github.com/CartoDB/cartodb/pull/15096))
+- Fix broken link in oauth app page ([#15098](https://github.com/CartoDB/cartodb/issues/15098))
+- Include users API key for EUMAPI ([#15102](https://github.com/CartoDB/cartodb/issues/15102))
+- Fix Mobile Apps deletion bug ([CartoDB/support#2218](https://github.com/CartoDB/cartodb/pull/15135))
+- Update Dataservices API client default version to `0.27.0` (#15134)
+- Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
+
+4.29.0 (2019-07-15)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.28.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+* Datasets that contain a column named `carto_geocode_hash` are not synchronized by replacing tables, but use
+  `CDB_SyncTable` instead (from the CartoDB PostgreSQL extension 0.28.0)
+  ([#14991](https://github.com/CartoDB/cartodb/pull/14991))
+* OAuth:
+  * Support datasets create scope ([#14592](https://github.com/CartoDB/cartodb/issues/14592))
+  * Grant schemas create scope ([#14591](https://github.com/CartoDB/cartodb/issues/14591))
+  * Save ownership_role_name in cdb_conf_info ([#14593](https://github.com/CartoDB/cartodb/issues/14593))
+  * Install schema triggers (upgrade to postgresql extension 0.29.0) to reassign owner of relation after creation ([#14594](https://github.com/CartoDB/cartodb/pull/14594))
+* Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+
+### Bug fixes / enhancements
+* Document and fix timeouts for the ArcGIS connector ([CartoDB/support#2075](https://github.com/CartoDB/support/issues/2075))
+* Document column names normalization ([CartoDB/support#2111](https://github.com/CartoDB/support/issues/2111))
+* Remove some rollbar logging ([#15001](https://github.com/CartoDB/cartodb/issues/15001))
+* Include scopes for granted OAuth apps endpoint and hide private information ([#15002](https://github.com/CartoDB/cartodb/issues/15002))
+* Add new parameters to send via GTM ([#15021](https://github.com/CartoDB/cartodb/pull/15021))
+
+4.28.0 (2019-07-01)
+-------------------
+
+### Features
+* Inform users about their quota usage ([CartoDB/product#334](https://github.com/CartoDB/product/issues/334))
+* API to manage OAuth apps ([#14985](https://github.com/CartoDB/cartodb/issues/14985), [#14986](https://github.com/CartoDB/cartodb/issues/14986))
+
+### Bug fixes / enhancements
+* Include objectid column from GDB files to be used as ID column when the content guesser is activated [#14965](https://github.com/CartoDB/cartodb/pull/14965)
+* Fix migrations of users with oauth_app_user_roles ([#14981](https://github.com/CartoDB/cartodb/issues/14981))
+
+4.27.1 (2019-06-20)
+-------------------
+
+### Features
+* New maintenance mode page ([#14946](https://github.com/CartoDB/cartodb/pull/14946))
+
+### Bug fixes / enhancements
+* Update user industries options with the allowed values from Hubspot ([#14959](https://github.com/CartoDB/cartodb/pull/14959))
+* New Superadmin API to get user activity stats ([CartoDB/cartodb-central#2455](https://github.com/CartoDB/cartodb-central/issues/2455))
+* Do not require trackjs config ([#14979](https://github.com/CartoDB/cartodb/pull/14979))
+
+4.27.0 (2019-06-17)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.27.1`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+* Limit public maps ([#14861](https://github.com/CartoDB/cartodb/issues/14861))
+* Add notification warning to display user notifications when necessary [#14859](https://github.com/CartoDB/cartodb/issues/14859)
+* Limit regular api keys ([#14863](https://github.com/CartoDB/cartodb/issues/14863))
+* New attributes to /me endpoint (#14862)
+* Kuviz (custom visualizations) API and visualization endpoints [#14900](https://github.com/CartoDB/cartodb/pull/14909)
+* Inform users about quota errors (#14921)
+
+### Bug fixes / enhancements
+* Load Track.js only 20% of the time [#14928](https://github.com/CartoDB/cartodb/pull/14928)
+* Fix choice of dataservices provider for metrics [#14729](https://github.com/CartoDB/cartodb/pull/14729)
+* Improve caching management when table permissions change ([CartoDB/cartodb-management#5218](https://github.com/CartoDB/cartodb-management/issues/5218))
+* Chaging test related to deprecated st_text function [#14865](https://github.com/CartoDB/cartodb/pull/14865)
+* Fix row count mix ([CartoDB/support#2039](https://github.com/CartoDB/support/issues/2039))
+* Sanitize profile form inputs
+* Fix map list style inside the delete dataset dialog [#14685](https://github.com/CartoDB/cartodb/issues/14685)
+* Update database_host IP for every user from a server rake [#14854](https://github.com/CartoDB/cartodb/pull/14854)
+* Fix paging parameters ([CartoDB/cartodb-management#5215](https://github.com/CartoDB/cartodb-management/issues/5215))
+* Rake task to remove password salt [#14834](https://github.com/CartoDB/cartodb/pull/14834)
+* Adds organization appearance to forget link URL ([CartoDB/cartodb#14875](https://github.com/CartoDB/cartodb/issues/14875))
+* Add public_map_quota to user ([CartoDB/cartodb-central#2452](https://github.com/CartoDB/cartodb-central/issues/2452))
+* Fix published maps in Editor ([CartoDB/support#2048](https://github.com/CartoDB/support/issues/2048))
+* Updates `odbc_fdw` extension to version `0.4.0` [#14885](https://github.com/CartoDB/cartodb/pull/14885)
+* Add regular_api_key_quota to user ([CartoDB/cartodb-central#2472](https://github.com/CartoDB/cartodb-central/issues/2472))
+* Add rescue for PG::UndefinedColumn on update_table_geom_pg_stats [#2034](https://github.com/CartoDB/support/issues/2034)
+* Filter TrackJS errors in embed maps ([#14890](https://github.com/CartoDB/cartodb/issues/14890))
+* Minor copy edit in final step of Builder Onboarding
+* Filter API keys by type (#14904)
+* Change API keys page layout ([#14907](https://github.com/CartoDB/cartodb/pull/14907))
+* Fix empty navigation for non engine users in API keys page ([#14916](https://github.com/CartoDB/cartodb/pull/14916))
+* Update Welcome message with plan info ([#14871](https://github.com/CartoDB/cartodb/issues/14871))
+* New signup plan ([CartoDB/cartodb-central#2456](https://github.com/CartoDB/cartodb-central/issues/2456))
+* Minor copy edit ([#14922](https://github.com/CartoDB/cartodb/pull/14922))
+* Fix notification warning positioning issue ([#14920](https://github.com/CartoDB/cartodb/pull/14920))
+* Update quota copies (#14945)
+* Fix public page with invalid datasets ([#14939](https://github.com/CartoDB/cartodb/issues/14939))
+* Fix tab scroll in modal ([#14955](https://github.com/CartoDB/cartodb/pull/14955))
+* Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
+* Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
+* [Maintenance Page] Remove unnecessary call ([#14977](https://github.com/CartoDB/cartodb/pull/14977))
+
+4.26.1 (2019-05-06)
+-------------------
+
+### NOTICES
+* For increased security, it's recommended to update the config to include a `secret_key_base`. You can generate a
   suitable random key by using `bundle exec rake secret`
 
 ### Features
@@ -11,35 +168,61 @@ Development
   * `visualization_backups` table Migration [#14749](https://github.com/CartoDB/cartodb/pull/14749)
   * New visualizations backup [#14745](https://github.com/CartoDB/cartodb/pull/14745)
   * Restore visualizations from new backup [#14764](https://github.com/CartoDB/cartodb/pull/14764)
+* Tag search [#14777](https://github.com/CartoDB/cartodb/pull/14777)
+* Add `search_preview` endpoint for quick tags and visualizations search [#14797](https://github.com/CartoDB/cartodb/pull/14797)
+* Search visualizations by tag in regular search [14798](https://github.com/CartoDB/cartodb/pull/14798)
+* Ghost tables event trigger creation [#14697](https://github.com/CartoDB/cartodb/issues/14697)
+* Password encryption with Argon2 [14811](https://github.com/CartoDB/cartodb/pull/14811)
+* Dashboard onboarding: Create components markup for wizard [#14787](https://github.com/CartoDB/cartodb/pull/14787)
+* Dashboard onboarding [#14823](https://github.com/CartoDB/cartodb/pull/14823)
+* Include tags in search results [CartoDB/product#243](https://github.com/CartoDB/product/issues/243)
 
 ### Bug fixes / enhancements
-- Add link to Help Center to invitation emails
-- Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
-- Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
-- Data Library defaults to .gpkg for import
-- Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
-- Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
-- New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
-- Fix initial rate limit setting
-- Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
+* Add link to Help Center to invitation emails
+* Remove locked maps from total_likes and total_shared counts [#14727](https://github.com/CartoDB/cartodb/pull/14727)
+* Unclear LDS Renewal Date ([#14724](https://github.com/CartoDB/cartodb/issues/14724))
+* Data Library defaults to .gpkg for import
+* Change Builder Feedback Form ([#14708](https://github.com/CartoDB/cartodb/issues/14708))
+* Dataset name doesn't change when it's updated ([#14735](https://github.com/CartoDB/cartodb/pull/14735))
+* New Dashboard documentation ([#14712](https://github.com/CartoDB/cartodb/pull/14712))
+* Fix initial rate limit setting
+* Bolt now can: retry with timeout, execute a rerun function for retry. The importer now uses bolt
   for the register phase in order to avoid multiple ghost table calls in the future[#14736](https://github.com/CartoDB/cartodb/pull/14736)
-- Fix `db:create` rake (#14766)
-- Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
-- Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
-- Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
-- Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
-- Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
-- Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
-- Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
-- Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
-- Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
-- Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
-- Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
-- Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
-- Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
-- Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
-- Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
-- Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+* Fix `db:create` rake (#14766)
+* Design review changes ([CartoDB/product#272](https://github.com/CartoDB/product/issues/272))
+* Invite User menu missing go back icon ([#14739](https://github.com/CartoDB/cartodb/issues/14739))
+* Fix error when duplicating shared dataset in dashboard ([#14750](https://github.com/CartoDB/cartodb/issues/14750))
+* Set results per page to 6 in maps and datasets for Home Page ([#14756](https://github.com/CartoDB/cartodb/pull/14756))
+* Display shared with colleagues list in map and dataset card ([#14748](https://github.com/CartoDB/cartodb/pull/14748))
+* Disable 'New dataset' options when no available/remaining storage quota ([#14762](https://github.com/CartoDB/cartodb/pull/14762))
+* Footer and pagination fix in create and share dialogs [#14765](https://github.com/CartoDB/cartodb/pull/14765)
+* Design review: update bulk actions labels and sticky table headings ([CartoDB/product#299](https://github.com/CartoDB/product/issues/299))
+* Unify modal footers ([#14769](https://github.com/CartoDB/cartodb/pull/14769))
+* Fix headers in search page and empty or initial states in dashboard([#14772](https://github.com/CartoDB/cartodb/pull/14772))
+* Add sql_query parameter on database connector sync examples([#14781](https://github.com/CartoDB/cartodb/pull/14781))
+* Fix layer interface does not appear ([CartoDB/product#1988](https://github.com/CartoDB/product/issues/1988))
+* Fix z-index in Quick Actions dropdown ([#14780](https://github.com/CartoDB/cartodb/pull/14780))
+* Fix extra API call in global search ([#14774](https://github.com/CartoDB/cartodb/issues/14774))
+* Fix Radio buttons not being displayed correctly in connect dataset modal ([#14776](https://github.com/CartoDB/cartodb/issues/14776))
+* Make drop functions code PG11 compatible ([#14792](https://github.com/CartoDB/cartodb/pull/14792))
+* Remove Builder enabled notification from Builder and migrated Dashboard ([#14784](https://github.com/CartoDB/cartodb/pull/14784))
+* Add dependent visualizations to visualizations method in GET ([#14802](https://github.com/CartoDB/cartodb/pull/14802))
+* Fix wrong link to Dashboard Help Center articule ([#14799](https://github.com/CartoDB/cartodb/issues/14799))
+* Sidebar overlaps Header in profile page ([#14803](https://github.com/CartoDB/cartodb/issues/14803))
+* Remove migrated dashboard ([#14741](https://github.com/CartoDB/cartodb/pull/14741))
+* Change tag icon and spacing ([#14773](https://github.com/CartoDB/cartodb/issues/14773))
+* Dashboard onboarding: Timeline animation and bug fixes ([#14789](https://github.com/CartoDB/cartodb/pull/14789))
+* Fix minor CSS issues in Groups and Add groups panels ([#14786](https://github.com/CartoDB/cartodb/issues/14786))
+* Add badge for first onboarding visitors ([#14831](https://github.com/CartoDB/cartodb/pull/14831))
+* Fix "Duplicate datasets" action in the dashboard ([#2023](https://github.com/CartoDB/support/issues/2023))
+* CSS color variables refactor ([#14837](https://github.com/CartoDB/cartodb/pull/14837))
+* Fix trial expired message without expiration date ([CartoDB/support#1997](https://github.com/CartoDB/support/issues/1997))
+* Obfuscate password in connector content ([CartoDB/support#2013](https://github.com/CartoDB/support/issues/2013))
+* Remove Editor dashboard from cartodb folder ([#14796](https://github.com/CartoDB/cartodb/pull/14796))
+* Replace title for items number when selecting visualizations ([#14832](https://github.com/CartoDB/cartodb/issues/14832))
+* Organize CSS files following 7-1 pattern style ([#14843](https://github.com/CartoDB/cartodb/pull/14843))
+* Fix email enumeration vulnerability [#5217](https://github.com/CartoDB/cartodb-management/issues/5217)
+* Synchronize password re-encryption with central ([#14867](https://github.com/CartoDB/cartodb/pull/14867))
 
 4.26.0 (2019-03-11)
 -------------------

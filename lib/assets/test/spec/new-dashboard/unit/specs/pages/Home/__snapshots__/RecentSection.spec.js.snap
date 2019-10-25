@@ -3,7 +3,7 @@
 exports[`RecentSection.vue Render should render properly 1`] = `
 <section class="recent-section is-bgSoftBlue">
   <div class="container">
-    <sectiontitle-stub title="HomePage.RecentSection.title" class="grid-cell"><template></template> <template></template></sectiontitle-stub>
+    <sectiontitle-stub class="grid-cell"><template></template> <template></template> <template></template></sectiontitle-stub>
     <ul class="grid"></ul>
   </div>
 </section>

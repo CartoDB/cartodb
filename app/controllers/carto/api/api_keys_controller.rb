@@ -10,15 +10,19 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   before_filter :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
-  before_filter :check_engine_enabled
+  before_filter :engine_required
   before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
 
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
   rescue_from Carto::LoadError, with: :rescue_from_carto_error
   rescue_from Carto::UnprocesableEntityError, with: :rescue_from_carto_error
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+  rescue_from Carto::CartoError, with: :rescue_from_carto_error
 
   VALID_ORDER_PARAMS = [:type, :name, :updated_at].freeze
+  VALID_TYPE_PARAMS = [Carto::ApiKey::TYPE_MASTER,
+                       Carto::ApiKey::TYPE_DEFAULT_PUBLIC,
+                       Carto::ApiKey::TYPE_REGULAR].freeze
 
   def create
     carto_viewer = Carto::User.find(current_viewer.id)
@@ -26,13 +30,15 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
     render_jsonp(Carto::Api::ApiKeyPresenter.new(api_key).to_poro, 201)
   rescue ActiveRecord::RecordInvalid => e
     raise Carto::UnprocesableEntityError.new(e.message)
+  rescue CartoDB::QuotaExceeded => e
+    raise Carto::CartoError.new(e.message, 403)
   end
 
   def destroy
     raise Carto::UnauthorizedError.new unless @viewed_api_key.can_be_deleted?
 
     @viewed_api_key.destroy
-    render_jsonp(Carto::Api::ApiKeyPresenter.new(@viewed_api_key).to_poro, 200)
+    head :no_content
   end
 
   def regenerate_token
@@ -43,7 +49,7 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
   def index
     page, per_page, order, _order_direction = page_per_page_order_params(VALID_ORDER_PARAMS)
 
-    api_keys = Carto::User.find(current_user.id).api_keys.user_visible.order_weighted_by_type
+    api_keys = Carto::User.find(current_user.id).api_keys.by_type(type_param).order_weighted_by_type
     api_keys = request_api_key.master? ? api_keys : api_keys.where(id: request_api_key.id)
     filtered_api_keys = Carto::PagedModel.paged_association(api_keys, page, per_page, order)
 
@@ -67,10 +73,6 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   private
 
-  def check_engine_enabled
-    render_404 unless current_viewer.try(:engine_enabled?)
-  end
-
   def load_api_key
     name = params[:id]
     @viewed_api_key = Carto::ApiKey.where(user_id: current_viewer.id, name: name).user_visible.first
@@ -85,5 +87,11 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
         self: api_key_url(id: CGI::escape(api_key.name))
       }
     )
+  end
+
+  def type_param
+    types = (params[:type] || '').split(',').map(&:strip)
+    raise Carto::ParamInvalidError.new(:type, VALID_TYPE_PARAMS) unless (types - VALID_TYPE_PARAMS).empty?
+    types
   end
 end

@@ -6,7 +6,7 @@ describe Carto::TagQueryBuilder do
   include_context 'users helper'
 
   before(:all) do
-    @builder = Carto::TagQueryBuilder.new(@user1.id)
+    @builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id)
   end
 
   describe "#build_paged" do
@@ -77,7 +77,7 @@ describe Carto::TagQueryBuilder do
       FactoryGirl.create(:carto_visualization, type: 'remote', user_id: @user1.id, tags: ["remote"])
       expected_result = [{ tag: "map", maps: 1 }]
 
-      builder = Carto::TagQueryBuilder.new(@user1.id).with_types(["derived"])
+      builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_types(["derived"])
       result = builder.build_paged(1, 10)
 
       result.should eql expected_result
@@ -92,7 +92,7 @@ describe Carto::TagQueryBuilder do
         { tag: "remote", maps: 0, data_library: 1 }
       ]
 
-      builder = Carto::TagQueryBuilder.new(@user1.id).with_types(["derived", "remote"])
+      builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_types(["derived", "remote"])
       result = builder.build_paged(1, 10)
 
       result.should eql expected_result
@@ -150,6 +150,103 @@ describe Carto::TagQueryBuilder do
         result = @builder.build_paged(2, 2)
 
         result.should eql expected_result
+      end
+    end
+
+    context "search" do
+      before(:each) do
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1"])
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["tag1", "tag2"])
+        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["several words"])
+      end
+
+      it 'finds tags with the exact word' do
+        expected_result = [{ tag: "tag2", datasets: 1, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag2')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+
+      it 'finds tags with partial words' do
+        expected_result = [
+          { tag: "tag1", datasets: 2, maps: 0, data_library: 0 },
+          { tag: "tag2", datasets: 1, maps: 0, data_library: 0 }
+        ]
+
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+
+      it 'finds multiple tags' do
+        expected_result = [
+          { tag: "tag2", datasets: 1, maps: 0, data_library: 0 },
+          { tag: "several words", datasets: 0, maps: 1, data_library: 0 }
+        ]
+
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('tag2 not-found word')
+        result = builder.build_paged(1, 10)
+        result.should =~ expected_result
+      end
+
+      it 'is not case sensitive' do
+        expected_result = [{ tag: "tag1", datasets: 2, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('TAG1')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+
+      it 'finds tags with problematic characters' do
+        FactoryGirl.create(:table_visualization, user_id: @user1.id, tags: ["50%"])
+        expected_result = [{ tag: "50%", datasets: 1, maps: 0, data_library: 0 }]
+
+        builder = Carto::TagQueryBuilder.new.with_owned_by_user_id(@user1.id).with_partial_match('%')
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
+      end
+    end
+
+    context "shared visualizations" do
+      before(:each) do
+        table = create_random_table(@user2)
+        shared_visualization = table.table_visualization
+        shared_visualization.tags = ["shared-tag"]
+        shared_visualization.save
+        shared_entity = CartoDB::SharedEntity.new(
+          recipient_id:   @user1.id,
+          recipient_type: CartoDB::SharedEntity::RECIPIENT_TYPE_USER,
+          entity_id:      shared_visualization.id,
+          entity_type:    CartoDB::SharedEntity::ENTITY_TYPE_VISUALIZATION
+        )
+        shared_entity.save
+
+        FactoryGirl.create(:derived_visualization, user_id: @user1.id, tags: ["owned-tag"])
+      end
+
+      it "does not include shared visualizations when using with_owned_by_user_id" do
+        expected_result = [{ tag: "owned-tag", datasets: 0, maps: 1, data_library: 0 }]
+
+        result = @builder.build_paged(1, 10)
+
+        result.should eql expected_result
+      end
+
+      it "includes tags from shared visualizations when using with_owned_by_or_shared_with_user_id" do
+        builder = Carto::TagQueryBuilder.new.with_owned_by_or_shared_with_user_id(@user1.id)
+        expected_result = [
+          { tag: "owned-tag", datasets: 0, maps: 1, data_library: 0 },
+          { tag: "shared-tag", datasets: 1, maps: 0, data_library: 0 }
+        ]
+
+        result = builder.build_paged(1, 10)
+
+        result.should =~ expected_result
       end
     end
   end

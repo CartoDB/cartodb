@@ -95,7 +95,6 @@ class Admin::VisualizationsController < Admin::AdminController
 
     get_viewed_user
     ff_user = @viewed_user || @org.try(:owner)
-    @has_new_dashboard = ff_user.builder_enabled?
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]

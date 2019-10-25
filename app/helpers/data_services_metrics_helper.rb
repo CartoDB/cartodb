@@ -55,11 +55,13 @@ module DataServicesMetricsHelper
   private
 
   def get_geocoding_data(user, from, to, orgwise = true)
-    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
+    org = user.organization if orgwise
+    geocoder_provider = org.try(:geocoder_provider) || user.geocoder_provider
+    orgname = org.try(:name)
     usage_metrics = CartoDB::GeocoderUsageMetrics.new(user.username, orgname)
     # FIXME removed once we have fixed to charge google geocoder users for overquota
     return 0 if user.google_maps_geocoder_enabled?
-    geocoder_key = CartoDB::GeocoderUsageMetrics::GEOCODER_KEYS.fetch(user.geocoder_provider, :geocoder_mapbox)
+    geocoder_key = CartoDB::GeocoderUsageMetrics::GEOCODER_KEYS.fetch(geocoder_provider, :geocoder_mapbox)
     cache_hits = 0
     success = usage_metrics.get_sum_by_date_range(geocoder_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(geocoder_key, :empty_responses, from, to)
@@ -68,18 +70,22 @@ module DataServicesMetricsHelper
   end
 
   def get_isolines_data(user, from, to, orgwise = true)
-    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
+    org = user.organization if orgwise
+    isolines_provider = org.try(:isolines_provider) || user.isolines_provider
+    orgname = org.try(:name)
     usage_metrics = CartoDB::IsolinesUsageMetrics.new(user.username, orgname)
-    isolines_key = CartoDB::IsolinesUsageMetrics::ISOLINES_KEYS.fetch(user.isolines_provider, :tomtom_isolines)
+    isolines_key = CartoDB::IsolinesUsageMetrics::ISOLINES_KEYS.fetch(isolines_provider, :tomtom_isolines)
     success = usage_metrics.get_sum_by_date_range(isolines_key, :isolines_generated, from, to)
     empty = usage_metrics.get_sum_by_date_range(isolines_key, :empty_responses, from, to)
     success + empty
   end
 
   def get_routing_data(user, from, to, orgwise = true)
-    orgname = user.organization.nil? || !orgwise ? nil : user.organization.name
+    org = user.organization if orgwise
+    routing_provider = org.try(:routing_provider) || user.routing_provider
+    orgname = org.try(:name)
     usage_metrics = CartoDB::RoutingUsageMetrics.new(user.username, orgname)
-    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(user.routing_provider, :routing_tomtom)
+    routing_key = CartoDB::RoutingUsageMetrics::ROUTING_KEYS.fetch(routing_provider, :routing_tomtom)
     success = usage_metrics.get_sum_by_date_range(routing_key, :success_responses, from, to)
     empty = usage_metrics.get_sum_by_date_range(routing_key, :empty_responses, from, to)
     success + empty

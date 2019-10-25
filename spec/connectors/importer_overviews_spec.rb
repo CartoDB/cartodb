@@ -1,12 +1,13 @@
-# encoding: utf-8
 require_relative '../spec_helper'
 require_relative '../../app/connectors/importer'
 require_relative '../doubles/result'
 require_relative '../helpers/feature_flag_helper'
 require 'csv'
+require 'helpers/database_connection_helper'
 
 describe CartoDB::Importer2::Overviews do
   include_context 'organization with users helper'
+  include DatabaseConnectionHelper
 
   before(:all) do
     @user = create_user(quota_in_bytes: 1000.megabyte, table_quota: 400)
@@ -300,36 +301,6 @@ describe CartoDB::Importer2::Overviews do
     end
   end
 
-  def with_connection(options)
-    connection = ::Sequel.connect(options)
-    begin
-      yield connection
-    ensure
-      connection.disconnect
-    end
-  end
-
-  def with_connection_from_user(user, &block)
-    options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-      'database' => user.database_name,
-      'username' => user.database_username,
-      'password' => user.database_password,
-      'host' => user.database_host
-    )
-    with_connection options, &block
-  end
-
-  def with_connection_from_api_key(api_key, &block)
-    user = api_key.user
-    options = ::SequelRails.configuration.environment_for(Rails.env).merge(
-      'database' => user.database_name,
-      'username' => api_key.db_role,
-      'password' => api_key.db_password,
-      'host' => user.database_host
-    )
-    with_connection options, &block
-  end
-
   it 'shares overviews when the base table is shared' do
     # create two users from the same organization (so they share the database)
     organization = create_organization_with_owner
@@ -368,7 +339,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{user1.database_schema}.#{ov_tables.first}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_tables.first}"
+        e.message.should match /permission denied .* #{ov_tables.first}/
       end
       failed.should be_true
     end
@@ -452,7 +423,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_table2}"
+        e.message.should match /permission denied .* #{ov_table2}/
       end
       failed.should be_true
 
@@ -527,7 +498,7 @@ describe CartoDB::Importer2::Overviews do
         connection.execute("select count(1) from #{ov_table2}")
       rescue Sequel::DatabaseError => e
         failed = true
-        e.message.should include "permission denied for relation #{ov_table2}"
+        e.message.should match /permission denied .* #{ov_table2}/
       end
       failed.should be_true
 

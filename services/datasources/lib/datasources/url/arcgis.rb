@@ -523,8 +523,8 @@ module CartoDB
 
         def validate_response(request_url, response)
           raise ExternalServiceTimeoutError.new("TIMEOUT: #{request_url} : #{response.return_message}") \
-            if response.code.zero? && !response.return_message.nil? \
-              && response.return_message.downcase.include?('timeout')
+            if response.timed_out? || (response.code.zero? && !response.return_message.nil? \
+              && response.return_message.downcase.include?('timeout'))
 
           raise UnsupportedOperationError.new("#{request_url} (#{response.code}) : #{response.body}") \
             if response.code == 400 && !response.return_message.nil? \

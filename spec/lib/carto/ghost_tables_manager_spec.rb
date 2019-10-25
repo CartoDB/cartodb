@@ -2,12 +2,14 @@
 
 require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/ghost_tables_manager'
+require 'helpers/database_connection_helper'
 
 module Carto
   describe GhostTablesManager do
+    include DatabaseConnectionHelper
     before(:all) do
-      @user = FactoryGirl.create(:carto_user)
-
+      @sequel_user = FactoryGirl.create(:valid_user)
+      @user = Carto::User.find(@sequel_user.id)
       @ghost_tables_manager = Carto::GhostTablesManager.new(@user.id)
     end
 
@@ -117,6 +119,97 @@ module Carto
 
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+    end
+
+    it 'should link sql created table using regular api key with create permissions' do
+      grants = [
+        {
+          type: 'apis',
+          apis: ['maps', 'sql']
+        },
+        {
+          type: "database",
+          schemas: [
+            {
+              name: "#{@user.database_schema}",
+              permissions: ['create']
+            }
+          ]
+        }
+      ]
+      api_key = @user.api_keys.create_regular_key!(name: 'ghost_tables', grants: grants)
+      with_connection_from_api_key(api_key) do |connection|
+        sql = %{
+          CREATE TABLE test_table ("description" text);
+          SELECT * FROM CDB_CartodbfyTable('test_table');
+        }
+        connection.execute(sql)
+      end
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+
+      @ghost_tables_manager.link_ghost_tables_synchronously
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'test_table'
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute('DROP TABLE test_table')
+      end
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      api_key.destroy
+    end
+
+    it 'should link sql created table using oauth_app api key with create permissions' do
+      scopes = ['offline', 'user:profile', 'schemas:c']
+      app = FactoryGirl.create(:oauth_app, user: @user)
+      oau = OauthAppUser.create!(user: @user, oauth_app: app, scopes: scopes)
+      refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
+      access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
+
+      with_connection_from_api_key(access_token.api_key) do |connection|
+        sql = %{
+          CREATE TABLE test_table ("description" text);
+          SELECT * FROM CDB_CartodbfyTable('test_table');
+        }
+        connection.execute(sql)
+      end
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+
+      @ghost_tables_manager.link_ghost_tables_synchronously
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      @user.tables.count.should eq 1
+      @user.tables.first.name.should == 'test_table'
+
+      with_connection_from_api_key(access_token.api_key) do |connection|
+        connection.execute('DROP TABLE test_table')
+      end
+
+      @user.tables.count.should eq 1
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
+      @ghost_tables_manager.link_ghost_tables_synchronously
+
+      @user.tables.count.should eq 0
+      @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
+
+      oau.destroy
+      app.destroy
     end
 
     it 'should not link non cartodbyfied tables' do

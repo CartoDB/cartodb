@@ -7,6 +7,14 @@ GIT
       oauth (>= 0.4.4)
 
 GIT
+  remote: https://github.com/cartodb/cartodb-common.git
+  revision: e445c66023bfe83fcd62878ec0f3f37909156e01
+  branch: master
+  specs:
+    cartodb-common (0.1.0)
+      argon2 (~> 2.0)
+
+GIT
   remote: https://github.com/kuldeepaggarwal/fake_net_ldap.git
   revision: d99f2fcf13b9737a150f869fe9b9fbc0d788aa3f
   branch: fix-responder
@@ -59,6 +67,9 @@ GEM
       public_suffix (>= 2.0.2, < 4.0)
     analytics-ruby (2.0.13)
     arel (6.0.4)
+    argon2 (2.0.2)
+      ffi (~> 1.9)
+      ffi-compiler (>= 0.1)
     aws-partitions (1.77.0)
     aws-sdk-core (3.19.0)
       aws-partitions (~> 1.0)
@@ -124,6 +135,9 @@ GEM
       faraday (~> 0.9, ~> 0.8)
       oauth2 (~> 1.1)
     ejs (1.1.1)
+    email_address (0.1.11)
+      netaddr (~> 2.0)
+      simpleidn
     equalizer (0.0.11)
     erubis (2.7.0)
     ethon (0.8.1)
@@ -144,6 +158,9 @@ GEM
     faye-websocket (0.4.7)
       eventmachine (>= 0.12.0)
     ffi (1.9.25)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
     gc_tracer (1.5.1)
     get_process_mem (0.2.0)
     gibbon (1.1.4)
@@ -216,6 +233,7 @@ GEM
     multipart-post (2.0.0)
     net-ldap (0.16.0)
     net-telnet (0.1.1)
+    netaddr (2.0.3)
     nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     oauth (0.4.7)
@@ -353,6 +371,8 @@ GEM
       simplecov
     simplecov-rcov (0.2.3)
       simplecov (>= 0.4.1)
+    simpleidn (0.1.1)
+      unf (~> 0.1.4)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -389,6 +409,9 @@ GEM
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uber (0.1.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.6)
     unicorn (4.8.2)
       kgio (~> 2.6)
       rack
@@ -425,6 +448,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   byebug
   capybara (= 1.1.2)
+  cartodb-common!
   charlock_holmes (= 0.7.6)
   ci_reporter (= 1.8.4)
   compass (= 1.0.3)
@@ -433,6 +457,7 @@ DEPENDENCIES
   delorean
   dropbox_api (= 0.1.6)
   ejs (~> 1.1.1)
+  email_address (~> 0.1.11)
   execjs (~> 0.4)
   factory_girl_rails (~> 4.0.0)
   fake_net_ldap!

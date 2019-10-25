@@ -22,8 +22,8 @@ module CartoDB
       SCHEMA_GEOCODING = 'cdb'.freeze
       SCHEMA_CDB_DATASERVICES_API = 'cdb_dataservices_client'.freeze
       SCHEMA_AGGREGATION_TABLES = 'aggregation'.freeze
-      CDB_DATASERVICES_CLIENT_VERSION = '0.26.2'.freeze
-      ODBC_FDW_VERSION = '0.3.0'.freeze
+      CDB_DATASERVICES_CLIENT_VERSION = '0.27.0'.freeze
+      ODBC_FDW_VERSION = '0.4.0'.freeze
 
       def initialize(user)
         raise "User nil" unless user
@@ -62,6 +62,7 @@ module CartoDB
       def setup_single_user_schema
         set_user_privileges_at_db
         rebuild_quota_trigger
+        create_ghost_tables_event_trigger
       end
 
       # All methods called inside should allow to be executed multiple times without errors
@@ -77,6 +78,7 @@ module CartoDB
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
+          create_ghost_tables_event_trigger
         end
 
         if @user.organization_admin?
@@ -356,14 +358,7 @@ module CartoDB
       end
 
       def all_tables_granted(role = nil)
-        roles = []
-        if role.present?
-          roles << role
-        else
-          roles = all_user_roles
-        end
-        roles_str = roles.map { |r| "'#{r}'" }.join(',')
-
+        roles_str = role ? "'#{role}'" : all_user_roles.map { |r| "'#{r}'" }.join(',')
         query = %{
           SELECT
             s.nspname as schema,
@@ -397,6 +392,75 @@ module CartoDB
         end
 
         privileges_hashed
+      end
+
+      def all_schemas_granted(role)
+        roles_str = role ? role : all_user_roles.join(',')
+        permissions = 'create,usage'
+        query = %{
+          WITH
+          roles AS (
+            SELECT unnest('{#{roles_str}}'::text[]) AS rname
+          ),
+          permissions AS (
+            SELECT 'SCHEMA' AS ptype, unnest('{#{permissions}}'::text[]) AS pname
+          ),
+          schemas AS (
+            SELECT schema_name AS sname
+            FROM information_schema.schemata
+            WHERE schema_name !~ '^pg_'
+              AND schema_name NOT IN ('cartodb', 'cdb', 'cdb_importer')
+          ),
+          schemas_roles_permissions AS (
+          SELECT
+              permissions.ptype,
+              schemas.sname AS obj_name,
+              roles.rname,
+              permissions.pname,
+              has_schema_privilege(roles.rname, schemas.sname, permissions.pname) AS has_permission
+          FROM
+            schemas
+            CROSS JOIN roles
+            CROSS JOIN permissions
+          WHERE
+            permissions.ptype = 'SCHEMA'
+          ),
+          schemas_and_grants AS (
+            SELECT obj_name AS object_name,
+            COALESCE(string_agg(DISTINCT CASE WHEN has_permission THEN pname END, ','), '') AS granted_permissions
+            FROM schemas_roles_permissions
+            GROUP BY 1
+            ORDER BY 1
+          )
+          SELECT
+            object_name, granted_permissions
+          FROM
+            schemas_and_grants
+          WHERE
+            granted_permissions is not null and granted_permissions <> '';
+        }
+
+        @user.in_database(as: :superuser) do |database|
+          database.fetch(query)
+        end
+      end
+
+      def all_schemas_granted_hashed(role = nil)
+        results = all_schemas_granted(role)
+        return {} if results.nil?
+
+        results.map { |row| [row[:object_name], row[:granted_permissions].split(',')] }.to_h
+      end
+
+      def exists_role?(rolname)
+        query = %{
+          SELECT 1
+          FROM   pg_catalog.pg_roles
+          WHERE  rolname = '#{rolname}'
+        }
+
+        result = @user.in_database(as: :superuser).fetch(query)
+        result.count > 0
       end
 
       def drop_owned_by_user(conn, role)
@@ -592,7 +656,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.25.0'
+          cdb_extension_target_version = '0.31.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -917,13 +981,7 @@ module CartoDB
 
         @user.in_database(as: :superuser) do |database|
           # Non-aggregate functions
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP FUNCTION "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = FALSE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
-
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name))
           # Simulate a controlled environment drop cascade contained to only functions
           failed_sqls = []
           recursivity_level = 0
@@ -953,12 +1011,7 @@ module CartoDB
 
           # And now aggregate functions
           failed_sqls = []
-          drop_function_sqls = database.fetch(%{
-            SELECT 'DROP AGGREGATE ' || ns.nspname || '.' || proname || '(' || oidvectortypes(proargtypes) || ');'
-              AS sql
-            FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND pg_proc.proisagg = TRUE)
-            WHERE ns.nspname = '#{schema_name}'
-          })
+          drop_function_sqls = database.fetch(get_drop_functions_sql(database, schema_name, aggregated: true))
           drop_function_sqls.each do |sql_sentence|
             begin
               database.run(sql_sentence[:sql])
@@ -986,6 +1039,23 @@ module CartoDB
             raise CartoDB::BaseCartoDBError.new('Cannot drop schema functions, dependencies remain')
           end
         end
+      end
+
+      def get_drop_functions_sql(database, schema_name, aggregated: false)
+        pg_version = database.fetch("select current_setting('server_version_num') as version").first[:version].to_i
+
+        if pg_version >= 110000
+          agg_join_clause = "pg_proc.prokind #{aggregated ? ' = ' : ' <> '} 'a'"
+        else
+          agg_join_clause = "pg_proc.proisagg = #{aggregated ? 'TRUE' : 'FALSE'}"
+        end
+
+        drop_type = aggregated ? 'AGGREGATE' : 'FUNCTION'
+
+        %{SELECT 'DROP #{drop_type} "' || ns.nspname || '".' || proname || '(' || oidvectortypes(proargtypes) || ');'
+         AS sql
+         FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid AND #{agg_join_clause} )
+         WHERE ns.nspname = '#{schema_name}'}
       end
 
       # Create a "public.cdb_invalidate_varnish()" function to invalidate Varnish
@@ -1335,6 +1405,31 @@ module CartoDB
         @user.in_database.fetch(placeholder_query, *binds).all.map(&:stringify_keys)
       rescue Sequel::DatabaseError => exception
         raise exception.cause
+      end
+
+      def create_ghost_tables_event_trigger
+        return if @user.has_feature_flag?('ghost_tables_trigger_disabled')
+        configure_ghost_table_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableGhostTablesTrigger()')
+      end
+
+      def configure_ghost_table_event_trigger
+        tis_config = Cartodb.config[:invalidation_service]
+        return unless tis_config
+        @user.in_database(as: :superuser)
+             .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
+      end
+
+      def drop_ghost_tables_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableGhostTablesTrigger()')
+      end
+
+      def create_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_EnableOAuthReassignTablesTrigger()')
+      end
+
+      def drop_oauth_reassign_ownership_event_trigger
+        @user.in_database(as: :superuser).run('SELECT CDB_DisableOAuthReassignTablesTrigger()')
       end
 
       private

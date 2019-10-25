@@ -11,9 +11,11 @@ describe Carto::Asset do
   before(:all) do
     @organization = Carto::Organization.find(FactoryGirl.create(:organization).id)
     @user = FactoryGirl.create(:carto_user)
+    @visualization = FactoryGirl.create(:carto_visualization, user: @user)
   end
 
   after(:all) do
+    @visualization.destroy
     @organization.destroy
     @user.destroy
   end
@@ -76,6 +78,7 @@ describe Carto::Asset do
       asset.valid?.should be_false
       asset.errors[:user].should_not be_empty
       asset.errors[:organization].should_not be_empty
+      asset.errors[:visualization].should_not be_empty
     end
 
     it 'requires a public url' do
@@ -143,6 +146,41 @@ describe Carto::Asset do
       it 'rejects spammy storage_info' do
         storage_info[:great_idea] = 'to spam a json!'
         asset = Carto::Asset.new(organization: @organization,
+                                 storage_info: storage_info,
+                                 public_url: public_url)
+        asset.valid?.should be_false
+        asset.errors[:storage_info].should_not be_empty
+      end
+    end
+
+    describe('#visualization asset') do
+      it 'accepts good asset' do
+        asset = Carto::Asset.new(visualization: @visualization,
+                                 storage_info: storage_info,
+                                 public_url: public_url)
+        asset.valid?.should be_true
+      end
+
+      it 'rejects nil storage_info' do
+        asset = Carto::Asset.new(visualization: @visualization,
+                                 public_url: public_url)
+        asset.valid?.should be_false
+        asset.errors[:storage_info].should_not be_empty
+        asset.errors[:storage_info].should eq ["can't be blank"]
+      end
+
+      it 'rejects incomplete storage_info' do
+        storage_info.delete(:type)
+        asset = Carto::Asset.new(visualization: @visualization,
+                                 storage_info: storage_info,
+                                 public_url: public_url)
+        asset.valid?.should be_false
+        asset.errors[:storage_info].should_not be_empty
+      end
+
+      it 'rejects spammy storage_info' do
+        storage_info[:great_idea] = 'to spam a json!'
+        asset = Carto::Asset.new(visualization: @visualization,
                                  storage_info: storage_info,
                                  public_url: public_url)
         asset.valid?.should be_false

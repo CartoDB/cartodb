@@ -8,7 +8,7 @@
       <ul>
         <template v-for="action in actions">
           <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
-            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive}" @click="emitEvent(action.event)">{{action.name}}</a>
+            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
           </li>
         </template>
       </ul>
@@ -83,7 +83,7 @@ export default {
   right: 0;
   width: 260px;
   margin-top: 8px;
-  border: 1px solid $grey;
+  border: 1px solid $border-color--dark;
   border-radius: 2px;
   background-color: $white;
   cursor: default;
@@ -110,6 +110,11 @@ export default {
     &:hover,
     &:focus {
       background-color: $softblue;
+    }
+
+    &.u-is-disabled {
+      pointer-events: none;
+      color: grey;
     }
   }
 }

@@ -15,6 +15,7 @@
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>
+<%= render :partial => 'admin/shared/trial_notification' %>
 
 <div class="FormAccount-Section u-inner">
 
@@ -22,7 +23,6 @@
 
   <div class="CDB-Text FormAccount-Content">
     <%= render :partial => 'admin/shared/api_keys_subheader' %>
-    <div class="Filters-separator"></div>
 
     <%= render :partial => 'carto/admin/mobile_apps/mobile_plan_info' %>
 
@@ -35,8 +35,4 @@
 
 </div>
 
-<% if current_user.has_feature_flag?('new-dashboard-feature') %>
-  <%= render 'admin/shared/new_private_footer' %>
-<% else %>
-  <%= render 'admin/shared/footer' %>
-<% end %>
+<%= render 'admin/shared/new_private_footer' %>

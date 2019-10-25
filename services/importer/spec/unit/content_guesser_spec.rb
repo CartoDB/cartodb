@@ -199,20 +199,32 @@ describe CartoDB::Importer2::ContentGuesser do
     it 'should return a column name known to be sequential and with index' do
       db = mock
       list_of_columns = [
-        {:column_name=>"data", :data_type=>"string"},
-        {:column_name=>"ogc_fid", :data_type=>"integer"},
-        {:column_name=>"more_data", :data_type=>"string"},
+        { column_name: "data", data_type: "string" },
+        { column_name: "ogc_fid", data_type: "integer" },
+        { column_name: "more_data", data_type: "string" }
       ]
       db.expects(:[]).once.returns(list_of_columns)
       guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
       guesser.id_column.should eq 'ogc_fid'
     end
 
+    it "should use objectid in case the file is a gdb one" do
+      db = mock
+      list_of_columns = [
+        { column_name: "data", data_type: "string" },
+        { column_name: "objectid", data_type: "integer" },
+        { column_name: "more_data", data_type: "string" }
+      ]
+      db.expects(:[]).once.returns(list_of_columns)
+      guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil
+      guesser.id_column.should eq 'objectid'
+    end
+
     it "should raise an exception if there's no suitable id column" do
       db = mock
       list_of_columns = [
-        {:column_name=>"data", :data_type=>"string"},
-        {:column_name=>"more_data", :data_type=>"string"},
+        { column_name: "data", data_type: "string" },
+        { column_name: "more_data", data_type: "string" }
       ]
       db.expects(:[]).once.returns(list_of_columns)
       guesser = CartoDB::Importer2::ContentGuesser.new db, nil, nil, nil

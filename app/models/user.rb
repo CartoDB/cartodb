@@ -1,5 +1,7 @@
 # encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
+require 'cartodb-common'
+require 'email_address'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -36,7 +38,6 @@ class User < Sequel::Model
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
   include Carto::EmailCleaner
-  extend Carto::UserAuthenticator
   include SequelFormCompatibility
 
   OAUTH_SERVICE_TITLES = {
@@ -53,24 +54,12 @@ class User < Sequel::Model
     'instagram' => 'http://instagram.com/accounts/manage_access/'
   }.freeze
 
-  INDUSTRIES = ['Academic and Education', 'Architecture and Engineering', 'Banking and Finance',
-                'Business Intelligence and Analytics', 'Utilities and Communications', 'GIS and Mapping',
-                'Government', 'Health', 'Marketing and Advertising', 'Media, Entertainment and Publishing',
-                'Natural Resources', 'Non-Profits', 'Real Estate', 'Software and Technology',
-                'Transportation and Logistics'].freeze
-
-  JOB_ROLES = ['Founder / Executive', 'Developer', 'Student', 'VP / Director', 'Manager / Lead',
-               'Personal / Non-professional', 'Media', 'Individual Contributor'].freeze
-
-  DEPRECATED_JOB_ROLES = ['Researcher', 'GIS specialist', 'Designer', 'Consultant / Analyst',
-                          'CIO / Executive', 'Marketer', 'Sales', 'Journalist', 'Hobbyist', 'Government official'].freeze
-
   # Make sure the following date is after Jan 29, 2015,
   # which is the date where a message to accept the Terms and
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
 
   self.strict_param_setting = false
 
@@ -110,7 +99,6 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
-                 :salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -129,6 +117,8 @@ class User < Sequel::Model
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
+  INDIVIDUAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -171,6 +161,14 @@ class User < Sequel::Model
   ## Validations
   def validate
     super
+    validate_username
+    validate_email
+    validate_password
+    validate_organization
+    validate_quotas
+  end
+
+  def validate_username
     validates_presence :username
     validates_unique   :username
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
@@ -178,24 +176,32 @@ class User < Sequel::Model
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
     validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
+  end
 
+  def validate_email
     validates_presence :email
-    validates_unique   :email, :message => 'is already taken'
-    validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+    validates_unique   :email, message: 'is already taken'
+    errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)
+  end
 
-    validates_presence :password if new? && (crypted_password.blank? || salt.blank?)
+  def validate_password
+    validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
+  end
 
+  def validate_organization
     if organization.present?
       organization_validation
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
+  end
 
+  def validate_quotas
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
@@ -235,7 +241,7 @@ class User < Sequel::Model
 
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_different_passwords(nil, self.class.password_digest(value, salt), key)
+    validate_password_not_in_use(nil, value, key)
 
     errors[key].empty?
   end
@@ -283,7 +289,7 @@ class User < Sequel::Model
   def before_create
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
-    self.api_key ||= self.class.make_token
+    self.api_key ||= make_token
   end
 
   def before_save
@@ -405,7 +411,7 @@ class User < Sequel::Model
     # API keys management
     sync_master_key if changes.include?(:api_key)
     sync_default_public_key if changes.include?(:database_schema)
-    $users_metadata.HSET(key, 'map_key', User.make_token) if locked?
+    $users_metadata.HSET(key, 'map_key', make_token) if locked?
     db.after_commit { sync_enabled_api_keys } if changes.include?(:engine_enabled) || changes.include?(:state)
 
     if changes.include?(:org_admin) && !organization_owner?
@@ -600,7 +606,6 @@ class User < Sequel::Model
     # Mark as changing passwords
     @changing_passwords = true
 
-    @old_password = old_password
     @new_password = new_password_value
     @new_password_confirmation = new_password_confirmation_value
 
@@ -608,28 +613,30 @@ class User < Sequel::Model
     return unless @old_password_validated
 
     return unless valid_password?(:new_password, new_password_value, new_password_confirmation_value)
-    return unless validate_different_passwords(@old_password, @new_password)
+    return unless validate_password_not_in_use(old_password, @new_password)
 
     self.password = new_password_value
   end
 
-  def validate_different_passwords(old_password = nil, new_password = nil, key = :new_password)
-    unless different_passwords?(old_password, new_password)
+  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
+    if password_in_use?(old_password, new_password)
       errors.add(key, 'New password cannot be the same as old password')
     end
     errors[key].empty?
   end
 
-  def different_passwords?(old_password = nil, new_password = nil)
-    return true if new? || (@changing_passwords && !old_password)
-    old_password = carto_user.crypted_password_was unless old_password.present?
-    new_password = crypted_password unless old_password.present? && new_password.present?
+  def password_in_use?(old_password = nil, new_password = nil)
+    return false if new? || (@changing_passwords && !old_password)
+    return old_password == new_password if old_password
 
-    old_password.present? && old_password != new_password
+    old_crypted_password = carto_user.crypted_password_was
+    Carto::Common::EncryptionService.verify(password: new_password, secure_password: old_crypted_password,
+                                            secret: Cartodb.config[:password_secret])
   end
 
   def validate_old_password(old_password)
-    (old_password.present? && self.class.password_digest(old_password, salt) == crypted_password) ||
+    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
+                                            secret: Cartodb.config[:password_secret]) ||
       (oauth_signin? && last_password_change_date.nil?)
   end
 
@@ -673,8 +680,8 @@ class User < Sequel::Model
     return if !Carto::Ldap::Manager.new.configuration_present? && !valid_password?(:password, value, value)
 
     @password = value
-    self.salt = new? ? self.class.make_token : ::User.filter(id: id).select(:salt).first.salt
-    self.crypted_password = self.class.password_digest(value, salt)
+    self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
+                                                                     secret: Cartodb.config[:password_secret])
     set_last_password_change_date
   end
 
@@ -695,7 +702,7 @@ class User < Sequel::Model
   end
 
   def database_password
-    crypted_password + database_username
+    Carto::Common::EncryptionService.hex_digest(crypted_password) + database_username
   end
 
   def user_database_host
@@ -886,8 +893,8 @@ class User < Sequel::Model
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    else
-      nil
+    elsif account_type.to_s.casecmp('individual').zero?
+      created_at + INDIVIDUAL_TRIAL_DAYS.days
     end
   end
 
@@ -1514,6 +1521,24 @@ class User < Sequel::Model
                         })
   end
 
+  def public_privacy_visualization_count
+    public_visualization_count
+  end
+
+  def link_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_LINK,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def password_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+                        privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
@@ -1744,20 +1769,19 @@ class User < Sequel::Model
   end
 
   def copy_account_features(to)
-    to.set_fields(self, [
-      :private_tables_enabled, :sync_tables_enabled, :max_layers, :user_timeout,
-      :database_timeout, :geocoding_quota, :map_view_quota, :table_quota, :database_host,
-      :period_end_date, :map_view_block_price, :geocoding_block_price, :account_type,
-      :twitter_datasource_enabled, :soft_twitter_datasource_limit, :twitter_datasource_quota,
-      :twitter_datasource_block_price, :twitter_datasource_block_size, :here_isolines_quota,
-      :here_isolines_block_price, :soft_here_isolines_limit, :obs_snapshot_quota,
-      :obs_snapshot_block_price, :soft_obs_snapshot_limit, :obs_general_quota,
-      :obs_general_block_price, :soft_obs_general_limit
-    ])
-    to.invite_token = ::User.make_token
+    attributes_to_copy = %i(
+      private_tables_enabled sync_tables_enabled max_layers user_timeout database_timeout geocoding_quota map_view_quota
+      table_quota public_map_quota regular_api_key_quota database_host period_end_date map_view_block_price
+      geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
+      twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
+      here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
+      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit
+    )
+    to.set_fields(self, attributes_to_copy)
+    to.invite_token = make_token
   end
 
-  def regenerate_api_key(new_api_key = ::User.make_token)
+  def regenerate_api_key(new_api_key = make_token)
     invalidate_varnish_cache
     update api_key: new_api_key
   end
@@ -1843,6 +1867,10 @@ class User < Sequel::Model
     state == STATE_LOCKED
   end
 
+  def maintenance_mode?
+    maintenance_mode == true
+  end
+
   # Central will request some data back to cartodb (quotas, for example), so the user still needs to exist.
   # Corollary: multithreading is needed for deletion to work.
   def destroy_account
@@ -1892,6 +1920,21 @@ class User < Sequel::Model
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
+  end
+
+  def remaining_trial_days
+    return 0 unless trial_ends_at
+    ((trial_ends_at - Time.now) / 1.day).round
+  end
+
+  def trial_user?
+    TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private
@@ -2040,5 +2083,9 @@ class User < Sequel::Model
 
   def sync_enabled_api_keys
     api_keys.each(&:set_enabled_for_engine)
+  end
+
+  def make_token
+    Carto::Common::EncryptionService.make_token
   end
 end

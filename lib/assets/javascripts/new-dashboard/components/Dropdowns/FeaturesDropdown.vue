@@ -74,7 +74,7 @@ export default {
 .list {
   position: relative;
   padding: 0;
-  border: 1px solid $light-grey;
+  border: 1px solid $border-color;
   border-radius: 4px;
   background-color: $white;
 }
@@ -93,7 +93,7 @@ export default {
       width: 14px;
       height: 14px;
       transform: rotate(45deg);
-      border: 1px solid $light-grey;
+      border: 1px solid $border-color;
       border-right: none;
       border-bottom: none;
       border-radius: 2px;
@@ -103,7 +103,7 @@ export default {
 }
 
 .footer {
-  color: $text-color;
+  color: $text__color;
   cursor: default;
 }
 </style>

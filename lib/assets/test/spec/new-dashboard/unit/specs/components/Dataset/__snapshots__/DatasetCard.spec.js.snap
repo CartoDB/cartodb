@@ -186,7 +186,7 @@ exports[`DatasetCard.vue should render multiple tags 1`] = `
         </h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
-        <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon-metadata">
+        <div class="row-metadata"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="icon-metadata">
           <!---->
           <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Just one more tag here" feature="tag" linkroute="tagSearch"><span class="tag-list__more-tags text is-small is-txtSoftGrey">4 DatasetCard.tags</span></featuresdropdown-stub>
         </div>
@@ -279,7 +279,7 @@ exports[`DatasetCard.vue should render tags 1`] = `
         </h3> <span class="card-favorite"><img svg-inline="" src="../../assets/icons/common/favorite.svg"></span>
       </div>
       <div class="row-metadataContainer">
-        <div class="row-metadata"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon-metadata">
+        <div class="row-metadata"><img src="../../assets/icons/common/tag.svg" width="14" height="14" class="icon-metadata">
           <ul class="tag-list">
             <li>
               <router-link to="[object Object]" class="text is-small is-txtSoftGrey tag-list__tag">Hi</router-link><span class="text is-small is-txtSoftGrey">,&nbsp;</span>

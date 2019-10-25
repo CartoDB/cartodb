@@ -22,7 +22,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -55,7 +55,7 @@ exports[`MapCard.vue Events should receive and process correctly the event when 
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -88,7 +88,7 @@ exports[`MapCard.vue Methods should close quick actions 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -121,7 +121,7 @@ exports[`MapCard.vue Methods should open quick actions 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -155,7 +155,7 @@ exports[`MapCard.vue Methods should show thumbnail error 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -188,7 +188,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -221,7 +221,7 @@ exports[`MapCard.vue Methods should toggle mouse hover 2`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -254,7 +254,7 @@ exports[`MapCard.vue should render correct contents 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>
@@ -287,7 +287,7 @@ exports[`MapCard.vue should render description and tag dropdown 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <!---->
         <featuresdropdown-stub list="Hi,Hello,CARTO Rules,Shows dropdown" feature="tag" linkroute="tagSearch"><span class="feature-text text is-caption is-txtGrey">4 MapCard.tags</span></featuresdropdown-stub>
       </li>
@@ -318,7 +318,7 @@ exports[`MapCard.vue should render description and tags 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li>
             <router-link to="[object Object]" class="card-tags__tag">Hi</router-link><span>, </span>
@@ -361,7 +361,7 @@ exports[`MapCard.vue should show the map is shared 1`] = `
       <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/calendar.svg"></span>
         <p>MapCard.lastUpdate</p>
       </li>
-      <li class="card-metadataItem text is-caption"><span class="icon"><img inline-svg="" src="../../assets/icons/maps/tag.svg"></span>
+      <li class="card-metadataItem text is-caption"><span class="icon"><img svg-inline="" src="../../assets/icons/common/tag.svg" class="icon__tags"></span>
         <ul class="card-tags">
           <li><span>MapCard.noTags</span></li>
         </ul>

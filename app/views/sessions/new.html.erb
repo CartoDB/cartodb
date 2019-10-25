@@ -42,7 +42,7 @@
                     <% end %>
 
                     <div class="Sessions-inputLinkAside">
-                      <%= link_to 'Forgot?', forget_password_url %>
+                      <%= link_to 'Forgot?', forget_password_url(organization_name: @organization.try(:name)) %>
                     </div>
                   </div>
 

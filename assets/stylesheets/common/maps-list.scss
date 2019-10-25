@@ -12,9 +12,11 @@
   align-items: center;
   justify-content: flex-start;
   width: $sLayout-width + $sMargin-element;
+  max-height: $sDialogInner-Height;
   margin: 4px auto 0;
   padding-right: $sMargin-elementInline;
   padding-left: $sMargin-elementInline;
+  overflow: scroll;
 }
 
 .MapsList-footer {

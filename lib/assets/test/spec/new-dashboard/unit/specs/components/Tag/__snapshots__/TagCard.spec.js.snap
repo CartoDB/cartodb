@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TagCard should render properly 1`] = `
+<router-link to="[object Object]" class="link">
+  <article class="card tag">
+    <h3 class="tag__title is-txtGrey title is-medium is-semibold">Test Tag</h3>
+    <ul>
+      <li class="tag__count tag__count--maps text is-caption is-txtGrey">
+        TagCard.maps
+      </li>
+      <li class="tag__count tag__count--datasets text is-caption is-txtGrey">
+        TagCard.datasets
+      </li>
+    </ul>
+  </article>
+</router-link>
+`;

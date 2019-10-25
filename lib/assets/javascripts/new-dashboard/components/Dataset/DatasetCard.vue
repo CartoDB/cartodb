@@ -34,7 +34,7 @@
         </div>
         <div class="row-metadataContainer" v-if="hasTags || isSharedWithMe || isSharedWithColleagues">
           <div class="row-metadata" v-if="hasTags" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-            <img class="icon-metadata" svg-inline src="../../assets/icons/common/tag.svg">
+            <img class="icon-metadata" src="../../assets/icons/common/tag.svg" width="14" height="14">
             <ul v-if="tagsChars <= maxTagChars" class="tag-list">
               <li v-for="(tag, index) in dataset.tags" :key="tag">
                 <router-link :to="{ name: 'tagSearch', params: { tag } }" class="text is-small is-txtSoftGrey tag-list__tag">{{ tag }}</router-link><span class="text is-small is-txtSoftGrey" v-if="!isLastTag(index)">,&nbsp;</span>
@@ -360,14 +360,14 @@ export default {
   overflow: hidden;
   transition: all 0.25s cubic-bezier(0.4, 0.01, 0.165, 0.99);
   border-radius: 2px;
-  background-color: $light-grey;
+  background-color: $thumbnail__bg-color;
 
   .row-typeIcon {
-    fill: $text-color;
+    fill: $text__color;
   }
 
   &.row-dataType--premium {
-    background-color: $premium-color;
+    background-color: $color-premium;
 
     .row-typeIcon {
       fill: $white;
@@ -483,7 +483,7 @@ export default {
 
     .icon-metadata {
       margin-right: 4px;
-      transform: translate(0, 1px);
+      transform: translate(0, 2px);
     }
 
     li {

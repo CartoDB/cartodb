@@ -1,4 +1,4 @@
-# coding: UTF-8
+# coding: utf-8
 
 # NOTE that these tests are very sensitive to precisce versions of GDAL (1.9.0)
 # 747 # Table post import processing tests should add a point the_geom column after importing a CSV
@@ -1240,7 +1240,7 @@ describe Table do
 
         table = create_table(user_table: UserTable[data_import.table_id], user_id: @user.id)
         table.should_not be_nil, "Import failure: #{data_import.log}"
-        update_data = {:upo___nombre_partido=>"PSOEE"}
+        update_data = {:upo_nombre_partido=>"PSOEE"}
         id = 5
 
         lambda {
@@ -1248,7 +1248,7 @@ describe Table do
         }.should_not raise_error
 
         res = table.sequel.where(:cartodb_id => 5).first
-        res[:upo___nombre_partido].should == "PSOEE"
+        res[:upo_nombre_partido].should == "PSOEE"
       end
 
       it "should be able to insert data in rows with column names with multiple underscores" do
@@ -1260,14 +1260,14 @@ describe Table do
         table.should_not be_nil, "Import failure: #{data_import.log}"
 
         pk = nil
-        insert_data = {:upo___nombre_partido=>"PSOEE"}
+        insert_data = {:upo_nombre_partido=>"PSOEE"}
 
         lambda {
           pk = table.insert_row!(insert_data)
         }.should_not raise_error
 
         res = table.sequel.where(:cartodb_id => pk).first
-        res[:upo___nombre_partido].should == "PSOEE"
+        res[:upo_nombre_partido].should == "PSOEE"
       end
 
       # No longer used, now we automatically rename reserved word columns
@@ -1398,6 +1398,19 @@ describe Table do
         end
 
         table.rows_counted.should == 7
+      end
+
+      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
+        delete_user_data @user
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('import_raster.tif.zip'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^import_raster/)
+
+        table.update_table_geom_pg_stats
       end
 
       it "should not drop a table that exists when upload fails" do
@@ -2237,6 +2250,26 @@ describe Table do
         pk_row1 = table.insert_row!(:name => 'name1')
         table.actual_row_count.should == 1
         [0, 1].should include(table.estimated_row_count)
+      end
+
+      context 'organization' do
+        include_context 'organization with users helper'
+
+        it 'returns the right row count estimation without mixing tables from other users' do
+          table1 = new_table(user_id: @org_user_1.id, name: 'wadus1')
+          table1.save
+          table1.insert_row!(name: '1')
+          @org_user_1.in_database.run("ANALYZE #{table1.qualified_table_name}")
+
+          table2 = new_table(user_id: @org_user_2.id, name: 'wadus1')
+          table2.save
+          table2.insert_row!(name: '1')
+          table2.insert_row!(name: '2')
+          @org_user_2.in_database.run("ANALYZE #{table2.qualified_table_name}")
+
+          table1.estimated_row_count.should eq 1
+          table2.estimated_row_count.should eq 2
+        end
       end
     end
   end

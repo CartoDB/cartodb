@@ -19,13 +19,6 @@ module.exports = {
 
   public_map_new: glob.sync(rootDir('assets/stylesheets/public_map/**/*.scss')),
 
-  dashboard: [
-    rootDir('lib/assets/javascripts/dashboard/dashboard.js'),
-    ...glob.sync(rootDir('assets/stylesheets/dashboard/*.scss')),
-    rootDir('assets/stylesheets/editor-3/_scroll-view.scss'),
-    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss')
-  ],
-
   new_dashboard: [
     '@babel/polyfill',
     rootDir('lib/assets/javascripts/new-dashboard/main.js'),
@@ -110,6 +103,11 @@ module.exports = {
     rootDir('lib/assets/javascripts/new-dashboard/bundles/lockout/lockout.js')
   ],
 
+  maintenance: [
+    '@babel/polyfill',
+    rootDir('lib/assets/javascripts/new-dashboard/bundles/maintenance/maintenance.js')
+  ],
+
   organization: [
     rootDir('lib/assets/javascripts/dashboard/organization.js'),
     rootDir('assets/stylesheets/plugins/tagit.scss'),
@@ -170,6 +168,8 @@ module.exports = {
     'whatwg-fetch',
     resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
+    rootDir('assets/stylesheets/deep-insights/entry.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 

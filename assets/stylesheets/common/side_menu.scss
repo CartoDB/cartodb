@@ -39,12 +39,11 @@
 .SideMenu-list {
   align-items: center;
   justify-content: space-between;
-  margin: 25px 0;
 }
 
 .SideMenu-typeItem {
   position: relative;
-  line-height: 35px;
+  margin-bottom: 20px;
 
   &:first-child {
     margin-left: 0;
@@ -98,19 +97,10 @@
   }
 }
 
-.SideMenu-helpSegment {
+.SideMenu-separator {
   display: flex;
-  flex-direction: row;
-  padding: 15px;
-  border: 1px solid $cTypography-help;
-  border-radius: 4px;
-  background: $cStructure-grayBkg;
-}
-
-.SideMenu-helpSegment--paragraph {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-left: 15px;
-  color: $cTypography-paragraphs;
+  width: 240px;
+  height: 1px;
+  margin: 20px 0;
+  background-color: rgba(0, 0, 0, 0.1);
 }

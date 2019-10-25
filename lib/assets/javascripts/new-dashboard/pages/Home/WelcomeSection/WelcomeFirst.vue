@@ -4,18 +4,8 @@
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
       <div class="welcome-first__text text is-caption" v-html="text"></div>
       <div class="welcome-first__actions">
-        <CreateButton v-if="!isOrganizationAdmin" visualizationType="map" :disabled="isViewer">
-          {{ $t(`MapsPage.createMap`) }}
-        </CreateButton>
-        <CreateButton v-if="!isOrganizationAdmin" visualizationType="dataset" :disabled="!canCreateDatasets">
-          {{ $t(`DataPage.createDataset`) }}
-        </CreateButton>
-        <a class="button button--small is-primary"
-          :href="`mailto:${organizationMail}`"
-          v-if="isOrganizationUser && !isOrganizationAdmin">
-          {{ $t('HomePage.WelcomeSection.firstTime.contactOrganizationAdmin') }}
-        </a>
-        <a class="button button--small is-primary"
+        <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
+        <a class="button button--border"
           :href="`${ baseUrl }/organization`"
           v-if="isOrganizationAdmin">
           {{ $t('HomePage.WelcomeSection.firstTime.manageOrganization') }}
@@ -26,12 +16,15 @@
 </template>
 
 <script>
+import differenceInDays from 'date-fns/difference_in_days';
 import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
-    CreateButton
+    CreateButton,
+    OnboardingButton
   },
   props: {
     name: String,
@@ -46,7 +39,8 @@ export default {
 
       const firstTimeMessage = this.$t('HomePage.WelcomeSection.firstTime.message');
       const planMessage = this.$t(`HomePage.WelcomeSection.firstTime.planMessage.${this.userType}`, {
-        organizationName
+        organizationName,
+        trialLength: this.trialLength
       });
 
       return `${firstTimeMessage} ${planMessage}`;
@@ -69,6 +63,11 @@ export default {
     },
     isViewer () {
       return this.$store.getters['user/isViewer'];
+    },
+    trialLength () {
+      const trialEndDate = this.$store.state.user.trial_ends_at;
+      const createdAt = this.$store.state.user.created_at;
+      return trialEndDate ? differenceInDays(trialEndDate, createdAt) : null;
     }
   }
 };
@@ -94,7 +93,7 @@ export default {
     justify-content: center;
   }
 
-  .button {
+  .button.button--border {
     border: 1px solid $white;
     background: none;
     color: $white;

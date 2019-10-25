@@ -14,10 +14,10 @@ module Carto
       include AvatarHelper
       include Carto::ControllerHelper
 
-      UPDATE_ME_FIELDS = [
-        :name, :last_name, :website, :description, :location, :twitter_username,
-        :disqus_shortname, :available_for_hire, :company, :industry, :phone, :job_role
-      ].freeze
+      UPDATE_ME_FIELDS = %i(
+        name last_name website description location twitter_username disqus_shortname available_for_hire company
+        industry phone job_role company_employees use_case
+      ).freeze
 
       PASSWORD_DOES_NOT_MATCH_MESSAGE = 'Password does not match'.freeze
 

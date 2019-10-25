@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <title>CARTO VL Example</title>
+      <!-- Load CARTO VL JS -->
+      <script src="https://libs.cartocdn.com/carto-vl/v1.2.4/carto-vl.min.js"></script>
+      <!-- Load Mapbox GL -->
+      <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js"></script>
+      <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css" rel="stylesheet"/>
+      <!-- Load CARTO VL Styles -->
+      <link href="https://carto.com/developers/carto-vl/examples/maps/style.css" rel="stylesheet"/>
+      <style>
+        #map {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="map"></div>
+    </body>
+    <script>
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: carto.basemaps.voyager,
+        center: [0, 30],
+        zoom: 2
+      })
+
+      carto.setDefaultAuth({
+        username: 'public',
+        apiKey: 'default_public'
+      })
+
+      const viz = new carto.Viz(`
+        width: 4
+        strokeWidth: 0.5
+        strokeColor: black
+        color: rgb(10,185,107)
+      `);
+      const source = new carto.source.Dataset('world_ports');
+      const layer = new carto.Layer('layer', source, viz);
+      layer.addTo(map);
+    </script>
+  </html>

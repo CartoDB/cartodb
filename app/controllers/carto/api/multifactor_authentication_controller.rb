@@ -17,6 +17,10 @@ module Carto
 
       setup_default_rescues
 
+      def show
+        render_jsonp({ mfa_required: @service.exists?(type: base_params[:type]) }, 200)
+      end
+
       def create
         if @service.exists?(type: base_params[:type])
           raise Carto::UnprocesableEntityError.new('Multi-factor authentication already exists')

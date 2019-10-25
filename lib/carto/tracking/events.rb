@@ -315,6 +315,19 @@ module Carto
         required_properties :user_id, :visualization_id, :mode_type
       end
 
+      class OauthAppEvent < Event
+        include Carto::Tracking::Services::Segment
+
+        include Carto::Tracking::Validators::User
+
+        required_properties :user_id, :app_id, :app_name
+      end
+
+      class CreatedOauthApp < OauthAppEvent; end
+      class DeletedOauthApp < OauthAppEvent; end
+      class CreatedOauthAppUser < OauthAppEvent; end
+      class DeletedOauthAppUser < OauthAppEvent; end
+
       # Models a generic event for segment.
       class SegmentEvent < Event
         include Carto::Tracking::Services::Segment

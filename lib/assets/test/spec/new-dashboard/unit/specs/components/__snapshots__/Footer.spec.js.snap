@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Footer.vue should render items for free users 1`] = `
-<div class="grid container footer">
+<div class="container grid footer">
   <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
   <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
@@ -31,7 +31,7 @@ exports[`Footer.vue should render items for free users 1`] = `
 `;
 
 exports[`Footer.vue should render items for organization users (no owner) 1`] = `
-<div class="grid container footer">
+<div class="container grid footer">
   <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
   <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
@@ -60,7 +60,7 @@ exports[`Footer.vue should render items for organization users (no owner) 1`] = 
 `;
 
 exports[`Footer.vue should render items for organization users (owner) 1`] = `
-<div class="grid container footer">
+<div class="container grid footer">
   <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
   <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">
@@ -87,7 +87,7 @@ exports[`Footer.vue should render items for organization users (owner) 1`] = `
 `;
 
 exports[`Footer.vue should render items for pro users 1`] = `
-<div class="grid container footer">
+<div class="container grid footer">
   <div class="grid-cell grid-cell--col3 grid-cell--col12--mobile footer-logo"><a href="https://carto.com"><img src="../assets/icons/common/cartoLogo.svg" class="carto-logo"></a></div>
   <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
     <div class="footer-block"><a href="https://carto.com/help" target="_blank" class="footer-link">

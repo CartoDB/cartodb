@@ -2,9 +2,8 @@
 
 module Carto
   class FederatedTablesService
-    def initialize(user, page, per_page, order, direction, offset)
+    def initialize(user, per_page, order, direction, offset)
       @user = user
-      @page = page
       @per_page = per_page
       @order = order
       @direction = direction

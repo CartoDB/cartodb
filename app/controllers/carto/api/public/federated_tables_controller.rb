@@ -14,7 +14,7 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def list
-          service = Carto::FederatedTablesService.new(@user, @page, @per_page, @order, @direction, @offset)
+          service = Carto::FederatedTablesService.new(@user, @per_page, @order, @direction, @offset)
 
           result = service.list_servers()
           total = service.count_servers()

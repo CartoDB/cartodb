@@ -14,10 +14,16 @@ describe Carto::Api::Public::FederatedTablesController do
     it 'returns 200 with the federated server list' do
       get_json api_v4_federated_servers_list_servers_url(@params) do |response|
         expect(response.status).to eq(200)
+
         expect(response.body[:total]).to eq(2)
+
         expect(response.body[:result][0][:name]).to eq('amazon')
         expect(response.body[:result][0][:dbname]).to eq('testdb')
         expect(response.body[:result][0][:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
+
+        expect(response.body[:result][1][:name]).to eq('azure')
+        expect(response.body[:result][1][:dbname]).to eq('db')
+        expect(response.body[:result][1][:host]).to eq('us-east-2.azure.com')
       end
     end
   end

@@ -7,31 +7,29 @@ module Carto
         extend Carto::DefaultRescueFroms
 
         before_action :load_user
-        before_action :load_params
+        before_action :load_service
+        before_action :load_params, only: [:index]
         before_action :check_permissions
+        before_action :load_federated_server, only: [:update, :show]
 
         setup_default_rescues
 
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def index
-          service = Carto::FederatedTablesService.new(user: @user)
-
-          result = service.list_servers(
+          result = @service.list_servers(
             page: @page,
             per_page: @per_page,
             order: @order,
             direction: @direction
           )
-          total = service.count_servers()
+          total = @service.count_servers()
 
           render_paged(result, total)
         end
 
         def register
-          service = Carto::FederatedTablesService.new(user: @user)
-
-          federated_server = service.register_server(
+          federated_server = @service.register_server(
             name: params[:name],
             mode: params[:mode],
             dbname: params[:dbname],
@@ -47,22 +45,15 @@ module Carto
         end
 
         def show
-          service = Carto::FederatedTablesService.new(user: @user)
+          raise Carto::LoadError.new("Federated server key not found: #{name}") if @federated_server.empty?
+          @federated_server[:password] = '********'
 
-          federated_server = service.get_server(name: params[:name])
-          raise Carto::LoadError.new("Federated server key not found: #{name}") if federated_server.empty?
-          federated_server[:password] = '********'
-
-          render_jsonp(federated_server, 200)
+          render_jsonp(@federated_server, 200)
         end
 
         def update
-          service = Carto::FederatedTablesService.new(user: @user)
-
-          federated_server = service.get_server(name: params[:name])
-
-          if federated_server.empty?
-            federated_server = service.register_server(
+          if @federated_server.empty?
+            @federated_server = @service.register_server(
               name: params[:name],
               mode: params[:mode],
               dbname: params[:dbname],
@@ -72,12 +63,12 @@ module Carto
               password: params[:password]
             )
 
-            response.headers['Content-Location'] = "#{request.path}/#{federated_server[:name]}"
+            response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:name]}"
 
             return render_jsonp({}, 201)
           end
 
-          federated_server = service.update_server(
+          @federated_server = @service.update_server(
             name: params[:name],
             mode: params[:mode],
             dbname: params[:dbname],
@@ -96,11 +87,19 @@ module Carto
           @user = ::User.where(id: current_viewer.id).first
         end
 
+        def load_service
+          @service = Carto::FederatedTablesService.new(user: @user)
+        end
+
         def load_params
           @page, @per_page, @order, @direction = page_per_page_order_params(
             VALID_ORDER_PARAMS, default_order: 'name',
             default_order_direction: 'asc'
           )
+        end
+
+        def load_federated_server
+          @federated_server = @service.get_server(name: params[:name])
         end
 
         def check_permissions

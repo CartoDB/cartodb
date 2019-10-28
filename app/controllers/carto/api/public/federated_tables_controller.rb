@@ -8,14 +8,16 @@ module Carto
 
         before_action :load_user
         before_action :load_service
-        before_action :load_params, only: [:list_federated_servers]
+        before_action :load_params, only: [:list_federated_servers, :list_remote_schemas]
         before_action :check_permissions
-        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
-        before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
+        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server, :list_remote_schemas]
+        before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server, :list_remote_schemas]
 
         setup_default_rescues
 
         VALID_ORDER_PARAMS = %i(name).freeze
+
+        # Federated Servers
 
         def list_federated_servers
           result = @service.list_servers(
@@ -85,6 +87,19 @@ module Carto
           render_jsonp({}, 204)
         end
 
+        # Remote Schemas
+
+        def list_remote_schemas
+          result = @service.list_remote_schemas(
+            page: @page,
+            per_page: @per_page,
+            order: @order,
+            direction: @direction
+          )
+          total = @service.count_remote_schemas()
+          render_paged(result, total)
+        end
+
         private
 
         def load_user
@@ -103,11 +118,11 @@ module Carto
         end
 
         def load_federated_server
-          @federated_server = @service.get_server(name: params[:name])
+          @federated_server = @service.get_server(name: params[:federated_server_name])
         end
 
         def check_federated_server
-          raise Carto::LoadError.new("Federated server key not found: #{params[:name]}") if @federated_server.empty?
+          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") if @federated_server.empty?
         end
 
         def check_permissions

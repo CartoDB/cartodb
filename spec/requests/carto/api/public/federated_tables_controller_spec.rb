@@ -95,7 +95,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#show_federated_server' do
     it 'returns 200 with the federated server' do
-      params = { name: 'amazon', api_key: @user1.api_key }
+      params = { federated_server_name: 'amazon', api_key: @user1.api_key }
 
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(200)
@@ -107,7 +107,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { name: 'amazon' }
+      params = { federated_server_name: 'amazon' }
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -115,7 +115,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { name: 'amazon', api_key: api_key.token }
+      params = { federated_server_name: 'amazon', api_key: api_key.token }
 
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(403)
@@ -123,7 +123,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     xit 'returns 404 when there is not a faderated server with the provided name' do
-      params = { name: 'wadus', api_key: @user1.api_key }
+      params = { federated_server_name: 'wadus', api_key: @user1.api_key }
 
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(404)
@@ -144,7 +144,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     xit 'returns 201 with the federated server created' do
-      params = { name: 'azure', api_key: @user1.api_key }
+      params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
         puts response.body
@@ -154,7 +154,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 204 with the federated server updated' do
-      params = { name: 'azure', api_key: @user1.api_key }
+      params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
         expect(response.status).to eq(204)
@@ -162,7 +162,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { name: 'azure' }
+      params = { federated_server_name: 'azure' }
       put_json api_v4_federated_servers_update_server_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -170,7 +170,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { name: 'azure', api_key: api_key.token }
+      params = { federated_server_name: 'azure', api_key: api_key.token }
 
       put_json api_v4_federated_servers_update_server_url(params) do |response|
         expect(response.status).to eq(403)
@@ -178,7 +178,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     xit 'returns 422 when payload is missing' do
-      params = { name: 'azure', api_key: @user1.api_key }
+      params = { federated_server_name: 'azure', api_key: @user1.api_key }
       payload = {}
 
       put_json api_v4_federated_servers_update_server_url(params), payload do |response|
@@ -189,7 +189,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#unregister_federated_server' do
     it 'returns 204 with the federated server destroyed' do
-      params = { name: 'azure', api_key: @user1.api_key }
+      params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_server_url(params), @payload do |response|
         expect(response.status).to eq(204)
@@ -197,7 +197,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { name: 'azure' }
+      params = { federated_server_name: 'azure' }
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -205,7 +205,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { name: 'azure', api_key: api_key.token }
+      params = { federated_server_name: 'azure', api_key: api_key.token }
 
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(403)
@@ -213,10 +213,42 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     xit 'returns 404 when there is not a faderated server with the provided name' do
-      params = { name: 'wadus', api_key: @user1.api_key }
+      params = { federated_server_name: 'wadus', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(404)
+      end
+    end
+  end
+
+  describe '#list_remote_schemas' do
+    it 'returns 200 with the remote schemas list' do
+      params = { federated_server_name: 'amazon', api_key: @user1.api_key, page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_schemas_url(params) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:total]).to eq(2)
+
+        expect(response.body[:result][0][:name]).to eq('default')
+        expect(response.body[:result][1][:name]).to eq('locations')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_schemas_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', api_key: api_key.token, page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_schemas_url(params) do |response|
+        expect(response.status).to eq(403)
       end
     end
   end

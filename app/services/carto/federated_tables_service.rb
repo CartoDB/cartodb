@@ -6,6 +6,8 @@ module Carto
       @user_db_connection = @user.in_database()
     end
 
+    # Federated Servers
+
     def list_servers(page: 1, per_page: 10, order:, direction:)
       offset = (page - 1) * per_page
 
@@ -59,6 +61,25 @@ module Carto
       @superuser_db_connection[
         unregister_federated_server_query(name: name)
       ].first
+    end
+
+    # Remote Schemas
+
+    def list_remote_schemas(page: 1, per_page: 10, order:, direction:)
+      offset = (page - 1) * per_page
+
+      @user_db_connection[
+        select_remote_schemas_query(
+          per_page: per_page,
+          offset: offset,
+          order: order,
+          direction: direction
+        )
+      ].all
+    end
+
+    def count_remote_schemas
+      @user_db_connection[count_remote_schemas_query].first[:count]
     end
 
     private
@@ -152,6 +173,31 @@ module Carto
           '5432' as port,
           'read_only_user' as username,
           'secret' as password
+      }.squish
+    end
+
+    # Remote Schemas
+
+    def select_remote_schemas_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
+      %{
+        SELECT * FROM (#{select_schemas_query}) AS remote_schemas
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
+      }.squish
+    end
+
+    def count_remote_schemas_query
+      "SELECT COUNT(*) FROM (#{select_schemas_query}) AS remote_schemas"
+    end
+
+    def select_schemas_query
+      %{
+        SELECT
+          'default' as name
+        UNION ALL
+        SELECT
+          'locations' as name
       }.squish
     end
   end

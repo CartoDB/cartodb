@@ -63,7 +63,7 @@
       <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.mfa_description') %></p>
     </div>
   </div>
-  
+
   <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
@@ -83,7 +83,7 @@
       </div>
     </div>
   <% } %>
-  
+
 
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">
@@ -105,7 +105,7 @@
       <p class="FormAccount-footerText"></p>
     <% } %>
 
-    <button type="submit" class="CDB-Button CDB-Button--primary">
+    <button type="submit" class="CDB-Button CDB-Button--primary js-save">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('account.views.form.save_changes') %></span>
     </button>
   </div>

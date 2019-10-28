@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   class FederatedTablesService
     def initialize(user, per_page, order, direction, offset)

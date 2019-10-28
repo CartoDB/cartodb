@@ -1,11 +1,13 @@
 module Carto
   class FederatedTablesService
-    def initialize(user, per_page, order, direction, offset)
+    def initialize(user, page, per_page, order, direction)
       @user = user
+
       @per_page = per_page
       @order = order
       @direction = direction
-      @offset = offset
+      @offset = (page - 1) * per_page
+
       @superuser_db_connection = @user.in_database(as: :superuser)
       @user_db_connection = @user.in_database()
     end

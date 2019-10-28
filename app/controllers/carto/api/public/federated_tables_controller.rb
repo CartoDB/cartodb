@@ -12,7 +12,7 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def list
-          service = Carto::FederatedTablesService.new(@user, @per_page, @order, @direction, @offset)
+          service = Carto::FederatedTablesService.new(@user, @page, @per_page, @order, @direction)
 
           result = service.list_servers()
           total = service.count_servers()
@@ -30,7 +30,6 @@ module Carto
           @page, @per_page, @order, @direction = page_per_page_order_params(
             VALID_ORDER_PARAMS, default_order: 'name', default_order_direction: 'asc'
           )
-          @offset = (@page - 1) * @per_page
         end
 
         def render_paged(result, total)

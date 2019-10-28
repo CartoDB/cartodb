@@ -1,19 +1,22 @@
 module Carto
   class FederatedTablesService
-    def initialize(user:, page: 1, per_page: 10, order: 'name', direction: 'asc')
+    def initialize(user:)
       @user = user
-
-      @per_page = per_page
-      @order = order
-      @direction = direction
-      @offset = (page - 1) * per_page
-
       #@superuser_db_connection = @user.in_database(as: :superuser)
       @user_db_connection = @user.in_database()
     end
 
-    def list_servers
-      @user_db_connection[select_federated_servers_query].all
+    def list_servers(page: 1, per_page: 10, order:, direction:)
+      offset = (page - 1) * per_page
+
+      @user_db_connection[
+        select_federated_servers_query(
+          per_page: per_page,
+          offset: offset,
+          order: order,
+          direction: direction
+        )
+      ].all
     end
 
     def count_servers
@@ -22,12 +25,12 @@ module Carto
 
     private
 
-    def select_federated_servers_query
+    def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
       %{
         SELECT * FROM (#{select_servers_query}) AS federated_servers
-        ORDER BY #{@order} #{@direction}
-        LIMIT #{@per_page}
-        OFFSET #{@offset}
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
       }.squish
     end
 

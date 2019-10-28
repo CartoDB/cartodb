@@ -15,15 +15,14 @@ module Carto
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def index
-          service = Carto::FederatedTablesService.new(
-            user: @user,
+          service = Carto::FederatedTablesService.new(user: @user)
+
+          result = service.list_servers(
             page: @page,
             per_page: @per_page,
             order: @order,
             direction: @direction
           )
-
-          result = service.list_servers()
           total = service.count_servers()
 
           render_paged(result, total)

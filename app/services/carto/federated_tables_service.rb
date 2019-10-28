@@ -25,7 +25,7 @@ module Carto
 
     def register_server(name:, mode:, dbname:, host:, port:, username:, password:)
       @superuser_db_connection[
-        register_server_query(
+        register_federated_server_query(
           name: name,
           mode: mode,
           dbname: dbname,
@@ -94,7 +94,7 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def register_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
+    def register_federated_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
       %{
         SELECT
           '#{name}' as name,

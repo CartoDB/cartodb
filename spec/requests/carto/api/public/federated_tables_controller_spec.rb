@@ -29,18 +29,18 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 401 when non authenticated user' do
-      @params = { page: 1, per_page: 10 }
+      params = { page: 1, per_page: 10 }
 
-      get_json api_v4_federated_servers_list_servers_url(@params) do |response|
+      get_json api_v4_federated_servers_list_servers_url(params) do |response|
         expect(response.status).to eq(401)
       end
     end
 
     it 'returns 403 when using a regular API key' do
-      @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { api_key: api_key.token, page: 1, per_page: 10 }
 
-      get_json api_v4_federated_servers_list_servers_url(@params.merge(api_key: api_key.token)) do |response|
+      get_json api_v4_federated_servers_list_servers_url(params) do |response|
         expect(response.status).to eq(403)
       end
     end

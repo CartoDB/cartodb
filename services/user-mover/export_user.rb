@@ -481,11 +481,11 @@ module CartoDB
       end
 
       def disable_ghost_tables_event_trigger
-        pg_conn.exec("SELECT cartodb.CDB_DisableGhostTablesTrigger()")
+        user_pg_conn.exec("SELECT CDB_DisableGhostTablesTrigger()")
       end
 
       def enable_ghost_tables_event_trigger
-        pg_conn.exec("SELECT cartodb.CDB_EnableGhostTablesTrigger()")
+        user_pg_conn.exec("SELECT CDB_EnableGhostTablesTrigger()")
       end
 
       def initialize(options)

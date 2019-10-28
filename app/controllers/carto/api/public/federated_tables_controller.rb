@@ -8,16 +8,16 @@ module Carto
 
         before_action :load_user
         before_action :load_service
-        before_action :load_params, only: [:index]
+        before_action :load_params, only: [:list_federated_servers]
         before_action :check_permissions
-        before_action :load_federated_server, only: [:update, :destroy, :show]
-        before_action :check_federated_server, only: [:destroy, :show]
+        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
+        before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
 
         setup_default_rescues
 
         VALID_ORDER_PARAMS = %i(name).freeze
 
-        def index
+        def list_federated_servers
           result = @service.list_servers(
             page: @page,
             per_page: @per_page,
@@ -29,7 +29,7 @@ module Carto
           render_paged(result, total)
         end
 
-        def register
+        def register_federated_server
           federated_server = @service.register_server(
             name: params[:name],
             mode: params[:mode],
@@ -45,14 +45,12 @@ module Carto
           render_jsonp({}, 201)
         end
 
-        def show
-          raise Carto::LoadError.new("Federated server key not found: #{params[:name]}") if @federated_server.empty?
+        def show_federated_server
           @federated_server[:password] = '********'
-
           render_jsonp(@federated_server, 200)
         end
 
-        def update
+        def update_federated_server
           if @federated_server.empty?
             @federated_server = @service.register_server(
               name: params[:name],
@@ -82,8 +80,8 @@ module Carto
           render_jsonp({}, 204)
         end
 
-        def destroy
-          @service.destroy_server(name: params[:name])
+        def unregister_federated_server
+          @service.unregister_server(name: params[:name])
           render_jsonp({}, 204)
         end
 

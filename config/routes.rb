@@ -597,11 +597,13 @@ CartoDB::Application.routes.draw do
       end
 
       # Federated Tables
-      get 'federated_servers', to: 'federated_tables#index', as: :api_v4_federated_servers_list_servers
-      post 'federated_servers' => 'federated_tables#register', as: :api_v4_federated_servers_register_server
-      get 'federated_servers/:name' => 'federated_tables#show', as: :api_v4_federated_servers_get_server
-      put 'federated_servers/:name' => 'federated_tables#update', as: :api_v4_federated_servers_update_server
-      delete 'federated_servers/:name' => 'federated_tables#destroy', as: :api_v4_federated_servers_destroy_server
+
+      ## Federated servers
+      get 'federated_servers', to: 'federated_tables#list_federated_servers', as: :api_v4_federated_servers_list_servers
+      post 'federated_servers' => 'federated_tables#register_federated_server', as: :api_v4_federated_servers_register_server
+      get 'federated_servers/:name' => 'federated_tables#show_federated_server', as: :api_v4_federated_servers_get_server
+      put 'federated_servers/:name' => 'federated_tables#update_federated_server', as: :api_v4_federated_servers_update_server
+      delete 'federated_servers/:name' => 'federated_tables#unregister_federated_server', as: :api_v4_federated_servers_unregister_server
     end
 
     scope 'v3/' do

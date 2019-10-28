@@ -55,9 +55,9 @@ module Carto
       ].first
     end
 
-    def destroy_server(name:)
+    def unregister_server(name:)
       @superuser_db_connection[
-        destroy_federated_server_query(name: name)
+        unregister_federated_server_query(name: name)
       ].first
     end
 
@@ -142,7 +142,7 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def destroy_federated_server_query(name:)
+    def unregister_federated_server_query(name:)
       %{
         SELECT
           '#{name}' as name,

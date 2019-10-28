@@ -121,5 +121,13 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.status).to eq(403)
       end
     end
+
+    xit 'returns 404 when there is not a faderated server with the provided name' do
+      params = { name: 'wadus', api_key: @user1.api_key }
+
+      get_json api_v4_federated_servers_get_server_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
   end
 end

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module BatchQueriesStatementTimeout
     def batch_queries_statement_timeout

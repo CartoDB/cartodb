@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'dropbox_api'
 require_relative '../base_oauth'
 require_relative '../../../../../lib/dropbox_api/endpoints/auth/token/revoke'

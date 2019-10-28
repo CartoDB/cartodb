@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../lib/importer/column'
 require_relative '../factories/pg_connection'
 require_relative '../doubles/log'

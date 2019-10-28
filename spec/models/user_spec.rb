@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'

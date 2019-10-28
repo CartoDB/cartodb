@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   namespace :tables do
     desc 'Set the bounding box for the canonical tables of the user'

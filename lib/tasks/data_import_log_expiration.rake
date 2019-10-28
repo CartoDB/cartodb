@@ -1,4 +1,3 @@
-# encoding: utf-8
 namespace :dataimport do
   namespace :log do
     desc 'Set expiration of DataImport logs to 2 days'

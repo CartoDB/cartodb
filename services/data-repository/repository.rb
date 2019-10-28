@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'uuidtools'
 require_relative 'backend/detector'
 require_relative 'backend/memory'

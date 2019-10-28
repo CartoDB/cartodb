@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'hires_geocoder'
 require_relative 'hires_batch_geocoder'
 require_relative 'geocoder_config'

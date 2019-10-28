@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'

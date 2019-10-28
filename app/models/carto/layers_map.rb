@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_record'
 require_dependency 'carto/visualization_backup_service'
 

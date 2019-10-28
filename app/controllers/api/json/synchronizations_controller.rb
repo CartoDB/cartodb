@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'json'
 require_relative '../../../models/synchronization/member'
 require_relative '../../../models/synchronization/collection'

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../spec_helper'
 
 # Tests should define the following methods:

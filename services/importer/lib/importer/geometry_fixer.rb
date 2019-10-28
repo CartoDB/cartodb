@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './column'
 require_relative './job'
 require_relative './query_batcher'

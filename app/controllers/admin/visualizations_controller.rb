@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../models/map/presenter'
 require_relative '../carto/admin/user_table_public_map_adapter'
 require_relative '../carto/admin/visualization_public_map_adapter'

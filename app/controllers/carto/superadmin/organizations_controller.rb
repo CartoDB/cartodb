@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_dependency 'carto/superadmin/metrics_controller_helper'
 
 module Carto

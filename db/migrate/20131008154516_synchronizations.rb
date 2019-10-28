@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class SynchronizationsMigration < Sequel::Migration
   def up
     create_table :synchronizations do

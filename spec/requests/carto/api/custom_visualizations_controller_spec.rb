@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
 require 'support/helpers'
 require_relative '../../../../app/controllers/carto/api/public/custom_visualizations_controller'

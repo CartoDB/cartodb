@@ -130,10 +130,6 @@ export default {
   padding-top: 64px;
 }
 
-.full-width {
-  width: 100%;
-}
-
 .catalogDetail {
   margin-top: 64px;
 

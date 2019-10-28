@@ -49,6 +49,8 @@ sudo make install
   * Add list of datasets for new Catalogue page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
   * Add interactivity/filtering section to new Catalogue page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
   * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
+* Kuviz page:
+  * [Dashboard] Add Kuviz page (I) - STRUCTURE ([#15170](https://github.com/CartoDB/cartodb/issues/15170))
 
 ### Bug fixes / enhancements
 * Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))

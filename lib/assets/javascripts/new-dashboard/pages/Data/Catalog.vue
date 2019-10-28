@@ -250,8 +250,4 @@ export default {
     }
   }
 }
-
-.full-width {
-  width: 100%;
-}
 </style>

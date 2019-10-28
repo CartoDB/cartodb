@@ -69,16 +69,12 @@ export default {
 @import "new-dashboard/styles/variables";
 
 .maps-section {
-  .full-width {
-    width: 100%;
+  .viewall-link {
+    display: block;
+    margin-top: 64px;
+    letter-spacing: 1px;
+    text-align: center;
+    text-transform: uppercase;
   }
-}
-
-.viewall-link {
-  display: block;
-  margin-top: 64px;
-  letter-spacing: 1px;
-  text-align: center;
-  text-transform: uppercase;
 }
 </style>

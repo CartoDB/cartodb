@@ -10,7 +10,7 @@ exports[`DatasetsList.vue should render empty state 1`] = `
   <!---->
   <!---->
   <div class="grid-cell grid-cell--col12">
-    <emptystate-stub text="DataPage.emptyCase.default"><img svg-inline="" src="../assets/icons/common/compass.svg"></emptystate-stub>
+    <emptystate-stub text="DatasetsPage.emptyCase.default"><img svg-inline="" src="../assets/icons/common/compass.svg"></emptystate-stub>
   </div>
   <!---->
 </div>
@@ -25,7 +25,7 @@ exports[`DatasetsList.vue should render initial state 1`] = `
     </sectiontitle-stub>
   </div>
   <div class="grid-cell grid-cell--col12">
-    <initialstate-stub title="DataPage.zeroCase.title"><template></template> <template></template> <template></template></initialstate-stub>
+    <initialstate-stub title="DatasetsPage.zeroCase.title"><template></template> <template></template> <template></template></initialstate-stub>
   </div>
   <!---->
   <!---->

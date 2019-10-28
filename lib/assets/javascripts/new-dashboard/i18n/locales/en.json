@@ -54,7 +54,7 @@
       "delete": "Delete"
     }
   },
-  "DataPage": {
+  "DatasetsPage": {
     "header": {
       "title": {
         "mine": "Your Datasets",
@@ -77,10 +77,6 @@
     "emptyCase": {
       "default": "There are no datasets here.",
       "onlyShared": "No datasets here. Go to the <a href='{path}'>datasets shared with you</a>."
-    },
-    "tabs": {
-      "yourDatasets": "Your Datasets",
-      "catalog": "Catalog"
     }
   },
   "MapsPage": {
@@ -664,6 +660,13 @@
       "mobileApps": "Mobile apps"
     }
   },
+  "DataSelectorPage":
+  {
+    "tabs": {
+      "yourDatasets": "Your Datasets",
+      "catalog": "Catalog"
+    }
+  },
   "CatalogPage": {
     "header": "Catalog"
   },
@@ -693,5 +696,16 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "MapsSelectorPage":
+  {
+    "tabs": {
+      "yourMaps": "Your Maps",
+      "kuviz": "CARTOframes"
+    }
+  },
+  "KuvizPage": {
+    "header": "CARTOframes",
+    "new": "New Map"
   }
 }

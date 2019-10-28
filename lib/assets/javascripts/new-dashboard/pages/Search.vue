@@ -273,10 +273,6 @@ export default {
   }
 }
 
-.full-width {
-  width: 100%;
-}
-
 .grid__head--sticky {
   top: 128px;
 }

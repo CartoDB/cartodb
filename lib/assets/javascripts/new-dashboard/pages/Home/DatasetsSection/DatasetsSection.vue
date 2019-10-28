@@ -62,10 +62,6 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.full-width {
-  width: 100%;
-}
-
 .viewall-link {
   display: block;
   margin-top: 64px;

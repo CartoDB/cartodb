@@ -3,10 +3,10 @@
     <SecondaryNavigation>
       <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
-          <span>{{ $t('DataPage.tabs.yourDatasets') }}</span>
+          <span>{{ $t('DataSelectorPage.tabs.yourDatasets') }}</span>
         </router-link>
         <router-link :to="{ name: 'catalog' }" class="tabs__item title is-small" active-class="is-active">
-          <span>{{ $t('DataPage.tabs.catalog') }}</span>
+          <span>{{ $t('DataSelectorPage.tabs.catalog') }}</span>
         </router-link>
       </div>
     </SecondaryNavigation>
@@ -20,7 +20,7 @@ import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import { isAllowed } from 'new-dashboard/core/configuration/filters';
 
 export default {
-  name: 'DataPage',
+  name: 'DataSelectorPage',
   components: {
     Page,
     SecondaryNavigation

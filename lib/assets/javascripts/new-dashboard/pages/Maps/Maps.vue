@@ -1,5 +1,5 @@
 <template>
-  <Page>
+  <section class="maps-section">
     <StickySubheader :is-visible="Boolean(selectedMaps.length && isScrollPastHeader)">
       <h2 class="title is-caption">
         {{ $t('BulkActions.selected', {count: selectedMaps.length}) }}
@@ -25,7 +25,7 @@
       @selectionChange="updateSelected" />
 
     <Pagination v-if="shouldShowPagination" :page=currentPage :numPages=numPages @pageChange="goToPage"></Pagination>
-  </Page>
+  </section>
 </template>
 
 <script>
@@ -148,3 +148,12 @@ export default {
   }
 };
 </script>
+
+<style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
+
+.maps-section {
+  margin-top: 64px;
+}
+
+</style>

@@ -8,7 +8,7 @@
 
         <template slot="title">
           <VisualizationsTitle
-            :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
+            :defaultTitle="$t(`DatasetsPage.header.title['${appliedFilter}']`)"
             :selectedItems="selectedDatasets.length"
             :vizQuota="datasetsQuota"
             :vizCount="datasetsCount"
@@ -17,7 +17,7 @@
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
           <BadgeWarning>
-            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+            <div class="warning" v-html="$t('DatasetsPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
           </BadgeWarning>
         </template>
 
@@ -43,22 +43,22 @@
 
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
           <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
-            {{ $t(`DataPage.createDataset`) }}
+            {{ $t(`DatasetsPage.createDataset`) }}
           </CreateButton>
         </template>
       </SectionTitle>
     </div>
 
     <div class="grid-cell grid-cell--col12" v-if="initialState">
-      <InitialState :title="$t(`DataPage.zeroCase.title`)">
+      <InitialState :title="$t(`DatasetsPage.zeroCase.title`)">
         <template slot="icon">
           <img svg-inline src="../assets/icons/datasets/initialState.svg">
         </template>
         <template slot="description">
-          <p class="text is-caption is-txtGrey" v-html="$t(`DataPage.zeroCase.description`)"></p>
+          <p class="text is-caption is-txtGrey" v-html="$t(`DatasetsPage.zeroCase.description`)"></p>
         </template>
         <template slot="actionButton">
-          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DataPage.zeroCase.createDataset`) }}</CreateButton>
+          <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">{{ $t(`DatasetsPage.zeroCase.createDataset`) }}</CreateButton>
         </template>
       </InitialState>
     </div>
@@ -195,7 +195,7 @@ export default {
     },
     emptyStateText () {
       const route = this.$router.resolve({name: 'datasets', params: { filter: 'shared' }});
-      return this.hasSharedDatasets ? this.$t('DataPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DataPage.emptyCase.default', { path: route.href });
+      return this.hasSharedDatasets ? this.$t('DatasetsPage.emptyCase.onlyShared', { path: route.href }) : this.$t('DatasetsPage.emptyCase.default', { path: route.href });
     },
     isFirstTimeViewerAfterAction () {
       // First time viewing dashboard but user has performed any action such as drag and dropping a dataset (no page refreshing)
@@ -274,10 +274,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-.full-width {
-  width: 100%;
-}
 
 .grid__head--sticky {
   top: 128px;

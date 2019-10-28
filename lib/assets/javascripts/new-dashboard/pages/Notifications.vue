@@ -75,10 +75,6 @@ export default {
   margin-bottom: 44px;
 }
 
-.full-width {
-  width: 100%;
-}
-
 .notification-item {
   margin-bottom: 36px;
   border-bottom: 1px solid $softblue;

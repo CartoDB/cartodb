@@ -50,6 +50,7 @@ module Carto
           service = Carto::FederatedTablesService.new(user: @user)
 
           federated_server = service.get_server(name: params[:name])
+          raise Carto::LoadError.new("Federated server key not found: #{name}") if federated_server.empty?
           federated_server[:password] = '********'
 
           render_jsonp(federated_server, 200)

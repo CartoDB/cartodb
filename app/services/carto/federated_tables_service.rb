@@ -2,7 +2,7 @@ module Carto
   class FederatedTablesService
     def initialize(user:)
       @user = user
-      #@superuser_db_connection = @user.in_database(as: :superuser)
+      @superuser_db_connection = @user.in_database(as: :superuser)
       @user_db_connection = @user.in_database()
     end
 
@@ -23,6 +23,20 @@ module Carto
       @user_db_connection[count_federated_servers_query].first[:count]
     end
 
+    def register_server(name:, mode:, dbname:, host:, port:, username:, password:)
+      @superuser_db_connection[
+        register_server_query(
+          name: name,
+          mode: mode,
+          dbname: dbname,
+          host: host,
+          port: port,
+          username: username,
+          password: password
+        )
+      ].first
+    end
+
     private
 
     def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
@@ -38,6 +52,7 @@ module Carto
       "SELECT COUNT(*) FROM (#{select_servers_query}) AS federated_servers"
     end
 
+    # WIP: Fake query to return a list of federated servers
     def select_servers_query
       %{
         SELECT
@@ -57,6 +72,20 @@ module Carto
           '5432' as port,
           'cartofante' as username,
           '*****' as password
+      }.squish
+    end
+
+    # WIP: Fake query to return register a federated server
+    def register_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
+      %{
+        SELECT
+          '#{name}' as name,
+          '#{mode}' as mode,
+          '#{dbname}' as dbname,
+          '#{host}' as host,
+          '#{port}' as port,
+          '#{username}' as username,
+          '#{password}' as password
       }.squish
     end
   end

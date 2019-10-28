@@ -28,6 +28,24 @@ module Carto
           render_paged(result, total)
         end
 
+        def register
+          service = Carto::FederatedTablesService.new(user: @user)
+
+          federated_server = service.register_server(
+            name: params[:name],
+            mode: params[:mode],
+            dbname: params[:dbname],
+            host: params[:host],
+            port: params[:port],
+            username: params[:username],
+            password: params[:password]
+          )
+
+          response.headers['Content-Location'] = "#{request.path}/#{federated_server[:name]}"
+
+          render_jsonp({}, 201)
+        end
+
         private
 
         def load_user

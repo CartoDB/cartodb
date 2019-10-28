@@ -46,6 +46,15 @@ module Carto
           render_jsonp({}, 201)
         end
 
+        def show
+          service = Carto::FederatedTablesService.new(user: @user)
+
+          federated_server = service.get_server(name: params[:name])
+          federated_server[:password] = '********'
+
+          render_jsonp(federated_server, 200)
+        end
+
         private
 
         def load_user

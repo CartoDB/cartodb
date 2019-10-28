@@ -11,9 +11,9 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#index' do
     it 'returns 200 with the federated server list' do
-      @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
+      params = { api_key: @user1.api_key, page: 1, per_page: 10 }
 
-      get_json api_v4_federated_servers_list_servers_url(@params) do |response|
+      get_json api_v4_federated_servers_list_servers_url(params) do |response|
         expect(response.status).to eq(200)
 
         expect(response.body[:total]).to eq(2)
@@ -89,6 +89,36 @@ describe Carto::Api::Public::FederatedTablesController do
 
       post_json api_v4_federated_servers_register_server_url(params), payload do |response|
         expect(response.status).to eq(422)
+      end
+    end
+  end
+
+  describe '#show' do
+    it 'returns 200 with the federated server' do
+      params = { name: 'amazon', api_key: @user1.api_key }
+
+      get_json api_v4_federated_servers_get_server_url(params) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:name]).to eq('amazon')
+        expect(response.body[:dbname]).to eq('testdb')
+        expect(response.body[:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { name: 'amazon' }
+      get_json api_v4_federated_servers_get_server_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { name: 'amazon', api_key: api_key.token }
+
+      get_json api_v4_federated_servers_get_server_url(params) do |response|
+        expect(response.status).to eq(403)
       end
     end
   end

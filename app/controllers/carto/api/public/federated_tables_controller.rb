@@ -11,7 +11,7 @@ module Carto
 
         VALID_ORDER_PARAMS = %i(name).freeze
 
-        def list
+        def index
           service = Carto::FederatedTablesService.new(@user, @page, @per_page, @order, @direction)
 
           result = service.list_servers()

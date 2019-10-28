@@ -597,7 +597,7 @@ CartoDB::Application.routes.draw do
       end
 
       # Federated Tables
-      get 'federated_servers', to: 'federated_tables#list', as: :api_v4_federated_servers_list_servers
+      get 'federated_servers', to: 'federated_tables#index', as: :api_v4_federated_servers_list_servers
       #post 'federated_servers' => 'federated_tabled#register', as: :api_v4_federated_servers_register_server
       #get 'federated_servers/:federated_server_name' => 'federated_tabled#get', as: :api_v4_federated_servers_get_server
     end

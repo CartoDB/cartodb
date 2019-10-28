@@ -55,6 +55,40 @@ module Carto
           render_jsonp(federated_server, 200)
         end
 
+        def update
+          service = Carto::FederatedTablesService.new(user: @user)
+
+          federated_server = service.get_server(name: params[:name])
+
+          if federated_server.empty?
+            federated_server = service.register_server(
+              name: params[:name],
+              mode: params[:mode],
+              dbname: params[:dbname],
+              host: params[:host],
+              port: params[:port],
+              username: params[:username],
+              password: params[:password]
+            )
+
+            response.headers['Content-Location'] = "#{request.path}/#{federated_server[:name]}"
+
+            return render_jsonp({}, 201)
+          end
+
+          federated_server = service.update_server(
+            name: params[:name],
+            mode: params[:mode],
+            dbname: params[:dbname],
+            host: params[:host],
+            port: params[:port],
+            username: params[:username],
+            password: params[:password]
+          )
+
+          render_jsonp({}, 204)
+        end
+
         private
 
         def load_user

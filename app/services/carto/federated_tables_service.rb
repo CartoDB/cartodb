@@ -41,6 +41,20 @@ module Carto
       @user_db_connection[get_federated_server_query(name: name)].first
     end
 
+    def update_server(name:, mode:, dbname:, host:, port:, username:, password:)
+      @superuser_db_connection[
+        update_federated_server_query(
+          name: name,
+          mode: mode,
+          dbname: dbname,
+          host: host,
+          port: port,
+          username: username,
+          password: password
+        )
+      ].first
+    end
+
     private
 
     def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
@@ -104,6 +118,20 @@ module Carto
           '5432' as port,
           'read_only_user' as username,
           'secret' as password
+      }.squish
+    end
+
+    # WIP: Fake query to return register a federated server
+    def update_federated_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
+      %{
+        SELECT
+          '#{name}' as name,
+          '#{mode}' as mode,
+          '#{dbname}' as dbname,
+          '#{host}' as host,
+          '#{port}' as port,
+          '#{username}' as username,
+          '#{password}' as password
       }.squish
     end
   end

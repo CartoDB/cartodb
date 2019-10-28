@@ -130,4 +130,60 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
   end
+
+  describe '#update' do
+    before(:each) do
+      @payload = {
+        mode: 'read-only',
+        dbname: 'testdb',
+        host: 'myhostname.us-east-2.rds.amazonaws.com',
+        port: '5432',
+        username: 'read_only_user',
+        password: 'secret'
+      }
+    end
+
+    xit 'returns 201 with the federated server created' do
+      params = { name: 'azure', api_key: @user1.api_key }
+
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        puts response.body
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon')
+      end
+    end
+
+    it 'returns 204 with the federated server updated' do
+      params = { name: 'azure', api_key: @user1.api_key }
+
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { name: 'azure' }
+      put_json api_v4_federated_servers_update_server_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { name: 'azure', api_key: api_key.token }
+
+      put_json api_v4_federated_servers_update_server_url(params) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 422 when payload is missing' do
+      params = { name: 'azure', api_key: @user1.api_key }
+      payload = {}
+
+      put_json api_v4_federated_servers_update_server_url(params), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+  end
 end

@@ -600,6 +600,7 @@ CartoDB::Application.routes.draw do
       get 'federated_servers', to: 'federated_tables#index', as: :api_v4_federated_servers_list_servers
       post 'federated_servers' => 'federated_tables#register', as: :api_v4_federated_servers_register_server
       get 'federated_servers/:name' => 'federated_tables#show', as: :api_v4_federated_servers_get_server
+      put 'federated_servers/:name' => 'federated_tables#update', as: :api_v4_federated_servers_update_server
     end
 
     scope 'v3/' do

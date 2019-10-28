@@ -10,7 +10,8 @@ module Carto
         before_action :load_service
         before_action :load_params, only: [:index]
         before_action :check_permissions
-        before_action :load_federated_server, only: [:update, :show]
+        before_action :load_federated_server, only: [:update, :destroy, :show]
+        before_action :check_federated_server, only: [:destroy, :show]
 
         setup_default_rescues
 
@@ -45,7 +46,7 @@ module Carto
         end
 
         def show
-          raise Carto::LoadError.new("Federated server key not found: #{name}") if @federated_server.empty?
+          raise Carto::LoadError.new("Federated server key not found: #{params[:name]}") if @federated_server.empty?
           @federated_server[:password] = '********'
 
           render_jsonp(@federated_server, 200)
@@ -81,6 +82,11 @@ module Carto
           render_jsonp({}, 204)
         end
 
+        def destroy
+          @service.destroy_server(name: params[:name])
+          render_jsonp({}, 204)
+        end
+
         private
 
         def load_user
@@ -100,6 +106,10 @@ module Carto
 
         def load_federated_server
           @federated_server = @service.get_server(name: params[:name])
+        end
+
+        def check_federated_server
+          raise Carto::LoadError.new("Federated server key not found: #{params[:name]}") if @federated_server.empty?
         end
 
         def check_permissions

@@ -186,4 +186,38 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
   end
+
+  describe '#destroy' do
+    it 'returns 204 with the federated server destroyed' do
+      params = { name: 'azure', api_key: @user1.api_key }
+
+      delete_json api_v4_federated_servers_destroy_server_url(params), @payload do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { name: 'azure' }
+      delete_json api_v4_federated_servers_destroy_server_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { name: 'azure', api_key: api_key.token }
+
+      delete_json api_v4_federated_servers_destroy_server_url(params) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 404 when there is not a faderated server with the provided name' do
+      params = { name: 'wadus', api_key: @user1.api_key }
+
+      delete_json api_v4_federated_servers_destroy_server_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+  end
 end

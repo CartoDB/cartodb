@@ -55,6 +55,12 @@ module Carto
       ].first
     end
 
+    def destroy_server(name:)
+      @superuser_db_connection[
+        destroy_federated_server_query(name: name)
+      ].first
+    end
+
     private
 
     def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
@@ -132,6 +138,20 @@ module Carto
           '#{port}' as port,
           '#{username}' as username,
           '#{password}' as password
+      }.squish
+    end
+
+    # WIP: Fake query to return register a federated server
+    def destroy_federated_server_query(name:)
+      %{
+        SELECT
+          '#{name}' as name,
+          'read-only' as mode,
+          'testdb' as dbname,
+          'myhostname.us-east-2.rds.amazonaws.com' as host,
+          '5432' as port,
+          'read_only_user' as username,
+          'secret' as password
       }.squish
     end
   end

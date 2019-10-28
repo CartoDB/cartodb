@@ -9,6 +9,8 @@ module Carto
         before_action :load_user
         before_action :load_params
 
+        setup_default_rescues
+
         VALID_ORDER_PARAMS = %i(name).freeze
 
         def index

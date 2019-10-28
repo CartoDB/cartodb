@@ -8,7 +8,7 @@ module Carto
       @direction = direction
       @offset = (page - 1) * per_page
 
-      @superuser_db_connection = @user.in_database(as: :superuser)
+      #@superuser_db_connection = @user.in_database(as: :superuser)
       @user_db_connection = @user.in_database()
     end
 

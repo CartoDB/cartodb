@@ -8,6 +8,7 @@ module Carto
 
         before_action :load_user
         before_action :load_params
+        before_action :check_permissions
 
         setup_default_rescues
 
@@ -39,6 +40,11 @@ module Carto
             VALID_ORDER_PARAMS, default_order: 'name',
             default_order_direction: 'asc'
           )
+        end
+
+        def check_permissions
+          api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          raise UnauthorizedError unless api_key.master? || api_key.dataset_metadata_permissions
         end
 
         def render_paged(result, total)

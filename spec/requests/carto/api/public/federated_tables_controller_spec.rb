@@ -7,11 +7,12 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#list' do
     before(:each) do
-      @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
       host! "#{@user1.username}.localhost.lan"
     end
 
     it 'returns 200 with the federated server list' do
+      @params = { api_key: @user1.api_key, page: 1, per_page: 10 }
+
       get_json api_v4_federated_servers_list_servers_url(@params) do |response|
         expect(response.status).to eq(200)
 
@@ -24,6 +25,14 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:result][1][:name]).to eq('azure')
         expect(response.body[:result][1][:dbname]).to eq('db')
         expect(response.body[:result][1][:host]).to eq('us-east-2.azure.com')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      @params = { page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_servers_url(@params) do |response|
+        expect(response.status).to eq(401)
       end
     end
   end

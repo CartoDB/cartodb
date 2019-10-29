@@ -7,14 +7,14 @@
             <img src="../../assets/icons/section-title/map.svg" width="18" height="20" />
           </template>
           <template slot="title">
-              <span>{{ $t('KuvizPage.header') }}</span>
+              <span>{{ $t('KuvizsPage.header') }}</span>
           </template>
           <template slot="actionButton">
             <router-link
               class="button is-primary"
               :to="{ name: 'onboarding-open', params: { onboardingId: 'cartoframes'} , hash: '#step-1'}"
               target= "_blank">
-              {{ $t('KuvizPage.new') }}
+              {{ $t('KuvizsPage.new') }}
            </router-link>
           </template>
         </SectionTitle>
@@ -52,7 +52,7 @@ import KuvizFakeCard from 'new-dashboard/components/Kuviz/KuvizFakeCard.vue';
 
 
 export default {
-  name: 'KuvizPage',
+  name: 'KuvizsPage',
   components: {
     Page,
     SectionTitle,
@@ -62,18 +62,15 @@ export default {
   },
   computed: {
       ...mapState({
-      numPages: state => state.kuviz.numPages,
-      currentPage: state => state.kuviz.page,
-      kuvizs: state => state.kuviz.list,
-      isFetchingKuvizs: state => state.kuviz.isFetching,
-      numResults: state => state.kuviz.numResults,
-      resultsPerPage: state => state.catalog.resultsPerPage
+      numPages: state => state.kuvizs.numPages,
+      currentPage: state => state.kuvizs.page,
+      kuvizs: state => state.kuvizs.list,
+      isFetchingKuvizs: state => state.kuvizs.isFetching,
+      numResults: state => state.kuvizs.metadata.total_entries,
+      resultsPerPage: state => state.kuvizs.resultsPerPage
     }),
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
-    },
-    shouldShowPagination () {
-      return !this.isFetchingKuvizs && this.numPages > 1;
     }
   }
 };

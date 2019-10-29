@@ -5,8 +5,8 @@
         <router-link :to="{ name: 'maps' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isMapsPage }">
           <span>{{ $t('MapsSelectorPage.tabs.yourMaps') }}</span>
         </router-link>
-        <router-link :to="{ name: 'kuviz' }" class="tabs__item title is-small" active-class="is-active">
-          <span>{{ $t('MapsSelectorPage.tabs.kuviz') }}</span>
+        <router-link :to="{ name: 'kuvizs' }" class="tabs__item title is-small" active-class="is-active">
+          <span>{{ $t('MapsSelectorPage.tabs.kuvizs') }}</span>
         </router-link>
       </div>
     </SecondaryNavigation>

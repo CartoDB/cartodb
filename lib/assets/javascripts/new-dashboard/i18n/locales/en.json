@@ -701,10 +701,10 @@
   {
     "tabs": {
       "yourMaps": "Your Maps",
-      "kuviz": "CARTOframes"
+      "kuvizs": "CARTOframes"
     }
   },
-  "KuvizPage": {
+  "KuvizsPage": {
     "header": "CARTOframes",
     "new": "New Map"
   },

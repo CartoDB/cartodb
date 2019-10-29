@@ -97,17 +97,9 @@ module Carto
       ].first[:count]
     end
 
-    def register_table(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+    def register_table(attributes)
       @superuser_db_connection[
-        register_remote_table_query(
-          federated_server_name: federated_server_name,
-          remote_schema_name: remote_schema_name,
-          remote_table_name: remote_table_name,
-          local_table_name_override: local_table_name_override,
-          id_column_name: id_column_name,
-          geom_column_name: geom_column_name,
-          webmercator_column_name: webmercator_column_name
-        )
+        register_remote_table_query(attributes)
       ].first
     end
 
@@ -121,17 +113,9 @@ module Carto
       ].first
     end
 
-    def update_table(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+    def update_table(attributes)
       @superuser_db_connection[
-        update_remote_table_query(
-          federated_server_name: federated_server_name,
-          remote_schema_name: remote_schema_name,
-          remote_table_name: remote_table_name,
-          local_table_name_override: local_table_name_override,
-          id_column_name: id_column_name,
-          geom_column_name: geom_column_name,
-          webmercator_column_name: webmercator_column_name
-        )
+        update_remote_table_query(attributes)
       ].first
     end
 
@@ -303,17 +287,17 @@ module Carto
     end
 
     # WIP: Fake query to register a remote table
-    def register_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+    def register_remote_table_query(attributes)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          '#{remote_schema_name}' as remote_schema_name,
-          '#{remote_table_name}' as remote_table_name,
-          '#{local_table_name_override}' as local_table_name_override,
-          '#{remote_schema_name}.#{local_table_name_override}' as qualified_name,
-          '#{id_column_name}' as id_column_name,
-          '#{geom_column_name}' as geom_column_name,
-          '#{webmercator_column_name}' as webmercator_column_name
+          '#{attributes[:federated_server_name]}' as federated_server_name,
+          '#{attributes[:remote_schema_name]}' as remote_schema_name,
+          '#{attributes[:remote_table_name]}' as remote_table_name,
+          '#{attributes[:local_table_name_override]}' as local_table_name_override,
+          '#{attributes[:remote_schema_name]}.#{attributes[:local_table_name_override]}' as qualified_name,
+          '#{attributes[:id_column_name]}' as id_column_name,
+          '#{attributes[:geom_column_name]}' as geom_column_name,
+          '#{attributes[:webmercator_column_name]}' as webmercator_column_name
       }.squish
     end
 
@@ -333,17 +317,17 @@ module Carto
     end
 
     # WIP: Fake query to update a remote table
-    def update_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+    def update_remote_table_query(attributes)
       %{
         SELECT
-        '#{federated_server_name}' as federated_server_name,
-        '#{remote_schema_name}' as remote_schema_name,
-        '#{remote_table_name}' as remote_table_name,
-        '#{local_table_name_override}' as local_table_name_override,
-        '#{remote_schema_name}.#{local_table_name_override}' as qualified_name,
-        '#{id_column_name}' as id_column_name,
-        '#{geom_column_name}' as geom_column_name,
-        '#{webmercator_column_name}' as webmercator_column_name
+        '#{attributes[:federated_server_name]}' as federated_server_name,
+        '#{attributes[:remote_schema_name]}' as remote_schema_name,
+        '#{attributes[:remote_table_name]}' as remote_table_name,
+        '#{attributes[:local_table_name_override]}' as local_table_name_override,
+        '#{attributes[:remote_schema_name]}.#{attributes[:local_table_name_override]}' as qualified_name,
+        '#{attributes[:id_column_name]}' as id_column_name,
+        '#{attributes[:geom_column_name]}' as geom_column_name,
+        '#{attributes[:webmercator_column_name]}' as webmercator_column_name
       }.squish
     end
 

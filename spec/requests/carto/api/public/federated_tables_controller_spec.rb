@@ -448,4 +448,37 @@ describe Carto::Api::Public::FederatedTablesController do
     end
   end
 
+  describe '#unregister_remote_table' do
+    it 'returns 204' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+
+      delete_json api_v4_federated_servers_unregister_table_url(params), @payload do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table' }
+      delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+
+      delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 404 when there is not a remote table with the provided name' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
+
+      delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+  end
 end

@@ -24,8 +24,8 @@ module Carto
         before_action :check_permissions
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
-        before_action :load_remote_table, only: [:show_remote_table]
-        before_action :check_remote_table, only: [:show_remote_table]
+        before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
+        before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]
 
         setup_default_rescues
 
@@ -168,7 +168,7 @@ module Carto
             return render_jsonp({}, 201)
           end
 
-          @federated_server = @service.update_table(
+          @remote_table = @service.update_table(
             federated_server_name: params[:federated_server_name],
             remote_schema_name: params[:remote_schema_name],
             remote_table_name: params[:remote_table_name],
@@ -178,6 +178,15 @@ module Carto
             webmercator_column_name: params[:webmercator_column_name]
           )
 
+          render_jsonp({}, 204)
+        end
+
+        def unregister_remote_table
+          @service.unregister_table(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name],
+            remote_table_name: params[:remote_table_name]
+          )
           render_jsonp({}, 204)
         end
 

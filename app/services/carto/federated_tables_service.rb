@@ -151,6 +151,16 @@ module Carto
       ].first
     end
 
+    def unregister_table(federated_server_name:, remote_schema_name:, remote_table_name:)
+      @superuser_db_connection[
+        unregister_remote_table_query(
+          federated_server_name: federated_server_name,
+          remote_schema_name: remote_schema_name,
+          remote_table_name: remote_table_name
+        )
+      ].first
+    end
+
     private
 
     def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
@@ -350,7 +360,22 @@ module Carto
         '#{id_column_name}' as id_column_name,
         '#{geom_column_name}' as geom_column_name,
         '#{webmercator_column_name}' as webmercator_column_name
-    }.squish
+      }.squish
+    end
+
+    # WIP: Fake query to unregister a remote table
+    def unregister_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
+      %{
+        SELECT
+          '#{federated_server_name}' as federated_server_name,
+          '#{remote_schema_name}' as remote_schema_name,
+          '#{remote_table_name}' as remote_table_name,
+          '#{remote_table_name}' as local_table_name_override,
+          '#{remote_schema_name}.#{remote_table_name}' as qualified_name,
+          'id' as id_column_name,
+          'the_geom' as geom_column_name,
+          'the_geom_webmercator' as webmercator_column_name
+      }.squish
     end
   end
 end

@@ -34,7 +34,7 @@ module Carto
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
         raise 'OAuth configuration not found for BigQuery provider' if @oauth_config.nil?
         raise 'Client Id and Client Secret MUST be defined' if @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
-        validate_config!(context)
+        validate_config!(context) if context
       end
 
       def validate_config!(context)

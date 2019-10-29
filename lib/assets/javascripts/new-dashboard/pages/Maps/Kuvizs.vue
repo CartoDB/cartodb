@@ -9,14 +9,6 @@
           <template slot="title">
               <span>{{ $t('KuvizsPage.header') }}</span>
           </template>
-          <template slot="actionButton">
-            <router-link
-              class="button is-primary"
-              :to="{ name: 'onboarding-open', params: { onboardingId: 'cartoframes'} , hash: '#step-1'}"
-              target= "_blank">
-              {{ $t('KuvizsPage.new') }}
-           </router-link>
-          </template>
         </SectionTitle>
       </div>
     </div>

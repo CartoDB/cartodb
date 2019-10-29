@@ -20,7 +20,7 @@
       </div>
       <div class="cell cell--large u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
-          {{ kuviz.privacy }}
+          {{ $t(`KuvizCard.privacy.${kuviz.privacy}`) }}
         </span>
       </div>
     </div>
@@ -37,7 +37,7 @@ export default {
   },
   computed: {
     lastUpdated () {
-      return this.$t('DatasetCard.lastUpdated', { date: distanceInWordsStrict(this.$props.kuviz.updated_at, new Date()) });
+      return this.$t('KuvizCard.lastUpdated', { date: distanceInWordsStrict(this.$props.kuviz.updated_at, new Date()) });
     }
   }
 };

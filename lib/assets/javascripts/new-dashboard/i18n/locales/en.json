@@ -705,12 +705,18 @@
     }
   },
   "KuvizsPage": {
-    "header": "CARTOframes",
-    "new": "New Map"
+    "header": "CARTOframes Maps"
   },
   "KuvizListHeader": {
     "name": "Name",
     "lastModified": "Last modified",
     "privacy": "Privacy"
+  },
+  "KuvizCard": {
+    "privacy": {
+      "public": "Link",
+      "password": "Password"
+    },
+    "lastUpdated": "Updated {date} ago"
   }
 }

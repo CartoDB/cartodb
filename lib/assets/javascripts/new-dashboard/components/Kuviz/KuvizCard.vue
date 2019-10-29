@@ -1,5 +1,11 @@
 <template>
-  <a :href="kuviz.url" target="_blank" class="kuvizCard">
+  <a :href="kuviz.url"
+  target="_blank"
+  class="kuvizCard"
+  :class="{
+    'kuvizCard--quick-actions-open': areQuickActionsOpen,
+  }"
+  >
 
     <div class="kuvizCard__column--main">
       <div class="kuvizCard__cell cell">
@@ -23,21 +29,57 @@
           {{ $t(`KuvizCard.privacy.${kuviz.privacy}`) }}
         </span>
       </div>
+
+      <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+        <div class="quick-actions__placeholder"></div>
+        <KuvizQuickActions class="kuvizCard--quick-actions" @deleteKuviz="deleteKuviz" :kuviz="kuviz" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
+      </div>
     </div>
   </a>
 </template>
 
 <script>
 import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+import KuvizQuickActions from 'new-dashboard/components/QuickActions/KuvizQuickActions';
+
 
 export default {
   name: 'KuvizCard',
+  components: {
+    KuvizQuickActions
+  },
   props: {
     kuviz: Object
+  },
+  data: function () {
+    return {
+      areQuickActionsOpen: false,
+      activeHover: true,
+    }
   },
   computed: {
     lastUpdated () {
       return this.$t('KuvizCard.lastUpdated', { date: distanceInWordsStrict(this.$props.kuviz.updated_at, new Date()) });
+    }
+  },
+  methods: {
+    mouseOverChildElement () {
+      this.activeHover = false;
+    },
+    mouseOutChildElement () {
+      this.activeHover = true;
+    },
+    openQuickActions () {
+      this.areQuickActionsOpen = true;
+    },
+    closeQuickActions () {
+      this.areQuickActionsOpen = false;
+    },
+    onContentChanged (type) {
+      this.$emit('contentChanged', type);
+    },
+    deleteKuviz (kuviz) {
+      this.$emit('deleteKuviz', kuviz);
     }
   }
 };
@@ -51,10 +93,15 @@ export default {
   align-items: center;
   width: 100%;
   padding: 16px;
-  overflow: hidden;
   border-bottom: 1px solid $softblue;
   background-color: $white;
   cursor: pointer;
+
+  &--quick-actions {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
 
   &:hover {
     background-color: $softblue;
@@ -63,6 +110,15 @@ export default {
     .kuvizCard__title {
       color: $primary-color;
       text-decoration: underline;
+    }
+  }
+
+  &--quick-actions-open,
+  &:hover {
+    .kuvizCard--quick-actions {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 

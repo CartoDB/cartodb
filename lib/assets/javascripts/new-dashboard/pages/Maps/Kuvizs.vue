@@ -19,7 +19,8 @@
         <ul class="kuviz__list" v-if="!isFetchingKuvizs">
           <li v-for="kuviz in kuvizs" class="full-width" :key="kuviz.id">
             <KuvizCard
-            :kuviz="kuviz">
+            :kuviz="kuviz"
+            @deleteKuviz="setSelectedKuviz">
             </KuvizCard>
           </li>
         </ul>
@@ -31,6 +32,8 @@
         </ul>
       </div>
     </div>
+
+    <DeleteKuvizModal ref="deleteKuvizModal" :kuviz="selectedKuviz"/>
   </section>
 </template>
 
@@ -38,9 +41,10 @@
 import { mapState } from 'vuex';
 import Page from 'new-dashboard/components/Page';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import KuvizCard from 'new-dashboard/components/Kuviz/KuvizCard.vue';
-import KuvizListHeader from 'new-dashboard/components/Kuviz/KuvizListHeader.vue';
-import KuvizFakeCard from 'new-dashboard/components/Kuviz/KuvizFakeCard.vue';
+import KuvizCard from 'new-dashboard/components/Kuviz/KuvizCard';
+import KuvizListHeader from 'new-dashboard/components/Kuviz/KuvizListHeader';
+import KuvizFakeCard from 'new-dashboard/components/Kuviz/KuvizFakeCard';
+import DeleteKuvizModal from 'new-dashboard/components/Kuviz/modals/DeleteKuvizModal';
 
 
 export default {
@@ -50,7 +54,13 @@ export default {
     SectionTitle,
     KuvizCard,
     KuvizListHeader,
-    KuvizFakeCard
+    KuvizFakeCard,
+    DeleteKuvizModal
+  },
+  data () {
+    return {
+      selectedKuviz: {}
+    };
   },
   computed: {
       ...mapState({
@@ -63,6 +73,12 @@ export default {
     }),
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
+    }
+  },
+  methods: {
+    setSelectedKuviz (kuviz) {
+      this.selectedKuviz = kuviz;
+      this.$refs.deleteKuvizModal.open()
     }
   }
 };

@@ -10,6 +10,8 @@ module Carto
         VALID_ORDER_PARAMS_REMOTE_SCHEMA = %i(remote_schema_name).freeze
         VALID_ORDER_PARAMS_REMOTE_TABLE = %i(remote_table_name).freeze
 
+        FEDERATED_SERVER_ATTRIBUTES = %i(federated_server_name mode dbname host port username password)
+
         before_action :load_user
         before_action :load_service
         before_action only: [:list_federated_servers] do
@@ -22,6 +24,7 @@ module Carto
           load_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
         end
         before_action :check_permissions
+        before_action :load_federated_server_params, only: [:register_federated_server, :update_federated_server ]
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
@@ -44,18 +47,8 @@ module Carto
         end
 
         def register_federated_server
-          federated_server = @service.register_server(
-            federated_server_name: params[:federated_server_name],
-            mode: params[:mode],
-            dbname: params[:dbname],
-            host: params[:host],
-            port: params[:port],
-            username: params[:username],
-            password: params[:password]
-          )
-
+          federated_server = @service.register_server(@federated_server_params)
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
-
           render_jsonp({}, 201)
         end
 
@@ -66,31 +59,12 @@ module Carto
 
         def update_federated_server
           if @federated_server.empty?
-            @federated_server = @service.register_server(
-              federated_server_name: params[:federated_server_name],
-              mode: params[:mode],
-              dbname: params[:dbname],
-              host: params[:host],
-              port: params[:port],
-              username: params[:username],
-              password: params[:password]
-            )
-
+            @federated_server = @service.register_server(@federated_server_params)
             response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:federated_server_name]}"
-
             return render_jsonp({}, 201)
           end
 
-          @federated_server = @service.update_server(
-            federated_server_name: params[:federated_server_name],
-            mode: params[:mode],
-            dbname: params[:dbname],
-            host: params[:host],
-            port: params[:port],
-            username: params[:username],
-            password: params[:password]
-          )
-
+          @federated_server = @service.update_server(@federated_server_params)
           render_jsonp({}, 204)
         end
 
@@ -206,6 +180,11 @@ module Carto
             default_order: default_order,
             default_order_direction: 'asc'
           )
+        end
+
+        def load_federated_server_params
+          @federated_server_params = params.slice(*FEDERATED_SERVER_ATTRIBUTES)
+          @federated_server_params[:local_table_name_override] ||= @federated_server_params[:remote_table_name]
         end
 
         def load_federated_server

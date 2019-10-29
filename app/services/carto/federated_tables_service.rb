@@ -25,17 +25,9 @@ module Carto
       @user_db_connection[count_federated_servers_query].first[:count]
     end
 
-    def register_server(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
+    def register_server(attributes)
       @superuser_db_connection[
-        register_federated_server_query(
-          federated_server_name: federated_server_name,
-          mode: mode,
-          dbname: dbname,
-          host: host,
-          port: port,
-          username: username,
-          password: password
-        )
+        register_federated_server_query(attributes)
       ].first
     end
 
@@ -43,17 +35,9 @@ module Carto
       @user_db_connection[get_federated_server_query(federated_server_name: federated_server_name)].first
     end
 
-    def update_server(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
+    def update_server(attributes)
       @superuser_db_connection[
-        update_federated_server_query(
-          federated_server_name: federated_server_name,
-          mode: mode,
-          dbname: dbname,
-          host: host,
-          port: port,
-          username: username,
-          password: password
-        )
+        update_federated_server_query(attributes)
       ].first
     end
 
@@ -200,16 +184,16 @@ module Carto
     end
 
     # WIP: Fake query to register a federated server
-    def register_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
+    def register_federated_server_query(attributes)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          '#{mode}' as mode,
-          '#{dbname}' as dbname,
-          '#{host}' as host,
-          '#{port}' as port,
-          '#{username}' as username,
-          '#{password}' as password
+          '#{attributes[:federated_server_name]}' as federated_server_name,
+          '#{attributes[:mode]}' as mode,
+          '#{attributes[:dbname]}' as dbname,
+          '#{attributes[:host]}' as host,
+          '#{attributes[:port]}' as port,
+          '#{attributes[:username]}' as username,
+          '#{attributes[:password]}' as password
       }.squish
     end
 
@@ -228,16 +212,16 @@ module Carto
     end
 
     # WIP: Fake query to update a federated server
-    def update_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
+    def update_federated_server_query(attributes)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          '#{mode}' as mode,
-          '#{dbname}' as dbname,
-          '#{host}' as host,
-          '#{port}' as port,
-          '#{username}' as username,
-          '#{password}' as password
+          '#{attributes[:federated_server_name]}' as federated_server_name,
+          '#{attributes[:mode]}' as mode,
+          '#{attributes[:dbname]}' as dbname,
+          '#{attributes[:host]}' as host,
+          '#{attributes[:port]}' as port,
+          '#{attributes[:username]}' as username,
+          '#{attributes[:password]}' as password
       }.squish
     end
 

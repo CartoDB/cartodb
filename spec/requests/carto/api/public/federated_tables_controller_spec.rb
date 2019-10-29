@@ -147,7 +147,6 @@ describe Carto::Api::Public::FederatedTablesController do
       params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
-        puts response.body
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon')
       end
@@ -408,7 +407,6 @@ describe Carto::Api::Public::FederatedTablesController do
       params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
-        puts response.body
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon/remote_schemas/public/remote_tables/my_table')
       end

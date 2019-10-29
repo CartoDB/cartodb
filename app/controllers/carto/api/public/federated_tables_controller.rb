@@ -8,14 +8,19 @@ module Carto
 
         before_action :load_user
         before_action :load_service
-        before_action :load_params, only: [:list_federated_servers, :list_remote_schemas]
+        before_action only: [:list_federated_servers, :list_remote_schemas] do
+          load_params(default_order: 'name')
+        end
+        before_action only: [:list_remote_tables] do
+          load_params(default_order: 'remote_table_name')
+        end
         before_action :check_permissions
-        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server, :list_remote_schemas]
-        before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server, :list_remote_schemas]
+        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server ]
+        before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
 
         setup_default_rescues
 
-        VALID_ORDER_PARAMS = %i(name).freeze
+        VALID_ORDER_PARAMS = %i(name remote_table_name).freeze
 
         # Federated Servers
 
@@ -91,12 +96,31 @@ module Carto
 
         def list_remote_schemas
           result = @service.list_remote_schemas(
+            server: params[:federated_server_name],
             page: @page,
             per_page: @per_page,
             order: @order,
             direction: @direction
           )
-          total = @service.count_remote_schemas()
+          total = @service.count_remote_schemas(server: params[:federated_server_name])
+          render_paged(result, total)
+        end
+
+        # Remote Tables
+
+        def list_remote_tables
+          result = @service.list_remote_tables(
+            server: params[:federated_server_name],
+            schema: params[:remote_schema_name],
+            page: @page,
+            per_page: @per_page,
+            order: @order,
+            direction: @direction
+          )
+          total = @service.count_remote_tables(
+            server: params[:federated_server_name],
+            schema: params[:remote_schema_name]
+          )
           render_paged(result, total)
         end
 
@@ -110,9 +134,10 @@ module Carto
           @service = Carto::FederatedTablesService.new(user: @user)
         end
 
-        def load_params
+        def load_params(default_order:)
           @page, @per_page, @order, @direction = page_per_page_order_params(
-            VALID_ORDER_PARAMS, default_order: 'name',
+            VALID_ORDER_PARAMS,
+            default_order: default_order,
             default_order_direction: 'asc'
           )
         end

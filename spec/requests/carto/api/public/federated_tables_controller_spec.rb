@@ -252,4 +252,49 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
   end
+
+  describe '#list_remote_tables' do
+    it 'returns 200 with the remote tables list' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'default', api_key: @user1.api_key, page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_tables_url(params) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:total]).to eq(2)
+
+        expect(response.body[:result][0][:remote_table_name]).to eq('my_table')
+        expect(response.body[:result][0][:remote_schema_name]).to eq('default')
+        expect(response.body[:result][0][:registered]).to eq('true')
+        expect(response.body[:result][0][:qualified_name]).to eq('default.my_table')
+        expect(response.body[:result][0][:id_column_name]).to eq('id')
+        expect(response.body[:result][0][:geom_column_name]).to eq('the_geom')
+        expect(response.body[:result][0][:webmercator_column_name]).to eq('the_geom_webmercator')
+
+        expect(response.body[:result][1][:remote_table_name]).to eq('shops')
+        expect(response.body[:result][1][:remote_schema_name]).to eq('public')
+        expect(response.body[:result][1][:registered]).to eq('false')
+        expect(response.body[:result][1][:qualified_name]).to eq('public.shops')
+        expect(response.body[:result][1][:id_column_name]).to eq('shop_id')
+        expect(response.body[:result][1][:geom_column_name]).to eq('the_geom')
+        expect(response.body[:result][1][:webmercator_column_name]).to eq('the_geom_webmercator')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'default', page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_tables_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', remote_schema_name: 'default', api_key: api_key.token, page: 1, per_page: 10 }
+
+      get_json api_v4_federated_servers_list_tables_url(params) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+  end
 end

@@ -65,11 +65,12 @@ module Carto
 
     # Remote Schemas
 
-    def list_remote_schemas(page: 1, per_page: 10, order:, direction:)
+    def list_remote_schemas(server:, page: 1, per_page: 10, order:, direction:)
       offset = (page - 1) * per_page
 
       @user_db_connection[
         select_remote_schemas_query(
+          server: server,
           per_page: per_page,
           offset: offset,
           order: order,
@@ -78,8 +79,38 @@ module Carto
       ].all
     end
 
-    def count_remote_schemas
-      @user_db_connection[count_remote_schemas_query].first[:count]
+    def count_remote_schemas(server:)
+      @user_db_connection[
+        count_remote_schemas_query(
+          server: server
+        )
+      ].first[:count]
+    end
+
+    # Remote Tables
+
+    def list_remote_tables(server:, schema:, page: 1, per_page: 10, order:, direction:)
+      offset = (page - 1) * per_page
+
+      @user_db_connection[
+        select_remote_tables_query(
+          server: server,
+          schema: schema,
+          per_page: per_page,
+          offset: offset,
+          order: order,
+          direction: direction
+        )
+      ].all
+    end
+
+    def count_remote_tables(server:, schema:)
+      @user_db_connection[
+        count_remote_tables_query(
+          server: server,
+          schema: schema
+        )
+      ].first[:count]
     end
 
     private
@@ -178,26 +209,63 @@ module Carto
 
     # Remote Schemas
 
-    def select_remote_schemas_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
+    def select_remote_schemas_query(server:, per_page: 10, offset: 0, order: 'name', direction: 'asc')
       %{
-        SELECT * FROM (#{select_schemas_query}) AS remote_schemas
+        SELECT * FROM (#{select_schemas_query(server: server)}) AS remote_schemas
         ORDER BY #{order} #{direction}
         LIMIT #{per_page}
         OFFSET #{offset}
       }.squish
     end
 
-    def count_remote_schemas_query
-      "SELECT COUNT(*) FROM (#{select_schemas_query}) AS remote_schemas"
+    def count_remote_schemas_query(server:)
+      "SELECT COUNT(*) FROM (#{select_schemas_query(server: server)}) AS remote_schemas"
     end
 
-    def select_schemas_query
+    def select_schemas_query(server:)
       %{
         SELECT
           'default' as name
         UNION ALL
         SELECT
           'locations' as name
+      }.squish
+    end
+
+    # Remote Tables
+
+    def select_remote_tables_query(server:, schema:, per_page: 10, offset: 0, order: 'name', direction: 'asc')
+      %{
+        SELECT * FROM (#{select_tables_query(server: server, schema: schema)}) AS remote_schemas
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
+      }.squish
+    end
+
+    def count_remote_tables_query(server:, schema:)
+      "SELECT COUNT(*) FROM (#{select_tables_query(server: server, schema: schema)}) AS remote_schemas"
+    end
+
+    def select_tables_query(server:, schema:)
+      %{
+        SELECT
+          'true' as registered,
+          'default.my_table' as qualified_name,
+          'default' as remote_schema_name,
+          'my_table' as remote_table_name,
+          'id' as id_column_name,
+          'the_geom' as geom_column_name,
+          'the_geom_webmercator' as webmercator_column_name
+        UNION ALL
+        SELECT
+          'false' as registered,
+          'public.shops' as qualified_name,
+          'public' as remote_schema_name,
+          'shops' as remote_table_name,
+          'shop_id' as id_column_name,
+          'the_geom' as geom_column_name,
+          'the_geom_webmercator' as webmercator_column_name
       }.squish
     end
   end

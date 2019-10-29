@@ -605,8 +605,12 @@ CartoDB::Application.routes.draw do
       put 'federated_servers/:federated_server_name' => 'federated_tables#update_federated_server', as: :api_v4_federated_servers_update_server
       delete 'federated_servers/:federated_server_name' => 'federated_tables#unregister_federated_server', as: :api_v4_federated_servers_unregister_server
 
-      ## Federated schemas
+      ## Remote schemas
       get 'federated_servers/:federated_server_name/remote_schemas', to: 'federated_tables#list_remote_schemas', as: :api_v4_federated_servers_list_schemas
+
+      ## Remote tables
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#list_remote_tables', as: :api_v4_federated_servers_list_tables
+
     end
 
     scope 'v3/' do

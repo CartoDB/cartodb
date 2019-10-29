@@ -59,7 +59,7 @@ describe Carto::Api::Public::FederatedTablesController do
       }
     end
 
-    it 'returns 201 with the federated server created' do
+    it 'returns 201 with the federated server was created' do
       params = { api_key: @user1.api_key }
 
       post_json api_v4_federated_servers_register_server_url(params), @payload do |response|
@@ -143,7 +143,7 @@ describe Carto::Api::Public::FederatedTablesController do
       }
     end
 
-    xit 'returns 201 with the federated server created' do
+    xit 'returns 201 with the federated server was created' do
       params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
@@ -153,7 +153,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 204 with the federated server updated' do
+    it 'returns 204 with the federated server was updated' do
       params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
@@ -188,7 +188,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#unregister_federated_server' do
-    it 'returns 204 with the federated server destroyed' do
+    it 'returns 204 with the federated server was destroyed' do
       params = { federated_server_name: 'azure', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_server_url(params), @payload do |response|
@@ -309,7 +309,7 @@ describe Carto::Api::Public::FederatedTablesController do
       }
     end
 
-    it 'returns 201 with the federated server created' do
+    it 'returns 201 with the federated server was created' do
       params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: @user1.api_key }
 
       post_json api_v4_federated_servers_register_table_url(params), @payload do |response|

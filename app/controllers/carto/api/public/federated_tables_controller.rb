@@ -6,21 +6,26 @@ module Carto
         include Carto::ControllerHelper
         extend Carto::DefaultRescueFroms
 
+        VALID_ORDER_PARAMS_FEDERATED_SERVER = %i(federated_server_name).freeze
+        VALID_ORDER_PARAMS_REMOTE_SCHEMA = %i(remote_schema_name).freeze
+        VALID_ORDER_PARAMS_REMOTE_TABLE = %i(remote_table_name).freeze
+
         before_action :load_user
         before_action :load_service
-        before_action only: [:list_federated_servers, :list_remote_schemas] do
-          load_params(default_order: 'name')
+        before_action only: [:list_federated_servers] do
+          load_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
+        end
+        before_action only: [:list_remote_schemas] do
+          load_params(default_order: 'remote_schema_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_SCHEMA)
         end
         before_action only: [:list_remote_tables] do
-          load_params(default_order: 'remote_table_name')
+          load_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
         end
         before_action :check_permissions
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server ]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
 
         setup_default_rescues
-
-        VALID_ORDER_PARAMS = %i(name remote_table_name).freeze
 
         # Federated Servers
 
@@ -38,7 +43,7 @@ module Carto
 
         def register_federated_server
           federated_server = @service.register_server(
-            name: params[:name],
+            federated_server_name: params[:federated_server_name],
             mode: params[:mode],
             dbname: params[:dbname],
             host: params[:host],
@@ -47,7 +52,7 @@ module Carto
             password: params[:password]
           )
 
-          response.headers['Content-Location'] = "#{request.path}/#{federated_server[:name]}"
+          response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
 
           render_jsonp({}, 201)
         end
@@ -60,7 +65,7 @@ module Carto
         def update_federated_server
           if @federated_server.empty?
             @federated_server = @service.register_server(
-              name: params[:name],
+              federated_server_name: params[:federated_server_name],
               mode: params[:mode],
               dbname: params[:dbname],
               host: params[:host],
@@ -69,13 +74,13 @@ module Carto
               password: params[:password]
             )
 
-            response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:name]}"
+            response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:federated_server_name]}"
 
             return render_jsonp({}, 201)
           end
 
           @federated_server = @service.update_server(
-            name: params[:name],
+            federated_server_name: params[:federated_server_name],
             mode: params[:mode],
             dbname: params[:dbname],
             host: params[:host],
@@ -88,7 +93,7 @@ module Carto
         end
 
         def unregister_federated_server
-          @service.unregister_server(name: params[:name])
+          @service.unregister_server(federated_server_name: params[:federated_server_name])
           render_jsonp({}, 204)
         end
 
@@ -134,16 +139,16 @@ module Carto
           @service = Carto::FederatedTablesService.new(user: @user)
         end
 
-        def load_params(default_order:)
+        def load_params(default_order:, valid_order_params:)
           @page, @per_page, @order, @direction = page_per_page_order_params(
-            VALID_ORDER_PARAMS,
+            valid_order_params,
             default_order: default_order,
             default_order_direction: 'asc'
           )
         end
 
         def load_federated_server
-          @federated_server = @service.get_server(name: params[:federated_server_name])
+          @federated_server = @service.get_server(federated_server_name: params[:federated_server_name])
         end
 
         def check_federated_server

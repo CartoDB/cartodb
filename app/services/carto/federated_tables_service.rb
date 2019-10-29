@@ -25,10 +25,10 @@ module Carto
       @user_db_connection[count_federated_servers_query].first[:count]
     end
 
-    def register_server(name:, mode:, dbname:, host:, port:, username:, password:)
+    def register_server(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       @superuser_db_connection[
         register_federated_server_query(
-          name: name,
+          federated_server_name: federated_server_name,
           mode: mode,
           dbname: dbname,
           host: host,
@@ -39,14 +39,14 @@ module Carto
       ].first
     end
 
-    def get_server(name:)
-      @user_db_connection[get_federated_server_query(name: name)].first
+    def get_server(federated_server_name:)
+      @user_db_connection[get_federated_server_query(federated_server_name: federated_server_name)].first
     end
 
-    def update_server(name:, mode:, dbname:, host:, port:, username:, password:)
+    def update_server(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       @superuser_db_connection[
         update_federated_server_query(
-          name: name,
+          federated_server_name: federated_server_name,
           mode: mode,
           dbname: dbname,
           host: host,
@@ -57,9 +57,9 @@ module Carto
       ].first
     end
 
-    def unregister_server(name:)
+    def unregister_server(federated_server_name:)
       @superuser_db_connection[
-        unregister_federated_server_query(name: name)
+        unregister_federated_server_query(federated_server_name: federated_server_name)
       ].first
     end
 
@@ -132,7 +132,7 @@ module Carto
     def select_servers_query
       %{
         SELECT
-          'amazon' as name,
+          'amazon' as federated_server_name,
           'read-only' as mode,
           'testdb' as dbname,
           'myhostname.us-east-2.rds.amazonaws.com' as host,
@@ -141,7 +141,7 @@ module Carto
           '*****' as password
         UNION ALL
         SELECT
-          'azure' as name,
+          'azure' as federated_server_name,
           'read-only' as mode,
           'db' as dbname,
           'us-east-2.azure.com' as host,
@@ -152,10 +152,10 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def register_federated_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
+    def register_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       %{
         SELECT
-          '#{name}' as name,
+          '#{federated_server_name}' as federated_server_name,
           '#{mode}' as mode,
           '#{dbname}' as dbname,
           '#{host}' as host,
@@ -166,10 +166,10 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def get_federated_server_query(name:)
+    def get_federated_server_query(federated_server_name:)
       %{
         SELECT
-          '#{name}' as name,
+          '#{federated_server_name}' as federated_server_name,
           'read-only' as mode,
           'testdb' as dbname,
           'myhostname.us-east-2.rds.amazonaws.com' as host,
@@ -180,10 +180,10 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def update_federated_server_query(name:, mode:, dbname:, host:, port:, username:, password:)
+    def update_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       %{
         SELECT
-          '#{name}' as name,
+          '#{federated_server_name}' as federated_server_name,
           '#{mode}' as mode,
           '#{dbname}' as dbname,
           '#{host}' as host,
@@ -194,10 +194,10 @@ module Carto
     end
 
     # WIP: Fake query to return register a federated server
-    def unregister_federated_server_query(name:)
+    def unregister_federated_server_query(federated_server_name:)
       %{
         SELECT
-          '#{name}' as name,
+          '#{federated_server_name}' as federated_server_name,
           'read-only' as mode,
           'testdb' as dbname,
           'myhostname.us-east-2.rds.amazonaws.com' as host,
@@ -225,10 +225,10 @@ module Carto
     def select_schemas_query(server:)
       %{
         SELECT
-          'default' as name
+          'default' as remote_schema_name
         UNION ALL
         SELECT
-          'locations' as name
+          'locations' as remote_schema_name
       }.squish
     end
 

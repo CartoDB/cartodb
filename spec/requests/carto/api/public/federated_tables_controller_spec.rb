@@ -18,11 +18,11 @@ describe Carto::Api::Public::FederatedTablesController do
 
         expect(response.body[:total]).to eq(2)
 
-        expect(response.body[:result][0][:name]).to eq('amazon')
+        expect(response.body[:result][0][:federated_server_name]).to eq('amazon')
         expect(response.body[:result][0][:dbname]).to eq('testdb')
         expect(response.body[:result][0][:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
 
-        expect(response.body[:result][1][:name]).to eq('azure')
+        expect(response.body[:result][1][:federated_server_name]).to eq('azure')
         expect(response.body[:result][1][:dbname]).to eq('db')
         expect(response.body[:result][1][:host]).to eq('us-east-2.azure.com')
       end
@@ -49,7 +49,7 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#register_federated_server' do
     before(:each) do
       @payload = {
-        name: 'amazon',
+        federated_server_name: 'amazon',
         mode: 'read-only',
         dbname: 'testdb',
         host: 'myhostname.us-east-2.rds.amazonaws.com',
@@ -100,7 +100,7 @@ describe Carto::Api::Public::FederatedTablesController do
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(200)
 
-        expect(response.body[:name]).to eq('amazon')
+        expect(response.body[:federated_server_name]).to eq('amazon')
         expect(response.body[:dbname]).to eq('testdb')
         expect(response.body[:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
       end
@@ -230,8 +230,8 @@ describe Carto::Api::Public::FederatedTablesController do
 
         expect(response.body[:total]).to eq(2)
 
-        expect(response.body[:result][0][:name]).to eq('default')
-        expect(response.body[:result][1][:name]).to eq('locations')
+        expect(response.body[:result][0][:remote_schema_name]).to eq('default')
+        expect(response.body[:result][1][:remote_schema_name]).to eq('locations')
       end
     end
 

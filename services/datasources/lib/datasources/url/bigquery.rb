@@ -60,8 +60,9 @@ module CartoDB
         # Return the url to be displayed or sent the user to to authenticate and get authorization code
         # @return string | nil
         def get_auth_url()
-          # service_name = service_name_for_user(DATASOURCE_NAME, @user)
+          service_name = service_name_for_user(DATASOURCE_NAME, @user)
           @client.state = CALLBACK_STATE_DATA_PLACEHOLDER.sub('user', @user.username)
+                                                         .sub('service', service_name)
           @client.authorization_uri.to_s
         end
 

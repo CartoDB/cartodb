@@ -51,6 +51,7 @@ sudo make install
   * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
 * Kuviz page:
   * [Dashboard] Add Kuviz page (I) - STRUCTURE ([#15170](https://github.com/CartoDB/cartodb/issues/15170))
+  * [Dashboard] Add Kuviz page (II) - LIST ([#15171](https://github.com/CartoDB/cartodb/issues/15171))
 
 ### Bug fixes / enhancements
 * Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))

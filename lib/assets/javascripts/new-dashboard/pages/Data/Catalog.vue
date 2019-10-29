@@ -110,7 +110,7 @@ export default {
       categories: state => state.catalog.categories,
       countries: state => state.catalog.countries,
       isFetchingDatasets: state => state.catalog.isFetching,
-      numResults: state => state.catalog.umResults,
+      numResults: state => state.catalog.numResults,
       resultsPerPage: state => state.catalog.resultsPerPage,
       appliedOrder: state => state.catalog.order,
       appliedOrderDirection: state => state.catalog.orderDirection

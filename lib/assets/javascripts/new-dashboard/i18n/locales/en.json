@@ -707,5 +707,10 @@
   "KuvizPage": {
     "header": "CARTOframes",
     "new": "New Map"
+  },
+  "KuvizListHeader": {
+    "name": "Name",
+    "lastModified": "Last modified",
+    "privacy": "Privacy"
   }
 }

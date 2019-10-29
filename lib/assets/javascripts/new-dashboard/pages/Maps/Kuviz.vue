@@ -20,6 +20,25 @@
         </SectionTitle>
       </div>
     </div>
+
+    <div class="container grid">
+      <div class="grid-cell grid-cell--col12">
+        <KuvizListHeader></KuvizListHeader>
+        <ul class="kuviz__list" v-if="!isFetchingKuvizs">
+          <li v-for="kuviz in kuvizs" class="full-width" :key="kuviz.id">
+            <KuvizCard
+            :kuviz="kuviz">
+            </KuvizCard>
+          </li>
+        </ul>
+
+        <ul v-else>
+          <li v-for="(n) in resultsPerPage" :key="n">
+            <KuvizFakeCard />
+          </li>
+        </ul>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -27,14 +46,35 @@
 import { mapState } from 'vuex';
 import Page from 'new-dashboard/components/Page';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
+import KuvizCard from 'new-dashboard/components/Kuviz/KuvizCard.vue';
+import KuvizListHeader from 'new-dashboard/components/Kuviz/KuvizListHeader.vue';
+import KuvizFakeCard from 'new-dashboard/components/Kuviz/KuvizFakeCard.vue';
+
 
 export default {
   name: 'KuvizPage',
   components: {
     Page,
     SectionTitle,
-    CreateButton
+    KuvizCard,
+    KuvizListHeader,
+    KuvizFakeCard
+  },
+  computed: {
+      ...mapState({
+      numPages: state => state.kuviz.numPages,
+      currentPage: state => state.kuviz.page,
+      kuvizs: state => state.kuviz.list,
+      isFetchingKuvizs: state => state.kuviz.isFetching,
+      numResults: state => state.kuviz.numResults,
+      resultsPerPage: state => state.catalog.resultsPerPage
+    }),
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    },
+    shouldShowPagination () {
+      return !this.isFetchingKuvizs && this.numPages > 1;
+    }
   }
 };
 </script>
@@ -44,6 +84,11 @@ export default {
 
 .kuviz {
   margin-top: 64px;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
 </style>

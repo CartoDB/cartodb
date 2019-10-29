@@ -151,6 +151,36 @@ module Carto
           render_jsonp(@remote_table, 200)
         end
 
+        def update_remote_table
+          if @remote_table.empty?
+            @remote_table = @service.register_table(
+              federated_server_name: params[:federated_server_name],
+              remote_schema_name: params[:remote_schema_name],
+              remote_table_name: params[:remote_table_name],
+              local_table_name_override: params[:local_table_name_override].empty? ? params[:remote_table_name] : params[:local_table_name_override],
+              id_column_name: params[:id_column_name],
+              geom_column_name: params[:geom_column_name],
+              webmercator_column_name: params[:webmercator_column_name]
+            )
+
+            response.headers['Content-Location'] = "#{request.path}/#{@remote_table[:remote_table_name]}"
+
+            return render_jsonp({}, 201)
+          end
+
+          @federated_server = @service.update_table(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name],
+            remote_table_name: params[:remote_table_name],
+            local_table_name_override: params[:local_table_name_override].empty? ? params[:remote_table_name] : params[:local_table_name_override],
+            id_column_name: params[:id_column_name],
+            geom_column_name: params[:geom_column_name],
+            webmercator_column_name: params[:webmercator_column_name]
+          )
+
+          render_jsonp({}, 204)
+        end
+
         private
 
         def load_user

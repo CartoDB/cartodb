@@ -393,4 +393,59 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
   end
+
+  describe '#update_remote_table' do
+    before(:each) do
+      @payload = {
+        local_table_name_override: 'my_table',
+        id_column_name: 'another_id',
+        geom_column_name: 'another_the_geom',
+        webmercator_column_name: 'another_the_geom_webmercator'
+      }
+    end
+
+    xit 'returns 201 with the remote table was created' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        puts response.body
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon/remote_schemas/public/remote_tables/my_table')
+      end
+    end
+
+    it 'returns 204 with the remote table was updated' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', }
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 422 when payload is missing' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+      payload = {}
+
+      put_json api_v4_federated_servers_update_server_url(params), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+  end
+
 end

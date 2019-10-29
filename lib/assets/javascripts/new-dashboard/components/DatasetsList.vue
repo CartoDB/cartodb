@@ -67,8 +67,8 @@
         v-if="shouldShowHeader"
         class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
         :class="{
-          'has-userNotification': isNotificationVisible,
-          'in-homePage': isHomePage,
+          'has-user-notification': isNotificationVisible,
+          'in-home': isInHomePage,
         }">
 
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
@@ -182,7 +182,7 @@ export default {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
+      return !this.emptyState && !this.initialState;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&
@@ -216,7 +216,7 @@ export default {
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
     },
-    isHomePage () {
+    isInHomePage () {
       return this.$router.currentRoute.name === 'home';
     }
   },
@@ -288,12 +288,16 @@ export default {
 .grid__head--sticky {
   top: 128px;
 
-  &.in-homePage {
+  &.in-home {
     top: 64px;
   }
 
-  &.has-userNotification {
+  &.has-user-notification {
     top: 128px + $notification-warning__height;
+
+    &.in-home {
+      top: 64px + $notification-warning__height;
+    }
   }
 }
 

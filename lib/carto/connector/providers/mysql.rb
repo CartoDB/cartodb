@@ -39,6 +39,14 @@ module Carto
         }
       end
 
+      def server_attributes
+        %I(Driver option prefetch no_spss can_handle_exp_pwd server port schema)
+      end
+
+      def user_attributes
+        %I(uid pwd)
+      end
+
       def non_connection_parameters
         # database acts like schema name in MySQL
         super.reverse_merge(schema: @connection[:database])

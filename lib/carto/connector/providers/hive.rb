@@ -46,6 +46,13 @@ module Carto
         super.reverse_merge(schema: @connection[:database] || DEFAULT_SCHEMA)
       end
 
+      def server_attributes
+        %I(Driver HOST PORT Schema)
+      end
+
+      def user_attributes
+        %I(UID PWD)
+      end
     end
   end
 end

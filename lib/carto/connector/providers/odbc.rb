@@ -211,8 +211,15 @@ module Carto
         @params.slice(*(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - %I(columns connection)))
       end
 
-      SERVER_OPTIONS = %w(dsn driver host server address port database).freeze
-      USER_OPTIONS   = %w(uid pwd user username password).freeze
+      # Attributes (internal names) which will defined at fdw server level
+      def server_attributes
+        must_be_defined_in_derived_class
+      end
+
+      # Attributes (internal names) which will defined at user mapping level
+      def user_attributes
+        must_be_defined_in_derived_class
+      end
 
       def connection_options(parameters)
         # Prefix option names with "odbc_"
@@ -230,15 +237,15 @@ module Carto
       end
 
       def server_options
-        connection_options(connection_attributes.slice(*SERVER_OPTIONS)).parameters
+        connection_options(connection_attributes.slice(*server_attributes)).parameters
       end
 
       def user_options
-        connection_options(connection_attributes.slice(*USER_OPTIONS)).parameters
+        connection_options(connection_attributes.slice(*user_attributes)).parameters
       end
 
       def table_options
-        params = connection_options connection_attributes.except(*(SERVER_OPTIONS + USER_OPTIONS))
+        params = connection_options connection_attributes.except(*(server_attributes + user_attributes))
         params.merge(non_connection_parameters).parameters
       end
 

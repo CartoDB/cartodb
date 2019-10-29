@@ -8,16 +8,10 @@ module Carto
 
     # Federated Servers
 
-    def list_servers(page: 1, per_page: 10, order:, direction:)
-      offset = (page - 1) * per_page
-
+    def list_servers(pagination)
+      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
       @user_db_connection[
-        select_federated_servers_query(
-          per_page: per_page,
-          offset: offset,
-          order: order,
-          direction: direction
-        )
+        select_federated_servers_query(pagination)
       ].all
     end
 
@@ -49,51 +43,31 @@ module Carto
 
     # Remote Schemas
 
-    def list_remote_schemas(server:, page: 1, per_page: 10, order:, direction:)
-      offset = (page - 1) * per_page
-
+    def list_remote_schemas(federated_server_name, pagination)
+      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
       @user_db_connection[
-        select_remote_schemas_query(
-          server: server,
-          per_page: per_page,
-          offset: offset,
-          order: order,
-          direction: direction
-        )
+        select_remote_schemas_query(federated_server_name, pagination)
       ].all
     end
 
-    def count_remote_schemas(server:)
+    def count_remote_schemas(federated_server_name)
       @user_db_connection[
-        count_remote_schemas_query(
-          server: server
-        )
+        count_remote_schemas_query(federated_server_name)
       ].first[:count]
     end
 
     # Remote Tables
 
-    def list_remote_tables(server:, schema:, page: 1, per_page: 10, order:, direction:)
-      offset = (page - 1) * per_page
-
+    def list_remote_tables(federated_server_name, remote_schema_name, pagination)
+      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
       @user_db_connection[
-        select_remote_tables_query(
-          server: server,
-          schema: schema,
-          per_page: per_page,
-          offset: offset,
-          order: order,
-          direction: direction
-        )
+        select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
       ].all
     end
 
-    def count_remote_tables(server:, schema:)
+    def count_remote_tables(federated_server_name, remote_schema_name)
       @user_db_connection[
-        count_remote_tables_query(
-          server: server,
-          schema: schema
-        )
+        count_remote_tables_query(federated_server_name, remote_schema_name)
       ].first[:count]
     end
 
@@ -131,12 +105,12 @@ module Carto
 
     private
 
-    def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
+    def select_federated_servers_query(pagination)
       %{
         SELECT * FROM (#{select_servers_query}) AS federated_servers
-        ORDER BY #{order} #{direction}
-        LIMIT #{per_page}
-        OFFSET #{offset}
+        ORDER BY #{pagination[:order]} #{pagination[:direction]}
+        LIMIT #{pagination[:per_page]}
+        OFFSET #{pagination[:offset]}
       }.squish
     end
 
@@ -225,20 +199,20 @@ module Carto
 
     # Remote Schemas
 
-    def select_remote_schemas_query(server:, per_page: 10, offset: 0, order: 'name', direction: 'asc')
+    def select_remote_schemas_query(federated_server_name, pagination)
       %{
-        SELECT * FROM (#{select_schemas_query(server: server)}) AS remote_schemas
-        ORDER BY #{order} #{direction}
-        LIMIT #{per_page}
-        OFFSET #{offset}
+        SELECT * FROM (#{select_schemas_query(federated_server_name)}) AS remote_schemas
+        ORDER BY #{pagination[:order]} #{pagination[:direction]}
+        LIMIT #{pagination[:per_page]}
+        OFFSET #{pagination[:offset]}
       }.squish
     end
 
-    def count_remote_schemas_query(server:)
-      "SELECT COUNT(*) FROM (#{select_schemas_query(server: server)}) AS remote_schemas"
+    def count_remote_schemas_query(federated_server_name)
+      "SELECT COUNT(*) FROM (#{select_schemas_query(federated_server_name)}) AS remote_schemas"
     end
 
-    def select_schemas_query(server:)
+    def select_schemas_query(federated_server_name)
       %{
         SELECT
           'default' as remote_schema_name
@@ -250,21 +224,21 @@ module Carto
 
     # Remote Tables
 
-    def select_remote_tables_query(server:, schema:, per_page: 10, offset: 0, order: 'name', direction: 'asc')
+    def select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
       %{
-        SELECT * FROM (#{select_tables_query(server: server, schema: schema)}) AS remote_schemas
-        ORDER BY #{order} #{direction}
-        LIMIT #{per_page}
-        OFFSET #{offset}
+        SELECT * FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_schemas
+        ORDER BY #{pagination[:order]} #{pagination[:direction]}
+        LIMIT #{pagination[:per_page]}
+        OFFSET #{pagination[:offset]}
       }.squish
     end
 
-    def count_remote_tables_query(server:, schema:)
-      "SELECT COUNT(*) FROM (#{select_tables_query(server: server, schema: schema)}) AS remote_schemas"
+    def count_remote_tables_query(federated_server_name, remote_schema_name)
+      "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_schemas"
     end
 
     # WIP: Fake query to return a list of remote tables
-    def select_tables_query(server:, schema:)
+    def select_tables_query(federated_server_name, remote_schema_name)
       %{
         SELECT
           'true' as registered,

@@ -16,13 +16,13 @@ module Carto
         before_action :load_user
         before_action :load_service
         before_action only: [:list_federated_servers] do
-          load_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
+          load_pagination_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
         end
         before_action only: [:list_remote_schemas] do
-          load_params(default_order: 'remote_schema_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_SCHEMA)
+          load_pagination_params(default_order: 'remote_schema_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_SCHEMA)
         end
         before_action only: [:list_remote_tables] do
-          load_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
+          load_pagination_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
         end
         before_action :check_permissions
         before_action :load_federated_server_attributes, only: [:register_federated_server, :update_federated_server ]
@@ -37,12 +37,7 @@ module Carto
         # Federated Servers
 
         def list_federated_servers
-          result = @service.list_servers(
-            page: @page,
-            per_page: @per_page,
-            order: @order,
-            direction: @direction
-          )
+          result = @service.list_servers(@pagination)
           total = @service.count_servers()
 
           render_paged(result, total)
@@ -78,32 +73,16 @@ module Carto
         # Remote Schemas
 
         def list_remote_schemas
-          result = @service.list_remote_schemas(
-            server: params[:federated_server_name],
-            page: @page,
-            per_page: @per_page,
-            order: @order,
-            direction: @direction
-          )
-          total = @service.count_remote_schemas(server: params[:federated_server_name])
+          result = @service.list_remote_schemas(params[:federated_server_name], @pagination)
+          total = @service.count_remote_schemas(params[:federated_server_name])
           render_paged(result, total)
         end
 
         # Remote Tables
 
         def list_remote_tables
-          result = @service.list_remote_tables(
-            server: params[:federated_server_name],
-            schema: params[:remote_schema_name],
-            page: @page,
-            per_page: @per_page,
-            order: @order,
-            direction: @direction
-          )
-          total = @service.count_remote_tables(
-            server: params[:federated_server_name],
-            schema: params[:remote_schema_name]
-          )
+          result = @service.list_remote_tables(params[:federated_server_name], params[:remote_schema_name], @pagination)
+          total = @service.count_remote_tables(params[:federated_server_name], params[:remote_schema_name])
           render_paged(result, total)
         end
 
@@ -148,12 +127,13 @@ module Carto
           @service = Carto::FederatedTablesService.new(user: @user)
         end
 
-        def load_params(default_order:, valid_order_params:)
-          @page, @per_page, @order, @direction = page_per_page_order_params(
+        def load_pagination_params(default_order:, valid_order_params:)
+          page, per_page, order, direction = page_per_page_order_params(
             valid_order_params,
             default_order: default_order,
             default_order_direction: 'asc'
           )
+          @pagination = { page: page, per_page: per_page, order: order, direction: direction }
         end
 
         def load_federated_server_attributes
@@ -194,8 +174,8 @@ module Carto
           enriched_response = paged_result(
             result: result,
             total_count: total,
-            page: @page,
-            per_page: @per_page,
+            page: @pagination[:page],
+            per_page: @pagination[:per_page],
             params: params.except('controller', 'action')
           ) { |params| api_v4_federated_servers_list_servers_url(params) }
 

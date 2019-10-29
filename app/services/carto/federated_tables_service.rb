@@ -113,6 +113,30 @@ module Carto
       ].first[:count]
     end
 
+    def register_table(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+      @superuser_db_connection[
+        register_remote_table_query(
+          federated_server_name: federated_server_name,
+          remote_schema_name: remote_schema_name,
+          remote_table_name: remote_table_name,
+          local_table_name_override: local_table_name_override,
+          id_column_name: id_column_name,
+          geom_column_name: geom_column_name,
+          webmercator_column_name: webmercator_column_name
+        )
+      ].first
+    end
+
+    def get_remote_table(federated_server_name:, remote_schema_name:, remote_table_name:)
+      @user_db_connection[
+        get_remote_table_query(
+          federated_server_name: federated_server_name,
+          remote_schema_name: remote_schema_name,
+          remote_table_name: remote_table_name
+        )
+      ].first
+    end
+
     private
 
     def select_federated_servers_query(per_page: 10, offset: 0, order: 'name', direction: 'asc')
@@ -151,7 +175,7 @@ module Carto
       }.squish
     end
 
-    # WIP: Fake query to return register a federated server
+    # WIP: Fake query to register a federated server
     def register_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       %{
         SELECT
@@ -165,7 +189,7 @@ module Carto
       }.squish
     end
 
-    # WIP: Fake query to return register a federated server
+    # WIP: Fake query to get a federated server
     def get_federated_server_query(federated_server_name:)
       %{
         SELECT
@@ -179,7 +203,7 @@ module Carto
       }.squish
     end
 
-    # WIP: Fake query to return register a federated server
+    # WIP: Fake query to update a federated server
     def update_federated_server_query(federated_server_name:, mode:, dbname:, host:, port:, username:, password:)
       %{
         SELECT
@@ -193,7 +217,7 @@ module Carto
       }.squish
     end
 
-    # WIP: Fake query to return register a federated server
+    # WIP: Fake query to unregister a federated server
     def unregister_federated_server_query(federated_server_name:)
       %{
         SELECT
@@ -247,6 +271,7 @@ module Carto
       "SELECT COUNT(*) FROM (#{select_tables_query(server: server, schema: schema)}) AS remote_schemas"
     end
 
+    # WIP: Fake query to return a list of remote tables
     def select_tables_query(server:, schema:)
       %{
         SELECT
@@ -264,6 +289,35 @@ module Carto
           'public' as remote_schema_name,
           'shops' as remote_table_name,
           'shop_id' as id_column_name,
+          'the_geom' as geom_column_name,
+          'the_geom_webmercator' as webmercator_column_name
+      }.squish
+    end
+
+    # WIP: Fake query to register a remote table
+    def register_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:, local_table_name_override:, id_column_name:, geom_column_name:, webmercator_column_name:)
+      %{
+        SELECT
+          '#{federated_server_name}' as federated_server_name,
+          '#{remote_schema_name}' as remote_schema_name,
+          '#{remote_table_name}' as remote_table_name,
+          '#{local_table_name_override}' as local_table_name_override,
+          '#{id_column_name}' as id_column_name,
+          '#{geom_column_name}' as geom_column_name,
+          '#{webmercator_column_name}' as webmercator_column_name
+      }.squish
+    end
+
+    # WIP: Fake query to get a remote table
+    def get_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
+      %{
+        SELECT
+          '#{federated_server_name}' as federated_server_name,
+          '#{remote_schema_name}' as remote_schema_name,
+          '#{remote_table_name}' as remote_table_name,
+          'my_table' as local_table_name_override,
+          '#{remote_schema_name}.my_table' as qualified_name,
+          'id' as id_column_name,
           'the_geom' as geom_column_name,
           'the_geom_webmercator' as webmercator_column_name
       }.squish

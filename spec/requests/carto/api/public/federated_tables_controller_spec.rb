@@ -297,4 +297,100 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
   end
+
+  describe '#register_remote_table' do
+    before(:each) do
+      @payload = {
+        remote_table_name: 'my_table',
+        local_table_name_override: 'my_table',
+        id_column_name: 'id',
+        geom_column_name: 'the_geom',
+        webmercator_column_name: 'the_geom_webmercator'
+      }
+    end
+
+    it 'returns 201 with the federated server created' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: @user1.api_key }
+
+      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon/remote_schemas/public/remote_tables/my_table')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public' }
+
+      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: api_key.token }
+
+      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 422 when payload is missing' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: @user1.api_key }
+      payload = {}
+
+      post_json api_v4_federated_servers_register_table_url(params), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+  end
+
+  describe '#show_remote_table' do
+    before(:each) do
+      @payload = {
+        local_table_name_override: 'my_table',
+        id_column_name: 'id',
+        geom_column_name: 'the_geom',
+        webmercator_column_name: 'the_geom_webmercator'
+      }
+    end
+
+    it 'returns 200 with the remote table' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(200)
+
+        expect(response.body[:federated_server_name]).to eq('amazon')
+        expect(response.body[:remote_schema_name]).to eq('public')
+        expect(response.body[:remote_table_name]).to eq('my_table')
+        expect(response.body[:local_table_name_override]).to eq('my_table')
+        expect(response.body[:qualified_name]).to eq('public.my_table')
+      end
+    end
+
+    it 'returns 401 when non authenticated user' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table' }
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when using a regular API key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    xit 'returns 404 when there is not a remote table with the provided name' do
+      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
+
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+  end
 end

@@ -610,7 +610,8 @@ CartoDB::Application.routes.draw do
 
       ## Remote tables
       get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#list_remote_tables', as: :api_v4_federated_servers_list_tables
-
+      post 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#register_remote_table', as: :api_v4_federated_servers_register_table
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
     end
 
     scope 'v3/' do

@@ -22,8 +22,10 @@ module Carto
           load_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
         end
         before_action :check_permissions
-        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server ]
+        before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
+        before_action :load_remote_table, only: [:show_remote_table]
+        before_action :check_remote_table, only: [:show_remote_table]
 
         setup_default_rescues
 
@@ -129,6 +131,26 @@ module Carto
           render_paged(result, total)
         end
 
+        def register_remote_table
+          remote_table = @service.register_table(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name],
+            remote_table_name: params[:remote_table_name],
+            local_table_name_override: params[:local_table_name_override].empty? ? params[:remote_table_name] : params[:local_table_name_override],
+            id_column_name: params[:id_column_name],
+            geom_column_name: params[:geom_column_name],
+            webmercator_column_name: params[:webmercator_column_name]
+          )
+
+          response.headers['Content-Location'] = "#{request.path}/#{remote_table[:remote_table_name]}"
+
+          render_jsonp({}, 201)
+        end
+
+        def show_remote_table
+          render_jsonp(@remote_table, 200)
+        end
+
         private
 
         def load_user
@@ -153,6 +175,18 @@ module Carto
 
         def check_federated_server
           raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") if @federated_server.empty?
+        end
+
+        def load_remote_table
+          @remote_table = @service.get_remote_table(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name],
+            remote_table_name: params[:remote_table_name]
+          )
+        end
+
+        def check_remote_table
+          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") if @remote_table.empty?
         end
 
         def check_permissions

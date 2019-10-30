@@ -29,7 +29,7 @@
   <% else %>
     <% @user.values[:db_size_in_bytes] = 0 %>
     <% @user.values[:organization] = current_user.data[:organization] %>
-    <% @user.values[:quota_available_for_user] = current_user.data[:organization][:unassigned_quota] + @user.values[:quota_in_bytes] %>
+    <% @user.values[:quota_available_for_user] = current_user.data[:organization][:unassigned_quota] + (@user.values[:quota_in_bytes] || 0) %>
 
     var organization_user_data = <%= safe_js_object @user.values.to_json %>;
   <% end %>

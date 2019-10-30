@@ -30,4 +30,8 @@ export default {
     margin: 0 auto;
   }
 }
+
+header.has-user-notification + .secondaryNavigation {
+  top: 64px + $notification-warning__height;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <section class="welcome-section" :class="{ 'is-user-notification': isNotificationVisible }">
+  <section class="welcome-section" :class="{ 'has-user-notification': isNotificationVisible }">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">

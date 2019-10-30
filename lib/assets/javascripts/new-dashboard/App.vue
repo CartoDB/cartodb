@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header :class="{ 'is-user-notification': isNotificationVisible }">
+    <header :class="{ 'has-user-notification': isNotificationVisible }">
       <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
       <NavigationBar
         :user="user"
@@ -87,7 +87,7 @@ export default {
 header {
   padding-top: 60px;
 
-  &.is-user-notification {
+  &.has-user-notification {
     padding-top: 124px;
   }
 }

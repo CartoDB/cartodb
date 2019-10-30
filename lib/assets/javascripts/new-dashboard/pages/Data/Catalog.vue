@@ -237,6 +237,10 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
+header.has-user-notification + section.page--data {
+  padding: 0;
+}
+
 .catalog {
   min-height: 640px;
   margin-top: 64px;

@@ -58,7 +58,7 @@
       <div
           v-if="shouldShowListHeader"
           class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-          :class="{ 'is-user-notification': isNotificationVisible }">
+          :class="{ 'has-user-notification': isNotificationVisible }">
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
@@ -308,7 +308,7 @@ export default {
   top: 64px;
 }
 
-.grid__head--sticky.is-user-notification {
+.grid__head--sticky.has-user-notification {
   top: 64px + $notification-warning__height;
 }
 

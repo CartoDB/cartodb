@@ -1,5 +1,5 @@
 <template>
-  <section class="page" :class="{ 'is-user-notification': isNotificationVisible }">
+  <section class="page" :class="{ 'has-user-notification': isNotificationVisible }">
     <slot />
   </section>
 </template>
@@ -30,7 +30,7 @@ export default {
     padding-top: 64px;
   }
 
-  &.is-user-notification {
+  &.has-user-notification {
     padding-top: 128px - $notification-warning__height;
   }
 }

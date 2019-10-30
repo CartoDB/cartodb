@@ -49,7 +49,7 @@
               <div
                 v-if="hasDatasets"
                 class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-                :class="{ 'is-user-notification': isNotificationVisible }">
+                :class="{ 'has-user-notification': isNotificationVisible }">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
               </div>
 
@@ -281,7 +281,7 @@ export default {
   top: 128px;
 }
 
-.grid__head--sticky.is-user-notification {
+.grid__head--sticky.has-user-notification {
   top: 128px + $notification-warning__height;
 }
 

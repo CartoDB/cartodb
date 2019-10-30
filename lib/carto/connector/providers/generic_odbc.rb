@@ -12,6 +12,18 @@ module Carto
     #
     class GenericOdbcProvider < OdbcProvider
 
+      def self.id
+        'odbc'
+      end
+
+      def self.name
+        'ODBC'
+      end
+
+      def self.public?
+        false # Intended for internal development/tests
+      end
+
       def initialize(context, params)
         super
         if @connection

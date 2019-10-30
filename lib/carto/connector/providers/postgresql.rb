@@ -14,6 +14,18 @@ module Carto
     #
     class PostgreSQLProvider < OdbcProvider
 
+      def self.id
+        'postgres'
+      end
+
+      def self.name
+        'PostgreSQL'
+      end
+
+      def self.public?
+        true
+      end
+
       private
 
       DEFAULT_SCHEMA = 'public'.freeze

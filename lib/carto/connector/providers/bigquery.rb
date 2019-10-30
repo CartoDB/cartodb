@@ -25,6 +25,18 @@ module Carto
     # }
     class BigQueryProvider < OdbcProvider
 
+      def self.id
+        'bigquery'
+      end
+
+      def self.name
+        'Google BigQuery'
+      end
+
+      def self.public?
+        true
+      end
+
       private
 
       # Class constants
@@ -101,6 +113,11 @@ module Carto
 
       def user_attributes
         %I(RefreshToken)
+      end
+
+      def non_connection_parameters
+        # database acts like schema name in MySQL
+        super.reverse_merge(schema: @connection[:database])
       end
 
       def create_proxy_conf

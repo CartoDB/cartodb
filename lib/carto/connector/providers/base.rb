@@ -104,6 +104,10 @@ module Carto
         info
       end
 
+      def provider_id
+        self.class.id
+      end
+
       private
 
       def must_be_defined_in_derived_class(*_)
@@ -120,6 +124,11 @@ module Carto
 
       def execute_as_superuser(sql)
         @connector_context.execute_as_superuser(sql)
+      end
+
+      def execute_with_timeout(command, timeout=nil)
+        timeout ||= @connector_context.user.connector_configuration(provider_id).timeout
+        @connector_context.execute_in_user_database command, statement_timeout: timeout
       end
     end
 

@@ -9,18 +9,17 @@ module Carto
 
       attr_reader :user
 
-      def initialize(logger:, user:, provider_name:)
+      def initialize(logger:, user:)
         @logger        = logger
         @user          = user
-        @provider_name = provider_name
       end
 
-      def self.cast(arg, provider_name)
+      def self.cast(arg)
         case arg
         when Context
           arg
         else
-          new arg.merge(provider_name: provider_name)
+          new arg
         end
       end
 
@@ -36,8 +35,7 @@ module Carto
         execute_in_user_database command
       end
 
-      def execute_with_timeout(command, timeout=nil)
-        timeout ||= @user.connector_configuration(@provider_name).timeout
+      def execute_with_timeout(command, timeout)
         execute_in_user_database command, statement_timeout: timeout
       end
 
@@ -63,6 +61,8 @@ module Carto
       def database_username
         @user.database_username
       end
+
+      attr_reader :user
     end
   end
 end

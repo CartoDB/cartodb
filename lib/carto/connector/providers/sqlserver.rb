@@ -11,6 +11,18 @@ module Carto
     #
     class SqlServerProvider < OdbcProvider
 
+      def self.id
+        'sqlserver'
+      end
+
+      def self.name
+        'Microsoft SQL Server'
+      end
+
+      def self.public?
+        true
+      end
+
       private
 
       DEFAULT_SCHEMA = 'dbo'.freeze

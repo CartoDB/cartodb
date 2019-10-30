@@ -12,6 +12,18 @@ module Carto
     #
     class MySqlProvider < OdbcProvider
 
+      def self.id
+        'mysql'
+      end
+
+      def self.name
+        'MySQL'
+      end
+
+      def self.public?
+        true
+      end
+
       private
 
       def fixed_connection_attributes

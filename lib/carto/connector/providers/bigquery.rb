@@ -9,10 +9,19 @@ module Carto
     # {
     #   "provider": "bigquery",
     #   "connection": {
-    #     "Catalog": "eternal-ship-170218"
+    #     "project": "eternal-ship-170218"
     #   },
     #   "table": "destination_table",
     #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
+    # }
+    #
+    # {
+    #   "provider": "bigquery",
+    #   "connection": {
+    #     "project": "some_project"
+    #   },
+    #   "table": "mytable",
+    #   "dataset": "mydataset"
     # }
     class BigQueryProvider < OdbcProvider
 
@@ -43,15 +52,8 @@ module Carto
         # a connection such as obtaining metadata (list_tables?, features_information, etc.)
         return if !context || !context.user
 
-        refreshTokenErrMsg = 'BigQuery refresh token not found for the user'
-        begin
-          @token = context.user.oauths.select(DATASOURCE_NAME).token
-          raise refreshTokenErrMsg if @token.nil?
-        rescue => e
-          CartoDB::Logger.error(exception: e,
-                                  message: refreshTokenErrMsg,
-                                  user_id: context.user.id)
-        end
+        @token = context.user.oauths.select(DATASOURCE_NAME)&.token
+        raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
       end
 
       def fixed_connection_attributes
@@ -76,9 +78,20 @@ module Carto
         return conf
       end
 
+      REQUIRED_OPTIONS = %I(table connection).freeze
+      OPTIONAL_OPTIONS = %I(dataset sql_query).freeze
+
+      def optional_parameters
+        OPTIONAL_OPTIONS
+      end
+
+      def required_parameters
+        REQUIRED_OPTIONS
+      end
+
       def required_connection_attributes
         {
-          database:       :Catalog
+          project:       :Catalog
         }
       end
 
@@ -101,6 +114,16 @@ module Carto
         end
       end
 
+      public
+
+      def features_information
+        {
+          "sql_queries":    true,
+          "list_projects": false,
+          "list_tables":    true,
+          "preview_table":  false
+        }
+      end
     end
   end
 end

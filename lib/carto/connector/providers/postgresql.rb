@@ -47,6 +47,14 @@ module Carto
         # Default remote schema
         super.reverse_merge(schema: DEFAULT_SCHEMA)
       end
+
+      def server_attributes
+        %I(Driver ByteaAsLongVarBinary MaxVarcharSize BoolsAsChar Server Database Port SSLmode)
+      end
+
+      def user_attributes
+        %I(UID PWD)
+      end
     end
   end
 end

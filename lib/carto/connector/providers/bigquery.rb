@@ -82,6 +82,14 @@ module Carto
         }
       end
 
+      def server_attributes
+        %I(Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime)
+      end
+
+      def user_attributes
+        %I(RefreshToken)
+      end
+
       def create_proxy_conf
         proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
         if !proxy.nil?

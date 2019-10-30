@@ -115,10 +115,9 @@ module Carto
         %I(RefreshToken)
       end
 
-      def non_connection_parameters
-        # database acts like schema name in MySQL
-        super.reverse_merge(schema: @connection[:database])
-      end
+      # def non_connection_parameters
+      #   super.reverse_merge(schema: @params[:dataset])
+      # end
 
       def create_proxy_conf
         proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']

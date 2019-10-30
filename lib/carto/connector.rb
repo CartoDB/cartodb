@@ -13,12 +13,13 @@ module Carto
     attr_reader :provider_name
 
     def initialize(parameters, context)
-      @connector_context = Context.cast(context)
-
       @params = Parameters.new(parameters)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
+
+      @connector_context = Context.cast(context, @provider_name)
+
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, @connector_context, @params

@@ -153,7 +153,7 @@ module Carto
       # Copy foreign table to local table
       def fdw_copy_foreign_table(local_table_name, foreign_table_name, max_rows)
         limit = max_rows && max_rows > 0 ? " LIMIT #{max_rows}" : ''
-        execute %{
+        execute_with_timeout %{
           CREATE TABLE #{local_table_name}
             AS SELECT * FROM #{foreign_table_name}
               #{limit};

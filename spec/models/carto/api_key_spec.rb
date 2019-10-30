@@ -177,7 +177,7 @@ describe Carto::ApiKey do
       @carto_user1.in_database.execute("drop table test_table")
     end
 
-    it 'reassign created table ownership after delete the api key' do
+    it 'reassigns role ownerships after deleting a regular API key' do
       grants = [schema_grant(@carto_user1.database_schema), apis_grant]
       api_key = @carto_user1.api_keys.create_regular_key!(name: 'drop_test', grants: grants)
 
@@ -931,6 +931,26 @@ describe Carto::ApiKey do
       table_user1.destroy
       table_user2.destroy
       user2.destroy
+    end
+
+    it 'reassigns role ownerships after deleting an OAuth API key' do
+      create_schema
+      create_role
+      grant_user
+      api_key = create_oauth_api_key
+
+      with_connection_from_api_key(api_key) do |connection|
+        connection.execute("create table test.wadus()")
+      end
+
+      api_key.destroy
+
+      ownership_query = "select pg_catalog.pg_get_userbyid(relowner) as owner from pg_class where relname = 'wadus'"
+      @carto_user1.in_database.execute(ownership_query) do |result|
+        result[0]['owner'].should eq @carto_user1.database_username
+      end
+
+      @carto_user1.in_database(as: :superuser).execute("drop table test.wadus")
     end
   end
 

@@ -8,7 +8,7 @@ Development
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
 
 ### Bug fixes / enhancements
-- None yet
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
 
 4.30.0 (2019-10-18)
 -------------------
@@ -72,7 +72,8 @@ sudo make install
 * Update Dataservices API client default version to `0.27.0` (#15134)
 * Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
 * Fix password validation for SAML ([#15147](https://github.com/CartoDB/cartodb/pull/15147))
-* Fix dataset list header sticky header top in homepage
+* Dashboard: Rename catalogue to catalog ([#15158](https://github.com/CartoDB/cartodb/issues/15158))
+* Fix dataset list header sticky header top in homepage ([#15164](https://github.com/CartoDB/cartodb/issues/15164))
 
 4.29.0 (2019-07-15)
 -------------------

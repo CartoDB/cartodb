@@ -1,48 +1,48 @@
 <template>
-  <div class="catalogueListHeader">
-    <div class="catalogueListHeader__column">
-      <div class="catalogueListHeader__cell cell">
+  <div class="catalogListHeader">
+    <div class="catalogListHeader__column">
+      <div class="catalogListHeader__cell cell">
       </div>
       <div class="cell cell--main">
-        <span class="text is-small is-txtSoftGrey catalogueListHeader__sort"
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('name'),
             'is-reversed': isReverseOrderApplied('name'),
           }">
-          {{ $t('CatalogueListHeader.name') }}
+          {{ $t('CatalogListHeader.name') }}
         </span>
       </div>
     </div>
 
-    <div class="catalogueListHeader__column">
-      <div class="cell catalogueCard__cell--large">
-        <span class="text is-small is-txtSoftGrey catalogueListHeader__sort"
+    <div class="catalogListHeader__column">
+      <div class="cell catalogCard__cell--large">
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
         :class="{
             'is-active': isOrderApplied('spatial_aggregations'),
             'is-reversed': isReverseOrderApplied('spatial_aggregations'),
           }">
-          {{ $t('CatalogueListHeader.aggregation') }}
+          {{ $t('CatalogListHeader.aggregation') }}
         </span>
       </div>
     </div>
 
-    <div class="catalogueListHeader__column">
+    <div class="catalogListHeader__column">
       <div class="cell cell--large">
-        <span class="text is-small is-txtSoftGrey catalogueListHeader__sort"
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('frequency'),
             'is-reversed': isReverseOrderApplied('frequency'),
           }">
-          {{ $t('CatalogueListHeader.frequency') }}
+          {{ $t('CatalogListHeader.frequency') }}
         </span>
       </div>
       <div class="cell cell--large">
-        <span class="text is-small is-txtSoftGrey catalogueListHeader__sort"
+        <span class="text is-small is-txtSoftGrey catalogListHeader__sort"
           :class="{
             'is-active': isOrderApplied('source'),
             'is-reversed': isReverseOrderApplied('source'),
           }">
-          {{ $t('CatalogueListHeader.source') }}
+          {{ $t('CatalogListHeader.source') }}
         </span>
       </div>
     </div>
@@ -51,7 +51,7 @@
 
 <script>
 export default {
-  name: 'CatalogueListHeader',
+  name: 'CatalogListHeader',
   props: {
     order: String,
     orderDirection: String
@@ -93,7 +93,7 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-.catalogueListHeader {
+.catalogListHeader {
   display: flex;
   align-items: center;
   width: 100%;
@@ -122,7 +122,7 @@ export default {
   }
 }
 
-.catalogueListHeader__sort {
+.catalogListHeader__sort {
   &.is-active,
   &:hover {
     color: $text__color;

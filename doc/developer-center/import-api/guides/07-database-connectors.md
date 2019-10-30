@@ -1091,7 +1091,7 @@ You can use the BigQuery Connector to:
 
 - Import a single, whole table stored in your BigQuery database
 - Apply a (Standard) SQL query to import filtered data
-- Apply a (Standard) SQL query from from multiple joined tables
+- Apply a (Standard) SQL query from multiple joined tables
 
 Before using the BigQuery Connector you need to connect your CARTO account to your BigQuery (which authorizes CARTO to access your BigQuery data on your behalf).
 You can do this by going to your profile (Settings in top right menu) and then select `Account` on the left.
@@ -1106,9 +1106,10 @@ To use the BigQuery Connector, you must include a `connector` parameter with the
   "connector": {
     "provider": "bigquery",
     "connection": {
-      "database":"mybigqueryproject"
+      "project":"mybigqueryproject"
     },
-    "table": "mytable"
+    "table": "mytable",
+    "dataset": "mybigquerydataset"
   }
 }
 ```
@@ -1122,15 +1123,16 @@ Param | Description
 connector | This value **MUST** be set to *bigquery*.
 connection |  Provide the parameters that define the Google Cloud project to connect to.
 table | Identifies the table to be imported.
+dataset | Name of the dataset where the table belongs to. This is optional.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 
 #### Connect to a Table
 
 In order to connect to an external BigQuery table, the following rules apply:
 
-- The name of the remote BigQuery dataset must be passed in the `schema` parameter
-- The name of the remote BigQuery table must be passed in the `table` parameter
-- The `sql_query` parameter must not be present
+- The name of the remote BigQuery dataset must be passed in the `dataset` parameter.
+- The name of the remote BigQuery table must be passed in the `table` parameter.
+- The `sql_query` parameter **MUST NOT** be present.
 - A CARTO dataset with the same name will be connected to the external table
 
 ##### Example
@@ -1144,10 +1146,10 @@ curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
     "connection": {
-      "database":"mybigqueryproject"
+      "project":"mybigqueryproject"
     },
     "table": "mytable",
-    "schema": "mybigquerydataset"
+    "dataset": "mybigquerydataset"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
 ```
@@ -1188,9 +1190,9 @@ curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
     "connection": {
-      "database":"mybigqueryproject"
+      "project":"mybigqueryproject"
     },
-    "table": "mytable",
+    "table": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
@@ -1228,9 +1230,9 @@ curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
     "connection": {
-      "database":"mybigqueryproject"
+      "project":"mybigqueryproject"
     },
-    "table": "mytable",
+    "table": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   },
   "interval": 2592000
@@ -1292,7 +1294,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "error_message":null,
   "retried_times":0,
   "service_name":"connector",
-  "service_item_id":"{\"provider\":\"bigquery\",\"connection\":{\"database\":\"mybigquerydataset\"},\"table\":\"mytable\"}",
+  "service_item_id":"{\"provider\":\"bigquery\",\"connection\":{\"database\":\"mybigquerydataset\"},\"table\":\"mylocaltable\"}",
   "type_guessing":true,
   "quoted_fields_guessing":true,
   "content_guessing":false,

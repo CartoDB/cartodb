@@ -10,12 +10,13 @@
     </div>
 
     <div class="kuvizFakeCard__column--extra">
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--xlarge u-ellipsis">
         <div class="text-placeholder"/>
       </div>
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--medium u-ellipsis">
         <div class="text-placeholder"/>
       </div>
+      <div class="cell cell--last"></div>
     </div>
   </div>
 </template>
@@ -54,6 +55,7 @@ export default {
     &--extra {
       display: flex;
       flex: 0 0 41.6665%;
+      align-items: center;
       justify-content: space-between;
       max-width: 41.6665%;
     }

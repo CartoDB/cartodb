@@ -19,19 +19,18 @@
     </div>
 
     <div class="kuvizCard__column--extra">
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--xlarge u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ lastUpdated }}
         </span>
       </div>
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--medium u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ $t(`KuvizCard.privacy.${kuviz.privacy}`) }}
         </span>
       </div>
 
-      <div class="cell quick-actions cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
-        <div class="quick-actions__placeholder"></div>
+      <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
         <KuvizQuickActions class="kuvizCard--quick-actions" @deleteKuviz="deleteKuviz" :kuviz="kuviz" @open="openQuickActions" @close="closeQuickActions" @contentChanged="onContentChanged" />
       </div>
     </div>
@@ -136,6 +135,7 @@ export default {
     &--extra {
       display: flex;
       flex: 0 0 41.6665%;
+      align-items: center;
       justify-content: space-between;
       max-width: 41.6665%;
     }

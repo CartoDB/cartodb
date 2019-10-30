@@ -18,10 +18,14 @@
   align-items: center;
 }
 
-.cell--xlarge {
+.cell--xxlarge {
   flex-grow: 1;
   flex-shrink: 1;
   width: 280px;
+}
+
+.cell--xlarge {
+  width: 180px;
 }
 
 .cell--large {

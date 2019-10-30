@@ -12,16 +12,17 @@
     </div>
 
     <div class="kuvizListHeader__column--extra">
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--xlarge u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ $t('KuvizListHeader.lastModified') }}
         </span>
       </div>
-      <div class="cell cell--large u-ellipsis">
+      <div class="cell cell--medium u-ellipsis">
         <span class="text is-small is-txtSoftGrey">
           {{ $t('KuvizListHeader.privacy') }}
         </span>
       </div>
+      <div class="cell cell--last kuvizListHeader__cell--last"></div>
     </div>
   </div>
 </template>
@@ -59,6 +60,7 @@ export default {
     &--extra {
       display: flex;
       flex: 0 0 41.6665%;
+      align-items: center;
       justify-content: space-between;
       max-width: 41.6665%;
     }
@@ -73,6 +75,10 @@ export default {
       flex-grow: 1;
       flex-shrink: 1;
       width: 280px;
+    }
+
+    &--last {
+      width: 34px;
     }
   }
 

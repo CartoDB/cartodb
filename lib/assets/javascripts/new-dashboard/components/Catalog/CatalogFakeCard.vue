@@ -11,7 +11,7 @@
     </div>
 
     <div class="catalogCardFake__column">
-      <div class="cell-placeholder cell cell--xlarge">
+      <div class="cell-placeholder cell cell--xxlarge">
         <div class="text-placeholder"/>
       </div>
     </div>

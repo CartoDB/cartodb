@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <header :class="{ 'has-user-notification': isNotificationVisible }">
+    <header class="header" :class="{ 'has-user-notification': isNotificationVisible }">
       <NotificationWarning v-if="isNotificationVisible" :htmlBody=user.notification />
       <NavigationBar
         :user="user"
@@ -73,7 +73,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+@import 'new-dashboard/styles/variables';
+
 #app {
   font-family: 'Montserrat', 'Open Sans', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -84,11 +86,11 @@ export default {
   box-sizing: border-box;
 }
 
-header {
-  padding-top: 60px;
+.header {
+  padding-top: 64px;
 
   &.has-user-notification {
-    padding-top: 124px;
+    padding-top: 64px + $notification-warning__height;
   }
 }
 

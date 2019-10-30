@@ -16,7 +16,9 @@
         <section class="section section--maps" :class="{ 'has-pagination': hasMaps && mapsNumPages > 1 }" ref="maps">
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.maps') }}</div>
             <div class="js-grid__head--sticky">
-              <div class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky" v-if="hasMaps">
+              <div v-if="hasMaps || isFetchingMaps"
+                class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
+                :class="{ 'has-user-notification': isNotificationVisible }">
                 <CondensedMapHeader order="" orderDirection="" :isSortable="false"></CondensedMapHeader>
               </div>
 
@@ -47,7 +49,7 @@
           <div class="section__title grid-cell title is-medium">{{ $t('SearchPage.sections.data') }}</div>
             <div class="js-grid__head--sticky">
               <div
-                v-if="hasDatasets"
+                v-if="hasDatasets || isFetchingDatasets"
                 class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
                 :class="{ 'has-user-notification': isNotificationVisible }">
                 <DatasetListHeader order="" orderDirection="" :isSortable="false"></DatasetListHeader>
@@ -189,6 +191,9 @@ export default {
     },
     isTermSearch () {
       return this.searchTerm;
+    },
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
     }
   },
   methods: {

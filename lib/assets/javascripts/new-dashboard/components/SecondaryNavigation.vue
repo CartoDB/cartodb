@@ -1,5 +1,5 @@
 <template>
-  <section class="secondaryNavigation">
+  <section class="secondaryNavigation" :class="{'has-user-notification': isNotificationVisible}">
       <div class="secondaryNavigation__content">
         <slot></slot>
       </div>
@@ -8,7 +8,12 @@
 
 <script>
 export default {
-  name: 'SecondaryNavigation'
+  name: 'SecondaryNavigation',
+  computed: {
+    isNotificationVisible () {
+      return this.$store.getters['user/isNotificationVisible'];
+    }
+  }
 };
 </script>
 
@@ -31,7 +36,7 @@ export default {
   }
 }
 
-header.has-user-notification + .secondaryNavigation {
+.secondaryNavigation.has-user-notification {
   top: 64px + $notification-warning__height;
 }
 </style>

@@ -114,16 +114,6 @@ module Carto
         end
       end
 
-      public
-
-      def features_information
-        {
-          "sql_queries":    true,
-          "list_projects": false,
-          "list_tables":    true,
-          "preview_table":  false
-        }
-      end
     end
   end
 end

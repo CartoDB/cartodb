@@ -30,7 +30,7 @@ module Carto
 
     class << self
       def provider_class(provider_id)
-        provider_item provider_id, :class
+        provider_data provider_id
       end
 
       def provider_public?(provider_id)

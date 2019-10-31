@@ -39,6 +39,10 @@ module Carto
         execute_in_user_database command, statement_timeout: timeout
       end
 
+      def execute_as_superuser_with_timeout(command)
+        execute_in_user_database command, as: :superuser, statement_timeout: timeout
+      end
+
       # Execute SQL command returning array of results.
       # Commands with no results (e.g. UPDATE, etc.) will return an empty array (`[]`).
       # Result rows are returned as hashes with indifferent access.

@@ -128,7 +128,7 @@ module Carto
           cmds << fdw_import_foreign_schema_sql(server_name, remote_schema_name, foreign_table_schema, options)
         end
         cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
-        execute_as_superuser cmds.join("\n")
+        execute_as_superuser_with_timeout cmds.join("\n")
         foreign_table_name
       end
 

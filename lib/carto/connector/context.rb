@@ -39,7 +39,7 @@ module Carto
         execute_in_user_database command, statement_timeout: timeout
       end
 
-      def execute_as_superuser_with_timeout(command)
+      def execute_as_superuser_with_timeout(command, timeout)
         execute_in_user_database command, as: :superuser, statement_timeout: timeout
       end
 

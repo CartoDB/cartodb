@@ -128,12 +128,12 @@ module Carto
 
       def execute_with_timeout(command, timeout=nil)
         timeout ||= default_timeout
-        @connector_context.execute_in_user_database command, statement_timeout: timeout
+        @connector_context.execute_in_user_database command, timeout
       end
 
       def execute_as_superuser_with_timeout(command, timeout=nil)
         timeout ||= default_timeout
-        @connector_context.execute_as_superuser command, statement_timeout: timeout
+        @connector_context.execute_as_superuser command, timeout
       end
 
       def default_timeout

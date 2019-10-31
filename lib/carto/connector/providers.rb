@@ -10,13 +10,6 @@ require_relative 'providers/bigquery'
 
 module Carto
   class Connector
-
-    # Here we map provider identifiers (as used in APIs, etc.) to the Provider class and basic attributes.
-    # `name` is the human-readable name
-    # `public` means that the provider is publicly announced (so it is accessible through UI, visible in lists of
-    # providers, etc.) A provider may be available or not (see Connector.limits) independently of its public status,
-    # so that a public provider may not be available for all users, and non-public providers may be available to
-    # some users (e.g. 'odbc' provider for tests)
     PROVIDERS = [
       GenericOdbcProvider,
       PostgreSQLProvider,

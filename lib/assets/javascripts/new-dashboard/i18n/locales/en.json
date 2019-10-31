@@ -714,8 +714,8 @@
   },
   "KuvizCard": {
     "privacy": {
-      "public": "Link",
-      "password": "Password"
+      "PUBLIC": "Link",
+      "PASSWORD": "Password"
     },
     "lastUpdated": "Updated {date} ago"
   }

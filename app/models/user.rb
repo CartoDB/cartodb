@@ -714,25 +714,18 @@ class User < Sequel::Model
   # which is only effective in case the connection does not use PGBouncer or any other
   # PostgreSQL transaction-level connection pool which might not persist connection variables.
   def in_database(options = {}, &block)
+    if options[:statement_timeout]
+      in_database.run("SET statement_timeout TO #{options[:statement_timeout]}")
+    end
+
     configuration = db_service.db_configuration_for(options[:as])
     configuration['database'] = options['database'] unless options['database'].nil?
 
     connection = get_connection(options, configuration)
 
     if block_given?
-      begin
-        if options[:statement_timeout]
-          connection.run("SET statement_timeout TO #{options[:statement_timeout]}")
-        end
-        yield(connection)
-      ensure
-        if options[:statement_timeout]
-          connection.run('SET statement_timeout TO DEFAULT')
-        end
-      end
+      yield(connection)
     else
-      # statement_timeout is ignored because we have no chance of resetting it in the session
-      CartoDB::Logger.info(message: "Ignored statement_timeout") if options[:statement_timeout]
       connection
     end
 

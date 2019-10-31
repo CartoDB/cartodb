@@ -11,7 +11,6 @@ module Carto
     # This is not meant for public use.
     #
     class GenericOdbcProvider < OdbcProvider
-
       def self.id
         'odbc'
       end

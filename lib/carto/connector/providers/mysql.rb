@@ -11,17 +11,12 @@ module Carto
     # https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-configuration-connection-parameters.html
     #
     class MySqlProvider < OdbcProvider
-
       def self.id
         'mysql'
       end
 
       def self.name
         'MySQL'
-      end
-
-      def self.public?
-        true
       end
 
       private

@@ -10,17 +10,12 @@ module Carto
     # For complete list of parameters, see http://www.freetds.org/userguide/odbcconnattr.htm
     #
     class SqlServerProvider < OdbcProvider
-
       def self.id
         'sqlserver'
       end
 
       def self.name
         'Microsoft SQL Server'
-      end
-
-      def self.public?
-        true
       end
 
       private

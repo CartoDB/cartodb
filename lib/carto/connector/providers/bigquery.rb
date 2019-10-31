@@ -24,7 +24,6 @@ module Carto
     #   "dataset": "mydataset"
     # }
     class BigQueryProvider < OdbcProvider
-
       def self.id
         'bigquery'
       end

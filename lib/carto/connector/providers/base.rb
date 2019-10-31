@@ -17,6 +17,25 @@
 module Carto
   class Connector
     class Provider
+      # Provider identifier (internal name, used in APIs, etc)
+      def self.id
+        must_be_defined_in_derived_class
+      end
+
+      # Human-readable name of the provider
+      def self.name
+        must_be_defined_in_derived_class
+      end
+
+      # This means that the provider is publicly announced (so it is accessible through UI, visible in lists of
+      # providers, etc.) A provider may be available or not (see Connector.limits) independently of its public status,
+      # so that a public provider may not be available for all users, and non-public providers may be available to
+      # some users.
+      def self.public?
+        # Providers are public by default
+        true
+      end
+
       def initialize(connector_context, params = {})
         @connector_context = connector_context
         @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
@@ -111,7 +130,11 @@ module Carto
       private
 
       def must_be_defined_in_derived_class(*_)
-        raise NotImplementedError, "Method #{caller_locations(1, 1)[0].label} must be defined in derived class"
+        raise NotImplementedError, "Method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
+      end
+
+      def self.must_be_defined_in_derived_class(*_)
+        raise NotImplementedError, "Class method \"#{caller_locations(1, 1)[0].label}\" must be defined in derived class"
       end
 
       def log(message, truncate = true)

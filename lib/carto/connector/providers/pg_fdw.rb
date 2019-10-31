@@ -33,6 +33,13 @@ module Carto
     # TODO: add support for sql_query parameter
     #
     class PgFdwProvider < FdwProvider
+      def self.id
+        'postgres'
+      end
+
+      def self.name
+        'PostgreSQL'
+      end
 
       def initialize(context, params)
         super

@@ -16,17 +16,12 @@ module Carto
     # So we'll use a `database` connection parameter for the schema for consistency with other providers.
     # The schema parameter should not be directly used by the user.
     class HiveProvider < OdbcProvider
-
       def self.id
         'hive'
       end
 
       def self.name
         'Hive'
-      end
-
-      def self.public?
-        true
       end
 
       private

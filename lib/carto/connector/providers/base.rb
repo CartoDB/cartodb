@@ -133,7 +133,7 @@ module Carto
 
       def execute_as_superuser_with_timeout(command, timeout=nil)
         timeout ||= default_timeout
-        @connector_context.execute_as_superuser command, timeout
+        @connector_context.execute_as_superuser_with_timeout command, timeout
       end
 
       def default_timeout

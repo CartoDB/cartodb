@@ -47,13 +47,26 @@ module Carto
       # Commands with no results (e.g. UPDATE, etc.) will return an empty array (`[]`).
       # Result rows are returned as hashes with indifferent access.
       def execute_in_user_database(command, *args)
-        # This admits Carto::User or User users
-        data = @user.in_database(*args) do |db|
-          case db
-            when Sequel::Database
-              db.fetch(command).all
-            else
-              db.execute command
+        statement_timeout = args.first.delete :statement_timeout
+
+        data = nil
+        @user.in_database(*args) do |db|
+          db.transaction do
+            unless statement_timeout.nil?
+              old_timeout = db.fetch("SHOW statement_timeout;").first[:statement_timeout]
+              db.run("SET statement_timeout TO '#{statement_timeout}';")
+            end
+
+            case db
+              when  Sequel::Database
+                data = db.fetch(command).all
+              else
+                data = db.execute command
+            end
+
+            unless statement_timeout.nil?
+              db.run("SET statement_timeout TO '#{old_timeout}';")
+            end
           end
         end
         data.map(&:with_indifferent_access)

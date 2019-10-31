@@ -85,7 +85,7 @@ module Carto
       def exec_sql(db, sql)
         case db
         when  Sequel::Database
-          db.fetch(command).all
+          db.fetch(sql).all
         else
           db.execute command
         end.map(&:with_indifferent_access)

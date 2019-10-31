@@ -48,13 +48,14 @@ module Carto
       # Result rows are returned as hashes with indifferent access.
       def execute_in_user_database(command, *args)
         # This admits Carto::User or User users
-        db = @user.in_database(*args)
-        data = case db
-               when Sequel::Database
-                 db.fetch(command).all
-               else
-                 db.execute command
-               end
+        data = @user.in_database(*args) do |db|
+          case db
+            when Sequel::Database
+              db.fetch(command).all
+            else
+              db.execute command
+          end
+        end
         data.map(&:with_indifferent_access)
       end
 

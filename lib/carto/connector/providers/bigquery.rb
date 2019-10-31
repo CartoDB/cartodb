@@ -91,7 +91,7 @@ module Carto
       end
 
       REQUIRED_OPTIONS = %I(table connection).freeze
-      OPTIONAL_OPTIONS = %I(dataset sql_query schema).freeze
+      OPTIONAL_OPTIONS = %I(dataset sql_query).freeze
 
       def optional_parameters
         OPTIONAL_OPTIONS
@@ -115,9 +115,9 @@ module Carto
         %I(RefreshToken)
       end
 
-      # def non_connection_parameters
-      #   super.reverse_merge(schema: @params[:dataset])
-      # end
+      def non_connection_parameters
+        super.reverse_merge(schema: @params[:dataset])
+      end
 
       def create_proxy_conf
         proxy = ENV['HTTP_PROXY'] || ENV['http_proxy']

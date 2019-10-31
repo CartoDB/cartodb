@@ -11,20 +11,29 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#list_federated_servers' do
     it 'returns 200 with the federated server list' do
-      params = { api_key: @user1.api_key, page: 1, per_page: 10 }
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: 'amazon',
+        mode: 'read-only',
+        dbname: 'testdb',
+        host: 'myhostname.us-east-2.rds.amazonaws.com',
+        port: '5432',
+        username: 'read_only_user',
+        password: 'secret'
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
+        expect(response.status).to eq(201)
 
-      get_json api_v4_federated_servers_list_servers_url(params) do |response|
-        expect(response.status).to eq(200)
+        params_list = { api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_servers_url(params_list) do |response|
+          expect(response.status).to eq(200)
 
-        expect(response.body[:total]).to eq(2)
+          expect(response.body[:total]).to eq(1)
 
-        expect(response.body[:result][0][:federated_server_name]).to eq('amazon')
-        expect(response.body[:result][0][:dbname]).to eq('testdb')
-        expect(response.body[:result][0][:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
-
-        expect(response.body[:result][1][:federated_server_name]).to eq('azure')
-        expect(response.body[:result][1][:dbname]).to eq('db')
-        expect(response.body[:result][1][:host]).to eq('us-east-2.azure.com')
+          expect(response.body[:result][0][:federated_server_name]).to eq('amazon')
+          expect(response.body[:result][0][:dbname]).to eq('testdb')
+          expect(response.body[:result][0][:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
+        end
       end
     end
 
@@ -95,14 +104,27 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#show_federated_server' do
     it 'returns 200 with the federated server' do
-      params = { federated_server_name: 'amazon', api_key: @user1.api_key }
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: 'azure',
+        mode: 'read-only',
+        dbname: 'db',
+        host: 'us-east-1.azure.com',
+        port: '5432',
+        username: 'read_only_user',
+        password: 'secret'
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
+        expect(response.status).to eq(201)
 
-      get_json api_v4_federated_servers_get_server_url(params) do |response|
-        expect(response.status).to eq(200)
+        params = { federated_server_name: 'azure', api_key: @user1.api_key }
+        get_json api_v4_federated_servers_get_server_url(params) do |response|
+          expect(response.status).to eq(200)
 
-        expect(response.body[:federated_server_name]).to eq('amazon')
-        expect(response.body[:dbname]).to eq('testdb')
-        expect(response.body[:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
+          expect(response.body[:federated_server_name]).to eq('azure')
+          expect(response.body[:dbname]).to eq('db')
+          expect(response.body[:host]).to eq('us-east-1.azure.com')
+        end
       end
     end
 
@@ -221,7 +243,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_remote_schemas' do
-    it 'returns 200 with the remote schemas list' do
+    xit 'returns 200 with the remote schemas list' do
       params = { federated_server_name: 'amazon', api_key: @user1.api_key, page: 1, per_page: 10 }
 
       get_json api_v4_federated_servers_list_schemas_url(params) do |response|

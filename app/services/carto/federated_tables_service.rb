@@ -20,9 +20,8 @@ module Carto
     end
 
     def register_server(attributes)
-      @superuser_db_connection[
-        register_federated_server_query(attributes)
-      ].first
+      @superuser_db_connection[register_federated_server_query(attributes)].first
+      get_server(federated_server_name: attributes[:federated_server_name])
     end
 
     def get_server(federated_server_name:)
@@ -30,9 +29,9 @@ module Carto
     end
 
     def update_server(attributes)
-      @superuser_db_connection[
-        update_federated_server_query(attributes)
-      ].first
+      unregister_server(federated_server_name: attributes[:federated_server_name])
+      register_server(attributes)
+      get_server(federated_server_name: attributes[:federated_server_name])
     end
 
     def unregister_server(federated_server_name:)
@@ -72,9 +71,12 @@ module Carto
     end
 
     def register_table(attributes)
-      @superuser_db_connection[
-        register_remote_table_query(attributes)
-      ].first
+      @superuser_db_connection[register_remote_table_query(attributes)].first
+      get_remote_table(
+        federated_server_name: attributes[:federated_server_name],
+        remote_schema_name: attributes[:remote_schema_name],
+        remote_table_name: attributes[:remote_table_name]
+      )
     end
 
     def get_remote_table(federated_server_name:, remote_schema_name:, remote_table_name:)
@@ -88,9 +90,17 @@ module Carto
     end
 
     def update_table(attributes)
-      @superuser_db_connection[
-        update_remote_table_query(attributes)
-      ].first
+      unregister_table(
+        federated_server_name: attributes[:federated_server_name],
+        remote_schema_name: attributes[:remote_schema_name],
+        remote_table_name: attributes[:remote_table_name]
+      )
+      register_table(attributes)
+      get_remote_table(
+        federated_server_name: attributes[:federated_server_name],
+        remote_schema_name: attributes[:remote_schema_name],
+        remote_table_name: attributes[:remote_table_name]
+      )
     end
 
     def unregister_table(federated_server_name:, remote_schema_name:, remote_table_name:)
@@ -118,82 +128,58 @@ module Carto
       "SELECT COUNT(*) FROM (#{select_servers_query}) AS federated_servers"
     end
 
-    # WIP: Fake query to return a list of federated servers
     def select_servers_query
       %{
         SELECT
-          'amazon' as federated_server_name,
-          'read-only' as mode,
-          'testdb' as dbname,
-          'myhostname.us-east-2.rds.amazonaws.com' as host,
-          '5432' as port,
-          'read_only_user' as username,
+          name as federated_server_name,
+          readmode as mode,
+          dbname,
+          host,
+          port,
+          username,
           '*****' as password
-        UNION ALL
-        SELECT
-          'azure' as federated_server_name,
-          'read-only' as mode,
-          'db' as dbname,
-          'us-east-2.azure.com' as host,
-          '5432' as port,
-          'cartofante' as username,
-          '*****' as password
+        FROM cartodb.CDB_Federated_Server_List_Servers()
       }.squish
     end
 
-    # WIP: Fake query to register a federated server
     def register_federated_server_query(attributes)
       %{
-        SELECT
-          '#{attributes[:federated_server_name]}' as federated_server_name,
-          '#{attributes[:mode]}' as mode,
-          '#{attributes[:dbname]}' as dbname,
-          '#{attributes[:host]}' as host,
-          '#{attributes[:port]}' as port,
-          '#{attributes[:username]}' as username,
-          '#{attributes[:password]}' as password
+        SELECT cartodb.CDB_Federated_Server_Register_PG(server := '#{attributes[:federated_server_name]}'::text, config := '{
+          "server": {
+            "dbname": "#{attributes[:dbname]}",
+            "host": "#{attributes[:host]}",
+            "port": "#{attributes[:port]}",
+            "extensions": "postgis",
+            "updatable": "#{attributes[:mode] == 'read-only' ? 'false' : 'true'}",
+            "use_remote_estimate": "true",
+            "fetch_size": "1000"
+          },
+          "credentials": {
+            "username": "#{attributes[:username]}",
+            "password": "#{attributes[:password]}"
+          }
+        }'::jsonb);
       }.squish
     end
 
-    # WIP: Fake query to get a federated server
     def get_federated_server_query(federated_server_name:)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          'read-only' as mode,
-          'testdb' as dbname,
-          'myhostname.us-east-2.rds.amazonaws.com' as host,
-          '5432' as port,
-          'read_only_user' as username,
-          'secret' as password
+          name as federated_server_name,
+          readmode as mode,
+          dbname,
+          host,
+          port,
+          username,
+          '*****' as password
+        FROM cartodb.CDB_Federated_Server_List_Servers(server := '#{federated_server_name}'::text)
       }.squish
     end
 
-    # WIP: Fake query to update a federated server
-    def update_federated_server_query(attributes)
-      %{
-        SELECT
-          '#{attributes[:federated_server_name]}' as federated_server_name,
-          '#{attributes[:mode]}' as mode,
-          '#{attributes[:dbname]}' as dbname,
-          '#{attributes[:host]}' as host,
-          '#{attributes[:port]}' as port,
-          '#{attributes[:username]}' as username,
-          '#{attributes[:password]}' as password
-      }.squish
-    end
-
-    # WIP: Fake query to unregister a federated server
     def unregister_federated_server_query(federated_server_name:)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          'read-only' as mode,
-          'testdb' as dbname,
-          'myhostname.us-east-2.rds.amazonaws.com' as host,
-          '5432' as port,
-          'read_only_user' as username,
-          'secret' as password
+          cartodb.CDB_Federated_Server_Unregister(server := '#{federated_server_name}'::text)
       }.squish
     end
 
@@ -215,10 +201,9 @@ module Carto
     def select_schemas_query(federated_server_name)
       %{
         SELECT
-          'default' as remote_schema_name
-        UNION ALL
-        SELECT
-          'locations' as remote_schema_name
+          remote_schema as remote_schema_name
+        FROM
+          cartodb.CDB_Federated_Server_List_Remote_Schemas(server => '#{federated_server_name}'::text)
       }.squish
     end
 
@@ -237,86 +222,58 @@ module Carto
       "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_schemas"
     end
 
-    # WIP: Fake query to return a list of remote tables
     def select_tables_query(federated_server_name, remote_schema_name)
       %{
         SELECT
           'true' as registered,
-          'default.my_table' as qualified_name,
-          'default' as remote_schema_name,
-          'my_table' as remote_table_name,
-          'id' as id_column_name,
-          'the_geom' as geom_column_name,
-          'the_geom_webmercator' as webmercator_column_name
-        UNION ALL
-        SELECT
-          'false' as registered,
-          'public.shops' as qualified_name,
-          'public' as remote_schema_name,
-          'shops' as remote_table_name,
-          'shop_id' as id_column_name,
-          'the_geom' as geom_column_name,
-          'the_geom_webmercator' as webmercator_column_name
+          table_schema || '.' || remote_table as qualified_name,
+          table_schema as remote_schema_name,
+          remote_table as remote_table_name,
+        FROM
+          cartodb.CDB_Federated_Server_List_Remote_Tables(server => '#{federated_server_name}', remote_schema => '#{remote_schema_name}');
       }.squish
     end
 
-    # WIP: Fake query to register a remote table
     def register_remote_table_query(attributes)
       %{
-        SELECT
-          '#{attributes[:federated_server_name]}' as federated_server_name,
-          '#{attributes[:remote_schema_name]}' as remote_schema_name,
-          '#{attributes[:remote_table_name]}' as remote_table_name,
-          '#{attributes[:local_table_name_override]}' as local_table_name_override,
-          '#{attributes[:remote_schema_name]}.#{attributes[:local_table_name_override]}' as qualified_name,
-          '#{attributes[:id_column_name]}' as id_column_name,
-          '#{attributes[:geom_column_name]}' as geom_column_name,
-          '#{attributes[:webmercator_column_name]}' as webmercator_column_name
+        SELECT cartodb.CDB_Federated_Table_Register(
+          server => '#{attributes[:federated_server_name]}',
+          remote_schema => '#{attributes[:remote_schema_name]}',
+          remote_table => '#{attributes[:remote_table_name]}',
+          id_column => '#{attributes[:id_column_name]}',
+          geom_column => '#{attributes[:geom_column_name]}',
+          webmercator_column => '#{attributes[:webmercator_column_name]}',
+          local_name => '#{attributes[:local_table_name_override]}'
+        );
       }.squish
     end
 
-    # WIP: Fake query to get a remote table
     def get_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
           '#{federated_server_name}' as federated_server_name,
           '#{remote_schema_name}' as remote_schema_name,
           '#{remote_table_name}' as remote_table_name,
-          '#{remote_table_name}' as local_table_name_override,
-          '#{remote_schema_name}.#{remote_table_name}' as qualified_name,
-          'id' as id_column_name,
-          'the_geom' as geom_column_name,
-          'the_geom_webmercator' as webmercator_column_name
+          local_view as local_table_name_override,
+          local_view as qualified_name
+        FROM
+          CDB_Federated_Server_List_Registered_Tables(
+            server => '#{federated_server_name}',
+            remote_schema => '#{remote_schema_name}'
+          )
+        WHERE
+          remote_table = '#{remote_table_name}'
       }.squish
     end
 
-    # WIP: Fake query to update a remote table
-    def update_remote_table_query(attributes)
-      %{
-        SELECT
-        '#{attributes[:federated_server_name]}' as federated_server_name,
-        '#{attributes[:remote_schema_name]}' as remote_schema_name,
-        '#{attributes[:remote_table_name]}' as remote_table_name,
-        '#{attributes[:local_table_name_override]}' as local_table_name_override,
-        '#{attributes[:remote_schema_name]}.#{attributes[:local_table_name_override]}' as qualified_name,
-        '#{attributes[:id_column_name]}' as id_column_name,
-        '#{attributes[:geom_column_name]}' as geom_column_name,
-        '#{attributes[:webmercator_column_name]}' as webmercator_column_name
-      }.squish
-    end
-
-    # WIP: Fake query to unregister a remote table
     def unregister_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          '#{remote_schema_name}' as remote_schema_name,
-          '#{remote_table_name}' as remote_table_name,
-          '#{remote_table_name}' as local_table_name_override,
-          '#{remote_schema_name}.#{remote_table_name}' as qualified_name,
-          'id' as id_column_name,
-          'the_geom' as geom_column_name,
-          'the_geom_webmercator' as webmercator_column_name
+          CDB_Federated_Table_Unregister(
+            server => '#{federated_server_name}',
+            remote_schema => '#{remote_schema_name}',
+            remote_table => '#{remote_table_name}'
+          );
       }.squish
     end
   end

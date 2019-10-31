@@ -49,7 +49,7 @@ module Carto
       def execute_in_user_database(command, *args)
         # FIXME: consider using ::User#transaction_with_timeout or in_database_direct_connection
 
-        statement_timeout = args.first.delete :statement_timeout if args.firsts
+        statement_timeout = args.first.delete :statement_timeout if args.first
 
         data = nil
         @user.in_database(*args) do |db|

@@ -28,6 +28,6 @@ export default {
 }
 
 .page.page__sticky-subheader {
-  padding: 128px 0 120px;
+  padding: $subheader__height + 64px 0 120px;
 }
 </style>

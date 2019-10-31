@@ -305,11 +305,11 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 64px;
+  top: $header__height;
 }
 
 .grid__head--sticky.has-user-notification {
-  top: 64px + $notification-warning__height;
+  top: $header__height + $notification-warning__height;
 }
 
 .pagination-element {

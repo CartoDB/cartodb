@@ -87,10 +87,10 @@ export default {
 }
 
 .header {
-  padding-top: 64px;
+  padding-top: $header__height;
 
   &.has-user-notification {
-    padding-top: 64px + $notification-warning__height;
+    padding-top: $header__height + $notification-warning__height;
   }
 }
 

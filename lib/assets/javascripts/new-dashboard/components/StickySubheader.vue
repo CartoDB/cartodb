@@ -42,10 +42,10 @@ export default {
   background-color: $white;
 
   &.is-visible {
-    transform: translate3d(0, 64px, 0);
+    transform: translate3d(0, $header__height, 0);
 
     &.has-user-notification {
-      $stickyHeaderPosition: calc(64px + #{$notification-warning__height});
+      $stickyHeaderPosition: calc($header__height + #{$notification-warning__height});
       transform: translate3d(0, #{$stickyHeaderPosition}, 0);
     }
   }

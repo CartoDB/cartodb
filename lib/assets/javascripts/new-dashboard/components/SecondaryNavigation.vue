@@ -23,7 +23,7 @@ export default {
 .secondaryNavigation {
   position: sticky;
   z-index: $z-index__subheader;
-  top: 64px;
+  top: $header__height;
   padding: 0 20px;
   border-bottom: 1px solid $neutral--300;
   background-color: $white;
@@ -37,6 +37,6 @@ export default {
 }
 
 .secondaryNavigation.has-user-notification {
-  top: 64px + $notification-warning__height;
+  top: $header__height + $notification-warning__height;
 }
 </style>

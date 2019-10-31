@@ -286,17 +286,17 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 128px;
+  top: $header__height + $subheader__height;
 
   &.in-home {
-    top: 64px;
+    top: $header__height;
   }
 
   &.has-user-notification {
-    top: 128px + $notification-warning__height;
+    top: $header__height + $subheader__height + $notification-warning__height;
 
     &.in-home {
-      top: 64px + $notification-warning__height;
+      top: $header__height + $notification-warning__height;
     }
   }
 }

@@ -39,7 +39,7 @@ module Carto
       private
 
       # Class constants
-      DATASOURCE_NAME              = 'bigquery'
+      DATASOURCE_NAME              = id
 
       # Driver constants
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'

@@ -34,7 +34,7 @@ module Carto
       end
 
       def self.public?
-        true
+        false
       end
 
       private

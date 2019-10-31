@@ -91,7 +91,7 @@ module Carto
       end
 
       REQUIRED_OPTIONS = %I(table connection).freeze
-      OPTIONAL_OPTIONS = %I(dataset sql_query).freeze
+      OPTIONAL_OPTIONS = %I(dataset sql_query schema).freeze
 
       def optional_parameters
         OPTIONAL_OPTIONS

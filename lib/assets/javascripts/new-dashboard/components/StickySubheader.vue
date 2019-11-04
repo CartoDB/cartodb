@@ -45,8 +45,8 @@ export default {
     transform: translate3d(0, $header__height, 0);
 
     &.has-user-notification {
-      $stickyHeaderPosition: calc($header__height + #{$notification-warning__height});
-      transform: translate3d(0, #{$stickyHeaderPosition}, 0);
+      $stickyHeaderPosition: $header__height + $notification-warning__height;
+      transform: translate3d(0, $stickyHeaderPosition, 0);
     }
   }
 }

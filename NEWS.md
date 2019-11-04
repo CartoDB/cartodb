@@ -73,6 +73,7 @@ sudo make install
 * Allow users to login from forbidden map/dataset page. ([CartoDB/support#2031](https://github.com/CartoDB/support/issues/2031))
 * Fix password validation for SAML ([#15147](https://github.com/CartoDB/cartodb/pull/15147))
 * Dashboard: Rename catalogue to catalog ([#15158](https://github.com/CartoDB/cartodb/issues/15158))
+* Fix dataset list header sticky header top in homepage ([#15164](https://github.com/CartoDB/cartodb/issues/15164))
 
 4.29.0 (2019-07-15)
 -------------------

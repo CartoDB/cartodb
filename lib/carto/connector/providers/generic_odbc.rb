@@ -33,6 +33,11 @@ module Carto
 
       private
 
+      # We'll map some usual names to server/user options, but in general we'll rely on
+      # having unforeseen attributes defined at table level
+      server_attributes %I(dsn driver host server address port database)
+      user_attributes %I(uid pwd user username password)
+
       def connection_attributes
         @connection
       end

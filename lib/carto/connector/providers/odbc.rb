@@ -48,8 +48,8 @@ module Carto
         super + @connection.errors(parameters_term: 'connection parameters')
       end
 
-      optional_parameters %I(schema sql_query sql_count encoding columns)
       required_parameters %I(table connection)
+      optional_parameters %I(schema sql_query sql_count encoding columns)
 
       # Required connection attributes: { name: :internal_name }
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
@@ -181,6 +181,7 @@ module Carto
         stringified_required_attrs.merge optionals
       end
 
+      # ODBC connection attributes (from parameters)
       def connection_attributes
         # Extract the connection attributes from the @params
         attribute_names = required_connection_attributes.keys + optional_connection_attributes.keys
@@ -199,20 +200,21 @@ module Carto
         attributes
       end
 
-      def non_connection_parameters
+      def non_connection_parameters # FIXME! may include odbc_ parameters
         @params.slice(*(required_parameters + optional_parameters - %I(columns connection)))
       end
 
-      # Attributes (internal names) which will defined at fdw server level
+      # ODBC Attributes (internal names) which will defined in FDW server options
       def server_attributes
         must_be_defined_in_derived_class
       end
 
-      # Attributes (internal names) which will defined at user mapping level
+      # OBBC Attributes (internal names) which will defined in FDW user mapping options
       def user_attributes
         must_be_defined_in_derived_class
       end
 
+      # Convert parameters to FDW options
       def connection_options(parameters)
         # Prefix option names with "odbc_"
         # Quote values that contain semicolons (the ODBC connection string pair separator)
@@ -247,14 +249,17 @@ module Carto
         end
       end
 
+      # FDW server-level options
       def server_options
         connection_options(connection_attributes.slice(*server_attributes)).parameters
       end
 
+      # FDW usermapping-level options
       def user_options
         connection_options(connection_attributes.slice(*user_attributes)).parameters
       end
 
+      # FDW table-level options
       def table_options
         params = connection_options connection_attributes.except(*(server_attributes + user_attributes))
         params.merge(non_connection_parameters).parameters

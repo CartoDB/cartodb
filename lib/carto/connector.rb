@@ -61,6 +61,14 @@ module Carto
       user.has_feature_flag?('carto-connectors')
     end
 
+    def self.provider_available?(provider, user)
+      connector = Carto::Connector.new({provider: provider}, user: user, logger: nil)
+      connector.check_availability!
+      true
+    rescue ConnectorsDisabledError
+      false
+    end
+
     # Check availability for a user and provider
     def check_availability!
       Connector.check_availability!(@connector_context.user)

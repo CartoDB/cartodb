@@ -127,6 +127,20 @@ module Carto
         self.class.id
       end
 
+      class <<self
+        def metadata(options)
+          options.each do |key, value|
+            define_singleton_method(key) { value.freeze }
+          end
+        end
+        def optional_parameters(params)
+          define_method(:optional_parameters) { params.freeze }
+        end
+        def required_parameters(params)
+          define_method(:required_parameters) { params.freeze }
+        end
+      end
+
       private
 
       def must_be_defined_in_derived_class(*_)

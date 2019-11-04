@@ -33,28 +33,14 @@ module Carto
     # TODO: add support for sql_query parameter
     #
     class PgFdwProvider < FdwProvider
-      def self.id
-        'postgres'
-      end
-
-      def self.name
-        'PostgreSQL'
-      end
+      metadata id: 'postgres', name: 'PostgreSQL'
 
       def initialize(context, params)
         super
       end
 
-      REQUIRED_PARAMETERS = %w(table server database username password).freeze
-      OPTIONAL_PARAMETERS = %w(schema port).freeze
-
-      def optional_parameters
-        OPTIONAL_PARAMETERS
-      end
-
-      def required_parameters
-        REQUIRED_PARAMETERS
-      end
+      optional_parameters %w(table server database username password)
+      required_parameters %w(schema port)
 
       def table_name
         @params[:table]

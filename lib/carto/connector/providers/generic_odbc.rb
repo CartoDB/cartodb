@@ -11,17 +11,7 @@ module Carto
     # This is not meant for public use.
     #
     class GenericOdbcProvider < OdbcProvider
-      def self.id
-        'odbc'
-      end
-
-      def self.name
-        'ODBC'
-      end
-
-      def self.public?
-        false # Intended for internal development/tests
-      end
+      metadata id: 'odbc', name: 'ODBC', public?: false # Intended for internal development/tests
 
       def initialize(context, params)
         super

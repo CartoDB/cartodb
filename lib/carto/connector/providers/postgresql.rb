@@ -13,54 +13,35 @@ module Carto
     # * https://odbc.postgresql.org/docs/config.html
     #
     class PostgreSQLProvider < OdbcProvider
-      def self.id
-        'postgres'
-      end
+      metadata id: 'postgres', name: 'PostgreSQL'
 
-      def self.name
-        'PostgreSQL'
-      end
+      fixed_connection_attributes(
+        Driver:               'PostgreSQL Unicode',
+        ByteaAsLongVarBinary: 1,
+        MaxVarcharSize:       256,
+        BoolsAsChar:          0
+      )
+      required_connection_attributes(
+        server:   :Server,
+        database: :Database,
+        username: :UID
+      )
+      optional_connection_attributes(
+        port:     { Port: 5432 },
+        password: { PWD: nil },
+        sslmode:  { SSLmode: 'require' }
+      )
 
       private
 
+      server_attributes %I(Driver ByteaAsLongVarBinary MaxVarcharSize BoolsAsChar Server Database Port SSLmode)
+      user_attributes %I(UID PWD)
+
       DEFAULT_SCHEMA = 'public'.freeze
-
-      def fixed_connection_attributes
-        {
-          Driver:               'PostgreSQL Unicode',
-          ByteaAsLongVarBinary: 1,
-          MaxVarcharSize:       256,
-          BoolsAsChar:          0
-        }
-      end
-
-      def required_connection_attributes
-        {
-          server:   :Server,
-          database: :Database,
-          username: :UID
-        }
-      end
-
-      def optional_connection_attributes
-        {
-          port: { Port: 5432 },
-          password: { PWD: nil },
-          sslmode: { SSLmode: 'require' }
-        }
-      end
 
       def non_connection_parameters
         # Default remote schema
         super.reverse_merge(schema: DEFAULT_SCHEMA)
-      end
-
-      def server_attributes
-        %I(Driver ByteaAsLongVarBinary MaxVarcharSize BoolsAsChar Server Database Port SSLmode)
-      end
-
-      def user_attributes
-        %I(UID PWD)
       end
     end
   end

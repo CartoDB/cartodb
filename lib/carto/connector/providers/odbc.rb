@@ -48,16 +48,8 @@ module Carto
         super + @connection.errors(parameters_term: 'connection parameters')
       end
 
-      REQUIRED_OPTIONS = %I(table connection).freeze
-      OPTIONAL_OPTIONS = %I(schema sql_query sql_count encoding columns).freeze
-
-      def optional_parameters
-        OPTIONAL_OPTIONS
-      end
-
-      def required_parameters
-        REQUIRED_OPTIONS
-      end
+      optional_parameters %I(schema sql_query sql_count encoding columns)
+      required_parameters %I(table connection)
 
       # Required connection attributes: { name: :internal_name }
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
@@ -208,7 +200,7 @@ module Carto
       end
 
       def non_connection_parameters
-        @params.slice(*(REQUIRED_OPTIONS + OPTIONAL_OPTIONS - %I(columns connection)))
+        @params.slice(*(required_parameters + optional_parameters - %I(columns connection)))
       end
 
       # Attributes (internal names) which will defined at fdw server level
@@ -225,6 +217,25 @@ module Carto
         # Prefix option names with "odbc_"
         # Quote values that contain semicolons (the ODBC connection string pair separator)
         parameters.map { |option_name, option_value| ["odbc_#{option_name}", quoted_value(option_value)] }
+      end
+
+      class <<self
+        # class helpers to define abstract method implementations
+        def fixed_connection_attributes(attrs)
+          define_method(:fixed_connection_attributes) { attrs.freeze }
+        end
+        def required_connection_attributes(attrs)
+          define_method(:required_connection_attributes) { attrs.freeze }
+        end
+        def optional_connection_attributes(attrs)
+          define_method(:optional_connection_attributes) { attrs.freeze }
+        end
+        def server_attributes(attrs)
+          private define_method(:server_attributes) { attrs.freeze }
+        end
+        def user_attributes(attrs)
+          private define_method(:user_attributes) { attrs.freeze }
+        end
       end
 
       def quoted_value(value)

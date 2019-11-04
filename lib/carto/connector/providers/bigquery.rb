@@ -24,19 +24,17 @@ module Carto
     #   "dataset": "mydataset"
     # }
     class BigQueryProvider < OdbcProvider
-      def self.id
-        'bigquery'
-      end
+      metadata id: 'bigquery', name: 'Google BigQuery', public?: false
 
-      def self.name
-        'Google BigQuery'
-      end
-
-      def self.public?
-        false
-      end
+      required_connection_attributes project: :Catalog
 
       private
+
+      server_attributes %I(
+        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret
+        AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime
+      )
+      user_attributes %I(RefreshToken)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -89,30 +87,8 @@ module Carto
         return conf
       end
 
-      REQUIRED_OPTIONS = %I(table connection).freeze
-      OPTIONAL_OPTIONS = %I(dataset sql_query).freeze
-
-      def optional_parameters
-        OPTIONAL_OPTIONS
-      end
-
-      def required_parameters
-        REQUIRED_OPTIONS
-      end
-
-      def required_connection_attributes
-        {
-          project:       :Catalog
-        }
-      end
-
-      def server_attributes
-        %I(Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime)
-      end
-
-      def user_attributes
-        %I(RefreshToken)
-      end
+      optional_parameters %I(table connection)
+      required_parameters %I(dataset sql_query)
 
       def non_connection_parameters
         super.reverse_merge(schema: @params[:dataset])

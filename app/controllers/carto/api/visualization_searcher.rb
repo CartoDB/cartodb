@@ -12,7 +12,7 @@ module Carto
       # to search based on params hash (can be request params).
       # It doesn't apply ordering or paging, just filtering.
       def query_builder_with_filter_from_hash(params)
-        types, total_types = get_types_parameters
+        types = get_types_parameters
 
         validate_parameters(types, params)
 
@@ -114,17 +114,13 @@ module Carto
         # INFO: this fits types and type into types, so only types is used for search.
         # types defaults to type if empty.
         # types defaults to derived if type is also empty.
-        # total_types are the types used for total counts.
         types = params.fetch(:types, "").split(',')
-
         type = params[:type].present? ? params[:type] : (types.empty? ? nil : types[0])
-        # TODO: add this assumption to a test or remove it (this is coupled to the UI)
-        total_types = [(type == Carto::Visualization::TYPE_REMOTE ? Carto::Visualization::TYPE_CANONICAL : type)].compact
 
         types = [type].compact if types.empty?
         types = [Carto::Visualization::TYPE_DERIVED] if types.empty?
 
-        return types, total_types
+        return types
       end
 
       def compose_shared(shared, only_shared, exclude_shared)

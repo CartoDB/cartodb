@@ -27,8 +27,27 @@ module Carto
       metadata id: 'bigquery', name: 'Google BigQuery', public?: false
 
       required_connection_attributes project: :Catalog
+      optional_connection_attributes dataset: { DefaultDataset: nil }
+
+      def errors(only: nil)
+        # dataset is not optional if not using a query
+        only = @params.normalize_parameter_names(only)
+        dataset_errors = []
+        if only.blank? || only.include?(:dataset)
+          if !@connection.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
+            dataset_errors << "The dataset connection parameter is needed for tables"
+          end
+        end
+        super + dataset_errors
+      end
 
       private
+
+      # Notes regarding IMPORT (extermal) schema and the DefaultDataset parameter:
+      # * For tables DefaultDataset is unnecesary (but does not harm if present),
+      #   the IMPORT (extermal) schema is necessary and the one which defines the dataset.
+      # * For queries (sql_query), IMPORT (extermal) schema  is ignored and
+      #   the DefaultDataset is necessary when table names are not qualified with the dataset.
 
       server_attributes %I(
         Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret
@@ -87,10 +106,13 @@ module Carto
         return conf
       end
 
-      optional_parameters %I(dataset sql_query)
+      optional_parameters %I(sql_query)
 
-      def non_connection_parameters
-        super.reverse_merge(schema: @params[:dataset])
+      def remote_schema_name
+        # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA
+        # is used with a query (sql_query). Since it is actually ignored in that case we'll used
+        # and arbitrary name in that case.
+        table_options[:odbc_DefaultDataset] || 'unused'
       end
 
       def create_proxy_conf

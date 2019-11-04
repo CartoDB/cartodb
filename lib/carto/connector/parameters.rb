@@ -106,13 +106,17 @@ module Carto
         @params.keys.map { |name| normalized_key(name) }
       end
 
+      def normalize_parameter_names(names)
+        normalized_array(Array(names))
+      end
+
       def errors(only: nil, parameters_term: 'parameters')
         errors = []
         if @accepted_parameters.present?
           invalid_params = normalized_names - @accepted_parameters
           missing_parameters = @required_parameters - normalized_names
           if only.present?
-            only = normalized_array(Array(only))
+            only = normalize_parameter_names(only)
             missing_parameters &= only
           end
           if missing_parameters.present?

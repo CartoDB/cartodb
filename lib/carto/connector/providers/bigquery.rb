@@ -87,7 +87,6 @@ module Carto
         return conf
       end
 
-      required_parameters %I(table connection)
       optional_parameters %I(dataset sql_query)
 
       def non_connection_parameters

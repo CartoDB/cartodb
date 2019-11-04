@@ -11,7 +11,7 @@ module Carto
     # https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-configuration-connection-parameters.html
     #
     class MySqlProvider < OdbcProvider
-      metadata id: 'misql', name: 'MySql'
+      metadata id: 'mysql', name: 'MySql'
 
       fixed_connection_attributes(
         Driver:   'MySQL',

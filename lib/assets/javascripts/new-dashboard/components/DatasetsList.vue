@@ -182,7 +182,7 @@ export default {
       return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
     },
     showCreateButton () {
-      return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !selectedDatasets.length;
+      return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !this.selectedDatasets.length;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&

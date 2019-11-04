@@ -39,8 +39,8 @@ module Carto
         super
       end
 
-      optional_parameters %w(table server database username password)
-      required_parameters %w(schema port)
+      required_parameters %w(table server database username password)
+      optional_parameters %w(schema port)
 
       def table_name
         @params[:table]

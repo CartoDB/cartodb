@@ -87,8 +87,8 @@ module Carto
         return conf
       end
 
-      optional_parameters %I(table connection)
-      required_parameters %I(dataset sql_query)
+      required_parameters %I(table connection)
+      optional_parameters %I(dataset sql_query)
 
       def non_connection_parameters
         super.reverse_merge(schema: @params[:dataset])

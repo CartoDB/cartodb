@@ -1427,10 +1427,11 @@
                 "confirm": "Ok, Change privacy"
             },
             "password-confirmation": {
-                "modal-title": "Please, use your old password to confirm the change",
+                "modal-title": "Please confirm your password.",
                 "modal-description": "\"Hey, ho! Let’s Go!\"",
                 "form": {
-                    "password-label": "Old password"
+                    "password-label": "Password",
+                    "old-password-label": "Old password"
                 },
                 "actions": {
                     "confirm": "Confirm",

@@ -297,7 +297,6 @@ describe Carto::Api::Public::FederatedTablesController do
           expect(response.body[:total] > 0)
           found = response.body[:result].select {|schema| schema[:remote_schema_name] == 'public'}.first
           expect(found[:remote_schema_name]).to eq('public')
-          puts response.body[:result]
         end
       end
     end
@@ -440,7 +439,6 @@ describe Carto::Api::Public::FederatedTablesController do
       payload = {}
 
       post_json api_v4_federated_servers_register_table_url(params), payload do |response|
-        puts response.body
         expect(response.status).to eq(422)
       end
     end
@@ -460,7 +458,6 @@ describe Carto::Api::Public::FederatedTablesController do
         username: @user2.database_username,
         password: @user2.database_password
       }
-      puts api_v4_federated_servers_register_server_url(params_register_server)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
 

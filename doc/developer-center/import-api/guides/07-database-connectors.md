@@ -1105,11 +1105,9 @@ To use the BigQuery Connector, you must include a `connector` parameter with the
 {
   "connector": {
     "provider": "bigquery",
-    "connection": {
-      "project":"mybigqueryproject"
-    },
-    "table": "mytable",
-    "dataset": "mybigquerydataset"
+    "project":"mybigqueryproject",
+    "dataset": "mybigquerydataset",
+    "table": "mytable"
   }
 }
 ```
@@ -1121,9 +1119,9 @@ The following table describes the connector attributes required to connect to a 
 Param | Description
 --- | ---
 connector | This value **MUST** be set to *bigquery*.
-connection |  Provide the parameters that define the Google Cloud project to connect to.
+project |  Define the Google Cloud project to connect to.
 table | Identifies the table to be imported.
-dataset | Name of the dataset where the table belongs to. This is optional.
+dataset | Name of the dataset where the table belongs to. This is optional if sql_query is used.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 
 #### Connect to a Table
@@ -1145,9 +1143,7 @@ The following example displays how to request an external BigQuery table.
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "connection": {
-      "project":"mybigqueryproject"
-    },
+    "project":"mybigqueryproject",
     "table": "mytable",
     "dataset": "mybigquerydataset"
   }
@@ -1173,8 +1169,9 @@ The SQL code to select the data that is imported from the remote database must b
 the `connector`/`sql_query` parameter. Note that the SQL query is interpreted by the remote BigQuery database
 as [Standard SQL](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax), not by PostgreSQL,
 so its syntax should follow BigQuery conventions.
-The tables referenced in the query should all belong to the same BigQuery dataset and the table
-name should be qualified with the dataset name: `mybigquerydataset.mytable`.
+The tables referenced in the query should all belong to the same BigQuery dataset.
+The dataset name can be either defined through the `dataset` parameter or included in the query
+by qualifying the table name with the dataset name: `mybigquerydataset.mytable`.
 
 The `table` parameter must also be used to define the name of the local table.
 This table stores the data of the remote table. This is the dataset that will be created in your CARTO account.
@@ -1189,9 +1186,7 @@ The following example displays how to connect to BigQuery through a SQL query.
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "connection": {
-      "project":"mybigqueryproject"
-    },
+    "project":"mybigqueryproject",
     "table": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   }
@@ -1229,9 +1224,7 @@ The following example displays how to sync data through an external BigQuery dat
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "connection": {
-      "project":"mybigqueryproject"
-    },
+    "project":"mybigqueryproject",
     "table": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   },
@@ -1294,7 +1287,7 @@ from_external_source | Has the value **false** for all connector-based synchroni
   "error_message":null,
   "retried_times":0,
   "service_name":"connector",
-  "service_item_id":"{\"provider\":\"bigquery\",\"connection\":{\"database\":\"mybigquerydataset\"},\"table\":\"mylocaltable\"}",
+  "service_item_id":"{\"provider\":\"bigquery\",\"project\":\"mybigquerydataset\"},\"table\":\"mylocaltable\"}",
   "type_guessing":true,
   "quoted_fields_guessing":true,
   "content_guessing":false,

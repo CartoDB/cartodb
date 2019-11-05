@@ -37,7 +37,7 @@ export default {
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldBeDisabled: !this.canChangePrivacy },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
-          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate },
+          { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate, shouldBeHidden: this.isKuviz },
           { name: this.$t('QuickActions.lock'), event: 'lockMap' },
           { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
         ],
@@ -64,6 +64,9 @@ export default {
     },
     canDuplicate () {
       return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
+    },
+    isKuviz () {
+      return this.map.type === 'kuviz'
     }
   },
   methods: {

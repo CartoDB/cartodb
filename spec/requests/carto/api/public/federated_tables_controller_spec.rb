@@ -399,6 +399,7 @@ describe Carto::Api::Public::FederatedTablesController do
         post_json api_v4_federated_servers_register_table_url(params), payload do |response|
           expect(response.status).to eq(201)
           expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/public/remote_tables/my_table")
+          @user2.in_database.execute('DROP TABLE my_table')
         end
       end
     end
@@ -481,6 +482,7 @@ describe Carto::Api::Public::FederatedTablesController do
       params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(204)
+        @user2.in_database.execute('DROP TABLE my_table')
       end
     end
 
@@ -619,8 +621,47 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#unregister_remote_table' do
+    before(:each) do
+      @federated_server_name = "fs_012_from_#{@user1.username}_to_#{@user2.username}"
+      @user2.in_database.execute('CREATE TABLE my_table(id integer NOT NULL, geom geometry, geom_webmercator geometry)')
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+        expect(response.status).to eq(201)
+
+        params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key }
+        payload_register_table = {
+          remote_table_name: 'my_table',
+          local_table_name_override: 'my_table',
+          id_column_name: 'id',
+          geom_column_name: 'geom',
+          webmercator_column_name: 'geom_webmercator'
+        }
+        post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+          expect(response.status).to eq(201)
+        end
+      end
+    end
+
+    after(:each) do
+      params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
+        expect(response.status).to eq(204)
+
+        @user2.in_database.execute('DROP TABLE my_table')
+      end
+    end
+
     it 'returns 204' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_table_url(params), @payload do |response|
         expect(response.status).to eq(204)
@@ -628,7 +669,7 @@ describe Carto::Api::Public::FederatedTablesController do
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table' }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table' }
       delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -636,15 +677,15 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
 
       delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
         expect(response.status).to eq(403)
       end
     end
 
-    xit 'returns 404 when there is not a remote table with the provided name' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
+    it 'returns 404 when there is not a remote table with the provided name' do
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_table_url(params) do |response|
         expect(response.status).to eq(404)

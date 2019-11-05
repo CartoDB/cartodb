@@ -8,34 +8,29 @@ module Carto
 
     # {
     #   "provider": "bigquery",
-    #   "connection": {
-    #     "project": "eternal-ship-170218"
-    #   },
+    #   "project": "eternal-ship-170218",
     #   "table": "destination_table",
     #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
     # }
     #
     # {
     #   "provider": "bigquery",
-    #   "connection": {
-    #     "project": "some_project"
-    #   },
-    #   "table": "mytable",
-    #   "dataset": "mydataset"
+    #   "project": "some_project",
+    #   "dataset": "mydataset",
+    #   "table": "mytable"
     # }
     class BigQueryProvider < OdbcProvider
       metadata id: 'bigquery', name: 'Google BigQuery', public?: false
 
-      required_connection_attributes project: :Catalog
-      optional_connection_attributes dataset: { DefaultDataset: nil }
+      odbc_attributes project: :Catalog, dataset: { DefaultDataset: nil }
 
       def errors(only: nil)
         # dataset is not optional if not using a query
         only = @params.normalize_parameter_names(only)
         dataset_errors = []
         if only.blank? || only.include?(:dataset)
-          if !@connection.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
-            dataset_errors << "The dataset connection parameter is needed for tables"
+          if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
+            dataset_errors << "The dataset parameter is needed for tables"
           end
         end
         super + dataset_errors
@@ -84,7 +79,7 @@ module Carto
         raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
       end
 
-      def fixed_connection_attributes
+      def fixed_odbc_attributes
         proxy_conf = create_proxy_conf
 
         conf = {
@@ -106,13 +101,14 @@ module Carto
         return conf
       end
 
-      optional_parameters %I(sql_query)
+      required_parameters %I(project table)
+      optional_parameters %I(dataset sql_query)
 
       def remote_schema_name
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA
         # is used with a query (sql_query). Since it is actually ignored in that case we'll used
         # and arbitrary name in that case.
-        table_options[:odbc_DefaultDataset] || 'unused'
+        table_options[:odbc_DefaultDataset] || 'unused' # @params[:dataset] || 'unused'
       end
 
       def create_proxy_conf

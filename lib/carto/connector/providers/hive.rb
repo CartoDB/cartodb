@@ -20,9 +20,9 @@ module Carto
 
       DEFAULT_SCHEMA = 'default'.freeze # '' would also be OK
 
-      fixed_connection_attributes Driver: 'Hortonworks Hive ODBC Driver 64-bit'
-      required_connection_attributes server: :HOST
-      optional_connection_attributes(
+      fixed_odbc_attributes Driver: 'Hortonworks Hive ODBC Driver 64-bit'
+      connection_odbc_attributes(
+        server: :HOST,
         database: { Schema: DEFAULT_SCHEMA },
         port:     { PORT: 10000 },
         username: { UID: nil },

@@ -12,9 +12,14 @@ module Carto
     class SqlServerProvider < OdbcProvider
       metadata id: 'sqlserver', name: 'Microsoft SQL Server'
 
-      fixed_connection_attributes Driver: 'FreeTDS', AppicationIntent: 'ReadOnly'
-      required_connection_attributes username: :UID, password: :PWD, server: :Server, database: :Database
-      optional_connection_attributes port: { Port: 1433 }
+      fixed_odbc_attributes Driver: 'FreeTDS', AppicationIntent: 'ReadOnly'
+      connection_odbc_attributes(
+        username: :UID,
+        password: :PWD,
+        server: :Server,
+        port: { Port: 1433 },
+        database: :Database
+      )
 
       private
 

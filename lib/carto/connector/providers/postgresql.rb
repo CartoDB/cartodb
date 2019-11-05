@@ -15,21 +15,19 @@ module Carto
     class PostgreSQLProvider < OdbcProvider
       metadata id: 'postgres', name: 'PostgreSQL'
 
-      fixed_connection_attributes(
+      fixed_odbc_attributes(
         Driver:               'PostgreSQL Unicode',
         ByteaAsLongVarBinary: 1,
         MaxVarcharSize:       256,
         BoolsAsChar:          0
       )
-      required_connection_attributes(
+      connection_odbc_attributes(
         server:   :Server,
-        database: :Database,
-        username: :UID
-      )
-      optional_connection_attributes(
         port:     { Port: 5432 },
+        username: :UID,
         password: { PWD: nil },
-        sslmode:  { SSLmode: 'require' }
+        sslmode:  { SSLmode: 'require' },
+        database: :Database,
       )
 
       private

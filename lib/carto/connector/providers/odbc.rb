@@ -25,11 +25,12 @@ module Carto
     #   * encoding (optional): character encoding used by the external database; default is UTF-8.
     #     The encoding names accepted are those accepted by PostgreSQL.
     #
-    # Derived classes for specific ODBC drivers will typically redine at least these methods:
+    # Derived classes for specific ODBC drivers will typically redine at least these methods that map
+    # parameters to ODBC connection attributes:
     #
-    # * `fixed_connection_attributes`
-    # * `required_connection_attributes`
-    # * `optional_connection_attributes`
+    # * `fixed_odbc_attributes` defines fixed values for odbc attributes
+    # * `connection_odbc_attributes` maps connection parameters to odbc attributes
+    # * `odbc_attributes` maps (non-connection) parameters to odbc attributes
     #
     class OdbcProvider < FdwProvider
 
@@ -39,8 +40,8 @@ module Carto
         @columns = @columns.split(',').map(&:strip) if @columns
         @connection = Parameters.new(
           @params[:connection],
-          required: required_connection_attributes.keys,
-          optional: optional_connection_attributes.keys
+          required: odbc_attributes_for_required_connection_parameters.keys,
+          optional: odbc_attributes_for_optional_connection_parameters.keys
         )
       end
 
@@ -51,26 +52,28 @@ module Carto
       required_parameters %I(table connection)
       optional_parameters %I(schema sql_query sql_count encoding columns)
 
-      # Required connection attributes: { name: :internal_name }
+      # ODBC attributes for (non-connection) parameters: { name: :internal_name }#
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
       # The :name is the case-insensitive parameter received here trhough the API
+      # Optional parameters are defined as { name: { internal_name: default_value } }
       # This can be redefined as needed in derived classes.
-      def required_connection_attributes
+      def odbc_attributes
         {}
       end
 
-      # Connection attributes that are optional: { name: { internal_name: default_value } }
-      # Those with non-nil default values will always be set.
-      # name/internal_name as in `required_connection_attributes`
+      # ODBC attributes for connector parameters: { name: :internal_name }#
+      # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
+      # The :name is the case-insensitive parameter received here trhough the API inside `connector`.
+      # Optional parameters are defined as { name: { internal_name: default_value } }
       # This can be redefined as needed in derived classes.
-      def optional_connection_attributes
+      def connection_odbc_attributes
         {}
       end
 
-      # Connection attributes with fixed values: { internal_name: value }
+      # ODBC attributes with fixed values: { internal_name: value }
       # which are always passed to the driver
       # This can be redefined as needed in derived classes.
-      def fixed_connection_attributes
+      def fixed_odbc_attributes
         {}
       end
 
@@ -157,51 +160,71 @@ module Carto
       def parameters_information
         info = super
         connection = {}
-        required_connection_attributes.keys.each do |name|
+        odbc_attributes_for_required_connection_parameters.keys.each do |name|
           # TODO: description = load template for parameter name of @provider.name
           connection[name.to_s] = {
             required: true
           }
         end
-        optional_connection_attributes.keys.each do |name|
+        odbc_attributes_for_optional_connection_parameters.keys.each do |name|
           # TODO: description = load template for parameter name of @provider.name
           connection[name.to_s] = {
             required: false
           }
         end
-        info['connection'] = connection
+        info['connection'] = connection if connection.present?
         info
       end
 
       private
 
-      def attribute_name_map
-        optionals = Hash[optional_connection_attributes.map { |k, v| [k.to_s, v.keys.first.to_s] }]
-        stringified_required_attrs = Hash[required_connection_attributes.map { |k, v| [k.to_s, v.to_s] }]
+      def attribute_name_map()
+        optionals = Hash[odbc_attributes_for_optional_connection_parameters.map { |k, v| [k.to_s, v.keys.first.to_s] }]
+        stringified_required_attrs = Hash[odbc_attributes_for_required_connection_parameters.map { |k, v| [k.to_s, v.to_s] }]
         stringified_required_attrs.merge optionals
       end
 
-      # ODBC connection attributes (from parameters)
-      def connection_attributes
-        # Extract the connection attributes from the @params
-        attribute_names = required_connection_attributes.keys + optional_connection_attributes.keys
-        attributes = @connection.slice(*attribute_names)
+      def attribute_name_map(optional_params, required_params)
+        optionals = Hash[optional_params.map { |k, v| [k.to_s, v.keys.first.to_s] }]
+        stringified_required_attrs = Hash[required_params.map { |k, v| [k.to_s, v.to_s] }]
+        stringified_required_attrs.merge optionals
+      end
+
+      def parameters_to_odbc_attributes(params, optional_params, required_params)
+        # Extract the connection attributes from the params
+        attribute_names = optional_params.keys + required_params.keys
+        attributes = params.slice(*attribute_names)
 
         # Apply non-nil default values
-        non_nil_defaults = optional_connection_attributes.reject { |_k, v| v.values.first.nil? }
+        non_nil_defaults = optional_params.reject { |_k, v| v.values.first.nil? }
         attributes.reverse_merge! Hash[non_nil_defaults.map { |k, v| [k.to_s, v.values.first] }]
 
         # Map attribute names to internal (driver) attributes
-        attributes = attributes.map { |k, v| [attribute_name_map[k.to_s.downcase] || k, v] }
-
-        # Set fixed attribute values
-        attributes.merge! fixed_connection_attributes
+        attributes = attributes.map { |k, v| [attribute_name_map(optional_params, required_params)[k.to_s.downcase] || k, v] }
 
         attributes
       end
 
-      def non_connection_parameters # FIXME! may include odbc_ parameters
-        @params.slice(*(required_parameters + optional_parameters - %I(columns connection)))
+
+      # ODBC connection attributes (from parameters)
+      def connection_attributes
+        # attributes from connection parameters
+        attributes = parameters_to_odbc_attributes(@connection, odbc_attributes_for_optional_connection_parameters, odbc_attributes_for_required_connection_parameters)
+
+        # attributes from other parameters
+        attributes.merge! parameters_to_odbc_attributes(@params, odbc_attributes_for_optional_parameters, odbc_attributes_for_required_parameters)
+
+        # fixed attribute values
+        attributes.merge! fixed_odbc_attributes
+
+        attributes
+      end
+
+      def non_connection_parameters
+        # parameters mapped to odbc attributes
+        attr_params = odbc_attributes_for_optional_parameters.keys + odbc_attributes_for_required_parameters.keys
+
+        @params.slice(*(required_parameters + optional_parameters - %I(columns connection) - attr_params))
       end
 
       # ODBC Attributes (internal names) which will defined in FDW server options
@@ -221,16 +244,32 @@ module Carto
         parameters.map { |option_name, option_value| ["odbc_#{option_name}", quoted_value(option_value)] }
       end
 
+      def odbc_attributes_for_required_connection_parameters
+        connection_odbc_attributes.select{|k,v| !v.kind_of?(Hash)}
+      end
+
+      def odbc_attributes_for_optional_connection_parameters
+        connection_odbc_attributes.select{|k,v| v.kind_of?(Hash)}
+      end
+
+      def odbc_attributes_for_required_parameters
+        odbc_attributes.select{|k,v| !v.kind_of?(Hash)}
+      end
+
+      def odbc_attributes_for_optional_parameters
+        odbc_attributes.select{|k,v| v.kind_of?(Hash)}
+      end
+
       class <<self
         # class helpers to define abstract method implementations
-        def fixed_connection_attributes(attrs)
-          define_method(:fixed_connection_attributes) { attrs.freeze }
+        def fixed_odbc_attributes(attrs)
+          define_method(:fixed_odbc_attributes) { attrs.freeze }
         end
-        def required_connection_attributes(attrs)
-          define_method(:required_connection_attributes) { attrs.freeze }
+        def connection_odbc_attributes(attrs)
+          define_method(:connection_odbc_attributes) { attrs.freeze }
         end
-        def optional_connection_attributes(attrs)
-          define_method(:optional_connection_attributes) { attrs.freeze }
+        def odbc_attributes(attrs)
+          define_method(:odbc_attributes) { attrs.freeze }
         end
         def server_attributes(attrs)
           private define_method(:server_attributes) { attrs.freeze }

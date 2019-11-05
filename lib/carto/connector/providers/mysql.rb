@@ -13,15 +13,17 @@ module Carto
     class MySqlProvider < OdbcProvider
       metadata id: 'mysql', name: 'MySql'
 
-      fixed_connection_attributes(
+      fixed_odbc_attributes(
         Driver:   'MySQL',
         option:   0, # see https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-configuration-connection-parameters.html#codbc-dsn-option-flags
         prefetch: 0,
         no_ssps:  0,
         can_handle_exp_pwd: 0
       )
-      required_connection_attributes username: :uid, password: :pwd, server: :server
-      optional_connection_attributes port: { port: 3306 }, database: { database: nil }
+      connection_odbc_attributes(
+        username: :uid, password: :pwd, server: :server,   # required connection parameters
+        port: { port: 3306 }, database: { database: nil }  # optional connection parameters with default values
+      )
 
       private
 

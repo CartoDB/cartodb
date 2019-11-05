@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+- Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 
 4.30.0 (2019-10-18)
 -------------------

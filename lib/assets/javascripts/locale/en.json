@@ -1427,7 +1427,7 @@
                 "confirm": "Ok, Change privacy"
             },
             "password-confirmation": {
-                "modal-title": "Please confirm your old password.",
+                "modal-title": "Please, use your old password to confirm the change",
                 "modal-description": "\"Hey, ho! Let’s Go!\"",
                 "form": {
                     "password-label": "Old password"

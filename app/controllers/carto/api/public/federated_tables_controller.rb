@@ -55,9 +55,9 @@ module Carto
         end
 
         def update_federated_server
-          if @federated_server.empty?
+          unless @federated_server
             @federated_server = @service.register_server(@federated_server_attributes)
-            response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:federated_server_name]}"
+            response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp({}, 201)
           end
 
@@ -97,9 +97,9 @@ module Carto
         end
 
         def update_remote_table
-          if @remote_table.empty?
+          unless @remote_table
             @remote_table = @service.register_table(@remote_table_attributes)
-            response.headers['Content-Location'] = "#{request.path}/#{@remote_table[:remote_table_name]}"
+            response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp({}, 201)
           end
 
@@ -145,7 +145,7 @@ module Carto
         end
 
         def check_federated_server
-          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") if @federated_server.empty?
+          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") unless @federated_server
         end
 
         def load_remote_table_attributes
@@ -162,7 +162,7 @@ module Carto
         end
 
         def check_remote_table
-          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") if @remote_table.empty?
+          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") unless @remote_table
         end
 
         def check_permissions

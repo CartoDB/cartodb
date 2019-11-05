@@ -11,15 +11,16 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#list_federated_servers' do
     it 'returns 200 with the federated server list' do
+      federated_server_name = "fs_001_from_#{@user1.username}_to_#{@user2.username}"
       params_register = { api_key: @user1.api_key }
       payload_register = {
-        federated_server_name: 'amazon',
+        federated_server_name: federated_server_name,
         mode: 'read-only',
-        dbname: 'testdb',
-        host: 'myhostname.us-east-2.rds.amazonaws.com',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
         port: '5432',
-        username: 'read_only_user',
-        password: 'secret'
+        username: @user2.database_username,
+        password: @user2.database_password
       }
       post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
         expect(response.status).to eq(201)
@@ -30,9 +31,9 @@ describe Carto::Api::Public::FederatedTablesController do
 
           expect(response.body[:total]).to eq(1)
 
-          expect(response.body[:result][0][:federated_server_name]).to eq('amazon')
-          expect(response.body[:result][0][:dbname]).to eq('testdb')
-          expect(response.body[:result][0][:host]).to eq('myhostname.us-east-2.rds.amazonaws.com')
+          expect(response.body[:result][0][:federated_server_name]).to eq(federated_server_name)
+          expect(response.body[:result][0][:dbname]).to eq(@user2.database_name)
+          expect(response.body[:result][0][:host]).to eq(@user2.database_host)
         end
       end
     end
@@ -57,14 +58,15 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#register_federated_server' do
     before(:each) do
+      @federated_server_name = "fs_002_from_#{@user1.username}_to_#{@user2.username}"
       @payload = {
-        federated_server_name: 'amazon',
+        federated_server_name: @federated_server_name,
         mode: 'read-only',
-        dbname: 'testdb',
-        host: 'myhostname.us-east-2.rds.amazonaws.com',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
         port: '5432',
-        username: 'read_only_user',
-        password: 'secret'
+        username: @user2.database_username,
+        password: @user2.database_password
       }
     end
 
@@ -73,7 +75,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
       post_json api_v4_federated_servers_register_server_url(params), @payload do |response|
         expect(response.status).to eq(201)
-        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon')
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
       end
     end
 
@@ -103,33 +105,37 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#show_federated_server' do
+    before(:each) do
+      @federated_server_name = "fs_003_from_#{@user1.username}_to_#{@user2.username}"
+    end
+
     it 'returns 200 with the federated server' do
       params_register = { api_key: @user1.api_key }
       payload_register = {
-        federated_server_name: 'azure',
+        federated_server_name: @federated_server_name,
         mode: 'read-only',
-        dbname: 'db',
-        host: 'us-east-1.azure.com',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
         port: '5432',
-        username: 'read_only_user',
-        password: 'secret'
+        username: @user2.database_username,
+        password: @user2.database_password
       }
       post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
         expect(response.status).to eq(201)
 
-        params = { federated_server_name: 'azure', api_key: @user1.api_key }
+        params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
         get_json api_v4_federated_servers_get_server_url(params) do |response|
           expect(response.status).to eq(200)
 
-          expect(response.body[:federated_server_name]).to eq('azure')
-          expect(response.body[:dbname]).to eq('db')
-          expect(response.body[:host]).to eq('us-east-1.azure.com')
+          expect(response.body[:federated_server_name]).to eq(@federated_server_name)
+          expect(response.body[:dbname]).to eq(@user2.database_name)
+          expect(response.body[:host]).to eq(@user2.database_host)
         end
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon' }
+      params = { federated_server_name: @federated_server_name }
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -137,14 +143,14 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', api_key: api_key.token }
+      params = { federated_server_name: @federated_server_name, api_key: api_key.token }
 
       get_json api_v4_federated_servers_get_server_url(params) do |response|
         expect(response.status).to eq(403)
       end
     end
 
-    xit 'returns 404 when there is not a faderated server with the provided name' do
+    it 'returns 404 when there is not a faderated server with the provided name' do
       params = { federated_server_name: 'wadus', api_key: @user1.api_key }
 
       get_json api_v4_federated_servers_get_server_url(params) do |response|
@@ -155,36 +161,45 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#update_federated_server' do
     before(:each) do
+      @federated_server_name = "fs_004_from_#{@user1.username}_to_#{@user2.username}"
       @payload = {
         mode: 'read-only',
-        dbname: 'testdb',
-        host: 'myhostname.us-east-2.rds.amazonaws.com',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
         port: '5432',
-        username: 'read_only_user',
-        password: 'secret'
+        username: @user2.database_username,
+        password: @user2.database_password
       }
     end
 
-    xit 'returns 201 with the federated server was created' do
-      params = { federated_server_name: 'azure', api_key: @user1.api_key }
+    it 'returns 201 with the federated server was created' do
+      params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
 
       put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
         expect(response.status).to eq(201)
-        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon')
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
       end
     end
 
     it 'returns 204 with the federated server was updated' do
-      params = { federated_server_name: 'azure', api_key: @user1.api_key }
+      federated_server_name = "fs_005_from_#{@user1.username}_to_#{@user2.username}"
+      @payload[:federated_server_name] = federated_server_name
+      params_register = { api_key: @user1.api_key }
 
-      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
-        expect(response.status).to eq(204)
+      post_json api_v4_federated_servers_register_server_url(params_register), @payload do |response|
+        expect(response.status).to eq(201)
+
+        params = { federated_server_name: federated_server_name, api_key: @user1.api_key }
+        @payload[:port] = '5433'
+        put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+          expect(response.status).to eq(204)
+        end
       end
     end
 
     it 'returns 401 when non authenticated user' do
       params = { federated_server_name: 'azure' }
-      put_json api_v4_federated_servers_update_server_url(params) do |response|
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
         expect(response.status).to eq(401)
       end
     end
@@ -193,7 +208,7 @@ describe Carto::Api::Public::FederatedTablesController do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       params = { federated_server_name: 'azure', api_key: api_key.token }
 
-      put_json api_v4_federated_servers_update_server_url(params) do |response|
+      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
         expect(response.status).to eq(403)
       end
     end
@@ -210,15 +225,29 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#unregister_federated_server' do
     it 'returns 204 with the federated server was destroyed' do
-      params = { federated_server_name: 'azure', api_key: @user1.api_key }
+      federated_server_name = "fs_005_from_#{@user1.username}_to_#{@user2.username}"
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
+        expect(response.status).to eq(201)
 
-      delete_json api_v4_federated_servers_unregister_server_url(params), @payload do |response|
-        expect(response.status).to eq(204)
+        params = { federated_server_name: federated_server_name, api_key: @user1.api_key }
+        delete_json api_v4_federated_servers_unregister_server_url(params), @payload do |response|
+          expect(response.status).to eq(204)
+        end
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'azure' }
+      params = { federated_server_name: 'wadus' }
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -226,14 +255,14 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'azure', api_key: api_key.token }
+      params = { federated_server_name: 'wadus', api_key: api_key.token }
 
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
         expect(response.status).to eq(403)
       end
     end
 
-    xit 'returns 404 when there is not a faderated server with the provided name' do
+    it 'returns 404 when there is not a faderated server with the provided name' do
       params = { federated_server_name: 'wadus', api_key: @user1.api_key }
 
       delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
@@ -243,21 +272,38 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_remote_schemas' do
-    xit 'returns 200 with the remote schemas list' do
-      params = { federated_server_name: 'amazon', api_key: @user1.api_key, page: 1, per_page: 10 }
+    before(:each) do
+      @federated_server_name = "fs_007_from_#{@user1.username}_to_#{@user2.username}"
+    end
 
-      get_json api_v4_federated_servers_list_schemas_url(params) do |response|
-        expect(response.status).to eq(200)
+    it 'returns 200 with the remote schemas list' do
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
+        expect(response.status).to eq(201)
 
-        expect(response.body[:total]).to eq(2)
+        params = { federated_server_name: @federated_server_name, api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_schemas_url(params) do |response|
+          expect(response.status).to eq(200)
 
-        expect(response.body[:result][0][:remote_schema_name]).to eq('default')
-        expect(response.body[:result][1][:remote_schema_name]).to eq('locations')
+          expect(response.body[:total] > 0)
+          found = response.body[:result].select {|schema| schema[:remote_schema_name] == 'public'}.first
+          expect(found[:remote_schema_name]).to eq('public')
+          puts response.body[:result]
+        end
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', page: 1, per_page: 10 }
+      params = { federated_server_name: @federated_server_name, page: 1, per_page: 10 }
 
       get_json api_v4_federated_servers_list_schemas_url(params) do |response|
         expect(response.status).to eq(401)
@@ -266,7 +312,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', api_key: api_key.token, page: 1, per_page: 10 }
+      params = { federated_server_name: @federated_server_name, api_key: api_key.token, page: 1, per_page: 10 }
 
       get_json api_v4_federated_servers_list_schemas_url(params) do |response|
         expect(response.status).to eq(403)
@@ -275,34 +321,37 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   describe '#list_remote_tables' do
+    before(:each) do
+      @federated_server_name = "fs_008_from_#{@user1.username}_to_#{@user2.username}"
+    end
+
     it 'returns 200 with the remote tables list' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'default', api_key: @user1.api_key, page: 1, per_page: 10 }
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
+        expect(response.status).to eq(201)
 
-      get_json api_v4_federated_servers_list_tables_url(params) do |response|
-        expect(response.status).to eq(200)
+        params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_tables_url(params) do |response|
+          expect(response.status).to eq(200)
 
-        expect(response.body[:total]).to eq(2)
-
-        expect(response.body[:result][0][:remote_table_name]).to eq('my_table')
-        expect(response.body[:result][0][:remote_schema_name]).to eq('default')
-        expect(response.body[:result][0][:registered]).to eq('true')
-        expect(response.body[:result][0][:qualified_name]).to eq('default.my_table')
-        expect(response.body[:result][0][:id_column_name]).to eq('id')
-        expect(response.body[:result][0][:geom_column_name]).to eq('the_geom')
-        expect(response.body[:result][0][:webmercator_column_name]).to eq('the_geom_webmercator')
-
-        expect(response.body[:result][1][:remote_table_name]).to eq('shops')
-        expect(response.body[:result][1][:remote_schema_name]).to eq('public')
-        expect(response.body[:result][1][:registered]).to eq('false')
-        expect(response.body[:result][1][:qualified_name]).to eq('public.shops')
-        expect(response.body[:result][1][:id_column_name]).to eq('shop_id')
-        expect(response.body[:result][1][:geom_column_name]).to eq('the_geom')
-        expect(response.body[:result][1][:webmercator_column_name]).to eq('the_geom_webmercator')
+          expect(response.body[:total] > 0)
+          found = response.body[:result].select {|schema| schema[:remote_table_name] == 'geometry_columns'}.first
+          expect(found[:remote_table_name]).to eq('geometry_columns')
+        end
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'default', page: 1, per_page: 10 }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', page: 1, per_page: 10 }
 
       get_json api_v4_federated_servers_list_tables_url(params) do |response|
         expect(response.status).to eq(401)
@@ -311,7 +360,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', remote_schema_name: 'default', api_key: api_key.token, page: 1, per_page: 10 }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: api_key.token, page: 1, per_page: 10 }
 
       get_json api_v4_federated_servers_list_tables_url(params) do |response|
         expect(response.status).to eq(403)
@@ -321,46 +370,76 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#register_remote_table' do
     before(:each) do
-      @payload = {
-        remote_table_name: 'my_table',
-        local_table_name_override: 'my_table',
-        id_column_name: 'id',
-        geom_column_name: 'the_geom',
-        webmercator_column_name: 'the_geom_webmercator'
-      }
+      @federated_server_name = "fs_009_from_#{@user1.username}_to_#{@user2.username}"
     end
 
     it 'returns 201 with the federated server was created' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: @user1.api_key }
-
-      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+      @user2.in_database.execute('CREATE TABLE my_table(id integer NOT NULL, geom geometry, geom_webmercator geometry)')
+      params_register = { api_key: @user1.api_key }
+      payload_register = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register), payload_register do |response|
         expect(response.status).to eq(201)
-        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon/remote_schemas/public/remote_tables/my_table')
+
+        params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key }
+        payload = {
+          remote_table_name: 'my_table',
+          local_table_name_override: 'my_table',
+          id_column_name: 'id',
+          geom_column_name: 'geom',
+          webmercator_column_name: 'geom_webmercator'
+        }
+        post_json api_v4_federated_servers_register_table_url(params), payload do |response|
+          expect(response.status).to eq(201)
+          expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/public/remote_tables/my_table")
+        end
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public' }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public' }
+      payload = {
+        remote_table_name: 'my_table',
+        local_table_name_override: 'my_table',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
 
-      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+      post_json api_v4_federated_servers_register_table_url(params), payload do |response|
         expect(response.status).to eq(401)
       end
     end
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: api_key.token }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: api_key.token }
+      payload = {
+        remote_table_name: 'my_table',
+        local_table_name_override: 'my_table',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
 
-      post_json api_v4_federated_servers_register_table_url(params), @payload do |response|
+      post_json api_v4_federated_servers_register_table_url(params), payload do |response|
         expect(response.status).to eq(403)
       end
     end
 
     xit 'returns 422 when payload is missing' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', api_key: @user1.api_key }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key }
       payload = {}
 
       post_json api_v4_federated_servers_register_table_url(params), payload do |response|
+        puts response.body
         expect(response.status).to eq(422)
       end
     end
@@ -368,30 +447,55 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#show_remote_table' do
     before(:each) do
-      @payload = {
-        local_table_name_override: 'my_table',
-        id_column_name: 'id',
-        geom_column_name: 'the_geom',
-        webmercator_column_name: 'the_geom_webmercator'
+      @federated_server_name = "fs_010_from_#{@user1.username}_to_#{@user2.username}"
+      @user2.in_database.execute('CREATE TABLE my_table(id integer NOT NULL, geom geometry, geom_webmercator geometry)')
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
       }
+      puts api_v4_federated_servers_register_server_url(params_register_server)
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+        expect(response.status).to eq(201)
+
+        params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key }
+        payload_register_table = {
+          remote_table_name: 'my_table',
+          local_table_name_override: 'my_table',
+          id_column_name: 'id',
+          geom_column_name: 'geom',
+          webmercator_column_name: 'geom_webmercator'
+        }
+        post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+          expect(response.status).to eq(201)
+        end
+      end
+    end
+
+    after(:each) do
+      params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
+        expect(response.status).to eq(204)
+      end
     end
 
     it 'returns 200 with the remote table' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
-
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(200)
 
-        expect(response.body[:federated_server_name]).to eq('amazon')
-        expect(response.body[:remote_schema_name]).to eq('public')
         expect(response.body[:remote_table_name]).to eq('my_table')
-        expect(response.body[:local_table_name_override]).to eq('my_table')
         expect(response.body[:qualified_name]).to eq('public.my_table')
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table' }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table' }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(401)
       end
@@ -399,15 +503,15 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
 
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(403)
       end
     end
 
-    xit 'returns 404 when there is not a remote table with the provided name' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
+    it 'returns 404 when there is not a remote table with the provided name' do
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'wadus', api_key: @user1.api_key }
 
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(404)
@@ -417,52 +521,98 @@ describe Carto::Api::Public::FederatedTablesController do
 
   describe '#update_remote_table' do
     before(:each) do
-      @payload = {
-        local_table_name_override: 'my_table',
-        id_column_name: 'another_id',
-        geom_column_name: 'another_the_geom',
-        webmercator_column_name: 'another_the_geom_webmercator'
+      @federated_server_name = "fs_011_from_#{@user1.username}_to_#{@user2.username}"
+      @user2.in_database.execute('CREATE TABLE my_table(id integer NOT NULL, geom geometry, geom_webmercator geometry)')
+      @user2.in_database.execute('CREATE TABLE my_other_table(id integer NOT NULL, geom geometry, geom_webmercator geometry)')
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: @user2.database_name,
+        host: @user2.database_host,
+        port: '5432',
+        username: @user2.database_username,
+        password: @user2.database_password
       }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+        expect(response.status).to eq(201)
+
+        params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: 'public', api_key: @user1.api_key }
+        payload_register_table = {
+          remote_table_name: 'my_table',
+          local_table_name_override: 'my_table',
+          id_column_name: 'id',
+          geom_column_name: 'geom',
+          webmercator_column_name: 'geom_webmercator'
+        }
+        post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+          expect(response.status).to eq(201)
+        end
+      end
     end
 
-    xit 'returns 201 with the remote table was created' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+    after(:each) do
+      params = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params) do |response|
+        expect(response.status).to eq(204)
 
-      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+        @user2.in_database.execute('DROP TABLE my_table')
+        @user2.in_database.execute('DROP TABLE my_other_table')
+      end
+    end
+
+    it 'returns 201 with the remote table was created' do
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_other_table', api_key: @user1.api_key }
+      payload_update_table = {
+        remote_table_name: 'my_other_table',
+        local_table_name_override: 'my_other_table',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+
+      put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
         expect(response.status).to eq(201)
-        expect(response.headers['Content-Location']).to eq('/api/v4/federated_servers/amazon/remote_schemas/public/remote_tables/my_table')
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/public/remote_tables/my_other_table")
       end
     end
 
     it 'returns 204 with the remote table was updated' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+      payload_update_table = {
+        remote_table_name: 'my_table',
+        local_table_name_override: 'my_table',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
 
-      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+      put_json api_v4_federated_servers_update_table_url(params), payload_update_table do |response|
         expect(response.status).to eq(204)
       end
     end
 
     it 'returns 401 when non authenticated user' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', }
-      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', }
+      put_json api_v4_federated_servers_update_table_url(params), @payload do |response|
         expect(response.status).to eq(401)
       end
     end
 
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: api_key.token }
 
-      put_json api_v4_federated_servers_update_server_url(params), @payload do |response|
+      put_json api_v4_federated_servers_update_table_url(params), @payload do |response|
         expect(response.status).to eq(403)
       end
     end
 
     xit 'returns 422 when payload is missing' do
-      params = { federated_server_name: 'amazon', remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'public', remote_table_name: 'my_table', api_key: @user1.api_key }
       payload = {}
 
-      put_json api_v4_federated_servers_update_server_url(params), payload do |response|
+      put_json api_v4_federated_servers_update_table_url(params), payload do |response|
         expect(response.status).to eq(422)
       end
     end

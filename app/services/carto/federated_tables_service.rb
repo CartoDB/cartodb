@@ -44,13 +44,15 @@ module Carto
 
     def list_remote_schemas(federated_server_name, pagination)
       pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
-      @user_db_connection[
+      # TODO: use @user_db_connection instead
+      @superuser_db_connection[
         select_remote_schemas_query(federated_server_name, pagination)
       ].all
     end
 
     def count_remote_schemas(federated_server_name)
-      @user_db_connection[
+      # TODO: use @user_db_connection instead
+      @superuser_db_connection[
         count_remote_schemas_query(federated_server_name)
       ].first[:count]
     end
@@ -59,13 +61,15 @@ module Carto
 
     def list_remote_tables(federated_server_name, remote_schema_name, pagination)
       pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
-      @user_db_connection[
+      # TODO: use @user_db_connection instead
+      @superuser_db_connection[
         select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
       ].all
     end
 
     def count_remote_tables(federated_server_name, remote_schema_name)
-      @user_db_connection[
+      # TODO: use @user_db_connection instead
+      @superuser_db_connection[
         count_remote_tables_query(federated_server_name, remote_schema_name)
       ].first[:count]
     end
@@ -80,7 +84,8 @@ module Carto
     end
 
     def get_remote_table(federated_server_name:, remote_schema_name:, remote_table_name:)
-      @user_db_connection[
+      # TODO: use @user_db_connection instead
+      @superuser_db_connection[
         get_remote_table_query(
           federated_server_name: federated_server_name,
           remote_schema_name: remote_schema_name,
@@ -211,7 +216,7 @@ module Carto
 
     def select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
       %{
-        SELECT * FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_schemas
+        SELECT * FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_tables
         ORDER BY #{pagination[:order]} #{pagination[:direction]}
         LIMIT #{pagination[:per_page]}
         OFFSET #{pagination[:offset]}
@@ -219,18 +224,18 @@ module Carto
     end
 
     def count_remote_tables_query(federated_server_name, remote_schema_name)
-      "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_schemas"
+      "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_tables"
     end
 
     def select_tables_query(federated_server_name, remote_schema_name)
       %{
         SELECT
           'true' as registered,
-          table_schema || '.' || remote_table as qualified_name,
-          table_schema as remote_schema_name,
-          remote_table as remote_table_name,
+          '#{remote_schema_name}' || '.' || remote_table as qualified_name,
+          '#{remote_schema_name}' as remote_schema_name,
+          remote_table as remote_table_name
         FROM
-          cartodb.CDB_Federated_Server_List_Remote_Tables(server => '#{federated_server_name}', remote_schema => '#{remote_schema_name}');
+          cartodb.CDB_Federated_Server_List_Remote_Tables(server => '#{federated_server_name}', remote_schema => '#{remote_schema_name}')
       }.squish
     end
 
@@ -244,25 +249,22 @@ module Carto
           geom_column => '#{attributes[:geom_column_name]}',
           webmercator_column => '#{attributes[:webmercator_column_name]}',
           local_name => '#{attributes[:local_table_name_override]}'
-        );
+        )
       }.squish
     end
 
     def get_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
-          '#{federated_server_name}' as federated_server_name,
-          '#{remote_schema_name}' as remote_schema_name,
-          '#{remote_table_name}' as remote_table_name,
-          local_view as local_table_name_override,
-          local_view as qualified_name
+          remote_name as remote_table_name,
+          local_name as qualified_name
         FROM
           CDB_Federated_Server_List_Registered_Tables(
             server => '#{federated_server_name}',
             remote_schema => '#{remote_schema_name}'
           )
         WHERE
-          remote_table = '#{remote_table_name}'
+          remote_name = '#{remote_table_name}'
       }.squish
     end
 
@@ -273,7 +275,7 @@ module Carto
             server => '#{federated_server_name}',
             remote_schema => '#{remote_schema_name}',
             remote_table => '#{remote_table_name}'
-          );
+          )
       }.squish
     end
   end

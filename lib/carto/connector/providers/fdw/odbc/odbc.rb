@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './fdw'
+require_relative '../fdw'
 
 module Carto
   class Connector

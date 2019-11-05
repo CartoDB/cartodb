@@ -1,15 +1,7 @@
 # encoding: utf-8
 
-require_relative './providers/generic_odbc'
-require_relative './providers/mysql'
-require_relative './providers/postgresql'
-require_relative './providers/sqlserver'
-require_relative './providers/hive'
-require_relative './providers/pg_fdw'
-
 module Carto
   class Connector
-
     # Connector parameters: behaves like a Hash, but:
     #
     # * keys are case-insensitive for [], slice, except, merge!, etc.

@@ -102,14 +102,14 @@ module Carto
         normalized_array(Array(names))
       end
 
-      def errors(only: nil, parameters_term: 'parameters')
+      def errors(only_for: nil, parameters_term: 'parameters')
         errors = []
         if @accepted_parameters.present?
           invalid_params = normalized_names - @accepted_parameters
           missing_parameters = @required_parameters - normalized_names
-          if only.present?
-            only = normalize_parameter_names(only)
-            missing_parameters &= only
+          if only_for.present?
+            only_for = normalize_parameter_names(only_for)
+            missing_parameters &= only_for
           end
           if missing_parameters.present?
             errors << "Missing required #{parameters_term} #{missing_parameters * ','}"

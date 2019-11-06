@@ -24,11 +24,11 @@ module Carto
 
       odbc_attributes project: :Catalog, dataset: { DefaultDataset: nil }
 
-      def errors(only: nil)
+      def errors(only_for: nil)
         # dataset is not optional if not using a query
-        only = @params.normalize_parameter_names(only)
+        parameters_to_validate = @params.normalize_parameter_names(only_for)
         dataset_errors = []
-        if only.blank? || only.include?(:dataset)
+        if parameters_to_validate.blank? || parameters_to_validate.include?(:dataset)
           if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
             dataset_errors << "The dataset parameter is needed for tables"
           end

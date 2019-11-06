@@ -21,7 +21,7 @@ module Carto
         end
       end
 
-      def errors(only: nil)
+      def errors(only_for: nil)
         errors = super
         if @connection.blank?
           errors << "Missing 'connection' parameters"

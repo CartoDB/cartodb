@@ -245,18 +245,26 @@ module Carto
       end
 
       def odbc_attributes_for_required_connection_parameters
+        # required parameters are defined as entries mapped to symbols/strings:
+        # as in: `{ parameter_name: :odbc_attribute_name }`
         connection_odbc_attributes.select{|k,v| !v.kind_of?(Hash)}
       end
 
       def odbc_attributes_for_optional_connection_parameters
+        # optional parameters are defined as entries mapped to a Hash that maps the odbc attribute name to its
+        # default value, as in: `{ parameter_name: { odbc_attribute_name: default_value } }`
         connection_odbc_attributes.select{|k,v| v.kind_of?(Hash)}
       end
 
       def odbc_attributes_for_required_parameters
+        # required parameters are defined as entries mapped to symbols/strings:
+        # as in: `{ parameter_name: :odbc_attribute_name }`
         odbc_attributes.select{|k,v| !v.kind_of?(Hash)}
       end
 
       def odbc_attributes_for_optional_parameters
+        # optional parameters are defined as entries mapped to a Hash that maps the odbc attribute name to its
+        # default value, as in: `{ parameter_name: { odbc_attribute_name: default_value } }`
         odbc_attributes.select{|k,v| v.kind_of?(Hash)}
       end
 

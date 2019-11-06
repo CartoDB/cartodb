@@ -6,6 +6,10 @@ Development
 
 ### Features
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
+- Federated Tables:
+  - Add enpoints to list, register, update, and unregister Federated Servers
+  - Add enpoints to list Remote Schemas
+  - Add enpoints to list, register, update, and unregister Remote Tables
 
 ### Bug fixes / enhancements
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))

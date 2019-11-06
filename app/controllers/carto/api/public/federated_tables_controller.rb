@@ -28,9 +28,11 @@ module Carto
         before_action :load_federated_server_attributes, only: [:register_federated_server, :update_federated_server ]
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
+        before_action :check_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
         before_action :load_remote_table_attributes, only: [:register_remote_table, :update_remote_table ]
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
         before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]
+        before_action :check_remote_table_attributes, only: [:register_remote_table, :update_remote_table]
 
         setup_default_rescues
 
@@ -55,9 +57,9 @@ module Carto
         end
 
         def update_federated_server
-          if @federated_server.empty?
+          unless @federated_server
             @federated_server = @service.register_server(@federated_server_attributes)
-            response.headers['Content-Location'] = "#{request.path}/#{@federated_server[:federated_server_name]}"
+            response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp({}, 201)
           end
 
@@ -97,9 +99,9 @@ module Carto
         end
 
         def update_remote_table
-          if @remote_table.empty?
+          unless @remote_table
             @remote_table = @service.register_table(@remote_table_attributes)
-            response.headers['Content-Location'] = "#{request.path}/#{@remote_table[:remote_table_name]}"
+            response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp({}, 201)
           end
 
@@ -145,7 +147,19 @@ module Carto
         end
 
         def check_federated_server
-          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") if @federated_server.empty?
+          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") unless @federated_server
+        end
+
+        def check_federated_server_attributes
+          if request.post?
+            raise Carto::CartoError.new("Missing 'federated server name' attribute", 422) unless params[:federated_server_name].present?
+          end
+          raise Carto::CartoError.new("Missing 'mode' attribute", 422) unless params[:mode].present?
+          raise Carto::CartoError.new("Missing 'database name' attribute", 422) unless params[:dbname].present?
+          raise Carto::CartoError.new("Missing 'host' attribute", 422) unless params[:host].present?
+          raise Carto::CartoError.new("Missing 'port' attribute", 422) unless params[:port].present?
+          raise Carto::CartoError.new("Missing 'username' attribute", 422) unless params[:username].present?
+          raise Carto::CartoError.new("Missing 'password' attribute", 422) unless params[:password].present?
         end
 
         def load_remote_table_attributes
@@ -162,7 +176,14 @@ module Carto
         end
 
         def check_remote_table
-          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") if @remote_table.empty?
+          raise Carto::LoadError.new("Remote table key not found: #{params[:federated_server_name]}/#{params[:remote_schema_name]}.#{params[:remote_table_name]}") unless @remote_table
+        end
+
+        def check_remote_table_attributes
+          if request.post?
+            raise Carto::CartoError.new("Missing 'remote table name' attribute", 422) unless params[:remote_table_name].present?
+          end
+          raise Carto::CartoError.new("Missing 'id column name' attribute", 422) unless params[:id_column_name].present?
         end
 
         def check_permissions

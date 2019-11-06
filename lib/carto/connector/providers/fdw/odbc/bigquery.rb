@@ -8,35 +8,47 @@ module Carto
 
     # {
     #   "provider": "bigquery",
-    #   "connection": {
-    #     "project": "eternal-ship-170218"
-    #   },
+    #   "project": "eternal-ship-170218",
     #   "table": "destination_table",
     #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
     # }
     #
     # {
     #   "provider": "bigquery",
-    #   "connection": {
-    #     "project": "some_project"
-    #   },
-    #   "table": "mytable",
-    #   "dataset": "mydataset"
+    #   "project": "some_project",
+    #   "dataset": "mydataset",
+    #   "table": "mytable"
     # }
     class BigQueryProvider < OdbcProvider
-      def self.id
-        'bigquery'
-      end
+      metadata id: 'bigquery', name: 'Google BigQuery', public?: false
 
-      def self.name
-        'Google BigQuery'
-      end
+      odbc_attributes project: :Catalog, dataset: { DefaultDataset: nil }
 
-      def self.public?
-        false
+      def errors(only_for: nil)
+        # dataset is not optional if not using a query
+        parameters_to_validate = @params.normalize_parameter_names(only_for)
+        dataset_errors = []
+        if parameters_to_validate.blank? || parameters_to_validate.include?(:dataset)
+          if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
+            dataset_errors << "The dataset parameter is needed for tables"
+          end
+        end
+        super + dataset_errors
       end
 
       private
+
+      # Notes regarding IMPORT (extermal) schema and the DefaultDataset parameter:
+      # * For tables DefaultDataset is unnecesary (but does not harm if present),
+      #   the IMPORT (extermal) schema is necessary and the one which defines the dataset.
+      # * For queries (sql_query), IMPORT (extermal) schema  is ignored and
+      #   the DefaultDataset is necessary when table names are not qualified with the dataset.
+
+      server_attributes %I(
+        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret
+        AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime
+      )
+      user_attributes %I(RefreshToken)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -67,7 +79,7 @@ module Carto
         raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
       end
 
-      def fixed_connection_attributes
+      def fixed_odbc_attributes
         proxy_conf = create_proxy_conf
 
         conf = {
@@ -89,33 +101,14 @@ module Carto
         return conf
       end
 
-      REQUIRED_OPTIONS = %I(table connection).freeze
-      OPTIONAL_OPTIONS = %I(dataset sql_query).freeze
+      required_parameters %I(project table)
+      optional_parameters %I(dataset sql_query)
 
-      def optional_parameters
-        OPTIONAL_OPTIONS
-      end
-
-      def required_parameters
-        REQUIRED_OPTIONS
-      end
-
-      def required_connection_attributes
-        {
-          project:       :Catalog
-        }
-      end
-
-      def server_attributes
-        %I(Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime)
-      end
-
-      def user_attributes
-        %I(RefreshToken)
-      end
-
-      def non_connection_parameters
-        super.reverse_merge(schema: @params[:dataset])
+      def remote_schema_name
+        # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA
+        # is used with a query (sql_query). Since it is actually ignored in that case we'll used
+        # and arbitrary name in that case.
+        table_options[:odbc_DefaultDataset] || 'unused' # @params[:dataset] || 'unused'
       end
 
       def create_proxy_conf

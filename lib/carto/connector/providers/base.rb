@@ -41,8 +41,8 @@ module Carto
         @params = Parameters.new(params, required: required_parameters + [:provider], optional: optional_parameters)
       end
 
-      def errors(only: nil)
-        @params.errors(only: only)
+      def errors(only_for: nil)
+        @params.errors(only_for: only_for)
       end
 
       def valid?
@@ -50,7 +50,7 @@ module Carto
       end
 
       def validate!(only: nil)
-        errors = self.errors(only: only)
+        errors = self.errors(only_for: only)
         raise InvalidParametersError.new(message: errors * "\n") if errors.present?
       end
 
@@ -125,6 +125,20 @@ module Carto
 
       def provider_id
         self.class.id
+      end
+
+      class <<self
+        def metadata(options)
+          options.each do |key, value|
+            define_singleton_method(key) { value.freeze }
+          end
+        end
+        def optional_parameters(params)
+          define_method(:optional_parameters) { params.freeze }
+        end
+        def required_parameters(params)
+          define_method(:required_parameters) { params.freeze }
+        end
       end
 
       private

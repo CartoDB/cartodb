@@ -11,17 +11,7 @@ module Carto
     # This is not meant for public use.
     #
     class GenericOdbcProvider < OdbcProvider
-      def self.id
-        'odbc'
-      end
-
-      def self.name
-        'ODBC'
-      end
-
-      def self.public?
-        false # Intended for internal development/tests
-      end
+      metadata id: 'odbc', name: 'ODBC', public?: false # Intended for internal development/tests
 
       def initialize(context, params)
         super
@@ -31,7 +21,7 @@ module Carto
         end
       end
 
-      def errors(only: nil)
+      def errors(only_for: nil)
         errors = super
         if @connection.blank?
           errors << "Missing 'connection' parameters"
@@ -42,6 +32,11 @@ module Carto
       end
 
       private
+
+      # We'll map some usual names to server/user options, but in general we'll rely on
+      # having unforeseen attributes defined at table level
+      server_attributes %I(dsn driver host server address port database)
+      user_attributes %I(uid pwd user username password)
 
       def connection_attributes
         @connection

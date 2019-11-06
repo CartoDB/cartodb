@@ -13,12 +13,12 @@ module Carto
     attr_reader :provider_name
 
     def initialize(parameters, context)
-      @connector_context = Context.cast(context)
-
       @params = Parameters.new(parameters)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
+
+      @connector_context = Context.cast(context)
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, @connector_context, @params
@@ -59,6 +59,14 @@ module Carto
 
     def self.available?(user)
       user.has_feature_flag?('carto-connectors')
+    end
+
+    def self.provider_available?(provider, user)
+      connector = Carto::Connector.new({provider: provider}, user: user, logger: nil)
+      connector.check_availability!
+      true
+    rescue ConnectorsDisabledError
+      false
     end
 
     # Check availability for a user and provider

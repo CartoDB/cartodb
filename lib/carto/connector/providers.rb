@@ -1,12 +1,12 @@
 # encoding: utf-8
 
-require_relative 'providers/generic_odbc'
-require_relative 'providers/mysql'
-require_relative 'providers/postgresql'
-require_relative 'providers/sqlserver'
-require_relative 'providers/hive'
-require_relative 'providers/pg_fdw'
-require_relative 'providers/bigquery'
+require_relative 'providers/fdw/odbc/generic_odbc'
+require_relative 'providers/fdw/odbc/mysql'
+require_relative 'providers/fdw/odbc/postgresql'
+require_relative 'providers/fdw/odbc/sqlserver'
+require_relative 'providers/fdw/odbc/hive'
+require_relative 'providers/fdw/odbc/bigquery'
+require_relative 'providers/fdw/pg_fdw'
 
 module Carto
   class Connector

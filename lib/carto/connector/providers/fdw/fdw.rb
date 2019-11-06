@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require_relative './base'
+require_relative '../base'
 
 # Base class for Connector Providers
 # that use FDW to import data through a foreign table.

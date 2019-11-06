@@ -29,7 +29,7 @@
         <% } %>
       <% } %>
 
-      <% if (listingState === "import") { %>
+      <% if (listingState === "import" || "upload") { %>
         <% if (importState === 'scratch') { %>
           <% if (isMapType) { %>
             <div class="CreateDialog-footerInfo">
@@ -40,7 +40,7 @@
           <div class="js-footer-info CreateDialog-footerInfo"></div>
           <div class="CreateDialog-footerActions js-footerActions">
             <button class="CDB-Button CDB-Button--primary CreateDialog-footerActionsButton <% if (!isUploadValid) { %>is-disabled<% } %> js-connect">
-              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">connect dataset</span>
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- listingState === "upload" ? 'Upload' : 'Connect' %> dataset</span>
             </button>
           </div>
         <% } %>

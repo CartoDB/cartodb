@@ -893,7 +893,9 @@
                 }
             },
             "create-dialog": {
-                "creating-map": "Creating map"
+                "creating-map": "Creating map",
+                "upload": "Upload",
+                "connect": "Connect"
             },
             "export-data": {
                 "title": "Export data",
@@ -1218,7 +1220,8 @@
                 "navigation": {
                     "search": "Search",
                     "search-placeholder": "by name, description, or :tag",
-                    "connect-dataset": "Connect dataset",
+                    "upload-dataset": "Upload",
+                    "connect-dataset": "Connect",
                     "shared-with-you": "Shared with you",
                     "data-library": "Data library",
                     "create-empty-map": "Create empty map",

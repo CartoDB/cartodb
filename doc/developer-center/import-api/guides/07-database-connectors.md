@@ -1118,10 +1118,10 @@ The following table describes the connector attributes required to connect to a 
 
 Param | Description
 --- | ---
-connector | This value **MUST** be set to *bigquery*.
-project |  Define the Google Cloud project to connect to.
+provider | This value **MUST** be set to *bigquery*.
+project |  Defines the Google Cloud project to connect to.
 table | Identifies the table to be imported.
-dataset | Name of the dataset where the table belongs to. This is optional if sql_query is used.
+dataset | Name of the dataset to import data from. This is optional if sql_query is used.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
 
 #### Connect to a Table

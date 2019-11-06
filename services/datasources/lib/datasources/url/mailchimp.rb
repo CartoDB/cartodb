@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'json'
 require 'gibbon'
 require 'addressable/uri'

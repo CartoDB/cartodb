@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'fileutils'
 require 'open3'
 require 'uri'

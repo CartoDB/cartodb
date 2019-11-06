@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 # NOTE: Implement further methods from ActiveRecord::Relation here as needed
 module Carto
   class OffdatabaseQueryAdapter

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'fileutils'
 require_relative '../../../../spec/spec_helper'
 require_relative '../../lib/importer/csv_normalizer'

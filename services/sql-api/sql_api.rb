@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'open-uri'
 require 'json'
 require_relative '../../lib/carto/http/client'

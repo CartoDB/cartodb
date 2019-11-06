@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   desc "Adapt max_import_file_size according to disk quota"
   task :setup_max_import_file_size_based_on_disk_quota => :environment do

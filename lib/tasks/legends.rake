@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :carto do
   namespace :legends do
     namespace :migration do

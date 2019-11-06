@@ -1,4 +1,3 @@
-# coding: UTF-8
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 

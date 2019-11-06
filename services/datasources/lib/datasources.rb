@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'zlib'
 require_relative './datasources/base'
 require_relative './datasources/base_oauth'

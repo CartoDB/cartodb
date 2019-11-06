@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carto/storage'
 require 'carto/assets/image_assets_service'
 require 'singleton'

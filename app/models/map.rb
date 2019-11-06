@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../models/visualization/collection'
 require_relative '../models/table/user_table'
 require_dependency 'carto/bounding_box_utils'

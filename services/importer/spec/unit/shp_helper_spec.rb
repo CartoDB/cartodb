@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'fileutils'
 require_relative '../../lib/importer/shp_helper'
 require_relative '../../lib/importer/exceptions'

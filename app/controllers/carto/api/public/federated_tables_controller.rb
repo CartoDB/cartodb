@@ -53,6 +53,10 @@ module Carto
 
         def register_federated_server
           federated_server = @service.register_server(@federated_server_attributes)
+          @service.grant_access_to_federated_server(
+            federated_server_name: federated_server[:federated_server_name],
+            db_role: @api_key.db_role
+          )
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
           render_jsonp({}, 201)
         end
@@ -190,8 +194,8 @@ module Carto
         end
 
         def check_permissions
-          api_key = Carto::ApiKey.find_by_token(params["api_key"])
-          raise UnauthorizedError unless api_key.master? || api_key.dataset_metadata_permissions
+          @api_key = Carto::ApiKey.find_by_token(params["api_key"])
+          raise UnauthorizedError unless @api_key.master? || @api_key.dataset_metadata_permissions
         end
 
         def render_paged(result, total)

@@ -24,6 +24,15 @@ module Carto
       get_server(federated_server_name: attributes[:federated_server_name])
     end
 
+    def grant_access_to_federated_server(federated_server_name:, db_role:)
+      @superuser_db_connection[
+        grant_access_to_federated_server_query(
+          federated_server_name: federated_server_name,
+          db_role: db_role
+        )
+      ]
+    end
+
     def get_server(federated_server_name:)
       @user_db_connection[get_federated_server_query(federated_server_name: federated_server_name)].first
     end
@@ -164,6 +173,12 @@ module Carto
             "password": "#{attributes[:password]}"
           }
         }'::jsonb);
+      }.squish
+    end
+
+    def grant_access_to_federated_server_query(federated_server_name:, db_role:)
+      %{
+        SELECT CDB_Federated_Server_Grant_Access(server := '#{federated_server_name}', db_role := '#{db_role}'::name)
       }.squish
     end
 

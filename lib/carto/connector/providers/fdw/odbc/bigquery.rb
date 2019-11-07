@@ -64,8 +64,6 @@ module Carto
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
-        raise 'OAuth configuration not found for BigQuery provider' if @oauth_config.nil?
-        raise 'Client Id and Client Secret MUST be defined' if @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
         validate_config!(context)
       end
 
@@ -74,6 +72,10 @@ module Carto
         # instantiated provider can be used for operations that don't require
         # a connection such as obtaining metadata (list_tables?, features_information, etc.)
         return if !context || !context.user
+
+        if @oauth_config.nil? || @oauth_config['client_id'].nil? || @oauth_config['client_secret'].nil?
+          raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
+        end
 
         @token = context.user.oauths.select(DATASOURCE_NAME)&.token
         raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?

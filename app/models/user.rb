@@ -1387,7 +1387,7 @@ class User < Sequel::Model
       when 'instagram'
         Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
       when 'bigquery'
-          Cartodb.config[:oauth][serv]['client_id'].present?
+          Cartodb.config[:oauth][serv]['client_id'].present? && Carto::Connector.provider_available?('bigquery', self)
       else
         true
       end

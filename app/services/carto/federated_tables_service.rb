@@ -33,6 +33,15 @@ module Carto
       ]
     end
 
+    def revoke_access_to_federated_server(federated_server_name:, db_role:)
+      @superuser_db_connection[
+        revoke_access_to_federated_server_query(
+          federated_server_name: federated_server_name,
+          db_role: db_role
+        )
+      ]
+    end
+
     def get_server(federated_server_name:)
       @user_db_connection[get_federated_server_query(federated_server_name: federated_server_name)].first
     end
@@ -179,6 +188,12 @@ module Carto
     def grant_access_to_federated_server_query(federated_server_name:, db_role:)
       %{
         SELECT CDB_Federated_Server_Grant_Access(server := '#{federated_server_name}', db_role := '#{db_role}'::name)
+      }.squish
+    end
+
+    def revoke_access_to_federated_server_query(federated_server_name:, db_role:)
+      %{
+        SELECT CDB_Federated_Server_Revoke_Access(server := '#{federated_server_name}', db_role := '#{db_role}'::name)
       }.squish
     end
 

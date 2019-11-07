@@ -79,6 +79,10 @@ module Carto
 
         def unregister_federated_server
           @service.unregister_server(federated_server_name: params[:federated_server_name])
+          @service.revoke_access_to_federated_server(
+            federated_server_name: params[:federated_server_name],
+            db_role: @api_key.db_role
+          )
           render_jsonp({}, 204)
         end
 

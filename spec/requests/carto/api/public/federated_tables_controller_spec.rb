@@ -84,6 +84,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 400 when payload is missing' do
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = {}
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
     it 'returns 401 when non authenticated user' do
       post_json api_v4_federated_servers_register_server_url, @payload_register_server do |response|
         expect(response.status).to eq(401)
@@ -96,14 +104,6 @@ describe Carto::Api::Public::FederatedTablesController do
       post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
         expect(response.status).to eq(403)
         api_key.destroy
-      end
-    end
-
-    it 'returns 422 when payload is missing' do
-      params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {}
-      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        expect(response.status).to eq(422)
       end
     end
   end
@@ -224,6 +224,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 400 when payload is missing' do
+      params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      payload_update_server = {}
+      put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
     it 'returns 401 when non authenticated user' do
       params_update_server = { federated_server_name: @federated_server_name }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
@@ -237,14 +245,6 @@ describe Carto::Api::Public::FederatedTablesController do
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(403)
         api_key.destroy
-      end
-    end
-
-    it 'returns 422 when payload is missing' do
-      params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
-      payload_update_server = {}
-      put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
-        expect(response.status).to eq(422)
       end
     end
   end
@@ -450,6 +450,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 400 when payload is missing' do
+      params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      payload = {}
+      post_json api_v4_federated_servers_register_table_url(params), payload do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
     it 'returns 401 when non authenticated user' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
@@ -463,15 +471,6 @@ describe Carto::Api::Public::FederatedTablesController do
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(403)
         api_key.destroy
-      end
-    end
-
-    it 'returns 422 when payload is missing' do
-      params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
-      payload = {}
-
-      post_json api_v4_federated_servers_register_table_url(params), payload do |response|
-        expect(response.status).to eq(422)
       end
     end
   end
@@ -621,6 +620,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 400 when payload is missing' do
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      payload_update_table = {}
+      put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
+        expect(response.status).to eq(400)
+      end
+    end
+
     it 'returns 401 when non authenticated user' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
@@ -634,14 +641,6 @@ describe Carto::Api::Public::FederatedTablesController do
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(403)
         api_key.destroy
-      end
-    end
-
-    it 'returns 422 when payload is missing' do
-      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
-      payload_update_table = {}
-      put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
-        expect(response.status).to eq(422)
       end
     end
   end

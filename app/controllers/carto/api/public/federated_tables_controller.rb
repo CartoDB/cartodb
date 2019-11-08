@@ -55,7 +55,7 @@ module Carto
           federated_server = @service.register_server(@federated_server_attributes)
           @service.grant_access_to_federated_server(
             federated_server_name: federated_server[:federated_server_name],
-            db_role: @api_key.db_role
+            db_role: @user.database_username
           )
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
           render_jsonp({}, 201)
@@ -81,7 +81,7 @@ module Carto
           @service.unregister_server(federated_server_name: params[:federated_server_name])
           @service.revoke_access_to_federated_server(
             federated_server_name: params[:federated_server_name],
-            db_role: @api_key.db_role
+            db_role: @user.database_username
           )
           render_jsonp({}, 204)
         end

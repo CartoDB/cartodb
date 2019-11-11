@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/importer/table_sampler'
 require_relative '../../../../spec/rspec_configuration.rb'
 

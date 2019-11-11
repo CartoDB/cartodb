@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module MinimalValidator
   class Validator
     def initialize

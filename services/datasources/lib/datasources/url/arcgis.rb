@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'json'
 require 'addressable/uri'
 require_relative '../base_direct_stream'

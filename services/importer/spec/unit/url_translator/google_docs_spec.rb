@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../lib/importer/url_translator/google_docs'
 
 include CartoDB::Importer2

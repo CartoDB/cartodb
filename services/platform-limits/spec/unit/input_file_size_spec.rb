@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../platform_limits'
 
 require_relative '../doubles/user'

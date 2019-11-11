@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'uri'
 require_relative './odbc'
 

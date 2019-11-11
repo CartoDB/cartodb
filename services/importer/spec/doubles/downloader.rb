@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../lib/importer/source_file'
 require 'tempfile'
 

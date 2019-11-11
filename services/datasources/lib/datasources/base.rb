@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoDB
   module Datasources
     class Base

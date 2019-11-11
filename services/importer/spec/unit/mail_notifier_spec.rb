@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'spec_helper_min'
 require_relative '../../lib/importer/mail_notifier'
 require_relative '../../../../spec/rspec_configuration.rb'

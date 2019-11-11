@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
 require 'email_address'

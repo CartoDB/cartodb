@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 require_relative '../../../services/table-geocoder/lib/exceptions'
 

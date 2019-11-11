@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../../services/datasources/lib/datasources/exceptions'
 require_relative './connector_runner'
 

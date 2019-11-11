@@ -1,4 +1,3 @@
-# coding: utf-8
 require_relative '../../models/map/presenter'
 
 class Admin::TablesController < Admin::AdminController

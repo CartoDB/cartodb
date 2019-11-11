@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carto/connector'
 require_relative 'exceptions'
 require_relative 'georeferencer'

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'carto/connector'
 require_relative '../../../../spec/spec_helper'
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'connector/fdw_support'
 require_relative 'connector/errors'
 require_relative 'connector/providers'

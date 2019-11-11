@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require_relative '../../../lib/cartodb/stats/editor_apis'
 
 class Api::ApplicationController < ApplicationController

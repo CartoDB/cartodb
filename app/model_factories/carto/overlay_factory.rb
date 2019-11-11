@@ -1,4 +1,3 @@
-# encoding: utf-8
 module Carto
   class OverlayFactory
     def self.build_default_overlays(user)

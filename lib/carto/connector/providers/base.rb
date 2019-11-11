@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Base class for Connector Providers
 #
 # This is an abstract class; concrete classes derived from this one

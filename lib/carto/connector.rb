@@ -77,6 +77,11 @@ module Carto
       false
     end
 
+    # Check availability for a user and provider
+    def check_availability!
+      Connector.check_availability!(@connector_context.user, @provider_name)
+    end
+
     # Limits for the user/provider
     def limits
       Connector.limits provider_name: @provider_name, user: @connector_context.user

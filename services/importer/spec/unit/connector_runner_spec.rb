@@ -73,9 +73,6 @@ describe CartoDB::Importer2::ConnectorRunner do
           Cartodb.with_config connectors: config do
             connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
             connector.run
-            puts ">"*60
-            puts @fake_log.to_s
-            puts ">"*60
             connector.success?.should be true
             connector.provider_name.should eq provider
           end

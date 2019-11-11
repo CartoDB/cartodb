@@ -53,7 +53,6 @@ export default {
   methods: {
     renderDialog () {
       const modalModel = ModalModel({
-        // create: createModalView => this.openDialog(createModalView),
         destroy: () => this.$emit('close')
       });
 
@@ -66,15 +65,8 @@ export default {
         this.$emit('deselectAll');
       });
 
-      const mapcapsData = window.mapcapsData;
-      const mapcapsCollection = new MapcapsCollection(mapcapsData, {
-        visDefinitionModel: visDefinitionModel
-      });
-
-
       const publishViewDialog = new PublishViewDialog({
         visDefinitionModel,
-        // mapcapsCollection,
         userModel: this.$cartoModels.user,
         el: this.$refs.injectionContent
       })
@@ -83,35 +75,6 @@ export default {
       return publishViewDialog;
     },
 
-    // openDialog (createModalView) {
-    //   const modalModel = {
-    //     destroy: () => {}
-    //   };
-
-    //   const modalView = createModalView(modalModel);
-    //   modalView.render();
-
-    //   this.$modal.show({
-    //     template: `
-    //     <Dialog @close="$emit('close')">
-    //       <div ref="dialogInjectionNode"></div>
-    //     </Dialog>`,
-    //     components: { Dialog },
-    //     mounted: function () {
-    //       // Replace injection node with Dialog
-    //       const reference = this.$refs.dialogInjectionNode;
-    //       const parentNode = reference.parentNode;
-    //       parentNode.replaceChild(modalView.el, reference);
-
-    //       // Hack to be able to close Share Modal
-    //       modalModel.destroy = () => {
-    //         this.$emit('close');
-    //       };
-    //     }
-    //   }, {}, { width: '100%', height: '100%' });
-
-    //   return modalModel;
-    // },
     close () {
       this.$emit('close')
     }

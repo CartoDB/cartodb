@@ -11,7 +11,11 @@
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
-    "tags": "tags"
+    "tags": "tags",
+    "type": {
+      "derived": "BUILDER",
+      "kuviz": "CARTOFRAMES"
+    }
   },
   "MapListHeader": {
     "name": "Name",

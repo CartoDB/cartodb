@@ -191,7 +191,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -220,10 +224,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_option" => '0',
-              "odbc_prefetch" => '0',
-              "odbc_no_ssps" => '0',
-              "odbc_can_handle_exp_pwd" => '0',
               "schema" => 'thedatabase',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -313,7 +313,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => '{the;server}',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -401,7 +405,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -430,10 +438,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_option" => '0',
-              "odbc_prefetch" => '0',
-              "odbc_no_ssps" => '0',
-              "odbc_can_handle_exp_pwd" => '0',
               "schema" => 'thedatabase',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -519,7 +523,11 @@ describe Carto::Connector do
                 'odbc_Driver' => 'MySQL',
                 'odbc_server' => 'theserver',
                 'odbc_database' => 'thedatabase',
-                'odbc_port' => '3306'
+                'odbc_port' => '3306',
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0'
               }
             }]
           }, {
@@ -548,10 +556,6 @@ describe Carto::Connector do
               server_name: server_name,
               schema_name: 'cdb_importer',
               options: {
-                "odbc_option" => '0',
-                "odbc_prefetch" => '0',
-                "odbc_no_ssps" => '0',
-                "odbc_can_handle_exp_pwd" => '0',
                 "schema" => 'thedatabase',
                 "table" => 'thetable',
                 "encoding" => 'theencoding',
@@ -648,7 +652,11 @@ describe Carto::Connector do
                 'odbc_Driver' => 'MySQL',
                 'odbc_server' => 'theserver',
                 'odbc_database' => 'thedatabase',
-                'odbc_port' => '3306'
+                'odbc_port' => '3306',
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0'
               }
             }]
           }, {
@@ -677,10 +685,6 @@ describe Carto::Connector do
               server_name: server_name,
               schema_name: 'cdb_importer',
               options: {
-                "odbc_option" => '0',
-                "odbc_prefetch" => '0',
-                "odbc_no_ssps" => '0',
-                "odbc_can_handle_exp_pwd" => '0',
                 "schema" => 'thedatabase',
                 "table" => 'thetable',
                 "encoding" => 'theencoding',
@@ -774,7 +778,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -938,7 +946,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'PostgreSQL Unicode',
               'odbc_Server' => 'theserver',
               'odbc_Port' => '5432',
-              'odbc_Database' => 'thedatabase'
+              'odbc_Database' => 'thedatabase',
+              "odbc_BoolsAsChar" => '0',
+              "odbc_ByteaAsLongVarBinary" => '1',
+              "odbc_MaxVarcharSize" => '256',
+              "odbc_SSLmode" => 'require'
             }
           }]
         }, {
@@ -968,10 +980,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_BoolsAsChar" => '0',
-              "odbc_ByteaAsLongVarBinary" => '1',
-              "odbc_MaxVarcharSize" => '256',
-              "odbc_SSLmode" => 'require',
               "schema" => 'public',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1092,7 +1100,8 @@ describe Carto::Connector do
               'odbc_Driver' => 'FreeTDS',
               'odbc_Server' => 'theserver',
               'odbc_Port' => '1433',
-              'odbc_Database' => 'thedatabase'
+              'odbc_Database' => 'thedatabase',
+              "odbc_AppicationIntent" => 'ReadOnly'
             }
           }]
         }, {
@@ -1122,7 +1131,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_AppicationIntent" => 'ReadOnly',
               "schema" => 'dbo',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1240,7 +1248,8 @@ describe Carto::Connector do
             options: {
               'odbc_Driver' => 'Hortonworks Hive ODBC Driver 64-bit',
               'odbc_HOST' => 'theserver',
-              'odbc_PORT' => '10000'
+              'odbc_PORT' => '10000',
+              "odbc_Schema" => 'default'
             }
           }]
         }, {
@@ -1270,7 +1279,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_Schema" => 'default',
               "schema" => 'default',
               "table" => 'thetable',
               "encoding" => 'theencoding',

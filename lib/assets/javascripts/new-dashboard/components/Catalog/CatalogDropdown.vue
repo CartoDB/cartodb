@@ -189,17 +189,13 @@ export default {
 
 .catalogDropdown {
   display: flex;
-  position: absolute;
   z-index: 2;
   flex-direction: column;
   width: 100%;
 
-  &__label {
-    margin-bottom: 16px;
-  }
-
   &__container {
-    position: absolute;
+    position: relative;
+    z-index: 2;
     top: 48px;
     width: calc(100% - 20px);
   }
@@ -307,7 +303,7 @@ export default {
   }
 
   &.is-height-limited {
-    max-height: 196px;
+    max-height: 392px;
     overflow-y: scroll;
   }
 }

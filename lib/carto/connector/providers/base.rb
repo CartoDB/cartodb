@@ -174,7 +174,7 @@ module Carto
       end
 
       def default_timeout
-        @connector_context.user.connector_configuration(provider_id).timeout
+        @connector_context.user.connector_configuration(provider_id)&.timeout
       end
     end
 

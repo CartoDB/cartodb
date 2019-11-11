@@ -28,7 +28,8 @@
         </button>
       </div>
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
-      <ul class="catalogDropdown__list"
+      <ul ref="catalogDropdownList"
+        class="catalogDropdown__list"
         :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
         <li
@@ -49,6 +50,7 @@
 
 <script>
 import CatalogDropdownItem from './CatalogDropdownItem';
+import PerfectScrollbar from 'perfect-scrollbar';
 
 export default {
   name: 'CatalogDropdown',
@@ -91,6 +93,16 @@ export default {
       isDisabled: this.disabled,
       error: ''
     };
+  },
+  updated () {
+    if (this.ps) {
+      this.ps.update();
+    } else {
+      this.ps = PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
+        wheelSpeed: 1,
+        minScrollbarLength: 20
+      });
+    }
   },
   computed: {
     filteredOptions () {
@@ -291,6 +303,7 @@ export default {
 
 .catalogDropdown__list {
   visibility: hidden;
+  position: relative;
   border: 1px solid $softblue;
   opacity: 0;
   background-color: $white;

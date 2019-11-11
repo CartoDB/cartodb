@@ -11,7 +11,7 @@ module Carto
     # https://dev.mysql.com/doc/connector-odbc/en/connector-odbc-configuration-connection-parameters.html
     #
     class MySqlProvider < OdbcProvider
-      metadata id: 'mysql', name: 'MySql'
+      metadata id: 'mysql', name: 'MySQL'
 
       fixed_odbc_attributes(
         Driver:   'MySQL',
@@ -27,7 +27,7 @@ module Carto
 
       private
 
-      server_attributes %I(Driver option prefetch no_spss can_handle_exp_pwd server port schema)
+      server_attributes %I(Driver option prefetch no_ssps can_handle_exp_pwd server port database schema)
       user_attributes %I(uid pwd)
 
       def non_connection_parameters

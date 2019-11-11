@@ -1,7 +1,7 @@
 <template>
   <div class="u-flex">
-    <div :class="`catalog__icon catalog__icon--${getCSSModifier(option)}`"></div>
-    <span>{{ option }}</span>
+    <div v-if="option" :class="`catalog__icon catalog__icon--${getCSSModifier(option)}`"></div>
+    <span>{{ text }}</span>
   </div>
 </template>
 
@@ -15,6 +15,11 @@ export default {
   },
   methods: {
     getCSSModifier
+  },
+  computed: {
+    text() {
+      return this.option || this.$t('CatalogDropdown.select')
+    }
   }
 };
 </script>

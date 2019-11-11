@@ -23,7 +23,9 @@
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
         <CatalogDropdownItem :option="searchFilter"/>
-        <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+        <button class="catalogDropdown__close" @click="reset">
+          <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
+        </button>
       </div>
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul class="catalogDropdown__list"
@@ -70,6 +72,10 @@ export default {
       type: Boolean,
       default: false
     },
+    searchDisabled: {
+      type: Boolean,
+      default: false
+    },
     limitHeight: {
       type: Boolean,
       default: false
@@ -101,7 +107,7 @@ export default {
       return this.error.length > 0;
     },
     showInput () {
-      return Object.keys(this.selected).length === 0;
+      return Object.keys(this.selected).length === 0 && !this.searchDisabled;
     }
   },
   methods: {

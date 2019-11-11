@@ -675,6 +675,7 @@
   },
   "CatalogDropdown" : {
     "placeholder": "Search...",
+    "select": "Select",
     "category": {
       "title": "Select a category",
       "placeholder": "Search...",

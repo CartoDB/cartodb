@@ -24,7 +24,17 @@ class TestConnectorContext < Carto::Connector::Context
     execute_results command
   end
 
+  def execute_as_superuser_with_timeout(command, timeout)
+    @executed_commands << [:superuser, command, @user.username]
+    execute_results command
+  end
+
   def execute(command)
+    @executed_commands << [:user, command, @user.username]
+    execute_results command
+  end
+
+  def execute_with_timeout(command, timeout)
     @executed_commands << [:user, command, @user.username]
     execute_results command
   end
@@ -43,7 +53,7 @@ class TestConnectorContext < Carto::Connector::Context
 end
 
 class FailingTestConnectorContext < TestConnectorContext
-  def execute(command)
+  def execute_with_timeout(command, timeout)
     if match_sql(command).first[:command] == :create_table_as_select
       raise "SQL EXECUTION ERROR"
     end

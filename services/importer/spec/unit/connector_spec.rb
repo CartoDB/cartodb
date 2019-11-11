@@ -1634,17 +1634,17 @@ describe Carto::Connector do
     end
   end
 
+  class PgProvider < Carto::Connector::PgFdwProvider
+    metadata id: 'pg', name: 'PostgreSQL FDW', public?: true
+  end
+
   describe 'Non odbc provider' do
     before(:each) do
-      Carto::Connector::PROVIDERS['pg'] = {
-        class: Carto::Connector::PgFdwProvider,
-        name:  'PostgreSQL FDW',
-        public: true
-      }
+      Carto::Connector::PROVIDERS << PgProvider
     end
 
     after(:each) do
-      Carto::Connector::PROVIDERS['pg'] = nil
+      Carto::Connector::PROVIDERS.delete PgProvider
     end
 
     it 'Executes expected odbc_fdw SQL commands to copy a table' do

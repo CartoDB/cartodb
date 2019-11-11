@@ -37,6 +37,7 @@ export default {
           { name: this.$t('QuickActions.manageTags'), event: 'manageTags' },
           { name: this.$t('QuickActions.changePrivacy'), event: 'changePrivacy', shouldBeDisabled: !this.canChangePrivacy },
           { name: this.$t('QuickActions.share'), event: 'shareVisualization', shouldBeHidden: !this.isUserInsideOrganization },
+          { name: this.$t('QuickActions.shareViaURL'), event: 'shareViaUrl', shouldBeHidden: !this.isKuviz },
           { name: this.$t('QuickActions.duplicate'), event: 'duplicateMap', shouldBeDisabled: !this.canDuplicate, shouldBeHidden: this.isKuviz },
           { name: this.$t('QuickActions.lock'), event: 'lockMap' },
           { name: this.$t('QuickActions.delete'), event: 'deleteMap', isDestructive: true }
@@ -138,6 +139,10 @@ export default {
     },
     shareVisualization () {
       DialogActions.shareVisualization.apply(this, [this.map, this.getActionHandlers()]);
+      this.closeDropdown();
+    },
+    shareViaUrl () {
+      DialogActions.shareViaUrl.apply(this, [this.map, this.getActionHandlers()]);
       this.closeDropdown();
     }
   }

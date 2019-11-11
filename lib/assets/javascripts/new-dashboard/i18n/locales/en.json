@@ -30,7 +30,8 @@
     "duplicate": "Duplicate",
     "lock": "Lock",
     "unlock": "Unlock",
-    "delete": "Delete"
+    "delete": "Delete",
+    "shareViaURL": "Share via URL"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -693,5 +694,12 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "Dialogs": {
+    "ShareViaURL": {
+      "map": "map",
+      "headerText": "Share current map via URL",
+      "close": "close"
+    }
   }
 }

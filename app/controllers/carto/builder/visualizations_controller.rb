@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 

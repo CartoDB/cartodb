@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../builder/builder_users_module'
 
 require_dependency 'carto/tracking/events'

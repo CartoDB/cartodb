@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_support/inflector'
 require 'carto/api/vizjson3_presenter'
 

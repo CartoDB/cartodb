@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/carto/styles/style'
 require_relative '../../lib/carto/styles/point'
 require_relative '../../lib/carto/styles/line'

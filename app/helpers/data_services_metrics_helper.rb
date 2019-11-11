@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../services/dataservices-metrics/lib/geocoder_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/isolines_usage_metrics'
 require_relative '../../services/dataservices-metrics/lib/routing_usage_metrics'

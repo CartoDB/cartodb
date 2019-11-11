@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'carto/connector'
 
 class Carto::ConnectorProvider < ActiveRecord::Base

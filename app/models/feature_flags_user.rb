@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 class FeatureFlagsUser < Sequel::Model
   include CartoDB::MiniSequel
 

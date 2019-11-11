@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../factories/pg_connection'
 require_relative '../../lib/abstract_table_geocoder'
 require_relative '../../../../spec/rspec_configuration.rb'

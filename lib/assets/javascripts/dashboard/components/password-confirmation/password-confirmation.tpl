@@ -13,7 +13,11 @@
 <div class="CDB-Text Dialog-body">
   <form id="password-confirmation-form" method="POST" class="Form-row Form-row--centered has-label">
     <div class="Form-rowLabel">
-      <label class="Form-label" for="password-confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
+      <% if (updatePassword) {%>
+        <label class="Form-label" for="password-confirmation"><%= _t('components.modals.password-confirmation.form.old-password-label') %></label>
+      <% } else { %>
+        <label class="Form-label" for="password-confirmation"><%= _t('components.modals.password-confirmation.form.password-label') %></label>
+      <% }%>
     </div>
     <div class="Form-rowData">
       <input type="password" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value="" autofocus/>

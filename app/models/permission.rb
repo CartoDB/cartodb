@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './permission/presenter'
 require_relative './visualization/member'
 require_relative 'shared_entity'

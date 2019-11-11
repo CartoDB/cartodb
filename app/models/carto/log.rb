@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Carto::Log < ActiveRecord::Base
 
   has_one :data_import, class_name: Carto::DataImport, foreign_key: :logger

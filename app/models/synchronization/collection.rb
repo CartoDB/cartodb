@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'set'
 require_relative './member'
 require_relative '../../../services/data-repository/structures/collection'

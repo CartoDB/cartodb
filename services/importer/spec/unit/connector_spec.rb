@@ -124,12 +124,12 @@ describe Carto::Connector do
   it "Should list providers available for a user with default configuration" do
     default_config = { 'mysql' => { 'enabled' => true }, 'postgres' => { 'enabled' => false } }
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(user: @user).should eq(
-        "postgres"  => { name: "PostgreSQL", enabled: false, description: nil },
-        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+      Carto::Connector.providers(user: @user).should == {
+        "postgres"  => { name: "PostgreSQL",           enabled: false, description: nil },
+        "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive", enabled: false, description: nil }
-      )
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+      }
     end
   end
 
@@ -142,12 +142,12 @@ describe Carto::Connector do
       enabled: true
     )
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(user: @user).should eq(
-        "postgres"  => { name: "PostgreSQL", enabled: true, description: nil },
-        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+      Carto::Connector.providers(user: @user).should == {
+        "postgres"  => { name: "PostgreSQL",           enabled: true, description: nil },
+        "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive", enabled: false, description: nil }
-      )
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+      }
     end
     user_config.destroy
   end
@@ -754,7 +754,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       tables = connector.list_tables
 
-      tables.should eq [{ schema: 'abc', name: 'xyz' }]
+      tables.should == [{ schema: 'abc', name: 'xyz' }]
 
       @executed_commands.size.should eq 7
 
@@ -873,7 +873,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('mysql').should eq(
+      Carto::Connector.information('mysql').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -895,7 +895,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1026,7 +1026,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('postgres').should eq(
+      Carto::Connector.information('postgres').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1049,7 +1049,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1177,7 +1177,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('sqlserver').should eq(
+      Carto::Connector.information('sqlserver').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1199,7 +1199,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1325,7 +1325,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('hive').should eq(
+      Carto::Connector.information('hive').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1347,7 +1347,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1897,7 +1897,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('pg').should eq(
+      Carto::Connector.information('pg').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1913,7 +1913,7 @@ describe Carto::Connector do
           'port'       => { required: false },
           'database'   => { required: true  }
         }
-      )
+      }
     end
   end
 end

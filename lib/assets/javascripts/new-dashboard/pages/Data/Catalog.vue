@@ -20,6 +20,7 @@
           :placeholder="$t('CatalogDropdown.category.placeholder')"
           :options="categories"
           :disabled="true"
+          :limitHeight="true"
           :searchDisabled="true"
           @selected="getCountries"
           @reset="resetCategory">

@@ -30,7 +30,7 @@
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul ref="catalogDropdownList"
         class="catalogDropdown__list"
-        :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
+        :class="{'is-open ps-container': isOpen, 'is-height-limited': limitHeight}"
         @mouseleave="resetActiveOption">
         <li
           v-for="(option, index) in filteredOptions" :key="option"
@@ -94,16 +94,6 @@ export default {
       error: ''
     };
   },
-  updated () {
-    if (this.ps) {
-      this.ps.update();
-    } else {
-      this.ps = PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
-        wheelSpeed: 1,
-        minScrollbarLength: 20
-      });
-    }
-  },
   computed: {
     filteredOptions () {
       const filtered = [];
@@ -122,12 +112,17 @@ export default {
       return Object.keys(this.selected).length === 0 && !this.searchDisabled;
     }
   },
+  mounted() {
+    PerfectScrollbar.initialize(this.$refs.catalogDropdownList);
+  },
   methods: {
     openDropdown () {
       this.isOpen = true;
+      PerfectScrollbar.update(this.$refs.catalogDropdownList);
     },
     closeDropdown () {
       this.isOpen = false;
+      PerfectScrollbar.update(this.$refs.catalogDropdownList);
     },
     disableDropdown () {
       this.isDisabled = true;
@@ -317,7 +312,6 @@ export default {
 
   &.is-height-limited {
     max-height: 392px;
-    overflow-y: scroll;
   }
 }
 

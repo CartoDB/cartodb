@@ -149,12 +149,6 @@ export default {
         allSections[section] = true;
         return allSections;
       }, {});
-    },
-    isBuilderMap () {
-      return this.$props.visualization.type === 'derived';
-    },
-    isKuviz () {
-      return this.$props.visualization.type === 'kuviz';
     }
   },
   methods: {

@@ -12,10 +12,10 @@
 
     <div class="viz-column--main-info">
       <div class="cell cell--thumbnail cell--first">
-        <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
-          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+        <div class="cell__media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored }">
+          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
 
-          <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+          <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
         </div>
 
         <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -156,6 +156,15 @@ export default {
     border-radius: 2px;
     background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
     background-size: cover;
+
+    &.is-kuviz {
+      display: block;
+      background: url($assetsDir + '/images/layout/kuviz-map-squared-bkg.png');
+
+      .card-type {
+        color: $card-cf__color;
+      }
+    }
 
     &.has-error {
       .MapCard-error {

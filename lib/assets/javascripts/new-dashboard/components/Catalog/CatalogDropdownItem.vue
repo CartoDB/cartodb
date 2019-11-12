@@ -37,24 +37,14 @@ export default {
 @media (max-width: $layout-mobile) {
   .catalogDropdownItem {
     align-items: center;
-    font-size: 12px;
     line-height: 1;
-
-    .catalog__icon {
-      width: 14px;
-    }
   }
 }
 
 @media (max-width: $layout-tablet) {
   .catalogDropdownItem {
     align-items: center;
-    font-size: 12px;
     line-height: 1;
-
-    .catalog__icon {
-      width: 14px;
-    }
   }
 }
 </style>

@@ -83,10 +83,10 @@ module Carto
           vqb.with_prefetch_dependent_visualizations if with_dependent_visualizations > 0
 
         else
-          # TODO: ok, this looks like business logic, refactor
-          subdomain = CartoDB.extract_subdomain(request)
-          vqb.with_user_id(Carto::User.where(username: subdomain).first.id)
-              .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
+          user = Carto::User.where(username: CartoDB.extract_subdomain(request)).first
+          raise Carto::ParamInvalidError.new(:username) unless user.present?
+          vqb.with_user_id(user.id)
+             .with_privacy(Carto::Visualization::PRIVACY_PUBLIC)
         end
 
         if pattern.present?

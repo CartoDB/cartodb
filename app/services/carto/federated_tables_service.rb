@@ -30,7 +30,7 @@ module Carto
           federated_server_name: federated_server_name,
           db_role: db_role
         )
-      ]
+      ].all
     end
 
     def get_server(federated_server_name:)
@@ -55,7 +55,7 @@ module Carto
           federated_server_name: federated_server_name,
           db_role: db_role
         )
-      ]
+      ].all
     end
 
     # Remote Schemas

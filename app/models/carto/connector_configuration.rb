@@ -64,7 +64,7 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
     end
   end
 
-  # default statement timeout in ms used for importss
+  # default statement timeout in ms used for imports
   DEFAULT_CONNECTOR_TIMEOUT = 1.hour * 1000
   # FIXME: should we unify with DataImport::DIRECT_STATEMENT_TIMEOUT
   # and CartoDB::Synchronization::Adapter::STATEMENT_TIMEOUT ?

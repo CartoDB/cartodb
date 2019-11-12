@@ -10,8 +10,10 @@ Development
 ### Bug fixes / enhancements
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
 - Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
-- Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
-- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
+- Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758))
+- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224))
+- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224))
+- Fix wording for feedback (Suggested by Flo via Slack)
 
 4.30.0 (2019-10-18)
 -------------------

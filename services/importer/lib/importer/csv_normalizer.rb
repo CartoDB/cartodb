@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'csv'
 require 'charlock_holmes'
 require 'tempfile'

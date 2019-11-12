@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'csv'
 require 'open3'
 require_relative './job'

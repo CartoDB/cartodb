@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../../../lib/resque/user_jobs'
 
 module CartoDB

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoGearsApi
   module Queue
     # Used by the API, not meant to be used directly.

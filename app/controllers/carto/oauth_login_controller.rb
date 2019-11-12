@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_dependency 'carto/oauth/github/api'
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/api'

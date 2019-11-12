@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'mock_redis'
 require 'active_support/time'
 require_relative '../spec_helper'

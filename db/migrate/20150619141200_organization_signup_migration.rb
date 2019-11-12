@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Sequel.migration do
 
   up do

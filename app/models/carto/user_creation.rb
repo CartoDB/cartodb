@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'cartodb-common'
 require_dependency 'carto/user_authenticator'
 

@@ -1,5 +1,3 @@
-# encoding utf-8
-
 class Carto::Api::AssetPresenter
   def initialize(asset)
     @asset = asset

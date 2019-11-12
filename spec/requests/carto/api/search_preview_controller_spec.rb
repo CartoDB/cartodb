@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper_min'
 require_relative '../../../../app/controllers/carto/api/search_preview_controller'
 require 'support/helpers'

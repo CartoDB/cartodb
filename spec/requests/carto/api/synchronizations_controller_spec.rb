@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'sequel'
 require 'rack/test'
 require_relative '../../../spec_helper'

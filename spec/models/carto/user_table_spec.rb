@@ -1,4 +1,3 @@
-# coding: UTF-8
 require_relative '../../spec_helper_min'
 require 'models/user_table_shared_examples'
 

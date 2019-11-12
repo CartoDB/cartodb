@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../spec_helper'
 require_relative '../helpers/file_server_helper'
 require_relative 'data_import_shared_examples'

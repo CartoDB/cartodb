@@ -51,6 +51,7 @@ module Carto
     # Availabillity check: checks general availability for user,
     # and specific provider availability if provider_name is not nil
     def self.check_availability!(user, provider_name=nil)
+      return false if user.nil?
       # check general availability
       unless user.has_feature_flag?('carto-connectors')
         raise ConnectorsDisabledError.new(user: user)

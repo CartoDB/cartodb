@@ -1,5 +1,5 @@
 <template>
-  <div class="u-flex">
+  <div class="catalogDropdownItem u-flex">
     <div v-if="option" :class="`catalog__icon catalog__icon--${getCSSModifier(option)}`"></div>
     <span>{{ text }}</span>
   </div>
@@ -25,11 +25,36 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import 'new-dashboard/styles/variables';
 
 .catalog__icon {
   width: 24px;
   height: 24px;
   margin-right: 12px;
   background-size: contain;
+}
+
+@media (max-width: $layout-mobile) {
+  .catalogDropdownItem {
+    align-items: center;
+    font-size: 12px;
+    line-height: 1;
+
+    .catalog__icon {
+      width: 14px;
+    }
+  }
+}
+
+@media (max-width: $layout-tablet) {
+  .catalogDropdownItem {
+    align-items: center;
+    font-size: 12px;
+    line-height: 1;
+
+    .catalog__icon {
+      width: 14px;
+    }
+  }
 }
 </style>

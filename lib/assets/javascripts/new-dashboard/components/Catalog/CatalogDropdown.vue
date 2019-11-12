@@ -115,6 +115,9 @@ export default {
   mounted() {
     PerfectScrollbar.initialize(this.$refs.catalogDropdownList);
   },
+  beforeDestroy() {
+    PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
+  },
   methods: {
     openDropdown () {
       this.isOpen = true;
@@ -349,6 +352,22 @@ export default {
 
   &--text {
     color: $neutral--600;
+  }
+}
+
+@media (max-width: $layout-mobile) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: 154px;
+    }
+  }
+}
+
+@media (max-height: $layout-tablet) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: 154px;
+    }
   }
 }
 </style>

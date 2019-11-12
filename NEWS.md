@@ -11,6 +11,7 @@ Development
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
 - Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 - Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
+- Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
 
 4.30.0 (2019-10-18)
 -------------------

@@ -5,8 +5,7 @@ module Carto
 
       ssl_required
 
-      before_filter :x_frame_options_allow, only: [:show, :show_protected]
-
+      before_action :x_frame_options_allow, only: [:show, :show_protected]
       before_action :get_kuviz
 
       skip_before_filter :verify_authenticity_token, only: [:show_protected]

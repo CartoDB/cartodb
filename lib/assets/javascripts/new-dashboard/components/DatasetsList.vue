@@ -41,7 +41,7 @@
           </SettingsDropdown>
         </template>
 
-        <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedDatasets.length">
+        <template slot="actionButton" v-if="showCreateButton">
           <CreateButton visualizationType="dataset" :disabled="!canCreateDatasets">
             {{ $t(`DataPage.createDataset`) }}
           </CreateButton>
@@ -183,6 +183,9 @@ export default {
     },
     shouldShowHeader () {
       return !this.emptyState && !this.initialState;
+    },
+    showCreateButton () {
+      return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !this.selectedDatasets.length;
     },
     initialState () {
       return this.isFirstTimeViewingDashboard &&

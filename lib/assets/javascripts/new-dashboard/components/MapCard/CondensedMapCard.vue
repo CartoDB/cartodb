@@ -164,7 +164,7 @@ export default {
 
     &.is-kuviz {
       display: block;
-      background: url($assetsDir + '/images/layout/kuviz-map-squared-bkg.png');
+      background: url($assetsDir + '/images/layout/kuviz-map-squared-bkg.svg');
 
       .badge {
         color: $badge-cf__color;

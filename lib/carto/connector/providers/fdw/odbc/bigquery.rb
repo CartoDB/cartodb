@@ -102,7 +102,7 @@ module Carto
       end
 
       required_parameters %I(project table)
-      optional_parameters %I(dataset sql_query)
+      optional_parameters %I(import_as dataset sql_query)
 
       def remote_schema_name
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA

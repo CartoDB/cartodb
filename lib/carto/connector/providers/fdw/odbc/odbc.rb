@@ -48,7 +48,7 @@ module Carto
       end
 
       required_parameters %I(table connection)
-      optional_parameters %I(schema sql_query sql_count encoding columns)
+      optional_parameters %I(import_as schema sql_query sql_count encoding columns)
 
       # ODBC attributes for (non-connection) parameters: { name: :internal_name }#
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
@@ -81,7 +81,7 @@ module Carto
       end
 
       def table_name
-        @params[:table]
+        @params[:import_as] || @params[:table]
       end
 
       def foreign_table_name_for(server_name, name = nil)

@@ -16,7 +16,7 @@
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <span class="card-type title is-xsmall is-semibold">{{ $t(`MapCard.type.${visualization.type}`) }}</span>
+      <span class="title is-xsmall is-semibold badge">{{ $t(`MapCard.type.${visualization.type}`) }}</span>
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -259,13 +259,13 @@ export default {
   color: $text__color;
 }
 
-.card-type {
+.badge {
   position: absolute;
   bottom: 12px;
   left: 12px;
-  padding: 6px 8px;
+  padding: 7px 8px 5px;
   border-radius: 2px;
-  border-color: $card__border-color;
+  border-color: $badge__border-color;
   background: $white;
   text-transform: uppercase;
 }
@@ -282,8 +282,8 @@ export default {
     display: block;
     background: url($assetsDir + '/images/layout/kuviz-map-bkg.png');
 
-    .card-type {
-      color: $card-cf__color;
+    .badge {
+      color: $badge-cf__color;
     }
   }
 

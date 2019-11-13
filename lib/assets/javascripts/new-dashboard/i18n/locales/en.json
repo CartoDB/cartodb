@@ -22,7 +22,8 @@
     "lastModified": "Last Modified",
     "views": "Views (30d)",
     "usage": "Usage",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "type": "Type"
   },
   "QuickActions": {
     "title": "Quick actions",

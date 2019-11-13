@@ -62,16 +62,19 @@
     </div>
 
     <div class="viz-column--extra-info">
-      <div class="viz-column--status">
+      <div class="viz-column--statusL">
+        <div class="cell cell--medium u-p--0">
+          <span class="title is-xsmall is-txtSoftGrey is-semibold badge">{{ $t(`MapCard.type.${visualization.type}`) }}</span>
+        </div>
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--large u-txt-right u-p--0 ">
+        <div class="cell cell--xsmall u-txt-right u-p--0 ">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
 
-      <div class="viz-column--share">
+      <div class="viz-column--shareS">
         <div class="cell cell--small">
           <p class="text is-small is-txtSoftGrey">
             {{ $t(`MapCard.shared.${visualization.privacy}`) }}
@@ -161,8 +164,8 @@ export default {
       display: block;
       background: url($assetsDir + '/images/layout/kuviz-map-squared-bkg.png');
 
-      .card-type {
-        color: $card-cf__color;
+      .badge {
+        color: $badge-cf__color;
       }
     }
 
@@ -329,6 +332,13 @@ export default {
         margin-right: 0.2em;
       }
     }
+  }
+
+  .badge {
+    padding: 7px 8px 5px;
+    border-radius: 2px;
+    background-color: $badge__bg;
+    text-transform: uppercase;
   }
 }
 </style>

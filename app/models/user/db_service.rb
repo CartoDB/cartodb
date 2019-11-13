@@ -1047,6 +1047,8 @@ module CartoDB
       end
 
       def get_drop_functions_sql(database, schema_name, aggregated: false)
+        set_pgversion
+
         if @pgversion >= 110000
           agg_join_clause = "pg_proc.prokind #{aggregated ? ' = ' : ' <> '} 'a'"
         else

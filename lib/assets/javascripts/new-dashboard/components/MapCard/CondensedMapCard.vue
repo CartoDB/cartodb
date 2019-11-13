@@ -64,7 +64,7 @@
     <div class="viz-column--extra-info">
       <div class="viz-column--statusL">
         <div class="cell cell--medium u-p--0">
-          <span class="title is-xsmall is-txtSoftGrey is-semibold badge">{{ $t(`MapCard.type.${visualization.type}`) }}</span>
+          <TypeBadge :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="true" />
         </div>
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
@@ -97,6 +97,7 @@ import data from './shared/data';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import SharedBrief from 'new-dashboard/components/SharedBrief';
+import TypeBadge from './TypeBadge';
 import methods from './shared/methods';
 import props from './shared/props';
 
@@ -105,7 +106,8 @@ export default {
   components: {
     MapQuickActions,
     FeaturesDropdown,
-    SharedBrief
+    SharedBrief,
+    TypeBadge
   },
   props,
   data () {
@@ -332,13 +334,6 @@ export default {
         margin-right: 0.2em;
       }
     }
-  }
-
-  .badge {
-    padding: 7px 8px 5px;
-    border-radius: 2px;
-    background-color: $badge__bg;
-    text-transform: uppercase;
   }
 }
 </style>

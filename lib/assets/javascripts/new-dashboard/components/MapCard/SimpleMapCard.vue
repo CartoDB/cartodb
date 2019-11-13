@@ -16,7 +16,7 @@
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <span class="title is-xsmall is-semibold badge">{{ $t(`MapCard.type.${visualization.type}`) }}</span>
+      <TypeBadge v-if="isBuilderMap || isKuviz" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
@@ -101,6 +101,7 @@
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
+import TypeBadge from './TypeBadge';
 import props from './shared/props';
 import methods from './shared/methods';
 import data from './shared/data';
@@ -111,7 +112,8 @@ export default {
   components: {
     MapQuickActions,
     DatasetQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    TypeBadge
   },
   props: {
     ...props,
@@ -259,15 +261,10 @@ export default {
   color: $text__color;
 }
 
-.badge {
+.card-badge {
   position: absolute;
   bottom: 12px;
   left: 12px;
-  padding: 7px 8px 5px;
-  border-radius: 2px;
-  border-color: $badge__border-color;
-  background: $white;
-  text-transform: uppercase;
 }
 
 .card-media {
@@ -281,10 +278,6 @@ export default {
   &.is-kuviz {
     display: block;
     background: url($assetsDir + '/images/layout/kuviz-map-bkg.png');
-
-    .badge {
-      color: $badge-cf__color;
-    }
   }
 
   img {

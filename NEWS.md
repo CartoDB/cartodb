@@ -2,7 +2,11 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+* This release upgrades the CartoDB PostgreSQL extension to `0.32.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
@@ -12,6 +16,7 @@ Development
 - Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 - Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
 - Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
+- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
 
 4.30.0 (2019-10-18)
 -------------------

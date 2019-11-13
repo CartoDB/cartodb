@@ -53,6 +53,7 @@ sudo make install
   * (a) - Add kuviz to visualizations request (maps) ([#15192](https://github.com/CartoDB/cartodb/issues/15192))
   * (b) - Quick actions ([#15174](https://github.com/CartoDB/cartodb/issues/15174))
   * (c) - Bulk actions ([#15173](https://github.com/CartoDB/cartodb/issues/15173))
+  * (d) - Dropdown filter ([#15175](https://github.com/CartoDB/cartodb/issues/15175))
   * (e) - Custom kuviz card ([#15193](https://github.com/CartoDB/cartodb/issues/15193))
 
 

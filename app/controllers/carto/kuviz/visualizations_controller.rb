@@ -1,3 +1,5 @@
+require_dependency 'carto/helpers/frame_options_helper'
+
 module Carto
   module Kuviz
     class VisualizationsController < ApplicationController

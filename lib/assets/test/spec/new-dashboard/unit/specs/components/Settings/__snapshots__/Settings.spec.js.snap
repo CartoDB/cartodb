@@ -36,6 +36,7 @@ exports[`Settings.vue should open dropdown when clicking toggle 1`] = `
               SettingsDropdown.types.passwordPrivacy
             </a></div>
         </li>
+        <!---->
       </ul>
     </div>
   </div>
@@ -78,6 +79,7 @@ exports[`Settings.vue should render correct contents based on filter and order 1
               SettingsDropdown.types.passwordPrivacy
             </a></div>
         </li>
+        <!---->
       </ul>
     </div>
   </div>

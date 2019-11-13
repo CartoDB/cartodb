@@ -92,14 +92,21 @@ export default {
   computed: {
     maxItemsScroll () {
       const PAGE_HEIGHT = window.innerHeight;
+      const SMALL_HEIGHT = 680;
+      const MEDIUM_HEIGHT = 850;
+      const HEIGHT_SMALL_MAX_ITEMS = 3;
+      const HEIGHT_MEDIUM_MAX_ITEMS = 5;
+      const HEIGHT_DEFAULT_MAX_ITEMS = 8;
 
-      if (PAGE_HEIGHT > 800) {
-        return 8;
+      if (PAGE_HEIGHT < SMALL_HEIGHT ) {
+        return HEIGHT_SMALL_MAX_ITEMS;
       }
 
-      if (PAGE_HEIGHT < 600 ) {
-        return 3;
+      if (PAGE_HEIGHT < MEDIUM_HEIGHT) {
+        return HEIGHT_MEDIUM_MAX_ITEMS;
       }
+
+      return HEIGHT_DEFAULT_MAX_ITEMS;
     },
     filteredOptions () {
       const filtered = [];
@@ -120,8 +127,8 @@ export default {
       return this.error.length > 0;
     },
     showInput () {
-      return Object.keys(this.selected).length === 0 &&
-        this.isOpen &&
+      return this.isOpen &&
+        Object.keys(this.selected).length === 0 &&
         this.filteredOptions.length > this.maxItemsScroll;
     }
   },
@@ -215,6 +222,11 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .catalogDropdown {
+  --default-height-items: 8;
+  --medium-height-items: 5;
+  --small-height-items: 3;
+  --catalog-dropdown-item-height: 50px;
+
   display: flex;
   z-index: $z-index__dropdown;
   flex-direction: column;
@@ -340,10 +352,6 @@ export default {
     opacity: 1;
     pointer-events: auto;
   }
-
-  &.is-height-limited {
-    max-height: 392px;
-  }
 }
 
 .catalogDropdown__option {
@@ -383,18 +391,26 @@ export default {
   }
 }
 
-@media (max-width: $layout-mobile) {
+@media (max-height: 680px) {
   .catalogDropdown__list {
     &.is-height-limited {
-      max-height: 154px;
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--small-height-items));
     }
   }
 }
 
-@media (max-height: $layout-tablet) {
+@media (min-height: 681px) and (max-height: 850px) {
   .catalogDropdown__list {
     &.is-height-limited {
-      max-height: 154px;
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--medium-height-items));
+    }
+  }
+}
+
+@media (min-height: 851px) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--default-height-items));
     }
   }
 }

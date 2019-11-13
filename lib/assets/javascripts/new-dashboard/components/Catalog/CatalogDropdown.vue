@@ -16,19 +16,16 @@
           @click="openDropdown"
           @keyup.enter="onKeyEnter"
           :disabled="isDisabled || hasError">
-        <button class="catalogDropdown__close" @click="reset">
-          <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
-        </button>
       </div>
       <div v-else
         class="text is-caption catalogDropdown__input"
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
         <CatalogDropdownItem :option="searchFilter"/>
-        <button class="catalogDropdown__close" @click="reset">
+      </div>
+      <button class="catalogDropdown__close" @click="reset">
         <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
       </button>
-      </div>
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul ref="catalogDropdownList"
         class="catalogDropdown__list"
@@ -93,6 +90,17 @@ export default {
     };
   },
   computed: {
+    maxItemsScroll () {
+      const PAGE_HEIGHT = window.innerHeight;
+
+      if (PAGE_HEIGHT > 800) {
+        return 8;
+      }
+
+      if (PAGE_HEIGHT < 600 ) {
+        return 3;
+      }
+    },
     filteredOptions () {
       const filtered = [];
       const regOption = new RegExp(this.searchFilter, 'ig');
@@ -112,7 +120,9 @@ export default {
       return this.error.length > 0;
     },
     showInput () {
-      return Object.keys(this.selected).length === 0 && this.isOpen;
+      return Object.keys(this.selected).length === 0 &&
+        this.isOpen &&
+        this.filteredOptions.length > this.maxItemsScroll;
     }
   },
   mounted() {
@@ -123,7 +133,7 @@ export default {
   },
   methods: {
     openDropdown () {
-      if (!this.isOpen) {
+      if (!this.isOpen && !this.isDisabled) {
         this.isOpen = true;
         this.$refs.catalogDropdownList.scrollTop = 1;
         PerfectScrollbar.update(this.$refs.catalogDropdownList);
@@ -132,7 +142,6 @@ export default {
     closeDropdown () {
       if (this.isOpen) {
         this.isOpen = false;
-        this.$refs.catalogDropdownList.scrollTop = 1;
         PerfectScrollbar.update(this.$refs.catalogDropdownList);
       }
     },
@@ -228,14 +237,6 @@ export default {
     &.has-error {
       border: 1px solid $warning__border-color;
     }
-
-    &:hover {
-      cursor: pointer;
-
-      .catalogDropdown__close {
-        display: block;
-      }
-    }
   }
 
   &__error {
@@ -261,7 +262,7 @@ export default {
   }
 
   &__close {
-    display: none;
+    display: block;
     position: absolute;
     top: 18px;
     right: 24px;
@@ -270,9 +271,9 @@ export default {
   &.is-disabled {
     opacity: 0.24;
 
-    // .catalogDropdown__close {
-    //   display: none;
-    // }
+    .catalogDropdown__close {
+      display: none;
+    }
   }
 
   &.is-open {
@@ -301,8 +302,27 @@ export default {
   }
 
   &:not(.is-open) {
-    .catalogDropdown__input:hover {
-      border-color: $text__color;
+    .catalogDropdown__close {
+      display: none;
+    }
+
+    .catalogDropdown__list, 
+    .catalogDropdown__extra {
+      display: none;
+    }
+
+    &:hover {
+      &:not(.is-disabled) {
+        cursor: pointer;
+        
+        .catalogDropdown__close {
+          display: block;
+        }
+
+        .catalogDropdown__input:hover {
+          border-color: $text__color;
+        }
+      }
     }
   }
 }

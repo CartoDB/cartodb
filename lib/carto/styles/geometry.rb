@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './point'
 require_relative './line'
 require_relative './polygon'

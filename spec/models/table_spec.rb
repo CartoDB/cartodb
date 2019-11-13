@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # NOTE that these tests are very sensitive to precisce versions of GDAL (1.9.0)
 # 747 # Table post import processing tests should add a point the_geom column after importing a CSV
 # 1210 # Table merging two+ tables should import and then export file twitters.csv

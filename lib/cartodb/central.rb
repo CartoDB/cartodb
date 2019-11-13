@@ -1,6 +1,5 @@
 require_relative '../carto/http/client'
 
-# encoding: utf-8
 module Cartodb
   class Central
 

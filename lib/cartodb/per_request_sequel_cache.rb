@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 module PerRequestSequelCache
 
   def self.set(key, obj, ttl)

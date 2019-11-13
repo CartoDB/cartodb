@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
   respond_to :json
 

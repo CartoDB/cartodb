@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../lib/carto/email_domain_validator.rb'
 
 module Carto

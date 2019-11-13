@@ -1,5 +1,3 @@
-# coding: utf-8
-
 module LoginHelper
 
   DEFAULT_BACKGROUND_COLOR = "#F9F9F9".freeze

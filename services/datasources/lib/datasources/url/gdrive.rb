@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'signet/oauth_2/client'
 require 'google/apis/drive_v2'
 require_relative '../../../../../lib/carto/http/client'

@@ -31,7 +31,6 @@ module Carto
 
     def generate_indices
       auto_indices(valid: false).each do |idx|
-        CartoDB::Logger.debug(message: 'Auto index', action: 'drop invalid', table: @user_table, column: idx[:column])
         @table.drop_index(idx[:column], AUTO_INDEX_PREFIX, concurrent: true)
       end
 
@@ -41,7 +40,6 @@ module Carto
       indexed_columns = valid_indices.map { |i| i[:column] }
       create_index_on = columns_to_index - indexed_columns
       create_index_on.each do |col|
-        CartoDB::Logger.debug(message: 'Auto index', action: 'create', table: @user_table, column: col)
         @table.create_index(col, AUTO_INDEX_PREFIX, concurrent: true)
       end
 

@@ -66,7 +66,10 @@
     <div
         v-if="shouldShowHeader"
         class="grid-cell grid-cell--noMargin grid-cell--col12 grid__head--sticky"
-        :class="{ 'is-user-notification': isNotificationVisible }">
+        :class="{
+          'has-user-notification': isNotificationVisible,
+          'in-home': isInHomePage,
+        }">
 
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
     </div>
@@ -179,7 +182,7 @@ export default {
       return Object.keys(this.datasets).length === this.selectedDatasets.length;
     },
     shouldShowHeader () {
-      return !this.emptyState && !this.initialState && this.currentEntriesCount > 0;
+      return !this.emptyState && !this.initialState;
     },
     showCreateButton () {
       return (this.totalUserEntries || !this.isFirstTimeViewingDashboard) && !this.selectedDatasets.length;
@@ -215,6 +218,9 @@ export default {
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];
+    },
+    isInHomePage () {
+      return this.$router.currentRoute.name === 'home';
     }
   },
   methods: {
@@ -283,11 +289,19 @@ export default {
 }
 
 .grid__head--sticky {
-  top: 128px;
-}
+  top: $header__height + $subheader__height;
 
-.grid__head--sticky.is-user-notification {
-  top: 128px + $notification-warning__height;
+  &.in-home {
+    top: $header__height;
+  }
+
+  &.has-user-notification {
+    top: $header__height + $subheader__height + $notification-warning__height;
+
+    &.in-home {
+      top: $header__height + $notification-warning__height;
+    }
+  }
 }
 
 .pagination-element {

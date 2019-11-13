@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'yaml'
 require 'resque'
 require_relative '../../../../app/models/log'

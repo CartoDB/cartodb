@@ -1,4 +1,3 @@
-# encoding: utf-8
 # This file provides a minimal Rails integration test environment with an empty database, without users.
 require 'simplecov_helper'
 require 'rspec_configuration'

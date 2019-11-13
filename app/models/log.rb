@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoDB
   # Motivation: Logs usually are quite small, but in some scenarios, or due to encoding errors, parsing errors, etc.
   # they can grow and even end with 1 line per source row. Thus the need of having a log that hits as less as possible

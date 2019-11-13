@@ -1,4 +1,3 @@
-# coding: UTF-8
 # Proxies management of a table in the users database
 require 'forwardable'
 

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './ogr2ogr'
 require_relative './exceptions'
 require_relative './format_linter'

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'file_system/sanitize'
 
 module Carto

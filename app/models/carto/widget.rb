@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative './carto_json_serializer'
 
 class Carto::Widget < ActiveRecord::Base

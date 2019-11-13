@@ -6,6 +6,8 @@ require_dependency 'carto/oauth_provider/token_presenter'
 
 module Carto
   class OauthProviderController < ApplicationController
+    include Carto::FrameOptionsHelper
+
     GRANT_STRATEGIES = {
       'authorization_code' => OauthProvider::GrantStrategies::AuthorizationCodeStrategy,
       'refresh_token' => OauthProvider::GrantStrategies::RefreshTokenStrategy
@@ -28,7 +30,7 @@ module Carto
     skip_before_action :ensure_org_url_if_org_user
     skip_before_action :verify_authenticity_token, only: [:token]
 
-    before_action :allow_silent_flow_iframe, only: :consent, if: :silent_flow?
+    before_action :x_frame_options_allow, only: :consent, if: :silent_flow?
     before_action :set_redirection_error_handling, only: [:consent, :authorize]
     before_action :ensure_required_token_params, only: [:token]
     before_action :load_oauth_app, :verify_redirect_uri
@@ -207,10 +209,6 @@ module Carto
 
     def response_strategy
       RESPONSE_STRATEGIES[params[:response_type]]
-    end
-
-    def allow_silent_flow_iframe
-      response.headers.except! 'X-Frame-Options'
     end
 
     def track_event

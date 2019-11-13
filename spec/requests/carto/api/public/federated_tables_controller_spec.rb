@@ -159,7 +159,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 404 when there is not a faderated server with the provided name' do
+    it 'returns 404 when there is not a federated server with the provided name' do
       params_show_server = { federated_server_name: 'wadus', api_key: @user1.api_key }
       get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
         expect(response.status).to eq(404)
@@ -290,7 +290,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 404 when there is not a faderated server with the provided name' do
+    it 'returns 404 when there is not a federated server with the provided name' do
       params_unregister_server = { federated_server_name: 'wadus', api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(404)

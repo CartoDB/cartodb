@@ -277,7 +277,7 @@ export default {
 
   &.is-kuviz {
     display: block;
-    background: url($assetsDir + '/images/layout/kuviz-map-bkg.svg');
+    background: url("../../assets/icons/maps/kuviz-map-bkg.svg");
   }
 
   img {

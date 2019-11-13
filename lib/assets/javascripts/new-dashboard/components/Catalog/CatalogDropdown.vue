@@ -29,7 +29,11 @@
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul ref="catalogDropdownList"
         class="catalogDropdown__list"
-        :class="{'is-open ps-container': isOpen, 'is-height-limited': limitHeight}"
+        :class="{
+          'is-open ps-container': isOpen,
+          'is-height-limited': limitHeight,
+          'ps-active-y': showScroll
+        }"
         @mouseleave="resetActiveOption">
         <li
           v-for="(option, index) in filteredOptions" :key="option"
@@ -126,14 +130,26 @@ export default {
     hasError () {
       return this.error.length > 0;
     },
+    showScroll () {
+      return this.filteredOptions.length > this.maxItemsScroll;
+    },
+    selectedItems() {
+      return Object.keys(this.selected).length === 0;
+    },
     showInput () {
-      return this.isOpen &&
-        Object.keys(this.selected).length === 0 &&
-        this.filteredOptions.length > this.maxItemsScroll;
+      return this.isOpen && !this.selectedItems && this.showScroll;
     }
   },
   mounted() {
-    PerfectScrollbar.initialize(this.$refs.catalogDropdownList);
+    this.$refs.catalogDropdownList.scrollTop = 0;
+    PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
+      wheelSpeed: 1,
+      wheelPropagation: false,
+      swipePropagation: true,
+      stopPropagationOnClick: false,
+      minScrollbarLength: 20,
+      useBothWheelAxes: true
+    });
   },
   beforeDestroy() {
     PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
@@ -142,13 +158,14 @@ export default {
     openDropdown () {
       if (!this.isOpen && !this.isDisabled) {
         this.isOpen = true;
-        this.$refs.catalogDropdownList.scrollTop = 1;
+        this.$refs.catalogDropdownList.scrollTop = 0;
         PerfectScrollbar.update(this.$refs.catalogDropdownList);
       }
     },
     closeDropdown () {
       if (this.isOpen) {
         this.isOpen = false;
+        this.$refs.catalogDropdownList.scrollTop = 0;
         PerfectScrollbar.update(this.$refs.catalogDropdownList);
       }
     },

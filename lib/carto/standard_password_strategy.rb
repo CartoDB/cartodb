@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_dependency 'carto/base_password_strategy'
 
 module Carto

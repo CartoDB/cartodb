@@ -1,4 +1,3 @@
-# coding: utf-8
 require_relative './../helpers/organization_notifications_helper'
 
 class Admin::ClientApplicationsController < Admin::AdminController

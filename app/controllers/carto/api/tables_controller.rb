@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../../../models/carto/permission'
 require_relative '../../../models/carto/user_table'
 

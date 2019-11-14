@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../rspec_configuration'
 require 'ostruct'
 require 'uuidtools'

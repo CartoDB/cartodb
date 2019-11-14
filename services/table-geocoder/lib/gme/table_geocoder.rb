@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../abstract_table_geocoder'
 require_relative 'client'
 require_relative 'geocoder_client'

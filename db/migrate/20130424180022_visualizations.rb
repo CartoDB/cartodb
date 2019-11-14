@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class VisualizationsFixMigration < Sequel::Migration
   def up
     SequelRails.connection.run(%Q{

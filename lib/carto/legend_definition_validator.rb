@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'json-schema'
 
 require_dependency 'carto/definition'

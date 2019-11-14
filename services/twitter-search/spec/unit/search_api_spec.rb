@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../twitter-search'
 require_relative '../../../../spec/rspec_configuration'
 

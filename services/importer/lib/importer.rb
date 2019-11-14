@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './importer/column'
 require_relative './importer/downloader'
 require_relative './importer/datasource_downloader'

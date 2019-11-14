@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'ostruct'
 require 'uuidtools'
 require_relative '../../spec_helper'

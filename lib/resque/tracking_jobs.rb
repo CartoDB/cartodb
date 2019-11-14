@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'hubspot/events_api'
 
 module Resque

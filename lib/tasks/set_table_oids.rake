@@ -1,4 +1,3 @@
-# encoding: utf-8
 namespace :cartodb do
   namespace :db do
     desc 'Sets table_ids for all table metadata recors'

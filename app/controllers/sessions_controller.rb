@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_dependency 'carto/oauth/github/config'
 require_dependency 'carto/oauth/google/config'
 require_dependency 'carto/saml_service'

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'open3'
 require_relative '../lib/table_geocoder.rb'
 require_relative 'factories/pg_connection'

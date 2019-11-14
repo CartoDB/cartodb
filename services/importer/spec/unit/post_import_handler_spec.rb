@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/importer/post_import_handler'
 
 describe CartoDB::Importer2::PostImportHandler do

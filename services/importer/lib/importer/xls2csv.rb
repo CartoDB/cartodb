@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './excel2csv'
 
 module CartoDB

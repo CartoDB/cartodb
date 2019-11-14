@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../../spec/rspec_configuration'
 require_relative '../../../../spec/spec_helper'
 require 'rspec/core'

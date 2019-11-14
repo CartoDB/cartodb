@@ -1,7 +1,6 @@
 <template>
   <div
     class="catalogDropdown"
-    v-click-outside="closeDropdown"
     @keydown.down.prevent="onKeydownDown"
     @keydown.up.prevent="onKeydownUp"
     :class="{'is-disabled': isDisabled, 'is-open': isOpen}">
@@ -22,14 +21,18 @@
         class="text is-caption catalogDropdown__input"
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
-        <CatalogDropdownItem :option="searchFilter"/>
+        <span>{{ defaultText }}</span>
+        <button
+          v-if="searchFilter"
+          class="catalogDropdown__close"
+          @click="reset">
+          <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
+        </button>
       </div>
-      <button class="catalogDropdown__close" @click="reset">
-        <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
-      </button>
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
       <ul ref="catalogDropdownList"
         class="catalogDropdown__list"
+        v-click-outside="closeDropdown"
         :class="{
           'is-open ps-container': isOpen,
           'is-height-limited': limitHeight,
@@ -95,6 +98,9 @@ export default {
     };
   },
   computed: {
+    defaultText () {
+      return this.searchFilter || this.$t('CatalogDropdown.select');
+    },
     maxItemsScroll () {
       const PAGE_HEIGHT = window.innerHeight;
       const SMALL_HEIGHT = 680;
@@ -132,10 +138,10 @@ export default {
       return this.error.length > 0;
     },
     showScroll () {
-      return this.filteredOptions.length >= this.maxItemsScroll;
+      return this.filteredOptions.length > this.maxItemsScroll;
     },
     showInput () {
-      return this.isOpen && Object.keys(this.selected).length !== 0 && this.showScroll;
+      return this.isOpen && Object.keys(this.selected).length === 0 && this.filteredOptions.length > this.maxItemsScroll;
     }
   },
   mounted() {
@@ -153,7 +159,11 @@ export default {
     PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
   },
   methods: {
-    openDropdown () {
+    openDropdown (event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
       if (!this.isOpen && !this.isDisabled) {
         this.isOpen = true;
         this.$refs.catalogDropdownList.scrollTop = 0;

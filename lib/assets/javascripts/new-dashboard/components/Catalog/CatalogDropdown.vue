@@ -132,13 +132,10 @@ export default {
       return this.error.length > 0;
     },
     showScroll () {
-      return this.filteredOptions.length > this.maxItemsScroll;
-    },
-    selectedItems() {
-      return Object.keys(this.selected).length === 0;
+      return this.filteredOptions.length >= this.maxItemsScroll;
     },
     showInput () {
-      return this.isOpen && !this.selectedItems && this.showScroll;
+      return this.isOpen && Object.keys(this.selected).length !== 0 && this.showScroll;
     }
   },
   mounted() {

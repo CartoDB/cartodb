@@ -289,7 +289,7 @@ module Carto
             remote_schema => '#{remote_schema_name}'
           )
         WHERE
-          remote_name = '#{remote_table_name}'
+          remote_table = '#{remote_table_name}'
       }.squish
     end
 

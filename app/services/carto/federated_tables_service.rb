@@ -255,7 +255,7 @@ module Carto
     def select_tables_query(federated_server_name, remote_schema_name)
       %{
         SELECT
-          'true' as registered,
+          registered,
           '#{remote_schema_name}' || '.' || remote_table as qualified_name,
           '#{remote_schema_name}' as remote_schema_name,
           remote_table as remote_table_name
@@ -281,10 +281,10 @@ module Carto
     def get_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
-          remote_name as remote_table_name,
-          local_name as qualified_name
+          remote_table as remote_table_name,
+          local_qualified_name as qualified_name
         FROM
-          CDB_Federated_Server_List_Registered_Tables(
+          cartodb.CDB_Federated_Server_List_Remote_Tables(
             server => '#{federated_server_name}',
             remote_schema => '#{remote_schema_name}'
           )
@@ -296,7 +296,7 @@ module Carto
     def unregister_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
-          CDB_Federated_Table_Unregister(
+          cartodb.CDB_Federated_Table_Unregister(
             server => '#{federated_server_name}',
             remote_schema => '#{remote_schema_name}',
             remote_table => '#{remote_table_name}'

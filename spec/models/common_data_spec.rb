@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'json'
 require_relative '../spec_helper'
 

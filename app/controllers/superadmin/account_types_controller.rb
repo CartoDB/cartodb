@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Superadmin::AccountTypesController < Superadmin::SuperadminController
   respond_to :json
 

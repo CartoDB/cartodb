@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './style.rb'
 require_relative '../definition.rb'
 

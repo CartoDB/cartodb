@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # One-time fix tasks
 namespace :carto do
   namespace :fix do

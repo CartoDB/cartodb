@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper_min'
 require 'helpers/storage_helper'
 require 'helpers/subdomainless_helper'

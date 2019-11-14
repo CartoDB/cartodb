@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'abstract_query_generator'
 
 module CartoDB

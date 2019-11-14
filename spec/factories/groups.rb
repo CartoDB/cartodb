@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'helpers/unique_names_helper'
 
 include UniqueNamesHelper

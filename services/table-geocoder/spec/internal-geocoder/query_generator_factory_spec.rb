@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/internal-geocoder/query_generator_factory.rb'
 require_relative '../../lib/internal-geocoder/abstract_query_generator.rb'
 require_relative '../../../../spec/rspec_configuration.rb'

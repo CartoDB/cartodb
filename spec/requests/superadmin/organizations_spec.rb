@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../acceptance_helper'
 
 feature "Superadmin's organization API" do

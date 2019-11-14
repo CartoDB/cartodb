@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../../app/models/visualization/member'
 require_relative '../helpers/file_server_helper'
 require 'json'

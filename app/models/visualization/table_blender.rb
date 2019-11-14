@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_dependency 'map/copier'
 
 module CartoDB

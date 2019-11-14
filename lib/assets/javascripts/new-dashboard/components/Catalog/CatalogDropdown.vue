@@ -250,7 +250,8 @@ export default {
   --default-height-items: 8;
   --medium-height-items: 5;
   --small-height-items: 3;
-  --catalog-dropdown-item-height: 50px;
+  --extra-space: 2px;
+  --catalog-dropdown-item-height: calc(48px + var(--extra-space));
 
   display: flex;
   z-index: $z-index__dropdown;
@@ -343,7 +344,7 @@ export default {
       display: none;
     }
 
-    .catalogDropdown__list, 
+    .catalogDropdown__list,
     .catalogDropdown__extra {
       display: none;
     }

@@ -281,6 +281,7 @@ module Carto
     def get_remote_table_query(federated_server_name:, remote_schema_name:, remote_table_name:)
       %{
         SELECT
+          registered,
           remote_table as remote_table_name,
           local_qualified_name as qualified_name
         FROM

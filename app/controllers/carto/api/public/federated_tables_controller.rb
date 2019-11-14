@@ -113,7 +113,7 @@ module Carto
         end
 
         def update_remote_table
-          unless @remote_table
+          unless @remote_table[:registered]
             @remote_table = @service.register_table(@remote_table_attributes)
             response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp({}, 201)

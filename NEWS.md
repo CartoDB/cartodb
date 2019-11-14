@@ -53,6 +53,7 @@ sudo make install
   * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
 * Add Kuviz to Maps page:
   * (a) - Add kuviz to visualizations request (maps) ([#15192](https://github.com/CartoDB/cartodb/issues/15192))
+  * (b) - Quick actions ([#15174](https://github.com/CartoDB/cartodb/issues/15174))
 
 
 ### Bug fixes / enhancements

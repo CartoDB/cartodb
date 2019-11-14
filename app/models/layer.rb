@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'layer/presenter'
 require_relative 'table/user_table'
 require_relative '../../lib/cartodb/stats/editor_apis'

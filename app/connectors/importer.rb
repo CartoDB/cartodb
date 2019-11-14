@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'uuidtools'
 require 'carto/importer/table_setup'
 

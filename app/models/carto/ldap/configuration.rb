@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 # See http://www.rubydoc.info/gems/net-ldap/0.11
 require 'net/ldap'
 

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/models/visualization/presenter'
 require_relative '../../doubles/support_tables.rb'

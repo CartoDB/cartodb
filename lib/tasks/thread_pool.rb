@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'monitor'
 
 # Basic thread pool with (unlimited) queue

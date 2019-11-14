@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper_min'
 require 'support/helpers'
 require_relative '../../../../app/controllers/carto/api/maps_controller'

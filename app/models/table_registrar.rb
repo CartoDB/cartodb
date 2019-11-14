@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoDB
   class TableRegistrar
     def initialize(user, table_klass=nil)

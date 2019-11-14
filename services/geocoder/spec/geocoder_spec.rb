@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../spec/spec_helper'
 require_relative '../../../spec/rspec_configuration.rb'
 require_relative '../lib/hires_batch_geocoder'

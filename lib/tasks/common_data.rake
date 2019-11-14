@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 namespace :cartodb do
   namespace :common_data do
     desc 'Generates datasets assets and upload them to Amazon S3'

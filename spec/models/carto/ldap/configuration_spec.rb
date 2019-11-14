@@ -1,4 +1,3 @@
-# coding: UTF-8
 require_relative '../../../spec_helper'
 require_relative '../../../lib/fake_net_ldap_bind_as'
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../acceptance_helper'
 require_relative '../../../app/controllers/superadmin/platform_controller'
 

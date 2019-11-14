@@ -1,4 +1,3 @@
-# coding: UTF-8
 require 'oauth/controllers/provider_controller'
 require_dependency 'carto/user_authenticator'
 

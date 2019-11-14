@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_record'
 require 'cartodb-common'
 require_dependency 'cartodb/errors'

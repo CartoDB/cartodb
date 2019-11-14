@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'open3'
 require_relative '../../../lib/gme/table_geocoder'
 require_relative '../../../../../lib/url_signer'

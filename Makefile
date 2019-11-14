@@ -358,6 +358,7 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
 	spec/lib/tasks/data_observatory_rake_spec.rb \
 	spec/services/carto/do_licensing_service_spec.rb \
+	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

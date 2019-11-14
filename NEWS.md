@@ -54,6 +54,7 @@ sudo make install
 * Add Kuviz to Maps page:
   * (a) - Add kuviz to visualizations request (maps) ([#15192](https://github.com/CartoDB/cartodb/issues/15192))
   * (b) - Quick actions ([#15174](https://github.com/CartoDB/cartodb/issues/15174))
+  * (c) - Bulk actions ([#15173](https://github.com/CartoDB/cartodb/issues/15173))
 
 
 ### Bug fixes / enhancements

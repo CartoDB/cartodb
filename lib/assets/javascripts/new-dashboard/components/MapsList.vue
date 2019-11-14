@@ -37,7 +37,6 @@
             :order="appliedOrder"
             :orderDirection="appliedOrderDirection"
             :metadata="mapsMetadata"
-            :appliesToMaps="true"
             @filterChanged="applyFilter">
             <img svg-inline src="../assets/icons/common/filter.svg">
           </SettingsDropdown>

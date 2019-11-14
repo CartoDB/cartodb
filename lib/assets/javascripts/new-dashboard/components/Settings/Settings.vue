@@ -4,7 +4,7 @@
     <slot />
   </template>
 
-  <Filters :section="section" :filter="filter" :metadata="metadata" :appliesToMaps="appliesToMaps" @filterChanged="setFilter"/>
+  <Filters :section="section" :filter="filter" :metadata="metadata" @filterChanged="setFilter"/>
 </Dropdown>
 </template>
 
@@ -26,10 +26,6 @@ export default {
       default () {
         return { total_shared: 0 };
       }
-    },
-    appliesToMaps: {
-      type: Boolean,
-      default: false
     }
   },
   data: function () {

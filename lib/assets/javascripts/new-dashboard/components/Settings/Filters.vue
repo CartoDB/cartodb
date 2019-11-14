@@ -38,7 +38,7 @@
         </a>
       </div>
     </li>
-    <li v-if="appliesToMaps" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isTypeFilterApplied }">
+    <li v-if="isMapsSection" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isTypeFilterApplied }">
       <div class="element">
         <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('builder') }" @click="setFilter('builder')">
           {{ $t('SettingsDropdown.types.builderType') }}
@@ -63,10 +63,6 @@ export default {
       default () {
         return { total_shared: 0 };
       }
-    },
-    appliesToMaps: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
@@ -75,6 +71,9 @@ export default {
     },
     isTypeFilterApplied () {
       return ['builder', 'cartoframes'].indexOf(this.$props.filter) > -1;
+    },
+    isMapsSection () {
+      return this.section === 'maps';
     }
   },
   methods: {

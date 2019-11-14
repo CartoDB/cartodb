@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../controllers/carto/api/group_presenter'
 
 module CartoDB

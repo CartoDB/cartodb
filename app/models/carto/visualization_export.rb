@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'uri'
 require 'fileutils'
 require 'active_record'

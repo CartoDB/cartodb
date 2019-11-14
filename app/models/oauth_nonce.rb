@@ -1,4 +1,3 @@
-# coding: utf-8
 # TODO: remove
 class OauthNonce < Sequel::Model
 

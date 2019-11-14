@@ -1,4 +1,3 @@
-# coding: utf-8
 require_dependency 'cartodb_config_utils'
 require_dependency 'carto/configuration'
 

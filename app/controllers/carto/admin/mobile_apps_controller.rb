@@ -1,4 +1,3 @@
-# coding: utf-8
 require_dependency 'helpers/avatar_helper'
 require_dependency 'cartodb/central'
 require_dependency 'helpers/organization_notifications_helper'

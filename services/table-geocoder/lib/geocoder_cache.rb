@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative 'exceptions'
 require_relative '../../../lib/carto/http/client'
 

@@ -1,5 +1,3 @@
-# coding: utf-8
-
 # this test controller renders the html with all the
 # javascript stuff to run the specs
 class TestController < ApplicationController

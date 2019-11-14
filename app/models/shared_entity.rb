@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoDB
   # A shared entity is just a relating model that joins entities (currently only visualizations)
   # shared but not owned by users.

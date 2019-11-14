@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'ostruct'
 require_relative '../../../../spec/spec_helper_min'
 require_relative '../../lib/importer/loader'

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carto/db/sql_interface'
 require_relative '../../../spec_helper'
 

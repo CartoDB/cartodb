@@ -29,7 +29,7 @@
         <% } %>
       <% } %>
 
-      <% if (listingState === "import" || "upload") { %>
+      <% if (listingState === "import" || listingState === "upload") { %>
         <% if (importState === 'scratch') { %>
           <% if (isMapType) { %>
             <div class="CreateDialog-footerInfo">

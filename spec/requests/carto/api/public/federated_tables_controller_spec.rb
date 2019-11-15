@@ -520,7 +520,7 @@ describe Carto::Api::Public::FederatedTablesController do
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(200)
         expect(response.body[:remote_table_name]).to eq(@remote_table_name)
-        expect(response.body[:qualified_name]).to eq("#{@remote_schema_name}.#{@remote_table_name}")
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
       end
     end
 

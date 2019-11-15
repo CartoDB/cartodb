@@ -14,36 +14,27 @@ module Carto
     # So we'll use a `database` connection parameter for the schema for consistency with other providers.
     # The schema parameter should not be directly used by the user.
     class HiveProvider < OdbcProvider
-
-      private
+      metadata id: 'hive', name: 'Hive'
 
       DEFAULT_SCHEMA = 'default'.freeze # '' would also be OK
 
-      def fixed_connection_attributes
-        {
-          Driver: 'Hortonworks Hive ODBC Driver 64-bit'
-        }
-      end
+      fixed_odbc_attributes Driver: 'Hortonworks Hive ODBC Driver 64-bit'
+      connection_odbc_attributes(
+        server: :HOST,
+        database: { Schema: DEFAULT_SCHEMA },
+        port:     { PORT: 10000 },
+        username: { UID: nil },
+        password: { PWD: nil }
+      )
 
-      def required_connection_attributes
-        {
-          server:   :HOST
-        }
-      end
+      private
 
-      def optional_connection_attributes
-        {
-          database: { Schema: DEFAULT_SCHEMA },
-          port: { PORT: 10000 },
-          username: { UID: nil },
-          password: { PWD: nil }
-        }
-      end
+      server_attributes %I(Driver HOST PORT Schema)
+      user_attributes %I(UID PWD)
 
       def non_connection_parameters
         super.reverse_merge(schema: @connection[:database] || DEFAULT_SCHEMA)
       end
-
     end
   end
 end

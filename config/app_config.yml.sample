@@ -374,6 +374,15 @@ defaults: &defaults
   oauth:
     # If the client_id/app_key is not set won't appear at the UI. @see application_helper.rb -> frontend_config
     # Must be the same as CartoDB::Datasources::xxxx DATASOURCE_NAME constants
+    bigquery:
+      application_name: ''
+      client_id: ''
+      client_secret: ''
+      scope: ["https://www.googleapis.com/auth/bigquery"]
+      authorization_uri: "https://accounts.google.com/o/oauth2/auth"
+      revoke_auth_uri: "https://accounts.google.com/o/oauth2/revoke"
+      token_credential_uri: "https://oauth2.googleapis.com/token"
+      callback_url: "https://oauth.carto-staging.com"
     gdrive:
       application_name:     ''
       client_id:            ''

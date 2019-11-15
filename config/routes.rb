@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
 
 # NOTES:

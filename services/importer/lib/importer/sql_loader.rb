@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './psql'
 require_relative './georeferencer'
 

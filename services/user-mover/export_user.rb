@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-# coding: utf-8
-
 # export-user.rb
 # This class can be used to generate an as-is backup of the metadata of an user.
 # It can be ran against a single user or a single user ID or a list of any of both.

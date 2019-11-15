@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'carto/connector'
 require_relative '../../../../spec/spec_helper'
 
@@ -24,7 +23,17 @@ class TestConnectorContext < Carto::Connector::Context
     execute_results command
   end
 
+  def execute_as_superuser_with_timeout(command, timeout)
+    @executed_commands << [:superuser, command, @user.username]
+    execute_results command
+  end
+
   def execute(command)
+    @executed_commands << [:user, command, @user.username]
+    execute_results command
+  end
+
+  def execute_with_timeout(command, timeout)
     @executed_commands << [:user, command, @user.username]
     execute_results command
   end
@@ -43,7 +52,7 @@ class TestConnectorContext < Carto::Connector::Context
 end
 
 class FailingTestConnectorContext < TestConnectorContext
-  def execute(command)
+  def execute_with_timeout(command, timeout)
     if match_sql(command).first[:command] == :create_table_as_select
       raise "SQL EXECUTION ERROR"
     end
@@ -114,12 +123,12 @@ describe Carto::Connector do
   it "Should list providers available for a user with default configuration" do
     default_config = { 'mysql' => { 'enabled' => true }, 'postgres' => { 'enabled' => false } }
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(user: @user).should eq(
-        "postgres"  => { name: "PostgreSQL", enabled: false, description: nil },
-        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+      Carto::Connector.providers(user: @user).should == {
+        "postgres"  => { name: "PostgreSQL",           enabled: false, description: nil },
+        "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive", enabled: false, description: nil }
-      )
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+      }
     end
   end
 
@@ -132,12 +141,12 @@ describe Carto::Connector do
       enabled: true
     )
     Cartodb.with_config connectors: default_config do
-      Carto::Connector.providers(user: @user).should eq(
-        "postgres"  => { name: "PostgreSQL", enabled: true, description: nil },
-        "mysql"     => { name: "MySQL",      enabled: true,  description: nil },
+      Carto::Connector.providers(user: @user).should == {
+        "postgres"  => { name: "PostgreSQL",           enabled: true, description: nil },
+        "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive", enabled: false, description: nil }
-      )
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+      }
     end
     user_config.destroy
   end
@@ -181,7 +190,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -210,10 +223,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_option" => '0',
-              "odbc_prefetch" => '0',
-              "odbc_no_ssps" => '0',
-              "odbc_can_handle_exp_pwd" => '0',
               "schema" => 'thedatabase',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -303,7 +312,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => '{the;server}',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -391,7 +404,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -420,10 +437,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_option" => '0',
-              "odbc_prefetch" => '0',
-              "odbc_no_ssps" => '0',
-              "odbc_can_handle_exp_pwd" => '0',
               "schema" => 'thedatabase',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -509,7 +522,11 @@ describe Carto::Connector do
                 'odbc_Driver' => 'MySQL',
                 'odbc_server' => 'theserver',
                 'odbc_database' => 'thedatabase',
-                'odbc_port' => '3306'
+                'odbc_port' => '3306',
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0'
               }
             }]
           }, {
@@ -538,10 +555,6 @@ describe Carto::Connector do
               server_name: server_name,
               schema_name: 'cdb_importer',
               options: {
-                "odbc_option" => '0',
-                "odbc_prefetch" => '0',
-                "odbc_no_ssps" => '0',
-                "odbc_can_handle_exp_pwd" => '0',
                 "schema" => 'thedatabase',
                 "table" => 'thetable',
                 "encoding" => 'theencoding',
@@ -638,7 +651,11 @@ describe Carto::Connector do
                 'odbc_Driver' => 'MySQL',
                 'odbc_server' => 'theserver',
                 'odbc_database' => 'thedatabase',
-                'odbc_port' => '3306'
+                'odbc_port' => '3306',
+                "odbc_option" => '0',
+                "odbc_prefetch" => '0',
+                "odbc_no_ssps" => '0',
+                "odbc_can_handle_exp_pwd" => '0'
               }
             }]
           }, {
@@ -667,10 +684,6 @@ describe Carto::Connector do
               server_name: server_name,
               schema_name: 'cdb_importer',
               options: {
-                "odbc_option" => '0',
-                "odbc_prefetch" => '0',
-                "odbc_no_ssps" => '0',
-                "odbc_can_handle_exp_pwd" => '0',
                 "schema" => 'thedatabase',
                 "table" => 'thetable',
                 "encoding" => 'theencoding',
@@ -744,7 +757,7 @@ describe Carto::Connector do
       connector = Carto::Connector.new(parameters, context)
       tables = connector.list_tables
 
-      tables.should eq [{ schema: 'abc', name: 'xyz' }]
+      tables.should == [{ schema: 'abc', name: 'xyz' }]
 
       @executed_commands.size.should eq 7
 
@@ -764,7 +777,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'MySQL',
               'odbc_server' => 'theserver',
               'odbc_database' => 'thedatabase',
-              'odbc_port' => '3306'
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
             }
           }]
         }, {
@@ -863,7 +880,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('mysql').should eq(
+      Carto::Connector.information('mysql').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -885,7 +902,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -928,7 +945,11 @@ describe Carto::Connector do
               'odbc_Driver' => 'PostgreSQL Unicode',
               'odbc_Server' => 'theserver',
               'odbc_Port' => '5432',
-              'odbc_Database' => 'thedatabase'
+              'odbc_Database' => 'thedatabase',
+              "odbc_BoolsAsChar" => '0',
+              "odbc_ByteaAsLongVarBinary" => '1',
+              "odbc_MaxVarcharSize" => '256',
+              "odbc_SSLmode" => 'require'
             }
           }]
         }, {
@@ -958,10 +979,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_BoolsAsChar" => '0',
-              "odbc_ByteaAsLongVarBinary" => '1',
-              "odbc_MaxVarcharSize" => '256',
-              "odbc_SSLmode" => 'require',
               "schema" => 'public',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1016,7 +1033,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('postgres').should eq(
+      Carto::Connector.information('postgres').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1039,7 +1056,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1082,7 +1099,8 @@ describe Carto::Connector do
               'odbc_Driver' => 'FreeTDS',
               'odbc_Server' => 'theserver',
               'odbc_Port' => '1433',
-              'odbc_Database' => 'thedatabase'
+              'odbc_Database' => 'thedatabase',
+              "odbc_AppicationIntent" => 'ReadOnly'
             }
           }]
         }, {
@@ -1112,7 +1130,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_AppicationIntent" => 'ReadOnly',
               "schema" => 'dbo',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1167,7 +1184,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('sqlserver').should eq(
+      Carto::Connector.information('sqlserver').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1189,7 +1206,7 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
 
@@ -1230,7 +1247,8 @@ describe Carto::Connector do
             options: {
               'odbc_Driver' => 'Hortonworks Hive ODBC Driver 64-bit',
               'odbc_HOST' => 'theserver',
-              'odbc_PORT' => '10000'
+              'odbc_PORT' => '10000',
+              "odbc_Schema" => 'default'
             }
           }]
         }, {
@@ -1260,7 +1278,6 @@ describe Carto::Connector do
             server_name: server_name,
             schema_name: 'cdb_importer',
             options: {
-              "odbc_Schema" => 'default',
               "schema" => 'default',
               "table" => 'thetable',
               "encoding" => 'theencoding',
@@ -1315,7 +1332,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('hive').should eq(
+      Carto::Connector.information('hive').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1337,9 +1354,166 @@ describe Carto::Connector do
           'encoding'   => { required: false },
           'columns'    => { required: false }
         }
-      )
+      }
     end
   end
+
+  describe 'bigquery' do
+    it 'Executes expected odbc_fdw SQL commands to copy a table' do
+      parameters = {
+        provider: 'bigquery',
+        project: 'theproject',
+        dataset: 'thedataset',
+        table:    'thetable'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      @user.oauths.add 'bigquery', 'thetoken'
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      oauth_config = {
+        'bigquery' => {
+          'client_id' => 'theclientid',
+          'client_secret' => 'theclientsecret'
+        }
+      }
+      Cartodb.with_config oauth: oauth_config do
+        connector = Carto::Connector.new(parameters, context)
+        connector.copy_table schema_name: 'xyz', table_name: 'abc'
+      end
+
+      @executed_commands.size.should eq 9
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
+      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
+      user_name = @user.username
+      user_role = @user.database_username
+
+      expected_commands = [{
+        # CREATE SERVER
+        mode: :superuser,
+        sql: [{
+          command: :create_server,
+          fdw_name: 'odbc_fdw',
+          options: {
+            'odbc_AllowLargeResults' => '0',
+            'odbc_Catalog' => 'theproject',
+            'odbc_ClientId' => 'theclientid',
+            'odbc_ClientSecret' => 'theclientsecret',
+            'odbc_Driver' => 'Simba ODBC Driver for Google BigQuery 64-bit',
+            'odbc_LargeResultsDataSetId' => '{_bqodbc_temp_tables}',
+            'odbc_LargeResultsTempTableExpirationTime' => '3600000',
+            'odbc_OAuthMechanism' => '1',
+            'odbc_SQLDialect' => '1'
+          }
+        }]
+      }, {
+        # CREATE USER MAPPING
+        mode: :superuser,
+        sql: [{
+          command: :create_user_mapping,
+          server_name: server_name,
+          user_name: user_role,
+          options: { 'odbc_RefreshToken' => 'thetoken' }
+        }]
+      }, {
+        # CREATE USER MAPPING
+        mode: :superuser,
+        sql: [{
+          command: :create_user_mapping,
+          server_name: server_name,
+          user_name: 'postgres',
+          options: { 'odbc_RefreshToken' => 'thetoken' }
+        }]
+      }, {
+        # IMPORT FOREIGH SCHEMA; GRANT SELECT
+        mode: :superuser,
+        sql: [{
+          command: :import_foreign_schema,
+          remote_schema_name: 'thedataset',
+          server_name: server_name,
+          schema_name: 'cdb_importer',
+          options: {
+            "odbc_DefaultDataset" => 'thedataset',
+            "table" => 'thetable',
+            "prefix" => "#{server_name}_"
+          }
+        }, {
+          command: :grant_select,
+          table_name: foreign_table_name,
+          user_name: user_role
+        }]
+      }, {
+        # CREATE TABLE AS SELECT
+        mode: :user,
+        user: user_name,
+        sql: [{
+          command: :create_table_as_select,
+          table_name: %{"xyz"."abc"},
+          select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+        }]
+      }, {
+        # DROP FOREIGN TABLE
+        mode: :superuser,
+        sql: [{
+          command: :drop_foreign_table_if_exists,
+          table_name: foreign_table_name
+        }]
+      }, {
+        # DROP USER MAPPING
+        mode: :superuser,
+        sql: [{
+          command: :drop_usermapping_if_exists,
+          server_name: server_name,
+          user_name: 'postgres'
+        }]
+      }, {
+        # DROP USER MAPPING
+        mode: :superuser,
+        sql: [{
+          command: :drop_usermapping_if_exists,
+          server_name: server_name,
+          user_name: user_role
+        }]
+      }, {
+        # DROP SERVER
+        mode: :superuser,
+        sql: [{
+          command: :drop_server_if_exists,
+          server_name: server_name
+        }]
+      }]
+
+      expect_executed_commands @executed_commands, *expected_commands
+    end
+
+    it 'Should provide connector metadata' do
+      Carto::Connector.information('hive').should == {
+        features: {
+          'list_tables':    true,
+          'list_databases': false,
+          'sql_queries':    true,
+          'preview_table':  false
+        },
+        parameters: {
+          'connection' => {
+            'username' => { required: false },
+            'password' => { required: false },
+            'server'   => { required: true  },
+            'port'     => { required: false },
+            'database' => { required: false }
+          },
+          'table'      => { required: true  },
+          'schema'     => { required: false },
+          'sql_query'  => { required: false },
+          'sql_count'  => { required: false },
+          'encoding'   => { required: false },
+          'columns'    => { required: false }
+        }
+      }
+    end
+  end
+
 
   describe 'invalid_provider' do
     it 'Fails' do
@@ -1624,17 +1798,17 @@ describe Carto::Connector do
     end
   end
 
+  class PgProvider < Carto::Connector::PgFdwProvider
+    metadata id: 'pg', name: 'PostgreSQL FDW', public?: true
+  end
+
   describe 'Non odbc provider' do
     before(:each) do
-      Carto::Connector::PROVIDERS['pg'] = {
-        class: Carto::Connector::PgFdwProvider,
-        name:  'PostgreSQL FDW',
-        public: true
-      }
+      Carto::Connector::PROVIDERS << PgProvider
     end
 
     after(:each) do
-      Carto::Connector::PROVIDERS['pg'] = nil
+      Carto::Connector::PROVIDERS.delete PgProvider
     end
 
     it 'Executes expected odbc_fdw SQL commands to copy a table' do
@@ -1887,7 +2061,7 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('pg').should eq(
+      Carto::Connector.information('pg').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
@@ -1903,7 +2077,7 @@ describe Carto::Connector do
           'port'       => { required: false },
           'database'   => { required: true  }
         }
-      )
+      }
     end
   end
 end

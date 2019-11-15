@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
@@ -656,7 +654,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.31.0'
+          cdb_extension_target_version = '0.32.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|

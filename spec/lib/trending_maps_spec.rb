@@ -1,4 +1,3 @@
-# coding: UTF-8
 require 'spec_helper'
 require_relative '../../lib/cartodb/trending_maps'
 

@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'securerandom'
 require_dependency 'carto/password_validator'
 require_dependency 'carto/strong_password_strategy'

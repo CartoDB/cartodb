@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './name_checker'
 
 module CartoDB

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   namespace :services do
     namespace :external do

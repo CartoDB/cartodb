@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'singleton'
 require 'carto/storage_options/s3'
 require 'carto/storage_options/local'

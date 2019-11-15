@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
 require 'email_address'
@@ -45,7 +44,8 @@ class User < Sequel::Model
     'dropbox' => 'Dropbox',
     'box' => 'Box',
     'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram'
+    'instagram' => 'Instagram',
+    'bigquery' => 'Google BigQuery'
   }.freeze
 
   OAUTH_SERVICE_REVOKE_URLS = {
@@ -1385,6 +1385,8 @@ class User < Sequel::Model
         Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
       when 'instagram'
         Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
+      when 'bigquery'
+          Cartodb.config[:oauth][serv]['client_id'].present? && Carto::Connector.provider_available?('bigquery', self)
       else
         true
       end

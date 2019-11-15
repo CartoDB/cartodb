@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../services/data-repository/backend/sequel'
 require_relative '../../app/models/visualization/collection'
 require_relative '../../app/models/synchronization/collection'

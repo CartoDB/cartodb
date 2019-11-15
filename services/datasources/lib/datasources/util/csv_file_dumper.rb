@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'tempfile'
 require 'fileutils'
 require 'json'

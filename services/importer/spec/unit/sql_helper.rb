@@ -118,7 +118,7 @@ def expect_sql(sql, expectactions = [])
         if expected_value.is_a?(Regexp)
           parsed_sql[key].should match expected_value
         else
-          parsed_sql[key].should eq expected_value
+          parsed_sql[key].should == expected_value
         end
       end
     end

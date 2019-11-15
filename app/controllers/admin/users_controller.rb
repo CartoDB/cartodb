@@ -1,5 +1,3 @@
-# coding: utf-8
-
 class Admin::UsersController < Admin::AdminController
   include LoginHelper
 

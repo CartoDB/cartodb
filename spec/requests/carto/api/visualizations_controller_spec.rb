@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
@@ -329,6 +327,13 @@ describe Carto::Api::VisualizationsController do
           v.should eq v2
         end
       end
+    end
+
+    it 'raises param invalid error if user does not exist' do
+      host! "pra.localhost.lan"
+      get base_url, {  }, @headers
+      JSON.load(last_response.body)['error'].should eq "Wrong 'username' parameter value."
+      last_response.status.should eq 400
     end
 
     it 'returns success, empty response for empty user' do

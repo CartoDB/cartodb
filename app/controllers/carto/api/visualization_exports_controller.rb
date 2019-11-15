@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_dependency 'carto/tracking/events'
 
 module Carto

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'
@@ -858,7 +857,9 @@ class DataImport < Sequel::Model
   rescue => e
     # Note: If this exception is not treated, results will not be defined
     # and the import will finish with a null error_code
-    set_error(manual_fields.fetch(:error_code, 99999))
+    if manual_fields
+      set_error(manual_fields.fetch(:error_code, 99999))
+    end
     raise e
   end
 

@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require_dependency 'carto/helpers/auth_token_generator'
 
 class Group < Sequel::Model

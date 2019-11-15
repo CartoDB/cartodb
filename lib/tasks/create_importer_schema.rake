@@ -1,4 +1,3 @@
-# encoding: utf-8
 namespace :cartodb do
   namespace :db do
     desc 'Create importer schema and assign privileges to owner'

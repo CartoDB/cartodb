@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   module Api
     class ConnectorsController < ::Api::ApplicationController
@@ -27,14 +25,24 @@ module Carto
       def connect
         provider_id = params[:provider_id]
         parameters = build_connection_parameters(provider_id, params)
+        error_code = nil
+        connection_res = {connected: false}
         begin
           connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
-          render_jsonp({"connected": connector.check_connection})
+          connection_res[:connected] = connector.check_connection
+          error_code = 200
         rescue Carto::Connector::InvalidParametersError => e
-          render_jsonp({ errors: e.message }, 422)
-        rescue
-          render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          connection_res[:errors] = e.message
+          error_code = 422
+        rescue CartoDB::Datasources::AuthError, CartoDB::Datasources::TokenExpiredOrInvalidError => e
+          user_account_url = CartoDB.url(self, 'account_user', user: current_user)
+          connection_res[:errors] = "Could not connect to Google BigQuery. Please go to #{user_account_url} to check your BigQuery connection"
+          error_code = 400
+        rescue => e
+          connection_res[:errors] = e.message
+          error_code = 400
         end
+        render_jsonp(connection_res, error_code)
       end
 
       def tables

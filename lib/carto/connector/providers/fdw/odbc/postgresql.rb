@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './odbc'
 
 module Carto
@@ -13,35 +11,29 @@ module Carto
     # * https://odbc.postgresql.org/docs/config.html
     #
     class PostgreSQLProvider < OdbcProvider
+      metadata id: 'postgres', name: 'PostgreSQL'
+
+      fixed_odbc_attributes(
+        Driver:               'PostgreSQL Unicode',
+        ByteaAsLongVarBinary: 1,
+        MaxVarcharSize:       256,
+        BoolsAsChar:          0
+      )
+      connection_odbc_attributes(
+        server:   :Server,
+        port:     { Port: 5432 },
+        username: :UID,
+        password: { PWD: nil },
+        sslmode:  { SSLmode: 'require' },
+        database: :Database,
+      )
 
       private
 
+      server_attributes %I(Driver ByteaAsLongVarBinary MaxVarcharSize BoolsAsChar Server Database Port SSLmode)
+      user_attributes %I(UID PWD)
+
       DEFAULT_SCHEMA = 'public'.freeze
-
-      def fixed_connection_attributes
-        {
-          Driver:               'PostgreSQL Unicode',
-          ByteaAsLongVarBinary: 1,
-          MaxVarcharSize:       256,
-          BoolsAsChar:          0
-        }
-      end
-
-      def required_connection_attributes
-        {
-          server:   :Server,
-          database: :Database,
-          username: :UID
-        }
-      end
-
-      def optional_connection_attributes
-        {
-          port: { Port: 5432 },
-          password: { PWD: nil },
-          sslmode: { SSLmode: 'require' }
-        }
-      end
 
       def non_connection_parameters
         # Default remote schema

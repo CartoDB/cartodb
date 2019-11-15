@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 # This class currently doesn't serve any purpose except pure data storage
 class Tag < Sequel::Model
   # Ignore mass-asigment on not allowed columns

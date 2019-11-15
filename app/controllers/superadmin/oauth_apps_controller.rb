@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Superadmin::OauthAppsController < Superadmin::SuperadminController
   respond_to :json
 

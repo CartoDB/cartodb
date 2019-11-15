@@ -165,10 +165,6 @@ export default {
     &.is-kuviz {
       display: block;
       background: url("../../assets/icons/maps/kuviz-map-squared-bkg.svg");
-
-      .badge {
-        color: $badge-cf__color;
-      }
     }
 
     &.has-error {

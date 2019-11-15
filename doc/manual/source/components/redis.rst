@@ -16,6 +16,7 @@ Data is stored in separate databases inside this Redis:
  - Database 0: Table and visualization metadata, including map styles and named maps.
  - Database 3: OAuth credentials metadata.
  - Database 5: Metadata about the users, including API keys and database_hosts.
+ - Database 8: Rate limits.
 
 
 At this moment CARTO requires Redis version 4.0 or newer with the `redis-cell` extension.

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   namespace :users do
     desc 'Get map views from remote service for every user'

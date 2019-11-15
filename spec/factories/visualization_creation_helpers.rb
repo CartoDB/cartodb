@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../support/factories/tables'
 require 'helpers/unique_names_helper'
 

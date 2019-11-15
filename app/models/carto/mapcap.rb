@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_dependency 'carto/visualizations_export_service_2'
 require_relative './carto_json_serializer'
 require_dependency 'carto/named_maps/api'

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'db_queries'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../acceptance_helper'
 
 feature "API 1.0 queries management" do

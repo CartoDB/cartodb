@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class SequenceForAutomatedFeatureFlags < Sequel::Migration
   START_SEQ_NUMBER = -1000
   NAME = 'machine_added_feature_flags_id_seq'

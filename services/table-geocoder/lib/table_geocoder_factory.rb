@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'table_geocoder'
 require_relative 'internal_geocoder'
 require_relative 'gme/table_geocoder'

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'rspec/mocks'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/database_groups_controller'

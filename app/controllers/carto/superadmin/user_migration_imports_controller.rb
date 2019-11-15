@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Carto
   module Superadmin
     class UserMigrationImportsController < ::Superadmin::SuperadminController

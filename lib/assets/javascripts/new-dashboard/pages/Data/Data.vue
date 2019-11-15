@@ -1,5 +1,5 @@
 <template>
-  <Page  class="page--data">
+  <Page class="page--data">
     <SecondaryNavigation>
       <div class="tabs">
         <router-link :to="{ name: 'datasets' }" class="tabs__item title is-small" exact active-class="is-active" :class="{'is-active': isDatasetPage }">
@@ -35,10 +35,6 @@ export default {
 
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
-
-.page--data {
-  padding-top: 64px;
-}
 
 .tabs {
   display: flex;

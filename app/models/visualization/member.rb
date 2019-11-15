@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'forwardable'
 require 'virtus'
 require 'json'

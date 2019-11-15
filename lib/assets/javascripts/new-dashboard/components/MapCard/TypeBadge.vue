@@ -36,16 +36,15 @@ export default {
   border-radius: 2px;
   border-color: $badge__border-color;
   background-color: $white;
-  color: $text__color--secondary;
+  color: $badge__color;
   text-transform: uppercase;
 
   &.is-kuviz {
-    border-color: $badge__border-color;
     color: $badge-cf__color;
   }
 
   &.in-condensedCard {
-    background-color: $badge__bg;
+    background-color: $badge-condensed__bg-color;
   }
 }
 

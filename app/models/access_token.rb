@@ -1,5 +1,3 @@
-# coding: utf-8
-
 class AccessToken < OauthToken
 
   def before_create

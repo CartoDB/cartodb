@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Sequel.migration do
   change do
     alter_table :visualizations do

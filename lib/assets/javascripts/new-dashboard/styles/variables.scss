@@ -88,6 +88,12 @@ $button-cta__bg-color--hover: $yellow--100;
 $button-alert__bg-color: $red--400;
 $button-alert__bg-color--hover: $red--700;
 
+/* header */
+$header__height: 64px;
+
+/* subheader */
+$subheader__height: 64px;
+
 /* navbar */
 $navbar-avatar__bg-color: $neutral--500;
 $notification__bg-color: $green--500;
@@ -112,9 +118,15 @@ $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
 
 /* badges */
+// default
+$badge__color: $text__color--secondary;
+$badge__bg-color:  $white;
 $badge__border-color: $neutral--600;
-$badge__bg: $blue--100;
-$badge-cf__border-color: $blue--100;
+
+// condensed
+$badge-condensed__bg-color:  $blue--100;
+
+// cartoframes
 $badge-cf__color: $purple--500;
 
 /* notification warning */

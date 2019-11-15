@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
 
 ### Bug fixes / enhancements
 - Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))

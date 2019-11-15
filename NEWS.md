@@ -11,6 +11,7 @@ sudo make install
 ### Features
 - Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
 - Add support for BigQuery connector (https://github.com/CartoDB/cartodb/pull/15179)
+- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
 
 ### Bug fixes / enhancements
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))

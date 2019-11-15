@@ -18,6 +18,7 @@ sudo make install
 - Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 - Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
 - Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
+- Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
 
 4.30.0 (2019-10-18)
 -------------------

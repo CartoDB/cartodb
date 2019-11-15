@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
 
 ### Bug fixes / enhancements
 - Avoid warnings when running test in parallel with an empty environment

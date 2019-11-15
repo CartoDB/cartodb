@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.139",
+  "version": "1.0.0-assets.139-2057-01",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -36,8 +36,8 @@
     "date-fns": "^1.29.0",
     "fastclick": "^1.0.6",
     "html-webpack-plugin": "^3.2.0",
-    "internal-carto.js": "CartoDB/carto.js#v4.1.12-1",
-    "jquery": "2.1.4",
+    "internal-carto.js": "CartoDB/carto.js#jquery-upgrade",
+    "jquery": "3.4.1",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
     "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "moment": "2.18.1",

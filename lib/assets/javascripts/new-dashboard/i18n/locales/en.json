@@ -11,14 +11,19 @@
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
-    "tags": "tags"
+    "tags": "tags",
+    "type": {
+      "derived": "BUILDER",
+      "kuviz": "CARTOFRAMES"
+    }
   },
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "views": "Views (30d)",
     "usage": "Usage",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "type": "Type"
   },
   "QuickActions": {
     "title": "Quick actions",

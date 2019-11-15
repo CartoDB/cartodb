@@ -33,6 +33,8 @@ $red--700: #E20703;
 $green--500: #74FFA8;
 $green--700: #72EEA8;
 
+$purple--500: #3D33CC;
+
 /* Theme */
 $color-primary--soft: $blue--100;
 $color-primary: $blue--500;
@@ -114,6 +116,18 @@ $progressbar__bg-color: $neutral--200;
 $card__shadow-color: rgba($neutral--400, 0.8);
 $card__shadow: 0 8px 20px 0 $card__shadow-color;
 $thumbnail__bg-color: $neutral--200;
+
+/* badges */
+// default
+$badge__color: $text__color--secondary;
+$badge__bg-color:  $white;
+$badge__border-color: $neutral--600;
+
+// condensed
+$badge-condensed__bg-color:  $blue--100;
+
+// cartoframes
+$badge-cf__color: $purple--500;
 
 /* notification warning */
 

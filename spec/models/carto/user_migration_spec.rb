@@ -923,7 +923,7 @@ describe 'UserMigration' do
       user.api_keys.select { |a| a.type == 'master' }.first.table_permissions_from_db.count.should be > 0
     end
 
-    xit 'keeps roles for oauth api keys with schemas grants and you can drop tables after migration' do
+    it 'keeps roles for oauth api keys with schemas grants and you can drop tables after migration' do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
       oauth_app = Carto::OauthApp.create!(name: 'test',
                                           user_id: @carto_user.id,

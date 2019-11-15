@@ -58,7 +58,7 @@ describe CartoDB::DataMover::ExportJob do
     end
 
     it_behaves_like "a migrated user"
-    xit "matches old and new user" do
+    it "matches old and new user" do
       expect((first_user.as_json.reject { |x| [:updated_at, :database_host].include?(x.to_sym) }))
         .to eq((subject.as_json.reject { |x| [:updated_at, :database_host].include?(x.to_sym) }))
     end

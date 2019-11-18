@@ -70,6 +70,7 @@
                 "confirm_password": "Confirm password",
                 "account_type": "Account type",
                 "billing_plan": "Your billing plan",
+                "license_expiration": "License expiration",
                 "view_details": "View details",
                 "multifactor_authentication": "Multi-factor authentication",
                 "mfa_enabled": "Enabled",

@@ -63,7 +63,8 @@ module Carto
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
-          mfa_required: multifactor_authentication_required?
+          mfa_required: multifactor_authentication_required?,
+          license_expiration: license_expiration
         }
       end
 
@@ -242,6 +243,16 @@ module Carto
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
         service.update(enabled: mfa_enabled)
         warden.session(user.username)[:multifactor_authentication_performed] = false unless mfa_enabled
+      end
+
+      def license_expiration
+        return nil unless cartodb_com_hosted?
+
+        redis_value = $api_credentials&.get('cartoctl:license')
+        license = JSON.parse(redis_value)
+        Time.at(license["e"]).to_datetime
+      rescue StandardError
+        nil
       end
     end
   end

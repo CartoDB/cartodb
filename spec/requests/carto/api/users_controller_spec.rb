@@ -89,6 +89,42 @@ describe Carto::Api::UsersController do
         expect(response.body[:user_frontend_version]).to eq(CartoDB::Application.frontend_version)
       end
     end
+
+    context 'license_expiration field' do
+      before(:each) do
+        $api_credentials = mock('Redis connection')
+        $api_credentials.stubs(:get).with('cartoctl:license').returns('{"e":1604534400}')
+      end
+
+      it 'is nil for cloud' do
+        Cartodb.with_config(cartodb_com_hosted: false) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to be_nil
+          end
+        end
+      end
+
+      it 'is nil if invalid' do
+        $api_credentials.stubs(:get).with('cartoctl:license').returns('wrong')
+
+        Cartodb.with_config(cartodb_com_hosted: true) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to be_nil
+          end
+        end
+      end
+
+      it 'gets the date from the license' do
+        Cartodb.with_config(cartodb_com_hosted: true) do
+          get_json api_v3_users_me_url, @headers do |response|
+            expect(response.status).to eq(200)
+            expect(response.body[:license_expiration]).to eq "2020-11-05T00:00:00.000+00:00"
+          end
+        end
+      end
+    end
   end
 
   describe 'update_me' do

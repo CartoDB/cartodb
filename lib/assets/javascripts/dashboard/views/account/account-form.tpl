@@ -62,27 +62,53 @@
     </div>
   </div>
   
-  <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
+  <% if (isCartoDBHosted) { %>
+    <% if ((isOrgAdmin || isOrgOwner) && licenseExpiration) { %>
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
+      </div>
+
+      <span class="FormAccount-separator"></span>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label
+            class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.license_expiration') %>
+          </label>
+        </div>
+        <div class="FormAccount-rowData">
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled" id="license-expiration"
+            name="license-expiration" readonly="readonly" size="30" type="text" value="<%= licenseExpiration %>">
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="CDB-Text CDB-Size-small u-altTextColor">To renew it, please contact <a href=mailto:sales@carto.com>sales@carto.com</a></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  <% } else { %>
+    <% if (!isInsideOrg || isOrgOwner) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
     </div>
-
+    
     <span class="FormAccount-separator"></span>
-
+    
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
+        <label
+          class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="FormAccount-planTag CDB-Size-medium"><%= planName %></div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>" class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
+          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>"
+              class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
         </div>
       </div>
     </div>
+    <% } %>
   <% } %>
   
-
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.connect_external_datasources') %></p>

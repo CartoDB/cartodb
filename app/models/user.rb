@@ -1373,23 +1373,22 @@ class User < Sequel::Model
       title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
       revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'box'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'dropbox'
-        Cartodb.config[:oauth]['dropbox']['app_key'].present?
-      when 'mailchimp'
-        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
-      when 'instagram'
-        Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
-      when 'bigquery'
-          Cartodb.config[:oauth][serv]['client_id'].present? && Carto::Connector.provider_available?('bigquery', self)
-      else
-        true
-      end
+                when 'gdrive'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'box'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'dropbox'
+                  Cartodb.get_config(:oauth, serv, 'app_key')
+                when 'mailchimp'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('mailchimp_import')
+                when 'instagram'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('instagram_import')
+                when 'bigquery'
+                  Cartodb.get_config(:oauth, serv, 'client_id') &&
+                  Carto::Connector.provider_available?('bigquery', self)
+                else
+                  true
+                end
 
       if enabled
         oauth = oauths.select(serv)

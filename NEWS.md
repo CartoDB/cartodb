@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
 
 4.30.1 (2019-11-15)
 -------------------

@@ -80,7 +80,7 @@
           <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled" id="license-expiration"
             name="license-expiration" readonly="readonly" size="30" type="text" value="<%= licenseExpiration %>">
           <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-            <p class="CDB-Text CDB-Size-small u-altTextColor">To renew it, please contact <a href=mailto:sales@carto.com>sales@carto.com</a></p>
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.license_renew_info') %></p>
           </div>
         </div>
       </div>

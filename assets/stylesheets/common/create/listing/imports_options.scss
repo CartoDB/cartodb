@@ -8,6 +8,29 @@ $w: 780px;
   position: relative;
   width: $w;
   margin: 0 auto 20px;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 176px;
+    height: 84px;
+    margin-right: 16px;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    background-color: #FFF;
+    color: #636D72;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+  }
 }
 
 .ImportOptions-navigationButton {
@@ -48,3 +71,24 @@ $w: 780px;
   margin: 0 $sMargin-formRow 0 0;
   text-align: center;
 }
+
+@mixin importIcon($name) {
+  .ImportOptions__item .is-#{$name} {
+    width: 44px;
+    height: 20px;
+    margin-bottom: 8px;
+    background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+@include importIcon(box);
+@include importIcon(dropbox);
+@include importIcon(gdrive);
+@include importIcon(bigquery);
+@include importIcon(hive);
+@include importIcon(sqlserver);
+@include importIcon(mysql);
+@include importIcon(postgresql);
+@include importIcon(arcgis);

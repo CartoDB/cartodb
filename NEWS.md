@@ -18,6 +18,7 @@ Development
 
 ### Bug fixes / enhancements
 * Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
+* Remove duplicate banner in API Keys page ([CartoDB/cartodb#14936](https://github.com/CartoDB/cartodb/issues/14936))
 
 4.30.1 (2019-11-15)
 -------------------

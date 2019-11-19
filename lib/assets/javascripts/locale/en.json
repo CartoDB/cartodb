@@ -891,7 +891,9 @@
               }
           },
           "create-dialog": {
-              "creating-map": "Creating map"
+              "creating-map": "Creating map",
+              "upload": "Upload",
+              "connect": "Connect"
           },
           "export-data": {
               "title": "Export data",

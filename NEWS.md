@@ -5,10 +5,19 @@ Development
 - None yet
 
 ### Features
-- Show license information for OnPremises ([#15243](https://github.com/CartoDB/cartodb/pull/15243))
+- None yet
 
 ### Bug fixes / enhancements
-- Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
+- None yet
+
+4.31.0 (2019-11-19)
+-------------------
+
+### Features
+* Show license information for OnPremises ([#15243](https://github.com/CartoDB/cartodb/pull/15243))
+
+### Bug fixes / enhancements
+* Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
 
 4.30.1 (2019-11-15)
 -------------------

@@ -40,7 +40,9 @@
           <div class="js-footer-info CreateDialog-footerInfo"></div>
           <div class="CreateDialog-footerActions js-footerActions">
             <button class="CDB-Button CDB-Button--primary CreateDialog-footerActionsButton <% if (!isUploadValid) { %>is-disabled<% } %> js-connect">
-              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- listingState === "upload" ? 'Upload' : 'Connect' %> dataset</span>
+              <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">
+                <%- listingState === "upload" ? _t('components.modals.create-dialog.upload') : _t('components.modals.create-dialog.connect') %> dataset
+              </span>
             </button>
           </div>
         <% } %>

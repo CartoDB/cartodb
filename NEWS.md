@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Show license information for OnPremises ([#15243](https://github.com/CartoDB/cartodb/pull/15243))
 
 ### Bug fixes / enhancements
 - Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))

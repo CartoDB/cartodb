@@ -70,6 +70,8 @@
                 "confirm_password": "Confirm password",
                 "account_type": "Account type",
                 "billing_plan": "Your billing plan",
+                "license_expiration": "License expiration",
+                "license_renew_info": "To renew it, please contact <a href=mailto:sales@carto.com>sales@carto.com</a>",
                 "view_details": "View details",
                 "multifactor_authentication": "Multi-factor authentication",
                 "mfa_enabled": "Enabled",

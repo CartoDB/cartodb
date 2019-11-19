@@ -13,6 +13,10 @@ module Carto
       include AccountTypeHelper
       include AvatarHelper
       include Carto::ControllerHelper
+      begin
+        include OnpremisesLicensingGear::ApplicationHelper
+      rescue NameError
+      end
 
       UPDATE_ME_FIELDS = %i(
         name last_name website description location twitter_username disqus_shortname available_for_hire company
@@ -248,11 +252,7 @@ module Carto
       def license_expiration
         return nil unless cartodb_com_hosted?
 
-        redis_value = $api_credentials&.get('cartoctl:license')
-        license = JSON.parse(redis_value)
-        Time.at(license["e"]).to_datetime
-      rescue StandardError
-        nil
+        send(:license_expiration_date) if respond_to?(:license_expiration_date)
       end
     end
   end

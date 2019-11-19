@@ -92,11 +92,16 @@ describe Carto::Api::UsersController do
 
     context 'license_expiration field' do
       before(:each) do
-        $api_credentials = mock('Redis connection')
-        $api_credentials.stubs(:get).with('cartoctl:license').returns('{"e":1604534400}')
+        @expiration_date = Time.parse("2020-11-05T00:00:00.000+00:00")
+      end
+
+      after(:each) do
+        Carto::Api::UsersController.any_instance.unstub(:license_expiration_date)
       end
 
       it 'is nil for cloud' do
+        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+
         Cartodb.with_config(cartodb_com_hosted: false) do
           get_json api_v3_users_me_url, @headers do |response|
             expect(response.status).to eq(200)
@@ -105,9 +110,7 @@ describe Carto::Api::UsersController do
         end
       end
 
-      it 'is nil if invalid' do
-        $api_credentials.stubs(:get).with('cartoctl:license').returns('wrong')
-
+      it 'is nil if the license_expiration_date does not exist (gear not loaded)' do
         Cartodb.with_config(cartodb_com_hosted: true) do
           get_json api_v3_users_me_url, @headers do |response|
             expect(response.status).to eq(200)
@@ -117,6 +120,8 @@ describe Carto::Api::UsersController do
       end
 
       it 'gets the date from the license' do
+        Carto::Api::UsersController.any_instance.stubs(:license_expiration_date).returns(@expiration_date)
+
         Cartodb.with_config(cartodb_com_hosted: true) do
           get_json api_v3_users_me_url, @headers do |response|
             expect(response.status).to eq(200)

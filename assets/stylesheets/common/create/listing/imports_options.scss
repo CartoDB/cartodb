@@ -2,12 +2,17 @@
 @import '../../../variables/sizes';
 
 // Imports styles
-$w: 780px;
+$w: 940px;
 
 .ImportOptions {
   position: relative;
   width: $w;
-  margin: 0 auto 20px;
+  margin: 8px auto 20px;
+
+  &__category-title {
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
 
   &__row {
     display: flex;
@@ -74,6 +79,7 @@ $w: 780px;
 
 @mixin importIcon($name) {
   .ImportOptions__item .is-#{$name} {
+    display: block;
     width: 44px;
     height: 20px;
     margin-bottom: 8px;

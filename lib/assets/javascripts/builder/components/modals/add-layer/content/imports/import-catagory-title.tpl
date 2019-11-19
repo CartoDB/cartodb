@@ -1,3 +1,3 @@
-<div class="CDB-Text CDB-Size-medium u-tSpace-xl u-bSpace--xl">
+<div class="ImportOptions__category-title CDB-Text CDB-Size-medium">
   <span><%- title %></span>
 </div>

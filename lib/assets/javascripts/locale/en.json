@@ -1233,6 +1233,7 @@
                 "adding-new-layer": "Adding new layer…",
                 "add-layer-error": "Could not add layer",
                 "imports": {
+                    "header": "Connect with %{brand}",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
                     "connector": "connector",

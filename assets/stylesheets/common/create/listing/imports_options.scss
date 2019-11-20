@@ -78,14 +78,21 @@ $w: 940px;
 }
 
 @mixin importIcon($name) {
-  .ImportOptions__item .is-#{$name} {
+  .ImportOptions__item .is-#{$name},
+  .SelectedImport__header .is-#{$name} {
     display: block;
     width: 44px;
     height: 20px;
-    margin-bottom: 8px;
     background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
     background-repeat: no-repeat;
     background-position: center;
+  }
+
+  .ImportOptions__item .is-#{$name} {
+    margin-bottom: 8px;
+  }
+  .SelectedImport__header .is-#{$name} {
+    margin-right: 8px;
   }
 }
 
@@ -98,3 +105,22 @@ $w: 940px;
 @include importIcon(mysql);
 @include importIcon(postgresql);
 @include importIcon(arcgis);
+
+.SelectedImport {
+  &__header {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    max-width: 940px;
+    margin: 10px auto 0;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #DDD;
+  }
+
+  &__back {
+    position: absolute;
+    left: 0;
+  }
+}

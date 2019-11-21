@@ -1,3 +1,4 @@
+# coding: utf-8
 module CartoDB
   module Importer2
     class StringSanitizer
@@ -65,6 +66,7 @@ module CartoDB
         .gsub(/-/,' ').strip
         .gsub(/ /,'-')
         .gsub(/-/,'_')
+        .gsub(/_+/,'_')
       end #sanitize
     end # StringSanitizer
   end # Importer2

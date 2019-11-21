@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Add a warning to assess changes in column name normalization upon table import/sync/creation ([#15231](https://github.com/CartoDB/cartodb/issues/15231))
 
 4.31.0 (2019-11-19)
 -------------------

@@ -22,6 +22,7 @@ $w: 940px;
 
   &__item {
     display: flex;
+    position: relative;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -36,6 +37,32 @@ $w: 940px;
     font-size: 12px;
     line-height: 16px;
   }
+
+  &__overlay {
+    display: none;
+  }
+
+  &__lock {
+    display: block;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 12px;
+    height: 16px;
+    background-image: url($assetsDir + '/images/layout/connectors/locked.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}
+
+.is-disabled .ImportOptions__overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.6;
+  background: #FFF;
 }
 
 .ImportOptions-navigationButton {
@@ -91,6 +118,7 @@ $w: 940px;
   .ImportOptions__item .is-#{$name} {
     margin-bottom: 8px;
   }
+
   .SelectedImport__header .is-#{$name} {
     margin-right: 8px;
   }

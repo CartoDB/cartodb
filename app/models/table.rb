@@ -1342,8 +1342,8 @@ class Table
         sanitized_column_name: sanitized_column_name
       )
     end
-    if valid_column_name != column_name
-      connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
+    if sanitized_column_name != column_name
+      connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{sanitized_column_name}";})
     end
 
     valid_column_name

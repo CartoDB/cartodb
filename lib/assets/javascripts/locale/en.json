@@ -1236,6 +1236,7 @@
                     "header": "Connect with %{brand}",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
+                    "request-beta": "Request beta access",
                     "connector": "connector",
                     "demo-email-title": "I am interested in the %{name} connector",
                     "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
@@ -1302,6 +1303,10 @@
                         "more-features": "more features",
                         "upgrade-desc": "Upgrade your account to get sync options and %{features}",
                         "upgrade": "upgrade"
+                    },
+                    "status-desc": {
+                        "not-enabled": "This connector is not enabled. Please contact us if you are interested.",
+                        "beta": "This connector is in beta. Please contact us if you want to give it a try."
                     },
                     "twitter": {
                         "category": "Category",

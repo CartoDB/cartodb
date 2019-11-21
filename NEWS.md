@@ -8,8 +8,10 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
 - Add a warning to assess changes in column name normalization upon table import/sync/creation ([#15231](https://github.com/CartoDB/cartodb/issues/15231))
-- Sanitization / normalization of column names now preserves uppercase letters upon import through DB Connectors [#15231](https://github.com/CartoDB/cartodb/issues/15231)
+- Sanitization / normalization of column names now preserves uppercase letters upon import through DB Connectors ([#15231](https://github.com/CartoDB/cartodb/issues/15231))
+
 
 4.31.0 (2019-11-19)
 -------------------

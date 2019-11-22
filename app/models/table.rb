@@ -11,7 +11,6 @@ require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
-require_relative '../../services/importer/lib/importer/string_sanitizer'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 require_relative '../model_factories/layer_factory'
@@ -1329,19 +1328,6 @@ class Table
     database_schema = options.fetch(:database_schema, 'public')
 
     valid_column_name = get_valid_column_name(table_name, column_name, options)
-    sanitized_column_name = CartoDB::Importer2::StringSanitizer.new.sanitize(column_name.to_s)
-    if valid_column_name != sanitized_column_name
-      CartoDB::Logger.warning(
-        message: "Differences in column name sanitization/normalization.",
-        table_name: table_name,
-        database_schema: database_schema,
-        database: connection.opts[:database],
-        username: connection.opts[:user],
-        column_name: column_name,
-        valid_column_name: valid_column_name,
-        sanitized_column_name: sanitized_column_name
-      )
-    end
     if valid_column_name != column_name
       connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
     end

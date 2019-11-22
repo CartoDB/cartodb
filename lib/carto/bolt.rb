@@ -20,13 +20,16 @@ module Carto
       locked_acquired = acquire_lock(attempts, timeout)
 
       begin
-        unless locked_acquired
-          set_rerun_after_finish
-          return !!locked_acquired
+        if locked_acquired
+          remove_retry
+          yield
+          true
+        else
+          if set_retry
+            rerun_func.call
+          end
+          false
         end
-        yield
-        try_to_rerun(rerun_func)
-        !!locked_acquired
       ensure
         unlock if locked_acquired
       end
@@ -48,14 +51,6 @@ module Carto
       false
     end
 
-    def try_to_rerun(rerun_func)
-      return unless rerun_func.present?
-      while retry?
-        refresh_lock_timeout
-        rerun_func.call
-      end
-    end
-
     def proc?(proc)
       proc.respond_to?(:call)
     end
@@ -75,17 +70,12 @@ module Carto
       @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
     end
 
-    def set_rerun_after_finish
-      @redis_object.set("#{@bolt_key}:retry", true, px: @ttl_ms, nx: true)
+    def remove_retry
+      @redis_object.del("#{@bolt_key}:retry")
     end
 
-    def refresh_lock_timeout
-      @redis_object.pexpire(@bolt_key, @ttl_ms)
-    end
-
-    def retry?
-      @redis_object.del("#{@bolt_key}:retry") > 0
-    end
+    def set_retry
+      redis_object.getset("#{@bolt_key}:retry", true)
 
     def add_namespace_to_key(key)
       "rails:bolt:#{key}"

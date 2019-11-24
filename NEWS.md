@@ -3001,7 +3001,7 @@ Now, back to the new features!
   * Improved color picker.
 
 * Bugs Fixed
-  * When deleting a user from the box, his database should be deleted before deleting his metadata.
+  * When deleting a user from the box, his/her database should be deleted before deleting his/her metadata.
   * Map turns blank at "Publish" time.
   * Revamp option for selecting a marker image / polygon pattern fill.
   * Wrong message shown in dashboard.

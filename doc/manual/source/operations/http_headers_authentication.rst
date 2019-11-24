@@ -30,5 +30,5 @@ Even more, if you want not only *authentication* (authenticating existing users)
 
 * ``email``: value of the header (``alice@myorg.com``).
 * ``username``: user of the email ( ``alice``).
-* ``password``: random. He can change it in his account page.
+* ``password``: random. they can change it in their account page.
 * ``organization``: taken from the subdomain (``myorg``).

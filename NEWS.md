@@ -2931,7 +2931,7 @@ Now, back to the new features!
   * Full screen options are enabled by default for public visualizations
   * Empty the_geom from CSV no longer imports to "" instead of NULL
   * Trying to change a password no longer returns unauthorized
-  * User destroy no longer fails when he has named maps
+  * User destroy no longer fails when she/he has named maps
   * /api/v1/tables returns 404 when table does not exist
 
 

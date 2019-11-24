@@ -119,8 +119,8 @@ class UserMailer < ActionMailer::Base
 
   private
 
-  # If user has been created by the admin he needs to tell him the password.
-  # If he has signed in through the page he doesn't.
+  # If user has been created by the admin they need to tell them the password.
+  # If user has signed in through the page they doesn't.
   def user_needs_password(user)
     !user.google_sign_in && user.enable_account_token.nil? && !user.created_with_invitation?
   end

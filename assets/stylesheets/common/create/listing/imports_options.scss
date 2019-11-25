@@ -36,9 +36,17 @@ $w: 940px;
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
     line-height: 16px;
+
+    &:hover {
+      border-color: #1785FB;
+    }
   }
 
   &__overlay {
+    display: none;
+  }
+
+  &__tag {
     display: none;
   }
 
@@ -63,6 +71,20 @@ $w: 940px;
   height: 100%;
   opacity: 0.6;
   background: #FFF;
+}
+
+.is-beta .ImportOptions__tag {
+  display: block;
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 32px;
+  height: 16px;
+  border-radius: 10px;
+  background: #979EA1;
+  color: #FFF;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .ImportOptions-navigationButton {
@@ -112,15 +134,16 @@ $w: 940px;
     height: 20px;
     background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
     background-repeat: no-repeat;
-    background-position: center;
   }
 
   .ImportOptions__item .is-#{$name} {
     margin-bottom: 8px;
+    background-position: center center;
   }
 
   .SelectedImport__header .is-#{$name} {
     margin-right: 8px;
+    background-position: right center;
   }
 }
 

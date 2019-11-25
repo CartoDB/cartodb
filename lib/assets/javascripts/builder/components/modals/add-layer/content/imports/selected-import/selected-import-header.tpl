@@ -3,5 +3,5 @@
     <i class="CDB-IconFont CDB-IconFont-arrowPrev u-actionTextColor"></i>
   </button>
   <i class='is-<%- name %>'></i>
-  <span><%- _t('components.modals.add-layer.imports.header', { brand: cdb.core.sanitize.html(title)}) %></span>
+  <span><%= _t('components.modals.add-layer.imports.header', { brand: cdb.core.sanitize.html(title)}) %></span>
 </div>

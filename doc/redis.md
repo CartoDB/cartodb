@@ -55,5 +55,5 @@ The values of the hash are:
     - `global`: sorted set of map views, the key for this sorted set is `%Y%m%d`
     - `stat_tag:<visualization_id>`: sorted set of map views for a given visualization
   - `api_calls`: array of aggregated map views for the last 30 days
-  - `last_active_time`: last time the user loaded his dashboard
+  - `last_active_time`: last time the user loaded their dashboard
 

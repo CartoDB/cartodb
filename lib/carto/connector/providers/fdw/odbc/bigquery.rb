@@ -34,6 +34,31 @@ module Carto
         super + dataset_errors
       end
 
+      # BigQuery provider add the list_projects feature
+      def features_information
+        features_info = super
+        features_info[:list_projects] = true
+        features_info
+      end
+
+      def check_connection
+        ok = false
+        if @oauth_client
+          ok = @oauth_client.token_valid?
+        end
+        ok
+      end
+
+      def list_projects
+        # TODO
+        []
+      end
+
+      def list_tables_by_project(project_id)
+        # TODO
+        []
+      end
+
       private
 
       # Notes regarding IMPORT (extermal) schema and the DefaultDataset parameter:
@@ -43,10 +68,14 @@ module Carto
       #   the DefaultDataset is necessary when table names are not qualified with the dataset.
 
       server_attributes %I(
-        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret
-        AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime
+        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret EnableHTAPI
+        AllowLargeResults UseDefaultLargeResultsDataset UseQueryCache HTAPI_MinActivationRatio
+        HTAPI_MinResultsSize LargeResultsDataSetId LargeResultsTempTableExpirationTime
       )
       user_attributes %I(RefreshToken)
+
+      required_parameters %I(project table)
+      optional_parameters %I(from_project dataset sql_query storage_api)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -55,13 +84,14 @@ module Carto
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
       SQL_DIALECT                  = 1
       OAUTH_MECHANISM              = 1
-      LRESULTS                     = 0
-      LRESULTS_DATASET_ID          = '{_bqodbc_temp_tables}'
-      LRESULTS_TEMP_TABLE_EXP_TIME = '3600000'
+      LRESULTS                     = 1
+      LRESULTS_DEFAULT_DATASET     = 0
+      HTAPI_MIN_ACTIVATION_RATIO   = 0
 
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
+        @connector_config = Cartodb.get_config(:connectors, DATASOURCE_NAME)
         validate_config!(context)
       end
 
@@ -75,7 +105,10 @@ module Carto
           raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
         end
 
-        @token = context.user.oauths.select(DATASOURCE_NAME)&.token
+        datasource_oauth = context.user.oauths.select(DATASOURCE_NAME)
+        @oauth_client = datasource_oauth&.get_service_datasource
+        @token = datasource_oauth&.token
+
         raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
       end
 
@@ -90,8 +123,13 @@ module Carto
           ClientId: @oauth_config['client_id'],
           ClientSecret: @oauth_config['client_secret'],
           AllowLargeResults: LRESULTS,
-          LargeResultsDataSetId: LRESULTS_DATASET_ID,
-          LargeResultsTempTableExpirationTime: LRESULTS_TEMP_TABLE_EXP_TIME
+          UseDefaultLargeResultsDataset: LRESULTS_DEFAULT_DATASET,
+          HTAPI_MinActivationRatio: HTAPI_MIN_ACTIVATION_RATIO,
+          EnableHTAPI: @connector_config['storage_api'],
+          UseQueryCache: @connector_config['query_cache'],
+          HTAPI_MinResultsSize: @connector_config['storage_api_min_results'],
+          LargeResultsDataSetId: @connector_config['storage_api_tmp_dataset'],
+          LargeResultsTempTableExpirationTime: @connector_config['storage_api_tmp_table_exp']
         }
 
         if !proxy_conf.nil?
@@ -100,9 +138,6 @@ module Carto
 
         return conf
       end
-
-      required_parameters %I(project table)
-      optional_parameters %I(dataset sql_query)
 
       def remote_schema_name
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA

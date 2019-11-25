@@ -60,6 +60,10 @@ module Carto
         must_be_defined_in_derived_class limits: limits
       end
 
+      def list_projects
+        must_be_defined_in_derived_class
+      end
+
       def check_connection
         must_be_defined_in_derived_class
       end

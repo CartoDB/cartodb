@@ -7,7 +7,7 @@ CARTO is an open, powerful, and intuitive platform for discovering and predictin
 
 Empower organizations to optimize operational performance, strategic investments, and everyday decisions with CARTO Engine—our embeddable platform for web and mobile apps—and the new CARTO Builder, a drag and drop analysis tool.
 
-It was built to make it easier for people to tell their stories by
+CARTO was built to make it easier for people to tell their stories by
 providing them with flexible and intuitive ways to create maps and design
 geospatial applications. CARTO can be installed on your own server
 and we also offer a hosted service at [carto.com](https://carto.com).
@@ -24,7 +24,7 @@ We hope you like it!
 With CARTO, you can upload your geospatial data (Shapefiles, GeoJSON,
 etc) using a web form and then make it public or private.
 
-After it is uploaded, you can visualize it in a dataset or on a map, search
+After geospatial data is uploaded, you can visualize it in a dataset or on a map, search
 it using SQL, and apply map styles using CartoCSS. You can even access it
 using the CARTO [APIs](https://docs.carto.com/#cartodb-platform), or export it
 to a file.
@@ -48,7 +48,7 @@ documentation.
 
 ## Developing & Contributing to CARTO
 
-See [our contributing doc](CONTRIBUTING.md) for how you can improve CARTO, but you will need to sign a Contributor License Agreement (CLA) before making a submission, [learn more here](https://carto.com/contributions).
+See [our contributing doc](CONTRIBUTING.md) for information on how you can improve CARTO, but you will need to sign a Contributor License Agreement (CLA) before making a submission. [learn more here](https://carto.com/contributions).
 
 ## Testing
 

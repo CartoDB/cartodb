@@ -432,7 +432,7 @@ describe SignupController do
       last_user_creation = Carto::UserCreation.order('created_at desc').limit(1).first
       @organization.whitelisted_email_domains.should_not include(last_user_creation.email)
       last_user_creation.organization_id.should == @organization.id
-      # last_user_creation.requires_validation_email?.should == false
+      last_user_creation.requires_validation_email?.should == false
       invitation.reload
       invitation.used_emails.should include(invited_email)
     end

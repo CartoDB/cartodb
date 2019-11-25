@@ -276,7 +276,135 @@ describe Carto::Connector do
       )
     end
 
-    it 'Should quote ODBC paremeters that require it' do
+    it 'can import an external table under a different name' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        table:    'thetable',
+        import_as: 'theimportedtable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
+
+      @executed_commands.size.should eq 9
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
+      foreign_table_name = %{"cdb_importer"."#{server_name}_theimportedtable"}
+      user_name = @user.username
+      user_role = @user.database_username
+      connector.remote_table_name.should == 'theimportedtable'
+
+
+      expect_executed_commands(
+        @executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            fdw_name: 'odbc_fdw',
+            options: {
+              'odbc_Driver' => 'MySQL',
+              'odbc_server' => 'theserver',
+              'odbc_database' => 'thedatabase',
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
+            }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          mode: :superuser,
+          sql: [{
+            command: :import_foreign_schema,
+            server_name: server_name,
+            schema_name: 'cdb_importer',
+            options: {
+              "schema" => 'thedatabase',
+              "table" => 'thetable',
+              "import_as" => 'theimportedtable',
+              "encoding" => 'theencoding',
+              "prefix" => "#{server_name}_"
+            }
+          }, {
+            command: :grant_select,
+            table_name: foreign_table_name,
+            user_name: user_role
+          }]
+        }, {
+          # CREATE TABLE AS SELECT
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :create_table_as_select,
+            table_name: %{"xyz"."abc"},
+            select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+          }]
+        }, {
+          # DROP FOREIGN TABLE
+          mode: :superuser,
+          sql: [{
+            command: :drop_foreign_table_if_exists,
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name
+          }]
+        }
+      )
+    end
+
+    it 'Should quote ODBC parameters that require it' do
       parameters = {
         provider: 'mysql',
         connection: {
@@ -896,6 +1024,7 @@ describe Carto::Connector do
             'database' => { required: false }
           },
           'table'      => { required: true  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1050,6 +1179,7 @@ describe Carto::Connector do
             'sslmode'  => { required: false }
           },
           'table'      => { required: true  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1200,6 +1330,7 @@ describe Carto::Connector do
             'database' => { required: true  }
           },
           'table'      => { required: true  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1348,6 +1479,7 @@ describe Carto::Connector do
             'database' => { required: false }
           },
           'table'      => { required: true  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1504,6 +1636,7 @@ describe Carto::Connector do
             'database' => { required: false }
           },
           'table'      => { required: true  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -2072,7 +2205,7 @@ describe Carto::Connector do
           'table'      => { required: true  },
           'schema'     => { required: false },
           'username'   => { required: true  },
-          'password'   => { required: true },
+          'password'   => { required: true  },
           'server'     => { required: true  },
           'port'       => { required: false },
           'database'   => { required: true  }

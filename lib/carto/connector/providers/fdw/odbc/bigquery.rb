@@ -75,7 +75,7 @@ module Carto
       user_attributes %I(RefreshToken)
 
       required_parameters %I(project table)
-      optional_parameters %I(from_project dataset sql_query storage_api)
+      optional_parameters %I(from_project import_as dataset sql_query storage_api)
 
       # Class constants
       DATASOURCE_NAME              = id

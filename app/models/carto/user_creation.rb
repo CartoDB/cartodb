@@ -163,6 +163,7 @@ class Carto::UserCreation < ActiveRecord::Base
 
   def pertinent_invitation
     @pertinent_invitation ||= select_valid_invitation_token(Carto::Invitation.query_with_unused_email(email).all)
+
   end
 
   private
@@ -264,11 +265,9 @@ class Carto::UserCreation < ActiveRecord::Base
   end
 
   def use_invitation
-    return unless invitation_token
-    invitation = pertinent_invitation
-    return unless invitation
-
-    invitation.use(email, invitation_token)
+    Carto::Invitation.query_with_valid_email(email).each do |invitation|
+      invitation.use(email, invitation.token(email))
+    end
   end
 
   def promote_user

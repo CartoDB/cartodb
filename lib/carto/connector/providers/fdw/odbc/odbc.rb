@@ -81,11 +81,15 @@ module Carto
       end
 
       def table_name
-        @params[:table] || @params[:import_as]
+        @params[:import_as] || @params[:table]
+      end
+
+      def remote_table_name
+        @params[:table]
       end
 
       def foreign_table_name_for(server_name, name = nil)
-        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || remote_table_name}")
       end
 
       def unique_prefix_for(server_name)

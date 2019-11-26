@@ -68,7 +68,8 @@ module Carto
         if Carto::Connector.list_projects?(provider_id)
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
-            render_jsonp(connector.list_projects)
+            #render_jsonp(connector.list_projects)
+            render_jsonp({ errors: "Not implemented yet" }, 501)
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)
           rescue
@@ -80,14 +81,14 @@ module Carto
       end
 
       def project_tables
-        byebug
         provider_id = params[:provider_id]
         project = params[:project_id]
         parameters = build_connection_parameters(provider_id, params)
         if Carto::Connector.list_tables?(provider_id)
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
-            render_jsonp(connector.list_tables_by_project(project))
+            #render_jsonp(connector.list_tables_by_project(project))
+            render_jsonp({ errors: "Not implemented yet" }, 501)
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)
           rescue

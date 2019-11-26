@@ -2,7 +2,7 @@
 @import '../../../variables/sizes';
 
 // Imports styles
-$w: 940px;
+$w: $sLayout-width;
 
 .ImportOptions {
   position: relative;
@@ -29,10 +29,10 @@ $w: 940px;
     width: 176px;
     height: 84px;
     margin-right: 16px;
-    border: 1px solid #DDD;
+    border: 1px solid $cStructure-mainLine;
     border-radius: 4px;
-    background-color: #FFF;
-    color: #636D72;
+    background-color: $cStructure-mainBkg;
+    color: $cTypography-helpSecondary;
     font-family: 'Open Sans', sans-serif;
     font-size: 12px;
     line-height: 16px;
@@ -70,7 +70,7 @@ $w: 940px;
   width: 100%;
   height: 100%;
   opacity: 0.6;
-  background: #FFF;
+  background: $cStructure-mainBkg;
 }
 
 .is-beta .ImportOptions__tag {
@@ -81,9 +81,9 @@ $w: 940px;
   width: 32px;
   height: 16px;
   border-radius: 10px;
-  background: #979EA1;
-  color: #FFF;
-  font-size: 10px;
+  background: $cTypography-linkSecondary;
+  color: $cTypography-headersOverBlack;
+  font-size: $sFontSize-smaller;
   font-weight: 600;
 }
 
@@ -167,7 +167,7 @@ $w: 940px;
     margin: 10px auto 0;
     padding-top: 16px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #DDD;
+    border-bottom: 1px solid $cStructure-mainLine;
   }
 
   &__back {

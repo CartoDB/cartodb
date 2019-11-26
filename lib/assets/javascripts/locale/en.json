@@ -1234,6 +1234,7 @@
                 "add-layer-error": "Could not add layer",
                 "imports": {
                     "header": "Connect with %{brand}",
+                    "header-alt": "%{brand} connector logo",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
                     "request-beta": "Request beta access",

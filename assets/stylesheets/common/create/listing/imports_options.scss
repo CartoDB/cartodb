@@ -127,23 +127,14 @@ $w: $sLayout-width;
 }
 
 @mixin importIcon($name) {
-  .ImportOptions__item .is-#{$name},
-  .SelectedImport__header .is-#{$name} {
+  .ImportOptions__item .is-#{$name} {
     display: block;
     width: 44px;
     height: 20px;
+    margin-bottom: 8px;
     background-image: url($assetsDir + '/images/layout/connectors/#{$name}.svg');
     background-repeat: no-repeat;
-  }
-
-  .ImportOptions__item .is-#{$name} {
-    margin-bottom: 8px;
     background-position: center center;
-  }
-
-  .SelectedImport__header .is-#{$name} {
-    margin-right: 8px;
-    background-position: right center;
   }
 }
 
@@ -168,6 +159,10 @@ $w: $sLayout-width;
     padding-top: 16px;
     padding-bottom: 16px;
     border-bottom: 1px solid $cStructure-mainLine;
+  }
+
+  &__icon {
+    margin-right: 8px;
   }
 
   &__back {

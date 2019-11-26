@@ -83,9 +83,9 @@ describe UserOrganization do
       @owner.reload
 
       triggers_after = @owner.db_service.triggers
-      triggers_after.map { |t| [t.database_name, t.table_name, t.trigger_name] }.sort \
-        .should == \
-      triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }.sort
+      triggers_after.map { |t| [t.database_name, t.table_name, t.trigger_name] } \
+        .should =~ \
+      triggers_before.map { |t| [t.database_name, t.table_name, t.trigger_name] }
 
       @owner.db_service.triggers('public').should be_empty
     end

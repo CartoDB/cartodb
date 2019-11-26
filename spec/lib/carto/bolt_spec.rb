@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../spec_helper_min.rb'
 require_relative '../../../lib/carto/bolt.rb'
 

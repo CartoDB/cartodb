@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'providers/fdw/odbc/generic_odbc'
 require_relative 'providers/fdw/odbc/mysql'
 require_relative 'providers/fdw/odbc/postgresql'

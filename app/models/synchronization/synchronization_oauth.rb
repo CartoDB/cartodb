@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../services/datasources/lib/datasources'
 
 # @see DB table 'synchronization_oauths'

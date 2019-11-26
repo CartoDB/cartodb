@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'connector/fdw_support'
 require_relative 'connector/errors'
 require_relative 'connector/providers'
@@ -50,10 +48,20 @@ module Carto
       @provider.table_name
     end
 
-    # General availabillity check
-    def self.check_availability!(user)
+    # Availabillity check: checks general availability for user,
+    # and specific provider availability if provider_name is not nil
+    def self.check_availability!(user, provider_name=nil)
+      return false if user.nil?
+      # check general availability
       unless user.has_feature_flag?('carto-connectors')
         raise ConnectorsDisabledError.new(user: user)
+      end
+      if provider_name
+        # check the provider is enabled for the user
+        limits = Connector.limits provider_name: provider_name, user: user
+        if !limits || !limits[:enabled]
+          raise ConnectorsDisabledError.new(user: user, provider: provider_name)
+        end
       end
     end
 
@@ -62,8 +70,7 @@ module Carto
     end
 
     def self.provider_available?(provider, user)
-      connector = Carto::Connector.new({provider: provider}, user: user, logger: nil)
-      connector.check_availability!
+      Carto::Connector.check_availability! user, provider
       true
     rescue ConnectorsDisabledError
       false
@@ -71,10 +78,7 @@ module Carto
 
     # Check availability for a user and provider
     def check_availability!
-      Connector.check_availability!(@connector_context.user)
-      if !enabled?
-        raise ConnectorsDisabledError.new(user: @connector_context.user, provider: @provider_name)
-      end
+      Connector.check_availability!(@connector_context.user, @provider_name)
     end
 
     # Limits for the user/provider

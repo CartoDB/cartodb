@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Base class for Connector Providers
 #
 # This is an abstract class; concrete classes derived from this one
@@ -174,7 +172,7 @@ module Carto
       end
 
       def default_timeout
-        @connector_context.user.connector_configuration(provider_id).timeout
+        @connector_context.user.connector_configuration(provider_id)&.timeout
       end
     end
 

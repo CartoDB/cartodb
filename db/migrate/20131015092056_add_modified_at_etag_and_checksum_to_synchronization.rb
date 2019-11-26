@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class AddModifiedAtEtagAndChecksumToSynchronization < Sequel::Migration
   def up
     alter_table :synchronizations do

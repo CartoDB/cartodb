@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'virtus'
 require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer'

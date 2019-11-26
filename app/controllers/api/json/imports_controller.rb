@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_relative '../../../helpers/file_upload'
 require_relative '../../../../services/datasources/lib/datasources'
 require_relative '../../../models/visualization/external_source'

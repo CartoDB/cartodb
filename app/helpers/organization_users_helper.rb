@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require_dependency 'carto/uuidhelper'
 
 module OrganizationUsersHelper

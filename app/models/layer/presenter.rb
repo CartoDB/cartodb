@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'json'
 require 'ejs'
 require_dependency 'carto/table_utils'

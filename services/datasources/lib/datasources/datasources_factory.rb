@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './url/arcgis'
 require_relative './url/dropbox'
 require_relative './url/box'

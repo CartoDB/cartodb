@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 require_relative '../../../factories/users_helper'
 require_relative '../../../../app/controllers/carto/api/visualizations_controller'
@@ -329,6 +327,13 @@ describe Carto::Api::VisualizationsController do
           v.should eq v2
         end
       end
+    end
+
+    it 'raises param invalid error if user does not exist' do
+      host! "pra.localhost.lan"
+      get base_url, {  }, @headers
+      JSON.load(last_response.body)['error'].should eq "Wrong 'username' parameter value."
+      last_response.status.should eq 400
     end
 
     it 'returns success, empty response for empty user' do
@@ -3193,7 +3198,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    it 'generates the URL for tables shared by another user with hyphens in his username' do
+    it 'generates the URL for tables shared by another user with hyphens in their username' do
       user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
       table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
       shared_table = table.table_visualization

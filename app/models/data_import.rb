@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'sequel'
 require 'fileutils'
 require 'uuidtools'

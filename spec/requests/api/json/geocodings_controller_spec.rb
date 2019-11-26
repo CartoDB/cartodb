@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 require_relative 'geocodings_controller_shared_examples'
 require_relative '../../../../app/controllers/api/json/geocodings_controller'

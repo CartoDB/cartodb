@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './carto_json_serializer'
 require_relative '../../controllers/carto/api/legend_presenter'
 require_dependency 'carto/legend_definition_validator'

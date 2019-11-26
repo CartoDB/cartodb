@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require 'ostruct'
 require_relative '../spec_helper'
 require_relative 'user_shared_examples'
@@ -95,7 +93,7 @@ describe User do
   end
 
   describe 'organization checks' do
-    it "should not be valid if his organization doesn't have more seats" do
+    it "should not be valid if their organization doesn't have more seats" do
       organization = create_org('testorg', 10.megabytes, 1)
       user1 = create_user email: 'user1@testorg.com',
                           username: 'user1',
@@ -117,7 +115,7 @@ describe User do
       user1.destroy
     end
 
-    it 'should be valid if his organization has enough seats' do
+    it 'should be valid if their organization has enough seats' do
       organization = create_org('testorg', 10.megabytes, 1)
       user = ::User.new
       user.organization = organization
@@ -126,7 +124,7 @@ describe User do
       organization.destroy
     end
 
-    it "should not be valid if his organization doesn't have enough disk space" do
+    it "should not be valid if their organization doesn't have enough disk space" do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(10.megabytes)
       user = ::User.new
@@ -137,7 +135,7 @@ describe User do
       organization.destroy
     end
 
-    it 'should be valid if his organization has enough disk space' do
+    it 'should be valid if their organization has enough disk space' do
       organization = create_org('testorg', 10.megabytes, 1)
       organization.stubs(:assigned_quota).returns(9.megabytes)
       user = ::User.new
@@ -235,7 +233,7 @@ describe User do
     end
 
     describe 'when updating user quota' do
-      it 'should be valid if his organization has enough disk space' do
+      it 'should be valid if their organization has enough disk space' do
         organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
         organization.assigned_quota.should == 70.megabytes
         user = organization.owner
@@ -244,7 +242,7 @@ describe User do
         user.errors.keys.should_not include(:quota_in_bytes)
         organization.destroy
       end
-      it "should not be valid if his organization doesn't have enough disk space" do
+      it "should not be valid if their organization doesn't have enough disk space" do
         organization = create_organization_with_users(quota_in_bytes: 70.megabytes)
         organization.assigned_quota.should == 70.megabytes
         user = organization.owner
@@ -542,7 +540,7 @@ describe User do
     @user.in_database(as: :public_user)["show statement_timeout"].first[:statement_timeout].should == "1000s"
   end
 
-  it "should invalidate all his vizjsons when his account type changes" do
+  it "should invalidate all their vizjsons when their account type changes" do
     @account_type = create_account_type_fg('WADUS')
     @user.account_type = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
@@ -550,14 +548,14 @@ describe User do
     @user.save
   end
 
-  it "should invalidate all his vizjsons when his disqus_shortname changes" do
+  it "should invalidate all their vizjsons when their disqus_shortname changes" do
     @user.disqus_shortname = 'WADUS'
     CartoDB::Varnish.any_instance.expects(:purge)
       .with("#{@user.database_name}.*:vizjson").times(1).returns(true)
     @user.save
   end
 
-  it "should not invalidate anything when his quota_in_bytes changes" do
+  it "should not invalidate anything when their quota_in_bytes changes" do
     @user.quota_in_bytes = @user.quota_in_bytes + 1.megabytes
     CartoDB::Varnish.any_instance.expects(:purge).times(0)
     @user.save
@@ -893,7 +891,7 @@ describe User do
     @user2.remaining_quota.should be > initial_quota
   end
 
-  it "should has his own database, created when the account is created" do
+  it "should has their own database, created when the account is created" do
     @user.database_name.should == "cartodb_test_user_#{@user.id}_db"
     @user.database_username.should == "test_cartodb_user_#{@user.id}"
     @user.in_database.test_connection.should == true
@@ -989,7 +987,7 @@ describe User do
     end
   end
 
-  it "should run valid queries against his database" do
+  it "should run valid queries against their database" do
     # initial select tests
     query_result = @user.db_service.run_pg_query("select * from import_csv_1 where family='Polynoidae' limit 10")
     query_result[:time].should_not be_blank
@@ -1023,13 +1021,13 @@ describe User do
     query_result[:rows][0].should == {:count => 2}
   end
 
-  it "should raise errors when running invalid queries against his database" do
+  it "should raise errors when running invalid queries against their database" do
     lambda {
       @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)
   end
 
-  it "should run valid queries against his database in pg mode" do
+  it "should run valid queries against their database in pg mode" do
     reload_user_data(@user) && @user.reload
 
     # initial select tests
@@ -1074,7 +1072,7 @@ describe User do
     query_result[:rows][0].should == {:count => 2}
   end
 
-  it "should raise errors when running invalid queries against his database in pg mode" do
+  it "should raise errors when running invalid queries against their database in pg mode" do
     lambda {
       @user.db_service.run_pg_query("selectttt * from import_csv_1 where family='Polynoidae' limit 10")
     }.should raise_error(CartoDB::ErrorRunningQuery)

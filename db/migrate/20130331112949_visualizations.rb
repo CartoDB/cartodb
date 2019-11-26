@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class VisualizationsMigration < Sequel::Migration
   def up
     create_table :visualizations do

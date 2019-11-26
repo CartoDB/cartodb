@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   # This rake retrieves all sync tables that should get synchronized, and puts the synchronization tasks at Resque
   # NOTE: This version does not mark the tables as "enqueued", should be done if planning to run multiple instances

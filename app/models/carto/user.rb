@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 require 'cartodb-common'
 require_relative 'user_service'
@@ -675,17 +673,17 @@ class Carto::User < ActiveRecord::Base
       revoke_url = ::User::OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
                 when 'gdrive'
-                  Cartodb.config[:oauth][serv]['client_id'].present?
+                  Cartodb.get_config(:oauth, serv, 'client_id')
                 when 'box'
-                  Cartodb.config[:oauth][serv]['client_id'].present?
+                  Cartodb.get_config(:oauth, serv, 'client_id')
                 when 'dropbox'
-                  Cartodb.config[:oauth]['dropbox']['app_key'].present?
+                  Cartodb.get_config(:oauth, serv, 'app_key')
                 when 'mailchimp'
-                  Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('mailchimp_import')
                 when 'instagram'
-                  Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('instagram_import')
                 when 'bigquery'
-                  Cartodb.config[:oauth][serv]['client_id'].present? &&
+                  Cartodb.get_config(:oauth, serv, 'client_id') &&
                   Carto::Connector.provider_available?('bigquery', self)
                 else
                   true

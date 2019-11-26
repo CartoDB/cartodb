@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 require 'spec_helper_min'
 
 describe UserMailer do

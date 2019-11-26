@@ -57,7 +57,7 @@ namespace :cartodb do
         end
       end
 
-      # Then, remove permissions of everything he has access to
+      # Then, remove permissions of everything they have access to
       CartoDB::SharedEntity.where(recipient_id: user.id).each do |shared_entity|
         permissions = CartoDB::Permission.where(entity_id: shared_entity.entity_id)
         permissions.each do |permission|

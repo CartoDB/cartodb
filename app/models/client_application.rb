@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'oauth'
 
 class DomainPatcherRequestProxy < OAuth::RequestProxy::RackRequest

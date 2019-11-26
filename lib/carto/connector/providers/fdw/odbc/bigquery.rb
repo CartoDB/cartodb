@@ -143,7 +143,12 @@ module Carto
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA
         # is used with a query (sql_query). Since it is actually ignored in that case we'll used
         # and arbitrary name in that case.
-        @params[:dataset] || 'unused'
+        schema_name = 'unused'
+        if @params[:dataset].present?
+          schema_name = @params[:from_project].present? ?
+            @params[:from_project] + "." + @params[:dataset]
+            : @params[:dataset]
+        end
       end
 
       def create_proxy_conf

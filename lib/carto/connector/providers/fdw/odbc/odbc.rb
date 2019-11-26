@@ -81,7 +81,7 @@ module Carto
       end
 
       def table_name
-        @params[:import_as] || @params[:table]
+        @params[:table] || @params[:import_as]
       end
 
       def foreign_table_name_for(server_name, name = nil)

@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- BigQuery Connector beta release
 
 ### Bug fixes / enhancements
 - Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))

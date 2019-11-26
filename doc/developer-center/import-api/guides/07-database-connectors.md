@@ -1083,7 +1083,9 @@ When using database connectors, the following limitations or restrictions are en
 
 **Note:** The number of imported columns will affect the performance of the connector.
 
-### The BigQuery Connector
+### The BigQuery Connector (beta)
+
+:warning: This connector is in **beta** stage and the API might change or have limited support :warning:
 
 The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
 

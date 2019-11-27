@@ -7,6 +7,10 @@ module Carto
       @bolt = Carto::Bolt.new('manolo_bolt_locked')
     end
 
+    after(:each) do
+      @bolt.send :remove_retry
+    end
+
     it 'should expect block' do
       expect { @bolt.run_locked.should_raise }.to raise_error('no code block given')
     end
@@ -57,14 +61,13 @@ module Carto
     end
 
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
+      flag = 0
+      rerun_func = lambda { flag += 1 }
       main = Thread.new do
-        flag = 0
-        rerun_func = lambda { flag += 1 }
         @bolt.run_locked(rerun_func: rerun_func) {
           flag += 1
           sleep(2)
         }.should be_true
-        flag.should eq(2)
       end
       sleep(0.5)
       thr = Thread.new do
@@ -72,30 +75,30 @@ module Carto
       end
       thr.join
       main.join
+      flag.should eq(2)
     end
 
     it 'should execute once the rerun_func part despite of the number of calls to acquire the lock' do
+      flag = 0
+      rerun_func = lambda do
+        flag += 1
+      end
       main = Thread.new do
-        flag = 0
-        rerun_func = lambda do
-          sleep(1)
-          flag += 1
-        end
         @bolt.run_locked(rerun_func: rerun_func) {
           flag += 1
           sleep(2)
         }.should be_true
-        flag.should > 2
       end
       sleep(0.5)
-      20.times do
+      10.times do
         t = Thread.new do
-          Carto::Bolt.new('manolo_bolt_locked').run_locked {}
-          sleep(0.25)
+          Carto::Bolt.new('manolo_bolt_locked').run_locked(rerun_func: rerun_func) {}
+          sleep(0.1)
         end
         t.join
       end
       main.join
+      flag.should eq(2)
     end
 
     it 'should raise error if rerun_func is not a lambda' do

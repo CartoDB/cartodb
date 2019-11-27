@@ -75,7 +75,7 @@ module Carto
     end
 
     def set_retry
-      redis_object.getset("#{@bolt_key}:retry", true)
+      @redis_object.getset("#{@bolt_key}:retry", true)
     end
 
     def add_namespace_to_key(key)

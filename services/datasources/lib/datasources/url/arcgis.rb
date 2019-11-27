@@ -157,19 +157,20 @@ module CartoDB
             puts "#{@ids_retrieved}/#{@ids_total} (#{ids_block.length})" if DEBUG
 
             items = get_by_ids(@url, ids_block, @metadata[:fields])
-            timed_log("Retrieved #{ids_block.length} elements (#{@ids_retrieved + ids_block.length} in total)")
+            timed_log("Downloaded a chunk of #{ids_block.length} ids (#{@ids_retrieved + ids_block.length} so far)")
             @current_stream_status = true
             retries = 0
             sleep(BLOCK_SLEEP_TIME) unless BLOCK_SLEEP_TIME == 0
           rescue ExternalServiceError => exception
-            timed_log("FAILED to retrieve #{ids_block.length} elements (#{@ids_retrieved + ids_block.length} retrieved in total)")
             if @block_size == MIN_BLOCK_SIZE && retries >= MAX_RETRIES
               if SKIP_FAILED_IDS
                 items = []
               else
+                @logger.append_and_store("Too many download failures. Giving up.")
                 raise exception
               end
             else
+              timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...")
               @current_stream_status = false
               # Add back, next pass will get fewer items
               @ids = ids_block + @ids

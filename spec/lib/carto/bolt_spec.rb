@@ -59,7 +59,8 @@ module Carto
     it 'should retry an execution when other process tries to acquire bolt and has retriable flag set' do
       main = Thread.new do
         flag = 0
-        @bolt.run_locked(rerun_func: lambda { flag += 1 }) {
+        rerun_func = lambda { flag += 1 }
+        @bolt.run_locked(rerun_func: rerun_func) {
           flag += 1
           sleep(2)
         }.should be_true
@@ -67,7 +68,7 @@ module Carto
       end
       sleep(0.5)
       thr = Thread.new do
-        Carto::Bolt.new('manolo_bolt_locked').run_locked {}.should be_false
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(rerun_func: rerun_func) {}.should be_false
       end
       thr.join
       main.join

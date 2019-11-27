@@ -25,7 +25,7 @@ module Carto
           yield
           true
         else
-          if rerun_func && set_retry
+          if rerun_func && !set_retry
             rerun_func.call
           end
           false

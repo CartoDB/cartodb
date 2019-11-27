@@ -9,6 +9,7 @@ Development
 
 ### Bug fixes / enhancements
 - Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
+- Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
 
 4.31.0 (2019-11-19)
 -------------------

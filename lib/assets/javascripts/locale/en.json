@@ -1237,7 +1237,10 @@
                     "header-alt": "%{brand} connector logo",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
-                    "request-beta": "Request beta access",
+                    "loading": "Sending request",
+                    "contact-soon": "Our team will contact you soon.",
+                    "got-it": "Ok, got it",
+                    "try-again": "Try again",
                     "connector": "connector",
                     "demo-email-title": "I am interested in the %{name} connector",
                     "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
@@ -1305,10 +1308,6 @@
                         "upgrade-desc": "Upgrade your account to get sync options and %{features}",
                         "upgrade": "upgrade"
                     },
-                    "status-desc": {
-                        "not-enabled": "This connector is not enabled. Please contact us if you are interested.",
-                        "beta": "This connector is in beta. Please contact us if you want to give it a try."
-                    },
                     "twitter": {
                         "category": "Category",
                         "credits-consumed": "Twitter credits for this period consumed - %{extraTweets} will be charged",
@@ -1354,10 +1353,18 @@
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
                     "notenabled": {
-                        "fallback-desc": "The %{brand} connector is not available. Please, contact us."
+                        "fallback-desc": "The %{brand} connector is not available. Please, contact us if you are interested.",
+                        "request-sent": "%{brand} activation request has been received.",
+                        "fallback-error": "There has been an error requesting the connector."
+                    },
+                    "beta": {
+                        "fallback-desc": "This connector is in beta. Please, contact us if you want to give it a try.",
+                        "request-access": "Request beta access",
+                        "request-sent": "%{brand} beta activation request has been received.",
+                        "fallback-error": "There has been an error requesting the access to the connector."
                     },
                     "feedback": {
-                        "text": "Is your data somewhere else? Please let us know!",
+                        "text": "Is your data somewhere else? Please, let us know!",
                         "button": "Request data source",
                         "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
                     }

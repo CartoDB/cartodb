@@ -118,7 +118,7 @@ module CartoDB
         def timed_log(s)
           t2 = Time.now
           if ((@log_timer == nil) || ((t2 - @log_timer) > LOG_TIMEOUT))
-            @logger.append_and_store(s)
+            @logger.append_and_store(s) if @logger != nil
             @log_timer = t2
           end
         end
@@ -170,7 +170,7 @@ module CartoDB
                 raise exception
               end
             else
-              timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...")
+              timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...") if @logger != nil
               @current_stream_status = false
               # Add back, next pass will get fewer items
               @ids = ids_block + @ids

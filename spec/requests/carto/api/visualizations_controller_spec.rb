@@ -3198,7 +3198,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    it 'generates the URL for tables shared by another user with hyphens in his username' do
+    it 'generates the URL for tables shared by another user with hyphens in their username' do
       user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
       table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
       shared_table = table.table_visualization

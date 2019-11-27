@@ -1,13 +1,5 @@
-require_relative './providers/generic_odbc'
-require_relative './providers/mysql'
-require_relative './providers/postgresql'
-require_relative './providers/sqlserver'
-require_relative './providers/hive'
-require_relative './providers/pg_fdw'
-
 module Carto
   class Connector
-
     # Connector parameters: behaves like a Hash, but:
     #
     # * keys are case-insensitive for [], slice, except, merge!, etc.
@@ -104,14 +96,18 @@ module Carto
         @params.keys.map { |name| normalized_key(name) }
       end
 
-      def errors(only: nil, parameters_term: 'parameters')
+      def normalize_parameter_names(names)
+        normalized_array(Array(names))
+      end
+
+      def errors(only_for: nil, parameters_term: 'parameters')
         errors = []
         if @accepted_parameters.present?
           invalid_params = normalized_names - @accepted_parameters
           missing_parameters = @required_parameters - normalized_names
-          if only.present?
-            only = normalized_array(Array(only))
-            missing_parameters &= only
+          if only_for.present?
+            only_for = normalize_parameter_names(only_for)
+            missing_parameters &= only_for
           end
           if missing_parameters.present?
             errors << "Missing required #{parameters_term} #{missing_parameters * ','}"

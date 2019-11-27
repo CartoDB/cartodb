@@ -1353,7 +1353,7 @@
                         "fallback-desc": "Contact us to learn more about %{brand} integration",
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
-                    "postgresql": {
+                    "notenabled": {
                         "fallback-desc": "The %{brand} connector is not available. Please, contact us."
                     },
                     "feedback": {

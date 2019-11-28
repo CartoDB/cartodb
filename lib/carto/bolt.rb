@@ -25,10 +25,10 @@ module Carto
       raise 'no code block given' unless block_given?
       raise 'no proc/lambda passed as fail_function' if fail_function.present? && !proc?(fail_function)
 
-      locked_acquired = acquire_lock(attempts, timeout)
+      lock_acquired = acquire_lock(attempts, timeout)
 
       begin
-        if locked_acquired
+        if lock_acquired
           retried
           yield
           true
@@ -39,7 +39,7 @@ module Carto
           false
         end
       ensure
-        unlock if locked_acquired
+        unlock if lock_acquired
       end
     end
 

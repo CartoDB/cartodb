@@ -29,7 +29,7 @@ module Carto
 
       begin
         if locked_acquired
-          remove_retry
+          retried
           yield
           true
         else
@@ -78,7 +78,7 @@ module Carto
       @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
     end
 
-    def remove_retry
+    def retried
       @redis_object.del("#{@bolt_key}:retry")
     end
 

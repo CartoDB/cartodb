@@ -8,7 +8,7 @@ module Carto
     end
 
     after(:each) do
-      @bolt.send :remove_retry
+      @bolt.send :retried
     end
 
     it 'should expect block' do

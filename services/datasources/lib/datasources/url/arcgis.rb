@@ -166,11 +166,11 @@ module CartoDB
               if SKIP_FAILED_IDS
                 items = []
               else
-                @logger.append_and_store("Too many download failures. Giving up.")
+                @logger.append_and_store("Too many download failures. Giving up.") if @logger != nil
                 raise exception
               end
             else
-              timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...") if @logger != nil
+              timed_log("FAILED to download a chunk of #{ids_block.length} ids (#{@ids_retrieved} ids already downloaded). Retrying...")
               @current_stream_status = false
               # Add back, next pass will get fewer items
               @ids = ids_block + @ids

@@ -11,11 +11,19 @@ module Carto
       @ttl_ms = ttl_ms
     end
 
+    # Run a block of code with the lock acquired.
+    # It will retry acquiring the lock up to `attempts` times and
+    # for up to `timeout` milliseconds.
+    # If an executable (lambda/Proc) object is passed through `fail_function`
+    # it will be executed if the lock is not acquired and another such proc hasn't
+    # been executed during the lock period (before a new locked execution).
+    # This can be used to reschedule execution while avoiding to reschedule
+    # additional executions while one is pending.
     def run_locked(attempts: DEFAULT_RETRY_ATTEMPTS,
                    timeout: DEFAULT_RETRY_TIMEOUT,
-                   rerun_func: nil)
+                   fail_function: nil)
       raise 'no code block given' unless block_given?
-      raise 'no proc/lambda passed as rerun_func' if rerun_func.present? && !proc?(rerun_func)
+      raise 'no proc/lambda passed as fail_function' if fail_function.present? && !proc?(fail_function)
 
       locked_acquired = acquire_lock(attempts, timeout)
 
@@ -25,8 +33,8 @@ module Carto
           yield
           true
         else
-          if rerun_func && !set_retry
-            rerun_func.call
+          if fail_function && !set_retry
+            fail_function.call
           end
           false
         end

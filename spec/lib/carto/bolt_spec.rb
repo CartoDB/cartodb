@@ -64,27 +64,27 @@ module Carto
       flag = 0
       rerun_func = lambda { flag += 1 }
       main = Thread.new do
-        @bolt.run_locked(rerun_func: rerun_func) {
+        @bolt.run_locked(fail_function: rerun_func) {
           flag += 1
           sleep(2)
         }.should be_true
       end
       sleep(0.5)
       thr = Thread.new do
-        Carto::Bolt.new('manolo_bolt_locked').run_locked(rerun_func: rerun_func) {}.should be_false
+        Carto::Bolt.new('manolo_bolt_locked').run_locked(fail_function: rerun_func) {}.should be_false
       end
       thr.join
       main.join
       flag.should eq(2)
     end
 
-    it 'should execute once the rerun_func part despite of the number of calls to acquire the lock' do
+    it 'should execute once the fail_function part despite of the number of calls to acquire the lock' do
       flag = 0
       rerun_func = lambda do
         flag += 1
       end
       main = Thread.new do
-        @bolt.run_locked(rerun_func: rerun_func) {
+        @bolt.run_locked(fail_function: rerun_func) {
           flag += 1
           sleep(2)
         }.should be_true
@@ -92,7 +92,7 @@ module Carto
       sleep(0.5)
       10.times do
         t = Thread.new do
-          Carto::Bolt.new('manolo_bolt_locked').run_locked(rerun_func: rerun_func) {}
+          Carto::Bolt.new('manolo_bolt_locked').run_locked(fail_function: rerun_func) {}
           sleep(0.1)
         end
         t.join
@@ -101,10 +101,10 @@ module Carto
       flag.should eq(2)
     end
 
-    it 'should raise error if rerun_func is not a lambda' do
+    it 'should raise error if fail_function is not a lambda' do
       expect {
-        @bolt.run_locked(rerun_func: "lala") {}.should_raise
-      }.to raise_error('no proc/lambda passed as rerun_func')
+        @bolt.run_locked(fail_function: "lala") {}.should_raise
+      }.to raise_error('no proc/lambda passed as fail_function')
     end
 
     it 'should expire a lock after ttl_ms' do

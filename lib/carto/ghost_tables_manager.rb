@@ -77,7 +77,7 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      got_locked = get_bolt.run_locked(rerun_func: lambda { link_ghost_tables_asynchronously }) { sync }
+      got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
     def sync

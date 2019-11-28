@@ -8,7 +8,7 @@ module Carto
     end
 
     after(:each) do
-      @bolt.send :retried
+      @bolt.send :set_state_to_executing # clear :pending redis key
     end
 
     it 'should expect block' do

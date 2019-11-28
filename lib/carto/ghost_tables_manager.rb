@@ -20,7 +20,9 @@ module Carto
       if should_run_synchronously?
         link_ghost_tables_synchronously
       else
-        link_ghost_tables_asynchronously
+        get_bolt.run_unless_pending do
+          link_ghost_tables_asynchronously
+        end
       end
     end
 

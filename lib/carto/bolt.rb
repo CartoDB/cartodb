@@ -29,18 +29,20 @@ module Carto
 
       begin
         if lock_acquired
-          retried
+          set_state_to_executing
           yield
           true
         else
-          if fail_function && !set_retry
-            fail_function.call
-          end
+          run_unless_pending { fail_function.call } if fail_function
           false
         end
       ensure
         unlock if lock_acquired
       end
+    end
+
+    def run_unless_pending
+      yield if set_state_to_pending
     end
 
     private
@@ -78,12 +80,12 @@ module Carto
       @redis_object.set(@bolt_key, true, px: @ttl_ms, nx: true)
     end
 
-    def retried
-      @redis_object.del("#{@bolt_key}:retry")
+    def set_state_to_executing
+      @redis_object.del("#{@bolt_key}:pending")
     end
 
-    def set_retry
-      @redis_object.getset("#{@bolt_key}:retry", true)
+    def set_state_to_pending
+      !@redis_object.getset("#{@bolt_key}:pending", true)
     end
 
     def add_namespace_to_key(key)

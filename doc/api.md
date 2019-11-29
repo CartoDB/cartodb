@@ -1,7 +1,13 @@
 API access control for CartoDB
 ===============================
 
+
 There are 3 main API:
+
+
+
+
+
 
 1. SQL API
 2. REST API (internal use mainly)

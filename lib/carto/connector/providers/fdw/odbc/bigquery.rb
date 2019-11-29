@@ -63,6 +63,22 @@ module Carto
         }
       end
 
+      def table_options
+        params = super
+        # for foreign table options we replace the import_as parameter by table
+        if !params[:table].present? && params[:import_as]
+          params[:table] = params[:import_as]
+        end
+        params.except!(:import_as)
+        # due to driver limitations when a table belongs to a different project
+        # it has to be imported as sql_query
+        if @params[:project].present? && !params[:sql_query].present?
+          params[:sql_query] = %{SELECT * FROM `#{@params[:project]}.#{@params[:dataset]}.#{params[:table]}`;}
+        end
+        params
+      end
+
+
       private
 
       # Notes regarding IMPORT (extermal) schema and the DefaultDataset parameter:

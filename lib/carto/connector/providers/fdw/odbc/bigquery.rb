@@ -36,9 +36,7 @@ module Carto
 
       # BigQuery provider add the list_projects feature
       def features_information
-        features_info = super
-        features_info[:list_projects] = true
-        features_info
+        super.merge(list_projects: true)
       end
 
       def check_connection

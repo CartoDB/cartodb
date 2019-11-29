@@ -13,6 +13,10 @@ module Carto
       include AccountTypeHelper
       include AvatarHelper
       include Carto::ControllerHelper
+      begin
+        include OnpremisesLicensingGear::ApplicationHelper
+      rescue NameError
+      end
 
       UPDATE_ME_FIELDS = %i(
         name last_name website description location twitter_username disqus_shortname available_for_hire company
@@ -63,7 +67,8 @@ module Carto
           user_frontend_version: carto_viewer.try(:relevant_frontend_version) || CartoDB::Application.frontend_version,
           asset_host: carto_viewer.try(:asset_host),
           google_sign_in: carto_viewer.try(:google_sign_in),
-          mfa_required: multifactor_authentication_required?
+          mfa_required: multifactor_authentication_required?,
+          license_expiration: license_expiration
         }
       end
 
@@ -242,6 +247,12 @@ module Carto
         service = Carto::UserMultifactorAuthUpdateService.new(user_id: user.id)
         service.update(enabled: mfa_enabled)
         warden.session(user.username)[:multifactor_authentication_performed] = false unless mfa_enabled
+      end
+
+      def license_expiration
+        return nil unless cartodb_com_hosted?
+
+        send(:license_expiration_date) if respond_to?(:license_expiration_date)
       end
     end
   end

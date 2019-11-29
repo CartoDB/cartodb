@@ -26,9 +26,9 @@ Configuration for the previous example:
 Autocreation
 ------------
 
-Even more, if you want not only *authentication* (authenticating existing users) but also *user creation* you can turn ``autocreation`` on by setting ``autocreation: true``. If you do so, when a user with the trusted header performs his first request his user will be created automatically. This feature requires that ``field`` is set to ``email``, since the new user will be created with it:
+Even more, if you want not only *authentication* (authenticating existing users) but also *user creation* you can turn ``autocreation`` on by setting ``autocreation: true``. If you do so, when a user with the trusted header performs their first request the user will be created automatically. This feature requires that ``field`` is set to ``email``, since the new user will be created with it:
 
 * ``email``: value of the header (``alice@myorg.com``).
 * ``username``: user of the email ( ``alice``).
-* ``password``: random. He can change it in his account page.
+* ``password``: random. they can change it in their account page.
 * ``organization``: taken from the subdomain (``myorg``).

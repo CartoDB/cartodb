@@ -8,7 +8,18 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
+- Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
+
+4.31.0 (2019-11-19)
+-------------------
+
+### Features
+* Show license information for OnPremises ([#15243](https://github.com/CartoDB/cartodb/pull/15243))
+
+### Bug fixes / enhancements
+* Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
+* Remove duplicate banner in API Keys page ([CartoDB/cartodb#14936](https://github.com/CartoDB/cartodb/issues/14936))
 
 4.30.1 (2019-11-15)
 -------------------
@@ -2925,7 +2936,7 @@ Now, back to the new features!
   * Full screen options are enabled by default for public visualizations
   * Empty the_geom from CSV no longer imports to "" instead of NULL
   * Trying to change a password no longer returns unauthorized
-  * User destroy no longer fails when he has named maps
+  * User destroy no longer fails when she/he has named maps
   * /api/v1/tables returns 404 when table does not exist
 
 
@@ -2995,7 +3006,7 @@ Now, back to the new features!
   * Improved color picker.
 
 * Bugs Fixed
-  * When deleting a user from the box, his database should be deleted before deleting his metadata.
+  * When deleting a user from the box, his/her database should be deleted before deleting his/her metadata.
   * Map turns blank at "Publish" time.
   * Revamp option for selecting a marker image / polygon pattern fill.
   * Wrong message shown in dashboard.

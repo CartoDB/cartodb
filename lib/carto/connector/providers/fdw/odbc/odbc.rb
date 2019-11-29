@@ -85,7 +85,7 @@ module Carto
       end
 
       def remote_table_name
-        @params[:table]
+        @params[:table] || @params[:import_as]
       end
 
       def foreign_table_name_for(server_name, name = nil)
@@ -202,7 +202,8 @@ module Carto
         attributes.reverse_merge! Hash[non_nil_defaults.map { |k, v| [k.to_s, v.values.first] }]
 
         # Map attribute names to internal (driver) attributes
-        attributes = attributes.map { |k, v| [attribute_name_map(optional_params, required_params)[k.to_s.downcase] || k, v] }
+        parameter_to_odbc_attr_map = attribute_name_map(optional_params, required_params)
+        attributes = attributes.map { |k, v| [parameter_to_odbc_attr_map[k.to_s.downcase] || k, v] }
 
         attributes
       end
@@ -213,11 +214,11 @@ module Carto
         # attributes from connection parameters
         attributes = parameters_to_odbc_attributes(@connection, odbc_attributes_for_optional_connection_parameters, odbc_attributes_for_required_connection_parameters)
 
-        # attributes from other parameters
-        attributes.merge! parameters_to_odbc_attributes(@params, odbc_attributes_for_optional_parameters, odbc_attributes_for_required_parameters)
-
         # fixed attribute values
         attributes.merge! fixed_odbc_attributes
+
+        # attributes from other parameters
+        attributes.merge! parameters_to_odbc_attributes(@params, odbc_attributes_for_optional_parameters, odbc_attributes_for_required_parameters)
 
         attributes
       end

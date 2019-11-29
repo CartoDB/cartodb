@@ -5,22 +5,17 @@ module Carto
   class Connector
 
     # {
-    #   "provider": "bigquery",
-    #   "project": "eternal-ship-170218",
-    #   "table": "destination_table",
-    #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
-    # }
-    #
-    # {
-    #   "provider": "bigquery",
-    #   "project": "some_project",
-    #   "dataset": "mydataset",
-    #   "table": "mytable"
+  #     "provider": "bigquery",
+  #     "billing_project": "cartodb-on-gcp-core-team",
+  #     "dataset": "f1",
+  #     "table": "circuits",
+  #     "import_as": "my_circuits",
+  #     "storage_api": true
     # }
     class BigQueryProvider < OdbcProvider
-      metadata id: 'bigquery', name: 'Google BigQuery', public?: false
+      metadata id: 'bigquery', name: 'Google BigQuery', public?: true
 
-      odbc_attributes project: :Catalog, dataset: { DefaultDataset: nil }
+      odbc_attributes billing_project: :Catalog, storage_api: :EnableHTAPI, project: :AdditionalProjects, dataset: { DefaultDataset: nil }
 
       def errors(only_for: nil)
         # dataset is not optional if not using a query
@@ -55,6 +50,17 @@ module Carto
       def list_tables_by_project(project_id)
         # TODO
         []
+      end
+
+      def parameters_to_odbc_attributes(params, optional_params, required_params)
+        super(params, optional_params, required_params).map { |k, v| 
+          if v == true
+            v = 1
+          elsif v == false
+            v = 0
+          end
+          [k, v]
+        }
       end
 
       private
@@ -141,12 +147,7 @@ module Carto
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA
         # is used with a query (sql_query). Since it is actually ignored in that case we'll used
         # and arbitrary name in that case.
-        schema_name = 'unused'
-        if @params[:dataset].present?
-          schema_name = @params[:from_project].present? ?
-            @params[:from_project] + "." + @params[:dataset]
-            : @params[:dataset]
-        end
+        @params[:dataset] || 'unused'
       end
 
       def create_proxy_conf

@@ -72,14 +72,26 @@ module Carto
       #   the DefaultDataset is necessary when table names are not qualified with the dataset.
 
       server_attributes %I(
-        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret EnableHTAPI
-        AllowLargeResults UseDefaultLargeResultsDataset UseQueryCache HTAPI_MinActivationRatio
-        HTAPI_MinResultsSize LargeResultsDataSetId LargeResultsTempTableExpirationTime
+        Driver
+        Catalog
+        SQLDialect
+        OAuthMechanism
+        ClientId
+        ClientSecret
+        EnableHTAPI
+        AllowLargeResults
+        UseDefaultLargeResultsDataset
+        UseQueryCache
+        HTAPI_MinActivationRatio
+        HTAPI_MinResultsSize
+        LargeResultsDataSetId
+        LargeResultsTempTableExpirationTime
+        AdditionalProjects
       )
       user_attributes %I(RefreshToken)
 
-      required_parameters %I(project table)
-      optional_parameters %I(from_project import_as dataset sql_query storage_api)
+      required_parameters %I(billing_project)
+      optional_parameters %I(project import_as dataset table sql_query storage_api)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -88,14 +100,18 @@ module Carto
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
       SQL_DIALECT                  = 1
       OAUTH_MECHANISM              = 1
-      LRESULTS                     = 1
-      LRESULTS_DEFAULT_DATASET     = 0
+      ALLOW_LRESULTS               = 1
+      ENABLE_STORAGE_API           = 0
+      QUERY_CACHE                  = 1
+      LRESULTS_DEFAULT_DATASET     = 1
       HTAPI_MIN_ACTIVATION_RATIO   = 0
+      HTAPI_MIN_RESULTS_SIZE       = 100
+      HTAPI_TEMP_DATASET           = '_cartoimport_temp'
+      HTAPI_TEMP_TABLE_EXP         = 3600000
 
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
-        @connector_config = Cartodb.get_config(:connectors, DATASOURCE_NAME)
         validate_config!(context)
       end
 
@@ -126,14 +142,14 @@ module Carto
           RefreshToken:   @token,
           ClientId: @oauth_config['client_id'],
           ClientSecret: @oauth_config['client_secret'],
-          AllowLargeResults: LRESULTS,
+          AllowLargeResults: ALLOW_LRESULTS,
           UseDefaultLargeResultsDataset: LRESULTS_DEFAULT_DATASET,
           HTAPI_MinActivationRatio: HTAPI_MIN_ACTIVATION_RATIO,
-          EnableHTAPI: @connector_config['storage_api'],
-          UseQueryCache: @connector_config['query_cache'],
-          HTAPI_MinResultsSize: @connector_config['storage_api_min_results'],
-          LargeResultsDataSetId: @connector_config['storage_api_tmp_dataset'],
-          LargeResultsTempTableExpirationTime: @connector_config['storage_api_tmp_table_exp']
+          EnableHTAPI: ENABLE_STORAGE_API,
+          UseQueryCache: QUERY_CACHE,
+          HTAPI_MinResultsSize: HTAPI_MIN_RESULTS_SIZE,
+          LargeResultsDataSetId: HTAPI_TEMP_DATASET,
+          LargeResultsTempTableExpirationTime: HTAPI_TEMP_TABLE_EXP
         }
 
         if !proxy_conf.nil?

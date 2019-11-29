@@ -4,26 +4,30 @@ require_relative './odbc'
 module Carto
   class Connector
 
-    # {
+  # {
   #     "provider": "bigquery",
   #     "billing_project": "cartodb-on-gcp-core-team",
   #     "dataset": "f1",
   #     "table": "circuits",
   #     "import_as": "my_circuits",
   #     "storage_api": true
-    # }
-    class BigQueryProvider < OdbcProvider
+  # }
+  class BigQueryProvider < OdbcProvider
       metadata id: 'bigquery', name: 'Google BigQuery', public?: true
 
       odbc_attributes billing_project: :Catalog, storage_api: :EnableHTAPI, project: :AdditionalProjects, dataset: { DefaultDataset: nil }
 
       def errors(only_for: nil)
-        # dataset is not optional if not using a query
         parameters_to_validate = @params.normalize_parameter_names(only_for)
         dataset_errors = []
         if parameters_to_validate.blank? || parameters_to_validate.include?(:dataset)
+          # dataset is not optional if not using a query
           if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
             dataset_errors << "The dataset parameter is needed for tables"
+          end
+          # table is not optional if not using a query
+          if !@params.normalized_names.include?(:table) && !@params.normalized_names.include?(:sql_query)
+            dataset_errors << "The table parameter is required if no sql_query parameter is provided"
           end
         end
         super + dataset_errors
@@ -192,7 +196,6 @@ module Carto
           }
         end
       end
-
     end
   end
 end

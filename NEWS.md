@@ -8,6 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
+- Add config option for disabling email MX check ([#15280](https://github.com/CartoDB/cartodb/pull/15280))
 - Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
 - Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
 

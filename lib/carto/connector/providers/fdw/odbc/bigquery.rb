@@ -47,13 +47,11 @@ module Carto
       end
 
       def list_projects
-        # TODO
-        []
+        raise Carto::Connector::NoImplementedYet.new
       end
 
       def list_tables_by_project(project_id)
-        # TODO
-        []
+        raise Carto::Connector::NoImplementedYet.new
       end
 
       def parameters_to_odbc_attributes(params, optional_params, required_params)
@@ -196,6 +194,7 @@ module Carto
           }
         end
       end
+
     end
   end
 end

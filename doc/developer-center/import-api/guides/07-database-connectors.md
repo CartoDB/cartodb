@@ -1107,9 +1107,12 @@ To use the BigQuery Connector, you must include a `connector` parameter with the
 {
   "connector": {
     "provider": "bigquery",
+    "billing_project":"mybigquerybillingproject",
     "project":"mybigqueryproject",
     "dataset": "mybigquerydataset",
-    "table": "mytable"
+    "table": "mytable",
+    "import_as": "mycartodataset",
+    "storage_api": true
   }
 }
 ```
@@ -1121,19 +1124,59 @@ The following table describes the connector attributes required to connect to a 
 Param | Description
 --- | ---
 provider | This value **MUST** be set to *bigquery*.
-project |  Defines the Google Cloud project to connect to.
-table | Identifies the table to be imported.
-dataset | Name of the dataset to import data from. This is optional if sql_query is used.
+billing_project |  Defines the Google Cloud project where the queries will be executed (charges will apply here).
+project | Defines the Google Cloud project that contains the data to be imported (optional).
+dataset | Name of the dataset to import data from (optional).
+table | Identifies the table to be imported. (optional),
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
+import_as | Can be used to specifiy the name of the imported dataset.
+storage_api | Boolean value (true/false) which specifies if BigQuery Storage API will be used.
 
-#### Connect to a Table
+Note that you could either import from a query using `sql_query` or from a table using `table`.
+
+#### Import a query
+
+The query must be passed in the `sql_query` parameter as [BigQuery Standard SQL](https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-and-operators).
+
+If importing a query, `project` and `dataset` are optional since they query can include them
+in the table name (using the form `project.dataset.table`). They are use to define the _default_
+project and dataset if the query doesn't specifies them explicitly.
+
+In this case, the parameter `import_as` is mandatory to name the imported data.
+
+#### Import a Table
 
 In order to connect to an external BigQuery table, the following rules apply:
 
+- The name of the remote BigQuery project can be passed in the `dataset` parameter. It default to the billing project.
 - The name of the remote BigQuery dataset must be passed in the `dataset` parameter.
 - The name of the remote BigQuery table must be passed in the `table` parameter.
 - The `sql_query` parameter **MUST NOT** be present.
-- A CARTO dataset with the same name will be connected to the external table
+- The desired name for the resulting CARTO dataset can be passed in the `import_as` parameter. By default
+  the name of the BigQuery table (`table`) will be used.
+
+#### Geography columns
+
+BigQuery columns of type GEOGRAPHY can be imported as the geometry of the resulting CARTO dataset
+(the `the_geom` column). In order to do so, the BigQuery column needs to have one of these names:
+`geometry`, `the_geom`,  `wkb_geometry`, `geom` or `wkt`. If your geography doesn't have one of those names,
+you could use a query (`sql_query` parameter) and rename your columns using `AS`:
+
+```sql
+SELECT name, my_geography AS the_geom FROM my_project.my_dataset.my_table
+```
+
+PLANNED: relax this naming restriction.
+
+#### BigQuery Storage API
+
+The [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) allows higher data throughput
+than the standard REST API used otherwise to import the data. It can be enabled with the `storage_api` parameter.
+
+When the `storage_api` is enabled, it will be used if possible and depending on the size of the imported data.
+To use it, the BigQuery project that you are querying must have the BigQuery Storage API enabled. For more information, see "Enabling the API" in the Google BigQuery documentation: https://cloud.google.com/bigquery/docs/reference/storage/#enabling_the_api.
+
+:warning: Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api. :warning:
 
 ##### Example
 
@@ -1145,9 +1188,9 @@ The following example displays how to request an external BigQuery table.
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "project":"mybigqueryproject",
+    "billing_project":"mybigqueryproject",
+    "dataset": "mybigquerydataset",
     "table": "mytable",
-    "dataset": "mybigquerydataset"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
 ```
@@ -1175,7 +1218,7 @@ The tables referenced in the query should all belong to the same BigQuery datase
 The dataset name can be either defined through the `dataset` parameter or included in the query
 by qualifying the table name with the dataset name: `mybigquerydataset.mytable`.
 
-The `table` parameter must also be used to define the name of the local table.
+The `import_as` parameter must also be used to define the name of the local table.
 This table stores the data of the remote table. This is the dataset that will be created in your CARTO account.
 
 ##### Example
@@ -1188,8 +1231,8 @@ The following example displays how to connect to BigQuery through a SQL query.
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "project":"mybigqueryproject",
-    "table": "mylocaltable",
+    "billing_project":"mybigqueryproject",
+    "import_as": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   }
 }' "https://{username}.carto.com/api/v1/imports/?api_key={API_KEY}"
@@ -1226,7 +1269,7 @@ The following example displays how to sync data through an external BigQuery dat
 curl -v -H "Content-Type: application/json" -d '{
   "connector": {
     "provider": "bigquery",
-    "project":"mybigqueryproject",
+    "billing_project":"mybigqueryproject",
     "table": "mylocaltable",
     "sql_query": "SELECT * FROM mybigquerydataset.mytable WHERE value = 1"
   },
@@ -1313,7 +1356,7 @@ Query charges apply to the billing project regardless of the project acting as s
 
 For example, you may be granted access to CARTO's Data Observatory project. BigQuery storage expenses do not apply to the data hosted in CARTO's projects, but queries needed to import and synchronize will be charged to your billing project.
 
-##### Synch tables
+##### Sync tables
 
 [Sync tables](https://carto.com/developers/import-api/guides/sync-tables/) run queries to refresh their content at periodic intervals. Please note they **may be a source of recurrent charges** to your billing project if you use them. As a general rule do not set a sync interval below your expected update frequency.
 

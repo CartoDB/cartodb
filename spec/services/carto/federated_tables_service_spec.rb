@@ -5,6 +5,39 @@ describe Carto::FederatedTablesService do
     include_context 'users helper'
     include HelperMethods
 
+    before(:all) do
+        puts "Starting remote server"
+        @dir = Cartodb.get_config(:federated_server, 'dir')
+        port = Cartodb.get_config(:federated_server, 'port')
+        user = Cartodb.get_config(:federated_server, 'test_user')
+        pg_bindir = Cartodb.get_config(:federated_server, 'pg_bindir_path')
+        unless pg_bindir.present?
+          pg_bindir = `pg_config --bindir`.delete!("\n")
+        end
+        @pg_ctl     = "#{pg_bindir}/pg_ctl"
+        @psql       = "#{pg_bindir}/psql"
+
+        raise "Federated server directory is not configured!" unless @dir.present?
+        raise "Federated server port is not configured!" unless port.present?
+        raise "Federated server user is not configured!" unless user.present?
+        raise "Binary 'pg_ctl' could not be found" unless system("which #{@pg_ctl}")
+        raise "Binary 'psql' could not be found" unless system("which #{@psql}")
+
+        puts "Starting the remote server"
+        raise("Could not start the federated DB") unless system("#{@pg_ctl} start --silent -D #{@dir} >/dev/null")
+
+        @remote_host     = "127.0.0.1"
+        @remote_port     = "#{port}"
+        @remote_database = "#{user}"
+        @remote_username = "#{user}"
+        @remote_password = "#{user}"
+    end
+
+    after(:all) do
+        puts "Stopping the remote server"
+        system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
+    end
+
     describe 'Federated Servers' do
         describe 'List Federated Servers' do
             it 'should return a empty collection of federated server' do
@@ -17,13 +50,13 @@ describe Carto::FederatedTablesService do
             it 'should return a collection with one federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 attributes = {
-                    federated_server_name: "fs_001_from_#{@user1.username}_to_#{@user2.username}",
+                    federated_server_name: "fs_001_from_#{@user1.username}_to_remote",
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 service.register_server(attributes)
                 pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
@@ -46,13 +79,13 @@ describe Carto::FederatedTablesService do
             it 'should register a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 attributes = {
-                    federated_server_name: "fs_002_from_#{@user1.username}_to_#{@user2.username}",
+                    federated_server_name: "fs_002_from_#{@user1.username}_to_remote",
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
                 expect(federated_server).to have_key(:federated_server_name)
@@ -69,15 +102,15 @@ describe Carto::FederatedTablesService do
 
             it 'should grant access of a federated server to a role' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_003_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
                 expect {
@@ -90,15 +123,15 @@ describe Carto::FederatedTablesService do
 
             it 'should get a federated server by name' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_004_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 service.register_server(attributes)
                 federated_server = service.get_server(federated_server_name: federated_server_name)
@@ -116,7 +149,7 @@ describe Carto::FederatedTablesService do
 
             it 'should update a federated server by name' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_005_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
@@ -130,11 +163,11 @@ describe Carto::FederatedTablesService do
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.update_server(attributes)
                 expect(federated_server).to have_key(:federated_server_name)
@@ -151,15 +184,15 @@ describe Carto::FederatedTablesService do
 
             it 'should unregister a federated server by name' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_006_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user1.database_name,
-                    host: @user1.database_host,
-                    port: '5432',
-                    username: @user1.database_username,
-                    password: @user1.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
                 expect {
@@ -169,18 +202,17 @@ describe Carto::FederatedTablesService do
 
             it 'should revoke access to a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_007_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user1.database_name,
-                    host: @user1.database_host,
-                    port: '5432',
-                    username: @user1.database_username,
-                    password: @user1.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
-
                 expect {
                     service.revoke_access_to_federated_server(
                         federated_server_name: federated_server_name,
@@ -193,15 +225,15 @@ describe Carto::FederatedTablesService do
         describe 'Remote Schemas' do
             it 'should list remote schemas of a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
-                federated_server_name = "fs_008_from_#{@user1.username}_to_#{@user2.username}"
+                federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
                 attributes = {
                     federated_server_name: federated_server_name,
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
                 service.grant_access_to_federated_server(
@@ -216,13 +248,13 @@ describe Carto::FederatedTablesService do
             it 'should raise "Not enough permissions" error when listing remote schemas of a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 attributes = {
-                    federated_server_name: "fs_009_from_#{@user1.username}_to_#{@user2.username}",
+                    federated_server_name: "fs_009_from_#{@user1.username}_to_remote",
                     mode: 'read-only',
-                    dbname: @user2.database_name,
-                    host: @user2.database_host,
-                    port: '5432',
-                    username: @user2.database_username,
-                    password: @user2.database_password
+                    dbname: @remote_database,
+                    host: @remote_host,
+                    port: @remote_port,
+                    username: @remote_username,
+                    password: @remote_username
                 }
                 federated_server = service.register_server(attributes)
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }

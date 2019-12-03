@@ -69,7 +69,7 @@ module Carto
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_projects)
-          rescue Carto::Connector::NoImplementedYet => e
+          rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)
@@ -89,7 +89,7 @@ module Carto
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_tables_by_project(project))
-          rescue Carto::Connector::NoImplementedYet => e
+          rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)

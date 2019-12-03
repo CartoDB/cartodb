@@ -55,7 +55,7 @@ module Carto
       end
 
       def parameters_to_odbc_attributes(params, optional_params, required_params)
-        super(params, optional_params, required_params).map { |k, v| 
+        super(params, optional_params, required_params).map { |k, v|
           if v == true
             v = 1
           elsif v == false

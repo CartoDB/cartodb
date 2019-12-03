@@ -49,6 +49,7 @@ connector | This value **MUST** be set to *mysql*.
 connection |  Provide the parameters that permit connection to the remote database.
 table | Identifies the table to be imported.
 sql_query | Allows you to import a dataset defined by a SQL query. This is optional.
+import_as | Defines the name of the resulting CARTO dataset
 encoding | The character encoding used by the MySQL database.
 
 For the `encoding` attribute, any of the [PostgreSQL character set names or aliases](https://www.postgresql.org/docs/10/static/multibyte.html) can be applied.
@@ -71,7 +72,19 @@ In order to connect to an external MySQL database table, the following rules app
 
 - The name of the remote MySQL table must be passed in the `connector`/`table` parameter
 - The `sql_query` parameter must not be present
-- A CARTO dataset with the same name will be connected to the external table
+- If the `import_as` parameter is present it will define the name of the CARTO dataset produced.
+  By default the name of the remote table (`table`) will be used.
+
+#### Legacy `table` parameter usage
+
+The `import_as` parameter is used to give a name to the imported query (`sql_query`) or
+an imported external table (`table`). In the latter case it is optional and the table
+original name will be preserved by default.
+
+The `table` parameter could be originally used also for the CARTO dataset name of
+an imported query. This usage is preserved for backwards compatibility but is now deprecated;
+please use the `import_as` parameter in that case. Use `table` only when you're importing
+an external table, not a query.
 
 ##### Example
 
@@ -113,7 +126,7 @@ The `item_queue_id` value is a unique identifier that references the connection 
 The SQL code to select the data that is imported from the remote database must be passed through
 the `connector`/`sql_query` parameter. Note that the SQL query is interpreted by the remote MySQL database, not by PostgreSQL, so its syntax should follow MySQL conventions.
 
-The `table` parameter must also be used to define the name of the local table. This table stores the data of the remote table. This is the dataset that will be created in your CARTO account.
+The `import_as` parameter must also be used to define the name of the local table. This table stores the data of the remote table. This is the dataset that will be created in your CARTO account. Note that formerly the `table` parameter was used for that purpose; such use is now deprecated.
 
 ##### Example
 
@@ -131,7 +144,7 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"myusername",
       "password":"mypassword"
     },
-    "table": "mytable",
+    "import_as": "mytable",
     "sql_query": "SELECT * FROM remote_table WHERE value = 1",
     "encoding": "iso88591"
   }
@@ -152,7 +165,7 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"myusername",
       "password":"mypassword"
     },
-    "table": "mytable",
+    "import_as": "mytable",
     "sql_query": "SELECT * FROM remote_table WHERE value = '"'"'1'"'"'",
     "encoding": "iso88591"
   }
@@ -196,7 +209,7 @@ curl -v -H "Content-Type: application/json" -d '{
       "username":"myusername",
       "password":"mypassword"
     },
-    "table": "mytable",
+    "import_as": "mytable",
     "sql_query": "SELECT * FROM remote_table WHERE value = 1",
     "encoding": "iso88591"
   },

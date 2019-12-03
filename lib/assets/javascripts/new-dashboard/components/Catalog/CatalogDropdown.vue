@@ -21,7 +21,8 @@
         class="text is-caption catalogDropdown__input"
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
-        <span>{{ defaultText }}</span>
+        <CatalogDropdownItem v-if="this.searchFilter" :option="this.searchFilter"/>
+        <span v-else class="catalogDropdown__input--placeholder">{{ this.placeholder }}</span>
         <button
           v-if="searchFilter"
           class="catalogDropdown__close"
@@ -98,9 +99,6 @@ export default {
     };
   },
   computed: {
-    defaultText () {
-      return this.searchFilter || this.$t('CatalogDropdown.select');
-    },
     maxItemsScroll () {
       const PAGE_HEIGHT = window.innerHeight;
       const SMALL_HEIGHT = 680;
@@ -262,7 +260,7 @@ export default {
     position: relative;
     z-index: 2;
     width: calc(100% - 20px);
-    margin-top: 48px;
+    margin-top: 16px;
   }
 
   &__input {
@@ -274,6 +272,10 @@ export default {
 
     &.has-error {
       border: 1px solid $warning__border-color;
+    }
+
+    &--placeholder {
+      color: $neutral--500;
     }
   }
 
@@ -352,7 +354,7 @@ export default {
     &:hover {
       &:not(.is-disabled) {
         cursor: pointer;
-        
+
         .catalogDropdown__close {
           display: block;
         }

@@ -790,6 +790,10 @@ test:
     body: ""
   session_domain:     '.localhost.lan'
   subdomainless_urls: false
+  federated_server:
+    dir: "/tmp/federated_server_db"
+    port: 22665
+    test_user: "remote_user"
 
 staging:
   <<: *defaults

@@ -19,20 +19,14 @@ describe Carto::Api::Public::FederatedTablesController do
     @pg_ctl     = "#{pg_bindir}/pg_ctl"
     @psql       = "#{pg_bindir}/psql"
 
-    unless @dir.present?
-      raise "Federated server directory is not configured!"
-    end
-    unless port.present?
-      raise "Federated server port is not configured!"
-    end
-    unless user.present?
-      raise "Federated server user is not configured!"
-    end
-    system("which #{@pg_ctl}") || raise("Federated server pg_ctl could not be found")
-    system("which #{@psql}") || raise("Federated server psql could not be found")
+    raise "Federated server directory is not configured!" unless @dir.present?
+    raise "Federated server port is not configured!" unless port.present?
+    raise "Federated server user is not configured!" unless user.present?
+    raise "Binary 'pg_ctl' could not be found" unless system("which #{@pg_ctl}")
+    raise "Binary 'psql' could not be found" unless system("which #{@psql}")
 
-    puts "Starting remote server"
-    system("#{@pg_ctl} start --silent -D #{@dir} >/dev/null") || raise("Could not start the federated DB")
+    puts "Starting the remote server"
+    raise("Could not start the federated DB") unless system("#{@pg_ctl} start --silent -D #{@dir} >/dev/null")
 
     @remote_host     = "127.0.0.1"
     @remote_port     = "#{port}"
@@ -42,8 +36,8 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   def remote_query(query)
-    system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"") ||
-        raise("Failed to execute remote query: #{query}")
+    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
+    raise "Failed to execute remote query: #{query}" unless status
   end
 
   after(:all) do

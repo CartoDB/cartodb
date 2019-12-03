@@ -1303,11 +1303,11 @@ from_external_source | Has the value **false** for all connector-based synchroni
 
 This service is subject to charges in your BigQuery project, according to your pricing settings. Please check https://cloud.google.com/bigquery/pricing for more information.
 
+When using the [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) (activated with the `storage_api` parameter) pricing may differ; see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
+
 ##### The billing project
 
-The project used to bill expenses is either:
-- the billing project associated to your user if you configured it through `Settings > Account > Connect to external data sources`
-- PLANNED the one set through the `billing_project` parameter, which is mandatory when using authorization through Service Account credentials.
+The project used to bill expenses is the one set through the `billing_project` parameter, which is mandatory.
 
 Query charges apply to the billing project regardless of the project acting as source of data.
 

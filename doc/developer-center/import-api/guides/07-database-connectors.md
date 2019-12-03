@@ -1298,3 +1298,23 @@ from_external_source | Has the value **false** for all connector-based synchroni
   }
 }
 ```
+
+#### BigQuery pricing and expenses
+
+This service is subject to charges in your BigQuery project, according to your pricing settings. Please check https://cloud.google.com/bigquery/pricing for more information.
+
+When using the [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/storage/) (activated with the `storage_api` parameter) pricing may differ; see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
+
+##### The billing project
+
+The project used to bill expenses is the one set through the `billing_project` parameter, which is mandatory.
+
+Query charges apply to the billing project regardless of the project acting as source of data.
+
+For example, you may be granted access to CARTO's Data Observatory project. BigQuery storage expenses do not apply to the data hosted in CARTO's projects, but queries needed to import and synchronize will be charged to your billing project.
+
+##### Synch tables
+
+[Sync tables](https://carto.com/developers/import-api/guides/sync-tables/) run queries to refresh their content at periodic intervals. Please note they **may be a source of recurrent charges** to your billing project if you use them. As a general rule do not set a sync interval below your expected update frequency.
+
+Future versions of this service may avoid queries when source tables are not updated.

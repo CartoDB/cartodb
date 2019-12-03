@@ -40,8 +40,9 @@ module Carto
 
       def check_connection
         ok = false
-        if @oauth_client
-          ok = @oauth_client.token_valid?
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          ok = oauth_client.token_valid?
         end
         ok
       end
@@ -130,6 +131,7 @@ module Carto
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
+        @sync_oauth = context&.user&.oauths.select(DATASOURCE_NAME)
         validate_config!(context)
       end
 
@@ -143,11 +145,17 @@ module Carto
           raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
         end
 
-        datasource_oauth = context.user.oauths.select(DATASOURCE_NAME)
-        @oauth_client = datasource_oauth&.get_service_datasource
-        @token = datasource_oauth&.token
+        if @sync_oauth.blank?
+          raise "Missing OAuth credentials for BigQuery: user must authorize"
+        end
+      end
 
-        raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
+      def token
+        # We can get a validated token (having obtained a refreshed access token) with
+        #   @token ||= @sync_oauth&.get_service_datasource&.token
+        # But since the ODBC driver takes care of obtaining a fresh access token
+        # that's unnecessary.
+        @token ||= @sync_oauth&.token
       end
 
       def fixed_odbc_attributes
@@ -157,7 +165,7 @@ module Carto
           Driver:         DRIVER_NAME,
           SQLDialect:     SQL_DIALECT,
           OAuthMechanism: OAUTH_MECHANISM,
-          RefreshToken:   @token,
+          RefreshToken:   token,
           ClientId: @oauth_config['client_id'],
           ClientSecret: @oauth_config['client_secret'],
           AllowLargeResults: ALLOW_LRESULTS,

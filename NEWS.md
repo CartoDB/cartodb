@@ -5,7 +5,9 @@ Development
 - None yet
 
 ### Features
-- None yet
+* Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
+  ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
 
 ### Bug fixes / enhancements
 - None yet

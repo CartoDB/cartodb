@@ -127,7 +127,8 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: false, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil },
+        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
       }
     end
   end
@@ -145,7 +146,8 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: true, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil },
+        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
       }
     end
     user_config.destroy
@@ -302,8 +304,7 @@ describe Carto::Connector do
       foreign_table_name = %{"cdb_importer"."#{server_name}_theimportedtable"}
       user_name = @user.username
       user_role = @user.database_username
-      connector.remote_table_name.should == 'theimportedtable'
-
+      connector.table_name.should == 'theimportedtable'
 
       expect_executed_commands(
         @executed_commands,
@@ -1494,7 +1495,7 @@ describe Carto::Connector do
     it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'bigquery',
-        project: 'theproject',
+        billing_project: 'theproject',
         dataset: 'thedataset',
         table:    'thetable'
       }
@@ -1507,7 +1508,13 @@ describe Carto::Connector do
       oauth_config = {
         'bigquery' => {
           'client_id' => 'theclientid',
-          'client_secret' => 'theclientsecret'
+          'client_secret' => 'theclientsecret',
+          'scope' => 'thescope',
+          'application_name' => 'Connect your Google BigQuery data with CartoDB',
+          'callback_url' => 'https://example.com',
+          'authorization_uri' => 'https://example.com',
+          'token_credential_uri' => 'https://example.com',
+          'revoke_auth_uri' =>  'https://example.com'
         }
       }
       Cartodb.with_config oauth: oauth_config do
@@ -1528,15 +1535,20 @@ describe Carto::Connector do
           command: :create_server,
           fdw_name: 'odbc_fdw',
           options: {
-            'odbc_AllowLargeResults' => '0',
+            'odbc_AllowLargeResults' => '1',
             'odbc_Catalog' => 'theproject',
             'odbc_ClientId' => 'theclientid',
             'odbc_ClientSecret' => 'theclientsecret',
             'odbc_Driver' => 'Simba ODBC Driver for Google BigQuery 64-bit',
-            'odbc_LargeResultsDataSetId' => '{_bqodbc_temp_tables}',
+            "odbc_EnableHTAPI" => "0",
+            "odbc_HTAPI_MinActivationRatio" => "0",
+            "odbc_HTAPI_MinResultsSize" => "100",
+            'odbc_LargeResultsDataSetId' => '_cartoimport_temp',
             'odbc_LargeResultsTempTableExpirationTime' => '3600000',
             'odbc_OAuthMechanism' => '1',
-            'odbc_SQLDialect' => '1'
+            'odbc_SQLDialect' => '1',
+            "odbc_UseDefaultLargeResultsDataset" => "1",
+            "odbc_UseQueryCache" => "1"
           }
         }]
       }, {

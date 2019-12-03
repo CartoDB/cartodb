@@ -131,7 +131,7 @@ module Carto
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
-        @sync_oauth = context&.user&.oauths.select(DATASOURCE_NAME)
+        @sync_oauth = context&.user&.oauths&.select(DATASOURCE_NAME)
         validate_config!(context)
       end
 

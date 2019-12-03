@@ -55,7 +55,7 @@ module Carto
       @provider.remote_data_updated?
     end
 
-    def remote_table_name
+    def table_name
       @provider.table_name
     end
 

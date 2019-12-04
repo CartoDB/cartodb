@@ -272,68 +272,62 @@ describe Carto::FederatedTablesService do
 
             it 'should list registered remote table of a federated server and schema' do
                 federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
-                remote_schema_name = 'public'
-                remote_table_name = 'my_table'
                 federated_server = create_and_grant_federated_server(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
-                    local_table_name_override: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
+                    local_table_name_override: @remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
                     webmercator_column_name: 'geom_webmercator'
                 }
                 @service.register_table(attributes)
                 pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
-                remote_tables = @service.list_remote_tables(federated_server_name, remote_schema_name, pagination)
+                remote_tables = @service.list_remote_tables(federated_server_name, @remote_schema_name, pagination)
                 expect(remote_tables).to include(
                     :registered => true,
-                    :qualified_name => "#{remote_schema_name}.#{remote_table_name}",
-                    :remote_schema_name => remote_schema_name,
-                    :remote_table_name => remote_table_name
+                    :qualified_name => "#{@remote_schema_name}.#{@remote_table_name}",
+                    :remote_schema_name => @remote_schema_name,
+                    :remote_table_name => @remote_table_name
                 )
             end
 
             it 'should register a remote table of a federated server and schema' do
                 federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
-                remote_schema_name = 'public'
-                remote_table_name = 'my_table'
                 federated_server = create_and_grant_federated_server(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
-                    local_table_name_override: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
+                    local_table_name_override: @remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
                     webmercator_column_name: 'geom_webmercator'
                 }
                 remote_table = @service.register_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
-                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{remote_table_name}")
-                expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
+                expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should get a remote table of a federated server and schema' do
                 federated_server_name = "fs_013_from_#{@user1.username}_to_remote"
-                remote_schema_name = 'public'
-                remote_table_name = 'my_table'
                 federated_server = create_and_grant_federated_server(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
-                    local_table_name_override: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
+                    local_table_name_override: @remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
                     webmercator_column_name: 'geom_webmercator'
@@ -341,18 +335,16 @@ describe Carto::FederatedTablesService do
                 @service.register_table(attributes)
                 remote_table = @service.get_remote_table(
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
+                    remote_schema_name: @remote_schema_name,
                     remote_table_name: remote_table_name
                 )
                 expect(remote_table[:registered]).to eq(true)
-                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{remote_table_name}")
-                expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
+                expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should update a remote table of a federated server and schema' do
                 federated_server_name = "fs_014_from_#{@user1.username}_to_remote"
-                remote_schema_name = 'public'
-                remote_table_name = 'my_table'
                 new_remote_table_name = 'overwitten_table_name'
                 federated_server = create_and_grant_federated_server(
                     federated_server_name: federated_server_name,
@@ -360,9 +352,9 @@ describe Carto::FederatedTablesService do
                 )
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
-                    local_table_name_override: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
+                    local_table_name_override: @remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
                     webmercator_column_name: 'geom_webmercator'
@@ -370,8 +362,8 @@ describe Carto::FederatedTablesService do
                 @service.register_table(attributes)
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
                     local_table_name_override: new_remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
@@ -380,22 +372,20 @@ describe Carto::FederatedTablesService do
                 remote_table = @service.update_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
                 expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{new_remote_table_name}")
-                expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should unregister a registered remote table of a federated server' do
                 federated_server_name = "fs_015_from_#{@user1.username}_to_remote"
-                remote_schema_name = 'public'
-                remote_table_name = 'my_table'
                 federated_server = create_and_grant_federated_server(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
                 attributes = {
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name,
-                    local_table_name_override: remote_table_name,
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name,
+                    local_table_name_override: @remote_table_name,
                     id_column_name: 'id',
                     geom_column_name: 'geom',
                     webmercator_column_name: 'geom_webmercator'
@@ -404,16 +394,16 @@ describe Carto::FederatedTablesService do
                 expect(remote_table[:registered]).to eq(true)
                 @service.unregister_table(
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name
                 )
                 remote_table = @service.get_remote_table(
                     federated_server_name: federated_server_name,
-                    remote_schema_name: remote_schema_name,
-                    remote_table_name: remote_table_name
+                    remote_schema_name: @remote_schema_name,
+                    remote_table_name: @remote_table_name
                 )
                 expect(remote_table[:registered]).to eq(false)
-                expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
                 expect(remote_table[:qualified_name]).to eq(nil)
             end
         end

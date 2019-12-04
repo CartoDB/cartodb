@@ -138,7 +138,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_list_servers = { page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
         expect(response.status).to eq(401)
@@ -288,7 +288,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       post_json api_v4_federated_servers_register_server_url, @payload_register_server do |response|
         expect(response.status).to eq(401)
       end
@@ -359,7 +359,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_show_server = { federated_server_name: @federated_server_name }
       get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
         expect(response.status).to eq(401)
@@ -430,7 +430,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_update_server = { federated_server_name: @federated_server_name }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(401)
@@ -464,7 +464,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_unregister_server = { federated_server_name: @federated_server_name }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(401)
@@ -529,7 +529,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_query("DROP SCHEMA new_schema")
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_list_schemas = { federated_server_name: @federated_server_name, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
         expect(response.status).to eq(401)
@@ -577,7 +577,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
         expect(response.status).to eq(401)
@@ -641,7 +641,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(401)
@@ -699,7 +699,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(401)
@@ -798,7 +798,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(401)
@@ -854,7 +854,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(401)

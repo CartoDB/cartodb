@@ -120,11 +120,11 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 400 when payload is missing' do
+    it 'returns 422 when payload is missing' do
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = {}
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(422)
       end
     end
 
@@ -260,11 +260,11 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 400 when payload is missing' do
+    it 'returns 422 when payload is missing' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       payload_update_server = {}
       put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(422)
       end
     end
 
@@ -368,7 +368,7 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(found[:remote_schema_name]).to eq('public')
       end
     end
-    
+
     it 'returns 200 and an updated list' do
       remote_query("CREATE SCHEMA IF NOT EXISTS new_schema")
       params_list_schemas = { federated_server_name: @federated_server_name, api_key: @user1.api_key, page: 1, per_page: 10 }
@@ -500,11 +500,11 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 400 when payload is missing' do
+    it 'returns 422 when payload is missing' do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       payload = {}
       post_json api_v4_federated_servers_register_table_url(params), payload do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(422)
       end
     end
 
@@ -670,11 +670,11 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 400 when payload is missing' do
+    it 'returns 422 when payload is missing' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
       payload_update_table = {}
       put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(422)
       end
     end
 

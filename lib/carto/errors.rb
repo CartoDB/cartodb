@@ -74,7 +74,7 @@ module Carto
   end
 
   class MissingParamsError < CartoError
-    def initialize(missing_params, status: 400)
+    def initialize(missing_params, status = 400)
       super("The following required params are missing: #{missing_params.join(', ')}", status)
     end
   end

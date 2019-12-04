@@ -301,7 +301,7 @@ describe Carto::Connector do
 
       @executed_commands.size.should eq 9
       server_name = match_sql_command(@executed_commands[0][1])[:server_name]
-      foreign_table_name = %{"cdb_importer"."#{server_name}_theimportedtable"}
+      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
       user_name = @user.username
       user_role = @user.database_username
       connector.table_name.should == 'theimportedtable'
@@ -353,7 +353,6 @@ describe Carto::Connector do
             options: {
               "schema" => 'thedatabase',
               "table" => 'thetable',
-              "import_as" => 'theimportedtable',
               "encoding" => 'theencoding',
               "prefix" => "#{server_name}_"
             }

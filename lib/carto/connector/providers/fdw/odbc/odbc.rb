@@ -80,12 +80,23 @@ module Carto
         must_be_defined_in_derived_class
       end
 
+      # Name that will be given to the local imported table
       def table_name
         @params[:import_as] || @params[:table]
       end
 
+      # Name of the external table to be imported.
+      # For queries this is a conventional name that can be used to name the foreign table.
+      def external_name
+        if @params[:sql_query].present?
+          table_name
+        else
+          @params[:table]
+        end
+      end
+
       def foreign_table_name_for(server_name, name = nil)
-        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || table_name}")
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || external_name}")
       end
 
       def unique_prefix_for(server_name)
@@ -113,6 +124,7 @@ module Carto
         cmds = []
         foreign_table_name = foreign_table_name_for(server_name)
         if @columns.present?
+          # note that it uses table for both imported external table and local name (with prefix) <<<<<
           cmds << fdw_create_foreign_table_sql(
             server_name, foreign_table_schema, foreign_table_name, @columns, table_options
           )
@@ -133,10 +145,11 @@ module Carto
 
       def fdw_check_connection(server_name)
         cmds = []
-        foreign_table_name = foreign_table_name_for(server_name, 'check_connection')
+        name = 'check_connection'
+        foreign_table_name = foreign_table_name_for(server_name, name)
         columns = ['ok int']
         cmds << fdw_create_foreign_table_sql(
-          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok")
+          server_name, foreign_table_schema, foreign_table_name, columns, check_table_options("SELECT 1 AS ok", server_name, name)
         )
         cmds << fdw_grant_select_sql(foreign_table_schema, foreign_table_name, @connector_context.database_username)
         execute_as_superuser cmds.join("\n")
@@ -308,13 +321,18 @@ module Carto
       # FDW table-level options
       def table_options
         params = connection_options connection_attributes.except(*(server_attributes + user_attributes))
-        params.merge(non_connection_parameters).parameters
+        params = params.merge(non_connection_parameters).parameters
+
+        # The `table` parameter here will be used by the odbc_fdw to
+        # name the foreign table.
+        params.merge(table: external_name).except(:import_as)
       end
 
-      def check_table_options(query)
+      def check_table_options(query, server_name, name)
         table_options.merge(
           sql_query: query,
-          table: 'check_table' # Not used, but required
+          prefix: unique_prefix_for(server_name),
+          table: name # Not used, but required
         )
       end
     end

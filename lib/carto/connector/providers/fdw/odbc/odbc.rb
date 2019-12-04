@@ -44,11 +44,24 @@ module Carto
       end
 
       def errors(only_for: nil)
-        super + @connection.errors(parameters_term: 'connection parameters')
+        additional_errors = []
+        parameters_to_validate = @params.normalize_parameter_names(only_for)
+        if parameters_to_validate.blank? || (parameters_to_validate & [:table, :sql_query, :import_as]).present?
+          if !@params.normalized_names.include?(:table) && !@params.normalized_names.include?(:sql_query)
+            additional_errors << "The table parameter is required if no sql_query parameter is provided"
+          end
+          if @params.normalized_names.include?(:sql_query) && !@params.normalized_names.include?(:import_as) &&
+            !@params.normalized_names.include?(:table)
+            # note that for backwards compatibility we support definining the result name with `table`
+            # but that is deprecated
+            additional_errors << "The import_as parameter is required to name the sql_query results"
+          end
+        end
+        super + @connection.errors(parameters_term: 'connection parameters') + additional_errors
       end
 
-      required_parameters %I(table connection)
-      optional_parameters %I(import_as schema sql_query sql_count encoding columns)
+      required_parameters %I(connection)
+      optional_parameters %I(table import_as schema sql_query sql_count encoding columns)
 
       # ODBC attributes for (non-connection) parameters: { name: :internal_name }#
       # The :internal_name is what is passed to the driver (through odbc_fdw 'odbc_' options)
@@ -87,7 +100,7 @@ module Carto
 
       # Name of the external table to be imported.
       # For queries this is a conventional name that can be used to name the foreign table.
-      def external_name
+      def external_table_name
         if @params[:sql_query].present?
           table_name
         else
@@ -96,7 +109,7 @@ module Carto
       end
 
       def foreign_table_name_for(server_name, name = nil)
-        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || external_name}")
+        fdw_adjusted_table_name("#{unique_prefix_for(server_name)}#{name || external_table_name}")
       end
 
       def unique_prefix_for(server_name)
@@ -323,9 +336,9 @@ module Carto
         params = connection_options connection_attributes.except(*(server_attributes + user_attributes))
         params = params.merge(non_connection_parameters).parameters
 
-        # The `table` parameter here will be used by the odbc_fdw to
-        # name the foreign table.
-        params.merge(table: external_name).except(:import_as)
+        # The `table` parameter here will be used by the odbc_fdw to name the foreing_table
+        # and also to select the external table if no sql_query is given.
+        params.merge(table: external_table_name).except(:import_as)
       end
 
       def check_table_options(query, server_name, name)

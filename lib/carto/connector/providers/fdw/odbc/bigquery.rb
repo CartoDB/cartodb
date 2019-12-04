@@ -25,10 +25,6 @@ module Carto
           if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
             dataset_errors << "The dataset parameter is needed for tables"
           end
-          # table is not optional if not using a query
-          if !@params.normalized_names.include?(:table) && !@params.normalized_names.include?(:sql_query)
-            dataset_errors << "The table parameter is required if no sql_query parameter is provided"
-          end
         end
         super + dataset_errors
       end

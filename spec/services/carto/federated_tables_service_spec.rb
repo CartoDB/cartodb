@@ -48,6 +48,34 @@ describe Carto::FederatedTablesService do
         return federated_server
     end
 
+    REMOTE_TABLE_ATTRIBUTES = %i(federated_server_name remote_schema_name remote_table_name local_table_name_override id_column_name geom_column_name webmercator_column_name).freeze
+
+    def get_remote_table_server_payload(
+        federated_server_name:,
+        remote_schema_name: @remote_schema_name,
+        remote_table_name: @remote_table_name,
+        local_table_name_override: @remote_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+    )
+        {
+            federated_server_name: federated_server_name,
+            remote_schema_name: remote_schema_name,
+            remote_table_name: remote_table_name,
+            local_table_name_override: local_table_name_override,
+            id_column_name: id_column_name,
+            geom_column_name: geom_column_name,
+            webmercator_column_name: webmercator_column_name
+        }
+    end
+
+    def resgiter_remote_table(attributes)
+        create_and_grant_federated_server(attributes)
+        remote_table_attributes = attributes.slice(*FEDERATED_SERVER_ATTRIBUTES)
+        @service.register_table(get_remote_table_server_payload(remote_table_attributes))
+    end
+
     before(:all) do
         puts "Starting remote server"
         @dir = Cartodb.get_config(:federated_server, 'dir')
@@ -276,16 +304,10 @@ describe Carto::FederatedTablesService do
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
-                attributes = {
+                resgiter_remote_table(
                     federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: @remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
-                @service.register_table(attributes)
+                    db_role: @user1.database_username
+                )
                 pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
                 remote_tables = @service.list_remote_tables(federated_server_name, @remote_schema_name, pagination)
                 expect(remote_tables).to include(
@@ -298,20 +320,10 @@ describe Carto::FederatedTablesService do
 
             it 'should register a remote table of a federated server and schema' do
                 federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
-                federated_server = create_and_grant_federated_server(
+                remote_table = resgiter_remote_table(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: @remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
-                remote_table = @service.register_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
                 expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
                 expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
@@ -319,24 +331,14 @@ describe Carto::FederatedTablesService do
 
             it 'should get a remote table of a federated server and schema' do
                 federated_server_name = "fs_013_from_#{@user1.username}_to_remote"
-                federated_server = create_and_grant_federated_server(
+                resgiter_remote_table(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: @remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
-                @service.register_table(attributes)
                 remote_table = @service.get_remote_table(
                     federated_server_name: federated_server_name,
                     remote_schema_name: @remote_schema_name,
-                    remote_table_name: remote_table_name
+                    remote_table_name: @remote_table_name
                 )
                 expect(remote_table[:registered]).to eq(true)
                 expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
@@ -346,29 +348,14 @@ describe Carto::FederatedTablesService do
             it 'should update a remote table of a federated server and schema' do
                 federated_server_name = "fs_014_from_#{@user1.username}_to_remote"
                 new_remote_table_name = 'overwitten_table_name'
-                federated_server = create_and_grant_federated_server(
+                resgiter_remote_table(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
-                attributes = {
+                attributes = get_remote_table_server_payload(
                     federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: @remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
-                @service.register_table(attributes)
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: new_remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
+                    local_table_name_override: new_remote_table_name
+                )
                 remote_table = @service.update_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
                 expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{new_remote_table_name}")
@@ -377,20 +364,10 @@ describe Carto::FederatedTablesService do
 
             it 'should unregister a registered remote table of a federated server' do
                 federated_server_name = "fs_015_from_#{@user1.username}_to_remote"
-                federated_server = create_and_grant_federated_server(
+                remote_table = resgiter_remote_table(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    remote_schema_name: @remote_schema_name,
-                    remote_table_name: @remote_table_name,
-                    local_table_name_override: @remote_table_name,
-                    id_column_name: 'id',
-                    geom_column_name: 'geom',
-                    webmercator_column_name: 'geom_webmercator'
-                }
-                remote_table = @service.register_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
                 @service.unregister_table(
                     federated_server_name: federated_server_name,

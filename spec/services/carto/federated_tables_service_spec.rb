@@ -5,6 +5,11 @@ describe Carto::FederatedTablesService do
     include_context 'users helper'
     include HelperMethods
 
+    def remote_query(query)
+        raise "Failed to execute remote query: #{query}" unless system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
+    end
+
+
     before(:all) do
         puts "Starting remote server"
         @dir = Cartodb.get_config(:federated_server, 'dir')
@@ -38,8 +43,8 @@ describe Carto::FederatedTablesService do
         system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
     end
 
-    describe 'Federated Servers' do
-        describe 'List Federated Servers' do
+    describe 'federated server service' do
+        describe 'list federated servers' do
             it 'should return a empty collection of federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
@@ -75,7 +80,7 @@ describe Carto::FederatedTablesService do
             end
         end
 
-        describe 'Federated Server' do
+        describe 'federated server' do
             it 'should register a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 attributes = {
@@ -222,7 +227,7 @@ describe Carto::FederatedTablesService do
             end
         end
 
-        describe 'Remote Schemas' do
+        describe 'remote schemas' do
             it 'should list remote schemas of a federated server' do
                 service = Carto::FederatedTablesService.new(user: @user1)
                 federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
@@ -261,6 +266,251 @@ describe Carto::FederatedTablesService do
                 expect {
                     service.list_remote_schemas(federated_server[:federated_server_name], pagination)
                 }.to raise_error(Sequel::DatabaseError, /Not enough permissions to access the server/)
+            end
+
+            describe 'remote tables' do
+                it 'should list unregistered remote table of a federated server and schema' do
+                    federated_server_name = "fs_010_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
+                    remote_tables = service.list_remote_tables(federated_server_name, remote_schema_name, pagination)
+                    expect(remote_tables).to include(
+                        :registered => false,
+                        :qualified_name => "#{remote_schema_name}.#{remote_table_name}",
+                        :remote_schema_name => remote_schema_name,
+                        :remote_table_name => remote_table_name
+                    )
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
+
+                it 'should list registered remote table of a federated server and schema' do
+                    federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    service.register_table(attributes)
+                    pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
+                    remote_tables = service.list_remote_tables(federated_server_name, remote_schema_name, pagination)
+                    expect(remote_tables).to include(
+                        :registered => true,
+                        :qualified_name => "#{remote_schema_name}.#{remote_table_name}",
+                        :remote_schema_name => remote_schema_name,
+                        :remote_table_name => remote_table_name
+                    )
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
+
+                it 'should register a remote table of a federated server and schema' do
+                    federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    remote_table = service.register_table(attributes)
+                    expect(remote_table[:registered]).to eq(true)
+                    expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{remote_table_name}")
+                    expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
+
+                it 'should get a remote table of a federated server and schema' do
+                    federated_server_name = "fs_013_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    service.register_table(attributes)
+                    remote_table = service.get_remote_table(
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name
+                    )
+                    expect(remote_table[:registered]).to eq(true)
+                    expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{remote_table_name}")
+                    expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
+
+                it 'should update a remote table of a federated server and schema' do
+                    federated_server_name = "fs_014_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    new_remote_table_name = 'overwitten_table_name'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    service.register_table(attributes)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: new_remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    remote_table = service.update_table(attributes)
+                    expect(remote_table[:registered]).to eq(true)
+                    expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{new_remote_table_name}")
+                    expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
+
+                it 'should unregister a registered remote table of a federated server' do
+                    federated_server_name = "fs_015_from_#{@user1.username}_to_remote"
+                    remote_schema_name = 'public'
+                    remote_table_name = 'my_table'
+                    remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+                    service = Carto::FederatedTablesService.new(user: @user1)
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        mode: 'read-only',
+                        dbname: @remote_database,
+                        host: @remote_host,
+                        port: @remote_port,
+                        username: @remote_username,
+                        password: @remote_username
+                    }
+                    federated_server = service.register_server(attributes)
+                    service.grant_access_to_federated_server(
+                        federated_server_name: federated_server_name,
+                        db_role: @user1.database_username
+                    )
+                    attributes = {
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name,
+                        local_table_name_override: remote_table_name,
+                        id_column_name: 'id',
+                        geom_column_name: 'geom',
+                        webmercator_column_name: 'geom_webmercator'
+                    }
+                    remote_table = service.register_table(attributes)
+                    expect(remote_table[:registered]).to eq(true)
+                    service.unregister_table(
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name
+                    )
+                    remote_table = service.get_remote_table(
+                        federated_server_name: federated_server_name,
+                        remote_schema_name: remote_schema_name,
+                        remote_table_name: remote_table_name
+                    )
+                    expect(remote_table[:registered]).to eq(false)
+                    expect(remote_table[:remote_table_name]).to eq(remote_table_name)
+                    expect(remote_table[:qualified_name]).to eq(nil)
+                    remote_query("DROP TABLE #{remote_schema_name}.#{remote_table_name}")
+                end
             end
         end
     end

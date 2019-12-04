@@ -14,7 +14,7 @@ You can use the MySQL Connector to:
 
 - Import a single, whole table stored in your MySQL database
 - Apply a SQL query to import filtered data
-- Apply a SQL query from from multiple joined tables
+- Apply a SQL query from multiple joined tables
 
 To use the MySQL Connector, you must include a `connector` parameter with the following attributes:
 
@@ -290,7 +290,7 @@ You can use the PostgreSQL Connector to:
 
 - Import a single, whole table stored in your PostgreSQL database
 - Apply a SQL query to import filtered data
-- Apply a SQL query from from multiple joined tables
+- Apply a SQL query from multiple joined tables
 
 To use the PostgreSQL Connector, you must include a `connector` parameter with the following attributes:
 
@@ -557,7 +557,7 @@ You can use the Microsoft SQL Server Connector to:
 
 - Import a single, whole table stored in your Microsoft SQL Server database
 - Apply a SQL query to import filtered data
-- Apply a SQL query from from multiple joined tables
+- Apply a SQL query from multiple joined tables
 
 To use the Microsoft SQL Server Connector, you must include a `connector` parameter with the following attributes:
 
@@ -815,7 +815,7 @@ You can use the Hive Connector to:
 
 - Import a single, whole table stored in your Hive database
 - Apply a SQL query to import filtered data
-- Apply a SQL query from from multiple joined tables
+- Apply a SQL query from multiple joined tables
 
 To use the Hive Connector, you must include a `connector` parameter with the following attributes:
 

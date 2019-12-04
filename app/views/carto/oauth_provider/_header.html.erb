@@ -2,7 +2,7 @@
 <% if @error.blank? %>
   <h1 class='oauth-form__title'>Request for permission</h1>
   <h2 class='oauth-form__subtitle'>
-    <strong><%= @oauth_app.name %></strong> by <strong><%= @oauth_app.user.name_or_username %></strong> would like permission to access your account
+    <strong><%= @oauth_app.name %></strong> <% if @oauth_app.user %>by <strong><%= @oauth_app.user.name_or_username %></strong><% end %> would like permission to access your account
   </h2>
 <% else %>
   <h1 class='oauth-form__title'>Something went wrong</h1>

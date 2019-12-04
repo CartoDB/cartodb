@@ -258,7 +258,7 @@ class Admin::VisualizationsController < Admin::AdminController
       unless @related_tables_owners.include?(table.user_id)
         table_owner = ::User.where(id: table.user_id).first
         if table_owner.nil?
-          # strange scenario, as user has been deleted but his table still exists
+          # strange scenario, as user has been deleted but their table still exists
           @related_tables_owners[table.user_id] = nil
         else
           @related_tables_owners[table.user_id] = table_owner

@@ -71,21 +71,23 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#list_federated_servers' do
     before(:all) do
       @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
-      params_register_server = { api_key: @user1.api_key }
-      payload_register_server = get_payload(@federated_server_name)
-      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        expect(response.status).to eq(201)
-      end
+      @params_register_server = { api_key: @user1.api_key }
+      @params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
     end
 
-    after(:all) do
-      params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
-      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
-        expect(response.status).to eq(204)
+    it 'returns 200 with an empty federated server list' do
+      params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(0)
       end
     end
 
     it 'returns 200 with the federated server list' do
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload(@federated_server_name) do |response|
+        expect(response.status).to eq(201)
+      end
+
       params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
         expect(response.status).to eq(200)
@@ -93,6 +95,46 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:result][0][:federated_server_name]).to eq(@federated_server_name)
         expect(response.body[:result][0][:dbname]).to eq(@remote_database)
         expect(response.body[:result][0][:host]).to eq(@remote_host)
+      end
+
+      delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 200 and works with pager' do
+      server_count = 5;
+      for i in 1..server_count do
+        post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload("#{@federated_server_name}#{i}") do |response|
+          expect(response.status).to eq(201)
+        end
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(2)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 2, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(2)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 3, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(1)
+      end
+
+      for i in 1..server_count do
+        delete_json api_v4_federated_servers_unregister_server_url({ federated_server_name: "#{@federated_server_name}#{i}", api_key: @user1.api_key }) do |response|
+          expect(response.status).to eq(204)
+        end
       end
     end
 

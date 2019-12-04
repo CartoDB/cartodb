@@ -360,7 +360,7 @@ module Carto
       ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername.perform(@user.username)
     end
 
-    it 'should call the rerun_func and execute sync twice becuase other worker tried to get the lock' do
+    it 'should call the fail_function and execute sync twice because other worker tried to get the lock' do
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
       main = Thread.new do
@@ -372,7 +372,7 @@ module Carto
           Carto::GhostTablesManager.new(@user.id).send(:sync)
         end
         gtm = Carto::GhostTablesManager.new(@user.id)
-        gtm.get_bolt.run_locked(rerun_func: rerun_func) do
+        gtm.get_bolt.run_locked(fail_function: rerun_func) do
           sleep(1)
           Carto::GhostTablesManager.new(@user.id).send(:sync)
         end

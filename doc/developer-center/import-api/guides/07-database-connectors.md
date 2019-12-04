@@ -1176,10 +1176,16 @@ BigQuery columns of type GEOGRAPHY can be imported as the geometry of the result
 you could use a query (`sql_query` parameter) and rename your columns using `AS`:
 
 ```sql
-SELECT name, my_geography AS the_geom FROM my_project.my_dataset.my_table
+SELECT my_othercolumn, my_geography AS the_geom FROM my_project.my_dataset.my_table
 ```
 
 PLANNED: relax this naming restriction.
+
+In case your BigQuery table specifies geographic locations using longitude and latitude numeric columns, you could import them as geometry by using the BigQuery [ST_GEOGPOINT](https://cloud.google.com/bigquery/docs/reference/standard-sql/geography_functions#st_geogpoint) function to convert them into a GEOGRAPHY like this:
+
+```sql
+SELECT my_othercolumn, ST_GEOGPOINT(my_long_column, my_lat_column) AS the_geom FROM my_project.my_dataset.my_table
+```
 
 #### BigQuery Storage API
 

@@ -35,22 +35,19 @@ describe Carto::Api::Public::FederatedTablesController do
     @remote_password = "#{user}"
   end
 
-  def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
-    raise "Failed to execute remote query: #{query}" unless status
-  end
-
   after(:all) do
       puts "Stopping the remote server"
       system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
   end
 
-  describe '#list_federated_servers' do
-    before(:all) do
-      @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
-      params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
+  def remote_query(query)
+    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
+    raise "Failed to execute remote query: #{query}" unless status
+  end
+  
+  def get_payload(name = nil)
+    if name.nil? then
+      {
         mode: 'read-only',
         dbname: @remote_database,
         host: @remote_host,
@@ -58,6 +55,24 @@ describe Carto::Api::Public::FederatedTablesController do
         username: @remote_username,
         password: @remote_username
       }
+    else
+      {
+        federated_server_name: name,
+        mode: 'read-only',
+        dbname: @remote_database,
+        host: @remote_host,
+        port: @remote_port,
+        username: @remote_username,
+        password: @remote_username
+      }
+    end
+  end
+
+  describe '#list_federated_servers' do
+    before(:all) do
+      @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -101,15 +116,7 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#register_federated_server' do
     before(:all) do
       @federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
-      @payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      @payload_register_server = get_payload(@federated_server_name)
     end
 
     it 'returns 201 with the federated server was created' do
@@ -152,15 +159,7 @@ describe Carto::Api::Public::FederatedTablesController do
     before(:all) do
       @federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -210,23 +209,8 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#update_federated_server' do
     before(:all) do
       @federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
-      @payload_update_server = {
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      @payload_update_server = get_payload()
+      payload_register_server = get_payload(@federated_server_name)
       params_register_server = { api_key: @user1.api_key }
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
@@ -242,14 +226,7 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 201 with the federated server was created' do
       federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
-      payload_update_server = {
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_update_server = get_payload()
       params_update_server = { federated_server_name: federated_server_name, api_key: @user1.api_key }
       put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
         expect(response.status).to eq(201)
@@ -297,15 +274,7 @@ describe Carto::Api::Public::FederatedTablesController do
     before(:all) do
       @federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -346,15 +315,7 @@ describe Carto::Api::Public::FederatedTablesController do
     before(:all) do
       @federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
       params_register_server= { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -415,15 +376,7 @@ describe Carto::Api::Public::FederatedTablesController do
       @remote_table_name = 'my_table_list_remote'
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -478,15 +431,7 @@ describe Carto::Api::Public::FederatedTablesController do
       }
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -543,15 +488,7 @@ describe Carto::Api::Public::FederatedTablesController do
       @remote_table_name = 'my_table_show_remote'
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
@@ -625,15 +562,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name_2}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
@@ -716,15 +645,7 @@ describe Carto::Api::Public::FederatedTablesController do
       @remote_table_name = 'my_table_unregister_remote'
       remote_query("CREATE TABLE #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }

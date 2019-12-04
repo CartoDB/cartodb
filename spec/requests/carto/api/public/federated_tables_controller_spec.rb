@@ -117,6 +117,10 @@ describe Carto::Api::Public::FederatedTablesController do
       post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
+        expect(response.body[:federated_server_name]).to eq(@federated_server_name)
+        expect(response.body[:dbname]).to eq(@payload_register_server[:dbname])
+        expect(response.body[:host]).to eq(@payload_register_server[:host])
+        expect(response.body[:port]).to eq(@payload_register_server[:port])
       end
     end
 
@@ -250,6 +254,10 @@ describe Carto::Api::Public::FederatedTablesController do
       put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{federated_server_name}")
+        expect(response.body[:federated_server_name]).to eq(federated_server_name)
+        expect(response.body[:dbname]).to eq(payload_update_server[:dbname])
+        expect(response.body[:host]).to eq(payload_update_server[:host])
+        expect(response.body[:port]).to eq(payload_update_server[:port])
       end
     end
 
@@ -492,11 +500,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 201 with the federated server was created' do
+    it 'returns 201 with the federated table created' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_table_name}")
+        expect(response.body[:remote_table_name]).to eq(@payload_register_table[:remote_table_name])
+        expect(response.body[:registered]).to eq(true)
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
       end
     end
 
@@ -648,7 +659,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 201 with the remote table was created' do
+    it 'returns 201 with the remote table created' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name_2, api_key: @user1.api_key }
       payload_update_table = {
         remote_table_name: @remote_table_name_2,
@@ -660,10 +671,13 @@ describe Carto::Api::Public::FederatedTablesController do
       put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_table_name_2}")
+        expect(response.body[:remote_table_name]).to eq(payload_update_table[:remote_table_name])
+        expect(response.body[:registered]).to eq(true)
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name_2}")
       end
     end
 
-    it 'returns 204 with the remote table was updated' do
+    it 'returns 204 with the remote table updated' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(204)

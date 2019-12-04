@@ -9,6 +9,34 @@ describe Carto::FederatedTablesService do
         raise "Failed to execute remote query: #{query}" unless system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
     end
 
+    def get_federated_server_payload(
+        federated_server_name:,
+        mode: 'read-only',
+        dbname: @remote_database,
+        host: @remote_host,
+        port: @remote_port,
+        username: @remote_username,
+        password: @remote_username
+    )
+        {
+            federated_server_name: federated_server_name,
+            mode: mode,
+            dbname: dbname,
+            host: host,
+            port: port,
+            username: username,
+            password: password
+        }
+    end
+
+    def create_federated_server(attributes)
+        @service.register_server(get_federated_server_payload(attributes))
+    end
+
+    def update_federated_server(attributes)
+        @service.update_server(get_federated_server_payload(attributes))
+    end
+
     before(:all) do
         puts "Starting remote server"
         @dir = Cartodb.get_config(:federated_server, 'dir')
@@ -47,77 +75,56 @@ describe Carto::FederatedTablesService do
     end
 
     describe 'federated server service' do
-        describe 'list federated servers' do
+        describe 'federated server' do
             it 'should return a empty collection of federated server' do
                 pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
+
                 federated_server_list = @service.list_servers(pagination)
+
                 expect(federated_server_list).to be_empty
             end
 
             it 'should return a collection with one federated server' do
-                attributes = {
-                    federated_server_name: "fs_001_from_#{@user1.username}_to_remote",
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                @service.register_server(attributes)
+                federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
+                federated_server = create_federated_server(federated_server_name: federated_server_name)
+
                 pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
                 federated_server_list = @service.list_servers(pagination)
+
                 expect(federated_server_list.length()).to eq(1)
                 expect(federated_server_list[0]).to have_key(:federated_server_name)
-                expect(federated_server_list[0][:federated_server_name]).to eq(attributes[:federated_server_name])
+                expect(federated_server_list[0][:federated_server_name]).to eq(federated_server[:federated_server_name])
                 expect(federated_server_list[0]).to have_key(:mode)
-                expect(federated_server_list[0][:mode]).to eq(attributes[:mode])
+                expect(federated_server_list[0][:mode]).to eq(federated_server[:mode])
                 expect(federated_server_list[0]).to have_key(:dbname)
-                expect(federated_server_list[0][:dbname]).to eq(attributes[:dbname])
+                expect(federated_server_list[0][:dbname]).to eq(federated_server[:dbname])
                 expect(federated_server_list[0]).to have_key(:host)
-                expect(federated_server_list[0][:host]).to eq(attributes[:host])
+                expect(federated_server_list[0][:host]).to eq(federated_server[:host])
                 expect(federated_server_list[0]).to have_key(:port)
-                expect(federated_server_list[0][:port]).to eq(attributes[:port])
+                expect(federated_server_list[0][:port]).to eq(federated_server[:port])
             end
-        end
 
-        describe 'federated server' do
             it 'should register a federated server' do
+                federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
+                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
+                federated_server = create_federated_server(federated_server_name: federated_server_name)
 
-                attributes = {
-                    federated_server_name: "fs_002_from_#{@user1.username}_to_remote",
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
                 expect(federated_server).to have_key(:federated_server_name)
-                expect(federated_server[:federated_server_name]).to eq(attributes[:federated_server_name])
+                expect(federated_server[:federated_server_name]).to eq(federated_server_name)
                 expect(federated_server).to have_key(:mode)
-                expect(federated_server[:mode]).to eq(attributes[:mode])
+                expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
-                expect(federated_server[:dbname]).to eq(attributes[:dbname])
+                expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
                 expect(federated_server).to have_key(:host)
-                expect(federated_server[:host]).to eq(attributes[:host])
+                expect(federated_server[:host]).to eq(expected_federated_server[:host])
                 expect(federated_server).to have_key(:port)
-                expect(federated_server[:port]).to eq(attributes[:port])
+                expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 
             it 'should grant access of a federated server to a role' do
                 federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
+                federated_server = create_federated_server(federated_server_name: federated_server_name)
+
                 expect {
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
@@ -128,75 +135,59 @@ describe Carto::FederatedTablesService do
 
             it 'should get a federated server by name' do
                 federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                @service.register_server(attributes)
+                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
+                create_federated_server(federated_server_name: federated_server_name)
+
                 federated_server = @service.get_server(federated_server_name: federated_server_name)
+
                 expect(federated_server).to have_key(:federated_server_name)
                 expect(federated_server[:federated_server_name]).to eq(federated_server_name)
                 expect(federated_server).to have_key(:mode)
-                expect(federated_server[:mode]).to eq(attributes[:mode])
+                expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
-                expect(federated_server[:dbname]).to eq(attributes[:dbname])
+                expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
                 expect(federated_server).to have_key(:host)
-                expect(federated_server[:host]).to eq(attributes[:host])
+                expect(federated_server[:host]).to eq(expected_federated_server[:host])
                 expect(federated_server).to have_key(:port)
-                expect(federated_server[:port]).to eq(attributes[:port])
+                expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 
             it 'should update a federated server by name' do
                 federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
-                attributes = {
+                expected_federated_server = get_federated_server_payload(
                     federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @user1.database_name,
-                    host: @user1.database_host,
-                    port: '5432',
-                    username: @user1.database_username,
-                    password: @user1.database_password
-                }
-                federated_server = @service.register_server(attributes)
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
                     dbname: @remote_database,
                     host: @remote_host,
-                    port: @remote_port,
                     username: @remote_username,
                     password: @remote_username
-                }
-                federated_server = @service.update_server(attributes)
+                )
+                create_federated_server(
+                    federated_server_name: federated_server_name,
+                    dbname: @user1.database_name,
+                    host: @user1.database_host,
+                    username: @user1.database_username,
+                    password: @user1.database_password
+                )
+
+                federated_server = update_federated_server(expected_federated_server)
+
                 expect(federated_server).to have_key(:federated_server_name)
                 expect(federated_server[:federated_server_name]).to eq(federated_server_name)
                 expect(federated_server).to have_key(:mode)
-                expect(federated_server[:mode]).to eq(attributes[:mode])
+                expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
-                expect(federated_server[:dbname]).to eq(attributes[:dbname])
+                expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
                 expect(federated_server).to have_key(:host)
-                expect(federated_server[:host]).to eq(attributes[:host])
+                expect(federated_server[:host]).to eq(expected_federated_server[:host])
                 expect(federated_server).to have_key(:port)
-                expect(federated_server[:port]).to eq(attributes[:port])
+                expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 
             it 'should unregister a federated server by name' do
                 federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
+                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
+                federated_server = create_federated_server(federated_server_name: federated_server_name)
+
                 expect {
                     @service.unregister_server(federated_server_name: federated_server_name)
                 }.not_to raise_error
@@ -204,16 +195,9 @@ describe Carto::FederatedTablesService do
 
             it 'should revoke access to a federated server' do
                 federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
+                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
+                create_federated_server(federated_server_name: federated_server_name)
+
                 expect {
                     @service.revoke_access_to_federated_server(
                         federated_server_name: federated_server_name,
@@ -226,39 +210,25 @@ describe Carto::FederatedTablesService do
         describe 'remote schemas' do
             it 'should list remote schemas of a federated server' do
                 federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
-                attributes = {
-                    federated_server_name: federated_server_name,
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
+                create_federated_server(federated_server_name: federated_server_name)
                 @service.grant_access_to_federated_server(
                     federated_server_name: federated_server_name,
                     db_role: @user1.database_username
                 )
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
+
                 remote_schemas = @service.list_remote_schemas(federated_server_name, pagination)
-                expect(remote_schemas).to include(:remote_schema_name=>"public")
+
+                expect(remote_schemas).to include(:remote_schema_name => "public")
             end
 
             it 'should raise "Not enough permissions" error when listing remote schemas of a federated server' do
-                attributes = {
-                    federated_server_name: "fs_009_from_#{@user1.username}_to_remote",
-                    mode: 'read-only',
-                    dbname: @remote_database,
-                    host: @remote_host,
-                    port: @remote_port,
-                    username: @remote_username,
-                    password: @remote_username
-                }
-                federated_server = @service.register_server(attributes)
+                federated_server_name = "fs_009_from_#{@user1.username}_to_remote"
+                create_federated_server(federated_server_name: federated_server_name)
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
+
                 expect {
-                    @service.list_remote_schemas(federated_server[:federated_server_name], pagination)
+                    @service.list_remote_schemas(federated_server_name, pagination)
                 }.to raise_error(Sequel::DatabaseError, /Not enough permissions to access the server/)
             end
 
@@ -268,16 +238,7 @@ describe Carto::FederatedTablesService do
                     remote_schema_name = 'public'
                     remote_table_name = 'my_table'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username
@@ -298,16 +259,7 @@ describe Carto::FederatedTablesService do
                     remote_schema_name = 'public'
                     remote_table_name = 'my_table'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username
@@ -338,16 +290,7 @@ describe Carto::FederatedTablesService do
                     remote_schema_name = 'public'
                     remote_table_name = 'my_table'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username
@@ -373,16 +316,7 @@ describe Carto::FederatedTablesService do
                     remote_schema_name = 'public'
                     remote_table_name = 'my_table'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username
@@ -414,16 +348,7 @@ describe Carto::FederatedTablesService do
                     remote_table_name = 'my_table'
                     new_remote_table_name = 'overwitten_table_name'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username
@@ -459,16 +384,7 @@ describe Carto::FederatedTablesService do
                     remote_schema_name = 'public'
                     remote_table_name = 'my_table'
                     remote_query("CREATE TABLE IF NOT EXISTS #{remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
-                    attributes = {
-                        federated_server_name: federated_server_name,
-                        mode: 'read-only',
-                        dbname: @remote_database,
-                        host: @remote_host,
-                        port: @remote_port,
-                        username: @remote_username,
-                        password: @remote_username
-                    }
-                    federated_server = @service.register_server(attributes)
+                    federated_server = create_federated_server(federated_server_name: federated_server_name)
                     @service.grant_access_to_federated_server(
                         federated_server_name: federated_server_name,
                         db_role: @user1.database_username

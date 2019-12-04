@@ -307,9 +307,9 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#show_federated_server' do
     before(:all) do
       @federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
-      params_register_server = { api_key: @user1.api_key }
+      @params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
-      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
     end
@@ -328,6 +328,34 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:federated_server_name]).to eq(@federated_server_name)
         expect(response.body[:dbname]).to eq(@remote_database)
         expect(response.body[:host]).to eq(@remote_host)
+      end
+    end
+
+    it 'returns 200 with only the exact match' do
+      federated_server_2 = "fs_003_from_#{@user1.username}_to_remote2"
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload(federated_server_2) do |response|
+        expect(response.status).to eq(201)
+      end
+
+      params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:federated_server_name]).to eq(@federated_server_name)
+        expect(response.body[:dbname]).to eq(@remote_database)
+        expect(response.body[:host]).to eq(@remote_host)
+      end
+
+      params_unregister_table = { federated_server_name: federated_server_2, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'does not expose the password' do
+      params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:password]).not_to eq(@remote_password)
       end
     end
 

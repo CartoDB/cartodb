@@ -108,6 +108,12 @@ describe Carto::FederatedTablesService do
         @service = Carto::FederatedTablesService.new(user: @user1)
     end
 
+    after(:each) do
+        if @federated_server_name.present?
+            @service.unregister_server(federated_server_name: @federated_server_name)
+        end
+    end
+
     after(:all) do
         puts "Stopping the remote server"
         raise("Could not stop the federated DB") unless system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null")
@@ -124,8 +130,8 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should return a collection with one federated server' do
-                federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
-                federated_server = create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
+                federated_server = create_federated_server(federated_server_name: @federated_server_name)
 
                 pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
                 federated_server_list = @service.list_servers(pagination)
@@ -144,12 +150,12 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should register a federated server' do
-                federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
-                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
-                federated_server = create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
+                expected_federated_server = get_federated_server_payload(federated_server_name: @federated_server_name)
+                federated_server = create_federated_server(federated_server_name: @federated_server_name)
 
                 expect(federated_server).to have_key(:federated_server_name)
-                expect(federated_server[:federated_server_name]).to eq(federated_server_name)
+                expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
                 expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
@@ -161,26 +167,26 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should grant access of a federated server to a role' do
-                federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
-                federated_server = create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
+                federated_server = create_federated_server(federated_server_name: @federated_server_name)
 
                 expect {
                     @service.grant_access_to_federated_server(
-                        federated_server_name: federated_server_name,
+                        federated_server_name: @federated_server_name,
                         db_role: @user1.database_username
                     )
                 }.not_to raise_error
             end
 
             it 'should get a federated server by name' do
-                federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
-                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
-                create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
+                expected_federated_server = get_federated_server_payload(federated_server_name: @federated_server_name)
+                create_federated_server(federated_server_name: @federated_server_name)
 
-                federated_server = @service.get_server(federated_server_name: federated_server_name)
+                federated_server = @service.get_server(federated_server_name: @federated_server_name)
 
                 expect(federated_server).to have_key(:federated_server_name)
-                expect(federated_server[:federated_server_name]).to eq(federated_server_name)
+                expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
                 expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
@@ -192,16 +198,16 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should update a federated server by name' do
-                federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
                 expected_federated_server = get_federated_server_payload(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     dbname: @remote_database,
                     host: @remote_host,
                     username: @remote_username,
                     password: @remote_username
                 )
                 create_federated_server(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     dbname: @user1.database_name,
                     host: @user1.database_host,
                     username: @user1.database_username,
@@ -211,7 +217,7 @@ describe Carto::FederatedTablesService do
                 federated_server = update_federated_server(expected_federated_server)
 
                 expect(federated_server).to have_key(:federated_server_name)
-                expect(federated_server[:federated_server_name]).to eq(federated_server_name)
+                expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
                 expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
                 expect(federated_server).to have_key(:dbname)
@@ -223,23 +229,24 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should unregister a federated server by name' do
-                federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
-                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
-                federated_server = create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
+                expected_federated_server = get_federated_server_payload(federated_server_name: @federated_server_name)
+                federated_server = create_federated_server(federated_server_name: @federated_server_name)
 
                 expect {
-                    @service.unregister_server(federated_server_name: federated_server_name)
+                    @service.unregister_server(federated_server_name: @federated_server_name)
+                    @federated_server_name = nil
                 }.not_to raise_error
             end
 
             it 'should revoke access to a federated server' do
                 federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
-                expected_federated_server = get_federated_server_payload(federated_server_name: federated_server_name)
-                create_federated_server(federated_server_name: federated_server_name)
+                expected_federated_server = get_federated_server_payload(federated_server_name: @federated_server_name)
+                create_federated_server(federated_server_name: @federated_server_name)
 
                 expect {
                     @service.revoke_access_to_federated_server(
-                        federated_server_name: federated_server_name,
+                        federated_server_name: @federated_server_name,
                         db_role: @user1.database_username
                     )
                 }.not_to raise_error
@@ -250,23 +257,23 @@ describe Carto::FederatedTablesService do
             it 'should list remote schemas of a federated server' do
                 federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
                 create_and_grant_federated_server(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
 
-                remote_schemas = @service.list_remote_schemas(federated_server_name, pagination)
+                remote_schemas = @service.list_remote_schemas(@federated_server_name, pagination)
 
                 expect(remote_schemas).to include(:remote_schema_name => "public")
             end
 
             it 'should raise "Not enough permissions" error when listing remote schemas of a federated server' do
-                federated_server_name = "fs_009_from_#{@user1.username}_to_remote"
-                create_federated_server(federated_server_name: federated_server_name)
+                @federated_server_name = "fs_009_from_#{@user1.username}_to_remote"
+                create_federated_server(federated_server_name: @federated_server_name)
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
 
                 expect {
-                    @service.list_remote_schemas(federated_server_name, pagination)
+                    @service.list_remote_schemas(@federated_server_name, pagination)
                 }.to raise_error(Sequel::DatabaseError, /Not enough permissions to access the server/)
             end
         end
@@ -283,13 +290,13 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should list unregistered remote table of a federated server and schema' do
-                federated_server_name = "fs_010_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_010_from_#{@user1.username}_to_remote"
                 federated_server = create_and_grant_federated_server(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
-                remote_tables = @service.list_remote_tables(federated_server_name, @remote_schema_name, pagination)
+                remote_tables = @service.list_remote_tables(@federated_server_name, @remote_schema_name, pagination)
                 expect(remote_tables).to include(
                     :registered => false,
                     :qualified_name => "#{@remote_schema_name}.#{@remote_table_name}",
@@ -299,17 +306,17 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should list registered remote table of a federated server and schema' do
-                federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
                 federated_server = create_and_grant_federated_server(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 resgiter_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
-                remote_tables = @service.list_remote_tables(federated_server_name, @remote_schema_name, pagination)
+                remote_tables = @service.list_remote_tables(@federated_server_name, @remote_schema_name, pagination)
                 expect(remote_tables).to include(
                     :registered => true,
                     :qualified_name => "#{@remote_schema_name}.#{@remote_table_name}",
@@ -319,63 +326,63 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should register a remote table of a federated server and schema' do
-                federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
                 remote_table = resgiter_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 expect(remote_table[:registered]).to eq(true)
-                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
+                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
                 expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should get a remote table of a federated server and schema' do
-                federated_server_name = "fs_013_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_013_from_#{@user1.username}_to_remote"
                 resgiter_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 remote_table = @service.get_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     remote_schema_name: @remote_schema_name,
                     remote_table_name: @remote_table_name
                 )
                 expect(remote_table[:registered]).to eq(true)
-                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{@remote_table_name}")
+                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
                 expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should update a remote table of a federated server and schema' do
-                federated_server_name = "fs_014_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_014_from_#{@user1.username}_to_remote"
                 new_remote_table_name = 'overwitten_table_name'
                 resgiter_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 attributes = get_remote_table_server_payload(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     local_table_name_override: new_remote_table_name
                 )
                 remote_table = @service.update_table(attributes)
                 expect(remote_table[:registered]).to eq(true)
-                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{federated_server_name}.#{new_remote_table_name}")
+                expect(remote_table[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{new_remote_table_name}")
                 expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
             end
 
             it 'should unregister a registered remote table of a federated server' do
                 federated_server_name = "fs_015_from_#{@user1.username}_to_remote"
                 remote_table = resgiter_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     db_role: @user1.database_username
                 )
                 expect(remote_table[:registered]).to eq(true)
                 @service.unregister_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     remote_schema_name: @remote_schema_name,
                     remote_table_name: @remote_table_name
                 )
                 remote_table = @service.get_remote_table(
-                    federated_server_name: federated_server_name,
+                    federated_server_name: @federated_server_name,
                     remote_schema_name: @remote_schema_name,
                     remote_table_name: @remote_table_name
                 )

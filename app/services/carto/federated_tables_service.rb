@@ -96,6 +96,10 @@ module Carto
         remote_schema_name: attributes[:remote_schema_name],
         remote_table_name: attributes[:remote_table_name]
       )
+    rescue Sequel::DatabaseError => exception
+      regex = /^PG::RaiseException: ERROR:  /
+      message = exception.message.split('\n').find do |s| s.match(regex) end.gsub(regex, '')
+      raise Carto::UnprocesableEntityError.new(message)
     end
 
     def get_remote_table(federated_server_name:, remote_schema_name:, remote_table_name:)

@@ -331,7 +331,7 @@ describe Carto::FederatedTablesService do
                     :remote_table_name => @remote_table_name,
                     :id_column_name=> "id",
                     :geom_column_name=>"geom",
-                    :webmercator_column_name=> nil,
+                    :webmercator_column_name=> "geom_webmercator",
                     :columns => "[{\"Name\" : \"geom\", \"Type\" : \"GEOMETRY,0\"}, {\"Name\" : \"geom_webmercator\", \"Type\" : \"GEOMETRY,0\"}, {\"Name\" : \"id\", \"Type\" : \"integer\"}]"
                 )
             end

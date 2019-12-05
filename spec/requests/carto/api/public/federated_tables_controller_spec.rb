@@ -407,9 +407,9 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{federated_server_name}")
         expect(response.body[:federated_server_name]).to eq(federated_server_name)
-        expect(response.body[:dbname]).to eq(payload_update_server[:dbname])
-        expect(response.body[:host]).to eq(payload_update_server[:host])
-        expect(response.body[:port]).to eq(payload_update_server[:port])
+        expect(response.body[:dbname]).to eq(@payload_update_server[:dbname])
+        expect(response.body[:host]).to eq(@payload_update_server[:host])
+        expect(response.body[:port]).to eq(@payload_update_server[:port])
       end
 
       params_unregister_table = { federated_server_name: federated_server_name, api_key: @user1.api_key }

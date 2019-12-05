@@ -5,9 +5,10 @@ describe Carto::FederatedTablesService do
     include_context 'users helper'
     include HelperMethods
 
-    def remote_query(query)
-        raise "Failed to execute remote query: #{query}" unless system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
-    end
+  def remote_query(query)
+    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
+    raise "Failed to execute remote query: #{query}" unless status
+  end
 
     def get_federated_server_payload(
         federated_server_name: @federated_server_name,

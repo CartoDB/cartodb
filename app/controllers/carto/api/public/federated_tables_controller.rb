@@ -15,6 +15,7 @@ module Carto
 
         REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES = ['federated_server_name', 'mode', 'host', 'username', 'password'].freeze
         REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES = ['mode', 'host', 'username', 'password'].freeze
+        ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES = ['mode', 'dbname', 'host', 'port', 'username', 'password'].freeze
 
         REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = ['remote_table_name', 'id_column_name'].freeze
         REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = ['id_column_name'].freeze
@@ -74,7 +75,7 @@ module Carto
             return render_jsonp(@federated_server, 201)
           end
 
-          @federated_server = @service.update_server(@federated_server_attributes)
+          @federated_server = @service.update_server(@federated_server[:federated_server_name], @federated_server_attributes)
           render_jsonp({}, 204)
         end
 
@@ -167,9 +168,10 @@ module Carto
 
         def ensure_required_federated_server_attributes
           if request.post?
-            ensure_required_params(REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES, 422)
+            ensure_required_request_params(REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES)
           else
-            ensure_required_params(REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES, 422)
+            ensure_required_request_params(REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES)
+            ensure_no_extra_request_params(ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES)
           end
         end
 
@@ -192,9 +194,9 @@ module Carto
 
         def ensure_required_remote_table_attributes
           if request.post?
-            ensure_required_params(REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES, 422)
+            ensure_required_request_params(REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES)
           else
-            ensure_required_params(REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES, 422)
+            ensure_required_request_params(REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES)
           end
         end
 

@@ -456,7 +456,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    xit 'returns 422 when trying to change the server name' do
+    it 'returns 422 when trying to change the server name' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       payload = get_payload("new name")
 

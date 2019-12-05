@@ -41,7 +41,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
+    status = system("PGPASSWORD='#{@remote_password}' #{@psql} -q -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
     raise "Failed to execute remote query: #{query}" unless status
   end
 
@@ -306,7 +306,6 @@ describe Carto::Api::Public::FederatedTablesController do
       params_register_server = { api_key: @user1.api_key }
       payload = get_payload("0123456789012345678901234567890123456789012345678901234567890123456789")
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
-        puts response
         expect(response.status).to eq(422)
       end
     end

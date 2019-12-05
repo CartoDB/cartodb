@@ -6,7 +6,7 @@ describe Carto::FederatedTablesService do
     include HelperMethods
 
   def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
+    status = system("PGPASSWORD='#{@remote_password}' #{@psql} -q -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
     raise "Failed to execute remote query: #{query}" unless status
   end
 

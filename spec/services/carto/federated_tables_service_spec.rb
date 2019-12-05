@@ -34,7 +34,7 @@ describe Carto::FederatedTablesService do
     end
 
     def update_federated_server(**attributes)
-        @service.update_server(get_federated_server_payload(attributes))
+        @service.update_server(attributes[:federated_server_name], get_federated_server_payload(attributes))
     end
 
     FEDERATED_SERVER_ATTRIBUTES = %i(federated_server_name mode dbname host port username password).freeze

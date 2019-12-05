@@ -58,7 +58,7 @@ module Carto
             db_role: @user.database_username
           )
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
-          render_jsonp({}, 201)
+          render_jsonp(federated_server, 201)
         end
 
         def show_federated_server
@@ -70,7 +70,7 @@ module Carto
           unless @federated_server
             @federated_server = @service.register_server(@federated_server_attributes)
             response.headers['Content-Location'] = "#{request.path}"
-            return render_jsonp({}, 201)
+            return render_jsonp(@federated_server, 201)
           end
 
           @federated_server = @service.update_server(@federated_server_attributes)
@@ -105,7 +105,7 @@ module Carto
         def register_remote_table
           remote_table = @service.register_table(@remote_table_attributes)
           response.headers['Content-Location'] = "#{request.path}/#{remote_table[:remote_table_name]}"
-          render_jsonp({}, 201)
+          render_jsonp(remote_table, 201)
         end
 
         def show_remote_table
@@ -116,7 +116,7 @@ module Carto
           unless @remote_table[:registered]
             @remote_table = @service.register_table(@remote_table_attributes)
             response.headers['Content-Location'] = "#{request.path}"
-            return render_jsonp({}, 201)
+            return render_jsonp(@remote_table, 201)
           end
 
           @remote_table = @service.update_table(@remote_table_attributes)

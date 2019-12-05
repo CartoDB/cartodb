@@ -1,4 +1,4 @@
-const { resolve, join } = require('path');
+const { resolve, join, sep } = require('path');
 const fs = require('fs');
 
 // Detect existing gears
@@ -29,9 +29,38 @@ function rootDir (file, opts = {}) {
           // PE, using ../..
           resolve(fileGearPath).startsWith(gearPath)
       ;
+
+      // Try to look for full folder overriding, preceded by @
+      if (!fileExistsAndBoundedToGear){
+        let pathParts = file.split(sep);
+
+        pathParts.some((pathPart, pathPartIdx) => {
+          fileGearPath = pathParts.slice(0, pathPartIdx).join(sep);
+
+          if (fileGearPath) fileGearPath += sep;
+
+          fileGearPath +=
+            '@' + pathPart + sep +
+            pathParts.slice(pathPartIdx + 1).join(sep)
+          ;
+
+          fileGearPath = join(gearPath, fileGearPath)
+
+          fileExistsAndBoundedToGear =
+              fs.existsSync(fileGearPath) &&
+              fs.lstatSync(fileGearPath).isDirectory() &&
+              // Check that the file is not from outside the gear path
+              // PE, using ../..
+              resolve(fileGearPath).startsWith(gearPath)
+          ;
+
+          return fileExistsAndBoundedToGear
+        });
+      }
+
       if (fileExistsAndBoundedToGear) {
         fileCache[file] = {
-          path: resolve(gearPath, file),
+          path: fileGearPath,
           gear: gearName
         };
         gearResolved.add(fileCache[file].path);

@@ -272,7 +272,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 422 when server name is not lowecase' do
+    it 'returns 422 when server name is not lowercase' do
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@payload_register_server[:federated_server_name].upcase)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|

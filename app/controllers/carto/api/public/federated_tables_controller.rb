@@ -36,6 +36,7 @@ module Carto
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
         before_action :ensure_required_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
+        before_action :validate_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
         before_action :load_remote_table_attributes, only: [:register_remote_table, :update_remote_table ]
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
         before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]
@@ -160,6 +161,11 @@ module Carto
 
         def load_federated_server
           @federated_server = @service.get_server(federated_server_name: params[:federated_server_name])
+        end
+
+        def validate_federated_server_attributes
+          name = @federated_server_attributes[:federated_server_name]
+          raise Carto::InvalidParameterFormatError.new('federated_server_name', "The value #{name} must be lowercase") unless name.strip.downcase == name
         end
 
         def check_federated_server

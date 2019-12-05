@@ -78,4 +78,10 @@ module Carto
       super("The following required params are missing: #{missing_params.join(', ')}", status)
     end
   end
+
+  class InvalidParameterFormatError < CartoError
+    def initialize(parameter, extra_message = nil)
+      super("Wrong '#{parameter}' parameter value. #{extra_message}", 422)
+    end
+  end
 end

@@ -272,6 +272,15 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 422 when server name is not lowecase' do
+      params_register_server = { api_key: @user1.api_key }
+      payload_register_server = get_payload(@payload_register_server[:federated_server_name].upcase)
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+        puts response.body
+        expect(response.status).to eq(422)
+      end
+    end
+
     xit 'Handles SQL escape characters' do
       params_register_server = { api_key: @user1.api_key }
       payload = {
@@ -425,14 +434,14 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    xit 'is case insensitive with the name' do
+    it 'returns 422 when the server name is upper-case' do
       params_update_server = { federated_server_name: @federated_server_name.upcase, api_key: @user1.api_key }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
-        expect(response.status).to eq(204)
+        expect(response.status).to eq(422)
       end
     end
 
-    it 'returns 400 when the payload is missing' do
+    it 'returns 422 when the payload is missing' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       payload_update_server = {}
       put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|

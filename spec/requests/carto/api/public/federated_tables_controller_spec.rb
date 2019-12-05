@@ -41,7 +41,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
+    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
     raise "Failed to execute remote query: #{query}" unless status
   end
 
@@ -571,6 +571,44 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(found[:remote_schema_name]).to eq('new_schema')
       end
       remote_query("DROP SCHEMA new_schema")
+    end
+
+    it 'returns 200 and works with pager' do
+      initial_count = 0
+      params_list_schemas = { federated_server_name: @federated_server_name, api_key: @user1.api_key, page: 1, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        initial_count = response.body[:total]
+      end
+
+      schema_count = 7;
+      for i in 1..schema_count do
+        remote_query("CREATE SCHEMA IF NOT EXISTS new_schema#{i}")
+      end
+
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count]).to eq(3)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 2, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count]).to eq(3)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 3, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count] > 1)
+      end
+
+      for i in 1..schema_count do
+        remote_query("DROP SCHEMA new_schema#{i}")
+      end
     end
 
     it 'returns 401 when using a non authenticated user' do

@@ -35,22 +35,19 @@ describe Carto::Api::Public::FederatedTablesController do
     @remote_password = "#{user}"
   end
 
-  def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
-    raise "Failed to execute remote query: #{query}" unless status
-  end
-
   after(:all) do
       puts "Stopping the remote server"
       system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
   end
 
-  describe '#list_federated_servers' do
-    before(:all) do
-      @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
-      params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
+  def remote_query(query)
+    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
+    raise "Failed to execute remote query: #{query}" unless status
+  end
+
+  def get_payload(name = nil)
+    if name.nil? then
+      {
         mode: 'read-only',
         dbname: @remote_database,
         host: @remote_host,
@@ -58,19 +55,39 @@ describe Carto::Api::Public::FederatedTablesController do
         username: @remote_username,
         password: @remote_username
       }
-      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        expect(response.status).to eq(201)
-      end
+    else
+      {
+        federated_server_name: name,
+        mode: 'read-only',
+        dbname: @remote_database,
+        host: @remote_host,
+        port: @remote_port,
+        username: @remote_username,
+        password: @remote_username
+      }
+    end
+  end
+
+  describe '#list_federated_servers' do
+    before(:all) do
+      @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
+      @params_register_server = { api_key: @user1.api_key }
+      @params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
     end
 
-    after(:all) do
-      params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
-      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
-        expect(response.status).to eq(204)
+    it 'returns 200 with an empty federated server list' do
+      params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(0)
       end
     end
 
     it 'returns 200 with the federated server list' do
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload(@federated_server_name) do |response|
+        expect(response.status).to eq(201)
+      end
+
       params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
         expect(response.status).to eq(200)
@@ -79,9 +96,49 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:result][0][:dbname]).to eq(@remote_database)
         expect(response.body[:result][0][:host]).to eq(@remote_host)
       end
+
+      delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
+        expect(response.status).to eq(204)
+      end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 200 and works with pager' do
+      server_count = 5;
+      for i in 1..server_count do
+        post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload("#{@federated_server_name}#{i}") do |response|
+          expect(response.status).to eq(201)
+        end
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(2)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 2, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(2)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 3, per_page: 2 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(server_count)
+        expect(response.body[:count]).to eq(1)
+      end
+
+      for i in 1..server_count do
+        delete_json api_v4_federated_servers_unregister_server_url({ federated_server_name: "#{@federated_server_name}#{i}", api_key: @user1.api_key }) do |response|
+          expect(response.status).to eq(204)
+        end
+      end
+    end
+
+    it 'returns 401 when using a non authenticated user' do
       params_list_servers = { page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
         expect(response.status).to eq(401)
@@ -101,15 +158,8 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#register_federated_server' do
     before(:all) do
       @federated_server_name = "fs_002_from_#{@user1.username}_to_remote"
-      @payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      @payload_register_server = get_payload(@federated_server_name)
+      @params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
     end
 
     it 'returns 201 with the federated server was created' do
@@ -122,6 +172,65 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:host]).to eq(@payload_register_server[:host])
         expect(response.body[:port]).to eq(@payload_register_server[:port])
       end
+
+      delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 201 with the federated server was re-created and the new values are stored' do
+      params_register_server = { api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
+      end
+
+      new_payload = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        dbname: "new_database",
+        host: @remote_host,
+        port: @remote_port,
+        username: @remote_username,
+        password: @remote_username
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), new_payload do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
+      get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(1)
+        expect(response.body[:result][0][:federated_server_name]).to eq(@federated_server_name)
+        expect(response.body[:result][0][:dbname]).to eq("new_database")
+        expect(response.body[:result][0][:host]).to eq(@remote_host)
+      end
+
+      delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 201 when optional parameters are missing' do
+      params_register_server = { api_key: @user1.api_key }
+      # No port and no database
+      payload = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-only',
+        host: @remote_host,
+        username: @remote_username,
+        password: @remote_username
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}")
+      end
+
+      delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
+        expect(response.status).to eq(204)
+      end
     end
 
     it 'returns 422 when payload is missing' do
@@ -132,7 +241,53 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 422 when mandatory parameters are missing' do
+      params_register_server = { api_key: @user1.api_key }
+      invalid_payloads = [
+        { mode: 'read-only', host: @remote_host, username: @remote_username, password: @remote_username },
+        { federated_server_name: @federated_server_name, host: @remote_host, username: @remote_username, password: @remote_username },
+        { federated_server_name: @federated_server_name, mode: 'read-only', username: @remote_username, password: @remote_username },
+        { federated_server_name: @federated_server_name, mode: 'read-only', host: @remote_host, password: @remote_username },
+        { federated_server_name: @federated_server_name, mode: 'read-only', host: @remote_host, username: @remote_username }
+      ]
+
+      for payload in invalid_payloads do
+        post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
+          expect(response.status).to eq(422)
+        end
+      end
+    end
+
+    it 'returns 422 when trying to create a read-write server' do
+      params_register_server = { api_key: @user1.api_key }
+      payload = {
+        federated_server_name: @federated_server_name,
+        mode: 'read-write',
+        host: @remote_host,
+        username: @remote_username,
+        password: @remote_username
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+
+    xit 'Handles SQL escape characters' do
+      params_register_server = { api_key: @user1.api_key }
+      payload = {
+        federated_server_name: "O'\"Break",
+        mode: 'read-only',
+        host: @remote_host,
+        port: @remote_port,
+        username: @remote_username,
+        password: "'; Select 1;"
+      }
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
+        expect(response.status).to eq(202)
+      end
+    end
+
+    it 'returns 401 when using a non authenticated user' do
       post_json api_v4_federated_servers_register_server_url, @payload_register_server do |response|
         expect(response.status).to eq(401)
       end
@@ -151,17 +306,9 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#show_federated_server' do
     before(:all) do
       @federated_server_name = "fs_003_from_#{@user1.username}_to_remote"
-      params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
-      post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
+      @params_register_server = { api_key: @user1.api_key }
+      payload_register_server = get_payload(@federated_server_name)
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
     end
@@ -183,7 +330,35 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 200 with only the exact match' do
+      federated_server_2 = "fs_003_from_#{@user1.username}_to_remote2"
+      post_json api_v4_federated_servers_register_server_url(@params_register_server), get_payload(federated_server_2) do |response|
+        expect(response.status).to eq(201)
+      end
+
+      params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:federated_server_name]).to eq(@federated_server_name)
+        expect(response.body[:dbname]).to eq(@remote_database)
+        expect(response.body[:host]).to eq(@remote_host)
+      end
+
+      params_unregister_table = { federated_server_name: federated_server_2, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'does not expose the password' do
+      params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:password]).not_to eq(@remote_password)
+      end
+    end
+
+    it 'returns 401 when using a non authenticated user' do
       params_show_server = { federated_server_name: @federated_server_name }
       get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
         expect(response.status).to eq(401)
@@ -210,23 +385,8 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#update_federated_server' do
     before(:all) do
       @federated_server_name = "fs_004_from_#{@user1.username}_to_remote"
-      @payload_update_server = {
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      @payload_update_server = get_payload()
+      payload_register_server = get_payload(@federated_server_name)
       params_register_server = { api_key: @user1.api_key }
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
@@ -240,35 +400,39 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 201 with the federated server was created' do
+    it 'returns 201 when the federated server was created (with a update instead of a register)' do
       federated_server_name = "fs_005_from_#{@user1.username}_to_remote"
-      payload_update_server = {
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
       params_update_server = { federated_server_name: federated_server_name, api_key: @user1.api_key }
-      put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
+      put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{federated_server_name}")
         expect(response.body[:federated_server_name]).to eq(federated_server_name)
-        expect(response.body[:dbname]).to eq(payload_update_server[:dbname])
-        expect(response.body[:host]).to eq(payload_update_server[:host])
-        expect(response.body[:port]).to eq(payload_update_server[:port])
+        expect(response.body[:dbname]).to eq(@payload_update_server[:dbname])
+        expect(response.body[:host]).to eq(@payload_update_server[:host])
+        expect(response.body[:port]).to eq(@payload_update_server[:port])
+      end
+
+      params_unregister_table = { federated_server_name: federated_server_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
+        expect(response.status).to eq(204)
       end
     end
 
-    it 'returns 204 with the federated server was updated' do
+    it 'returns 204 when the federated server was updated' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(204)
       end
     end
 
-    it 'returns 422 when payload is missing' do
+    xit 'is case insensitive with the name' do
+      params_update_server = { federated_server_name: @federated_server_name.upcase, api_key: @user1.api_key }
+      put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
+        expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 400 when the payload is missing' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       payload_update_server = {}
       put_json api_v4_federated_servers_update_server_url(params_update_server), payload_update_server do |response|
@@ -276,7 +440,41 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 422 when mandatory parameters are missing' do
+      params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      invalid_payloads = [
+        { host: @remote_host, username: @remote_username, password: @remote_username },
+        { mode: 'read-only', username: @remote_username, password: @remote_username },
+        { mode: 'read-only', host: @remote_host, password: @remote_username },
+        { mode: 'read-only', host: @remote_host, username: @remote_username }
+      ]
+
+      for payload in invalid_payloads do
+        put_json api_v4_federated_servers_update_server_url(params_update_server), payload do |response|
+          expect(response.status).to eq(422)
+        end
+      end
+    end
+
+    xit 'returns 422 when trying to change the server name' do
+      params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      payload = get_payload("new name")
+
+      put_json api_v4_federated_servers_update_server_url(params_update_server), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+
+    it 'returns 422 when trying to change the mode to read-write' do
+      params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      payload = { mode: "read-write", host: @remote_host, username: @remote_username, password: @remote_username }
+
+      put_json api_v4_federated_servers_update_server_url(params_update_server), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+
+    it 'returns 401 when using a non authenticated user' do
       params_update_server = { federated_server_name: @federated_server_name }
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(401)
@@ -297,15 +495,7 @@ describe Carto::Api::Public::FederatedTablesController do
     before(:all) do
       @federated_server_name = "fs_006_from_#{@user1.username}_to_remote"
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -318,7 +508,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_unregister_server = { federated_server_name: @federated_server_name }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(401)
@@ -346,15 +536,7 @@ describe Carto::Api::Public::FederatedTablesController do
     before(:all) do
       @federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
       params_register_server= { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -391,7 +573,45 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_query("DROP SCHEMA new_schema")
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 200 and works with pager' do
+      initial_count = 0
+      params_list_schemas = { federated_server_name: @federated_server_name, api_key: @user1.api_key, page: 1, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        initial_count = response.body[:total]
+      end
+
+      schema_count = 7;
+      for i in 1..schema_count do
+        remote_query("CREATE SCHEMA IF NOT EXISTS new_schema#{i}")
+      end
+
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count]).to eq(3)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 2, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count]).to eq(3)
+      end
+
+      params_list_servers = { api_key: @user1.api_key, page: 3, per_page: 3 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:total]).to eq(initial_count + schema_count)
+        expect(response.body[:count] > 1)
+      end
+
+      for i in 1..schema_count do
+        remote_query("DROP SCHEMA new_schema#{i}")
+      end
+    end
+
+    it 'returns 401 when using a non authenticated user' do
       params_list_schemas = { federated_server_name: @federated_server_name, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
         expect(response.status).to eq(401)
@@ -415,15 +635,7 @@ describe Carto::Api::Public::FederatedTablesController do
       @remote_table_name = 'my_table_list_remote'
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -447,7 +659,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
         expect(response.status).to eq(401)
@@ -478,15 +690,7 @@ describe Carto::Api::Public::FederatedTablesController do
       }
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
       end
@@ -519,7 +723,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(401)
@@ -543,15 +747,7 @@ describe Carto::Api::Public::FederatedTablesController do
       @remote_table_name = 'my_table_show_remote'
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
@@ -585,7 +781,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(401)
@@ -625,15 +821,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name_2}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
@@ -692,7 +880,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(401)
@@ -714,17 +902,9 @@ describe Carto::Api::Public::FederatedTablesController do
       @federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
       @remote_schema_name = 'public'
       @remote_table_name = 'my_table_unregister_remote'
-      remote_query("CREATE TABLE #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
-      payload_register_server = {
-        federated_server_name: @federated_server_name,
-        mode: 'read-only',
-        dbname: @remote_database,
-        host: @remote_host,
-        port: @remote_port,
-        username: @remote_username,
-        password: @remote_username
-      }
+      payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
         expect(response.status).to eq(201)
         params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
@@ -756,7 +936,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 401 when non authenticated user' do
+    it 'returns 401 when using a non authenticated user' do
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(401)

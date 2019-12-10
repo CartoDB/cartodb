@@ -257,9 +257,13 @@ module Carto
       %{
         SELECT
           registered,
-          '#{remote_schema_name}' || '.' || remote_table as qualified_name,
+          local_qualified_name as qualified_name,
+          remote_table as remote_table_name,
           '#{remote_schema_name}' as remote_schema_name,
-          remote_table as remote_table_name
+          id_column_name,
+          geom_column_name,
+          webmercator_column_name,
+          columns
         FROM
           cartodb.CDB_Federated_Server_List_Remote_Tables(server => '#{federated_server_name}', remote_schema => '#{remote_schema_name}')
       }.squish
@@ -283,8 +287,13 @@ module Carto
       %{
         SELECT
           registered,
+          local_qualified_name as qualified_name,
           remote_table as remote_table_name,
-          local_qualified_name as qualified_name
+          '#{remote_schema_name}' as remote_schema_name,
+          id_column_name,
+          geom_column_name,
+          webmercator_column_name,
+          columns
         FROM
           cartodb.CDB_Federated_Server_List_Remote_Tables(
             server => '#{federated_server_name}',

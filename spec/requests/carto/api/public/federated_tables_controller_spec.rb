@@ -41,7 +41,7 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   def remote_query(query)
-    status = system("PGPASSWORD='#{@remote_password}' psql -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\" >/dev/null")
+    status = system("PGPASSWORD='#{@remote_password}' #{@psql} -q -U #{@remote_username} -d #{@remote_database} -h #{@remote_host} -p #{@remote_port} -c \"#{query};\"")
     raise "Failed to execute remote query: #{query}" unless status
   end
 
@@ -308,6 +308,14 @@ describe Carto::Api::Public::FederatedTablesController do
       post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
         expect(response.status).to eq(403)
         api_key.destroy
+      end
+    end
+
+    xit 'returns 422 when trying to use a long name' do
+      params_register_server = { api_key: @user1.api_key }
+      payload = get_payload("0123456789012345678901234567890123456789012345678901234567890123456789")
+      post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
+        expect(response.status).to eq(422)
       end
     end
   end
@@ -640,8 +648,9 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#list_remote_tables' do
     before(:all) do
       @federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
-      @remote_schema_name = 'public'
+      @remote_schema_name = 'list_remote'
       @remote_table_name = 'my_table_list_remote'
+      remote_query("CREATE SCHEMA IF NOT EXISTS #{@remote_schema_name}")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
@@ -654,7 +663,7 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name}")
+        remote_query("DROP SCHEMA #{@remote_schema_name} CASCADE")
       end
     end
 
@@ -662,9 +671,17 @@ describe Carto::Api::Public::FederatedTablesController do
       params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
         expect(response.status).to eq(200)
-        expect(response.body[:total] > 0)
+        expect(response.body[:total] == 1)
         found = response.body[:result].select {|schema| schema[:remote_table_name] == @remote_table_name}.first
+        expect(found[:registered]).to eq(false)
+        expect(found[:remote_schema_name]).to eq(@remote_schema_name)
         expect(found[:remote_table_name]).to eq(@remote_table_name)
+        expect(found[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+
+        expect(found.include?(:qualified_name)).to eq(false)
+        expect(found.include?(:id_column_name)).to eq(false)
+        expect(found.include?(:geom_column_name)).to eq(false)
+        expect(found.include?(:webmercator_column_name)).to eq(false)
       end
     end
 

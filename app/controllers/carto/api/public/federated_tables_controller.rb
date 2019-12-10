@@ -216,6 +216,8 @@ module Carto
             remote_schema_name: params[:remote_schema_name],
             remote_table_name: params[:remote_table_name]
           )
+        rescue Sequel::DatabaseError => exception
+          handle_service_error(exception)
         end
 
         def check_remote_table

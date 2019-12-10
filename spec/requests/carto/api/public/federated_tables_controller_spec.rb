@@ -316,11 +316,12 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    xit 'returns 422 when trying to use a long name' do
+    it 'returns 422 when trying to use a long name' do
       params_register_server = { api_key: @user1.api_key }
       payload = get_payload("0123456789012345678901234567890123456789012345678901234567890123456789")
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
         expect(response.status).to eq(422)
+        expect(response.body[:errors]).to match(/Server name (.*) is too long to be used as identifier/)
       end
     end
   end

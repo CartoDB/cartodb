@@ -1094,9 +1094,12 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#unregister_remote_table' do
     before(:all) do
       @federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
-      @remote_schema_name = 'public'
+      @remote_schema_name = 'unregister_schema'
       @remote_table_name = 'my_table_unregister_remote'
+      @remote_not_registered = 'not_registered'
+      remote_query("CREATE SCHEMA IF NOT EXISTS #{@remote_schema_name}")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_not_registered}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
@@ -1119,7 +1122,7 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name}")
+        remote_query("DROP SCHEMA #{@remote_schema_name} CASCADE")
       end
     end
 
@@ -1162,6 +1165,13 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 404 when there is not a remote table with the provided name' do
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: 'wadus', api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there the table has not been registered' do
+      params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_not_registered, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(404)
       end

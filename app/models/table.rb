@@ -1348,8 +1348,8 @@ class Table
     candidate_column_name = candidate_column_name.to_s.squish
 
     # TODO implement in a new Class
-    case @data_import.column_normalization_version
-    when 0
+    case options.column_normalization_version
+    when nil, 0
       # Subsequent characters can be letters, underscores or digits
       candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
     when 1

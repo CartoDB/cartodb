@@ -356,7 +356,7 @@ describe Carto::FederatedTablesService do
                 @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
 
                 expect {
-                    remote_table = resgiter_remote_table(id_column_name: 'wadus')
+                    remote_table = register_remote_table(id_column_name: 'wadus')
                 }.to raise_error(Sequel::DatabaseError, /non integer id_column (.*)/)
             end
 
@@ -364,7 +364,7 @@ describe Carto::FederatedTablesService do
                 @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
 
                 expect {
-                    remote_table = resgiter_remote_table(geom_column_name: 'wadus')
+                    remote_table = register_remote_table(geom_column_name: 'wadus')
                 }.to raise_error(Sequel::DatabaseError, /non geometry column (.*)/)
             end
 
@@ -372,7 +372,7 @@ describe Carto::FederatedTablesService do
                 @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
 
                 expect {
-                    remote_table = resgiter_remote_table(webmercator_column_name: 'wadus')
+                    remote_table = register_remote_table(webmercator_column_name: 'wadus')
                 }.to raise_error(Sequel::DatabaseError, /non geometry column (.*)/)
             end
 

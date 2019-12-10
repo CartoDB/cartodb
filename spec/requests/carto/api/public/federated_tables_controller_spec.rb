@@ -272,7 +272,7 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    it 'returns 422 when server name is not lowecase' do
+    it 'returns 422 when server name is not lowercase' do
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@payload_register_server[:federated_server_name].upcase)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
@@ -745,6 +745,20 @@ describe Carto::Api::Public::FederatedTablesController do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       payload = {}
       post_json api_v4_federated_servers_register_table_url(params), payload do |response|
+        expect(response.status).to eq(422)
+      end
+    end
+
+    it 'returns 422 when remote table name doesn\'t match' do
+      payload_register_table = {
+        remote_table_name: @remote_table_name.upcase,
+        local_table_name_override: @remote_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+      params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params), payload_register_table do |response|
         expect(response.status).to eq(422)
       end
     end

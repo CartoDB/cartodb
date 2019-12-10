@@ -87,7 +87,7 @@ describe Carto::FederatedTablesService do
 
     def register_remote_table(**attributes)
         create_and_grant_federated_server(attributes)
-        remote_table_attributes = attributes.slice(*FEDERATED_SERVER_ATTRIBUTES)
+        remote_table_attributes = attributes.slice(*REMOTE_TABLE_ATTRIBUTES)
         @service.register_table(get_remote_table_server_payload(remote_table_attributes))
     end
 
@@ -288,6 +288,14 @@ describe Carto::FederatedTablesService do
                     @service.list_remote_schemas(@federated_server_name, pagination)
                 }.to raise_error(Sequel::DatabaseError, /Not enough permissions to access the server/)
             end
+
+            it 'should raise "Server [...] does not exist" error when listing remote schemas of a non registered federated server' do
+                nonregistered_federated_server_name = "fs_999_from_#{@user1.username}_to_remote"
+                pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
+                expect {
+                    @service.list_remote_schemas(nonregistered_federated_server_name, pagination)
+                }.to raise_error(Sequel::DatabaseError, /Server (.*) does not exist/)
+            end
         end
 
         describe 'remote tables' do
@@ -342,6 +350,30 @@ describe Carto::FederatedTablesService do
                 expect(remote_table[:registered]).to eq(true)
                 expect(remote_table[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
                 expect(remote_table[:remote_table_name]).to eq(@remote_table_name)
+            end
+
+            it 'should raise "non integer id_column (.*)" error when registering a remote table' do
+                @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
+
+                expect {
+                    remote_table = resgiter_remote_table(id_column_name: 'wadus')
+                }.to raise_error(Sequel::DatabaseError, /non integer id_column (.*)/)
+            end
+
+            it 'should raise "non geometry column (.*)" error when registering a remote table with wrong "geom_column_name"' do
+                @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
+
+                expect {
+                    remote_table = resgiter_remote_table(geom_column_name: 'wadus')
+                }.to raise_error(Sequel::DatabaseError, /non geometry column (.*)/)
+            end
+
+            it 'should raise "non geometry column (.*)" error when registering a remote table with wrong "webmercator_column_name"' do
+                @federated_server_name = "fs_0121_from_#{@user1.username}_to_remote"
+
+                expect {
+                    remote_table = resgiter_remote_table(webmercator_column_name: 'wadus')
+                }.to raise_error(Sequel::DatabaseError, /non geometry column (.*)/)
             end
 
             it 'should get a remote table of a federated server and schema' do

@@ -635,6 +635,15 @@ describe Carto::Api::Public::FederatedTablesController do
         api_key.destroy
       end
     end
+
+    it 'returns 404 when federated server does not exist' do
+      unexistent_federated_server_name = "wadus"
+      params_list_schemas = { federated_server_name: unexistent_federated_server_name, api_key: @user1.api_key, page: 1, per_page: 10 }
+      get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+        expect(response.status).to eq(404)
+        expect(response.body[:errors]).to match(/Server (.*) does not exist/)
+      end
+    end
   end
 
   describe '#list_remote_tables' do

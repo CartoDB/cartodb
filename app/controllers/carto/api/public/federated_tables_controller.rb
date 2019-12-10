@@ -265,7 +265,7 @@ module Carto
 
         def get_error_message(exception)
           regex = /^PG::RaiseException: ERROR:  /
-          message = exception.message.split('\n').find { |s| s.match(regex) }.gsub(regex, '')
+          message = exception.message.split("\n").find { |s| s.match(regex) }.gsub(regex, '')
 
           if message.present?
             return message

@@ -276,7 +276,6 @@ describe Carto::Api::Public::FederatedTablesController do
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@payload_register_server[:federated_server_name].upcase)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        puts response.body
         expect(response.status).to eq(422)
       end
     end
@@ -768,6 +767,43 @@ describe Carto::Api::Public::FederatedTablesController do
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(403)
         api_key.destroy
+      end
+    end
+
+    it 'returns 422 when there is no column id defined in the remote table' do
+      remote_table_name = 'my_table_without_id'
+      payload_register_table = {
+        remote_table_name: remote_table_name,
+        local_table_name_override: @remote_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{remote_table_name}(geom geometry, geom_webmercator geometry)")
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+        remote_query("DROP TABLE #{@remote_schema_name}.#{remote_table_name}")
+        expect(response.status).to eq(422)
+        expect(response.body[:errors]).to match(/non integer id_column (.*)/)
+      end
+    end
+
+    it 'returns 422 when there is no geom column id defined in the remote table' do
+      remote_table_name = 'my_table_without_geom'
+      payload_register_table = {
+        remote_table_name: remote_table_name,
+        local_table_name_override: @remote_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{remote_table_name}(id integer NOT NULL, geom_webmercator geometry)")
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+        remote_query("DROP TABLE #{@remote_schema_name}.#{remote_table_name}")
+        expect(response.status).to eq(422)
+        expect(response.body[:errors]).to match(/non geometry column (.*)/)
       end
     end
   end

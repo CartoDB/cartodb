@@ -977,6 +977,20 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 404 when there is not a remote server with the provided name' do
+      params = { federated_server_name: 'wadus', remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there is not a remote schema with the provided name' do
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'wadus', remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
     it 'returns 404 when there is not a remote table with the provided name' do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: 'wadus', api_key: @user1.api_key }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
@@ -1129,6 +1143,20 @@ describe Carto::Api::Public::FederatedTablesController do
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(403)
         api_key.destroy
+      end
+    end
+
+    it 'returns 404 when there is not a remote server with the provided name' do
+      params_unregister_table = { federated_server_name: 'wadus', remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there is not a remote schema with the provided name' do
+      params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: 'wadus', remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
       end
     end
 

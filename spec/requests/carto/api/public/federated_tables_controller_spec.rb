@@ -276,15 +276,16 @@ describe Carto::Api::Public::FederatedTablesController do
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@payload_register_server[:federated_server_name].upcase)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
-        puts response.body
         expect(response.status).to eq(422)
       end
     end
 
-    xit 'Handles SQL escape characters' do
+    it 'Handles SQL escape characters and missing dbname' do
+      server_name_sql_chars = "o'\"break;''a"
+      params_unregister_server = { federated_server_name: server_name_sql_chars, api_key: @user1.api_key }
       params_register_server = { api_key: @user1.api_key }
       payload = {
-        federated_server_name: "O'\"Break",
+        federated_server_name: server_name_sql_chars,
         mode: 'read-only',
         host: @remote_host,
         port: @remote_port,
@@ -292,7 +293,11 @@ describe Carto::Api::Public::FederatedTablesController do
         password: "'; Select 1;"
       }
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload do |response|
-        expect(response.status).to eq(202)
+        expect(response.status).to eq(201)
+      end
+
+      delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
+        expect(response.status).to eq(204)
       end
     end
 
@@ -705,16 +710,19 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#register_remote_table' do
     before(:all) do
       @federated_server_name = "fs_009_from_#{@user1.username}_to_remote"
-      @remote_schema_name = 'public'
-      @remote_table_name = 'my_table_register_remote'
+      @remote_schema_name = 'register_remote_table'
+      @remote_geo_table_name = 'my_table_full'
       @payload_register_table = {
-        remote_table_name: @remote_table_name,
-        local_table_name_override: @remote_table_name,
+        remote_table_name: @remote_geo_table_name,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
       }
-      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+      @remote_no_geo_table_name = 'my_table_no_geom'
+      remote_query("CREATE SCHEMA IF NOT EXISTS #{@remote_schema_name}")
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_geo_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_no_geo_table_name}(id integer NOT NULL, value double precision)")
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
@@ -726,7 +734,7 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name}")
+        remote_query("DROP SCHEMA #{@remote_schema_name} CASCADE")
       end
     end
 
@@ -734,10 +742,96 @@ describe Carto::Api::Public::FederatedTablesController do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
         expect(response.status).to eq(201)
-        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_table_name}")
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_geo_table_name}")
+        expect(response.body[:remote_schema_name]).to eq(@remote_schema_name)
         expect(response.body[:remote_table_name]).to eq(@payload_register_table[:remote_table_name])
         expect(response.body[:registered]).to eq(true)
-        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
+        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:id_column_name]).to eq('id')
+        expect(response.body[:geom_column_name]).to eq('geom')
+        expect(response.body[:webmercator_column_name]).to eq('geom_webmercator')
+      end
+    end
+
+    it 'returns 201 when a table without geometry is imported' do
+      payload_register_no_geom_table = {
+        remote_table_name: @remote_no_geo_table_name,
+        id_column_name: 'id'
+      }
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_no_geom_table do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_no_geo_table_name}")
+        expect(response.body[:remote_schema_name]).to eq(@remote_schema_name)
+        expect(response.body[:remote_table_name]).to eq(@remote_no_geo_table_name)
+        expect(response.body[:registered]).to eq(true)
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_no_geo_table_name}")
+        expect(response.body[:columns]).to eq('[{"Name" : "id", "Type" : "integer"}, {"Name" : "value", "Type" : "double precision"}]')
+        expect(response.body[:id_column_name]).to eq('id')
+        expect(response.body[:geom_column_name]).to eq('')
+        expect(response.body[:webmercator_column_name]).to eq('')
+      end
+    end
+
+    # Check when not passing mandatory values
+    it 'returns 422 when mandatory parameters are missing' do
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      invalid_payloads = [
+          # No remote_table_name
+        { local_table_name_override: @remote_geo_table_name, id_column_name: 'id', geom_column_name: 'geom', webmercator_column_name: 'geom_webmercator' },
+          # No id_column_name
+        { remote_table_name: @remote_geo_table_name, local_table_name_override: @remote_geo_table_name, geom_column_name: 'geom', webmercator_column_name: 'geom_webmercator' }
+      ]
+
+      for payload in invalid_payloads do
+        post_json api_v4_federated_servers_register_table_url(params_register_table), payload do |response|
+          expect(response.status).to eq(422)
+        end
+      end
+    end
+
+    it 'works when webmercator is not passed' do
+      payload_register_table = {
+        remote_table_name: @remote_geo_table_name,
+        local_table_name_override: @remote_geo_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom'
+      }
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_geo_table_name}")
+        expect(response.body[:remote_schema_name]).to eq(@remote_schema_name)
+        expect(response.body[:remote_table_name]).to eq(payload_register_table[:remote_table_name])
+        expect(response.body[:registered]).to eq(true)
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
+        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:id_column_name]).to eq('id')
+        expect(response.body[:geom_column_name]).to eq('geom')
+        expect(response.body[:webmercator_column_name]).to eq('geom')
+      end
+    end
+
+    it 'works when geom is not passed' do
+      payload_register_table = {
+        remote_table_name: @remote_geo_table_name,
+        local_table_name_override: @remote_geo_table_name,
+        id_column_name: 'id',
+        webmercator_column_name: 'geom_webmercator'
+      }
+      params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+      post_json api_v4_federated_servers_register_table_url(params_register_table), payload_register_table do |response|
+        expect(response.status).to eq(201)
+        expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_geo_table_name}")
+        expect(response.body[:remote_schema_name]).to eq(@remote_schema_name)
+        expect(response.body[:remote_table_name]).to eq(payload_register_table[:remote_table_name])
+        expect(response.body[:registered]).to eq(true)
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
+        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:id_column_name]).to eq('id')
+        expect(response.body[:geom_column_name]).to eq('geom_webmercator')
+        expect(response.body[:webmercator_column_name]).to eq('geom_webmercator')
       end
     end
 

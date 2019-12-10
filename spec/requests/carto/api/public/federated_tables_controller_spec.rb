@@ -784,7 +784,6 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    # Check when not passing mandatory values
     it 'returns 422 when mandatory parameters are missing' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       invalid_payloads = [
@@ -855,8 +854,8 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 422 when remote table name doesn\'t match' do
       payload_register_table = {
-        remote_table_name: @remote_table_name.upcase,
-        local_table_name_override: @remote_table_name,
+        remote_table_name: @remote_geo_table_name.upcase,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
@@ -887,7 +886,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_table_name = 'my_table_without_id'
       payload_register_table = {
         remote_table_name: remote_table_name,
-        local_table_name_override: @remote_table_name,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
@@ -906,7 +905,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_table_name = 'my_table_without_geom'
       payload_register_table = {
         remote_table_name: remote_table_name,
-        local_table_name_override: @remote_table_name,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'

@@ -258,7 +258,7 @@ module Carto
             raise Carto::LoadError.new(message)
           when /Not enough permissions to access the server (.*)/
             raise Carto::UnauthorizedError.new(message)
-          when /Could not import table (.*) of server (.*)/, /Could not import table (.*) as (.*) already exists/, /non integer id_column (.*)/, /non geometry column (.*)/
+          when /Server name (.*) is too long to be used as identifier/, /Could not import table (.*) of server (.*)/, /Could not import table (.*) as (.*) already exists/, /non integer id_column (.*)/, /non geometry column (.*)/
             raise Carto::UnprocesableEntityError.new(message)
           else
             raise exception

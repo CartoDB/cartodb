@@ -227,7 +227,11 @@ class Table
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
       # Make sure column names are sanitized. Make it consistently.
-      self.class.sanitize_columns(uniname, {database_schema: owner.database_schema, connection: owner.in_database})
+      self.class.sanitize_columns(uniname, {
+        database_schema: owner.database_schema,
+        connection: owner.in_database,
+        column_normalization_version: @data_import.column_normalization_version,
+      })
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
@@ -1343,8 +1347,15 @@ class Table
     candidate_column_name = 'untitled_column' if candidate_column_name.blank?
     candidate_column_name = candidate_column_name.to_s.squish
 
-    # Subsequent characters can be letters, underscores or digits
-    candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+    # TODO implement in a new Class
+    case @data_import.column_normalization_version
+    when 0
+      # Subsequent characters can be letters, underscores or digits
+      candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+    when 1
+      # Subsequent characters can be letters, underscores or digits
+      candidate_column_name = CartoDB::Importer2::StringSanitizer.new.sanitize(candidate_column_name)
+    end
 
     # Valid names start with a letter or an underscore
     candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]

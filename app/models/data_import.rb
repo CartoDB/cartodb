@@ -108,19 +108,30 @@ class DataImport < Sequel::Model
   TYPE_QUERY          = 'query'
   TYPE_DATASOURCE     = 'datasource'
 
+  # this attribute must not be modified
+  INITIAL_COLUMN_NAME_NORMALIZATION_VERSION = 0
+
+  # increase this attribute when a new normalization
+  # method is implemented
+  CURRENT_COLUMN_NAME_NORMALIZATION_VERSION = 1
+
   def after_initialize
     instantiate_log
     self.results  = []
     self.state    ||= STATE_PENDING
   end
 
-  # This before_create should be only necessary to track old dashboard data imports.
-  # New ones are already tracked during the data_import create inside the controller
-  # For the old dashboard
+  # This before_create has two goals:
+  # 1. Tracking old dashboard data imports (new ones are already
+  # tracked during the data_import create inside the controller)
+  # 2. Adding the normalization version used for the column names
   def before_create
     if self.from_common_data?
       self.extra_options = self.extra_options.merge({:common_data => true})
     end
+    self.extra_options = self.extra_options.merge({
+      :column_name_normalization_version => CURRENT_COLUMN_NAME_NORMALIZATION_VERSION
+    })
   end
 
   def before_save
@@ -159,6 +170,10 @@ class DataImport < Sequel::Model
     if !value.nil?
       self.import_extra_options = ::JSON.dump(value)
     end
+  end
+
+  def column_normalization_version
+    extra_options[:column_name_normalization_version] || INITIAL_COLUMN_NAME_NORMALIZATION_VERSION
   end
 
   def dataimport_logger

@@ -667,7 +667,7 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(found[:registered]).to eq(false)
         expect(found[:remote_schema_name]).to eq(@remote_schema_name)
         expect(found[:remote_table_name]).to eq(@remote_table_name)
-        expect(found[:columns]).to eq("[{\"Name\" : \"geom\", \"Type\" : \"GEOMETRY,0\"}, {\"Name\" : \"geom_webmercator\", \"Type\" : \"GEOMETRY,0\"}, {\"Name\" : \"id\", \"Type\" : \"integer\"}]")
+        expect(found[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
 
         expect(found.include?(:qualified_name)).to eq(false)
         expect(found.include?(:id_column_name)).to eq(false)

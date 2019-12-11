@@ -64,10 +64,11 @@ module Carto
 
       def table_options
         params = super
-        # due to driver limitations when a table belongs to a different project
-        # it has to be imported as sql_query
-        if @params[:project].present? && !params[:sql_query].present?
-          params[:sql_query] = %{SELECT * FROM `#{@params[:project]}.#{@params[:dataset]}.#{params[:table]}`;}
+        # due to driver limitations (users need specific permissions in
+        # their projects) table imports have to be imported as sql_query
+        if !params[:sql_query].present?
+          project = @params[:project] || @params[:billing_project]
+          params[:sql_query] = %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{params[:table]}`;}
         end
         params
       end

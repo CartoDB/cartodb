@@ -18,6 +18,7 @@ $w: $sLayout-width;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    height: 86px;
   }
 
   &__item {
@@ -174,5 +175,138 @@ $w: $sLayout-width;
   &__desc {
     margin-top: 20px;
     margin-bottom: 32px;
+  }
+}
+
+.ImportOther {
+  margin-right: 16px;
+}
+
+.ImportOther__step1,
+.ImportOther__step2,
+.ImportOther__step3,
+.ImportOther__step4 {
+  display: none;
+
+  &.is-active {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: $cStructure-mainBkg;
+    color: $cTypography-helpSecondary;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+.ImportOther__step2,
+.ImportOther__step3,
+.ImportOther__step4 {
+  flex-direction: column;
+  width: 192px;
+  height: 104px;
+  border: 1px solid $cHighlight-main;
+}
+
+.ImportOther__step1 {
+  flex-direction: row;
+  width: 170px;
+  height: 84px;
+  border: 1px solid $cStructure-mainLine;
+
+  &:hover {
+    border-color: $cHighlight-main;
+  }
+
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-image: url($assetsDir + '/images/layout/connectors/add.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+  }
+}
+
+.ImportOther__step2 {
+  .ImportOther__input {
+    position: relative;
+    z-index: 2;
+    width: 90px;
+    height: 32px;
+    margin-top: 12px;
+    padding: 0 48px 0 12px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    outline: none;
+    color: #666;
+
+    &:focus {
+      border-color: #999;
+    }
+  }
+
+  .ImportOther__inputSubmit {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: 32px;
+    height: 54px;
+    margin-top: -14px;
+    padding: 0;
+    opacity: 1;
+    background: none;
+
+    &.is-disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+}
+
+.ImportOther__step3 {
+  .ImportOther__spinner {
+    margin-top: 12px;
+  }
+}
+
+.ImportOther__step4 {
+  .ImportOther_requestText {
+    margin: 0 20px;
+  }
+
+  .ImportOther__requestButton {
+    box-sizing: content-box;
+    margin-top: 12px;
+  }
+
+  .ImportOther__requestButton {
+    width: 60px;
+
+    &Text {
+      display: block;
+      margin-right: -20px;
+      margin-left: -8px;
+      background-image: url($assetsDir + '/images/layout/connectors/request-success.svg');
+      background-repeat: no-repeat;
+      background-position: left center;
+      background-size: 12px;
+    }
+  }
+
+  &.hasError {
+    border-color: $cHighlight-caution;
+
+    .ImportOther__requestButton {
+      width: auto;
+
+      &Text {
+        margin: auto;
+        background: none;
+      }
+    }
   }
 }

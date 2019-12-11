@@ -1096,7 +1096,7 @@ When using database connectors, the following limitations or restrictions are en
 
 **Note:** The number of imported columns will affect the performance of the connector.
 
-### The BigQuery Connector (beta)
+### The BigQuery Connector (BETA)
 
 :warning: This connector is in **beta** stage and the API might change or have limited support :warning:
 
@@ -1180,7 +1180,7 @@ To use the BigQuery Connector with the Import API, you must include a `connector
     "dataset": "mybigquerydataset",
     "table": "mytable",
     "import_as": "mycartodataset",
-    "storage_api": 1
+    "storage_api": true
   }
 }
 ```
@@ -1195,7 +1195,7 @@ project | Defines the Google Cloud project that contains the data to be imported
 dataset | Name of the dataset to import data from (optional).
 table \| sql_query | Required. Either identify the BigQuery table to be imported or use a SQL query to fetch data.
 import_as | Can be used to specifiy the name of the imported dataset (optional)
-storage_api | (1/0) specifies if BigQuery Storage API will be used (value 1) or not (value 0). (optional)
+storage_api | (true/false) specifies if BigQuery Storage API will be used or not. (optional; false by default)
 
 Note that you could either import from a query using `sql_query` or from a table using `table`.
 Note also that by default the Storage API is not used.

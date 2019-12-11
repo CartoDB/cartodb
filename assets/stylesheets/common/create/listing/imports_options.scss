@@ -66,6 +66,7 @@ $w: $sLayout-width;
 .is-disabled .ImportOptions__overlay {
   display: block;
   position: absolute;
+  z-index: 1;
   top: 0;
   width: 100%;
   height: 100%;

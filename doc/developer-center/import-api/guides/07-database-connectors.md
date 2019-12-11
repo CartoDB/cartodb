@@ -1204,7 +1204,7 @@ Note also that by default the Storage API is not used.
 
 In order to connect to an external BigQuery table, the following rules apply:
 
-- The name of the remote BigQuery project can be passed in the `dataset` parameter. It default to the billing project.
+- The name of the remote BigQuery project can be passed in the `project` parameter. It default to the billing project.
 - The name of the remote BigQuery dataset must be passed in the `dataset` parameter.
 - The name of the remote BigQuery table must be passed in the `table` parameter.
 - The `sql_query` parameter **MUST NOT** be present.
@@ -1214,6 +1214,8 @@ In order to connect to an external BigQuery table, the following rules apply:
 ##### Example
 
 The following example displays how to request an external BigQuery table.
+called `mytable` which belongs to the dataset `mybigquerydataset` and this, in turn,
+to the project `mybigqueryproject` which is also the project for billing expenses.
 
 ###### Call
 

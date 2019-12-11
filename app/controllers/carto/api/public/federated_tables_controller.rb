@@ -277,7 +277,7 @@ module Carto
           if message.present?
             return message
           else
-            raise exception
+            raise exception.message
           end
         end
       end

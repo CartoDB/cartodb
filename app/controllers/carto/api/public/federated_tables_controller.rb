@@ -19,6 +19,7 @@ module Carto
 
         REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = ['remote_table_name', 'id_column_name'].freeze
         REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = ['id_column_name'].freeze
+        ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = ['local_table_name_override', 'id_column_name', 'geom_column_name', 'webmercator_column_name']
 
         before_action :load_user
         before_action :load_service
@@ -141,7 +142,6 @@ module Carto
             response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp(@remote_table, 201)
           end
-
           @remote_table = @service.update_table(@remote_table_attributes)
 
           render_jsonp({}, 204)
@@ -216,6 +216,7 @@ module Carto
             remote_schema_name: params[:remote_schema_name],
             remote_table_name: params[:remote_table_name]
           )
+          raise Carto::LoadError.new("Table '#{params[:remote_schema_name]}'.'#{params[:remote_table_name]}' not found at '#{params[:federated_server_name]}'") if @remote_table.nil?
         rescue Sequel::DatabaseError => exception
           handle_service_error(exception)
         end
@@ -229,6 +230,7 @@ module Carto
             ensure_required_request_params(REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES)
           else
             ensure_required_request_params(REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES)
+            ensure_no_extra_request_params(ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES, 422)
           end
         end
 

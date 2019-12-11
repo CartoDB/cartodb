@@ -91,11 +91,9 @@ module Carto
         ClientSecret
         EnableHTAPI
         AllowLargeResults
-        UseDefaultLargeResultsDataset
         UseQueryCache
         HTAPI_MinActivationRatio
         HTAPI_MinResultsSize
-        LargeResultsDataSetId
         LargeResultsTempTableExpirationTime
         AdditionalProjects
       )
@@ -111,10 +109,9 @@ module Carto
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
       SQL_DIALECT                  = 1
       OAUTH_MECHANISM              = 1
-      ALLOW_LRESULTS               = 1
+      ALLOW_LRESULTS               = 0
       ENABLE_STORAGE_API           = 0
       QUERY_CACHE                  = 1
-      LRESULTS_DEFAULT_DATASET     = 1
       HTAPI_MIN_ACTIVATION_RATIO   = 0
       HTAPI_MIN_RESULTS_SIZE       = 100
       HTAPI_TEMP_DATASET           = '_cartoimport_temp'
@@ -161,12 +158,10 @@ module Carto
           ClientId: @oauth_config['client_id'],
           ClientSecret: @oauth_config['client_secret'],
           AllowLargeResults: ALLOW_LRESULTS,
-          UseDefaultLargeResultsDataset: LRESULTS_DEFAULT_DATASET,
           HTAPI_MinActivationRatio: HTAPI_MIN_ACTIVATION_RATIO,
           EnableHTAPI: ENABLE_STORAGE_API,
           UseQueryCache: QUERY_CACHE,
           HTAPI_MinResultsSize: HTAPI_MIN_RESULTS_SIZE,
-          LargeResultsDataSetId: HTAPI_TEMP_DATASET,
           LargeResultsTempTableExpirationTime: HTAPI_TEMP_TABLE_EXP
         }
 

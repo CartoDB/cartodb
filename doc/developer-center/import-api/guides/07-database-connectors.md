@@ -1163,7 +1163,7 @@ The [BigQuery Storage API](https://cloud.google.com/bigquery/docs/reference/stor
 than the standard REST API used otherwise to import the data. It can be enabled with the `storage_api` parameter.
 
 When the `storage_api` is enabled, it will be used if possible and depending on the size of the imported data.
-To use it, the BigQuery project that you are querying must have the BigQuery Storage API enabled. For more information, see "Enabling the API" in the Google BigQuery documentation: https://cloud.google.com/bigquery/docs/reference/storage/#enabling_the_api.
+To use it, the BigQuery billing project that you use must have the BigQuery Storage API enabled. For more information, see "Enabling the API" in the Google BigQuery documentation: https://cloud.google.com/bigquery/docs/reference/storage/#enabling_the_api.
 
 :warning: Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api. :warning:
 

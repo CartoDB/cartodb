@@ -784,7 +784,6 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
-    # Check when not passing mandatory values
     it 'returns 422 when mandatory parameters are missing' do
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
       invalid_payloads = [
@@ -855,8 +854,8 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 422 when remote table name doesn\'t match' do
       payload_register_table = {
-        remote_table_name: @remote_table_name.upcase,
-        local_table_name_override: @remote_table_name,
+        remote_table_name: @remote_geo_table_name.upcase,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
@@ -887,7 +886,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_table_name = 'my_table_without_id'
       payload_register_table = {
         remote_table_name: remote_table_name,
-        local_table_name_override: @remote_table_name,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
@@ -906,7 +905,7 @@ describe Carto::Api::Public::FederatedTablesController do
       remote_table_name = 'my_table_without_geom'
       payload_register_table = {
         remote_table_name: remote_table_name,
-        local_table_name_override: @remote_table_name,
+        local_table_name_override: @remote_geo_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
@@ -975,6 +974,20 @@ describe Carto::Api::Public::FederatedTablesController do
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(403)
         api_key.destroy
+      end
+    end
+
+    it 'returns 404 when there is not a remote server with the provided name' do
+      params = { federated_server_name: 'wadus', remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there is not a remote schema with the provided name' do
+      params = { federated_server_name: @federated_server_name, remote_schema_name: 'wadus', remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(params) do |response|
+        expect(response.status).to eq(404)
       end
     end
 
@@ -1081,9 +1094,12 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#unregister_remote_table' do
     before(:all) do
       @federated_server_name = "fs_012_from_#{@user1.username}_to_remote"
-      @remote_schema_name = 'public'
+      @remote_schema_name = 'unregister_schema'
       @remote_table_name = 'my_table_unregister_remote'
+      @remote_not_registered = 'not_registered'
+      remote_query("CREATE SCHEMA IF NOT EXISTS #{@remote_schema_name}")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
+      remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_not_registered}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
       payload_register_server = get_payload(@federated_server_name)
       post_json api_v4_federated_servers_register_server_url(params_register_server), payload_register_server do |response|
@@ -1106,7 +1122,7 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_table = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_table) do |response|
         expect(response.status).to eq(204)
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name}")
+        remote_query("DROP SCHEMA #{@remote_schema_name} CASCADE")
       end
     end
 
@@ -1133,8 +1149,29 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 404 when there is not a remote server with the provided name' do
+      params_unregister_table = { federated_server_name: 'wadus', remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there is not a remote schema with the provided name' do
+      params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: 'wadus', remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
     it 'returns 404 when there is not a remote table with the provided name' do
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: 'wadus', api_key: @user1.api_key }
+      delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 404 when there the table has not been registered' do
+      params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_not_registered, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(404)
       end

@@ -216,6 +216,8 @@ module Carto
             remote_schema_name: params[:remote_schema_name],
             remote_table_name: params[:remote_table_name]
           )
+        rescue Sequel::DatabaseError => exception
+          handle_service_error(exception)
         end
 
         def check_remote_table
@@ -254,7 +256,7 @@ module Carto
         def handle_service_error(exception)
           message = get_error_message(exception)
           case message
-          when /Server (.*) does not exist/
+          when /(.*) does not exist/
             raise Carto::LoadError.new(message)
           when /Not enough permissions to access the server (.*)/
             raise Carto::UnauthorizedError.new(message)
@@ -269,13 +271,13 @@ module Carto
         end
 
         def get_error_message(exception)
-          regex = /^PG::RaiseException: ERROR:  /
-          message = exception.message.split("\n").find { |s| s.match(regex) }.gsub(regex, '')
+          regex = /^PG::(.*): ERROR:  /
+          message = exception.message.split("\n").find { |s| s.match(regex) }.to_s.gsub(regex, '')
 
           if message.present?
             return message
           else
-            return ''
+            raise exception.message
           end
         end
       end

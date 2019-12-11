@@ -18,9 +18,9 @@
   <li class="ImportOther__step4 js-step js-step4 <%- hasError ? 'hasError' : '' %>">
     <span class="ImportOther_requestText">
       <% if (hasError) { %>
-        <%- _t('components.modals.add-layer.imports.other.success') %>
-      <% } else { %>
         <%- _t('components.modals.add-layer.imports.other.error') %>
+      <% } else { %>
+        <%- _t('components.modals.add-layer.imports.other.success') %>
       <% } %>
     </span>
     <button class="CDB-Button CDB-Button--primary ImportOther__requestButton js-ok">

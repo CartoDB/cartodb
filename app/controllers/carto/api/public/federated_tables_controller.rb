@@ -59,10 +59,6 @@ module Carto
 
         def register_federated_server
           federated_server = @service.register_server(@federated_server_attributes)
-          @service.grant_access_to_federated_server(
-            federated_server_name: federated_server[:federated_server_name],
-            db_role: @user.database_username
-          )
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
           render_jsonp(federated_server, 201)
         rescue Sequel::DatabaseError => exception
@@ -90,10 +86,6 @@ module Carto
         end
 
         def unregister_federated_server
-          @service.revoke_access_to_federated_server(
-            federated_server_name: params[:federated_server_name],
-            db_role: @user.database_username
-          )
           @service.unregister_server(federated_server_name: params[:federated_server_name])
           render_jsonp({}, 204)
         rescue Sequel::DatabaseError => exception

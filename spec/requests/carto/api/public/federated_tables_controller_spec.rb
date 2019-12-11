@@ -467,7 +467,7 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:dbname]).to eq(new_db_name)
         expect(response.body[:host]).to eq(new_host)
         expect(response.body[:port]).to eq(new_port)
-        # We don't check for username or password since they aren't returned for db users (only to superadmin)
+        expect(response.body[:username]).to eq(new_username)
       end
 
       # Return it to previous values

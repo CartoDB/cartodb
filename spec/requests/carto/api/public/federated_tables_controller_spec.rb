@@ -443,6 +443,34 @@ describe Carto::Api::Public::FederatedTablesController do
 
     it 'returns 204 when the federated server was updated' do
       params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      new_db_name = 'new_name'
+      new_host = 'new_host'
+      new_port = '2222'
+      new_username = 'new_user'
+      new_password = 'new_pass'
+      new_payload = {
+        mode: 'read-only',
+        dbname: new_db_name,
+        host: new_host,
+        port: new_port,
+        username: new_username,
+        password: new_password
+      }
+      put_json api_v4_federated_servers_update_server_url(params_update_server), new_payload do |response|
+        expect(response.status).to eq(204)
+      end
+
+      params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:federated_server_name]).to eq(@federated_server_name)
+        expect(response.body[:dbname]).to eq(new_db_name)
+        expect(response.body[:host]).to eq(new_host)
+        expect(response.body[:port]).to eq(new_port)
+        # We don't check for username or password since they aren't returned for db users (only to superadmin)
+      end
+
+      # Return it to previous values
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(204)
       end
@@ -1002,16 +1030,22 @@ describe Carto::Api::Public::FederatedTablesController do
   describe '#update_remote_table' do
     before(:all) do
       @federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
-      @remote_schema_name = 'public'
+      @remote_schema_name = 'update_remote_table_schema'
       @remote_table_name = 'my_table_update_remote_1'
       @remote_table_name_2 = 'my_table_update_remote_2'
       @payload_update_table = {
-        remote_table_name: @remote_table_name,
+        local_table_name_override: @remote_table_name,
+        id_column_name: 'id',
+        geom_column_name: 'geom_webmercator',
+        webmercator_column_name: 'geom'
+      }
+      @payload_update_table_reverse = {
         local_table_name_override: @remote_table_name,
         id_column_name: 'id',
         geom_column_name: 'geom',
         webmercator_column_name: 'geom_webmercator'
       }
+      remote_query("CREATE SCHEMA IF NOT EXISTS #{@remote_schema_name}")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       remote_query("CREATE TABLE IF NOT EXISTS #{@remote_schema_name}.#{@remote_table_name_2}(id integer NOT NULL, geom geometry, geom_webmercator geometry)")
       params_register_server = { api_key: @user1.api_key }
@@ -1036,15 +1070,13 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
         expect(response.status).to eq(204)
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name}")
-        remote_query("DROP TABLE #{@remote_schema_name}.#{@remote_table_name_2}")
+        remote_query("DROP SCHEMA #{@remote_schema_name} CASCADE")
       end
     end
 
     it 'returns 201 with the remote table created' do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name_2, api_key: @user1.api_key }
       payload_update_table = {
-        remote_table_name: @remote_table_name_2,
         local_table_name_override: @remote_table_name_2,
         id_column_name: 'id',
         geom_column_name: 'geom',
@@ -1053,7 +1085,7 @@ describe Carto::Api::Public::FederatedTablesController do
       put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
         expect(response.status).to eq(201)
         expect(response.headers['Content-Location']).to eq("/api/v4/federated_servers/#{@federated_server_name}/remote_schemas/#{@remote_schema_name}/remote_tables/#{@remote_table_name_2}")
-        expect(response.body[:remote_table_name]).to eq(payload_update_table[:remote_table_name])
+        expect(response.body[:remote_table_name]).to eq("#{@remote_table_name_2}")
         expect(response.body[:registered]).to eq(true)
         expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name_2}")
       end
@@ -1063,6 +1095,73 @@ describe Carto::Api::Public::FederatedTablesController do
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
       put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
         expect(response.status).to eq(204)
+      end
+
+      show_params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(show_params) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:remote_table_name]).to eq("#{@remote_table_name}")
+        expect(response.body[:remote_schema_name]).to eq("#{@remote_schema_name}")
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
+        expect(response.body[:geom_column_name]).to eq("geom_webmercator")
+        expect(response.body[:webmercator_column_name]).to eq("geom")
+      end
+
+      # We change everything again to leave everything unchanged
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table_reverse do |response|
+        expect(response.status).to eq(204)
+      end
+
+      show_params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      get_json api_v4_federated_servers_get_table_url(show_params) do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:remote_table_name]).to eq("#{@remote_table_name}")
+        expect(response.body[:remote_schema_name]).to eq("#{@remote_schema_name}")
+        expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_table_name}")
+        expect(response.body[:geom_column_name]).to eq("geom")
+        expect(response.body[:webmercator_column_name]).to eq("geom_webmercator")
+      end
+    end
+
+    it 'returns 422 when one of the columns is invalid' do
+      invalid_payloads = [
+          { id_column_name: 'wadus', geom_column_name: 'geom_webmercator', webmercator_column_name: 'geom' },
+          { id_column_name: 'id', geom_column_name: 'wadus', webmercator_column_name: 'geom' },
+          { id_column_name: 'id', geom_column_name: 'geom_webmercator', webmercator_column_name: 'wadus' }
+      ]
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      for payload in invalid_payloads do
+        put_json api_v4_federated_servers_update_table_url(params_update_table), payload do |response|
+          expect(response.status).to eq(422)
+        end
+      end
+    end
+
+    it 'returns 404 when the remote table does not exist' do
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: 'wadus', api_key: @user1.api_key }
+      payload_update_table = {
+        local_table_name_override: 'wadus',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+      put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
+        expect(response.status).to eq(404)
+      end
+    end
+
+    it 'returns 422 when the table name is included in the payload' do
+      params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+      payload_update_table = {
+        remote_table_name: 'wadus',
+        local_table_name_override: 'wadus',
+        id_column_name: 'id',
+        geom_column_name: 'geom',
+        webmercator_column_name: 'geom_webmercator'
+      }
+      put_json api_v4_federated_servers_update_table_url(params_update_table), payload_update_table do |response|
+        expect(response.status).to eq(422)
       end
     end
 

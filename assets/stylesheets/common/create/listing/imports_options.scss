@@ -62,6 +62,42 @@ $w: $sLayout-width;
     background-repeat: no-repeat;
     background-position: center;
   }
+
+  &__input {
+    &--long {
+      box-sizing: border-box !important;
+      width: 460px;
+    }
+  }
+
+  &__label {
+    width: 160px !important;
+
+    &--textarea {
+      padding-top: 12px;
+    }
+  }
+
+  &__CodeMirror {
+    position: relative;
+    width: 460px;
+    min-height: 150px;
+
+    .CodeMirror {
+      padding: 10px 0;
+      border-radius: 4px;
+    }
+
+    .CodeMirror-code {
+      & > div {
+        margin-bottom: 3px;
+      }
+    }
+  }
+
+  &__hint {
+    width: 460px;
+  }
 }
 
 .is-disabled .ImportOptions__overlay {

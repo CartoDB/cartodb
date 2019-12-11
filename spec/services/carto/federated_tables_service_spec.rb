@@ -255,7 +255,7 @@ describe Carto::FederatedTablesService do
             end
 
             it 'should revoke access to a federated server' do
-                federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_007_from_#{@user1.username}_to_remote"
                 expected_federated_server = get_federated_server_payload()
                 create_federated_server(federated_server_name: @federated_server_name)
 
@@ -270,7 +270,7 @@ describe Carto::FederatedTablesService do
 
         describe 'remote schemas' do
             it 'should list remote schemas of a federated server' do
-                federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
+                @federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
                 create_and_grant_federated_server()
                 pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
 

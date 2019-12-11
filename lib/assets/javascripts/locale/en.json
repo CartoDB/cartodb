@@ -1367,6 +1367,16 @@
                         "text": "Is your data somewhere else? Please, let us know!",
                         "button": "Request data source",
                         "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
+                    },
+                    "other": {
+                        "request": "Request connector",
+                        "type": "Type the one you look for",
+                        "submit": "Submit",
+                        "sending": "Sending request",
+                        "success": "Request sent. We will contact you soon.",
+                        "error": "Request not successful.",
+                        "try-again": "Try again",
+                        "ok": "Ok, got it!"
                     }
                 },
                 "datasets": {

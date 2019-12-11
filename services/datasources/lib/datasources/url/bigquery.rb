@@ -2,6 +2,7 @@
 
 require 'signet/oauth_2/client'
 require_relative '../../../../../lib/carto/http/client'
+require 'google/apis/bigquery_v2'
 
 module CartoDB
   module Datasources
@@ -41,6 +42,8 @@ module CartoDB
             access_type: :offline
           )
           @revoke_uri = config.fetch('revoke_auth_uri')
+          @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
+          @bigquery_api.authorization = @client
         end
 
         # Factory method
@@ -199,6 +202,16 @@ module CartoDB
           end
         rescue => ex
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
+        end
+
+        def create_dataset(project_id, dataset_id, options)
+          dataset = Google::Apis::BigqueryV2::Dataset.new(options.merge({
+            :dataset_reference => Google::Apis::BigqueryV2::DatasetReference.new({
+              :project_id => project_id,
+              :dataset_id => dataset_id,
+            })
+          }))
+          @bigquery_api.insert_dataset(project_id, dataset)
         end
 
       end

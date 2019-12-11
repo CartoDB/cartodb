@@ -100,7 +100,7 @@ module Carto
       user_attributes %I(RefreshToken)
 
       required_parameters %I(billing_project)
-      optional_parameters %I(project import_as dataset table sql_query storage_api)
+      optional_parameters %I(project location import_as dataset table sql_query storage_api)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -148,9 +148,11 @@ module Carto
       end
 
       def fixed_odbc_attributes
+        return @server_conf if @server_conf.present?
+
         proxy_conf = create_proxy_conf
 
-        conf = {
+        @server_conf = {
           Driver:         DRIVER_NAME,
           SQLDialect:     SQL_DIALECT,
           OAuthMechanism: OAUTH_MECHANISM,
@@ -165,11 +167,41 @@ module Carto
           LargeResultsTempTableExpirationTime: HTAPI_TEMP_TABLE_EXP
         }
 
-        if !proxy_conf.nil?
-          conf = conf.merge(proxy_conf)
+        if @params[:storage_api] == true
+          @server_conf = @server_conf.merge({
+            UseDefaultLargeResultsDataset: 1
+          })
+          if @params[:location].present?
+            @params[:location].upcase!
+            @server_conf = @server_conf.merge({
+              UseDefaultLargeResultsDataset: 0,
+              LargeResultsDataSetId: create_temp_dataset(@params[:billing_project], @params[:location])
+          })
+          end
         end
 
-        return conf
+        if !proxy_conf.nil?
+          @server_conf = @server_conf.merge(proxy_conf)
+        end
+
+        return @server_conf
+      end
+
+      def create_temp_dataset(project_id, location)
+        temp_dataset_id = %{#{HTAPI_TEMP_DATASET}_#{location.downcase}}
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          begin
+            oauth_client.create_dataset(project_id, temp_dataset_id, {
+              :default_table_expiration_ms => HTAPI_TEMP_TABLE_EXP,
+              :location => location
+            })
+          rescue Google::Apis::ClientError => error
+            # if the dataset exists (409 conflict) do it nothing
+            raise error unless error.status_code == 409
+          end
+        end
+        temp_dataset_id
       end
 
       def remote_schema_name

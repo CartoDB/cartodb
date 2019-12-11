@@ -665,7 +665,8 @@
     }
   },
   "CatalogPage": {
-    "header": "Catalog"
+    "header": "Catalog",
+    "description": "Broaden your analysis and augment your own data with our curated selection of location datasets."
   },
   "CatalogListHeader": {
     "name": "Name",

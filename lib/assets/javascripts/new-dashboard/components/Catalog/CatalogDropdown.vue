@@ -139,7 +139,7 @@ export default {
       return this.filteredOptions.length > this.maxItemsScroll;
     },
     showInput () {
-      return this.isOpen && Object.keys(this.selected).length === 0 && this.filteredOptions.length > this.maxItemsScroll;
+      return this.isOpen && Object.keys(this.selected).length === 0;
     }
   },
   mounted() {

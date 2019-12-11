@@ -2,7 +2,7 @@
   <section class="catalog">
     <div class="container grid">
       <div class="full-width">
-        <SectionTitle class="grid-cell">
+        <SectionTitle class="grid-cell" :description="$t('CatalogPage.description')">
           <template slot="icon">
             <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
           </template>

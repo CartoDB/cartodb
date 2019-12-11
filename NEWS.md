@@ -11,6 +11,9 @@ Development
 - Avoid warnings when running test in parallel with an empty environment
 - Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
 - Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
+- Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
+- Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
+- ArcGIS connector: Stop skipping ids on failure
 
 4.31.0 (2019-11-19)
 -------------------

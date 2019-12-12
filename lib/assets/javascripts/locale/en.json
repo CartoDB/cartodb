@@ -893,7 +893,9 @@
                 }
             },
             "create-dialog": {
-                "creating-map": "Creating map"
+                "creating-map": "Creating map",
+                "upload": "Upload",
+                "connect": "Connect"
             },
             "export-data": {
                 "title": "Export data",
@@ -1218,7 +1220,8 @@
                 "navigation": {
                     "search": "Search",
                     "search-placeholder": "by name, description, or :tag",
-                    "connect-dataset": "Connect dataset",
+                    "upload-dataset": "Upload",
+                    "connect-dataset": "Connect",
                     "shared-with-you": "Shared with you",
                     "data-library": "Data library",
                     "create-empty-map": "Create empty map",
@@ -1230,8 +1233,14 @@
                 "adding-new-layer": "Adding new layer…",
                 "add-layer-error": "Could not add layer",
                 "imports": {
+                    "header": "Connect with %{brand}",
+                    "header-alt": "%{brand} connector logo",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
+                    "loading": "Sending request",
+                    "contact-soon": "Our team will contact you soon.",
+                    "got-it": "Ok, got it",
+                    "try-again": "Try again",
                     "connector": "connector",
                     "demo-email-title": "I am interested in the %{name} connector",
                     "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
@@ -1343,10 +1352,38 @@
                         "fallback-desc": "Contact us to learn more about %{brand} integration",
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
+                    "bigquery": {
+                        "field-project-billing": "Project Billing ID",
+                        "field-sql-query": "SQL query",
+                        "hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly.",
+                        "run": "Run SQL query",
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
+                    },
+                    "notenabled": {
+                        "fallback-desc": "The %{brand} connector is not available. Please, contact us if you are interested.",
+                        "request-sent": "Your request has been received.",
+                        "fallback-error": "There has been an error requesting the connector."
+                    },
+                    "beta": {
+                        "fallback-desc": "This connector is in beta. Please, contact us if you want to give it a try.",
+                        "request-access": "Request beta access",
+                        "request-sent": "Your request has been received.",
+                        "fallback-error": "There has been an error requesting the access to the connector."
+                    },
                     "feedback": {
-                        "text": "Is your data somewhere else? Please let us know!",
+                        "text": "Is your data somewhere else? Please, let us know!",
                         "button": "Request data source",
                         "url": "https://docs.google.com/forms/d/e/1FAIpQLSeSP4idHpOLdGlUkCCve1BfCsakZdmeAO_5yrHH4FSIJt5cdw/viewform"
+                    },
+                    "other": {
+                        "request": "Request connector",
+                        "type": "Type the one you look for",
+                        "submit": "Submit",
+                        "sending": "Sending request",
+                        "success": "Request sent. We will contact you soon.",
+                        "error": "Request not successful.",
+                        "try-again": "Try again",
+                        "ok": "Ok, got it!"
                     }
                 },
                 "datasets": {

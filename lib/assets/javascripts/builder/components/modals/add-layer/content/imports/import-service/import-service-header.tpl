@@ -6,8 +6,6 @@
         <% } else { %>
         <%- _t('components.modals.add-layer.imports.service-import.item-selected') %>
       <% } %>
-    <% } else { %>
-      <%- _t('components.modals.add-layer.imports.service-import.connect-with', { title: title }) %>
     <% } %>
   </h3>
   <p class="CDB-Text CDB-Size-medium u-altTextColor <% if (state === "error") { %>ImportPanel-headerDescription--negative<% } %>">

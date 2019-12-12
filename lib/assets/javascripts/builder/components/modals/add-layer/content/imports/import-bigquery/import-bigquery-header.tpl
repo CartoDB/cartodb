@@ -1,11 +1,4 @@
-<h3 class="CDB-Text CDB-Size-large u-mainTextColor u-secondaryTextColor u-bSpace--m">
-  <% if (state === 'selected') { %>
-    <%= _t('components.modals.add-layer.imports.header-import.type-selected', { brand: 'BigQuery' }) %>
-  <% } else { %>
-    <%= _t('components.modals.add-layer.imports.header-import.type-import', { brand: 'BigQuery' }) %>
-  <% } %>
-</h3>
-<p class="CDB-Text CDB-Size-medium u-altTextColor">
+<p class="CDB-Text CDB-Size-medium u-secondaryTextColor">
   <% if (state !== "selected") { %>
     <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'BigQuery' }) %>
   <% } else { %>

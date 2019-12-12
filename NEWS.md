@@ -8,6 +8,7 @@ Development
 * Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
 * Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
   ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
 
 ### Bug fixes / enhancements
 - Avoid warnings when running test in parallel with an empty environment

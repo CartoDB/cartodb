@@ -94,6 +94,8 @@ module Carto
         UseQueryCache
         HTAPI_MinActivationRatio
         HTAPI_MinResultsSize
+        UseDefaultLargeResultsDataset
+        LargeResultsDataSetId
         LargeResultsTempTableExpirationTime
         AdditionalProjects
       )

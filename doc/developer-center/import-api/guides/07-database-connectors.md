@@ -1167,6 +1167,18 @@ To use it, the BigQuery billing project that you use must have the BigQuery Stor
 
 :warning: Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api. :warning:
 
+#### Location
+
+To use Storage API with data in locations other than `US` you'll need to set the `location` parameter to the
+[location](https://cloud.google.com/bigquery/docs/locations) of the BigQuery dataset being queried.
+This is required because, to download query data using the Storage API we need first to save the data into
+a temporary table. In order to do so, an anonimous dataset will be created in the same location as the data.
+By default an anonymous dataset in the US location will be used if Storage API used; if the data is in a different
+location an error will occur.
+
+The `location` parameter can be also set when Storage API is not used. In that case, data will also be
+saved into a temporary table in the specified location before being transferred.
+
 #### Parameters and Usage
 
 To use the BigQuery Connector with the Import API, you must include a `connector` parameter with the following attributes:
@@ -1176,6 +1188,7 @@ To use the BigQuery Connector with the Import API, you must include a `connector
   "connector": {
     "provider": "bigquery",
     "billing_project":"mybigquerybillingproject",
+    "location":"us",
     "project":"mybigqueryproject",
     "dataset": "mybigquerydataset",
     "table": "mytable",
@@ -1191,6 +1204,7 @@ Param | Description
 --- | ---
 provider | Required. This value **MUST** be set to *bigquery*.
 billing_project | Required. Defines the Google Cloud project where the queries will be executed (charges will apply here).
+location | Location of the dataset to import data from (optional).
 project | Defines the Google Cloud project that contains the data to be imported (optional).
 dataset | Name of the dataset to import data from (optional).
 table \| sql_query | Required. Either identify the BigQuery table to be imported or use a SQL query to fetch data.

@@ -1360,12 +1360,12 @@
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
                     },
                     "notenabled": {
-                        "fallback-desc": "The %{brand} connector is not available. Please, contact us if you are interested.",
+                        "fallback-desc": "This connector is not currently enabled in your account. Please, contact us if you are interested.",
                         "request-sent": "Your request has been received.",
                         "fallback-error": "There has been an error requesting the connector."
                     },
                     "beta": {
-                        "fallback-desc": "This connector is in beta. Please, contact us if you want to give it a try.",
+                        "fallback-desc": "This connector is currently in beta. Please, contact us if you want to give it a try.",
                         "request-access": "Request beta access",
                         "request-sent": "Your request has been received.",
                         "fallback-error": "There has been an error requesting the access to the connector."

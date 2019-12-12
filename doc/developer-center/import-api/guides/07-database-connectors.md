@@ -1176,9 +1176,6 @@ a temporary table. In order to do so, an anonimous dataset will be created in th
 By default an anonymous dataset in the US location will be used if Storage API used; if the data is in a different
 location an error will occur.
 
-The `location` parameter can be also set when Storage API is not used. In that case, data will also be
-saved into a temporary table in the specified location before being transferred.
-
 #### Parameters and Usage
 
 To use the BigQuery Connector with the Import API, you must include a `connector` parameter with the following attributes:

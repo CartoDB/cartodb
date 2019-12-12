@@ -1,12 +1,17 @@
 require 'spec_helper_min'
 require 'support/helpers'
+require 'helpers/feature_flag_helper'
 
 describe Carto::Api::Public::FederatedTablesController do
   include_context 'users helper'
   include HelperMethods
+  include FeatureFlagHelper
 
   before(:all) do
     host! "#{@user1.username}.localhost.lan"
+
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'federated_tables', restricted: true)
+    Carto::FeatureFlagsUser.create(user_id: @user1.id, feature_flag_id: @feature_flag.id)
 
     puts "Starting remote server"
     @dir = Cartodb.get_config(:federated_server, 'dir')
@@ -36,8 +41,9 @@ describe Carto::Api::Public::FederatedTablesController do
   end
 
   after(:all) do
-      puts "Stopping the remote server"
-      system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
+    @feature_flag.destroy
+    puts "Stopping the remote server"
+    system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
   end
 
   def remote_query(query)
@@ -153,6 +159,16 @@ describe Carto::Api::Public::FederatedTablesController do
         api_key.destroy
       end
     end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_list_servers = { api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_servers_url(params_list_servers) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
   end
 
   describe '#register_federated_server' do
@@ -230,6 +246,16 @@ describe Carto::Api::Public::FederatedTablesController do
 
       delete_json api_v4_federated_servers_unregister_server_url(@params_unregister_server) do |response|
         expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_register_server = { api_key: @user1.api_key }
+        post_json api_v4_federated_servers_register_server_url(params_register_server), @payload_register_server do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
       end
     end
 
@@ -388,6 +414,16 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_show_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+        get_json api_v4_federated_servers_get_server_url(params_show_server) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
+
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       params_show_server = { federated_server_name: @federated_server_name, api_key: api_key.token }
@@ -473,6 +509,24 @@ describe Carto::Api::Public::FederatedTablesController do
       # Return it to previous values
       put_json api_v4_federated_servers_update_server_url(params_update_server), @payload_update_server do |response|
         expect(response.status).to eq(204)
+      end
+    end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_update_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+        new_payload = {
+          mode: 'read-only',
+          dbname: 'new_name',
+          host: 'new_host',
+          port: '2222',
+          username: 'new_user',
+          password: 'new_pass'
+        }
+        put_json api_v4_federated_servers_update_server_url(params_update_server), new_payload do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
       end
     end
 
@@ -575,6 +629,16 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_unregister_server = { federated_server_name: @federated_server_name, api_key: @user1.api_key }
+        delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
+
     it 'returns 404 when there is not a federated server with the provided name' do
       params_unregister_server = { federated_server_name: 'wadus', api_key: @user1.api_key }
       delete_json api_v4_federated_servers_unregister_server_url(params_unregister_server) do |response|
@@ -669,6 +733,16 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_list_schemas = { federated_server_name: @federated_server_name, api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_schemas_url(params_list_schemas) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
+
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       params_list_schemas = { federated_server_name: @federated_server_name, api_key: api_key.token, page: 1, per_page: 10 }
@@ -732,6 +806,16 @@ describe Carto::Api::Public::FederatedTablesController do
       params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, page: 1, per_page: 10 }
       get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_list_tables = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key, page: 1, per_page: 10 }
+        get_json api_v4_federated_servers_list_tables_url(params_list_tables) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
       end
     end
 
@@ -901,6 +985,16 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: @user1.api_key }
+        post_json api_v4_federated_servers_register_table_url(params_register_table), @payload_register_table do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
+
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       params_register_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, api_key: api_key.token }
@@ -993,6 +1087,16 @@ describe Carto::Api::Public::FederatedTablesController do
       params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+        get_json api_v4_federated_servers_get_table_url(params) do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
       end
     end
 
@@ -1180,6 +1284,16 @@ describe Carto::Api::Public::FederatedTablesController do
       end
     end
 
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+        put_json api_v4_federated_servers_update_table_url(params_update_table), @payload_update_table do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
+      end
+    end
+
     it 'returns 403 when using a regular API key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user1.id)
       params_update_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: api_key.token }
@@ -1236,6 +1350,16 @@ describe Carto::Api::Public::FederatedTablesController do
       params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name }
       delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table) do |response|
         expect(response.status).to eq(401)
+      end
+    end
+
+    it 'returns 403 when feature flag is not enabled for the user' do
+      with_feature_flag @user1, 'federated_tables', false do
+        params_unregister_table = { federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, remote_table_name: @remote_table_name, api_key: @user1.api_key }
+        delete_json api_v4_federated_servers_unregister_table_url(params_unregister_table), @payload do |response|
+          expect(response.status).to eq(403)
+          expect(response.body).to eq(errors: "Federated Tables not enabled", errors_cause: nil)
+        end
       end
     end
 

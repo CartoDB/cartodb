@@ -22,6 +22,7 @@ module Carto
         ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = ['local_table_name_override', 'id_column_name', 'geom_column_name', 'webmercator_column_name']
 
         before_action :load_user
+        before_action :check_federated_tables_enable
         before_action :load_service
         before_action only: [:list_federated_servers] do
           load_pagination_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
@@ -233,6 +234,10 @@ module Carto
         def check_permissions
           @api_key = Carto::ApiKey.find_by_token(params["api_key"])
           raise UnauthorizedError unless @api_key.master? || @api_key.dataset_metadata_permissions
+        end
+
+        def check_federated_tables_enable
+          raise UnauthorizedError.new('Federated Tables not enabled') unless @user.has_feature_flag?('federated_tables')
         end
 
         def render_paged(result, total)

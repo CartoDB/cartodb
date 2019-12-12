@@ -84,8 +84,20 @@ $w: $sLayout-width;
     min-height: 150px;
 
     .CodeMirror {
+      height: 114px;
+      margin-top: 0;
       padding: 10px 0;
       border-radius: 4px;
+      background-color: rgb(43, 60, 67);
+      line-height: 13px;
+
+      pre {
+        padding-left: 14px;
+
+        &.CodeMirror-placeholder {
+          color: rgba(255, 255, 255, 0.24);
+        }
+      }
     }
 
     .CodeMirror-code {

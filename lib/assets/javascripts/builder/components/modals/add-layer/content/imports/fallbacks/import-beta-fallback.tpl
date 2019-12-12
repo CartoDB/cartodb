@@ -8,7 +8,7 @@
     </button>
   <% } else if (state === "success") { %>
     <div class="SelectedImport__desc CDB-Text CDB-Size-medium u-secondaryTextColor">
-      <p><%- _t('components.modals.add-layer.imports.beta.request-sent', { brand: title }) %></p>
+      <p><%- _t('components.modals.add-layer.imports.beta.request-sent') %></p>
       <p><%= _t('components.modals.add-layer.imports.contact-soon') %></p>
     </div>
     <button class="CDB-Button CDB-Button--primary CDB-Button--medium js-back">

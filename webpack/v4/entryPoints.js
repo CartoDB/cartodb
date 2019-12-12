@@ -9,7 +9,8 @@ module.exports = {
     rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
-    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+    rootDir('node_modules/cartoassets/src/scss/entry.scss'),
+    rootDir('assets/stylesheets/editor-3/_codemirror.scss')
   ]),
 
   deep_insights_new: [

@@ -1352,15 +1352,22 @@
                         "fallback-desc": "Contact us to learn more about %{brand} integration",
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
+                    "bigquery": {
+                        "field-project-billing": "Project Billing ID",
+                        "field-sql-query": "SQL query",
+                        "hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly.",
+                        "run": "Run SQL query",
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
+                    },
                     "notenabled": {
                         "fallback-desc": "The %{brand} connector is not available. Please, contact us if you are interested.",
-                        "request-sent": "%{brand} activation request has been received.",
+                        "request-sent": "Your request has been received.",
                         "fallback-error": "There has been an error requesting the connector."
                     },
                     "beta": {
                         "fallback-desc": "This connector is in beta. Please, contact us if you want to give it a try.",
                         "request-access": "Request beta access",
-                        "request-sent": "%{brand} beta activation request has been received.",
+                        "request-sent": "Your request has been received.",
                         "fallback-error": "There has been an error requesting the access to the connector."
                     },
                     "feedback": {

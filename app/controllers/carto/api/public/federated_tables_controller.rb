@@ -186,7 +186,7 @@ module Carto
         end
 
         def check_federated_server
-          raise Carto::LoadError.new("Federated server key not found: #{params[:federated_server_name]}") unless @federated_server
+          raise Carto::LoadError.new("Federated server not found: #{params[:federated_server_name]}") unless @federated_server
         end
 
         def ensure_required_federated_server_attributes

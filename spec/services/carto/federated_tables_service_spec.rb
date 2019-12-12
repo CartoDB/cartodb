@@ -306,14 +306,18 @@ describe Carto::FederatedTablesService do
                 pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
                 remote_tables = @service.list_remote_tables(@federated_server_name, @remote_schema_name, pagination)
                 expect(remote_tables).to include(
-                    :registered => false,
-                    :qualified_name => nil,
-                    :remote_schema_name => @remote_schema_name,
-                    :remote_table_name => @remote_table_name,
-                    :id_column_name => nil,
+                    :registered=>false,
+                    :qualified_name=>nil,
+                    :remote_table_name=>@remote_table_name,
+                    :remote_schema_name=>@remote_schema_name,
+                    :id_column_name=>nil,
                     :geom_column_name=>nil,
-                    :webmercator_column_name => nil,
-                    :columns => '[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]'
+                    :webmercator_column_name=>nil,
+                    :columns=>[
+                        {:Name=>"geom", :Type=>"GEOMETRY,0"},
+                        {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+                        {:Name=>"id", :Type=>"integer"}
+                    ]
                 )
             end
 
@@ -330,7 +334,11 @@ describe Carto::FederatedTablesService do
                     :id_column_name=> "id",
                     :geom_column_name=>"geom",
                     :webmercator_column_name=> "geom_webmercator",
-                    :columns => '[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]'
+                    :columns => [
+                        {:Name=>"geom", :Type=>"GEOMETRY,0"},
+                        {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+                        {:Name=>"id", :Type=>"integer"}
+                    ]
                 )
             end
 

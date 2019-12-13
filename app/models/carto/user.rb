@@ -124,7 +124,7 @@ class Carto::User < ApplicationRecord
   def static_notifications_with_creation
     static_notifications_without_creation || build_static_notifications(user: self, notifications: {})
   end
-  alias_method_chain :static_notifications, :creation
+  # alias_method_chain :static_notifications, :creation
 
   def name_or_username
     name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username

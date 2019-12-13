@@ -1,6 +1,4 @@
-# Disable XML parameter parsing, see:
-# http://www.insinuator.net/2013/01/rails-yaml/
-ActionDispatch::ParamsParser::DEFAULT_PARSERS.delete(Mime::XML)
+ActionDispatch::Request.parameter_parsers = ActionDispatch::Request.parameter_parsers.except(:xml)
 
 # Adds an extension method previously found in a Vizzuality fork of rails-sequel
 module SequelRails

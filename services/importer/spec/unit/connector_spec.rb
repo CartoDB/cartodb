@@ -1834,7 +1834,8 @@ describe Carto::Connector do
           options: {
             "odbc_DefaultDataset" => 'thedataset',
             "table" => 'thetable',
-            "prefix" => "#{server_name}_"
+            "prefix" => "#{server_name}_",
+            "sql_query" => "SELECT * FROM `theproject.thedataset.thetable`;" # uses a query for BQ driver issues
           }
         }, {
           command: :grant_select,

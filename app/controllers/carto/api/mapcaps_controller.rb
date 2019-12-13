@@ -15,7 +15,7 @@ module Carto
                     :owners_only
       before_action :load_mapcap, only: [:show, :destroy]
 
-      after_filter :track_published_map, only: :create
+      after_action :track_published_map, only: :create
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError,

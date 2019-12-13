@@ -43,7 +43,7 @@ class Admin::VisualizationsController < Admin::AdminController
                                                          :show_protected_embed_map,
                                                          :public_map, :show_protected_public_map]
 
-  after_filter :update_user_last_activity, only: [:show]
+  after_action :update_user_last_activity, only: [:show]
 
   skip_before_action :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]

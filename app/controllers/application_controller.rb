@@ -20,9 +20,9 @@ class ApplicationController < ActionController::Base
   before_action :cors_preflight_check
   before_action :check_maintenance_mode
   before_action :check_user_state
-  after_filter  :allow_cross_domain_access
-  after_filter  :remove_flash_cookie
-  after_filter  :add_revision_header
+  after_action  :allow_cross_domain_access
+  after_action  :remove_flash_cookie
+  after_action  :add_revision_header
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404

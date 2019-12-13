@@ -21,7 +21,7 @@ module Carto
       # TODO: remove this when analysis logic lives in the backend
       before_action :ensure_source_analyses, unless: :has_analyses?
 
-      after_filter :update_user_last_activity,
+      after_action :update_user_last_activity,
                    :track_builder_visit, only: :show
 
       layout 'application_builder'

@@ -16,8 +16,8 @@ module Carto
                     :load_auth_tokens, only: :show
       before_action :editable_visualizations_only, only: :show
 
-      after_filter :update_user_last_activity, only: :show
-      after_filter :track_dataset_visit, only: :show
+      after_action :update_user_last_activity, only: :show
+      after_action :track_dataset_visit, only: :show
 
       layout 'application_builder'
 

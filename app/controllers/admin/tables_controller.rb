@@ -6,7 +6,7 @@ class Admin::TablesController < Admin::AdminController
   skip_before_action :browser_is_html5_compliant?, :only => [:embed_map]
   before_action      :login_required,              :only => [:index]
 
-  after_filter :update_user_last_activity, only: [:index, :show]
+  after_action :update_user_last_activity, only: [:index, :show]
 
   def index
   end

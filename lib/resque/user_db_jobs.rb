@@ -1,12 +1,10 @@
 require_relative './base_job'
-require 'resque-metrics'
 require_relative '../cartodb/metrics'
 
 module Resque
   module UserDBJobs
     module UserDBMaintenance
       module LinkGhostTables
-        extend ::Resque::Metrics
         @queue = :user_dbs
 
         def self.perform(user_id)
@@ -18,7 +16,6 @@ module Resque
       end
 
       module LinkGhostTablesByUsername
-        extend ::Resque::Metrics
         @queue = :user_dbs
 
         def self.perform(username)

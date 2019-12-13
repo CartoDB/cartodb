@@ -1,12 +1,10 @@
 require_relative './base_job'
-require 'resque-metrics'
 require_relative '../cartodb/metrics'
 
 module Resque
   module OrganizationJobs
     module Mail
       module DiskQuotaLimitReached
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(organization_id)
@@ -26,7 +24,6 @@ module Resque
       end
 
       module SeatLimitReached
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(organization_id)
@@ -52,7 +49,6 @@ module Resque
 
     module RateLimitsJobs
       module SyncRedis
-        extend ::Resque::Metrics
         @queue = :batch_updates
 
         def self.perform(account_type)
@@ -69,7 +65,6 @@ module Resque
 
     module Notifications
       module Send
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_ids, notification_id)
@@ -83,7 +78,6 @@ module Resque
 
     module Mail
       module NewOrganizationUser
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)
@@ -93,7 +87,6 @@ module Resque
       end
 
       module ShareVisualization
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, user_id)
@@ -104,7 +97,6 @@ module Resque
       end
 
       module ShareTable
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_id, user_id)
@@ -115,7 +107,6 @@ module Resque
       end
 
       module UnshareVisualization
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_name, visualization_owner_name, user_id)
@@ -125,7 +116,6 @@ module Resque
       end
 
       module UnshareTable
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(table_name, table_owner_name, user_id)
@@ -135,7 +125,6 @@ module Resque
       end
 
       module MapLiked
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, viewer_user_id, vis_preview_image)
@@ -146,7 +135,6 @@ module Resque
       end
 
       module TableLiked
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, viewer_user_id, vis_preview_image)
@@ -157,7 +145,6 @@ module Resque
       end
 
       module DataImportFinished
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id, imported_tables, total_tables, first_imported_table, first_table, errors, filenames)
@@ -168,7 +155,6 @@ module Resque
       end
 
       module GeocoderFinished
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id, state, table_name, error_code, processable_rows, number_geocoded_rows)
@@ -180,7 +166,6 @@ module Resque
 
       module Sync
         module MaxRetriesReached
-          extend ::Resque::Metrics
           @queue = :users
 
           def self.perform(user_id, visualization_id, dataset_name, error_code, error_message)
@@ -191,7 +176,6 @@ module Resque
       end
 
       module TrendingMap
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(visualization_id, mapviews, vis_preview_image)
@@ -201,7 +185,6 @@ module Resque
       end
 
       module PasswordReset
-        extend ::Resque::Metrics
         @queue = :users
 
         def self.perform(user_id)

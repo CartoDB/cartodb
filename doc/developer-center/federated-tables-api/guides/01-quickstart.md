@@ -212,13 +212,43 @@ curl -X GET "https://documentation.carto.com/api/v4/federated_servers/example_se
          "registered": false,
          "remote_schema_name": "borders",
          "remote_table_name": "pref",
-         "columns": "[{\"Name\" : \"area\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_bill\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_contents\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_pop\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_youto\", \"Type\" : \"double precision\"}, {\"Name\" : \"cartodb_id\", \"Type\" : \"integer\"}, {\"Name\" : \"gid\", \"Type\" : \"integer\"}, {\"Name\" : \"pref\", \"Type\" : \"text\"}, {\"Name\" : \"prefcode\", \"Type\" : \"integer\"}, {\"Name\" : \"the_geom\", \"Type\" : \"GEOMETRY,4326\"}, {\"Name\" : \"the_geom_webmercator\", \"Type\" : \"GEOMETRY,3857\"}]"
+         "columns": [
+            { Name: 'area', Type: 'double precision' },
+            { Name: 'area_bill', Type: 'double precision' },
+            { Name: 'area_contents', Type: 'double precision' },
+            { Name: 'area_pop', Type: 'double precision' },
+            { Name: 'area_youto', Type: 'double precision' },
+            { Name: 'cartodb_id', Type: 'integer' },
+            { Name: 'gid', Type: 'integer' },
+            { Name: 'pref', Type: 'text' },
+            { Name: 'prefcode', Type: 'integer' },
+            { Name: 'the_geom', Type: 'GEOMETRY,4326' },
+            { Name: 'the_geom_webmercator', Type: 'GEOMETRY,3857' }
+         ]
       },
       {
          "registered": false,
          "remote_schema_name": "borders",
          "remote_table_name": "world_borders",
-         "columns": "[{\"Name\" : \"area\", \"Type\" : \"integer\"}, {\"Name\" : \"cartodb_id\", \"Type\" : \"integer\"}, {\"Name\" : \"created_at\", \"Type\" : \"timestamp with time zone\"}, {\"Name\" : \"fips\", \"Type\" : \"text\"}, {\"Name\" : \"iso2\", \"Type\" : \"text\"}, {\"Name\" : \"iso3\", \"Type\" : \"text\"}, {\"Name\" : \"lat\", \"Type\" : \"double precision\"}, {\"Name\" : \"lon\", \"Type\" : \"double precision\"}, {\"Name\" : \"name\", \"Type\" : \"text\"}, {\"Name\" : \"pop2005\", \"Type\" : \"integer\"}, {\"Name\" : \"region\", \"Type\" : \"integer\"}, {\"Name\" : \"subregion\", \"Type\" : \"integer\"}, {\"Name\" : \"the_geom\", \"Type\" : \"GEOMETRY,4326\"}, {\"Name\" : \"the_geom_str\", \"Type\" : \"text\"}, {\"Name\" : \"the_geom_webmercator\", \"Type\" : \"GEOMETRY,3857\"}, {\"Name\" : \"un\", \"Type\" : \"integer\"}, {\"Name\" : \"updated_at\", \"Type\" : \"timestamp with time zone\"}]"
+         "columns": [
+            { Name: 'area', Type: 'integer' },
+            { Name: 'cartodb_id', Type: 'integer' },
+            { Name: 'created_at', Type: 'timestamp with time zone' },
+            { Name: 'fips', Type: 'text' },
+            { Name: 'iso2', Type: 'text' },
+            { Name: 'iso3', Type: 'text' },
+            { Name: 'lat', Type: 'double precision' },
+            { Name: 'lon', Type: 'double precision' },
+            { Name: 'name', Type: 'text' },
+            { Name: 'pop2005', Type: 'integer' },
+            { Name: 'region', Type: 'integer' },
+            { Name: 'subregion', Type: 'integer' },
+            { Name: 'the_geom', Type: 'GEOMETRY,4326' },
+            { Name: 'the_geom_str', Type: 'text' },
+            { Name: 'the_geom_webmercator', Type: 'GEOMETRY,3857' },
+            { Name: 'un', Type: 'integer' },
+            { Name: 'updated_at', Type: 'timestamp with time zone' }
+         ]
       }
    ],
    "_links":{
@@ -249,7 +279,19 @@ curl -X GET "https://documentation.carto.com/api/v4/federated_servers/example_se
    "registered": false,
    "remote_table_name": "pref",
    "remote_schema_name": "borders",
-   "columns": "[{\"Name\" : \"area\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_bill\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_contents\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_pop\", \"Type\" : \"double precision\"}, {\"Name\" : \"area_youto\", \"Type\" : \"double precision\"}, {\"Name\" : \"cartodb_id\", \"Type\" : \"integer\"}, {\"Name\" : \"gid\", \"Type\" : \"integer\"}, {\"Name\" : \"pref\", \"Type\" : \"text\"}, {\"Name\" : \"prefcode\", \"Type\" : \"integer\"}, {\"Name\" : \"the_geom\", \"Type\" : \"GEOMETRY,4326\"}, {\"Name\" : \"the_geom_webmercator\", \"Type\" : \"GEOMETRY,3857\"}]"
+   "columns": [
+      { Name: 'area', Type: 'double precision' },
+      { Name: 'area_bill', Type: 'double precision' },
+      { Name: 'area_contents', Type: 'double precision' },
+      { Name: 'area_pop', Type: 'double precision' },
+      { Name: 'area_youto', Type: 'double precision' },
+      { Name: 'cartodb_id', Type: 'integer' },
+      { Name: 'gid', Type: 'integer' },
+      { Name: 'pref', Type: 'text' },
+      { Name: 'prefcode', Type: 'integer' },
+      { Name: 'the_geom', Type: 'GEOMETRY,4326' },
+      { Name: 'the_geom_webmercator', Type: 'GEOMETRY,3857' }
+   ]
 }
 ```
 
@@ -281,7 +323,25 @@ In this reponse, we can already see the `qualified_name` parameter, which can be
    "id_column_name": "cartodb_id",
    "geom_column_name": "the_geom",
    "webmercator_column_name": "the_geom_webmercator",
-   "columns": "[{\"Name\" : \"area\", \"Type\" : \"integer\"}, {\"Name\" : \"cartodb_id\", \"Type\" : \"integer\"}, {\"Name\" : \"created_at\", \"Type\" : \"timestamp with time zone\"}, {\"Name\" : \"fips\", \"Type\" : \"text\"}, {\"Name\" : \"iso2\", \"Type\" : \"text\"}, {\"Name\" : \"iso3\", \"Type\" : \"text\"}, {\"Name\" : \"lat\", \"Type\" : \"double precision\"}, {\"Name\" : \"lon\", \"Type\" : \"double precision\"}, {\"Name\" : \"name\", \"Type\" : \"text\"}, {\"Name\" : \"pop2005\", \"Type\" : \"integer\"}, {\"Name\" : \"region\", \"Type\" : \"integer\"}, {\"Name\" : \"subregion\", \"Type\" : \"integer\"}, {\"Name\" : \"the_geom\", \"Type\" : \"GEOMETRY,4326\"}, {\"Name\" : \"the_geom_str\", \"Type\" : \"text\"}, {\"Name\" : \"the_geom_webmercator\", \"Type\" : \"GEOMETRY,3857\"}, {\"Name\" : \"un\", \"Type\" : \"integer\"}, {\"Name\" : \"updated_at\", \"Type\" : \"timestamp with time zone\"}]"
+   "columns": [
+      { Name: 'area', Type: 'integer' },
+      { Name: 'cartodb_id', Type: 'integer' },
+      { Name: 'created_at', Type: 'timestamp with time zone' },
+      { Name: 'fips', Type: 'text' },
+      { Name: 'iso2', Type: 'text' },
+      { Name: 'iso3', Type: 'text' },
+      { Name: 'lat', Type: 'double precision' },
+      { Name: 'lon', Type: 'double precision' },
+      { Name: 'name', Type: 'text' },
+      { Name: 'pop2005', Type: 'integer' },
+      { Name: 'region', Type: 'integer' },
+      { Name: 'subregion', Type: 'integer' },
+      { Name: 'the_geom', Type: 'GEOMETRY,4326' },
+      { Name: 'the_geom_str', Type: 'text' },
+      { Name: 'the_geom_webmercator', Type: 'GEOMETRY,3857' },
+      { Name: 'un', Type: 'integer' },
+      { Name: 'updated_at', Type: 'timestamp with time zone' }
+   ]
 }
 ```
 
@@ -311,7 +371,25 @@ curl -X PUT -H "Content-Type: application/json" "https://documentation.carto.com
    "id_column_name": "cartodb_id",
    "geom_column_name": "the_geom",
    "webmercator_column_name": "the_geom_webmercator",
-   "columns": "[{\"Name\" : \"area\", \"Type\" : \"integer\"}, {\"Name\" : \"cartodb_id\", \"Type\" : \"integer\"}, {\"Name\" : \"created_at\", \"Type\" : \"timestamp with time zone\"}, {\"Name\" : \"fips\", \"Type\" : \"text\"}, {\"Name\" : \"iso2\", \"Type\" : \"text\"}, {\"Name\" : \"iso3\", \"Type\" : \"text\"}, {\"Name\" : \"lat\", \"Type\" : \"double precision\"}, {\"Name\" : \"lon\", \"Type\" : \"double precision\"}, {\"Name\" : \"name\", \"Type\" : \"text\"}, {\"Name\" : \"pop2005\", \"Type\" : \"integer\"}, {\"Name\" : \"region\", \"Type\" : \"integer\"}, {\"Name\" : \"subregion\", \"Type\" : \"integer\"}, {\"Name\" : \"the_geom\", \"Type\" : \"GEOMETRY,4326\"}, {\"Name\" : \"the_geom_str\", \"Type\" : \"text\"}, {\"Name\" : \"the_geom_webmercator\", \"Type\" : \"GEOMETRY,3857\"}, {\"Name\" : \"un\", \"Type\" : \"integer\"}, {\"Name\" : \"updated_at\", \"Type\" : \"timestamp with time zone\"}]"
+   "columns": [
+      { Name: 'area', Type: 'integer' },
+      { Name: 'cartodb_id', Type: 'integer' },
+      { Name: 'created_at', Type: 'timestamp with time zone' },
+      { Name: 'fips', Type: 'text' },
+      { Name: 'iso2', Type: 'text' },
+      { Name: 'iso3', Type: 'text' },
+      { Name: 'lat', Type: 'double precision' },
+      { Name: 'lon', Type: 'double precision' },
+      { Name: 'name', Type: 'text' },
+      { Name: 'pop2005', Type: 'integer' },
+      { Name: 'region', Type: 'integer' },
+      { Name: 'subregion', Type: 'integer' },
+      { Name: 'the_geom', Type: 'GEOMETRY,4326' },
+      { Name: 'the_geom_str', Type: 'text' },
+      { Name: 'the_geom_webmercator', Type: 'GEOMETRY,3857' },
+      { Name: 'un', Type: 'integer' },
+      { Name: 'updated_at', Type: 'timestamp with time zone' }
+   ]
 }
 ```
 

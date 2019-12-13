@@ -2,8 +2,8 @@ class Api::Json::UploadsController < Api::ApplicationController
 
   ssl_required :create
 
-  skip_before_filter :verify_authenticity_token
-  before_filter :api_or_user_authorization_required
+  skip_before_action :verify_authenticity_token
+  before_action :api_or_user_authorization_required
 
   def create
     @stats_aggregator.timing('uploads.create') do

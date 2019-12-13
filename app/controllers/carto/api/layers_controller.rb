@@ -9,14 +9,14 @@ module Carto
       ssl_required :show, :layers_by_map, :custom_layers_by_user, :map_index, :user_index, :map_show, :user_show,
                    :map_create, :user_create, :map_update, :user_update, :map_destroy, :user_destroy
 
-      before_filter :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_update, :user_destroy]
-      before_filter :load_user_layer, only: [:user_show, :user_destroy]
-      before_filter :load_user_layers, only: [:user_update]
+      before_action :ensure_current_user, only: [:user_index, :user_show, :user_create, :user_update, :user_destroy]
+      before_action :load_user_layer, only: [:user_show, :user_destroy]
+      before_action :load_user_layers, only: [:user_update]
 
-      before_filter :load_map, only: [:map_index, :map_show, :map_create, :map_update, :map_destroy]
-      before_filter :ensure_writable_map, only: [:map_create, :map_update, :map_destroy]
-      before_filter :load_map_layer, only: [:map_show, :map_destroy]
-      before_filter :load_map_layers, only: [:map_update]
+      before_action :load_map, only: [:map_index, :map_show, :map_create, :map_update, :map_destroy]
+      before_action :ensure_writable_map, only: [:map_create, :map_update, :map_destroy]
+      before_action :load_map_layer, only: [:map_show, :map_destroy]
+      before_action :load_map_layers, only: [:map_update]
 
       rescue_from LoadError,
                   UnprocesableEntityError,

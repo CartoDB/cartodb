@@ -10,15 +10,15 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :add_users, :remove_users
 
-      before_filter :load_fetching_options, only: [:show, :index]
-      before_filter :load_organization
-      before_filter :load_user
-      before_filter :validate_organization_or_user_loaded
-      before_filter :load_group, only: [:show, :update, :destroy, :add_users, :remove_users]
-      before_filter :org_admin_only, only: [:create, :update, :destroy, :add_users, :remove_users]
-      before_filter :org_users_only, only: [:show, :index]
-      before_filter :load_organization_users, only: [:add_users, :remove_users]
-      before_filter :valid_password_confirmation, only: [:destroy, :add_users, :remove_users]
+      before_action :load_fetching_options, only: [:show, :index]
+      before_action :load_organization
+      before_action :load_user
+      before_action :validate_organization_or_user_loaded
+      before_action :load_group, only: [:show, :update, :destroy, :add_users, :remove_users]
+      before_action :org_admin_only, only: [:create, :update, :destroy, :add_users, :remove_users]
+      before_action :org_users_only, only: [:show, :index]
+      before_action :load_organization_users, only: [:add_users, :remove_users]
+      before_action :valid_password_confirmation, only: [:destroy, :add_users, :remove_users]
 
       rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
       rescue_from Carto::PasswordConfirmationError, with: :rescue_from_password_confirmation_error

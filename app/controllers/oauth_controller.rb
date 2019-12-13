@@ -10,9 +10,9 @@ class OauthController < ApplicationController
   ssl_allowed :access_token_with_xauth
 
   # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user
+  skip_before_action :ensure_org_url_if_org_user
 
-  prepend_before_filter do
+  prepend_before_action do
     warden.custom_failure!
   end
 
@@ -35,7 +35,7 @@ class OauthController < ApplicationController
       access_token_without_xauth
     end
   end
-  alias_method_chain :access_token, :xauth
+  # alias_method_chain :access_token, :xauth
 
 
   protected

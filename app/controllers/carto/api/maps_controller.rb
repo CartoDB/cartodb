@@ -5,7 +5,7 @@ module Carto
 
       ssl_required :show, :update
 
-      before_filter :load_map, :owners_only
+      before_action :load_map, :owners_only
 
       rescue_from Carto::LoadError,
                   Carto::UnprocesableEntityError, with: :rescue_from_carto_error

@@ -8,10 +8,10 @@ module Carto
       REJECT_PARAMS = %w{ format controller action row_id requestId column_id
                           api_key table_id oauth_token oauth_token_secret api_key user_domain }.freeze
 
-      before_filter :set_start_time
-      before_filter :load_user_table, only: [:show, :create, :update, :destroy]
-      before_filter :read_privileges?, only: [:show]
-      before_filter :write_privileges?, only: [:create, :update, :destroy]
+      before_action :set_start_time
+      before_action :load_user_table, only: [:show, :create, :update, :destroy]
+      before_action :read_privileges?, only: [:show]
+      before_action :write_privileges?, only: [:create, :update, :destroy]
 
       # This endpoint is not used by the editor but by users. Do not remove
       def show

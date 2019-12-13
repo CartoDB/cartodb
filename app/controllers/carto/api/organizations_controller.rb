@@ -9,7 +9,7 @@ module Carto
 
       ssl_required :users
 
-      before_filter :load_organization, :load_group
+      before_action :load_organization, :load_group
 
       rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 

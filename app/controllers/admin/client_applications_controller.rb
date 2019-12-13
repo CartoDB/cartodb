@@ -5,11 +5,11 @@ class Admin::ClientApplicationsController < Admin::AdminController
 
   ssl_required :oauth, :api_key, :regenerate_api_key, :regenerate_oauth
 
-  before_filter :invalidate_browser_cache
-  before_filter :login_required
-  before_filter :enforce_engine_enabled, only: :regenerate_api_key
-  before_filter :load_dashboard_notifications, only: :api_key
-  before_filter :load_organization_notifications, only: :api_key
+  before_action :invalidate_browser_cache
+  before_action :login_required
+  before_action :enforce_engine_enabled, only: :regenerate_api_key
+  before_action :load_dashboard_notifications, only: :api_key
+  before_action :load_organization_notifications, only: :api_key
 
   layout 'application'
 

@@ -5,7 +5,7 @@ class AccountTokensController < ApplicationController
 
   ssl_required :enable, :resend
 
-  skip_before_filter :ensure_account_has_been_activated, :only => [ :enable, :resend ]
+  skip_before_action :ensure_account_has_been_activated, :only => [ :enable, :resend ]
 
   def enable
     # Cleans session information, making sure that Warden authenticate runs the strategy. Check #10489.

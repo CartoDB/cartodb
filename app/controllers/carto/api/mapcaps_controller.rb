@@ -10,10 +10,10 @@ module Carto
 
       ssl_required :show, :create, :destroy, :index
 
-      before_filter :builder_users_only,
+      before_action :builder_users_only,
                     :load_visualization,
                     :owners_only
-      before_filter :load_mapcap, only: [:show, :destroy]
+      before_action :load_mapcap, only: [:show, :destroy]
 
       after_filter :track_published_map, only: :create
 

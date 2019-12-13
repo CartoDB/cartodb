@@ -2,7 +2,7 @@ class Superadmin::OrganizationsController < Superadmin::SuperadminController
   respond_to :json
 
   ssl_required :show, :create, :update, :destroy, :index
-  before_filter :get_organization, only: [:update, :destroy, :show]
+  before_action :get_organization, only: [:update, :destroy, :show]
 
   layout 'application'
 

@@ -5,7 +5,7 @@ module Carto
     include Carto::ControllerHelper
 
     ssl_required  :metadata
-    before_filter :load_organization, :ensure_saml_enabled
+    before_action :load_organization, :ensure_saml_enabled
 
     rescue_from LoadError, UnauthorizedError, with: :rescue_from_carto_error
 

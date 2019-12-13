@@ -5,7 +5,7 @@ module Carto
     class BuilderController < ApplicationController
       include BuilderUsersModule
 
-      before_filter :builder_users_only
+      before_action :builder_users_only
     end
   end
 end

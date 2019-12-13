@@ -3,8 +3,8 @@ class Superadmin::AccountTypesController < Superadmin::SuperadminController
 
   ssl_required :create, :update, :destroy
 
-  before_filter :get_account_type, only: [:update, :destroy]
-  before_filter :get_rate_limit, only: [:create, :update]
+  before_action :get_account_type, only: [:update, :destroy]
+  before_action :get_rate_limit, only: [:create, :update]
 
   def create
     if Carto::AccountType.exists?(params[:account_type][:account_type])

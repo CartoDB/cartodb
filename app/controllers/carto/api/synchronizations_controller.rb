@@ -4,7 +4,7 @@ module Carto
 
       ssl_required :show, :index, :syncing?
 
-      before_filter :load_synchronization, only: [:show, :syncing?]
+      before_action :load_synchronization, only: [:show, :syncing?]
 
       def show
         render_jsonp(@synchronization)

@@ -10,7 +10,7 @@ module Carto
       before_action :x_frame_options_allow, only: [:show, :show_protected]
       before_action :get_kuviz
 
-      skip_before_filter :verify_authenticity_token, only: [:show_protected]
+      skip_before_action :verify_authenticity_token, only: [:show_protected]
 
       def show
         return kuviz_password_protected if @kuviz.password_protected?

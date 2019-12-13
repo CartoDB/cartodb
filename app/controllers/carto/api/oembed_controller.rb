@@ -7,7 +7,7 @@ module Carto
 
       ssl_allowed :show
 
-      skip_before_filter :api_authorization_required
+      skip_before_action :api_authorization_required
 
       # Returns oembed data as required
       def show

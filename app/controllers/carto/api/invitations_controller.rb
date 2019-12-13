@@ -4,7 +4,7 @@ module Carto
 
       ssl_required :create
 
-      before_filter :load_organization
+      before_action :load_organization
 
       def create
         @organization.update_attribute(:auth_username_password_enabled, true) if params[:enable_organization_signup] === true

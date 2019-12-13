@@ -4,8 +4,8 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy, :related_templates_by_visualization,
                    :related_templates_by_table
-      before_filter :load_template, only: [ :show, :update, :destroy ]
-      before_filter :check_feature_flag
+      before_action :load_template, only: [ :show, :update, :destroy ]
+      before_action :check_feature_flag
 
       def index
         templates = Carto::Template.where(organization_id: current_user.organization_id)

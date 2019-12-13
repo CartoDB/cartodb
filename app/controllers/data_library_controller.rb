@@ -2,7 +2,7 @@ class DataLibraryController < ApplicationController
   layout 'data_library'
 
   ssl_allowed :index, :search
-  before_filter :get_viewed_user
+  before_action :get_viewed_user
 
   def index
     render_404 and return if @viewed_user.nil? || (Cartodb.get_config(:data_library, 'username') && (Cartodb.config[:data_library]['username'] != @viewed_user.username))

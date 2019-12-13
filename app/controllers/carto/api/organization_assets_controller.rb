@@ -5,11 +5,11 @@ module Carto
 
       ssl_required :index, :show, :create, :destroy
 
-      before_filter :load_organization,
+      before_action :load_organization,
                     :organization_members_only
-      before_filter :organization_owners_only, only: [:create, :destroy]
-      before_filter :load_asset, only: [:show, :destroy]
-      before_filter :load_resource, only: :create
+      before_action :organization_owners_only, only: [:create, :destroy]
+      before_action :load_asset, only: [:show, :destroy]
+      before_action :load_resource, only: :create
 
       rescue_from LoadError,
                   UnprocesableEntityError,

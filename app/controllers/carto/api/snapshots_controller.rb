@@ -5,9 +5,9 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_visualization,
+      before_action :load_visualization,
                     :check_visualization_viewable
-      before_filter :load_snapshot,
+      before_action :load_snapshot,
                     :owners_only, only: [:show, :update, :destroy]
 
       rescue_from LoadError,

@@ -10,10 +10,10 @@ module Carto
 
       ssl_required :show, :create, :update, :destroy
 
-      before_filter :builder_users_only
-      before_filter :load_visualization
-      before_filter :check_user_can_add_analysis, only: [:show, :create, :update, :destroy]
-      before_filter :load_analysis, only: [:show, :update, :destroy]
+      before_action :builder_users_only
+      before_action :load_visualization
+      before_action :check_user_can_add_analysis, only: [:show, :create, :update, :destroy]
+      before_action :load_analysis, only: [:show, :update, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error

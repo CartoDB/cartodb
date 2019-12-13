@@ -11,7 +11,7 @@ class Api::Json::SynchronizationsController < Api::ApplicationController
 
   ssl_required :create, :update, :destroy, :sync, :sync_now
 
-  before_filter :set_external_source, only: [ :create ]
+  before_action :set_external_source, only: [ :create ]
 
   # Upon creation, no rate limit checks
   def create

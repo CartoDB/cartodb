@@ -12,8 +12,8 @@ module Carto
 
       ssl_required :create, :update, :destroy, :add_users, :remove_users, :update_permission, :destroy_permission
 
-      # TODO: Make this controller inherit from ::Api::ApplicationController and remove skip_before_filter bellow
-      skip_before_filter :verify_authenticity_token
+      # TODO: Make this controller inherit from ::Api::ApplicationController and remove skip_before_action bellow
+      skip_before_action :verify_authenticity_token
 
       # Allow HTTPS on local/test as the calls from the groups API are done sending a https X-Forwarded-Proto,
       #  like simulating they come from https:
@@ -24,12 +24,12 @@ module Carto
         Rails.env.development? || Rails.env.test?
       end
 
-      before_filter :authenticate_extension
-      before_filter :load_parameters
-      before_filter :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
-      before_filter :load_user_from_username, :only => [:load_table, :update_permission, :destroy_permission]
-      before_filter :load_users_from_username, :only => [:add_users, :remove_users]
-      before_filter :load_table, :only => [:update_permission, :destroy_permission]
+      before_action :authenticate_extension
+      before_action :load_parameters
+      before_action :load_mandatory_group, :only => [:destroy, :add_users, :remove_users, :update_permission, :destroy_permission]
+      before_action :load_user_from_username, :only => [:load_table, :update_permission, :destroy_permission]
+      before_action :load_users_from_username, :only => [:add_users, :remove_users]
+      before_action :load_table, :only => [:update_permission, :destroy_permission]
 
       def create
         group = Group.new_instance(@database_name, @name, @database_role)

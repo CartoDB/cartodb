@@ -9,12 +9,12 @@ module Carto
 
       ssl_required :show
 
-      before_filter :redirect_to_editor_if_forced, only: :show
-      before_filter :load_canonical_visualization, only: :show
-      before_filter :authorized_only
-      before_filter :load_user_table,
+      before_action :redirect_to_editor_if_forced, only: :show
+      before_action :load_canonical_visualization, only: :show
+      before_action :authorized_only
+      before_action :load_user_table,
                     :load_auth_tokens, only: :show
-      before_filter :editable_visualizations_only, only: :show
+      before_action :editable_visualizations_only, only: :show
 
       after_filter :update_user_last_activity, only: :show
       after_filter :track_dataset_visit, only: :show

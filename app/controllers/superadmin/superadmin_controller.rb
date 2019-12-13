@@ -1,5 +1,5 @@
 class Superadmin::SuperadminController < ActionController::Base
-  before_filter :authenticate
+  before_action :authenticate
 
   rescue_from StandardError, with: :rescue_from_superadmin_error
 

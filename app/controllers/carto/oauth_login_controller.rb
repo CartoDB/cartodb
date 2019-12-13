@@ -9,9 +9,9 @@ module Carto
     include AccountCreator
 
     ssl_required  :github, :google
-    before_filter :load_parameters
-    before_filter :initialize_github_config, only: [:github]
-    before_filter :initialize_google_config, only: [:google]
+    before_action :load_parameters
+    before_action :initialize_github_config, only: [:github]
+    before_action :initialize_google_config, only: [:google]
 
     layout 'frontend'
 

@@ -7,10 +7,10 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :logged_users_only
-      before_filter :load_visualization
-      before_filter :check_current_user_has_permissions_on_vis
-      before_filter :load_overlay, only: [:show, :update, :destroy]
+      before_action :logged_users_only
+      before_action :load_visualization
+      before_action :check_current_user_has_permissions_on_vis
+      before_action :load_overlay, only: [:show, :update, :destroy]
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::CartoError, with: :rescue_from_carto_error

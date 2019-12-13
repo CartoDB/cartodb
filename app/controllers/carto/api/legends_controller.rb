@@ -5,9 +5,9 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_layer,
+      before_action :load_layer,
                     :owners_only
-      before_filter :load_legend, only: [:show, :update, :destroy]
+      before_action :load_legend, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError,
                   Carto::UnauthorizedError,

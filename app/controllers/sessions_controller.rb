@@ -23,22 +23,22 @@ class SessionsController < ApplicationController
                :ldap_user_not_at_cartodb, :saml_user_not_in_carto, :password_expired, :password_change,
                :password_locked, :multifactor_authentication, :multifactor_authentication_verify_code
 
-  skip_before_filter :ensure_org_url_if_org_user # Don't force org urls
+  skip_before_action :ensure_org_url_if_org_user # Don't force org urls
 
   # Disables CSRF protection for the login view (create). I *think* this is safe
   # since the only transaction that a user can be tricked into doing is logging in
   # and login won't be accepted if the ADFS server's fingerprint is wrong / missing.
   # If SAML data isn't passed at all, then authentication is manually failed.
   # In case of fallback on SAML authorization failed, it will be manually checked.
-  skip_before_filter :verify_authenticity_token, only: [:create], if: :saml_authentication?
+  skip_before_action :verify_authenticity_token, only: [:create], if: :saml_authentication?
   # We want the password expiration related methods to be executed regardless of CSRF token authenticity
-  skip_before_filter :verify_authenticity_token, only: [:password_expired], if: :json_formatted_request?
-  skip_before_filter :ensure_account_has_been_activated,
+  skip_before_action :verify_authenticity_token, only: [:password_expired], if: :json_formatted_request?
+  skip_before_action :ensure_account_has_been_activated,
                      only: [:account_token_authentication_error, :ldap_user_not_at_cartodb, :saml_user_not_in_carto]
 
-  before_filter :load_organization
-  before_filter :initialize_oauth_config
-  before_filter :api_authorization_required, only: :show
+  before_action :load_organization
+  before_action :initialize_oauth_config
+  before_action :api_authorization_required, only: :show
   after_action  :set_last_mfa_activity, only: [:multifactor_authentication, :multifactor_authentication_verify_code]
 
   PLEASE_LOGIN = 'Please, log in to continue using CARTO.'.freeze

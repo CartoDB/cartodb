@@ -7,13 +7,13 @@ class Admin::OrganizationsController < Admin::AdminController
 
   ssl_required :show, :settings, :settings_update, :regenerate_all_api_keys, :groups, :auth, :auth_update,
                :notifications, :new_notification, :destroy_notification, :destroy
-  before_filter :login_required, :load_organization_and_members, :load_ldap_configuration
-  before_filter :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update,
+  before_action :login_required, :load_organization_and_members, :load_ldap_configuration
+  before_action :owners_only, only: [:settings, :settings_update, :regenerate_all_api_keys, :auth, :auth_update,
                                      :destroy]
-  before_filter :enforce_engine_enabled, only: :regenerate_all_api_keys
-  before_filter :load_carto_organization, only: [:notifications, :new_notification]
-  before_filter :load_notification, only: [:destroy_notification]
-  before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
+  before_action :enforce_engine_enabled, only: :regenerate_all_api_keys
+  before_action :load_carto_organization, only: [:notifications, :new_notification]
+  before_action :load_notification, only: [:destroy_notification]
+  before_action :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
                                                          :new_notification]
   helper_method :show_billing
 

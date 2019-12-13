@@ -6,7 +6,7 @@ module Carto
 
       ssl_required :index, :show, :tables, :connect
 
-      before_filter :check_availability
+      before_action :check_availability
 
       def index
         render_jsonp(Carto::Connector.providers(user: current_user))

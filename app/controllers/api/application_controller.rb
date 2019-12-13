@@ -4,13 +4,13 @@ class Api::ApplicationController < ApplicationController
   protect_from_forgery with: :null_session
 
   # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user, :browser_is_html5_compliant?
-  skip_before_filter :verify_authenticity_token, if: :json_formatted_request?
+  skip_before_action :ensure_org_url_if_org_user, :browser_is_html5_compliant?
+  skip_before_action :verify_authenticity_token, if: :json_formatted_request?
 
-  before_filter :api_authorization_required
-  before_filter :ensure_account_has_been_activated
+  before_action :api_authorization_required
+  before_action :ensure_account_has_been_activated
 
-  before_filter :setup_stats_instance
+  before_action :setup_stats_instance
 
   protected
 

@@ -14,7 +14,7 @@ class Api::Json::ImportsController < Api::ApplicationController
   ssl_allowed :invalidate_service_token
 
   # NOTE: When/If OAuth tokens management is built into the UI, remove this to send and check CSRF
-  skip_before_filter :verify_authenticity_token, only: [:invalidate_service_token]
+  skip_before_action :verify_authenticity_token, only: [:invalidate_service_token]
 
   INVALID_TOKEN_MESSAGE = 'OAuth token invalid or expired'
 

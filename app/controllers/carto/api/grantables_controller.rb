@@ -11,7 +11,7 @@ module Carto
 
       ssl_required :index
 
-      before_filter :load_organization
+      before_action :load_organization
 
       VALID_ORDER_PARAMS = [:id, :name, :type, :avatar_url, :organization_id, :updated_at].freeze
 

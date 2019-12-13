@@ -6,11 +6,11 @@ module Carto
     class TablesController < ::Api::ApplicationController
       ssl_required :show, :create, :update
 
-      before_filter :set_start_time
+      before_action :set_start_time
 
-      before_filter :load_user_table, only: [:show, :update]
-      before_filter :read_privileges?, only: [:show]
-      before_filter :write_privileges?, only: [:update]
+      before_action :load_user_table, only: [:show, :update]
+      before_action :read_privileges?, only: [:show]
+      before_action :write_privileges?, only: [:update]
 
       def show
         table = @user_table.service

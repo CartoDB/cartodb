@@ -25,9 +25,9 @@ class HomeController < ApplicationController
   RUN_SQL_API_INSTRUCTIONS = 'Run SQL API <span class="code">cd /CartoDB-SQL-API; node app.js development</span>'.freeze
   RUN_RESQUE_INSTRUCTIONS =  'Run Resque <span class="code">bundle exec script/resque</span>'.freeze
 
-  skip_before_filter :browser_is_html5_compliant?, only: :app_status
+  skip_before_action :browser_is_html5_compliant?, only: :app_status
   # Don't force org urls
-  skip_before_filter :ensure_org_url_if_org_user
+  skip_before_action :ensure_org_url_if_org_user
 
   def app_status
     return head(503) if Cartodb.config[:disable_file] && File.exists?(File.expand_path(Cartodb.config[:disable_file]))

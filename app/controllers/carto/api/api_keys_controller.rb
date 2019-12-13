@@ -8,10 +8,10 @@ class Carto::Api::ApiKeysController < ::Api::ApplicationController
 
   ssl_required :create, :destroy, :regenerate_token, :show, :index
 
-  before_filter :any_api_authorization_required, only: [:index, :show]
+  before_action :any_api_authorization_required, only: [:index, :show]
   skip_filter :api_authorization_required, only: [:index, :show]
-  before_filter :engine_required
-  before_filter :load_api_key, only: [:destroy, :regenerate_token, :show]
+  before_action :engine_required
+  before_action :load_api_key, only: [:destroy, :regenerate_token, :show]
 
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
   rescue_from Carto::LoadError, with: :rescue_from_carto_error

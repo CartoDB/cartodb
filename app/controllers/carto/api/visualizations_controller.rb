@@ -27,30 +27,30 @@ module Carto
         :notify_watching, :list_watching, :add_like, :remove_like
 
       # TODO: compare with older, there seems to be more optional authentication endpoints
-      skip_before_filter :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
+      skip_before_action :api_authorization_required, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
                                                              :remove_like, :notify_watching, :list_watching,
                                                              :static_map, :show]
 
       # :update and :destroy are correctly handled by permission check on the model
-      before_filter :ensure_user_can_create, only: [:create]
+      before_action :ensure_user_can_create, only: [:create]
 
-      before_filter :optional_api_authorization, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
+      before_action :optional_api_authorization, only: [:show, :index, :vizjson2, :vizjson3, :add_like,
                                                         :remove_like, :notify_watching, :list_watching, :static_map]
 
-      before_filter :id_and_schema_from_params
+      before_action :id_and_schema_from_params
 
-      before_filter :load_visualization, only: [:add_like, :remove_like, :show,
+      before_action :load_visualization, only: [:add_like, :remove_like, :show,
                                                 :list_watching, :notify_watching, :static_map, :vizjson2, :vizjson3,
                                                 :update, :destroy, :google_maps_static_image]
 
-      before_filter :ensure_username_matches_visualization_owner, only: [:show, :static_map, :vizjson2, :vizjson3,
+      before_action :ensure_username_matches_visualization_owner, only: [:show, :static_map, :vizjson2, :vizjson3,
                                                                          :list_watching, :notify_watching, :update,
                                                                          :destroy, :google_maps_static_image]
 
-      before_filter :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
-      before_filter :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
-      before_filter :link_ghost_tables, only: [:index]
-      before_filter :load_common_data, only: [:index]
+      before_action :ensure_visualization_owned, only: [:destroy, :google_maps_static_image]
+      before_action :ensure_visualization_is_likeable, only: [:add_like, :remove_like]
+      before_action :link_ghost_tables, only: [:index]
+      before_action :load_common_data, only: [:index]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error

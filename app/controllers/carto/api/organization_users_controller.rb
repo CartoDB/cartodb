@@ -7,10 +7,10 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_organization
-      before_filter :admins_only
-      before_filter :load_user, only: [:show, :update, :destroy]
-      before_filter :ensure_edit_permissions, only: [:show, :update, :destroy]
+      before_action :load_organization
+      before_action :admins_only
+      before_action :load_user, only: [:show, :update, :destroy]
+      before_action :ensure_edit_permissions, only: [:show, :update, :destroy]
 
       def index
         presentations = @organization.users.map do |user|

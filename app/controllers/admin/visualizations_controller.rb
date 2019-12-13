@@ -23,31 +23,31 @@ class Admin::VisualizationsController < Admin::AdminController
               :embed_protected, :public_map_protected, :embed_forbidden, :track_embed
   ssl_required :index, :show, :protected_public_map, :show_protected_public_map
 
-  before_filter :x_frame_options_allow, only: [:embed_forbidden, :embed_map, :embed_protected,
+  before_action :x_frame_options_allow, only: [:embed_forbidden, :embed_map, :embed_protected,
                                                :show_organization_embed_map, :show_protected_embed_map,
                                                :track_embed]
-  before_filter :login_required, only: [:index]
-  before_filter :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
+  before_action :login_required, only: [:index]
+  before_action :table_and_schema_from_params, only: [:show, :public_table, :public_map, :show_protected_public_map,
                                                       :show_protected_embed_map, :embed_map]
-  before_filter :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
+  before_action :get_viewed_user, only: [:public_map, :public_table, :show_protected_public_map, :show_organization_public_map, :public_map_protected, :embed_map, :embed_protected]
 
-  before_filter :resolve_visualization_and_table,
+  before_action :resolve_visualization_and_table,
                 :ensure_visualization_viewable,
                 only: [:show, :public_table, :public_map,
                        :show_organization_public_map, :show_organization_embed_map,
                        :show_protected_public_map, :show_protected_embed_map]
 
-  before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
-  before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
+  before_action :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_action :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
                                                          :public_map, :show_protected_public_map]
 
   after_filter :update_user_last_activity, only: [:show]
 
-  skip_before_filter :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
+  skip_before_action :browser_is_html5_compliant?, only: [:public_map, :embed_map, :track_embed,
                                                           :show_protected_embed_map, :show_protected_public_map]
-  skip_before_filter :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
+  skip_before_action :verify_authenticity_token, only: [:show_protected_public_map, :show_protected_embed_map]
 
   def index
     render(file: "public/static/dashboard/index.html", layout: false)

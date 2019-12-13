@@ -6,8 +6,8 @@ module Carto
 
       ssl_required :create, :destroy
 
-      before_filter :owners_only, :load_organization
-      before_filter :load_notification, only: [:destroy]
+      before_action :owners_only, :load_organization
+      before_action :load_notification, only: [:destroy]
 
       setup_default_rescues
 

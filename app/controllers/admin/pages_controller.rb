@@ -31,12 +31,12 @@ class Admin::PagesController < Admin::AdminController
   ssl_allowed :index, :sitemap, :datasets_for_user, :datasets_for_organization, :maps_for_user, :maps_for_organization,
               :render_not_found
 
-  before_filter :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
-  before_filter :load_viewed_entity
-  before_filter :set_new_dashboard_flag
-  before_filter :ensure_organization_correct
-  skip_before_filter :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
-  skip_before_filter :ensure_user_organization_valid, only: [:public]
+  before_action :login_required, :except => [:public, :datasets, :maps, :sitemap, :index, :user_feed]
+  before_action :load_viewed_entity
+  before_action :set_new_dashboard_flag
+  before_action :ensure_organization_correct
+  skip_before_action :browser_is_html5_compliant?, only: [:public, :datasets, :maps, :user_feed]
+  skip_before_action :ensure_user_organization_valid, only: [:public]
 
   helper_method :named_map_vizjson3
 

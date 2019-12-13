@@ -8,7 +8,7 @@ module Carto
 
       ssl_required
 
-      before_filter :load_parameters
+      before_action :load_parameters
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::ParamCombinationInvalidError, with: :rescue_from_carto_error

@@ -4,12 +4,12 @@ module Carto
   module Api
     class UserCreationsController < ::Api::ApplicationController
 
-      skip_before_filter :api_authorization_required
-      skip_before_filter :http_header_authentication, only: [:show]
+      skip_before_action :api_authorization_required
+      skip_before_action :http_header_authentication, only: [:show]
 
       ssl_required :show
 
-      before_filter :load_user_creation, only: :show
+      before_action :load_user_creation, only: :show
 
       def show
         if @user_creation.autologin?

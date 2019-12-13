@@ -6,7 +6,7 @@ module Carto
       include Carto::ControllerHelper
 
       ssl_required :update
-      before_filter :load_static_notifications, only: [:update]
+      before_action :load_static_notifications, only: [:update]
 
       rescue_from StandardError, with: :rescue_from_standard_error
       rescue_from Carto::LoadError, with: :rescue_from_carto_error

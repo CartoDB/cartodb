@@ -9,14 +9,14 @@ class Carto::Admin::MobileAppsController < Admin::AdminController
   include OrganizationNotificationsHelper
 
   ssl_required  :index, :show, :new, :create, :update, :destroy
-  before_filter :invalidate_browser_cache
-  before_filter :login_required
-  before_filter :check_user_permissions
-  before_filter :initialize_cartodb_central_client
-  before_filter :load_organization_notifications
-  before_filter :validate_id, only: [:show, :update, :destroy]
-  before_filter :load_mobile_app, only: [:show, :update]
-  before_filter :setup_avatar_upload, only: [:new, :create, :show, :update]
+  before_action :invalidate_browser_cache
+  before_action :login_required
+  before_action :check_user_permissions
+  before_action :initialize_cartodb_central_client
+  before_action :load_organization_notifications
+  before_action :validate_id, only: [:show, :update, :destroy]
+  before_action :load_mobile_app, only: [:show, :update]
+  before_action :setup_avatar_upload, only: [:new, :create, :show, :update]
 
   rescue_from Carto::LoadError, with: :render_404
 

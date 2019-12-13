@@ -6,9 +6,9 @@ module Carto
 
       ssl_required :index, :show, :create, :update, :destroy
 
-      before_filter :load_user_table, only: [:index, :show, :create, :update, :destroy]
-      before_filter :read_privileges?, only: [:index, :show]
-      before_filter :write_privileges?, only: [:create, :update, :destroy]
+      before_action :load_user_table, only: [:index, :show, :create, :update, :destroy]
+      before_action :read_privileges?, only: [:index, :show]
+      before_action :write_privileges?, only: [:create, :update, :destroy]
 
       def index
         render_jsonp(@user_table.service.schema(cartodb_types: true))

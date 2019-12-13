@@ -5,7 +5,7 @@ module Carto
 
       ssl_required :update
 
-      before_filter :load_visualization,
+      before_action :load_visualization,
                     :check_writer, only: :update
 
       rescue_from LoadError,

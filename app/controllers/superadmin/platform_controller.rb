@@ -7,7 +7,7 @@ class Superadmin::PlatformController < Superadmin::SuperadminController
   ssl_required :databases_info
   layout 'application'
 
-  before_filter :check_for_database_host, only: [:database_validation]
+  before_action :check_for_database_host, only: [:database_validation]
 
   def databases_info
     if params[:database_host]

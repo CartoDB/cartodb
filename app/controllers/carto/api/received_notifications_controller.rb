@@ -6,8 +6,8 @@ module Carto
 
       ssl_required :update
 
-      before_filter :load_user
-      before_filter :load_notification, only: [:update]
+      before_action :load_user
+      before_action :load_notification, only: [:update]
 
       setup_default_rescues
 

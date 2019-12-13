@@ -10,18 +10,18 @@ module Carto
 
         ssl_required :show, :show_protected
 
-        before_filter :x_frame_options_allow,
+        before_action :x_frame_options_allow,
                       :load_visualization,
                       :redirect_to_old_embed_if_v2, only: [:show, :show_protected]
-        before_filter :load_vizjson,
+        before_action :load_vizjson,
                       :load_state, only: [:show, :show_protected]
-        before_filter :ensure_viewable, only: [:show]
-        before_filter :ensure_protected_viewable,
+        before_action :ensure_viewable, only: [:show]
+        before_action :ensure_protected_viewable,
                       :load_auth_tokens,
                       :load_google_maps_qs, only: [:show, :show_protected]
 
-        skip_before_filter :builder_users_only # This is supposed to be public even in beta
-        skip_before_filter :verify_authenticity_token, only: [:show_protected]
+        skip_before_action :builder_users_only # This is supposed to be public even in beta
+        skip_before_action :verify_authenticity_token, only: [:show_protected]
 
         layout false
 

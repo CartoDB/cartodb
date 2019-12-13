@@ -9,17 +9,17 @@ class ApplicationController < ActionController::Base
 
   around_action :wrap_in_profiler
 
-  before_filter :set_security_headers
-  before_filter :http_header_authentication, if: :http_header_authentication?
-  before_filter :store_request_host
-  before_filter :ensure_user_organization_valid
-  before_filter :ensure_org_url_if_org_user
-  before_filter :ensure_account_has_been_activated
-  before_filter :browser_is_html5_compliant?
-  before_filter :set_asset_debugging
-  before_filter :cors_preflight_check
-  before_filter :check_maintenance_mode
-  before_filter :check_user_state
+  before_action :set_security_headers
+  before_action :http_header_authentication, if: :http_header_authentication?
+  before_action :store_request_host
+  before_action :ensure_user_organization_valid
+  before_action :ensure_org_url_if_org_user
+  before_action :ensure_account_has_been_activated
+  before_action :browser_is_html5_compliant?
+  before_action :set_asset_debugging
+  before_action :cors_preflight_check
+  before_action :check_maintenance_mode
+  before_action :check_user_state
   after_filter  :allow_cross_domain_access
   after_filter  :remove_flash_cookie
   after_filter  :add_revision_header

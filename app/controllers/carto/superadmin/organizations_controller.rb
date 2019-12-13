@@ -8,7 +8,7 @@ module Carto
       respond_to :json
 
       ssl_required :usage
-      before_filter :load_organization
+      before_action :load_organization
 
       rescue_from ArgumentError, with: :render_format_error
 

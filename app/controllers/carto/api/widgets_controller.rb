@@ -5,9 +5,9 @@ module Carto
 
       ssl_required :show, :create, :update, :destroy, :update_many
 
-      before_filter :load_map
-      before_filter :load_layer, :load_widget_id, except: [:update_many]
-      before_filter :load_widget, only: [:show, :update, :destroy]
+      before_action :load_map
+      before_action :load_layer, :load_widget_id, except: [:update_many]
+      before_action :load_widget, only: [:show, :update, :destroy]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error

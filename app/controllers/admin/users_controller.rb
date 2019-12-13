@@ -3,9 +3,9 @@ class Admin::UsersController < Admin::AdminController
 
   ssl_required  :account, :profile, :lockout, :maintenance
 
-  before_filter :invalidate_browser_cache
-  before_filter :login_required
-  before_filter :setup_user
+  before_action :invalidate_browser_cache
+  before_action :login_required
+  before_action :setup_user
 
   layout 'application'
 

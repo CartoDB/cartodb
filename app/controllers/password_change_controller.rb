@@ -11,9 +11,9 @@ class PasswordChangeController < ApplicationController
   DIFFERENT_PASSWORD_MSG = 'Must be different than current password'.freeze
   FORM_ERROR = 'Could not update the password. Please, try again'.freeze
 
-  before_filter :set_user
-  before_filter :set_errors
-  before_filter :check_password_expired
+  before_action :set_user
+  before_action :set_errors
+  before_action :check_password_expired
 
   def edit; end
 

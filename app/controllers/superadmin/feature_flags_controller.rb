@@ -3,7 +3,7 @@ class Superadmin::FeatureFlagsController < Superadmin::SuperadminController
 
   ssl_required :create, :update, :destroy
 
-  before_filter :get_feature_flag, only: [:create, :update, :destroy]
+  before_action :get_feature_flag, only: [:create, :update, :destroy]
 
   def create
     @feature_flag.save

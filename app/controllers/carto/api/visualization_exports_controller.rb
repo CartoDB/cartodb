@@ -8,11 +8,11 @@ module Carto
 
       ssl_required :create, :show, :download
 
-      skip_before_filter :api_authorization_required, only: [:create, :show, :download]
-      before_filter :optional_api_authorization, only: [:create, :show, :download]
+      skip_before_action :api_authorization_required, only: [:create, :show, :download]
+      before_action :optional_api_authorization, only: [:create, :show, :download]
 
-      before_filter :load_visualization, only: :create
-      before_filter :load_visualization_export, only: [:show, :download]
+      before_action :load_visualization, only: :create
+      before_action :load_visualization_export, only: [:show, :download]
 
       rescue_from Carto::LoadError, with: :rescue_from_carto_error
       rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error

@@ -3,7 +3,7 @@ require Rails.root.join('services', 'sql-api', 'sql_api')
 class Api::Json::GeocodingsController < Api::ApplicationController
   ssl_required :create, :update
 
-  before_filter :load_table, only: [:create, :estimation_for]
+  before_action :load_table, only: [:create, :estimation_for]
 
   # In seconds
   GEOCODING_SQLAPI_CALLS_TIMEOUT = 45

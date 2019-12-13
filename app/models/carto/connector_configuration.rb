@@ -13,8 +13,8 @@ class Carto::ConnectorConfiguration < ApplicationRecord
   # * organization configuration: user.nil? && organization.present?
   # * user configuration: organization.nil? && user.present?
   validates :connector_provider_id, presence: true
-  validates :user_id, uniqueness: { scope: [:connector_provider_id, :organization_id] }, if: 'organization_id.nil?'
-  validates :organization_id, uniqueness: { scope: [:connector_provider_id, :user_id] }, if: 'user_id.nil?'
+  validates :user_id, uniqueness: { scope: [:connector_provider_id, :organization_id] }, if: -> { organization_id.nil? }
+  validates :organization_id, uniqueness: { scope: [:connector_provider_id, :user_id] }, if: -> { user_id.nil? }
   validate :not_user_and_organization_simultaneously
 
   def not_user_and_organization_simultaneously

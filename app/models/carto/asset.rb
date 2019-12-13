@@ -3,10 +3,10 @@ require_dependency 'carto/assets/organization_image_assets_service'
 require_dependency 'carto/assets/kuviz_assets_service'
 
 module Carto
-  class Asset < ActiveRecord::Base
-    belongs_to :user, class_name: Carto::User
-    belongs_to :organization, class_name: Carto::Organization
-    belongs_to :visualization, class_name: Carto::Visualization
+  class Asset < ApplicationRecord
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :organization, class_name: 'Carto::Organization'
+    belongs_to :visualization, class_name: 'Carto::Visualization'
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true

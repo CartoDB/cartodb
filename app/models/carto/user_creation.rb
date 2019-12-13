@@ -1,7 +1,7 @@
 require 'cartodb-common'
 require_dependency 'carto/user_authenticator'
 
-class Carto::UserCreation < ActiveRecord::Base
+class Carto::UserCreation < ApplicationRecord
 
   # Synced with CartoGearsApi::Events::UserCreationEvent
   CREATED_VIA_SAML = 'saml'.freeze
@@ -21,8 +21,8 @@ class Carto::UserCreation < ActiveRecord::Base
   scope :http_authentication, -> { where(created_via: CREATED_VIA_HTTP_AUTENTICATION) }
   scope :in_progress, -> { where(state: IN_PROGRESS_STATES) }
 
-  belongs_to :log, class_name: Carto::Log
-  belongs_to :user, class_name: Carto::User
+  belongs_to :log, class_name: 'Carto::Log'
+  belongs_to :user, class_name: 'Carto::User'
 
   after_create :use_invitation
 

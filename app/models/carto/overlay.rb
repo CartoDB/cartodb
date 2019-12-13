@@ -1,7 +1,7 @@
 require 'active_record'
 
 module Carto
-  class Overlay < ActiveRecord::Base
+  class Overlay < ApplicationRecord
     # INFO: disable ActiveRecord inheritance column
     self.inheritance_column = :_type
 

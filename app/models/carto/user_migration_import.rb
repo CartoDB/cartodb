@@ -6,10 +6,10 @@ require_dependency 'carto/user_metadata_export_service'
 require_dependency 'carto/organization_metadata_export_service'
 
 module Carto
-  class UserMigrationImport < ::ActiveRecord::Base
-    belongs_to :organization, class_name: Carto::Organization
-    belongs_to :user, class_name: Carto::User
-    belongs_to :log, class_name: Carto::Log
+  class UserMigrationImport < ::ApplicationRecord
+    belongs_to :organization, class_name: 'Carto::Organization'
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :log, class_name: 'Carto::Log'
 
     STATE_PENDING = 'pending'.freeze
     STATE_DOWNLOADING = 'downloading'.freeze
@@ -150,7 +150,7 @@ module Carto
     def import_visualizations(imported, package, service)
       log.append('=== Importing visualizations and search tweets ===')
       begin
-        ActiveRecord::Base.transaction do
+        ApplicationRecord.transaction do
           service.import_metadata_from_directory(imported, package.meta_dir)
         end
       rescue => e

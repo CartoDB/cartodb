@@ -1,7 +1,7 @@
 require 'active_record'
 
 module Carto
-  class SearchTweet < ActiveRecord::Base
+  class SearchTweet < ApplicationRecord
 
     belongs_to :user, inverse_of: :search_tweets, class_name: 'Carto::User'
     belongs_to :user_table, class_name: 'Carto::UserTable'

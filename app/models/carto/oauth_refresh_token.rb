@@ -2,7 +2,7 @@ require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
-  class OauthRefreshToken < ActiveRecord::Base
+  class OauthRefreshToken < ApplicationRecord
     include OauthProvider::Scopes
 
     # Multiple of 3 for pretty base64
@@ -28,7 +28,7 @@ module Carto
       invalid_scopes = Carto::OauthProvider::Scopes.subtract_scopes(requested_scopes, scopes, oauth_app_user.user.database_schema)
       raise OauthProvider::Errors::InvalidScope.new(invalid_scopes) if invalid_scopes.any?
 
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         regenerate_token
         save!
         [oauth_app_user.oauth_access_tokens.create!(scopes: requested_scopes), self]

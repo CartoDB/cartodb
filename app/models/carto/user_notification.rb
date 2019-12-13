@@ -1,7 +1,7 @@
 require_relative './carto_json_serializer'
 
 module Carto
-  class UserNotification < ActiveRecord::Base
+  class UserNotification < ApplicationRecord
     belongs_to :user
     serialize :notifications, ::Carto::CartoJsonSymbolizerSerializer
 

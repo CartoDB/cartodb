@@ -10,7 +10,7 @@ require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/helpers/billing_cycle'
 
 # TODO: This probably has to be moved as the service of the proper User Model
-class Carto::User < ActiveRecord::Base
+class Carto::User < ApplicationRecord
   extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
@@ -50,7 +50,7 @@ class Carto::User < ActiveRecord::Base
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
                    "users.public_map_quota, users.maintenance_mode, users.company_employees, users.use_case".freeze
 
-  has_many :tables, class_name: Carto::UserTable, inverse_of: :user
+  has_many :tables, class_name: 'Carto::UserTable', inverse_of: :user
   has_many :visualizations, inverse_of: :user
   has_many :maps, inverse_of: :user
   has_many :layers_user
@@ -58,35 +58,35 @@ class Carto::User < ActiveRecord::Base
 
   belongs_to :organization, inverse_of: :users
   belongs_to :rate_limit
-  has_one :owned_organization, class_name: Carto::Organization, inverse_of: :owner, foreign_key: :owner_id
-  has_one :static_notifications, class_name: Carto::UserNotification, inverse_of: :user
+  has_one :owned_organization, class_name: 'Carto::Organization', inverse_of: :owner, foreign_key: :owner_id
+  has_one :static_notifications, class_name: 'Carto::UserNotification', inverse_of: :user
 
   has_many :feature_flags_user, dependent: :destroy, foreign_key: :user_id, inverse_of: :user
   has_many :feature_flags, through: :feature_flags_user
   has_many :assets, inverse_of: :user
   has_many :data_imports, inverse_of: :user
   has_many :geocodings, inverse_of: :user
-  has_many :synchronization_oauths, class_name: Carto::SynchronizationOauth, inverse_of: :user, dependent: :destroy
+  has_many :synchronization_oauths, class_name: 'Carto::SynchronizationOauth', inverse_of: :user, dependent: :destroy
   has_many :search_tweets, inverse_of: :user
   has_many :synchronizations, inverse_of: :user
   has_many :tags, inverse_of: :user
   has_many :permissions, inverse_of: :owner, foreign_key: :owner_id
   has_many :connector_configurations, inverse_of: :user, dependent: :destroy
 
-  has_many :client_applications, class_name: Carto::ClientApplication
-  has_many :oauth_tokens, class_name: Carto::OauthToken
+  has_many :client_applications, class_name: 'Carto::ClientApplication'
+  has_many :oauth_tokens, class_name: 'Carto::OauthToken'
 
-  has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
+  has_many :users_group, dependent: :destroy, class_name: 'Carto::UsersGroup'
   has_many :groups, through: :users_group
 
   has_many :received_notifications, inverse_of: :user
 
   has_many :api_keys, inverse_of: :user
-  has_many :user_multifactor_auths, inverse_of: :user, class_name: Carto::UserMultifactorAuth
+  has_many :user_multifactor_auths, inverse_of: :user, class_name: 'Carto::UserMultifactorAuth'
 
   has_many :oauth_apps, inverse_of: :user, dependent: :destroy
   has_many :oauth_app_users, inverse_of: :user, dependent: :destroy
-  has_many :granted_oauth_apps, through: :oauth_app_users, class_name: Carto::OauthApp, source: 'oauth_app'
+  has_many :granted_oauth_apps, through: :oauth_app_users, class_name: 'Carto::OauthApp', source: 'oauth_app'
 
   delegate [
     :database_username, :database_password, :in_database,

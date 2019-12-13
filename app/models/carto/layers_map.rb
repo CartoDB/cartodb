@@ -2,11 +2,11 @@ require 'active_record'
 require_dependency 'carto/visualization_backup_service'
 
 module Carto
-  class LayersMap < ActiveRecord::Base
+  class LayersMap < ApplicationRecord
     include Carto::VisualizationBackupService
 
-    belongs_to :layer, class_name: Carto::Layer
-    belongs_to :map, class_name: Carto::Map
+    belongs_to :layer, class_name: 'Carto::Layer'
+    belongs_to :map, class_name: 'Carto::Map'
 
     before_destroy :backup_visualization
     after_destroy :invalidate_map, :destroy_layer

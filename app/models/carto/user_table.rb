@@ -12,7 +12,7 @@ class Carto::OidType < ActiveRecord::Type::Integer
 end
 
 module Carto
-  class UserTable < ActiveRecord::Base
+  class UserTable < ApplicationRecord
     PRIVACY_PRIVATE = 0
     PRIVACY_PUBLIC = 1
     PRIVACY_LINK = 2
@@ -29,7 +29,7 @@ module Carto
 
     # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
     # so the `before_validation` hook sets an appropriate privacy based on the table owner
-    attribute 'privacy', Type::Integer.new, default: nil
+    attribute 'privacy', ActiveRecord::Type::Integer.new, default: nil
 
     # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
     # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour
@@ -41,7 +41,7 @@ module Carto
 
     belongs_to :data_import
 
-    has_many :automatic_geocodings, inverse_of: :table, class_name: Carto::AutomaticGeocoding,
+    has_many :automatic_geocodings, inverse_of: :table, class_name: 'Carto::AutomaticGeocoding',
                                     foreign_key: :table_id, dependent: :destroy
 
     # Disabled to avoid conflicting with the `tags` field. This relation is updated by ::Table.manage_tags.

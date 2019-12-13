@@ -1,5 +1,5 @@
 module Carto
-  class OauthAppOrganization < ActiveRecord::Base
+  class OauthAppOrganization < ApplicationRecord
     belongs_to :organization, inverse_of: :oauth_app_organizations
     belongs_to :oauth_app, inverse_of: :oauth_app_organizations
 

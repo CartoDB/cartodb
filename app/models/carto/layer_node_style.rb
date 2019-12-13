@@ -1,7 +1,7 @@
 require_dependency 'carto/carto_json_serializer'
 
 module Carto
-  class LayerNodeStyle < ActiveRecord::Base
+  class LayerNodeStyle < ApplicationRecord
     belongs_to :layer
 
     serialize :options, CartoJsonSymbolizerSerializer

@@ -2,7 +2,7 @@ require 'active_record'
 require_relative '../shared_entity'
 
 module Carto
-  class SharedEntity < ActiveRecord::Base
+  class SharedEntity < ApplicationRecord
     ENTITY_TYPE_VISUALIZATION = 'vis'.freeze
 
     RECIPIENT_TYPE_USER         = 'user'.freeze

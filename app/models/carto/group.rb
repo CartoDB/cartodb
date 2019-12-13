@@ -14,12 +14,12 @@ module Carto
   # - destroy_group_with_extension
   # - add_users_with_extension
   # - remove_users_with_extension
-  class Group < ActiveRecord::Base
+  class Group < ApplicationRecord
     include PagedModel
     include AuthTokenGenerator
 
-    belongs_to :organization, class_name: Carto::Organization
-    has_many :users_group, dependent: :destroy, class_name: Carto::UsersGroup
+    belongs_to :organization, class_name: 'Carto::Organization'
+    has_many :users_group, dependent: :destroy, class_name: 'Carto::UsersGroup'
     has_many :users, through: :users_group
 
     private_class_method :new

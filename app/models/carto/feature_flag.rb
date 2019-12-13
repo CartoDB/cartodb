@@ -1,5 +1,5 @@
 module Carto
-  class FeatureFlag < ActiveRecord::Base
+  class FeatureFlag < ApplicationRecord
 
     validates :name, presence: true
 

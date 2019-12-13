@@ -90,11 +90,11 @@ class Carto::TagQueryBuilder
       SELECT #{select_clause} FROM (#{query.to_sql}) AS tags #{where_clause} #{limit_clause} #{offset_clause}
     }.squish
 
-    ActiveRecord::Base.send(:sanitize_sql_array, [filter_sql, @pattern, limit, offset].compact)
+    ApplicationRecord.send(:sanitize_sql_array, [filter_sql, @pattern, limit, offset].compact)
   end
 
   def run_query(query)
-    connection = ActiveRecord::Base.connection
+    connection = ApplicationRecord.connection
     connection.exec_query(query)
   end
 

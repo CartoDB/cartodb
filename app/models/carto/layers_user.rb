@@ -1,5 +1,5 @@
 module Carto
-  class LayersUser < ActiveRecord::Base
+  class LayersUser < ApplicationRecord
     belongs_to :layer
     belongs_to :user
   end

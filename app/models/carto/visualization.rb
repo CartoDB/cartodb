@@ -1,6 +1,7 @@
 require 'active_record'
 require 'cartodb-common'
 require_relative '../visualization/stats'
+require_relative '../../../lib/cartodb/errors'
 require_dependency 'carto/named_maps/api'
 require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/uuidhelper'
@@ -27,7 +28,7 @@ module Carto::VisualizationDependencies
   end
 end
 
-class Carto::Visualization < ActiveRecord::Base
+class Carto::Visualization < ApplicationRecord
   include CacheHelper
   include Carto::UUIDHelper
   include Carto::AuthTokenGenerator
@@ -61,7 +62,7 @@ class Carto::Visualization < ActiveRecord::Base
   self.inheritance_column = :_type
 
   belongs_to :user, -> { select(Carto::User::DEFAULT_SELECT) }, inverse_of: :visualizations
-  belongs_to :full_user, -> { readonly(true) }, class_name: Carto::User, inverse_of: :visualizations,
+  belongs_to :full_user, -> { readonly(true) }, class_name: 'Carto::User', inverse_of: :visualizations,
                                                 primary_key: :id, foreign_key: :user_id
 
   belongs_to :permission, inverse_of: :visualization, dependent: :destroy
@@ -69,28 +70,28 @@ class Carto::Visualization < ActiveRecord::Base
   has_many :likes, foreign_key: :subject
   has_many :shared_entities, foreign_key: :entity_id, inverse_of: :visualization, dependent: :destroy
 
-  has_one :external_source, class_name: Carto::ExternalSource, dependent: :destroy, inverse_of: :visualization
-  has_many :unordered_children, class_name: Carto::Visualization, foreign_key: :parent_id
+  has_one :external_source, class_name: 'Carto::ExternalSource', dependent: :destroy, inverse_of: :visualization
+  has_many :unordered_children, class_name: 'Carto::Visualization', foreign_key: :parent_id
 
   has_many :overlays, -> { order(:order) }, dependent: :destroy, inverse_of: :visualization
 
-  belongs_to :active_layer, class_name: Carto::Layer
+  belongs_to :active_layer, class_name: 'Carto::Layer'
 
-  belongs_to :map, class_name: Carto::Map, inverse_of: :visualization, dependent: :destroy
+  belongs_to :map, class_name: 'Carto::Map', inverse_of: :visualization, dependent: :destroy
 
-  has_one :asset, class_name: Carto::Asset, inverse_of: :visualization, dependent: :destroy
+  has_one :asset, class_name: 'Carto::Asset', inverse_of: :visualization, dependent: :destroy
 
-  has_many :related_templates, class_name: Carto::Template, foreign_key: :source_visualization_id
+  has_many :related_templates, class_name: 'Carto::Template', foreign_key: :source_visualization_id
 
-  has_one :synchronization, class_name: Carto::Synchronization, dependent: :destroy
-  has_many :external_sources, class_name: Carto::ExternalSource
+  has_one :synchronization, class_name: 'Carto::Synchronization', dependent: :destroy
+  has_many :external_sources, class_name: 'Carto::ExternalSource'
 
-  has_many :analyses, class_name: Carto::Analysis
-  has_many :mapcaps, -> { order('created_at DESC') }, class_name: Carto::Mapcap, dependent: :destroy
+  has_many :analyses, class_name: 'Carto::Analysis'
+  has_many :mapcaps, -> { order('created_at DESC') }, class_name: 'Carto::Mapcap', dependent: :destroy
 
-  has_one :state, class_name: Carto::State, autosave: true
+  has_one :state, class_name: 'Carto::State', autosave: true
 
-  has_many :snapshots, class_name: Carto::Snapshot, dependent: :destroy
+  has_many :snapshots, class_name: 'Carto::Snapshot', dependent: :destroy
 
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }

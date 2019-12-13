@@ -1,5 +1,5 @@
 module Carto
-  class AccountType < ActiveRecord::Base
+  class AccountType < ApplicationRecord
 
     belongs_to :rate_limit, dependent: :destroy
 

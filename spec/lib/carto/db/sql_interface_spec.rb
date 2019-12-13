@@ -70,7 +70,7 @@ module Carto
 
       context 'with active record connection' do
         before do
-          @connection = ::ActiveRecord::Base.connection
+          @connection = ::ApplicationRecord.connection
         end
 
         include_examples 'run examples'

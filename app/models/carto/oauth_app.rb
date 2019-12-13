@@ -1,7 +1,7 @@
 require_dependency 'carto/helpers/url_validator'
 
 module Carto
-  class OauthApp < ActiveRecord::Base
+  class OauthApp < ApplicationRecord
     # Multiple of 3 for pretty base64
     CLIENT_ID_RANDOM_BYTES = 9
     CLIENT_SECRET_RANDOM_BYTES = 18

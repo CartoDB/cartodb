@@ -2,7 +2,7 @@ require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
-  class OauthAuthorizationCode < ActiveRecord::Base
+  class OauthAuthorizationCode < ApplicationRecord
     include OauthProvider::Scopes
     # Multiple of 3 for pretty base64
     CODE_RANDOM_BYTES = 12
@@ -22,7 +22,7 @@ module Carto
     def exchange!
       raise OauthProvider::Errors::InvalidGrant.new if expired?
 
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         destroy!
         access_token = oauth_app_user.oauth_access_tokens.create!(scopes: scopes)
         if scopes.include?(SCOPE_OFFLINE)

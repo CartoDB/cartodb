@@ -4,7 +4,7 @@ require_relative './carto_json_serializer'
 require_dependency 'common/map_common'
 require_dependency 'carto/bounding_box_utils'
 
-class Carto::Map < ActiveRecord::Base
+class Carto::Map < ApplicationRecord
   include Carto::MapBoundaries
 
   has_many :layers_maps, dependent: :destroy
@@ -17,13 +17,13 @@ class Carto::Map < ActiveRecord::Base
                                                source: :layer
 
   # autosave must be explicitly disabled due to https://github.com/rails/rails/issues/9336
-  has_one :user_table, class_name: Carto::UserTable, inverse_of: :map, dependent: :destroy, autosave: false
+  has_one :user_table, class_name: 'Carto::UserTable', inverse_of: :map, dependent: :destroy, autosave: false
 
   belongs_to :user
 
   # Autosave disabled because this caused the `inverse_of` to break (visualization.map != self) until `reload`
   # Fixed in Rails 5 https://github.com/rails/rails/pull/23197
-  has_one :visualization, class_name: Carto::Visualization, inverse_of: :map, autosave: false
+  has_one :visualization, class_name: 'Carto::Visualization', inverse_of: :map, autosave: false
 
   # bounding_box_sw, bounding_box_new and center should probably be JSON serialized fields
   # However, many callers expect to get an string (and do the JSON deserialization themselves), mainly in presenters

@@ -3,11 +3,11 @@ require_relative './carto_json_serializer'
 require_dependency 'carto/named_maps/api'
 
 module Carto
-  class Mapcap < ActiveRecord::Base
+  class Mapcap < ApplicationRecord
     include Carto::VisualizationsExportService2Importer
     include Carto::VisualizationsExportService2Exporter
 
-    belongs_to :visualization, class_name: Carto::Visualization, foreign_key: 'visualization_id'
+    belongs_to :visualization, class_name: 'Carto::Visualization', foreign_key: 'visualization_id'
 
     serialize :ids_json, ::Carto::CartoJsonSymbolizerSerializer
     serialize :export_json, ::Carto::CartoJsonSymbolizerSerializer

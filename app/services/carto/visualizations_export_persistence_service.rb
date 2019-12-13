@@ -14,7 +14,7 @@ module Carto
     def save_import(user, visualization, renamed_tables: {}, full_restore: false)
       old_username = visualization.user.username if visualization.user
       apply_user_limits(user, visualization)
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         visualization.id = random_uuid unless visualization.id && full_restore
         visualization.user = user
 

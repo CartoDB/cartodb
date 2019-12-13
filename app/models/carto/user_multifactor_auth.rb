@@ -2,7 +2,7 @@ require 'rotp'
 require 'rqrcode'
 
 module Carto
-  class UserMultifactorAuth < ActiveRecord::Base
+  class UserMultifactorAuth < ApplicationRecord
 
     TYPE_TOTP = 'totp'.freeze
     VALID_TYPES = [TYPE_TOTP].freeze

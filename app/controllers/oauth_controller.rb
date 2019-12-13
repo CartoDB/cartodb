@@ -24,7 +24,7 @@ class OauthController < ApplicationController
         @token = AccessToken.create(:user => user, :client_application => current_client_application) if @token.blank?
 
         if @token
-          render :text => @token.to_query
+          render :plain => @token.to_query
         else
           render_unauthorized
         end

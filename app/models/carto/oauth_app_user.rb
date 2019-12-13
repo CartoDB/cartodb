@@ -2,7 +2,7 @@ require_dependency 'carto/oauth_provider/scopes/scopes'
 require_dependency 'carto/oauth_provider/errors'
 
 module Carto
-  class OauthAppUser < ActiveRecord::Base
+  class OauthAppUser < ApplicationRecord
     include OauthProvider::Scopes
 
     belongs_to :user, inverse_of: :oauth_app_users

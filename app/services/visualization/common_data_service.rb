@@ -74,7 +74,7 @@ module CartoDB
                                                           .readonly(false) # joins causes readonly
                                                           .where(external_sources: { username: common_data_username })
                                                           .map { |v| [v.name, v] }.to_h
-        ActiveRecord::Base.transaction do
+        ApplicationRecord.transaction do
           datasets.each do |dataset|
             begin
               visualization = common_data_remotes_by_name.delete(dataset['name'])

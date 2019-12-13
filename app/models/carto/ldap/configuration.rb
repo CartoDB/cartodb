@@ -1,7 +1,7 @@
 # See http://www.rubydoc.info/gems/net-ldap/0.11
 require 'net/ldap'
 
-class Carto::Ldap::Configuration < ActiveRecord::Base
+class Carto::Ldap::Configuration < ApplicationRecord
 
   # Not encrypted
   ENCRYPTION_NONE = nil
@@ -17,7 +17,7 @@ class Carto::Ldap::Configuration < ActiveRecord::Base
 
   self.table_name = 'ldap_configurations'
 
-  belongs_to :organization, class_name: Carto::Organization
+  belongs_to :organization, class_name: 'Carto::Organization'
 
   # @param Uuid id  (Self-generated)
   # @param Uuid organization_id

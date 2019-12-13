@@ -7,13 +7,13 @@ require_relative './visualization'
 require_dependency 'carto/visualization_exporter'
 
 module Carto
-  class VisualizationExport < ::ActiveRecord::Base
+  class VisualizationExport < ::ApplicationRecord
     include VisualizationExporter
     include Carto::VisualizationsExportService2Validator
 
-    belongs_to :visualization, class_name: Carto::Visualization
-    belongs_to :user, class_name: Carto::User
-    belongs_to :log, class_name: Carto::Log
+    belongs_to :visualization, class_name: 'Carto::Visualization'
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :log, class_name: 'Carto::Log'
 
     validate :visualization_exportable_by_user?, if: :new_record?
     validate :user_tables_ids_valid?, if: :new_record?

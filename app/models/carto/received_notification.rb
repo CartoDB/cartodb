@@ -1,5 +1,5 @@
 module Carto
-  class ReceivedNotification < ActiveRecord::Base
+  class ReceivedNotification < ApplicationRecord
     # autosave must be explicitly disabled due to https://github.com/rails/rails/issues/9336
     # but we probably should not autosave from a ternary table anyway
     belongs_to :user, inverse_of: :received_notifications, autosave: false

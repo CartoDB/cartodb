@@ -101,7 +101,7 @@ module CartoDB
         end
 
         def sql_sanitize(str)
-          ActiveRecord::Base::sanitize(str)
+          ApplicationRecord::sanitize(str)
         end
 
       end

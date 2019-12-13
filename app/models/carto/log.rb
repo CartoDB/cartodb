@@ -1,6 +1,6 @@
-class Carto::Log < ActiveRecord::Base
+class Carto::Log < ApplicationRecord
 
-  has_one :data_import, class_name: Carto::DataImport, foreign_key: :logger
+  has_one :data_import, class_name: 'Carto::DataImport', foreign_key: :logger
 
   MAX_ENTRY_LENGTH = 256
 

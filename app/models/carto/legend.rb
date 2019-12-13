@@ -3,10 +3,10 @@ require_relative '../../controllers/carto/api/legend_presenter'
 require_dependency 'carto/legend_definition_validator'
 
 module Carto
-  class Legend < ActiveRecord::Base
+  class Legend < ApplicationRecord
     self.inheritance_column = :_type
 
-    belongs_to :layer, class_name: Carto::Layer
+    belongs_to :layer, class_name: 'Carto::Layer'
 
     VALID_LEGEND_TYPES = %w(category bubble choropleth custom custom_choropleth torque).freeze
     LEGEND_TYPES_PER_ATTRIBUTE = {

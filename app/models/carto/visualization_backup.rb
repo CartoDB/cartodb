@@ -1,7 +1,7 @@
 require 'active_record'
 
 module Carto
-  class VisualizationBackup < ActiveRecord::Base
+  class VisualizationBackup < ApplicationRecord
 
     # @param Uuid id
     # @param Uuid user_id

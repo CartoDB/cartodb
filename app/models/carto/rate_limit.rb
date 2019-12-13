@@ -1,5 +1,5 @@
 module Carto
-  class RateLimit < ActiveRecord::Base
+  class RateLimit < ApplicationRecord
 
     RATE_LIMIT_ATTRIBUTES = [:maps_anonymous,
                              :maps_static,

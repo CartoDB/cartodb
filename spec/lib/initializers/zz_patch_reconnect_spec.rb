@@ -8,7 +8,7 @@ describe ActiveRecord::ConnectionAdapters::PostgreSQLAdapter do
       Carto::Visualization.first
       # break the AR connection on purpose
       expect {
-        ActiveRecord::Base.connection.exec_query("SELECT pg_terminate_backend(pg_backend_pid())")
+        ApplicationRecord.connection.exec_query("SELECT pg_terminate_backend(pg_backend_pid())")
       }.to raise_exception(ActiveRecord::StatementInvalid)
       Carto::Visualization.first
     end

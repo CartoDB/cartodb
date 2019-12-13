@@ -1,7 +1,7 @@
 require 'active_record'
 
 module Carto
-  class Template < ActiveRecord::Base
+  class Template < ApplicationRecord
 
     # INFO: On delete org will wipe out all templates
     belongs_to :organization

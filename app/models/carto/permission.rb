@@ -1,7 +1,7 @@
 require 'active_record'
 require_dependency 'cartodb/errors'
 
-class Carto::Permission < ActiveRecord::Base
+class Carto::Permission < ApplicationRecord
   DEFAULT_ACL_VALUE = [].freeze
 
   ACCESS_READONLY   = 'r'.freeze
@@ -13,8 +13,8 @@ class Carto::Permission < ActiveRecord::Base
   TYPE_ORGANIZATION = 'org'.freeze
   TYPE_GROUP        = 'group'.freeze
 
-  belongs_to :owner, -> { select(Carto::User::DEFAULT_SELECT) }, class_name: Carto::User
-  has_one :visualization, inverse_of: :permission, class_name: Carto::Visualization, foreign_key: :permission_id
+  belongs_to :owner, -> { select(Carto::User::DEFAULT_SELECT) }, class_name: 'Carto::User'
+  has_one :visualization, inverse_of: :permission, class_name: 'Carto::Visualization', foreign_key: :permission_id
 
   validate :not_w_permission_to_viewers
 

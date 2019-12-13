@@ -18,13 +18,13 @@ class Carto::GrantableQueryBuilder
   end
 
   def run(page = 1, per_page = 200, order = 'name')
-    query = ActiveRecord::Base.send(:sanitize_sql_array, paged_query_array(page, per_page, order))
-    ActiveRecord::Base.connection.execute(query).map { |r| Carto::Grantable.new(r) }
+    query = ApplicationRecord.send(:sanitize_sql_array, paged_query_array(page, per_page, order))
+    ApplicationRecord.connection.execute(query).map { |r| Carto::Grantable.new(r) }
   end
 
   def count
-    query = ActiveRecord::Base.send(:sanitize_sql_array, count_query_array)
-    ActiveRecord::Base.connection.execute(query).first['count'].to_i
+    query = ApplicationRecord.send(:sanitize_sql_array, count_query_array)
+    ApplicationRecord.connection.execute(query).first['count'].to_i
   end
 
   private

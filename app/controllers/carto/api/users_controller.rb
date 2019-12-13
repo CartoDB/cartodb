@@ -83,7 +83,7 @@ module Carto
           update_user_attributes(user, attributes)
           raise Sequel::ValidationFailed.new('Validation failed') unless user.errors.try(:empty?) && user.valid?
 
-          ActiveRecord::Base.transaction do
+          ApplicationRecord.transaction do
             update_user_multifactor_authentication(user, attributes[:mfa])
             user.update_in_central
             user.save(raise_on_failure: true)

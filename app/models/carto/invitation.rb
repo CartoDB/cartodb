@@ -4,7 +4,7 @@ require_dependency 'cartodb/errors'
 require_dependency 'carto/user_authenticator'
 
 module Carto
-  class Invitation < ActiveRecord::Base
+  class Invitation < ApplicationRecord
 
     # Because of an activerecord-postgresql-array bug that makes array
     # insertions unusable we can't set _users_emails mandatory on construction,
@@ -15,7 +15,7 @@ module Carto
     validates :users_emails, email: true
     validate :users_emails_not_taken
 
-    belongs_to :inviter_user, class_name: Carto::User
+    belongs_to :inviter_user, class_name: 'Carto::User'
     belongs_to :organization
 
     private_class_method :new

@@ -2,7 +2,7 @@ require_dependency 'carto/oauth_provider/errors'
 require_dependency 'carto/oauth_provider/scopes/scopes'
 
 module Carto
-  class OauthAccessToken < ActiveRecord::Base
+  class OauthAccessToken < ApplicationRecord
     include OauthProvider::Scopes
 
     ACCESS_TOKEN_EXPIRATION_TIME = 1.hour

@@ -1,7 +1,7 @@
 require_dependency 'carto/notifications_markdown_renderer'
 
 module Carto
-  class Notification < ActiveRecord::Base
+  class Notification < ApplicationRecord
     MAX_BODY_LENGTH = 140
 
     # Update CartoGearsAPI::Notifications::Notification when adding constants here

@@ -1,10 +1,10 @@
 require 'active_record'
 
-class Carto::Synchronization < ActiveRecord::Base
+class Carto::Synchronization < ApplicationRecord
 
   belongs_to :user
-  belongs_to :visualization, class_name: Carto::Visualization
-  belongs_to :log, class_name: Carto::Log
+  belongs_to :visualization, class_name: 'Carto::Visualization'
+  belongs_to :log, class_name: 'Carto::Log'
 
   has_many :external_data_imports
 

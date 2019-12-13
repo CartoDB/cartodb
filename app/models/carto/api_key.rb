@@ -20,7 +20,7 @@ class ApiKeyGrantsValidator < ActiveModel::EachValidator
 end
 
 module Carto
-  class ApiKey < ActiveRecord::Base
+  class ApiKey < ApplicationRecord
 
     include Carto::AuthTokenGenerator
 

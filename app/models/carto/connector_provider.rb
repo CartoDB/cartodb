@@ -1,6 +1,6 @@
 require 'carto/connector'
 
-class Carto::ConnectorProvider < ActiveRecord::Base
+class Carto::ConnectorProvider < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: true
 

@@ -1,5 +1,4 @@
 require 'active_record'
-require 'active_record/connection_adapters/postgresql/oid/json'
 require_relative './carto_json_serializer'
 require_dependency 'carto/table_utils'
 require_dependency 'carto/query_rewriter'
@@ -55,14 +54,14 @@ module Carto
     end
   end
 
-  class Layer < ActiveRecord::Base
+  class Layer < ApplicationRecord
     include Carto::TableUtils
     include LayerTableDependencies
     include Carto::QueryRewriter
 
-    attribute :options, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
-    attribute :infowindow, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
-    attribute :tooltip, ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Json.new
+    attribute :options, ActiveRecord::Type::Json.new
+    attribute :infowindow, ActiveRecord::Type::Json.new
+    attribute :tooltip, ActiveRecord::Type::Json.new
 
     serialize :options, CartoJsonSerializer
     serialize :infowindow, CartoJsonSerializer
@@ -75,10 +74,10 @@ module Carto
     has_many :users, through: :layers_user, after_add: :set_default_order
 
     has_many :layers_user_tables, dependent: :destroy
-    has_many :user_tables, through: :layers_user_tables, class_name: Carto::UserTable
+    has_many :user_tables, through: :layers_user_tables, class_name: 'Carto::UserTable'
 
-    has_many :widgets, -> { order(:order) }, class_name: Carto::Widget
-    has_many :legends, -> { order(:created_at) }, class_name: Carto::Legend, dependent: :destroy
+    has_many :widgets, -> { order(:order) }, class_name: 'Carto::Widget'
+    has_many :legends, -> { order(:created_at) }, class_name: 'Carto::Legend', dependent: :destroy
 
     has_many :layer_node_styles
 

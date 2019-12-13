@@ -1,10 +1,10 @@
 require 'active_record'
 
-class Carto::ExternalSource < ActiveRecord::Base
+class Carto::ExternalSource < ApplicationRecord
   # Seconds
   REFRESH_INTERVAL = 30*24*60*60
 
-  has_many :external_data_imports, class_name: Carto::ExternalDataImport, dependent: :destroy
+  has_many :external_data_imports, class_name: 'Carto::ExternalDataImport', dependent: :destroy
   belongs_to :visualization, inverse_of: :external_source
   validates :visualization, :import_url, :rows_counted, :size, presence: true
 

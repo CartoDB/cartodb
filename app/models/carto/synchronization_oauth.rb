@@ -1,7 +1,7 @@
 require 'active_record'
 
 module Carto
-  class SynchronizationOauth < ActiveRecord::Base
+  class SynchronizationOauth < ApplicationRecord
 
     belongs_to :user, class_name: 'Carto::User', inverse_of: :synchronization_oauths
 

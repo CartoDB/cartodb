@@ -479,7 +479,7 @@ class User < Sequel::Model
 
     begin
       # Remove user data imports, maps, layers and assets
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         delete_external_data_imports
         delete_external_sources
         Carto::VisualizationQueryBuilder.new.with_user_id(id).build.all.each do |v|

@@ -60,7 +60,7 @@ describe CartoDB::Visualization::CommonDataService do
   it 'should import common data datasets within an ActiveRecord transaction (see #12488)' do
     # This would trigger an exception because of data integrity
     expect {
-      ActiveRecord::Base.transaction do
+      ApplicationRecord.transaction do
         stub_datasets([dataset('ds1')])
         service.load_common_data_for_user(@user, 'some_url')
       end

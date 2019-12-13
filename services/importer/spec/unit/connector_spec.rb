@@ -1791,7 +1791,7 @@ describe Carto::Connector do
           command: :create_server,
           fdw_name: 'odbc_fdw',
           options: {
-            'odbc_AllowLargeResults' => '1',
+            'odbc_AllowLargeResults' => '0',
             'odbc_Catalog' => 'theproject',
             'odbc_ClientId' => 'theclientid',
             'odbc_ClientSecret' => 'theclientsecret',
@@ -1799,11 +1799,9 @@ describe Carto::Connector do
             "odbc_EnableHTAPI" => "0",
             "odbc_HTAPI_MinActivationRatio" => "0",
             "odbc_HTAPI_MinResultsSize" => "100",
-            'odbc_LargeResultsDataSetId' => '_cartoimport_temp',
             'odbc_LargeResultsTempTableExpirationTime' => '3600000',
             'odbc_OAuthMechanism' => '1',
             'odbc_SQLDialect' => '1',
-            "odbc_UseDefaultLargeResultsDataset" => "1",
             "odbc_UseQueryCache" => "1"
           }
         }]

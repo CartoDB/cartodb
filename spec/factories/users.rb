@@ -1,7 +1,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
-require 'helpers/account_types_helper'
-require 'helpers/unique_names_helper'
+require_relative '../helpers/account_types_helper'
+require_relative '../helpers/unique_names_helper'
 require 'carto/user_authenticator'
 require 'cartodb-common'
 

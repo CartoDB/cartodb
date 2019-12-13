@@ -1,5 +1,5 @@
-require 'helpers/account_types_helper'
-require 'helpers/unique_names_helper'
+require_relative '../helpers/account_types_helper'
+require_relative '../helpers/unique_names_helper'
 
 include UniqueNamesHelper
 

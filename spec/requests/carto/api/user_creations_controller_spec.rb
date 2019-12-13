@@ -1,7 +1,7 @@
 require 'uuidtools'
 require_relative '../../../spec_helper'
 require_relative '../../../../app/controllers/carto/api/user_creations_controller'
-require 'helpers/account_types_helper'
+require_relative '../helpers/account_types_helper'
 
 describe Carto::Api::UserCreationsController do
   include_context 'organization with users helper'

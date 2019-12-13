@@ -1,6 +1,7 @@
 require_relative '../../app/models/carto/analysis'
+require_relative '../helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
-require 'helpers/unique_names_helper'
+
 
 include UniqueNamesHelper
 

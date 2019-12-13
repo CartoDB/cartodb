@@ -5,7 +5,7 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
 require_relative './vizjson_shared_examples'
-require 'helpers/unique_names_helper'
+require_relative '../helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
 require 'helpers/visualization_destruction_helper'

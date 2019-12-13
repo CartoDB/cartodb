@@ -82,9 +82,13 @@ module Carto
 
     def list_remote_tables(federated_server_name, remote_schema_name, pagination)
       pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
-      @user_db_connection[
+      remote_tables = @user_db_connection[
         select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
       ].all
+      remote_tables.each do |remote_table|
+        remote_table[:columns] = JSON.parse(remote_table[:columns], symbolize_names: true)
+      end
+      return remote_tables
     end
 
     def count_remote_tables(federated_server_name, remote_schema_name)
@@ -103,13 +107,17 @@ module Carto
     end
 
     def get_remote_table(federated_server_name:, remote_schema_name:, remote_table_name:)
-      @user_db_connection[
+      remote_table = @user_db_connection[
         get_remote_table_query(
           federated_server_name: federated_server_name,
           remote_schema_name: remote_schema_name,
           remote_table_name: remote_table_name
         )
       ].first
+      unless remote_table.nil?
+        remote_table[:columns] = JSON.parse(remote_table[:columns], symbolize_names: true)
+      end
+      return remote_table
     end
 
     def update_table(attributes)

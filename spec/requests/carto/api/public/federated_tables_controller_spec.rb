@@ -793,7 +793,11 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(found[:registered]).to eq(false)
         expect(found[:remote_schema_name]).to eq(@remote_schema_name)
         expect(found[:remote_table_name]).to eq(@remote_table_name)
-        expect(found[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(found[:columns]).to eq([
+          {:Name=>"geom", :Type=>"GEOMETRY,0"},
+          {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+          {:Name=>"id", :Type=>"integer"}
+        ])
 
         expect(found.include?(:qualified_name)).to eq(false)
         expect(found.include?(:id_column_name)).to eq(false)
@@ -869,7 +873,11 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:remote_table_name]).to eq(@payload_register_table[:remote_table_name])
         expect(response.body[:registered]).to eq(true)
         expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
-        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:columns]).to eq([
+          {:Name=>"geom", :Type=>"GEOMETRY,0"},
+          {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+          {:Name=>"id", :Type=>"integer"}
+        ])
         expect(response.body[:id_column_name]).to eq('id')
         expect(response.body[:geom_column_name]).to eq('geom')
         expect(response.body[:webmercator_column_name]).to eq('geom_webmercator')
@@ -889,7 +897,7 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:remote_table_name]).to eq(@remote_no_geo_table_name)
         expect(response.body[:registered]).to eq(true)
         expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_no_geo_table_name}")
-        expect(response.body[:columns]).to eq('[{"Name" : "id", "Type" : "integer"}, {"Name" : "value", "Type" : "double precision"}]')
+        expect(response.body[:columns]).to eq([{:Name=>"id", :Type=>"integer"}, {:Name=>"value", :Type=>"double precision"}])
         expect(response.body[:id_column_name]).to eq('id')
         expect(response.body[:geom_column_name]).to eq('')
         expect(response.body[:webmercator_column_name]).to eq('')
@@ -927,7 +935,11 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:remote_table_name]).to eq(payload_register_table[:remote_table_name])
         expect(response.body[:registered]).to eq(true)
         expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
-        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:columns]).to eq([
+          {:Name=>"geom", :Type=>"GEOMETRY,0"},
+          {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+          {:Name=>"id", :Type=>"integer"}
+        ])
         expect(response.body[:id_column_name]).to eq('id')
         expect(response.body[:geom_column_name]).to eq('geom')
         expect(response.body[:webmercator_column_name]).to eq('geom')
@@ -949,7 +961,11 @@ describe Carto::Api::Public::FederatedTablesController do
         expect(response.body[:remote_table_name]).to eq(payload_register_table[:remote_table_name])
         expect(response.body[:registered]).to eq(true)
         expect(response.body[:qualified_name]).to eq("cdb_fs_#{@federated_server_name}.#{@remote_geo_table_name}")
-        expect(response.body[:columns]).to eq('[{"Name" : "geom", "Type" : "GEOMETRY,0"}, {"Name" : "geom_webmercator", "Type" : "GEOMETRY,0"}, {"Name" : "id", "Type" : "integer"}]')
+        expect(response.body[:columns]).to eq([
+          {:Name=>"geom", :Type=>"GEOMETRY,0"},
+          {:Name=>"geom_webmercator", :Type=>"GEOMETRY,0"},
+          {:Name=>"id", :Type=>"integer"}
+        ])
         expect(response.body[:id_column_name]).to eq('id')
         expect(response.body[:geom_column_name]).to eq('geom_webmercator')
         expect(response.body[:webmercator_column_name]).to eq('geom_webmercator')
@@ -1119,6 +1135,7 @@ describe Carto::Api::Public::FederatedTablesController do
     it 'returns 404 when there is not a remote schema with the provided name' do
       params = { federated_server_name: @federated_server_name, remote_schema_name: 'wadus', remote_table_name: @remote_table_name, api_key: @user1.api_key }
       get_json api_v4_federated_servers_get_table_url(params) do |response|
+        puts response.body
         expect(response.status).to eq(404)
       end
     end

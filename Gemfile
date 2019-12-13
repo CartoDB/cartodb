@@ -12,6 +12,7 @@ gem 'sequel_pg',               '~> 1.12.0', require: 'sequel'
 gem 'protected_attributes_continued', '~> 1.5'
 
 gem 'activerecord-postgresql-adapter'
+gem 'listen', '~> 3.1', '>= 3.1.5'
 
 gem 'responders', '~> 2.4.1'
 

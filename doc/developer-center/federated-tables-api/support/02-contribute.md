@@ -14,7 +14,7 @@ If you want to open a new issue in our repository, please follow these instructi
 
 ## Contributing code
 
-Best part of open source, collaborate in Import API code!. We like hearing from you, so if you have any bug fixed, or a new feature ready to be merged, those are the steps you should follow:
+Best part of open source, collaborate in Federated Tables API code!. We like hearing from you, so if you have any bug fixed, or a new feature ready to be merged, those are the steps you should follow:
 
 1. Fork the repository.
 2. Create a new branch in your forked repository.

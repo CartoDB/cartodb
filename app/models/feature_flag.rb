@@ -1,4 +1,5 @@
-# Feature flags are synchronized through API, so there's no need for validation
+require_relative '../../lib/cartodb/mini_sequel'
+
 class FeatureFlag < Sequel::Model
   include CartoDB::MiniSequel
 

@@ -1,4 +1,5 @@
 require_relative 'db_queries'
+require_relative '../../../lib/cartodb/mini_sequel'
 require_dependency 'carto/db/database'
 require_dependency 'carto/db/user_schema_mover'
 require 'cartodb/sequel_connection_helper'

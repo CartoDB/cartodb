@@ -1,3 +1,5 @@
+require_relative '../../lib/cartodb/mini_sequel'
+
 class FeatureFlagsUser < Sequel::Model
   include CartoDB::MiniSequel
 

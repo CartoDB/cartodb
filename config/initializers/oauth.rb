@@ -12,7 +12,7 @@ module OAuth
           end
         end
 
-        alias_method_chain :oauth10_request_token, :xauth
+        # alias_method_chain :oauth10_request_token, :xauth
       end
     end
   end

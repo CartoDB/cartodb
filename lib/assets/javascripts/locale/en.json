@@ -1357,7 +1357,9 @@
                         "field-sql-query": "SQL query",
                         "hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly.",
                         "run": "Run SQL query",
-                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable",
+                        "feedback-text": "Have feedback or questions about the BigQuery connector?",
+                        "feedback-link": "Please let us know!"
                     },
                     "notenabled": {
                         "fallback-desc": "This connector is not currently enabled in your account. Please, contact us if you are interested.",

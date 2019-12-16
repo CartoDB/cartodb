@@ -14,7 +14,7 @@ describe Carto::Api::Public::DataObservatoryController do
     @granted_token = @user1.api_keys.create_regular_key!(name: 'do', grants: do_grants).token
     @headers = { 'CONTENT_TYPE' => 'application/json' }
     populate_do_metadata
-    @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-licensing', restricted: true)
+    @feature_flag = FactoryGirl.create(:feature_flag, name: 'do-instant-licensing', restricted: true)
     Carto::FeatureFlagsUser.create(user_id: @user1.id, feature_flag_id: @feature_flag.id)
   end
 
@@ -237,15 +237,6 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 403 if the feature flag is not enabled for the user' do
-      with_feature_flag @user1, 'do-licensing', false do
-        get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
-          expect(response.status).to eq(403)
-          expect(response.body).to eq(errors: "DO licensing not enabled", errors_cause: nil)
-        end
-      end
-    end
-
     it 'returns 404 if the metadata user does not exist' do
       Carto::User.find_by_username('do-metadata').destroy
 
@@ -326,15 +317,6 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 403 if the feature flag is not enabled for the user' do
-      with_feature_flag @user1, 'do-licensing', false do
-        post_json endpoint_url(api_key: @master), @payload do |response|
-          expect(response.status).to eq(403)
-          expect(response.body).to eq(errors: "DO licensing not enabled", errors_cause: nil)
-        end
-      end
-    end
-
     it 'returns 404 if the metadata user does not exist' do
       Carto::User.find_by_username('do-metadata').destroy
 
@@ -353,13 +335,6 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 404 if the dataset metadata is incomplete' do
-      post_json endpoint_url(api_key: @master), id: 'carto.abc.incomplete', type: 'dataset' do |response|
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: "Incomplete metadata found for carto.abc.incomplete", errors_cause: nil)
-      end
-    end
-
     it 'returns 500 with an explicit message if the central call fails' do
       central_response = OpenStruct.new(code: 500, body: { errors: ['boom'] }.to_json)
       central_error = CartoDB::CentralCommunicationFailure.new(central_response)
@@ -368,6 +343,31 @@ describe Carto::Api::Public::DataObservatoryController do
       post_json endpoint_url(api_key: @master), @payload do |response|
         expect(response.status).to eq(500)
         expect(response.body).to eq(errors: ["boom"])
+      end
+    end
+
+    it 'sends 2 emails if the dataset metadata is incomplete' do
+      mailer_mock = stub(:deliver_now)
+      dataset_id = 'carto.abc.incomplete'
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
+
+      post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
+        expect(response.status).to eq(200)
+      end
+    end
+
+    it 'sends 2 emails if instant licensing is not enabled for the user' do
+      mailer_mock = stub(:deliver_now)
+      dataset_id = @payload[:id]
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
+
+      with_feature_flag @user1, 'do-instant-licensing', false do
+        post_json endpoint_url(api_key: @master), @payload do |response|
+          p response.body
+          expect(response.status).to eq(200)
+        end
       end
     end
 
@@ -402,7 +402,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 200 with the dataset metadata without calling DoLicensingService when the delivery time is not 0' do
+    it 'returns 200 with the dataset metadata and sends an email when the delivery time is not 0' do
       Carto::DoLicensingService.expects(:new).never
 
       Delorean.time_travel_to '2018/01/01 00:00:00' do
@@ -436,15 +436,6 @@ describe Carto::Api::Public::DataObservatoryController do
       delete_json endpoint_url(@params.merge(id: 'wrong')) do |response|
         expect(response.status).to eq(400)
         expect(response.body).to eq(errors: "Wrong 'id' parameter value.", errors_cause: nil)
-      end
-    end
-
-    it 'returns 403 if the feature flag is not enabled for the user' do
-      with_feature_flag @user1, 'do-licensing', false do
-        delete_json endpoint_url(@params) do |response|
-          expect(response.status).to eq(403)
-          expect(response.body).to eq(errors: "DO licensing not enabled", errors_cause: nil)
-        end
       end
     end
 

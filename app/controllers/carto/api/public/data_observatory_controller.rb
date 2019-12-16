@@ -13,7 +13,6 @@ module Carto
         before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
         before_action :load_type, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
-        before_action :check_licensing_enabled, only: [:subscription_info, :subscribe, :unsubscribe]
 
         setup_default_rescues
 
@@ -26,6 +25,7 @@ module Carto
         METADATA_FIELDS = %i(id estimated_delivery_days subscription_list_price tos tos_link licenses licenses_link
                              rights type).freeze
         TABLES_BY_TYPE = { 'dataset' => 'datasets', 'geography' => 'geographies' }.freeze
+        REQUIRED_METADATA_FIELDS = %i(available_in estimated_delivery_days subscription_list_price).freeze
 
         def token
           response = Cartodb::Central.new.get_do_token(@user.username)
@@ -46,19 +46,27 @@ module Carto
 
         def subscribe
           metadata = subscription_metadata
+
+          instant_licensing_available?(metadata) ? instant_license(metadata) : regular_license(metadata)
+
           response = present_metadata(metadata)
-
-          return render(json: response) if metadata[:estimated_delivery_days].positive?
-
-          license_info = {
-            dataset_id: metadata[:id],
-            available_in: metadata[:available_in],
-            price: metadata[:subscription_list_price],
-            expires_at: Time.now.round + 1.year
-          }
-          Carto::DoLicensingService.new(@user.username).subscribe([license_info])
-
           render(json: response)
+        end
+
+        def instant_licensing_available?(metadata)
+          @user.has_feature_flag?('do-instant-licensing') &&
+            REQUIRED_METADATA_FIELDS.all? { |field| metadata[field].present? } &&
+            metadata[:estimated_delivery_days].zero?
+        end
+
+        def instant_license(metadata)
+          licensing_service = Carto::DoLicensingService.new(@user.username)
+          licensing_service.subscribe([license_info(metadata)])
+        end
+
+        def regular_license(metadata)
+          DataObservatoryMailer.user_request(@user, metadata[:id]).deliver_now
+          DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
         end
 
         def unsubscribe
@@ -97,10 +105,6 @@ module Carto
           raise UnauthorizedError unless api_key&.master? || api_key&.data_observatory_permissions?
         end
 
-        def check_licensing_enabled
-          raise UnauthorizedError.new('DO licensing not enabled') unless @user.has_feature_flag?('do-licensing')
-        end
-
         def rescue_from_central_error(exception)
           render_jsonp({ errors: exception.errors }, 500)
         end
@@ -137,20 +141,18 @@ module Carto
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
 
           result = metadata_user.in_database[query].first
-          validate_metadata(result)
-        end
-
-        def validate_metadata(result)
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
-          valid_data = result[:available_in].present? && result[:estimated_delivery_days].present? &&
-                       result[:subscription_list_price].present?
-          unless valid_data
-            CartoDB::Logger.info(message: 'Incomplete DO metadata', id: @id)
-            raise Carto::LoadError.new("Incomplete metadata found for #{@id}")
-          end
-
           result
+        end
+
+        def license_info(metadata)
+          {
+            dataset_id: metadata[:id],
+            available_in: metadata[:available_in],
+            price: metadata[:subscription_list_price],
+            expires_at: Time.now.round + 1.year
+          }
         end
       end
     end

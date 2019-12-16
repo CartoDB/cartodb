@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Regular licensing for Data Observatory ([#15315](https://github.com/CartoDB/cartodb/pull/15315))
 
 ### Bug fixes / enhancements
 - Avoid warnings when running test in parallel with an empty environment

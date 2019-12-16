@@ -71,8 +71,6 @@ $w: $sLayout-width;
   }
 
   &__label {
-    width: 160px !important;
-
     &--textarea {
       padding-top: 12px;
     }
@@ -109,6 +107,11 @@ $w: $sLayout-width;
 
   &__hint {
     width: 460px;
+  }
+
+  &__feedback {
+    padding-top: 75px;
+    text-align: center;
   }
 }
 

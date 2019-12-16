@@ -127,7 +127,8 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: false, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil },
+        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
       }
     end
   end
@@ -145,7 +146,8 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: true, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil },
+        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
       }
     end
     user_config.destroy
@@ -276,7 +278,390 @@ describe Carto::Connector do
       )
     end
 
-    it 'Should quote ODBC paremeters that require it' do
+    it 'can import an external table under a different name' do
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        table:    'thetable',
+        import_as: 'theimportedtable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
+
+      @executed_commands.size.should eq 9
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
+      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
+      user_name = @user.username
+      user_role = @user.database_username
+      connector.table_name.should == 'theimportedtable'
+
+      expect_executed_commands(
+        @executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            fdw_name: 'odbc_fdw',
+            options: {
+              'odbc_Driver' => 'MySQL',
+              'odbc_server' => 'theserver',
+              'odbc_database' => 'thedatabase',
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
+            }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          mode: :superuser,
+          sql: [{
+            command: :import_foreign_schema,
+            server_name: server_name,
+            schema_name: 'cdb_importer',
+            options: {
+              "schema" => 'thedatabase',
+              "table" => 'thetable',
+              "encoding" => 'theencoding',
+              "prefix" => "#{server_name}_"
+            }
+          }, {
+            command: :grant_select,
+            table_name: foreign_table_name,
+            user_name: user_role
+          }]
+        }, {
+          # CREATE TABLE AS SELECT
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :create_table_as_select,
+            table_name: %{"xyz"."abc"},
+            select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+          }]
+        }, {
+          # DROP FOREIGN TABLE
+          mode: :superuser,
+          sql: [{
+            command: :drop_foreign_table_if_exists,
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name
+          }]
+        }
+      )
+    end
+
+    it 'can import a query' do
+      sql_query = 'SELECT 1000 AS value'
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        sql_query: sql_query,
+        import_as: 'theimportedtable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
+
+      @executed_commands.size.should eq 9
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
+      foreign_table_name = %{"cdb_importer"."#{server_name}_theimportedtable"}
+      user_name = @user.username
+      user_role = @user.database_username
+      connector.table_name.should == 'theimportedtable'
+
+      expect_executed_commands(
+        @executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            fdw_name: 'odbc_fdw',
+            options: {
+              'odbc_Driver' => 'MySQL',
+              'odbc_server' => 'theserver',
+              'odbc_database' => 'thedatabase',
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
+            }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          mode: :superuser,
+          sql: [{
+            command: :import_foreign_schema,
+            server_name: server_name,
+            schema_name: 'cdb_importer',
+            options: {
+              "schema" => 'thedatabase',
+              "sql_query" => sql_query,
+              "table" => 'theimportedtable',
+              "encoding" => 'theencoding',
+              "prefix" => "#{server_name}_"
+            }
+          }, {
+            command: :grant_select,
+            table_name: foreign_table_name,
+            user_name: user_role
+          }]
+        }, {
+          # CREATE TABLE AS SELECT
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :create_table_as_select,
+            table_name: %{"xyz"."abc"},
+            select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+          }]
+        }, {
+          # DROP FOREIGN TABLE
+          mode: :superuser,
+          sql: [{
+            command: :drop_foreign_table_if_exists,
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name
+          }]
+        }
+      )
+    end
+
+    it 'can can use the legacy table parameter to name a query' do
+      # this is for backwards compatibility, but deprecated
+      sql_query = 'SELECT 1000 AS value'
+      parameters = {
+        provider: 'mysql',
+        connection: {
+          server:   'theserver',
+          username: 'theuser',
+          password: 'thepassword',
+          database: 'thedatabase'
+        },
+        sql_query: sql_query,
+        table: 'theimportedtable',
+        encoding: 'theencoding'
+      }
+      options = {
+        logger:  @fake_log,
+        user: @user
+      }
+      context = TestConnectorContext.new(@executed_commands = [], options)
+      connector = Carto::Connector.new(parameters, context)
+      connector.copy_table schema_name: 'xyz', table_name: 'abc'
+
+      @executed_commands.size.should eq 9
+      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
+      foreign_table_name = %{"cdb_importer"."#{server_name}_theimportedtable"}
+      user_name = @user.username
+      user_role = @user.database_username
+      connector.table_name.should == 'theimportedtable'
+
+      expect_executed_commands(
+        @executed_commands,
+        {
+          # CREATE SERVER
+          mode: :superuser,
+          sql: [{
+            command: :create_server,
+            fdw_name: 'odbc_fdw',
+            options: {
+              'odbc_Driver' => 'MySQL',
+              'odbc_server' => 'theserver',
+              'odbc_database' => 'thedatabase',
+              'odbc_port' => '3306',
+              "odbc_option" => '0',
+              "odbc_prefetch" => '0',
+              "odbc_no_ssps" => '0',
+              "odbc_can_handle_exp_pwd" => '0'
+            }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: user_role,
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # CREATE USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :create_user_mapping,
+            server_name: server_name,
+            user_name: 'postgres',
+            options: { 'odbc_uid' => 'theuser', 'odbc_pwd' => 'thepassword' }
+          }]
+        }, {
+          # IMPORT FOREIGH SCHEMA; GRANT SELECT
+          mode: :superuser,
+          sql: [{
+            command: :import_foreign_schema,
+            server_name: server_name,
+            schema_name: 'cdb_importer',
+            options: {
+              "schema" => 'thedatabase',
+              "sql_query" => sql_query,
+              "table" => 'theimportedtable',
+              "encoding" => 'theencoding',
+              "prefix" => "#{server_name}_"
+            }
+          }, {
+            command: :grant_select,
+            table_name: foreign_table_name,
+            user_name: user_role
+          }]
+        }, {
+          # CREATE TABLE AS SELECT
+          mode: :user,
+          user: user_name,
+          sql: [{
+            command: :create_table_as_select,
+            table_name: %{"xyz"."abc"},
+            select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
+          }]
+        }, {
+          # DROP FOREIGN TABLE
+          mode: :superuser,
+          sql: [{
+            command: :drop_foreign_table_if_exists,
+            table_name: foreign_table_name
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: 'postgres'
+          }]
+        }, {
+          # DROP USER MAPPING
+          mode: :superuser,
+          sql: [{
+            command: :drop_usermapping_if_exists,
+            server_name: server_name,
+            user_name: user_role
+          }]
+        }, {
+          # DROP SERVER
+          mode: :superuser,
+          sql: [{
+            command: :drop_server_if_exists,
+            server_name: server_name
+          }]
+        }
+      )
+    end
+
+    it 'Should quote ODBC parameters that require it' do
       parameters = {
         provider: 'mysql',
         connection: {
@@ -895,7 +1280,8 @@ describe Carto::Connector do
             'port'     => { required: false },
             'database' => { required: false }
           },
-          'table'      => { required: true  },
+          'table'      => { required: false  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1049,7 +1435,8 @@ describe Carto::Connector do
             'database' => { required: true  },
             'sslmode'  => { required: false }
           },
-          'table'      => { required: true  },
+          'table'      => { required: false  },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1199,7 +1586,8 @@ describe Carto::Connector do
             'port'     => { required: false },
             'database' => { required: true  }
           },
-          'table'      => { required: true  },
+          'table'      => { required: false },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1347,7 +1735,8 @@ describe Carto::Connector do
             'port'     => { required: false },
             'database' => { required: false }
           },
-          'table'      => { required: true  },
+          'table'      => { required: false },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -1362,7 +1751,7 @@ describe Carto::Connector do
     it 'Executes expected odbc_fdw SQL commands to copy a table' do
       parameters = {
         provider: 'bigquery',
-        project: 'theproject',
+        billing_project: 'theproject',
         dataset: 'thedataset',
         table:    'thetable'
       }
@@ -1375,7 +1764,13 @@ describe Carto::Connector do
       oauth_config = {
         'bigquery' => {
           'client_id' => 'theclientid',
-          'client_secret' => 'theclientsecret'
+          'client_secret' => 'theclientsecret',
+          'scope' => 'thescope',
+          'application_name' => 'Connect your Google BigQuery data with CartoDB',
+          'callback_url' => 'https://example.com',
+          'authorization_uri' => 'https://example.com',
+          'token_credential_uri' => 'https://example.com',
+          'revoke_auth_uri' =>  'https://example.com'
         }
       }
       Cartodb.with_config oauth: oauth_config do
@@ -1401,10 +1796,13 @@ describe Carto::Connector do
             'odbc_ClientId' => 'theclientid',
             'odbc_ClientSecret' => 'theclientsecret',
             'odbc_Driver' => 'Simba ODBC Driver for Google BigQuery 64-bit',
-            'odbc_LargeResultsDataSetId' => '{_bqodbc_temp_tables}',
+            "odbc_EnableHTAPI" => "0",
+            "odbc_HTAPI_MinActivationRatio" => "0",
+            "odbc_HTAPI_MinResultsSize" => "100",
             'odbc_LargeResultsTempTableExpirationTime' => '3600000',
             'odbc_OAuthMechanism' => '1',
-            'odbc_SQLDialect' => '1'
+            'odbc_SQLDialect' => '1',
+            "odbc_UseQueryCache" => "1"
           }
         }]
       }, {
@@ -1436,7 +1834,8 @@ describe Carto::Connector do
           options: {
             "odbc_DefaultDataset" => 'thedataset',
             "table" => 'thetable',
-            "prefix" => "#{server_name}_"
+            "prefix" => "#{server_name}_",
+            "sql_query" => "SELECT * FROM `theproject.thedataset.thetable`;" # uses a query for BQ driver issues
           }
         }, {
           command: :grant_select,
@@ -1503,7 +1902,8 @@ describe Carto::Connector do
             'port'     => { required: false },
             'database' => { required: false }
           },
-          'table'      => { required: true  },
+          'table'      => { required: false },
+          'import_as'  => { required: false },
           'schema'     => { required: false },
           'sql_query'  => { required: false },
           'sql_count'  => { required: false },
@@ -2072,7 +2472,7 @@ describe Carto::Connector do
           'table'      => { required: true  },
           'schema'     => { required: false },
           'username'   => { required: true  },
-          'password'   => { required: true },
+          'password'   => { required: true  },
           'server'     => { required: true  },
           'port'       => { required: false },
           'database'   => { required: true  }

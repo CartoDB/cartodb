@@ -4,35 +4,75 @@ require_relative './odbc'
 module Carto
   class Connector
 
-    # {
-    #   "provider": "bigquery",
-    #   "project": "eternal-ship-170218",
-    #   "table": "destination_table",
-    #   "sql_query": "select * from `eternal-ship-170218.test.test` limit 1;"
-    # }
-    #
-    # {
-    #   "provider": "bigquery",
-    #   "project": "some_project",
-    #   "dataset": "mydataset",
-    #   "table": "mytable"
-    # }
-    class BigQueryProvider < OdbcProvider
-      metadata id: 'bigquery', name: 'Google BigQuery', public?: false
+  # {
+  #     "provider": "bigquery",
+  #     "billing_project": "cartodb-on-gcp-core-team",
+  #     "dataset": "f1",
+  #     "table": "circuits",
+  #     "import_as": "my_circuits",
+  #     "storage_api": true
+  # }
+  class BigQueryProvider < OdbcProvider
+      metadata id: 'bigquery', name: 'Google BigQuery', public?: true
 
-      odbc_attributes project: :Catalog, dataset: { DefaultDataset: nil }
+      odbc_attributes billing_project: :Catalog, storage_api: :EnableHTAPI, project: :AdditionalProjects, dataset: { DefaultDataset: nil }
 
       def errors(only_for: nil)
-        # dataset is not optional if not using a query
         parameters_to_validate = @params.normalize_parameter_names(only_for)
         dataset_errors = []
         if parameters_to_validate.blank? || parameters_to_validate.include?(:dataset)
+          # dataset is not optional if not using a query
           if !@params.normalized_names.include?(:dataset) && !@params.normalized_names.include?(:sql_query)
             dataset_errors << "The dataset parameter is needed for tables"
           end
         end
         super + dataset_errors
       end
+
+      # BigQuery provider add the list_projects feature
+      def features_information
+        super.merge(list_projects: true)
+      end
+
+      def check_connection
+        ok = false
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          ok = oauth_client.token_valid?
+        end
+        ok
+      end
+
+      def list_projects
+        raise Carto::Connector::NotImplemented.new
+      end
+
+      def list_tables_by_project(project_id)
+        raise Carto::Connector::NotImplemented.new
+      end
+
+      def parameters_to_odbc_attributes(params, optional_params, required_params)
+        super(params, optional_params, required_params).map { |k, v|
+          if v == true
+            v = 1
+          elsif v == false
+            v = 0
+          end
+          [k, v]
+        }
+      end
+
+      def table_options
+        params = super
+        # due to driver limitations (users need specific permissions in
+        # their projects) table imports have to be imported as sql_query
+        if !params[:sql_query].present?
+          project = @params[:project] || @params[:billing_project]
+          params[:sql_query] = %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{params[:table]}`;}
+        end
+        params
+      end
+
 
       private
 
@@ -43,10 +83,26 @@ module Carto
       #   the DefaultDataset is necessary when table names are not qualified with the dataset.
 
       server_attributes %I(
-        Driver Catalog SQLDialect OAuthMechanism ClientId ClientSecret
-        AllowLargeResults LargeResultsDataSetId LargeResultsTempTableExpirationTime
+        Driver
+        Catalog
+        SQLDialect
+        OAuthMechanism
+        ClientId
+        ClientSecret
+        EnableHTAPI
+        AllowLargeResults
+        UseQueryCache
+        HTAPI_MinActivationRatio
+        HTAPI_MinResultsSize
+        UseDefaultLargeResultsDataset
+        LargeResultsDataSetId
+        LargeResultsTempTableExpirationTime
+        AdditionalProjects
       )
       user_attributes %I(RefreshToken)
+
+      required_parameters %I(billing_project)
+      optional_parameters %I(project location import_as dataset table sql_query storage_api)
 
       # Class constants
       DATASOURCE_NAME              = id
@@ -55,13 +111,18 @@ module Carto
       DRIVER_NAME                  = 'Simba ODBC Driver for Google BigQuery 64-bit'
       SQL_DIALECT                  = 1
       OAUTH_MECHANISM              = 1
-      LRESULTS                     = 0
-      LRESULTS_DATASET_ID          = '{_bqodbc_temp_tables}'
-      LRESULTS_TEMP_TABLE_EXP_TIME = '3600000'
+      ALLOW_LRESULTS               = 0
+      ENABLE_STORAGE_API           = 0
+      QUERY_CACHE                  = 1
+      HTAPI_MIN_ACTIVATION_RATIO   = 0
+      HTAPI_MIN_RESULTS_SIZE       = 100
+      HTAPI_TEMP_DATASET           = '_cartoimport_temp'
+      HTAPI_TEMP_TABLE_EXP         = 3600000
 
       def initialize(context, params)
         super
         @oauth_config = Cartodb.get_config(:oauth, DATASOURCE_NAME)
+        @sync_oauth = context&.user&.oauths&.select(DATASOURCE_NAME)
         validate_config!(context)
       end
 
@@ -75,34 +136,75 @@ module Carto
           raise "Missing OAuth configuration for BigQuery: Client ID & Secret must be defined"
         end
 
-        @token = context.user.oauths.select(DATASOURCE_NAME)&.token
-        raise AuthError.new('BigQuery refresh token not found for the user', DATASOURCE_NAME) if @token.nil?
+        if @sync_oauth.blank?
+          raise "Missing OAuth credentials for BigQuery: user must authorize"
+        end
+      end
+
+      def token
+        # We can get a validated token (having obtained a refreshed access token) with
+        #   @token ||= @sync_oauth&.get_service_datasource&.token
+        # But since the ODBC driver takes care of obtaining a fresh access token
+        # that's unnecessary.
+        @token ||= @sync_oauth&.token
       end
 
       def fixed_odbc_attributes
+        return @server_conf if @server_conf.present?
+
         proxy_conf = create_proxy_conf
 
-        conf = {
+        @server_conf = {
           Driver:         DRIVER_NAME,
           SQLDialect:     SQL_DIALECT,
           OAuthMechanism: OAUTH_MECHANISM,
-          RefreshToken:   @token,
+          RefreshToken:   token,
           ClientId: @oauth_config['client_id'],
           ClientSecret: @oauth_config['client_secret'],
-          AllowLargeResults: LRESULTS,
-          LargeResultsDataSetId: LRESULTS_DATASET_ID,
-          LargeResultsTempTableExpirationTime: LRESULTS_TEMP_TABLE_EXP_TIME
+          AllowLargeResults: ALLOW_LRESULTS,
+          HTAPI_MinActivationRatio: HTAPI_MIN_ACTIVATION_RATIO,
+          EnableHTAPI: ENABLE_STORAGE_API,
+          UseQueryCache: QUERY_CACHE,
+          HTAPI_MinResultsSize: HTAPI_MIN_RESULTS_SIZE,
+          LargeResultsTempTableExpirationTime: HTAPI_TEMP_TABLE_EXP
         }
 
-        if !proxy_conf.nil?
-          conf = conf.merge(proxy_conf)
+        if @params[:storage_api] == true
+          @server_conf = @server_conf.merge({
+            UseDefaultLargeResultsDataset: 1
+          })
+          if @params[:location].present?
+            @params[:location].upcase!
+            @server_conf = @server_conf.merge({
+              UseDefaultLargeResultsDataset: 0,
+              LargeResultsDataSetId: create_temp_dataset(@params[:billing_project], @params[:location])
+          })
+          end
         end
 
-        return conf
+        if !proxy_conf.nil?
+          @server_conf = @server_conf.merge(proxy_conf)
+        end
+
+        return @server_conf
       end
 
-      required_parameters %I(project table)
-      optional_parameters %I(dataset sql_query)
+      def create_temp_dataset(project_id, location)
+        temp_dataset_id = %{#{HTAPI_TEMP_DATASET}_#{location.downcase}}
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          begin
+            oauth_client.create_dataset(project_id, temp_dataset_id, {
+              :default_table_expiration_ms => HTAPI_TEMP_TABLE_EXP,
+              :location => location
+            })
+          rescue Google::Apis::ClientError => error
+            # if the dataset exists (409 conflict) do it nothing
+            raise error unless error.status_code == 409
+          end
+        end
+        temp_dataset_id
+      end
 
       def remote_schema_name
         # Note that DefaultDataset may not be defined and not needed when using IMPORT FOREIGN SCHEMA

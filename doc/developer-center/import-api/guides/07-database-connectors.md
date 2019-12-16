@@ -1180,6 +1180,7 @@ location an error will occur.
 #### Known Problems
 
 We're still in beta and intently enhancing this connector, so expect fast changes and improvements, but we also have some rough edges at the moment.
+Rest assured we’ll work hard to solve these problems and make the connector as capable and convenient to use as possible.
 
 ##### Project Permissions
 

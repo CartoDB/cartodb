@@ -1124,7 +1124,7 @@ When using the [BigQuery Storage API](https://cloud.google.com/bigquery/docs/ref
 
 ##### The billing project
 
-The project used to bill expenses is the one set through the `billing_project` parameter, which is mandatory.
+The project expenses are billed is the one set through the `billing_project` parameter, which is mandatory.
 
 Query charges apply to the billing project regardless of the project acting as source of data.
 

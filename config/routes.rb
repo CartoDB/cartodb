@@ -707,6 +707,8 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
+      get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
+      get 'connectors/:provider_id/:project_id/tables' => 'connectors#project_tables', as: :api_v1_connectors_project_tables
     end
   end
 

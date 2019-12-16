@@ -756,6 +756,9 @@ defaults: &defaults
     sqlserver:
       enabled: false
       max_rows: 500000
+    bigquery:
+      enabled: false
+      max_rows: 1000000
   enforce_non_empty_layer_css: false
   dataservices:
     enabled:

@@ -1179,20 +1179,18 @@ location an error will occur.
 
 #### Known Problems
 
-We're still in beta and intently enhancing this connectors, so expect fast changes and improvements,
-but we also have some rough edges at the moment.
+We're still in beta and intently enhancing this connectors, so expect fast changes and improvements, but we also have some rough edges at the moment.
 
 ##### Project Permissions
 
-If the account used to authorized CARTO (via OAuth) have access to your BigQuery projects but some of the
+If the account used to authorize CARTO (via OAuth) gives access to your BigQuery projects but some of the
 [necessary permissions](https://cloud.google.com/bigquery/docs/access-control) to execute the queries in the billing
 query are not granted to the account you won't get any error, but the imported datasets will be empty.
-Please, for the time being make sure you have permissions to admin BigQuery and use its APIS on the billing
-project, and check the imported results if you're in doubt.
+Please, make sure for the time being that you have permissions to admin BigQuery and use its APIS on the billing
+project, and check the imported results if in doubt.
 
-The permissions we are aware that can cause this problem (if not granted) are `bigquery.jobs.create` (which allows
-to execute queries in the billing project) and, if Storage API is used,
-`bigquery.readsessions.create` (required to read table data).
+The permissions that we are aware can cause this problem (when missing) are `bigquery.jobs.create` (which allows
+execution of queries in the billing project) and, if Storage API is used, `bigquery.readsessions.create` (required to read table data).
 
 ##### Column Names
 
@@ -1200,7 +1198,7 @@ Currently imported data from BigQuery follows a normalization process that adapt
 to [CARTO conventions](https://carto.com/developers/import-api/guides/column-names-normalization/).
 
 This process eliminates uppercase letters and special characters from the column names, which can lead
-to altered and hard to understand names. If this affects you, please assign lowercase names to your
+to altered and hard to understand names. If this affects you datasets, please assign lowercase names to your
 columns in the imported query (using `sql_query`) like this:
 
 ```sql

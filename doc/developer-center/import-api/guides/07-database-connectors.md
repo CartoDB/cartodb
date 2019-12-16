@@ -1179,7 +1179,7 @@ location an error will occur.
 
 #### Known Problems
 
-We're still in beta and intently enhancing this connectors, so expect fast changes and improvements, but we also have some rough edges at the moment.
+We're still in beta and intently enhancing this connector, so expect fast changes and improvements, but we also have some rough edges at the moment.
 
 ##### Project Permissions
 

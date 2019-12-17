@@ -13,13 +13,13 @@ module Carto
         FEDERATED_SERVER_ATTRIBUTES = %i(federated_server_name mode dbname host port username password).freeze
         REMOTE_TABLE_ATTRIBUTES = %i(federated_server_name remote_schema_name remote_table_name local_table_name_override id_column_name geom_column_name webmercator_column_name).freeze
 
-        REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES = ['federated_server_name', 'mode', 'host', 'username', 'password'].freeze
-        REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES = ['mode', 'host', 'username', 'password'].freeze
-        ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES = ['mode', 'dbname', 'host', 'port', 'username', 'password'].freeze
+        REQUIRED_POST_FEDERATED_SERVER_ATTRIBUTES = %w{ federated_server_name mode host username password }.freeze
+        REQUIRED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{ mode host username password }.freeze
+        ALLOWED_PUT_FEDERATED_SERVER_ATTRIBUTES = %w{ mode dbname host port username password }.freeze
 
-        REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = ['remote_table_name', 'id_column_name'].freeze
-        REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = ['id_column_name'].freeze
-        ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = ['local_table_name_override', 'id_column_name', 'geom_column_name', 'webmercator_column_name']
+        REQUIRED_POST_REMOTE_TABLE_ATTRIBUTES = %w{ remote_table_name id_column_name }.freeze
+        REQUIRED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{ id_column_name }.freeze
+        ALLOWED_PUT_REMOTE_TABLE_ATTRIBUTES = %w{ local_table_name_override id_column_name geom_column_name webmercator_column_name }.freeze
 
         before_action :load_user
         before_action :check_federated_tables_enable

@@ -65,7 +65,7 @@ module Carto
         end
 
         def regular_license(metadata)
-          DataObservatoryMailer.user_request(@user, metadata[:id]).deliver_now
+          DataObservatoryMailer.user_request(@user, metadata[:id], metadata[:name]).deliver_now
           DataObservatoryMailer.carto_request(@user, metadata[:id], metadata[:estimated_delivery_days]).deliver_now
         end
 

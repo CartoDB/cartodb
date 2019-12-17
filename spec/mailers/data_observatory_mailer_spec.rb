@@ -27,7 +27,7 @@ describe DataObservatoryMailer do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
-      expect(mail.subject).to eql('Your Data Observatory request')
+      expect(mail.subject).to eql('Your dataset request to CARTO')
     end
 
     it "delivers to the expected recipients" do
@@ -70,7 +70,7 @@ describe DataObservatoryMailer do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
-      expect(mail.subject).to eql('Data Observatory request')
+      expect(mail.subject).to eql('Dataset request')
     end
 
     it "delivers to the expected recipients" do

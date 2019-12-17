@@ -70,14 +70,14 @@ describe DataObservatoryMailer do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
-      expect(mail.subject).to eql('Your Data Observatory request')
+      expect(mail.subject).to eql('Data Observatory request')
     end
 
     it "delivers to the expected recipients" do
       @mailer.deliver_now
 
       mail = ActionMailer::Base.deliveries.first
-      expect(mail.to).to eql(['XAVI@cartodb.com'])
+      expect(mail.to).to eql(['dataobservatory@carto.com'])
     end
 
     it "delivers a text including the requested dataset id" do

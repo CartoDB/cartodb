@@ -14,7 +14,7 @@ class DataObservatoryMailer < ActionMailer::Base
   end
 
   def carto_request(user, dataset_id, delivery_days)
-    subject = 'Data Observatory request from CARTOframes'
+    subject = 'Data Observatory request'
     @user_name = user.name
     @user_email = user.email
     @dataset_id = dataset_id

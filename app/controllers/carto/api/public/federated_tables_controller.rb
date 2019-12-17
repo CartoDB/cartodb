@@ -242,7 +242,7 @@ module Carto
 
         def check_permissions
           @api_key = Carto::ApiKey.find_by_token(params["api_key"])
-          raise UnauthorizedError unless @api_key.master? || @api_key.dataset_metadata_permissions
+          raise UnauthorizedError unless @api_key.master?
         end
 
         def check_federated_tables_enable

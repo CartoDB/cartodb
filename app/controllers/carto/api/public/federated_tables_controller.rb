@@ -60,7 +60,7 @@ module Carto
 
         def list_federated_servers
           result = @service.list_servers(@pagination)
-          total = @service.count_servers()
+          total = @service.count_servers
 
           render_paged(result, total)
         rescue Sequel::DatabaseError => exception

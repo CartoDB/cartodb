@@ -346,7 +346,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'sends 2 emails if the dataset metadata is incomplete' do
+    it 'sends request emails if the dataset metadata is incomplete' do
       mailer_mock = stub(:deliver_now)
       dataset_id = 'carto.abc.incomplete'
       DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
@@ -357,7 +357,7 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'sends 2 emails if instant licensing is not enabled for the user' do
+    it 'sends request emails if instant licensing is not enabled for the user' do
       mailer_mock = stub(:deliver_now)
       dataset_id = @payload[:id]
       DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
@@ -365,8 +365,33 @@ describe Carto::Api::Public::DataObservatoryController do
 
       with_feature_flag @user1, 'do-instant-licensing', false do
         post_json endpoint_url(api_key: @master), @payload do |response|
-          p response.body
           expect(response.status).to eq(200)
+        end
+      end
+    end
+
+    it 'sends request emails if the delivery time is not 0' do
+      mailer_mock = stub(:deliver_now)
+      dataset_id = 'carto.abc.geography1'
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
+      Carto::DoLicensingService.expects(:new).never
+
+      Delorean.time_travel_to '2018/01/01 00:00:00' do
+        post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
+          expect(response.status).to eq(200)
+          expected_response = {
+            estimated_delivery_days: 3.0,
+            id: 'carto.abc.geography1',
+            licenses: 'licenses',
+            licenses_link: 'licenses_link',
+            rights: 'rights',
+            subscription_list_price: 90.0,
+            tos: 'tos',
+            tos_link: 'tos_link',
+            type: 'geography'
+          }
+          expect(response.body).to eq expected_response
         end
       end
     end
@@ -401,29 +426,6 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
-
-    it 'returns 200 with the dataset metadata and sends an email when the delivery time is not 0' do
-      Carto::DoLicensingService.expects(:new).never
-
-      Delorean.time_travel_to '2018/01/01 00:00:00' do
-        post_json endpoint_url(api_key: @master), id: 'carto.abc.geography1', type: 'geography' do |response|
-          expect(response.status).to eq(200)
-          expected_response = {
-            estimated_delivery_days: 3.0,
-            id: 'carto.abc.geography1',
-            licenses: 'licenses',
-            licenses_link: 'licenses_link',
-            rights: 'rights',
-            subscription_list_price: 90.0,
-            tos: 'tos',
-            tos_link: 'tos_link',
-            type: 'geography'
-          }
-          expect(response.body).to eq expected_response
-        end
-      end
-    end
-
   end
 
   describe 'unsubscribe' do

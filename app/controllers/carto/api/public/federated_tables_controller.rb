@@ -55,6 +55,7 @@ module Carto
         before_action :ensure_readonly_mode, only: [:register_federated_server, :update_federated_server]
 
         setup_default_rescues
+        rescue_from Sequel::DatabaseError, with: :rescue_from_service_error
 
         # Federated Servers
 
@@ -63,23 +64,17 @@ module Carto
           total = @service.count_servers
 
           render_paged(result, total)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def register_federated_server
           federated_server = @service.register_server(@federated_server_attributes)
           response.headers['Content-Location'] = "#{request.path}/#{federated_server[:federated_server_name]}"
           render_jsonp(federated_server, 201)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def show_federated_server
           @federated_server[:password] = '********'
           render_jsonp(@federated_server, 200)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def update_federated_server
@@ -91,15 +86,11 @@ module Carto
 
           @federated_server = @service.update_server(@federated_server[:federated_server_name], @federated_server_attributes)
           render_jsonp({}, 204)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def unregister_federated_server
           @service.unregister_server(federated_server_name: params[:federated_server_name])
           render_jsonp({}, 204)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         # Remote Schemas
@@ -108,8 +99,6 @@ module Carto
           result = @service.list_remote_schemas(params[:federated_server_name], @pagination)
           total = @service.count_remote_schemas(params[:federated_server_name])
           render_paged(result, total)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         # Remote Tables
@@ -120,22 +109,16 @@ module Carto
           result.each {|table| table.slice!(:registered, :remote_schema_name, :remote_table_name, :columns) unless table[:registered]}
           total = @service.count_remote_tables(params[:federated_server_name], params[:remote_schema_name])
           render_paged(result, total)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def register_remote_table
           remote_table = @service.register_table(@remote_table_attributes)
           response.headers['Content-Location'] = "#{request.path}/#{remote_table[:remote_table_name]}"
           render_jsonp(remote_table, 201)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def show_remote_table
           render_jsonp(@remote_table, 200)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def update_remote_table
@@ -147,8 +130,6 @@ module Carto
           @remote_table = @service.update_table(@remote_table_attributes)
 
           render_jsonp({}, 204)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def unregister_remote_table
@@ -158,8 +139,6 @@ module Carto
             remote_table_name: params[:remote_table_name]
           )
           render_jsonp({}, 204)
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         private
@@ -219,8 +198,6 @@ module Carto
             remote_table_name: params[:remote_table_name]
           )
           raise Carto::LoadError.new("Table '#{params[:remote_schema_name]}'.'#{params[:remote_table_name]}' not found at '#{params[:federated_server_name]}'") if @remote_table.nil?
-        rescue Sequel::DatabaseError => exception
-          handle_service_error(exception)
         end
 
         def check_remote_table
@@ -262,18 +239,18 @@ module Carto
           render_jsonp(enriched_response, 200)
         end
 
-        def handle_service_error(exception)
+        def rescue_from_service_error(exception)
           message = get_error_message(exception)
           case message
           when /(.*) does not exist/
-            raise Carto::LoadError.new(message)
+            rescue_from_carto_error(Carto::LoadError.new(message))
           when /Not enough permissions to access the server (.*)/
-            raise Carto::UnauthorizedError.new(message)
+            rescue_from_carto_error(Carto::UnauthorizedError.new(message))
           when /Server name (.*) is too long to be used as identifier/,
                /Could not import table (.*) of server (.*)/,
                /Could not import table (.*) as (.*) already exists/,
                /non integer id_column (.*)/, /non geometry column (.*)/
-            raise Carto::UnprocesableEntityError.new(message)
+            rescue_from_carto_error(Carto::UnprocesableEntityError.new(message))
           else
             raise exception
           end

@@ -1067,38 +1067,9 @@ from_external_source | Has the value **false** for all connector-based synchroni
 }
 ```
 
-### Limitations and Restrictions
-
-When using database connectors, the following limitations or restrictions are enforced:
-
-- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
-
-  **Note:** A lower number of row limits, per import, may apply to your CARTO account a prevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
-
-- The maximum number of columns for a remote table is 256. Connections will fail if this limit is surpassed
-- The number of simultaneous sync tables and concurrent executions is subject to limits, depending on your account plan. [Contact us](sales@carto.com) to discuss support for your connector
-- The length of table, column, schema, or identifier names should not be greater than 63 characters. Beyond 63 characters, the identifier is truncated, which could lead to undefined behavior
-- Only columns of supported types will be imported. Currently, any of the following that can be assimilated to standard SQL types, are supported:
-  - `CHARACTER`
-  - `CHARACTER VARYING`
-  - `DECIMAL`
-  - `NUMERIC`
-  - `FLOAT`
-  - `REAL`
-  - `DOUBLE PRECISION`
-  - `INTEGER`
-  - `SMALLINT`
-  - `BIGINT`
-  - `DATE`
-  - `TIME`
-  - `TIMESTAMP`
-- The number of remote listing tables is limited to 500 table names
-
-**Note:** The number of imported columns will affect the performance of the connector.
-
 ### The BigQuery Connector (BETA)
 
-:warning: This connector is in **beta** stage and the API might change or have limited support :warning:
+**Warning:** This connector is in **BETA** stage and the API might change or have limited support-
 
 The BigQuery Connector allows you to import data into a CARTO account as tables from BigQuery. Note that **this connector is disabled by default** in the CARTO importer options. If you are interested in enabling it, [contact us](mailto:sales@carto.com) for details.
 
@@ -1165,7 +1136,7 @@ than the standard REST API used otherwise to import the data. It can be enabled 
 When the `storage_api` is enabled, it will be used if possible and depending on the size of the imported data.
 To use it, the BigQuery billing project that you use must have the BigQuery Storage API enabled. For more information, see "Enabling the API" in the Google BigQuery documentation: https://cloud.google.com/bigquery/docs/reference/storage/#enabling_the_api.
 
-:warning: Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api. :warning:
+**Warning:** Pricing for the BigQuery Storage API is different than pricing for the standard API. For more information, see "BigQuery Storage API Pricing" in the Google BigQuery documentation: https://cloud.google.com/bigquery/pricing#storage-api.
 
 #### Location
 
@@ -1182,7 +1153,7 @@ location an error will occur.
 We're still in beta and intently enhancing this connector, so expect fast changes and improvements, but we also have some rough edges at the moment.
 Rest assured we’ll work hard to solve these problems and make the connector as capable and convenient to use as possible.
 
-##### Project Permissions
+##### Project Permissions
 
 If the account used to authorize CARTO (via OAuth) gives access to your BigQuery projects but some of the
 [necessary permissions](https://cloud.google.com/bigquery/docs/access-control) to execute the queries in the billing
@@ -1190,7 +1161,7 @@ query are not granted to the account you won't get any error, but the imported d
 Please, make sure for the time being that you have permissions to admin BigQuery and use its APIS on the billing
 project, and check the imported results if in doubt.
 
-The permissions that we are aware can cause this problem (when missing) are `bigquery.jobs.create` (which allows
+**Tip:** The permissions that we are aware can cause this problem (when missing) are `bigquery.jobs.create` (which allows
 execution of queries in the billing project) and, if Storage API is used, `bigquery.readsessions.create` (required to read table data).
 
 ##### Column Names
@@ -1419,3 +1390,31 @@ from_external_source | Has the value **false** for all connector-based synchroni
 }
 ```
 
+### Limitations and Restrictions
+
+When using database connectors, the following limitations or restrictions are enforced:
+
+- The maximum number of rows that the connector can fetch from the remote table is 1 MILLION rows. When this limit is reached, a warning will be fired and the dataset will be successfully imported, but truncated to 1 million rows
+
+  **Note:** A lower number of row limits, per import, may apply to your CARTO account a prevent the connection. [Contact us](mailto:sales@carto.com) if you have questions about account limitations.
+
+- The maximum number of columns for a remote table is 256. Connections will fail if this limit is surpassed
+- The number of simultaneous sync tables and concurrent executions is subject to limits, depending on your account plan. [Contact us](sales@carto.com) to discuss support for your connector
+- The length of table, column, schema, or identifier names should not be greater than 63 characters. Beyond 63 characters, the identifier is truncated, which could lead to undefined behavior
+- Only columns of supported types will be imported. Currently, any of the following that can be assimilated to standard SQL types, are supported:
+  - `CHARACTER`
+  - `CHARACTER VARYING`
+  - `DECIMAL`
+  - `NUMERIC`
+  - `FLOAT`
+  - `REAL`
+  - `DOUBLE PRECISION`
+  - `INTEGER`
+  - `SMALLINT`
+  - `BIGINT`
+  - `DATE`
+  - `TIME`
+  - `TIMESTAMP`
+- The number of remote listing tables is limited to 500 table names
+
+**Note:** The number of imported columns will affect the performance of the connector.

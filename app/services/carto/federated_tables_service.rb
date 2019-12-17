@@ -175,16 +175,16 @@ module Carto
 
     def register_federated_server_query(attributes)
       config_server = {}
-      config_server["dbname"] = attributes[:dbname] unless (attributes[:dbname].nil? || attributes[:dbname] == "")
-      config_server["host"] = attributes[:host] unless (attributes[:host].nil? || attributes[:host] == "")
-      config_server["port"] = attributes[:port] unless (attributes[:port].nil? || attributes[:port] == "")
+      config_server["dbname"] = attributes[:dbname] if attributes[:dbname].present?
+      config_server["host"] = attributes[:host] if attributes[:host].present?
+      config_server["port"] = attributes[:port] if attributes[:port].present?
       config_server["extensions"] = "postgis"
       config_server["updatable"] = attributes[:mode] != 'read-write' ? "false" : "write"
       config_server["use_remote_estimate"] = "true"
       config_server["fetch_size"] = "1000"
       config_credentials = {}
-      config_credentials["username"] = attributes[:username] unless (attributes[:username].nil? || attributes[:username] == "")
-      config_credentials["password"] = attributes[:password] unless (attributes[:password].nil? || attributes[:password] == "")
+      config_credentials["username"] = attributes[:username] if attributes[:username].present?
+      config_credentials["password"] = attributes[:password] if attributes[:password].present?
       config = { :server => config_server, :credentials => config_credentials }
 
       server_str = @user_db_connection.literal(attributes[:federated_server_name])

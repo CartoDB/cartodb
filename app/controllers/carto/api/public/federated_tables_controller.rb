@@ -23,22 +23,31 @@ module Carto
 
         before_action :load_user
         before_action :check_federated_tables_enable
+        before_action :check_permissions
         before_action :load_service
+
+        # Federated Servers
+
         before_action only: [:list_federated_servers] do
           load_pagination_params(default_order: 'federated_server_name', valid_order_params: VALID_ORDER_PARAMS_FEDERATED_SERVER)
         end
-        before_action only: [:list_remote_schemas] do
-          load_pagination_params(default_order: 'remote_schema_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_SCHEMA)
-        end
-        before_action only: [:list_remote_tables] do
-          load_pagination_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
-        end
-        before_action :check_permissions
         before_action :load_federated_server_attributes, only: [:register_federated_server, :update_federated_server ]
         before_action :load_federated_server, only: [:update_federated_server, :unregister_federated_server, :show_federated_server]
         before_action :check_federated_server, only: [:unregister_federated_server, :show_federated_server]
         before_action :ensure_required_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
         before_action :validate_federated_server_attributes, only: [:register_federated_server, :update_federated_server]
+
+        # Remote Schemas
+
+        before_action only: [:list_remote_schemas] do
+          load_pagination_params(default_order: 'remote_schema_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_SCHEMA)
+        end
+
+        # Remote Tables
+
+        before_action only: [:list_remote_tables] do
+          load_pagination_params(default_order: 'remote_table_name', valid_order_params: VALID_ORDER_PARAMS_REMOTE_TABLE)
+        end
         before_action :load_remote_table_attributes, only: [:register_remote_table, :update_remote_table ]
         before_action :load_remote_table, only: [:update_remote_table, :unregister_remote_table, :show_remote_table]
         before_action :check_remote_table, only: [:unregister_remote_table, :show_remote_table]

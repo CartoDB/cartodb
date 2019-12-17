@@ -18,6 +18,7 @@ Development
 - Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
 - ArcGIS connector: Stop skipping ids on failure.
 - Adapt python scripts python3 syntax.
+- Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
 
 4.31.0 (2019-11-19)
 -------------------

@@ -13,4 +13,4 @@ To execute an authorized request, `api_key=YOURAPIKEY` should be added to the re
 
 ### Errors
 
-Errors are reported using standard HTTP codes....
+Errors are reported using standard HTTP codes.

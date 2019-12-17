@@ -349,7 +349,9 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'sends request emails if the dataset metadata is incomplete' do
       mailer_mock = stub(:deliver_now)
       dataset_id = 'carto.abc.incomplete'
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      dataset_name = 'Incomplete dataset'
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once
+                           .returns(mailer_mock)
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
 
       post_json endpoint_url(api_key: @master), id: dataset_id, type: 'dataset' do |response|
@@ -360,7 +362,9 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'sends request emails if instant licensing is not enabled for the user' do
       mailer_mock = stub(:deliver_now)
       dataset_id = @payload[:id]
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      dataset_name = 'CARTO dataset 1'
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once
+                           .returns(mailer_mock)
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 0.0).once.returns(mailer_mock)
 
       with_feature_flag @user1, 'do-instant-licensing', false do
@@ -373,7 +377,8 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'sends request emails if the delivery time is not 0' do
       mailer_mock = stub(:deliver_now)
       dataset_id = 'carto.abc.geography1'
-      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id).once.returns(mailer_mock)
+      dataset_name = 'CARTO geography 1'
+      DataObservatoryMailer.expects(:user_request).with(@carto_user1, dataset_id, dataset_name).once.returns(mailer_mock)
       DataObservatoryMailer.expects(:carto_request).with(@carto_user1, dataset_id, 3.0).once.returns(mailer_mock)
       Carto::DoLicensingService.expects(:new).never
 
@@ -456,15 +461,17 @@ describe Carto::Api::Public::DataObservatoryController do
     metadata_user = FactoryGirl.create(:user, username: 'do-metadata')
     db_seed = %{
       CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                            tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
+                            tos_link text, licenses text, licenses_link text, rights text, available_in text[], 
+                            name text);
       INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', '{bq}');
+                                   'rights', '{bq}', 'CARTO dataset 1');
       INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                   'rights', NULL);
+                                   'rights', NULL, 'Incomplete dataset');
       CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                               tos_link text, licenses text, licenses_link text, rights text, available_in text[]);
+                               tos_link text, licenses text, licenses_link text, rights text, available_in text[],
+                               name text);
       INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
-                                      'rights', '{bq}');
+                                      'rights', '{bq}', 'CARTO geography 1');
     }
     metadata_user.in_database.run(db_seed)
   end

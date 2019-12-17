@@ -24,6 +24,7 @@ require_relative '../../services/platform-limits/platform_limits'
 require_relative '../../services/importer/lib/importer/overviews'
 require_relative '../../services/importer/lib/importer/connector_runner'
 require_relative '../../services/importer/lib/importer/exceptions'
+require_relative '../../services/importer/lib/importer/column'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/valid_table_name_proposer'
@@ -119,8 +120,9 @@ class DataImport < Sequel::Model
   # For the old dashboard
   def before_create
     if self.from_common_data?
-      self.extra_options = self.extra_options.merge({:common_data => true})
+      extra_options.merge! common_data: true
     end
+    extra_options.merge! column_sanitization_version: CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
   end
 
   def before_save
@@ -426,6 +428,10 @@ class DataImport < Sequel::Model
     [STATE_COMPLETE, STATE_FAILURE, STATE_STUCK].include?(state)
   end
 
+  def column_sanitization_version
+    extra_options[:column_sanitization_version] || CartoDB::Importer2::Column::INITIAL_COLUMN_SANITIZATION_VERSION
+  end
+
   private
 
   def dispatch
@@ -574,12 +580,18 @@ class DataImport < Sequel::Model
     collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_OVERWRITE
   end
 
+
   def sanitize_columns(table_name)
-    Table.sanitize_columns(table_name, {
+    # TODO: is this called before table is registered? otherwise we should use Table#sanitize_columns
+    Table.sanitize_columns(
+      table_name,
+      column_sanitization_version,
+      {
         connection: current_user.in_database,
         database_schema: current_user.database_schema,
-        reserved_words: CartoDB::Importer2::Column::RESERVED_WORDS
-      })
+        reserved_words: CartoDB::Importer2::Column::RESERVED_WORDS # TODO: review this
+      }
+    )
   end
 
   def migrate_existing(imported_name)

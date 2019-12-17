@@ -11,6 +11,7 @@ require_relative './visualization/overlays'
 require_relative './visualization/table_blender'
 require_relative '../../services/importer/lib/importer/query_batcher'
 require_relative '../../services/importer/lib/importer/cartodbfy_time'
+require_relative '../../services/importer/lib/importer/column'
 require_relative '../../services/datasources/lib/datasources/decorators/factory'
 require_relative '../../services/table-geocoder/lib/internal-geocoder/latitude_longitude'
 require_relative '../model_factories/layer_factory'
@@ -227,7 +228,7 @@ class Table
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
 
       # Make sure column names are sanitized. Make it consistently.
-      self.class.sanitize_columns(uniname, {database_schema: owner.database_schema, connection: owner.in_database})
+      sanitize_columns(table_name: uniname, database_schema: owner.database_schema, connection: owner.in_database)
 
       # with table #{uniname} table created now run migrator to CartoDBify
       hash_in = ::SequelRails.configuration.environment_for(Rails.env).merge(
@@ -1303,14 +1304,31 @@ class Table
     Carto::ValidTableNameProposer.new.propose_valid_table_name(contendent, taken_names: user_table_names)
   end
 
-  def self.sanitize_columns(table_name, options={})
+  def column_sanitization_version
+    if @data_import
+      @data_import.column_sanitization_version
+    else
+      CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION
+    end
+  end
+
+  # Apply the sanitization defined for this table.
+  # If the table_name parameter is passed, the sanitization which was originally applied to self
+  # is applied to the table so named.
+  # If no table_name parameters is paseed the normalization is applied to self.
+  # This allows re-applying the same normalization to imported tables.
+  def sanitize_columns(table_name: name, **options)
+    self.class.sanitize_columns(table_name, column_sanitization_version, options)
+  end
+
+  def self.sanitize_columns(table_name, column_sanitization_version, options={})
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 
     connection.schema(table_name, schema: database_schema, reload: true).each do |column|
       column_name = column[0].to_s
       column_type = column[1][:db_type]
-      column_name = ensure_column_has_valid_name(table_name, column_name, options)
+      column_name = ensure_column_has_valid_name(table_name, column_name, column_sanitization_version, options)
       if column_type == 'unknown'
         CartoDB::ColumnTypecaster.new(
           user_database:  connection,
@@ -1323,11 +1341,11 @@ class Table
     end
   end
 
-  def self.ensure_column_has_valid_name(table_name, column_name, options={})
+  def self.ensure_column_has_valid_name(table_name, column_name, column_sanitization_version, options={})
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 
-    valid_column_name = get_valid_column_name(table_name, column_name, options)
+    valid_column_name = get_valid_column_name(table_name, column_name, column_sanitization_version, options)
     if valid_column_name != column_name
       connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
     end
@@ -1335,30 +1353,8 @@ class Table
     valid_column_name
   end
 
-  def self.get_valid_column_name(table_name, candidate_column_name, options={})
-    reserved_words = options.fetch(:reserved_words, [])
-
-    existing_names = get_column_names(table_name, options) - [candidate_column_name]
-
-    candidate_column_name = 'untitled_column' if candidate_column_name.blank?
-    candidate_column_name = candidate_column_name.to_s.squish
-
-    # Subsequent characters can be letters, underscores or digits
-    candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
-
-    # Valid names start with a letter or an underscore
-    candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
-
-    # Avoid collisions
-    count = 1
-    new_column_name = candidate_column_name
-    while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
-      suffix = "_#{count}"
-      new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
-      count += 1
-    end
-
-    new_column_name
+  def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, options={})
+    CartoDB::Importer2::Column.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, get_column_names(table_name, options), options)
   end
 
   def self.get_column_names(table_name, options={})

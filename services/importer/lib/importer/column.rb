@@ -33,6 +33,10 @@ module CartoDB
                             FORMAT CONTROLLER ACTION
                           }
 
+      NO_COLUMN_SANITIZATION_VERSION = 0
+      INITIAL_COLUMN_SANITIZATION_VERSION = 1
+      CURRENT_COLUMN_SANITIZATION_VERSION = 2
+
       def initialize(db, table_name, column_name, user, schema = DEFAULT_SCHEMA, job = nil, logger = nil, capture_exceptions = true)
         @job          = job || Job.new({logger: logger})
         @db           = db
@@ -276,6 +280,44 @@ module CartoDB
 
       def unsupported?(name)
         name !~ /^[a-zA-Z_]/
+      end
+
+      def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, column_names, options={})
+
+        return candidate_column_name if column_sanitization_version == NO_COLUMN_SANITIZATION_VERSION
+
+        if column_sanitization_version == INITIAL_COLUMN_SANITIZATION_VERSION
+          reserved_words = options.fetch(:reserved_words, []) # FIXME: use RESERVED_WORDS ?
+
+          existing_names = column_names - [candidate_column_name]
+
+          candidate_column_name = 'untitled_column' if candidate_column_name.blank?
+          candidate_column_name = candidate_column_name.to_s.squish
+
+          # Subsequent characters can be letters, underscores or digits
+          candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+          # Valid names start with a letter or an underscore
+          candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
+
+          # Avoid collisions
+          count = 1
+          new_column_name = candidate_column_name
+          while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
+            suffix = "_#{count}"
+            new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
+            count += 1
+          end
+
+          new_column_name
+        elsif column_sanitization_version == 1
+
+          # TODO: use StringSanitizer / DB::Sanitize (handle special characters, maximum length, ...)
+          candidate_column_name.downcase
+
+        else
+          raise "Invalid column sanitization version #{column_sanitization_version.inspect}"
+        end
       end
 
       private

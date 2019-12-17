@@ -5,6 +5,10 @@ Development
 - None yet
 
 ### Features
+* BigQuery Connector beta release
+* Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
+  ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
 - Federated Tables:
   - Add enpoints to list, register, update, and unregister Federated Servers
   - Add enpoints to list Remote Schemas

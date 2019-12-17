@@ -62,16 +62,57 @@ module Carto
         end
       end
 
+      def projects
+        provider_id = params[:provider_id]
+        parameters = build_connection_parameters(provider_id, params)
+        if Carto::Connector.list_projects?(provider_id)
+          begin
+            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            render_jsonp(connector.list_projects)
+          rescue Carto::Connector::NotImplemented => e
+            render_jsonp({ errors: e.message }, 501)
+          rescue Carto::Connector::InvalidParametersError => e
+            render_jsonp({ errors: e.message }, 422)
+          rescue
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          end
+        else
+          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects" }, 422)
+        end
+      end
+
+      def project_tables
+        provider_id = params[:provider_id]
+        project = params[:project_id]
+        parameters = build_connection_parameters(provider_id, params)
+        if Carto::Connector.list_tables?(provider_id)
+          begin
+            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            render_jsonp(connector.list_tables_by_project(project))
+          rescue Carto::Connector::NotImplemented => e
+            render_jsonp({ errors: e.message }, 501)
+          rescue Carto::Connector::InvalidParametersError => e
+            render_jsonp({ errors: e.message }, 422)
+          rescue
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          end
+        else
+          render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
+        end
+      end
+
       private
 
       def build_connection_parameters(provider_id, request_params)
         parameters = {}
         parameters[:provider] = request_params[:provider_id]
-        parameters[:connection] = {}
         provider_information = Carto::Connector.information(provider_id)
-        provider_information[:parameters]["connection"].each do |key, _value|
-          if request_params[key.to_sym].present?
-            parameters[:connection][key.to_sym] = request_params[key.to_sym]
+        if provider_information[:parameters]["connection"].present?
+          parameters[:connection] = {}
+          provider_information[:parameters]["connection"].each do |key, _value|
+            if request_params[key.to_sym].present?
+              parameters[:connection][key.to_sym] = request_params[key.to_sym]
+            end
           end
         end
         parameters

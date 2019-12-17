@@ -71,7 +71,7 @@ describe Carto::Api::ConnectorsController do
         response.status.should be_success
         response.body[:features][:sql_queries].should eq true
         response.body[:features][:list_tables].should eq true
-        response.body[:parameters][:table][:required].should eq true
+        response.body[:parameters][:table][:required].should eq false
         response.body[:parameters][:connection][:database][:required].should eq true
         response.body[:parameters][:connection][:username][:required].should eq true
         response.body[:parameters][:connection][:port][:required].should eq false

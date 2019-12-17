@@ -679,7 +679,7 @@
     "select": "Select",
     "category": {
       "title": "Select a category",
-      "placeholder": "Search...",
+      "placeholder": "Select",
       "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     },
     "country": {

@@ -1354,7 +1354,7 @@ class Table
   end
 
   def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, options={})
-    CartoDB::Importer2::Column.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, get_column_names(table_name, options), options)
+    CartoDB::Importer2::Column.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, get_column_names(table_name, options))
   end
 
   def self.get_column_names(table_name, options={})

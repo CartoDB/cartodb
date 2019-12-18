@@ -282,12 +282,13 @@ module CartoDB
         name !~ /^[a-zA-Z_]/
       end
 
-      def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, column_names, options={})
+      def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, column_names)
 
         return candidate_column_name if column_sanitization_version == NO_COLUMN_SANITIZATION_VERSION
 
         if column_sanitization_version == INITIAL_COLUMN_SANITIZATION_VERSION
-          reserved_words = options.fetch(:reserved_words, []) # FIXME: use RESERVED_WORDS ?
+          # NOTE: originally not all uses of this sanitization version applied reserved words
+          reserved_words = RESERVED_WORDS
 
           existing_names = column_names - [candidate_column_name]
 

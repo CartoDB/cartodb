@@ -588,8 +588,7 @@ class DataImport < Sequel::Model
       column_sanitization_version,
       {
         connection: current_user.in_database,
-        database_schema: current_user.database_schema,
-        reserved_words: CartoDB::Importer2::Column::RESERVED_WORDS # TODO: review this
+        database_schema: current_user.database_schema
       }
     )
   end

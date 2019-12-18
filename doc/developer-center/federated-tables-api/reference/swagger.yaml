@@ -493,6 +493,124 @@ paths:
         - lang: Curl
           source: |
             curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}?api_key={api_key}"
+    put:
+      summary: Modify a registered Federated Table
+      description: Allows the modification of an already registered table. If it wasn't already, the table will be registered.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteTableRequest'
+            example:
+              remote_table_name: world_borders
+              local_table_name_override: countries
+              id_column_name: id
+              geom_column_name: the_geom
+              webmercator_column_name: the_geom_webmercator
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteTableResponse'
+              example:
+                registered: true
+                remote_schema_name: borders
+                remote_table_name: world_borders
+                local_table_name_override: countries
+                qualified_name: cdb_fs_example_server.countries
+                id_column_name: id
+                geom_column_name: the_geom
+                webmercator_column_name: the_geom_webmercator
+                columns:
+                  - Name: id
+                    Type: integer
+                  - Name: the_geom
+                    Type: GEOMETRY,4326
+                  - Name: the_geom_webmercator
+                    Type: GEOMETRY,3857
+                  - Name: name
+                    Type: text
+        '204':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X PUT -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}?api_key={api_key}" -d ''{
+                "local_table_name_override": "countries"
+                "id_column_name": "cartodb_id",
+                "geom_column_name": "the_geom",
+                "webmercator_column_name": "the_geom_webmercator"
+            }''
+    delete:
+      summary: Unregister a Federated Table
+      description: |
+        This endpoint will remove a registered table.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '204':
+          description: Unregistered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   schemas:
     FederatedServerRequest:

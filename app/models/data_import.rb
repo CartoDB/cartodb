@@ -119,10 +119,10 @@ class DataImport < Sequel::Model
   # New ones are already tracked during the data_import create inside the controller
   # For the old dashboard
   def before_create
-    if self.from_common_data?
-      extra_options.merge! common_data: true
+    if from_common_data?
+      self.extra_options = extra_options.merge(common_data: true)
     end
-    extra_options.merge! column_sanitization_version: CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
+    self.extra_options = extra_options.merge(column_sanitization_version: CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION)
   end
 
   def before_save

@@ -277,7 +277,8 @@ module CartoDB
 
           # For consistency with regular imports, also eases testing
           # The sanitization of @table_name is applied to the newly imported table_name
-          @user.tables.where(name: @table_name).sanitize_columns(table_name: table_name, database_schema: schema_name, connection: user_database)
+          table = ::Table.new(name: @table_name, user_id: @user.id)
+          table.sanitize_columns(table_name: table_name, database_schema: schema_name, connection: user_database)
 
           # When tables are created using ogr2ogr they are added a ogc_fid or gid primary key
           # In that case:

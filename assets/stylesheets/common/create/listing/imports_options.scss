@@ -236,6 +236,16 @@ div[class^="gtm-connectors"] {
     margin-top: 20px;
     margin-bottom: 32px;
   }
+
+  &__tag {
+    display: inline-block;
+    align-self: center;
+    margin-left: 26px;
+    padding: 0 4px;
+    border: 1px solid $cTypography-linkSecondary;
+    border-radius: 2px;
+    color: $cTypography-helpSecondary;
+  }
 }
 
 .ImportOther {

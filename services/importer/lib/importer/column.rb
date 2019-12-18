@@ -261,7 +261,7 @@ module CartoDB
       end
 
       def self.reserved?(name)
-        RESERVED_COLUMN_NAMES.include?(name.upcase)
+        RESERVED_COLUMN_NAMES.include?(name.downcase)
       end
 
       def self.unsupported?(name)
@@ -300,7 +300,7 @@ module CartoDB
           # Avoid collisions
           count = 1
           new_column_name = candidate_column_name
-          while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.upcase)
+          while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.downcase)
             suffix = "_#{count}"
             new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
             count += 1

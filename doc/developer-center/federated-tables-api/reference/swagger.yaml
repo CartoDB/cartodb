@@ -431,6 +431,68 @@ paths:
         - lang: Curl
           source: |
             curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}':
+    get:
+      summary: List a single remote table
+      description: |
+        If we want to see a single remote table, we can use this endpoint
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: path
+          name: remote_table_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote table
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteTableResponse'
+              example:
+                registered: true
+                remote_schema_name: borders
+                remote_table_name: world_borders
+                qualified_name: cdb_fs_example_server.world_borders
+                id_column_name: id
+                geom_column_name: the_geom
+                webmercator_column_name: the_geom_webmercator
+                columns:
+                  - Name: id
+                    Type: integer
+                  - Name: the_geom
+                    Type: GEOMETRY,4326
+                  - Name: the_geom_webmercator
+                    Type: GEOMETRY,3857
+                  - Name: name
+                    Type: text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}/remote_tables/{remote_table_name}?api_key={api_key}"
 components:
   schemas:
     FederatedServerRequest:

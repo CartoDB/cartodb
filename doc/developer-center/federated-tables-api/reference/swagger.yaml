@@ -4,6 +4,8 @@ info:
   description: >
     # Introduction
 
+    :warning: Federated Tables is in **beta** stage and the API might change or have limited support :warning:
+
     A Federated Table is a PostgreSQL Foreign Data Wrapper to a remote server,
     allowing us to perform live queries to a remote database. Think of it as a
     virtual table that looks like a regular sync table in CARTO — but when used,
@@ -17,7 +19,7 @@ info:
     scalability or low latency of your cloud database from within the CARTO ecosystem.
 
     The API allows you to register remote databases, then you can browse remote schemas and tables
-    to register those you want to use with CARTO.
+    to register those you want to use with CARTO as a regular table.
 
     # Authorization
 

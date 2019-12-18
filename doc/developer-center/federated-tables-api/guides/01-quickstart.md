@@ -1,5 +1,7 @@
 ## Quickstart
 
+:warning: Federated Tables is in **beta** stage and the API might change or have limited support :warning:
+
 In order to manage Federated Tables as part of the CARTO platform, we provide a RESTful Web Service to manipulate the resources that represent Federated Tables by using a uniform and predefined set of operations.
 
 For this example (and the rest of the ones illustrated here) we will be using a command-line tool known as `cURL`. For more info about this tool see [this blog post](http://quickleft.com/blog/command-line-tutorials-curl) or type `man curl` in bash.

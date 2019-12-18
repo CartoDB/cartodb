@@ -9,7 +9,7 @@ We will be using the following authentication parameters in the examples:
 Param | Value | Description
 --- | --- | ---
 username | `documentation` | The CARTO account username.
-api_key | `bec1667cdedaa6fd70165f5099981d0c61ec1112` | The target CARTO account [API key](https://carto.com/developers/fundamentals/authorization/#api-keys).
+api_key | `bec1667cdedaa6fd70165f5099981d0c61ec1112` | The target CARTO account [API key](https://carto.com/developers/fundamentals/authorization/#api-keys). Used only for illustration purposes.
 
 
 ### Registering a new Federated Server

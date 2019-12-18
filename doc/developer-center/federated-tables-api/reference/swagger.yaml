@@ -265,6 +265,46 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  '/v4/federated_servers/{federated_server_name}/remote_schemas':
+    get:
+      summary: List remote schemas
+      description: |
+        Once we have a server registered, we can check what information is available to us
+        (via the provided database's user), so first we'll list the available schemas.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRemoteSchemasResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas?api_key={api_key}"
 components:
   schemas:
     FederatedServerRequest:
@@ -329,6 +369,18 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/FederatedServerResponse'
+    RemoteSchemasResponse:
+      type: object
+      properties:
+        remote_schema_name:
+          type: string
+          title: schema name
+          description: Name of the schema of the federated server
+    ListOfRemoteSchemasResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteSchemasResponse'
+
   responses:
     NotFound:
       description: The specified resource was not found

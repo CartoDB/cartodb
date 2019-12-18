@@ -1222,6 +1222,15 @@ class Table
     SequelRails.connection.run(update_sql)
   end
 
+  # Apply the sanitization defined for this table.
+  # If the table_name parameter is passed, the sanitization which was originally applied to self
+  # is applied to the table so named.
+  # If no table_name parameters is paseed the normalization is applied to self.
+  # This allows re-applying the same normalization to imported tables.
+  def sanitize_columns(table_name: name, **options)
+    self.class.sanitize_columns(table_name, column_sanitization_version, options)
+  end
+
   private
 
   def valid_cartodb_id_candidate?(col_name)
@@ -1310,15 +1319,6 @@ class Table
     else
       CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION
     end
-  end
-
-  # Apply the sanitization defined for this table.
-  # If the table_name parameter is passed, the sanitization which was originally applied to self
-  # is applied to the table so named.
-  # If no table_name parameters is paseed the normalization is applied to self.
-  # This allows re-applying the same normalization to imported tables.
-  def sanitize_columns(table_name: name, **options)
-    self.class.sanitize_columns(table_name, column_sanitization_version, options)
   end
 
   def self.sanitize_columns(table_name, column_sanitization_version, options={})

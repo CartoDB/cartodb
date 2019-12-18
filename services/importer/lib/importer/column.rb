@@ -311,7 +311,7 @@ module CartoDB
           end
 
           new_column_name
-        elsif column_sanitization_version == 1
+        elsif column_sanitization_version == 2
 
           # TODO: use StringSanitizer / DB::Sanitize (handle special characters, maximum length, ...)
           candidate_column_name.downcase

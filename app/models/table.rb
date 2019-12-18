@@ -38,13 +38,6 @@ class Table
   GEOMETRY_TYPES_PRESENT_CACHING_TIMEOUT = 24.hours
   STATEMENT_TIMEOUT = 1.hour * 1000
 
-  # See http://www.postgresql.org/docs/9.5/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-  PG_IDENTIFIER_MAX_LENGTH = 63
-
-  # @see services/importer/lib/importer/column.rb -> RESERVED_WORDS
-  # @see config/initializers/carto_db.rb -> RESERVED_COLUMN_NAMES
-  RESERVED_COLUMN_NAMES = %w(oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
-
   DEFAULT_THE_GEOM_TYPE = 'geometry'
 
   VALID_GEOMETRY_TYPES = %W{ geometry multipolygon point multilinestring }
@@ -677,10 +670,11 @@ class Table
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if RESERVED_COLUMN_NAMES.include?(options[:name]) || options[:name] =~ /^[0-9]/
+    raise CartoDB::InvalidColumnName if CartoDB::Importer2::Column.reserved_or_unsupported?(options[:name])
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
-    column_name = options[:name].to_s.sanitize_column_name
+    # FIXME: consider CartoDB::Importer2::Column.get_valid_column_name with CURRENT_COLUMN_SANITIZATION_VERSION
+    column_name = CartoDB::Importer2::Column.sanitize_name(options[:name].to_s)
     owner.in_database.add_column name, column_name, type
 
     update_cdb_tablemetadata
@@ -701,12 +695,12 @@ class Table
   end
 
   def modify_column!(options)
-    old_name  = options.fetch(:name, '').to_s.sanitize
-    new_name  = options.fetch(:new_name, '').to_s.sanitize
+    # FIXME: consider CartoDB::Importer2::Column.get_valid_column_name with CURRENT_COLUMN_SANITIZATION_VERSION
+    old_name  = CartoDB::Importer2::Column.sanitize_name(options.fetch(:name, '').to_s)
+    new_name  = CartoDB::Importer2::Column.sanitize_name(options.fetch(:new_name, '').to_s)
     raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
 
     if new_name.present? && new_name != old_name
-      new_name = new_name.sanitize_column_name
       rename_column(old_name, new_name)
     end
 
@@ -732,7 +726,7 @@ class Table
     raise 'Please provide a column name' if new_name.empty?
     raise 'This column cannot be renamed' if CARTODB_COLUMNS.include?(old_name.to_s)
 
-    if new_name =~ /^[0-9]/ || RESERVED_COLUMN_NAMES.include?(new_name) || CARTODB_COLUMNS.include?(new_name)
+    if CartoDB::Importer2::Column.reserved_or_unsupported?(new_name) || CARTODB_COLUMNS.include?(new_name)
       raise CartoDB::InvalidColumnName, 'That column name is reserved, please choose a different one'
     end
 
@@ -1436,7 +1430,7 @@ class Table
         sanitized_force_schema = force_schema.split(',').map do |column|
           # Convert existing primary key into a unique key
           if column =~ /\A\s*\"([^\"]+)\"(.*)\z/
-            "#{$1.sanitize} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
+            "#{CartoDB::Importer2::Column.sanitize_name $1} #{$2.gsub(/primary\s+key/i,'UNIQUE')}"
           else
             column.gsub(/primary\s+key/i,'UNIQUE')
           end

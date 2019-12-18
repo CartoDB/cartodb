@@ -552,7 +552,7 @@ describe Table do
         table.name = 'Wadus table #23'
         table.save
         table.reload
-        table.name.should == "Wadus table #23".sanitize
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table'.to_sym).should be_false
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
@@ -561,7 +561,7 @@ describe Table do
         table.name = ''
         table.save
         table.reload
-        table.name.should == "Wadus table #23".sanitize
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
         end

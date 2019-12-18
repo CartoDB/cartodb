@@ -5,6 +5,8 @@ require_relative './string_sanitizer'
 require_relative './exceptions'
 require_relative './query_batcher'
 
+require_relative '../../../../lib/carto/db/sanitize'
+
 module CartoDB
   module Importer2
     class Column
@@ -16,22 +18,8 @@ module CartoDB
       KML_POINT_RE    = /<Point>/
       DEFAULT_SCHEMA  = 'cdb_importer'
       DIRECT_STATEMENT_TIMEOUT = 1.hour * 1000
-      # @see config/initializers/carto_db.rb -> POSTGRESQL_RESERVED_WORDS
-      RESERVED_WORDS  = %w{ ALL ANALYSE ANALYZE AND ANY ARRAY AS ASC ASYMMETRIC
-                            AUTHORIZATION BETWEEN BINARY BOTH CASE CAST CHECK
-                            COLLATE COLUMN CONSTRAINT CREATE CROSS CURRENT_DATE
-                            CURRENT_ROLE CURRENT_TIME CURRENT_TIMESTAMP
-                            CURRENT_USER DEFAULT DEFERRABLE DESC DISTINCT DO
-                            ELSE END EXCEPT FALSE FOR FOREIGN FREEZE FROM FULL
-                            GRANT GROUP HAVING ILIKE IN INITIALLY INNER INTERSECT
-                            INTO IS ISNULL JOIN LEADING LEFT LIKE LIMIT LOCALTIME
-                            LOCALTIMESTAMP NATURAL NEW NOT NOTNULL NULL OFF
-                            OFFSET OLD ON ONLY OR ORDER OUTER OVERLAPS PLACING
-                            PRIMARY REFERENCES RIGHT SELECT SESSION_USER SIMILAR
-                            SOME SYMMETRIC TABLE THEN TO TRAILING TRUE UNION
-                            UNIQUE USER USING VERBOSE WHEN WHERE XMIN XMAX
-                            FORMAT CONTROLLER ACTION
-                          }
+      RESERVED_COLUMN_NAMES = Carto::DB::Sanitize::RESERVED_COLUMN_NAMES
+      PG_IDENTIFIER_MAX_LENGTH = Carto::DB::Sanitize::MAX_IDENTIFIER_LENGTH
 
       NO_COLUMN_SANITIZATION_VERSION = 0
       INITIAL_COLUMN_SANITIZATION_VERSION = 1
@@ -273,17 +261,20 @@ module CartoDB
       end
 
       def self.reserved?(name)
-        RESERVED_WORDS.include?(name.upcase)
+        RESERVED_COLUMN_NAMES.include?(name.upcase)
       end
 
       def self.unsupported?(name)
         name !~ /^[a-zA-Z_]/
       end
 
+      def self.reserved_or_unsupported?(name)
+        reserved?(name) || unsupported?(name)
+      end
+
       def self.sanitize_name(column_name)
-        # TODO: take into account Postgres identifier length limitations; use DB::Sanitize ?
-        name = StringSanitizer.new.sanitize(column_name.to_s)
-        return name unless reserved?(name) || unsupported?(name)
+        name = StringSanitizer.new.sanitize(column_name.to_s, cyrillic: false)
+        return name unless reserved_or_unsupported?(name)
         "_#{name}"
       end
 
@@ -293,7 +284,7 @@ module CartoDB
 
         if column_sanitization_version == INITIAL_COLUMN_SANITIZATION_VERSION
           # NOTE: originally not all uses of this sanitization version applied reserved words
-          reserved_words = RESERVED_WORDS
+          reserved_words = RESERVED_COLUMN_NAMES
 
           existing_names = column_names - [candidate_column_name]
 
@@ -319,7 +310,7 @@ module CartoDB
         elsif column_sanitization_version == 2
 
           sanitize_name(candidate_column_name)
-          # TODO: Avoid collisions?
+          # TODO: Avoid collisions & apply PG_IDENTIFIER_MAX_LENGTH limit?;
 
         else
           raise "Invalid column sanitization version #{column_sanitization_version.inspect}"

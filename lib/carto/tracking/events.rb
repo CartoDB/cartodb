@@ -1,3 +1,5 @@
+require 'carto/tracking/services/pubsub_tracker'
+
 require_dependency 'carto/tracking/formats/internal'
 require_dependency 'carto/tracking/services/pubsub'
 require_dependency 'carto/tracking/services/segment'
@@ -110,6 +112,7 @@ module Carto
       class ExportedMap < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
@@ -119,6 +122,7 @@ module Carto
 
       class MapEvent < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -135,6 +139,7 @@ module Carto
       class PublishedMap < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -145,6 +150,7 @@ module Carto
       class ConnectionEvent < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
@@ -156,6 +162,7 @@ module Carto
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
@@ -165,6 +172,7 @@ module Carto
 
       class ScoredTrendingMap < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -174,6 +182,7 @@ module Carto
 
       class VisitedPrivatePage < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
@@ -186,6 +195,7 @@ module Carto
 
       class DatasetEvent < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -202,6 +212,7 @@ module Carto
       class AnalysisEvent < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -238,6 +249,7 @@ module Carto
 
       class CreatedWidget < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Widget::Existence
         include Carto::Tracking::Validators::Visualization::Writable
@@ -248,6 +260,7 @@ module Carto
 
       class DownloadedLayer < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::Layer
@@ -261,6 +274,7 @@ module Carto
 
       class StyledByValue < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -270,6 +284,7 @@ module Carto
 
       class DraggedNode < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -279,6 +294,7 @@ module Carto
 
       class CreatedLayer < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::Layer
@@ -289,6 +305,7 @@ module Carto
 
       class ChangedDefaultGeometry < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -298,6 +315,7 @@ module Carto
 
       class AggregatedGeometries < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -307,6 +325,7 @@ module Carto
 
       class UsedAdvancedMode < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -316,6 +335,7 @@ module Carto
 
       class OauthAppEvent < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 

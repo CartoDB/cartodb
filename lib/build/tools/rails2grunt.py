@@ -3,7 +3,7 @@ import sys
 import os.path
 
 if (len(sys.argv) != 4):
-    print "rails2grunt type rails_file grunt.json"
+    print("rails2grunt type rails_file grunt.json")
     sys.exit()
 
 file_type = sys.argv[1]
@@ -38,6 +38,6 @@ for x in open(rails_file):
             else:
                 lines.append("'%s'," % (normalize(f) + "/**/*.js"))
 
-print "%s: [\n%s\n]" % (name, '\n'.join(lines)[:-1])
+print("%s: [\n%s\n]" % (name, '\n'.join(lines)[:-1]))
 
 

@@ -1,1 +1,176 @@
-This should be a swagger file :D
+openapi: 3.0.0
+info:
+  title: Federated Tables API
+  description: >
+    # Introduction
+
+    A Federated Table is a PostgreSQL Foreign Data Wrapper to a remote server,
+    allowing us to perform live queries to a remote database. Think of it as a
+    virtual table that looks like a regular sync table in CARTO — but when used,
+    makes the queries you perform in CARTO travel to the remote database and get
+    executed there.
+
+    Typically, the use cases for Federated Tables include having frequently changing
+    data that you join with other tables in CARTO. Having a large amount of data that
+    is dificult to sync with CARTO but that you only need to query distinct parts of,
+    like in the case of time-series databases. Even when you want to leverage the
+    scalability or low latency of your cloud database from within the CARTO ecosystem.
+
+    The API allows you to register remote databases, then you can browse remote schemas and tables
+    to finally register the tables you want to use with CARTO.
+
+    # Authorization
+
+    In order to access Federated Tables API you must provide an API key. The CARTO
+    Authorization guide explains how these keys are sent (TLDR: _HTTP basic
+    auth_ or _query string param_ with the API key token). Depending on the
+    permissions granted to the provided API key, the request will be authorized
+    or not.
+
+  version: 0.0.1
+  contact:
+    name: Have you found an error? Github issues
+    url: 'https://github.com/CartoDB/Windshaft-cartodb/issues'
+servers:
+  - url: 'https://{user}.{domain}/api'
+    description: Production server (uses live data)
+    variables:
+      domain:
+        default: carto.com
+        description: 'If on premises, change it to your domain'
+      user:
+        default: username
+        description: Your username
+paths:
+  '/v4/federated_servers':
+    post:
+      summary: Register a Federated Server
+      description: |
+        The Federated Server handles the information about the remote database,
+        that is its address and authentication values so CARTO can gain access to it.
+      operationId: registerServer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FederatedServer'
+            example:
+              federated_server_name: amazon
+              mode: read-only
+              dbname: testdb
+              host: myhostname.us-east-2.rds.amazonaws.com
+              port: 5432
+              username: read_only_user
+              password: secret
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterFederatedServerResponse'
+              example:
+                federated_server_name: amazon
+                mode: read-only
+                dbname: testdb
+                host: myhostname.us-east-2.rds.amazonaws.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      security:
+        - ApiKeyHTTPBasicAuth: []
+        - ApiKeyQueryParam: []
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X POST -H "Content-Type: application/json" "https://documentation.carto.com/api/v4/federated_servers?api_key=bec1667cdedaa6fd70165f5099981d0c61ec1112" -d \'{
+                "federated_server_name": "example_server",
+                "mode": "read-only",
+                "dbname": "geometries",
+                "host": "example.com",
+                "port": "5432",
+                "username": "remote_user",
+                "password": "remote_password"
+            }\'
+components:
+  schemas:
+    FederatedServer:
+      type: object
+      properties:
+        federated_server_name:
+          type: string
+          title: federated server name
+          description: Alias for the federated server. It must be unique per user/organization and lower-case (required).
+        mode:
+          type: string
+          enum:
+            - read-only
+          title: mode
+          description: only read-only available
+        dbname:
+          type: string
+          title: federated server database name
+          description: database name
+        host:
+          type: string
+          title: Host's URL
+          description: Domain name of the federated server.
+        port:
+          type: string
+          title: port
+          description: available port number
+        username:
+          type: string
+          title: username
+          description: database role with login privileges
+        password:
+          type: string
+          title: password
+          description: the role’s secret password
+    RegisterFederatedServerResponse:
+      type: object
+      properties:
+        federated_server_name:
+          type: string
+          title: federated server name
+          description: Alias for the federated server. It must be unique per user/organization and lower-case (required).
+        mode:
+          type: string
+          enum:
+            - read-only
+          title: mode
+          description: only read-only available
+        dbname:
+          type: string
+          title: federated server database name
+          description: database name
+        host:
+          type: string
+          title: Host's URL
+          description: Domain name of the federated server.
+        port:
+          type: string
+          title: port
+          description: available port number
+  securitySchemes:
+    ApiKeyHTTPBasicAuth:
+      type: http
+      scheme: basic
+    ApiKeyQueryParam:
+      type: apiKey
+      in: header
+      name: api_key
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Unauthorized. No authentication provided.
+    Forbidden:
+      description: Forbidden. The API key does not authorize this request.
+    UnprocessableEntity:
+      description: Request's parameters error

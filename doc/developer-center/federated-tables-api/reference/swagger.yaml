@@ -17,7 +17,7 @@ info:
     scalability or low latency of your cloud database from within the CARTO ecosystem.
 
     The API allows you to register remote databases, then you can browse remote schemas and tables
-    to finally register the tables you want to use with CARTO.
+    to register those you want to use with CARTO.
 
     # Authorization
 
@@ -48,7 +48,13 @@ paths:
       description: |
         The Federated Server handles the information about the remote database,
         that is its address and authentication values so CARTO can gain access to it.
-      operationId: registerServer
+      parameters:
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
       requestBody:
         required: true
         content:
@@ -71,10 +77,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/RegisterFederatedServerResponse'
               example:
-                federated_server_name: amazon
+                federated_server_name: example_server
                 mode: read-only
-                dbname: testdb
-                host: myhostname.us-east-2.rds.amazonaws.com
+                dbname: geometries
+                host: example.com
                 port: "5432"
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -82,13 +88,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
-      security:
-        - ApiKeyHTTPBasicAuth: []
-        - ApiKeyQueryParam: []
       x-code-samples:
         - lang: Curl
           source: |
-            curl -X POST -H "Content-Type: application/json" "https://documentation.carto.com/api/v4/federated_servers?api_key=bec1667cdedaa6fd70165f5099981d0c61ec1112" -d \'{
+            curl -X POST -H "Content-Type: application/json" "https://documentation.carto.com/api/v4/federated_servers?api_key=bec1667cdedaa6fd70165f5099981d0c61ec1112" -d ''{
                 "federated_server_name": "example_server",
                 "mode": "read-only",
                 "dbname": "geometries",
@@ -96,7 +99,7 @@ paths:
                 "port": "5432",
                 "username": "remote_user",
                 "password": "remote_password"
-            }\'
+            }''
 components:
   schemas:
     FederatedServer:
@@ -157,14 +160,6 @@ components:
           type: string
           title: port
           description: available port number
-  securitySchemes:
-    ApiKeyHTTPBasicAuth:
-      type: http
-      scheme: basic
-    ApiKeyQueryParam:
-      type: apiKey
-      in: header
-      name: api_key
   responses:
     NotFound:
       description: The specified resource was not found

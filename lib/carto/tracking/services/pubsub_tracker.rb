@@ -28,9 +28,9 @@ class PubSubTracker
 
     return Google::Cloud::Pubsub.new unless project_id.present?
 
-    return Google::Cloud::Pubsub.new(project_id: project_id) unless credentials.present?
+    return Google::Cloud::Pubsub.new(project: project_id) unless credentials.present?
 
-    @pubsub = Google::Cloud::Pubsub.new(project_id: project_id, credentials: credentials)
+    @pubsub = Google::Cloud::Pubsub.new(project: project_id, keyfile: credentials)
   end
 
   def metrics_topic

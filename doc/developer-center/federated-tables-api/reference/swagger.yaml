@@ -305,6 +305,59 @@ paths:
         - lang: Curl
           source: |
             curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}':
+    get:
+      summary: List all remote tables whitin a remote schema
+      description: |
+        Once we know which schema we want to check, we can list what are the available tables and
+        their columns so we can register them as a Federated Table.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: path
+          name: remote_schema_name
+          required: true
+          schema:
+            type: string
+          description: The name of the remote schema
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRemoteTableResponse'
+              example:
+                - registered: false
+                  remote_schema_name: borders
+                  remote_table_name: world_borders
+                  columns:
+                    - Name: id
+                      Type: integer
+                    - Name: the_geom
+                      Type: GEOMETRY,4326
+                    - Name: the_geom_webmercator
+                      Type: GEOMETRY,3857
+                    - Name: name
+                      Type: text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}/remote_schemas/{remote_schema_name}?api_key={api_key}"
 components:
   schemas:
     FederatedServerRequest:
@@ -380,6 +433,64 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/RemoteSchemasResponse'
+    RemoteTableResponse:
+      type: object
+      properties:
+        remote_schema_name:
+          type: string
+          title: schema name
+          description: Name of the schema of the federated server
+        remote_table_name:
+          type: string
+          title: remote table name
+          description: Name of the table of the federated server
+        local_table_name_override:
+          type: string
+          title: local table name override
+          description: Defaults to remote_table_name. Useful to avoid name clashing, should be needed
+        qualified_name:
+          type: string
+          title: qualified name
+          description: Full qualified name to be used in maps/queries in CARTO
+        id_column_name:
+          type: string
+          title: id column name
+          description: Name of the primary key column
+        geom_column_name:
+          type: string
+          title: geom column name
+          description: Name of the geometry column with SRID 4326 (optional). If not passed, it’ll try to use geom_column_name if available
+        webmercator_column_name:
+          type: string
+          title: webmercator column name
+          description: Name of the geometry column with SRID 3857 (optional). If not passed, it’ll try to use geom_column_name if available
+        registered:
+          type: boolean
+          title: registered
+          description: Whether the table is ready to be used as a regular table in CARTO
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListOfRemoteTableColumn'
+    ListOfRemoteTableResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteTableResponse'
+    RemoteTableColumn:
+      type: object
+      properties:
+        Name:
+          type: string
+          title: the column name
+          description: the column name
+        Type:
+          type: string
+          title: the column type
+          description: the column type
+    ListOfRemoteTableColumn:
+      type: array
+      items:
+        $ref: '#/components/schemas/RemoteTableColumn'
 
   responses:
     NotFound:

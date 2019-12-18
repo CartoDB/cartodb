@@ -41,6 +41,9 @@ servers:
       user:
         default: username
         description: Your username
+      api_key:
+        default: wadus
+        description: Your api key token
 paths:
   '/v4/federated_servers':
     post:
@@ -60,13 +63,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FederatedServer'
+              $ref: '#/components/schemas/FederatedServerRequest'
             example:
-              federated_server_name: amazon
+              federated_server_name: example_server
               mode: read-only
-              dbname: testdb
-              host: myhostname.us-east-2.rds.amazonaws.com
-              port: 5432
+              dbname: geometries
+              host: example.com
+              port: "5432"
               username: read_only_user
               password: secret
       responses:
@@ -75,7 +78,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterFederatedServerResponse'
+                $ref: '#/components/schemas/FederatedServerResponse'
               example:
                 federated_server_name: example_server
                 mode: read-only
@@ -91,7 +94,7 @@ paths:
       x-code-samples:
         - lang: Curl
           source: |
-            curl -X POST -H "Content-Type: application/json" "https://documentation.carto.com/api/v4/federated_servers?api_key=bec1667cdedaa6fd70165f5099981d0c61ec1112" -d ''{
+            curl -X POST -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers?api_key={api_key}" -d ''{
                 "federated_server_name": "example_server",
                 "mode": "read-only",
                 "dbname": "geometries",
@@ -100,9 +103,171 @@ paths:
                 "username": "remote_user",
                 "password": "remote_password"
             }''
+    get:
+      summary: List all existing Federated Servers
+      description: |
+        This endpoint allows you to access the information of all registered servers accesible by the caller.
+      parameters:
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfFederatedServerResponse'
+              example:
+                - federated_server_name: example_server
+                  mode: read-only
+                  dbname: geometries
+                  host: example.com
+                  port: "5432"
+                - federated_server_name: another_example_server
+                  mode: read-only
+                  dbname: countries
+                  host: example.com
+                  port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers?api_key={api_key}"
+  '/v4/federated_servers/{federated_server_name}':
+    get:
+      summary: Get a Federated Server
+      description: |
+        This endpoint returns the configuration of a single server that matches the federated server name.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederatedServerResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X GET "https://{user}.carto.com/api/v4/federated_servers/{federated_server_name}?api_key={api_key}"
+    put:
+      summary: Update a Federated Server
+      description: |
+        This endpoint allows the modification of an already registered server. If the server didn't already exist it will create it.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FederatedServerRequest'
+            example:
+              mode: read-only
+              dbname: geometries
+              host: example.com
+              port: "5432"
+              username: read_only_user
+              password: secret
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FederatedServerResponse'
+              example:
+                federated_server_name: example_server
+                mode: read-only
+                dbname: geometries
+                host: example.com
+                port: "5432"
+        '204':
+          description: Updated
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+      x-code-samples:
+        - lang: Curl
+          source: |
+            curl -X PUT -H "Content-Type: application/json" "https://{user}.carto.com/api/v4/federated_servers/example_server?api_key={api_key}" -d ''{
+                "mode": "read-only",
+                "dbname": "geometries",
+                "host": "example.com",
+                "port": "5432",
+                "username": "new_user",
+                "password": "new_password"
+            }''
+    delete:
+      summary: Unregister a Federated Server
+      description: |
+        This endpoint will remove a registered server and all the registered tables created through it.
+      parameters:
+        - in: path
+          name: federated_server_name
+          required: true
+          schema:
+            type: string
+          description: The name of the federated server
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+          description: The authorization key token
+      responses:
+        '204':
+          description: Unregistered
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 components:
   schemas:
-    FederatedServer:
+    FederatedServerRequest:
       type: object
       properties:
         federated_server_name:
@@ -135,7 +300,7 @@ components:
           type: string
           title: password
           description: the role’s secret password
-    RegisterFederatedServerResponse:
+    FederatedServerResponse:
       type: object
       properties:
         federated_server_name:
@@ -160,6 +325,10 @@ components:
           type: string
           title: port
           description: available port number
+    ListOfFederatedServerResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/FederatedServerResponse'
   responses:
     NotFound:
       description: The specified resource was not found

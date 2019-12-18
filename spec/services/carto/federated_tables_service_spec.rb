@@ -152,15 +152,10 @@ describe Carto::FederatedTablesService do
                 federated_server_list = @service.list_servers(pagination)
 
                 expect(federated_server_list.length()).to eq(1)
-                expect(federated_server_list[0]).to have_key(:federated_server_name)
                 expect(federated_server_list[0][:federated_server_name]).to eq(federated_server[:federated_server_name])
-                expect(federated_server_list[0]).to have_key(:mode)
                 expect(federated_server_list[0][:mode]).to eq(federated_server[:mode])
-                expect(federated_server_list[0]).to have_key(:dbname)
                 expect(federated_server_list[0][:dbname]).to eq(federated_server[:dbname])
-                expect(federated_server_list[0]).to have_key(:host)
                 expect(federated_server_list[0][:host]).to eq(federated_server[:host])
-                expect(federated_server_list[0]).to have_key(:port)
                 expect(federated_server_list[0][:port]).to eq(federated_server[:port])
             end
 
@@ -169,15 +164,10 @@ describe Carto::FederatedTablesService do
                 expected_federated_server = get_federated_server_payload()
                 federated_server = create_federated_server()
 
-                expect(federated_server).to have_key(:federated_server_name)
                 expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
-                expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
-                expect(federated_server).to have_key(:dbname)
                 expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
-                expect(federated_server).to have_key(:host)
                 expect(federated_server[:host]).to eq(expected_federated_server[:host])
-                expect(federated_server).to have_key(:port)
                 expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 
@@ -200,15 +190,10 @@ describe Carto::FederatedTablesService do
 
                 federated_server = @service.get_server(federated_server_name: @federated_server_name)
 
-                expect(federated_server).to have_key(:federated_server_name)
                 expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
-                expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
-                expect(federated_server).to have_key(:dbname)
                 expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
-                expect(federated_server).to have_key(:host)
                 expect(federated_server[:host]).to eq(expected_federated_server[:host])
-                expect(federated_server).to have_key(:port)
                 expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 
@@ -231,15 +216,10 @@ describe Carto::FederatedTablesService do
 
                 federated_server = update_federated_server(expected_federated_server)
 
-                expect(federated_server).to have_key(:federated_server_name)
                 expect(federated_server[:federated_server_name]).to eq(@federated_server_name)
-                expect(federated_server).to have_key(:mode)
                 expect(federated_server[:mode]).to eq(expected_federated_server[:mode])
-                expect(federated_server).to have_key(:dbname)
                 expect(federated_server[:dbname]).to eq(expected_federated_server[:dbname])
-                expect(federated_server).to have_key(:host)
                 expect(federated_server[:host]).to eq(expected_federated_server[:host])
-                expect(federated_server).to have_key(:port)
                 expect(federated_server[:port]).to eq(expected_federated_server[:port])
             end
 

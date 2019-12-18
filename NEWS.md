@@ -16,7 +16,8 @@ Development
 - Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
 - Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
 - Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
-- ArcGIS connector: Stop skipping ids on failure
+- ArcGIS connector: Stop skipping ids on failure.
+- Adapt python scripts python3 syntax.
 
 4.31.0 (2019-11-19)
 -------------------

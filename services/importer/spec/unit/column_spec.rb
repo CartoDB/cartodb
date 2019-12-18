@@ -243,15 +243,15 @@ describe Column do
 
   describe '#reserved?' do
     it 'returns true if name is a reserved keyword' do
-      @column.reserved?('select').should eq true
-      @column.reserved?('bogus').should eq false
+      Column.reserved?('select').should eq true
+      Column.reserved?('bogus').should eq false
     end
   end #reserved?
 
   describe '#unsupported?' do
     it 'returns true if name is not supported by Postgres' do
-      @column.unsupported?('9name').should eq true
-      @column.unsupported?('name9').should eq false
+      Column.unsupported?('9name').should eq true
+      Column.unsupported?('name9').should eq false
     end
   end #unsupported?
 

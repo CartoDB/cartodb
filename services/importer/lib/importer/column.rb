@@ -269,17 +269,22 @@ module CartoDB
       end
 
       def sanitized_name
-        name = StringSanitizer.new.sanitize(column_name.to_s)
-        return name unless reserved?(name) || unsupported?(name)
-        "_#{name}"
+        self.class.sanitize_name column_name
       end
 
-      def reserved?(name)
+      def self.reserved?(name)
         RESERVED_WORDS.include?(name.upcase)
       end
 
-      def unsupported?(name)
+      def self.unsupported?(name)
         name !~ /^[a-zA-Z_]/
+      end
+
+      def self.sanitize_name(column_name)
+        # TODO: take into account Postgres identifier length limitations; use DB::Sanitize ?
+        name = StringSanitizer.new.sanitize(column_name.to_s)
+        return name unless reserved?(name) || unsupported?(name)
+        "_#{name}"
       end
 
       def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, column_names)
@@ -313,8 +318,8 @@ module CartoDB
           new_column_name
         elsif column_sanitization_version == 2
 
-          # TODO: use StringSanitizer / DB::Sanitize (handle special characters, maximum length, ...)
-          candidate_column_name.downcase
+          sanitize_name(candidate_column_name)
+          # TODO: Avoid collisions?
 
         else
           raise "Invalid column sanitization version #{column_sanitization_version.inspect}"

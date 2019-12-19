@@ -375,7 +375,11 @@ describe Column do
     "@relations" =>  "_relations",
     "EntityName" => "_ntity_ame",
     "_ injured" => "_injured",
-    "trips 11 _ 15 miles" => "trips_11_15_miles"
+    "trips 11 _ 15 miles" => "trips_11_15_miles",
+    "as" => "as",
+    "any" => "any",
+    "xmin" => "xmin",
+    "action" => "action",
   }
 
   LEGACY_SANITIZATION_COLS = {
@@ -383,11 +387,52 @@ describe Column do
     ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description_", "description__1"]
   }
 
+  VERSION_2_SANITIZATION_EXAMPLES = {
+    "abc" => "abc",
+    "abc xyz" => "abc_xyz",
+    "2abc" => "_2abc",
+    "Abc" => "abc",
+    "выхлопы автотранспорта2" => "vyxlopy_vtotr_nsport_2",
+    "неустановленный источник2" => "neust_novlennyj_istochnik2",
+    "выбросы предприятий2" => "vybrosy_predpriyatij2",
+    "ĺr" => "lr",
+    "CONVERT(BlueNumber USING utf8)" => "convert_bluenumber_using_utf8",
+    "is growing site fenced?" => "is_growing_site_fenced",
+    "if it’s a community garden, is it collective or allotment?" => "if_it_s_a_community_garden_is_it_collective_or_allotment",
+    "Paddock" => "paddock",
+    "Date Due" => "date_due",
+    "__5" => "__5",
+    "__1" => "__1",
+    "teléfono" => "telefono",
+    ":@computed_region_wvic_k925" => "computed_region_wvic_k925",
+    "Регион" => "region",
+    "неустановленный источник" => "neust_novlennyj_istochnik",
+    "> min" => "min",
+    "12_ schedule of visits.0" => "_12__schedule_of_visits_0",
+    "previous rent (£ per sq ft)" => "previous_rent_per_sq_ft",
+    "description/名稱" => "description",
+    "description/地址" => "description",
+    "@relations" => "relations",
+    "EntityName" => "entityname",
+    "_ injured" => "__injured",
+    "trips 11 _ 15 miles" => "trips_11___15_miles",
+    "as" => "_as",
+    "any" => "_any",
+    "xmin" => "_xmin",
+    "action" => "_action",
+  }
+
+  VERSION_2_SANITIZATION_COLS = {
+    ['выбросы предприятий2', 'выхлопы автотранспорта2', 'неустановленный источник2'] => ['vybrosy_predpriyatij2', 'vyxlopy_vtotr_nsport_2', 'neust_novlennyj_istochnik2'],
+    ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description", "description_1"],
+    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"]
+  }
+
   describe '.get_valid_column_name' do
 
     it 'can apply legacy sanitization to single columns' do
       LEGACY_SANITIZATION_EXAMPLES.each do |input_name, output_name|
-        name = Column::get_valid_column_name('xxx', input_name, Column::INITIAL_COLUMN_SANITIZATION_VERSION, [])
+        name = Column::get_valid_column_name(input_name, Column::INITIAL_COLUMN_SANITIZATION_VERSION, [])
         name.should eq output_name
       end
     end
@@ -396,13 +441,38 @@ describe Column do
       LEGACY_SANITIZATION_COLS.each do |input_columns, output_columns|
         columns = []
         input_columns.zip(output_columns).each do |input_column, output_column|
-          column = Column::get_valid_column_name('xxx', input_column, Column::INITIAL_COLUMN_SANITIZATION_VERSION, columns)
+          column = Column::get_valid_column_name(input_column, Column::INITIAL_COLUMN_SANITIZATION_VERSION, columns)
           columns << column
           column.should eq output_column
         end
       end
     end
 
+    it 'can apply sanitization v2 to single columns' do
+      VERSION_2_SANITIZATION_EXAMPLES.each do |input_name, output_name|
+        name = Column::get_valid_column_name(input_name, 2, [])
+        name.should eq output_name
+      end
+    end
+
+    it 'v2 sanitization is idempotent' do
+      VERSION_2_SANITIZATION_EXAMPLES.each_key do |input_name|
+        first_name = Column::get_valid_column_name(input_name, 2, [])
+        second_name = Column::get_valid_column_name(first_name, 2, [])
+        second_name.should eq first_name
+      end
+    end
+
+    it 'can apply v2 sanitization to multiple columns' do
+      VERSION_2_SANITIZATION_COLS.each do |input_columns, output_columns|
+        columns = []
+        input_columns.zip(output_columns).each do |input_column, output_column|
+          column = Column::get_valid_column_name(input_column, 2, columns)
+          columns << column
+          column.should eq output_column
+        end
+      end
+    end
   end # .get_valid_column_name
 
 end # Column

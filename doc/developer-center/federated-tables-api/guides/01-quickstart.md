@@ -410,4 +410,3 @@ curl -X DELETE -H "https://documentation.carto.com/api/v4/federated_servers/exam
 #### Response
 
 The reponse has no extra content.
-```

@@ -306,7 +306,7 @@ module CartoDB
 
           avoid_collisions(candidate_column_name, existing_names, reserved_words)
         elsif column_sanitization_version == 2
-          new_column_name = sanitize_name(candidate_column_name)
+          new_column_name = sanitize_name(candidate_column_name).gsub(/_{2,}/, '_')
           new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
           avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
         else

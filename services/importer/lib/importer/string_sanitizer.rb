@@ -1,7 +1,7 @@
 module CartoDB
   module Importer2
     class StringSanitizer
-      def normalize(string, cyrillic: false)
+      def normalize(string, transliterate_cyrillic: false)
         return '' if string.nil? || string.empty?
 
         n = string.force_encoding("UTF-8")
@@ -51,7 +51,7 @@ module CartoDB
         n.gsub!(/Ŵ/,             'W')
         n.gsub!(/[ÝŸŶ]/,         'Y')
         n.gsub!(/[ŽŻŹ]/,         'Z')
-        if cyrillic
+        if transliterate_cyrillic
           n.gsub!(/Б/, 'B')
           n.gsub!(/б/, 'b')
           n.gsub!(/В/, 'V')
@@ -122,7 +122,7 @@ module CartoDB
 
       def legacy_sanitize(string)
         return '' if string.nil? || string.empty?
-        normalize(string.downcase.gsub(/<[^>]+>/m,''), cyrillic: false)
+        normalize(string.downcase.gsub(/<[^>]+>/m,''), transliterate_cyrillic: false)
          .gsub(/&.+?;/,'-')
          .gsub(/[^a-z0-9 _-]/,'-').strip
          .gsub(/\s+/,'-')
@@ -132,9 +132,9 @@ module CartoDB
          .gsub(/-/,'_')
        end
 
-      def sanitize(string, cyrillic: false)
+      def sanitize(string, transliterate_cyrillic: false)
        return '' if string.nil? || string.empty?
-       normalize(string.gsub(/<[^>]+>/m,''), cyrillic: cyrillic)
+       normalize(string.gsub(/<[^>]+>/m,''), transliterate_cyrillic: transliterate_cyrillic)
         .downcase
         .gsub(/&.+?;/,'-')
         .gsub(/[^a-z0-9 _-]/,'-').strip

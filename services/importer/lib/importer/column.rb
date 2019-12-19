@@ -273,7 +273,7 @@ module CartoDB
       end
 
       def self.sanitize_name(column_name)
-        name = StringSanitizer.new.sanitize(column_name.to_s, cyrillic: false)
+        name = StringSanitizer.new.sanitize(column_name.to_s, transliterate_cyrillic: true)
         return name unless reserved_or_unsupported?(name)
         "_#{name}"
       end
@@ -282,11 +282,12 @@ module CartoDB
 
         return candidate_column_name if column_sanitization_version == NO_COLUMN_SANITIZATION_VERSION
 
+        existing_names = column_names - [candidate_column_name]
+
         if column_sanitization_version == INITIAL_COLUMN_SANITIZATION_VERSION
           # NOTE: originally not all uses of this sanitization version applied reserved words
-          reserved_words = RESERVED_COLUMN_NAMES
-
-          existing_names = column_names - [candidate_column_name]
+          # reserved_words = RESERVED_COLUMN_NAMES
+          reserved_words = []
 
           candidate_column_name = 'untitled_column' if candidate_column_name.blank?
           candidate_column_name = candidate_column_name.to_s.squish
@@ -297,27 +298,28 @@ module CartoDB
           # Valid names start with a letter or an underscore
           candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
 
-          # Avoid collisions
-          count = 1
-          new_column_name = candidate_column_name
-          while existing_names.include?(new_column_name) || reserved_words.include?(new_column_name.downcase)
-            suffix = "_#{count}"
-            new_column_name = candidate_column_name[0..PG_IDENTIFIER_MAX_LENGTH-suffix.length] + suffix
-            count += 1
-          end
-
-          new_column_name
+          avoid_collisions(candidate_column_name, existing_names, reserved_words)
         elsif column_sanitization_version == 2
-
-          sanitize_name(candidate_column_name)
-          # TODO: Avoid collisions & apply PG_IDENTIFIER_MAX_LENGTH limit?;
-
+          new_column_name = sanitize_name(candidate_column_name)
+          new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
+          avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
         else
           raise "Invalid column sanitization version #{column_sanitization_version.inspect}"
         end
       end
 
       private
+
+      def self.avoid_collisions(name, existing_names, reserved_words, max_length=PG_IDENTIFIER_MAX_LENGTH)
+        count = 1
+        new_name = name
+        while existing_names.include?(new_name) || reserved_words.include?(new_name.downcase)
+          suffix = "_#{count}"
+          new_name = name[0..max_length-suffix.length] + suffix
+          count += 1
+        end
+        new_name
+      end
 
       attr_reader :job, :db, :table_name, :column_name, :schema
 

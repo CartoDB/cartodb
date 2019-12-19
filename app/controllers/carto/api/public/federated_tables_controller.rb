@@ -260,11 +260,9 @@ module Carto
           regex = /^PG::(.*): ERROR:  /
           message = exception.message.split("\n").find { |s| s.match(regex) }.to_s.gsub(regex, '')
 
-          if message.present?
-            return message
-          else
-            raise exception.message
-          end
+          raise exception.message unless message.present?
+
+          message
         end
       end
     end

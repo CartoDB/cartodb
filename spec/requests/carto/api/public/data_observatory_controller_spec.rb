@@ -120,7 +120,23 @@ describe Carto::Api::Public::DataObservatoryController do
       $users_metadata.del(@redis_key)
     end
 
+    before(:each) do
+      Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+    end
+
+    after(:each) do
+      Cartodb::Central.any_instance.unstub(:check_do_enabled)
+    end
+
     it_behaves_like 'an endpoint validating a DO API key'
+
+    it 'checks if DO is enabled' do
+      central_mock = mock
+      Cartodb::Central.stubs(:new).returns(central_mock)
+      central_mock.expects(:check_do_enabled).once.returns(true)
+
+      get_json endpoint_url(api_key: @master), @headers
+    end
 
     it 'returns 200 with the non expired subscriptions' do
       expected_dataset = { project: 'carto', dataset: 'abc', table: 'table2', id: 'carto.abc.table2', type: 'dataset' }
@@ -212,12 +228,28 @@ describe Carto::Api::Public::DataObservatoryController do
   end
 
   describe 'subscription_info' do
+    before(:each) do
+      Cartodb::Central.any_instance.stubs(:check_do_enabled).returns(true)
+    end
+
+    after(:each) do
+      Cartodb::Central.any_instance.unstub(:check_do_enabled)
+    end
+
     before(:all) do
       @url_helper = 'api_v4_do_subscription_info_url'
       @params = { id: 'carto.abc.dataset1', type: 'dataset' }
     end
 
     it_behaves_like 'an endpoint validating a DO API key'
+
+    it 'checks if DO is enabled' do
+      central_mock = mock
+      Cartodb::Central.stubs(:new).returns(central_mock)
+      central_mock.expects(:check_do_enabled).once.returns(true)
+
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers
+    end
 
     it 'returns 400 if the id param is not valid' do
       get_json endpoint_url(api_key: @master, id: 'wrong'), @headers do |response|

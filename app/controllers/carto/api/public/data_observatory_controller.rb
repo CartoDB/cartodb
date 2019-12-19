@@ -13,6 +13,7 @@ module Carto
         before_action :load_id, only: [:subscription_info, :subscribe, :unsubscribe]
         before_action :load_type, only: [:subscription_info, :subscribe]
         before_action :check_api_key_permissions
+        before_action :check_do_enabled, only: [:subscription_info, :subscriptions]
 
         setup_default_rescues
 
@@ -103,6 +104,10 @@ module Carto
         def check_api_key_permissions
           api_key = Carto::ApiKey.find_by_token(params["api_key"])
           raise UnauthorizedError unless api_key&.master? || api_key&.data_observatory_permissions?
+        end
+
+        def check_do_enabled
+          Cartodb::Central.new.check_do_enabled(@user.username)
         end
 
         def rescue_from_central_error(exception)

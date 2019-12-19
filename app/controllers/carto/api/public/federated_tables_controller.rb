@@ -97,17 +97,24 @@ module Carto
 
         def list_remote_schemas
           result = @service.list_remote_schemas(federated_server_name: params[:federated_server_name], **@pagination)
-          total = @service.count_remote_schemas(params[:federated_server_name])
+          total = @service.count_remote_schemas(federated_server_name: params[:federated_server_name])
           render_paged(result, total)
         end
 
         # Remote Tables
 
         def list_remote_tables
-          result = @service.list_remote_tables(federated_server_name: params[:federated_server_name], remote_schema_name: params[:remote_schema_name], **@pagination)
+          result = @service.list_remote_tables(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name],
+            **@pagination
+          )
           # For unregistered tables we only want to keep the relevant properties
           result.each {|table| table.slice!(:registered, :remote_schema_name, :remote_table_name, :columns) unless table[:registered]}
-          total = @service.count_remote_tables(params[:federated_server_name], params[:remote_schema_name])
+          total = @service.count_remote_tables(
+            federated_server_name: params[:federated_server_name],
+            remote_schema_name: params[:remote_schema_name]
+          )
           render_paged(result, total)
         end
 

@@ -78,9 +78,9 @@ module Carto
       ].all
     end
 
-    def count_remote_schemas(federated_server_name)
+    def count_remote_schemas(federated_server_name:)
       @user_db_connection[
-        count_remote_schemas_query(federated_server_name)
+        count_remote_schemas_query(federated_server_name: federated_server_name)
       ].first[:count]
     end
 
@@ -104,9 +104,9 @@ module Carto
       return remote_tables
     end
 
-    def count_remote_tables(federated_server_name, remote_schema_name)
+    def count_remote_tables(federated_server_name:, remote_schema_name:)
       @user_db_connection[
-        count_remote_tables_query(federated_server_name, remote_schema_name)
+        count_remote_tables_query(federated_server_name: federated_server_name, remote_schema_name: remote_schema_name)
       ].first[:count]
     end
 
@@ -251,18 +251,18 @@ module Carto
 
     def select_remote_schemas_query(federated_server_name:, order:, direction:, per_page:, offset:)
       %{
-        SELECT * FROM (#{select_schemas_query(federated_server_name)}) AS remote_schemas
+        SELECT * FROM (#{select_schemas_query(federated_server_name: federated_server_name)}) AS remote_schemas
         ORDER BY #{order} #{direction}
         LIMIT #{per_page}
         OFFSET #{offset}
       }.squish
     end
 
-    def count_remote_schemas_query(federated_server_name)
-      "SELECT COUNT(*) FROM (#{select_schemas_query(federated_server_name)}) AS remote_schemas"
+    def count_remote_schemas_query(federated_server_name:)
+      "SELECT COUNT(*) FROM (#{select_schemas_query(federated_server_name: federated_server_name)}) AS remote_schemas"
     end
 
-    def select_schemas_query(federated_server_name)
+    def select_schemas_query(federated_server_name:)
       server_str = @user_db_connection.literal(federated_server_name)
       %{
         SELECT
@@ -276,18 +276,18 @@ module Carto
 
     def select_remote_tables_query(federated_server_name:, remote_schema_name:, order:, direction:, per_page:, offset:)
       %{
-        SELECT * FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_tables
+        SELECT * FROM (#{select_tables_query(federated_server_name: federated_server_name, remote_schema_name: remote_schema_name)}) AS remote_tables
         ORDER BY #{order} #{direction}
         LIMIT #{per_page}
         OFFSET #{offset}
       }.squish
     end
 
-    def count_remote_tables_query(federated_server_name, remote_schema_name)
-      "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_tables"
+    def count_remote_tables_query(federated_server_name:, remote_schema_name:)
+      "SELECT COUNT(*) FROM (#{select_tables_query(federated_server_name: federated_server_name, remote_schema_name: remote_schema_name)}) AS remote_tables"
     end
 
-    def select_tables_query(federated_server_name, remote_schema_name)
+    def select_tables_query(federated_server_name:, remote_schema_name:)
       server_str = @user_db_connection.literal(federated_server_name)
       schema_str = @user_db_connection.literal(remote_schema_name)
       %{

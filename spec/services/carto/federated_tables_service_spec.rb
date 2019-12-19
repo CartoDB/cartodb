@@ -252,18 +252,27 @@ describe Carto::FederatedTablesService do
             it 'should list remote schemas of a federated server' do
                 @federated_server_name = "fs_008_from_#{@user1.username}_to_remote"
                 create_and_grant_federated_server()
-                pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
-
-                remote_schemas = @service.list_remote_schemas(@federated_server_name, pagination)
+                remote_schemas = @service.list_remote_schemas(
+                    federated_server_name: @federated_server_name,
+                    page: 1,
+                    per_page: 10,
+                    order: 'remote_schema_name',
+                    direction: 'asc'
+                )
 
                 expect(remote_schemas).to include(:remote_schema_name => "public")
             end
 
             it 'should raise "Server [...] does not exist" error when listing remote schemas of a non registered federated server' do
                 nonregistered_federated_server_name = "fs_999_from_#{@user1.username}_to_remote"
-                pagination = { page: 1, per_page: 10, order: 'remote_schema_name', direction: 'asc' }
                 expect {
-                    @service.list_remote_schemas(nonregistered_federated_server_name, pagination)
+                    @service.list_remote_schemas(
+                        federated_server_name: nonregistered_federated_server_name,
+                        page: 1,
+                        per_page: 10,
+                        order: 'remote_schema_name',
+                        direction: 'asc'
+                    )
                 }.to raise_error(Sequel::DatabaseError, /Server (.*) does not exist/)
             end
         end

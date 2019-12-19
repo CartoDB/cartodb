@@ -65,10 +65,16 @@ module Carto
 
     # Remote Schemas
 
-    def list_remote_schemas(federated_server_name, pagination)
-      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
+    def list_remote_schemas(federated_server_name:, order:, direction:, per_page:, page:)
+      offset = (page - 1) * per_page
       @user_db_connection[
-        select_remote_schemas_query(federated_server_name, pagination)
+        select_remote_schemas_query(
+          federated_server_name: federated_server_name,
+          order: order,
+          direction: direction,
+          per_page: per_page,
+          offset: offset
+        )
       ].all
     end
 
@@ -236,12 +242,12 @@ module Carto
 
     # Remote Schemas
 
-    def select_remote_schemas_query(federated_server_name, pagination)
+    def select_remote_schemas_query(federated_server_name:, order:, direction:, per_page:, offset:)
       %{
         SELECT * FROM (#{select_schemas_query(federated_server_name)}) AS remote_schemas
-        ORDER BY #{pagination[:order]} #{pagination[:direction]}
-        LIMIT #{pagination[:per_page]}
-        OFFSET #{pagination[:offset]}
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
       }.squish
     end
 

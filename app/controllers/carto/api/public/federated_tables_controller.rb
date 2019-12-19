@@ -96,7 +96,7 @@ module Carto
         # Remote Schemas
 
         def list_remote_schemas
-          result = @service.list_remote_schemas(params[:federated_server_name], @pagination)
+          result = @service.list_remote_schemas(federated_server_name: params[:federated_server_name], **@pagination)
           total = @service.count_remote_schemas(params[:federated_server_name])
           render_paged(result, total)
         end

@@ -109,12 +109,19 @@ module Carto
       ].first[:count]
     end
 
-    def register_table(attributes)
-      @user_db_connection[register_remote_table_query(attributes)].first
+    def register_table(federated_server_name:, remote_schema_name:, remote_table_name:, **attributes)
+      @user_db_connection[
+        register_remote_table_query(
+          federated_server_name: federated_server_name,
+          remote_schema_name: remote_schema_name,
+          remote_table_name: remote_table_name,
+          **attributes
+        )
+      ].first
       get_remote_table(
-        federated_server_name: attributes[:federated_server_name],
-        remote_schema_name: attributes[:remote_schema_name],
-        remote_table_name: attributes[:remote_table_name]
+        federated_server_name: federated_server_name,
+        remote_schema_name: remote_schema_name,
+        remote_table_name: remote_table_name
       )
     end
 

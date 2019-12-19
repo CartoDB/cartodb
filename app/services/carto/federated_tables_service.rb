@@ -8,8 +8,7 @@ module Carto
 
     # Federated Servers
 
-    def list_servers(order:, direction:, per_page:, page:)
-      offset = (page - 1) * per_page
+    def list_servers(order:, direction:, per_page:, page:, offset:)
       @user_db_connection[
         select_federated_servers_query(order: order, direction: direction, per_page: per_page, offset: offset)
       ].all
@@ -66,8 +65,7 @@ module Carto
 
     # Remote Schemas
 
-    def list_remote_schemas(federated_server_name:, order:, direction:, per_page:, page:)
-      offset = (page - 1) * per_page
+    def list_remote_schemas(federated_server_name:, order:, direction:, per_page:, page:, offset:)
       @user_db_connection[
         select_remote_schemas_query(
           federated_server_name: federated_server_name,
@@ -87,8 +85,7 @@ module Carto
 
     # Remote Tables
 
-    def list_remote_tables(federated_server_name:, remote_schema_name:, order:, direction:, per_page:, page:)
-      offset = (page - 1) * per_page
+    def list_remote_tables(federated_server_name:, remote_schema_name:, order:, direction:, per_page:, page:, offset:)
       remote_tables = @user_db_connection[
         select_remote_tables_query(
           federated_server_name: federated_server_name,

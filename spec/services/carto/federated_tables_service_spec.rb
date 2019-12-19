@@ -137,7 +137,7 @@ describe Carto::FederatedTablesService do
     describe 'federated server service' do
         describe 'federated server' do
             it 'should return a empty collection of federated server' do
-                pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
+                pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc', offset: 0 }
 
                 federated_server_list = @service.list_servers(pagination)
 
@@ -148,7 +148,7 @@ describe Carto::FederatedTablesService do
                 @federated_server_name = "fs_001_from_#{@user1.username}_to_remote"
                 federated_server = create_federated_server()
 
-                pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc' }
+                pagination = { page: 1, per_page: 10, order: 'federated_server_name', direction: 'asc', offset: 0 }
                 federated_server_list = @service.list_servers(pagination)
 
                 expect(federated_server_list.length()).to eq(1)
@@ -257,7 +257,8 @@ describe Carto::FederatedTablesService do
                     page: 1,
                     per_page: 10,
                     order: 'remote_schema_name',
-                    direction: 'asc'
+                    direction: 'asc',
+                    offset: 0
                 )
 
                 expect(remote_schemas).to include(:remote_schema_name => "public")
@@ -271,7 +272,8 @@ describe Carto::FederatedTablesService do
                         page: 1,
                         per_page: 10,
                         order: 'remote_schema_name',
-                        direction: 'asc'
+                        direction: 'asc',
+                        offset: 0
                     )
                 }.to raise_error(Sequel::DatabaseError, /Server (.*) does not exist/)
             end
@@ -292,7 +294,7 @@ describe Carto::FederatedTablesService do
             it 'should list unregistered remote table of a federated server and schema' do
                 @federated_server_name = "fs_010_from_#{@user1.username}_to_remote"
                 federated_server = create_and_grant_federated_server()
-                pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
+                pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc', offset: 0 }
                 remote_tables = @service.list_remote_tables(federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, **pagination)
                 expect(remote_tables).to include(
                     :registered=>false,
@@ -313,7 +315,7 @@ describe Carto::FederatedTablesService do
             it 'should list registered remote table of a federated server and schema' do
                 @federated_server_name = "fs_011_from_#{@user1.username}_to_remote"
                 register_remote_table()
-                pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc' }
+                pagination = { page: 1, per_page: 10, order: 'remote_table_name', direction: 'asc', offset: 0 }
                 remote_tables = @service.list_remote_tables(federated_server_name: @federated_server_name, remote_schema_name: @remote_schema_name, **pagination)
                 expect(remote_tables).to include(
                     :registered => true,

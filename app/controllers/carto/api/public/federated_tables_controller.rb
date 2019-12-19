@@ -162,7 +162,8 @@ module Carto
             default_order: default_order,
             default_order_direction: 'asc'
           )
-          @pagination = { page: page, per_page: per_page, order: order, direction: direction }
+          offset = (page - 1) * per_page
+          @pagination = { page: page, per_page: per_page, order: order, direction: direction, offset: offset }
         end
 
         def load_federated_server_attributes

@@ -73,7 +73,6 @@ module Carto
         end
 
         def show_federated_server
-          @federated_server[:password] = '********'
           render_jsonp(@federated_server, 200)
         end
 

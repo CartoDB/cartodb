@@ -1339,7 +1339,7 @@ class Table
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 
-    valid_column_name = get_valid_column_name(column_name, column_sanitization_version, options)
+    valid_column_name = get_valid_column_name(table_name, column_name, column_sanitization_version, options)
     if valid_column_name != column_name
       connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
     end

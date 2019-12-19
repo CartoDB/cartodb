@@ -86,10 +86,17 @@ module Carto
 
     # Remote Tables
 
-    def list_remote_tables(federated_server_name, remote_schema_name, pagination)
-      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
+    def list_remote_tables(federated_server_name:, remote_schema_name:, order:, direction:, per_page:, page:)
+      offset = (page - 1) * per_page
       remote_tables = @user_db_connection[
-        select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
+        select_remote_tables_query(
+          federated_server_name: federated_server_name,
+          remote_schema_name: remote_schema_name,
+          order: order,
+          direction: direction,
+          per_page: per_page,
+          offset: offset
+        )
       ].all
       remote_tables.each do |remote_table|
         remote_table[:columns] = JSON.parse(remote_table[:columns], symbolize_names: true)
@@ -267,12 +274,12 @@ module Carto
 
     # Remote Tables
 
-    def select_remote_tables_query(federated_server_name, remote_schema_name, pagination)
+    def select_remote_tables_query(federated_server_name:, remote_schema_name:, order:, direction:, per_page:, offset:)
       %{
         SELECT * FROM (#{select_tables_query(federated_server_name, remote_schema_name)}) AS remote_tables
-        ORDER BY #{pagination[:order]} #{pagination[:direction]}
-        LIMIT #{pagination[:per_page]}
-        OFFSET #{pagination[:offset]}
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
       }.squish
     end
 

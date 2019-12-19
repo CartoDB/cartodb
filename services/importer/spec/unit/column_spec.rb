@@ -425,9 +425,7 @@ describe Column do
   VERSION_2_SANITIZATION_COLS = {
     ['выбросы предприятий2', 'выхлопы автотранспорта2', 'неустановленный источник2'] => ['vybrosy_predpriyatij2', 'vyxlopy_vtotr_nsport_2', 'neust_novlennyj_istochnik2'],
     ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description", "description_1"],
-    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"],
-    ["_", "_", "_", "_"] => ["_", "_1", "_2", "_3"]
-
+    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"]
   }
 
   describe '.get_valid_column_name' do
@@ -470,7 +468,9 @@ describe Column do
         columns = []
         input_columns.zip(output_columns).each do |input_column, output_column|
           column = Column::get_valid_column_name(input_column, 2, columns)
+          puts "--- ADDING COL #{column}"
           columns << column
+          puts " >> #{columns.inspect}"
           column.should eq output_column
         end
       end

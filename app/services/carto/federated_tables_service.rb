@@ -197,21 +197,30 @@ module Carto
       }.squish
     end
 
-    def register_federated_server_query(attributes)
+    def register_federated_server_query(
+      federated_server_name:,
+      host: nil,
+      port: nil,
+      dbname: nil,
+      mode:,
+      username: nil,
+      password: nil
+    )
       config_server = {}
-      config_server["dbname"] = attributes[:dbname] if attributes[:dbname].present?
-      config_server["host"] = attributes[:host] if attributes[:host].present?
-      config_server["port"] = attributes[:port] if attributes[:port].present?
+      config_server["dbname"] = dbname if dbname.present?
+      config_server["host"] = host if host.present?
+      config_server["port"] = port if port.present?
       config_server["extensions"] = "postgis"
-      config_server["updatable"] = attributes[:mode] != 'read-write' ? "false" : "write"
+      config_server["updatable"] = mode != 'read-write' ? "false" : "write"
       config_server["use_remote_estimate"] = "true"
       config_server["fetch_size"] = "1000"
       config_credentials = {}
-      config_credentials["username"] = attributes[:username] if attributes[:username].present?
-      config_credentials["password"] = attributes[:password] if attributes[:password].present?
+      config_credentials["username"] = username if username.present?
+      config_credentials["password"] = password if password.present?
+
       config = { :server => config_server, :credentials => config_credentials }
 
-      server_str = @user_db_connection.literal(attributes[:federated_server_name])
+      server_str = @user_db_connection.literal(federated_server_name)
       config_str = @user_db_connection.literal(config.to_json)
 
       %{

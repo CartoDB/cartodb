@@ -285,7 +285,6 @@ module CartoDB
       end
 
       def self.get_valid_column_name(candidate_column_name, column_sanitization_version, column_names)
-
         return candidate_column_name if column_sanitization_version == NO_COLUMN_SANITIZATION_VERSION
 
         existing_names = column_names - [candidate_column_name]
@@ -307,6 +306,19 @@ module CartoDB
           avoid_collisions(candidate_column_name, existing_names, reserved_words)
         elsif column_sanitization_version == 2
           new_column_name = sanitize_name(candidate_column_name).gsub(/_{2,}/, '_')
+          new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
+          avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
+        elsif column_sanitization_version == 3
+          # experimental sanitization
+          # this can be configured using the locale files for the current (I18n.locale) locale;
+          # for example, for I18n.locale == :en we could add this to config/locales/en.yml
+          #   en:
+          #     i18n:
+          #      transliterate:
+          #        rule:
+          #          Ж: Zh
+          #          ж: zh
+          new_column_name = candidate_column_name.parameterize.tr('-','_')
           new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
           avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
         else

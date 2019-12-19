@@ -1339,7 +1339,7 @@ class Table
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 
-    valid_column_name = get_valid_column_name(table_name, column_name, column_sanitization_version, options)
+    valid_column_name = get_valid_column_name(column_name, column_sanitization_version, options)
     if valid_column_name != column_name
       connection.run(%Q{ALTER TABLE "#{database_schema}"."#{table_name}" RENAME COLUMN "#{column_name}" TO "#{valid_column_name}";})
     end
@@ -1348,7 +1348,7 @@ class Table
   end
 
   def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, options={})
-    CartoDB::Importer2::Column.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, get_column_names(table_name, options))
+    CartoDB::Importer2::Column.get_valid_column_name(candidate_column_name, column_sanitization_version, get_column_names(table_name, options))
   end
 
   def self.get_column_names(table_name, options={})

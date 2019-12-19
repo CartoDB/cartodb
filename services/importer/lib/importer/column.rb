@@ -278,7 +278,7 @@ module CartoDB
         "_#{name}"
       end
 
-      def self.get_valid_column_name(table_name, candidate_column_name, column_sanitization_version, column_names)
+      def self.get_valid_column_name(candidate_column_name, column_sanitization_version, column_names)
 
         return candidate_column_name if column_sanitization_version == NO_COLUMN_SANITIZATION_VERSION
 

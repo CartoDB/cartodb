@@ -99,10 +99,9 @@ module Carto
           offset: offset
         )
       ].all
-      remote_tables.each do |remote_table|
-        remote_table[:columns] = JSON.parse(remote_table[:columns], symbolize_names: true)
+      remote_tables.map do |remote_table|
+        remote_table.merge(columns: JSON.parse(remote_table[:columns], symbolize_names: true))
       end
-      return remote_tables
     end
 
     def count_remote_tables(federated_server_name:, remote_schema_name:)

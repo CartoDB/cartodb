@@ -273,7 +273,7 @@ module CartoDB
       end
 
       def self.sanitize_name(column_name)
-        name = StringSanitizer.new.sanitize(column_name.to_s, transliterate_cyrillic: true)
+        name = StringSanitizer.sanitize(column_name.to_s, transliterate_cyrillic: true)
         return name unless reserved_or_unsupported?(name)
         "_#{name}"
       end

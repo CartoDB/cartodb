@@ -19,13 +19,15 @@ module Carto
       @user_db_connection[count_federated_servers_query].first[:count]
     end
 
-    def register_server(attributes)
-      @superuser_db_connection[register_federated_server_query(attributes)].first
+    def register_server(federated_server_name:, **attributes)
+      @superuser_db_connection[
+        register_federated_server_query(federated_server_name: federated_server_name, **attributes)
+      ].first
       grant_access_to_federated_server(
-        federated_server_name: attributes[:federated_server_name],
+        federated_server_name: federated_server_name,
         db_role: @user.database_username
-       )
-      get_server(federated_server_name: attributes[:federated_server_name])
+      )
+      get_server(federated_server_name: federated_server_name)
     end
 
     def grant_access_to_federated_server(federated_server_name:, db_role:)

@@ -220,7 +220,7 @@ module Carto
         def check_permissions
           @api_key = Carto::ApiKey.find_by_token(params["api_key"])
           raise UnauthorizedError unless @api_key&.master?
-          raise UnauthorizedError unless @api_key.user.username === @user.username
+          raise UnauthorizedError unless @api_key.user_id === @user.id
         end
 
         def check_federated_tables_enable

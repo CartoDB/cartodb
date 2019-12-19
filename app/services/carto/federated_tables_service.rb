@@ -8,10 +8,10 @@ module Carto
 
     # Federated Servers
 
-    def list_servers(pagination)
-      pagination[:offset] = (pagination[:page] - 1) * pagination[:per_page]
+    def list_servers(order:, direction:, per_page:, page:)
+      offset = (page - 1) * per_page
       @user_db_connection[
-        select_federated_servers_query(pagination)
+        select_federated_servers_query(order: order, direction: direction, per_page: per_page, offset: offset)
       ].all
     end
 
@@ -146,12 +146,12 @@ module Carto
 
     private
 
-    def select_federated_servers_query(pagination)
+    def select_federated_servers_query(order:, direction:, per_page:, offset:)
       %{
         SELECT * FROM (#{select_servers_query}) AS federated_servers
-        ORDER BY #{pagination[:order]} #{pagination[:direction]}
-        LIMIT #{pagination[:per_page]}
-        OFFSET #{pagination[:offset]}
+        ORDER BY #{order} #{direction}
+        LIMIT #{per_page}
+        OFFSET #{offset}
       }.squish
     end
 

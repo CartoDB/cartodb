@@ -2219,23 +2219,28 @@ describe Table do
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})
-        Table.get_valid_column_name('dummy_table_name', 'a').should == 'a'
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
+        Table.get_valid_column_name('dummy_table_name', 'a', version).should == 'a'
       end
 
       it 'returns an alternative name if using a reserved word' do
         Table.expects(:get_column_names).once.returns(%w{column b c})
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
         Table.get_valid_column_name(
           'dummy_table_name',
           'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_1'
+          version
+        ).should == 'column_1'
       end
 
       it 'avoids collisions when a renamed column already exists' do
         Table.expects(:get_column_names).once.returns(%w{column_1 column c})
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
         Table.get_valid_column_name(
           'dummy_table_name',
           'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_2'
+          version
+        ).should == 'column_2'
       end
 
     end

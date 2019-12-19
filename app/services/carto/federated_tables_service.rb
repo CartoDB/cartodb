@@ -214,7 +214,7 @@ module Carto
       config_credentials["username"] = username if username.present?
       config_credentials["password"] = password if password.present?
 
-      config = { :server => config_server, :credentials => config_credentials }
+      config = { server: config_server, credentials: config_credentials }
 
       server_str = @user_db_connection.literal(federated_server_name)
       config_str = @user_db_connection.literal(config.to_json)
@@ -322,11 +322,8 @@ module Carto
     end
 
     def literal_attribute_or_null(attribute)
-        if attribute.nil? || attribute == ""
-            "NULL"
-        else
-             @user_db_connection.literal(attribute)
-        end
+      return "NULL" if attribute.blank?
+      @user_db_connection.literal(attribute)
     end
 
     def register_remote_table_query(

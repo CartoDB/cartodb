@@ -425,7 +425,9 @@ describe Column do
   VERSION_2_SANITIZATION_COLS = {
     ['выбросы предприятий2', 'выхлопы автотранспорта2', 'неустановленный источник2'] => ['vybrosy_predpriyatij2', 'vyxlopy_vtotr_nsport_2', 'neust_novlennyj_istochnik2'],
     ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description", "description_1"],
-    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"]
+    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"],
+    ["_", "_", "_", "_"] => ["_", "_1", "_2", "_3"]
+
   }
 
   describe '.get_valid_column_name' do
@@ -470,6 +472,22 @@ describe Column do
           column = Column::get_valid_column_name(input_column, 2, columns)
           columns << column
           column.should eq output_column
+        end
+      end
+    end
+
+    it 'multiple column sanitization is idempotent' do
+      VERSION_2_SANITIZATION_COLS.each_key do |input_columns|
+        columns1 = []
+        input_columns.each do |input_column|
+          column1 = Column::get_valid_column_name(input_column, 2, columns1)
+          columns1 << column1
+        end
+        columns2 = []
+        columns1.each do |input_column|
+          column2 = Column::get_valid_column_name(input_column, 2, columns2)
+          columns2 << column2
+          column2.should eq input_column
         end
       end
     end

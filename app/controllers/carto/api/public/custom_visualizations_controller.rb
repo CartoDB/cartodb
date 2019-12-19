@@ -18,7 +18,8 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
-  before_action :check_for_permission, only: [:update, :delete]
+  before_action :check_edition_permission, only: [:update, :delete]
+  before_action :check_master_api_key, only: [:create, :update, :delete]
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -68,10 +69,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   def delete
     @kuviz.destroy
     head 204
-  rescue StandardError => exception
-    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: exception,
-                          visualization: @kuviz)
-    render_jsonp({ errors: [exception.message] }, 400)
+  rescue StandardError => e
+    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)
+    render_jsonp({ errors: [e.message] }, 400)
   end
 
   private
@@ -91,7 +91,12 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     @logged_user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
   end
 
-  def check_for_permission
+  def check_master_api_key
+    api_key = Carto::ApiKey.find_by_token(params["api_key"])
+    raise UnauthorizedError unless api_key&.master?
+  end
+
+  def check_edition_permission
     head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
   end
 

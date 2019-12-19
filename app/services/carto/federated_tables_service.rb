@@ -139,17 +139,22 @@ module Carto
       return remote_table
     end
 
-    def update_table(attributes)
+    def update_table(federated_server_name:, remote_schema_name:, remote_table_name:, **attributes)
       unregister_table(
-        federated_server_name: attributes[:federated_server_name],
-        remote_schema_name: attributes[:remote_schema_name],
-        remote_table_name: attributes[:remote_table_name]
+        federated_server_name: federated_server_name,
+        remote_schema_name: remote_schema_name,
+        remote_table_name: remote_table_name
       )
-      register_table(attributes)
+      register_table(
+        federated_server_name: federated_server_name,
+        remote_schema_name: remote_schema_name,
+        remote_table_name: remote_table_name,
+        **attributes
+      )
       get_remote_table(
-        federated_server_name: attributes[:federated_server_name],
-        remote_schema_name: attributes[:remote_schema_name],
-        remote_table_name: attributes[:remote_table_name]
+        federated_server_name: federated_server_name,
+        remote_schema_name: remote_schema_name,
+        remote_table_name: remote_table_name
       )
     end
 

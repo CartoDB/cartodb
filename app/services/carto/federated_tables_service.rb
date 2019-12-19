@@ -41,11 +41,10 @@ module Carto
       @user_db_connection[get_federated_server_query(federated_server_name: federated_server_name)].first
     end
 
-    def update_server(federated_server_name, attributes)
+    def update_server(federated_server_name:, **attributes)
       unregister_server(federated_server_name: federated_server_name)
-      attributes[:federated_server_name] = federated_server_name
-      register_server(attributes)
-      get_server(federated_server_name: attributes[:federated_server_name])
+      register_server(federated_server_name: federated_server_name, **attributes)
+      get_server(federated_server_name: federated_server_name)
     end
 
     def unregister_server(federated_server_name:)

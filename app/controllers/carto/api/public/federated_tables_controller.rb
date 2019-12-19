@@ -83,8 +83,7 @@ module Carto
             response.headers['Content-Location'] = "#{request.path}"
             return render_jsonp(@federated_server, 201)
           end
-
-          @federated_server = @service.update_server(@federated_server[:federated_server_name], @federated_server_attributes)
+          @federated_server = @service.update_server(@federated_server_attributes)
           render_jsonp({}, 204)
         end
 
@@ -168,7 +167,7 @@ module Carto
         end
 
         def load_federated_server_attributes
-          @federated_server_attributes = params.slice(*FEDERATED_SERVER_ATTRIBUTES)
+          @federated_server_attributes = params.slice(*FEDERATED_SERVER_ATTRIBUTES).permit(*FEDERATED_SERVER_ATTRIBUTES).to_h.symbolize_keys
         end
 
         def load_federated_server
@@ -194,7 +193,7 @@ module Carto
         end
 
         def load_remote_table_attributes
-          @remote_table_attributes = params.slice(*REMOTE_TABLE_ATTRIBUTES)
+          @remote_table_attributes = params.slice(*REMOTE_TABLE_ATTRIBUTES).permit(*REMOTE_TABLE_ATTRIBUTES).to_h.symbolize_keys
           @remote_table_attributes[:local_table_name_override] ||= @remote_table_attributes[:remote_table_name]
         end
 

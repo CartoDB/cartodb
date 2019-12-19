@@ -58,14 +58,13 @@ gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
-gem 'faraday',                 '0.11.0'
-gem 'google-api-client',       '0.32.1'
+gem 'google-api-client',       '0.34.1'
 gem 'dropbox_api',             '0.1.17'
-gem 'instagram-continued',     '1.4.0'
 gem 'gibbon',                  '1.1.4'
+gem 'instagram-continued-continued'
 
 # GCloud
-gem 'google-cloud-pubsub', '0.27.2'
+gem 'google-cloud-pubsub', '1.1.2'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'

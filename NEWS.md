@@ -9,6 +9,9 @@ Development
 * Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
 * Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
   ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
+* New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
+* New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
 
 ### Bug fixes / enhancements
 - Avoid warnings when running test in parallel with an empty environment
@@ -18,6 +21,7 @@ Development
 - Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
 - ArcGIS connector: Stop skipping ids on failure.
 - Adapt python scripts python3 syntax.
+- Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
 
 4.31.0 (2019-11-19)
 -------------------

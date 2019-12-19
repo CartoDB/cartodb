@@ -2230,17 +2230,17 @@ describe Table do
           'dummy_table_name',
           'column',
           version
-        ).should == 'column_1'
+        ).should == '_column'
       end
 
       it 'avoids collisions when a renamed column already exists' do
-        Table.expects(:get_column_names).once.returns(%w{column_1 column c})
+        Table.expects(:get_column_names).once.returns(%w{_column column c})
         version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
         Table.get_valid_column_name(
           'dummy_table_name',
           'column',
           version
-        ).should == 'column_2'
+        ).should == '_column_1'
       end
 
     end

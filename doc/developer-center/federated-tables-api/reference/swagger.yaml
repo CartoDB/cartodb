@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Federated Tables API
   description: >
-    **Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support-
+    **Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support.
 
     # Introduction
 

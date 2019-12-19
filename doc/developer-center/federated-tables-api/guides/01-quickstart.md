@@ -1,4 +1,4 @@
-**Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support-
+**Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support.
 
 
 ## Quickstart

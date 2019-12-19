@@ -15,6 +15,8 @@ module Carto
     validates :users_emails, email: true
     validate :users_emails_not_taken
 
+    after_save :uniqueness_by_organization
+
     belongs_to :inviter_user, class_name: Carto::User
     belongs_to :organization
 
@@ -89,6 +91,23 @@ module Carto
 
       users_emails.each do |email|
         errors[:users_emails] << "Existing user for #{email}" if Carto::User.find_by_email(email)
+      end
+    end
+    
+    def uniqueness_by_organization
+      return unless users_emails
+
+      users_emails.each do |email|
+        organization.invitations.query_with_valid_email(email).each do |invitation|
+          next if self.id == invitation.id
+
+          if invitation.users_emails == [email]
+            invitation.destroy!
+          else
+            invitation.users_emails.delete(email)
+            invitation.update(users_emails: invitation.users_emails)
+          end
+        end
       end
     end
 

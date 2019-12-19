@@ -25,6 +25,20 @@ describe Carto::Invitation do
       invitation.errors[:users_emails].count.should == 2
     end
 
+    it 'duplicated email in same organization should remove other invitations' do
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['usr@carto.com'], 'hi', false)
+      invitation2 = Carto::Invitation.create_new(@carto_org_user_owner, ['usr@carto.com'], 'hi', false)
+      expect { invitation.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+      invitation2.reload.users_emails.should == ['usr@carto.com']
+    end
+
+    it 'duplicated emails in same organization should remove email from other invitations' do
+      invitation = Carto::Invitation.create_new(@carto_org_user_owner, ['usr1@carto.com', 'usr2@carto.com'], 'hi', false)
+      invitation2 = Carto::Invitation.create_new(@carto_org_user_owner, ['usr1@carto.com'], 'hi', false)
+      invitation.reload.users_emails.should == ['usr2@carto.com']
+      invitation2.reload.users_emails.should == ['usr1@carto.com']
+    end
+
     it 'sends invitations' do
       ::Resque.expects(:enqueue).with(Resque::OrganizationJobs::Mail::Invitation, instance_of(String)).once
       emails = ['w_1@carto.com', 'w_2@carto.com']
@@ -69,6 +83,7 @@ describe Carto::Invitation do
     before(:each) do
       @valid_email = 'email1@carto.com'
       @valid_email_2 = 'email2@carto.com'
+      Carto::Invitation.query_with_valid_email(@valid_email).destroy_all
       @invitation = Carto::Invitation.create_new(
         @carto_org_user_owner,
         [@valid_email, @valid_email_2],

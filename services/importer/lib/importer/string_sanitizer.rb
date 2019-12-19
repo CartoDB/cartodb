@@ -1,6 +1,8 @@
 module CartoDB
   module Importer2
-    class StringSanitizer
+    module StringSanitizer
+      module_function
+
       def normalize(string, transliterate_cyrillic: false)
         return '' if string.nil? || string.empty?
 

@@ -134,10 +134,8 @@ module Carto
           remote_table_name: remote_table_name
         )
       ].first
-      unless remote_table.nil?
-        remote_table[:columns] = JSON.parse(remote_table[:columns], symbolize_names: true)
-      end
-      return remote_table
+      return unless remote_table
+      remote_table.merge(columns: JSON.parse(remote_table[:columns], symbolize_names: true))
     end
 
     def update_table(federated_server_name:, remote_schema_name:, remote_table_name:, **attributes)

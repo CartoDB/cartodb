@@ -324,23 +324,24 @@ module Carto
         end
     end
 
-    def register_remote_table_query(attributes)
-      server_str = literal_attribute_or_null(attributes[:federated_server_name])
-      schema_str = literal_attribute_or_null(attributes[:remote_schema_name])
-      table_str = literal_attribute_or_null(attributes[:remote_table_name])
-      id_column_str = literal_attribute_or_null(attributes[:id_column_name])
-      geom_column_str = literal_attribute_or_null(attributes[:geom_column_name])
-      webmercator_column_str = literal_attribute_or_null(attributes[:webmercator_column_name])
-      local_name_str = literal_attribute_or_null(attributes[:local_table_name_override])
+    def register_remote_table_query(
+      federated_server_name:,
+      remote_schema_name:,
+      remote_table_name:,
+      local_table_name_override:,
+      id_column_name: nil,
+      geom_column_name: nil,
+      webmercator_column_name: nil
+    )
       %{
         SELECT cartodb.CDB_Federated_Table_Register(
-          server => #{server_str},
-          remote_schema => #{schema_str},
-          remote_table => #{table_str},
-          id_column => #{id_column_str},
-          geom_column => #{geom_column_str},
-          webmercator_column => #{webmercator_column_str},
-          local_name => #{local_name_str}
+          server => #{literal_attribute_or_null(federated_server_name)},
+          remote_schema => #{literal_attribute_or_null(remote_schema_name)},
+          remote_table => #{literal_attribute_or_null(remote_table_name)},
+          id_column => #{literal_attribute_or_null(id_column_name)},
+          geom_column => #{literal_attribute_or_null(geom_column_name)},
+          webmercator_column => #{literal_attribute_or_null(webmercator_column_name)},
+          local_name => #{literal_attribute_or_null(local_table_name_override)}
         )
       }.squish
     end

@@ -5,13 +5,11 @@ import sys
 import dbfUtils
 import sys
 from osgeo import osr
-from urllib import urlencode
-from urllib2 import urlopen
 import json
 import subprocess
 
 if len(sys.argv) != 3:
-    print "usage: python %s shp_file name" % sys.argv[0]
+    print("usage: python %s shp_file name" % sys.argv[0])
     sys.exit()
 shp_file = sys.argv[1]
 name = sys.argv[2]
@@ -75,8 +73,8 @@ try:
     dbf = open(dbf_file.strip(), 'rb')
     db = dbfUtils.dbfreader(dbf)
 
-    fnames = db.next()
-    ftypes = db.next()
+    fnames = next(db)
+    ftypes = next(db)
 
     # find string fields
     sfields = []
@@ -108,4 +106,4 @@ except Exception as err:
     #sys.stderr.write(repr(err)+'\n')
     #sys.exit(1)
 
-print "%s,%s,%s,%s" % (srid,encoding,shp_file,name)
+print("%s,%s,%s,%s" % (srid,encoding,shp_file,name))

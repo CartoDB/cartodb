@@ -35,7 +35,7 @@ module Carto
       # FIXME we have been reserving these name in columns but I don't know the reason ¯\_(ツ)_/¯
       ADDITIONAL_WORDS      = %w(between new off old format controller action).freeze
 
-      RESERVED_COLUMN_NAMES = SYSTEM_COLUMN_NAMES + RESERVED_WORDS + ADDITIONAL_RESERVED_COLUMNS + ADDITIONAL_WORDS
+      RESERVED_COLUMN_NAMES = SYSTEM_COLUMN_NAMES + RESERVED_WORDS + ADDITIONAL_WORDS
 
 
       def self.append_with_truncate_and_sanitize(identifier, suffix)

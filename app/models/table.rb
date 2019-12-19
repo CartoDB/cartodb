@@ -695,16 +695,19 @@ class Table
   end
 
   def modify_column!(options)
+    old_name  = options.fetch(:name, '').to_s
+    new_name  = options.fetch(:new_name, '').to_s
+
     # FIXME: consider CartoDB::Importer2::Column.get_valid_column_name with CURRENT_COLUMN_SANITIZATION_VERSION
-    old_name  = CartoDB::Importer2::Column.sanitize_name(options.fetch(:name, '').to_s)
-    new_name  = CartoDB::Importer2::Column.sanitize_name(options.fetch(:new_name, '').to_s)
-    raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_name.to_s)
+    old_sanitized_name = CartoDB::Importer2::Column.sanitize_name(old_name)
+    raise 'This column cannot be modified' if CARTODB_COLUMNS.include?(old_sanitized_name.to_s)
 
     if new_name.present? && new_name != old_name
-      rename_column(old_name, new_name)
+      new_sanitized_name = CartoDB::Importer2::Column.sanitize_name(new_name)
+      rename_column(old_sanitized_name, new_sanitized_name)
     end
 
-    column_name = (new_name.present? ? new_name : old_name)
+    column_name = (new_name.present? ? new_sanitized_name : old_sanitized_name)
     convert_column_datatype(owner.in_database, name, column_name, options[:type])
     column_type = column_type_for(column_name)
 
@@ -1316,6 +1319,7 @@ class Table
   end
 
   def self.sanitize_columns(table_name, column_sanitization_version, options={})
+
     connection = options.fetch(:connection)
     database_schema = options.fetch(:database_schema, 'public')
 

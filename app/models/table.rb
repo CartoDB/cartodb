@@ -670,7 +670,7 @@ class Table
   end
 
   def add_column!(options)
-    raise CartoDB::InvalidColumnName if CartoDB::Importer2::Column.reserved_or_unsupported?(options[:name])
+    raise CartoDB::InvalidColumnName if CartoDB::Importer2::Column.rejected?(options[:name])
     type = options[:type].convert_to_db_type
     cartodb_type = options[:type].convert_to_cartodb_type
     # FIXME: consider CartoDB::Importer2::Column.get_valid_column_name with CURRENT_COLUMN_SANITIZATION_VERSION

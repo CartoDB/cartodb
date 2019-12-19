@@ -28,7 +28,9 @@ module Carto
                                  some symmetric table tablesample then to trailing true union unique user using
                                  variadic verbose when where window with).freeze
 
-      ADDITIONAL_RESERVED_COLUMNS = %w(ogc_fid).freeze
+      ADDITIONAL_RESERVED_COLUMNS = %w(oid ogc_fid).freeze
+
+      REJECTED_COLUMN_NAMES = (SYSTEM_COLUMN_NAMES + ADDITIONAL_RESERVED_COLUMNS).freeze
 
       # FIXME we have been reserving these name in columns but I don't know the reason ¯\_(ツ)_/¯
       ADDITIONAL_WORDS      = %w(between new off old format controller action).freeze

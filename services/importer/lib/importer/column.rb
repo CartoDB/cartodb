@@ -21,6 +21,8 @@ module CartoDB
       RESERVED_COLUMN_NAMES = Carto::DB::Sanitize::RESERVED_COLUMN_NAMES
       PG_IDENTIFIER_MAX_LENGTH = Carto::DB::Sanitize::MAX_IDENTIFIER_LENGTH
 
+      REJECTED_COLUMN_NAMES = Carto::DB::Sanitize::REJECTED_COLUMN_NAMES
+
       NO_COLUMN_SANITIZATION_VERSION = 0
       INITIAL_COLUMN_SANITIZATION_VERSION = 1
       CURRENT_COLUMN_SANITIZATION_VERSION = 2
@@ -276,6 +278,10 @@ module CartoDB
         name = StringSanitizer.sanitize(column_name.to_s, transliterate_cyrillic: true)
         return name unless reserved_or_unsupported?(name)
         "_#{name}"
+      end
+
+      def self.rejected?(name)
+        REJECTED_COLUMN_NAMES.include?(name) || name =~ /^[0-9]/
       end
 
       def self.get_valid_column_name(candidate_column_name, column_sanitization_version, column_names)

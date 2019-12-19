@@ -1,6 +1,7 @@
-## Quickstart
+**Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support-
 
-:warning: Federated Tables is in **beta** stage and the API might change or have limited support :warning:
+
+## Quickstart
 
 In order to manage Federated Tables as part of the CARTO platform, we provide a RESTful Web Service to manipulate the resources that represent Federated Tables by using a uniform and predefined set of operations.
 

@@ -2,9 +2,9 @@ openapi: 3.0.0
 info:
   title: Federated Tables API
   description: >
-    # Introduction
+    **Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support-
 
-    :warning: Federated Tables is in **beta** stage and the API might change or have limited support :warning:
+    # Introduction
 
     A Federated Table is a PostgreSQL Foreign Data Wrapper to a remote server,
     allowing us to perform live queries to a remote database. Think of it as a

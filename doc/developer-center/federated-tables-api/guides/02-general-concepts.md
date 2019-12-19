@@ -1,6 +1,6 @@
-## General Concepts
+**Warning:** Federated Tables is in **BETA** stage and the API might change or have limited support-
 
-:warning: Federated Tables is in **beta** stage and the API might change or have limited support :warning:
+## General Concepts
 
 The following concepts are the same for every endpoint in the API except when it is noted explicitly.
 

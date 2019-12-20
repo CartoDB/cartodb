@@ -209,14 +209,17 @@ class Table
     end
   end
 
+  def data_import
+    @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
+  end
+
   ## Callbacks
 
   def import_to_cartodb(uniname = nil)
-    @data_import ||= DataImport.where(id: @user_table.data_import_id).first || DataImport.new(user_id: owner.id)
     if migrate_existing_table.present? || uniname
-      @data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE if @data_import.data_type.nil?
-      @data_import.data_source = migrate_existing_table || uniname
-      @data_import.save
+      data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE if data_import.data_type.nil?
+      data_import.data_source = migrate_existing_table || uniname
+      data_import.save
 
       # ensure unique name, also ensures self.name can override any imported table name
       uniname = get_valid_name(name ? name : migrate_existing_table) unless uniname
@@ -237,12 +240,12 @@ class Table
         :debug => Rails.env.development?,
         :remaining_quota => owner.remaining_quota,
         :remaining_tables => owner.remaining_table_quota,
-        :data_import_id => @data_import.id
+        :data_import_id => data_import.id
       ).symbolize_keys
       importer = CartoDB::Migrator.new(hash_in)
       imported_name = importer.migrate!
-      @data_import.reload
-      @data_import.save
+      data_import.reload
+      data_import.save
       imported_name
     end
   end
@@ -1312,8 +1315,8 @@ class Table
   end
 
   def column_sanitization_version
-    if @data_import
-      @data_import.column_sanitization_version
+    if data_import
+      data_import.column_sanitization_version
     else
       CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION
     end

@@ -2,20 +2,20 @@ Development
 -----------
 
 ### NOTICES
-* This release upgrades the CartoDB PostgreSQL extension to `0.33.0`. Run the following to have it available:
+- This release upgrades the CartoDB PostgreSQL extension to `0.33.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-* BigQuery Connector beta release
-* Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
-* Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
+- BigQuery Connector beta release
+- Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+- Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
   ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
-* Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
-* New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
-* New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
+- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
+- New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
+- New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
 - Federated Tables Beta Release:
   - Add enpoints to list, register, update, and unregister Federated Servers
   - Add enpoints to list Remote Schemas

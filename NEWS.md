@@ -9,6 +9,7 @@ sudo make install
 ```
 
 ### Features
+- Regular licensing for Data Observatory ([#15315](https://github.com/CartoDB/cartodb/pull/15315))
 - BigQuery Connector beta release
 - Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
 - Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
@@ -16,7 +17,7 @@ sudo make install
 - Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
 - New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
 - New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
-- Federated Tables Beta Release:
+- Federated Tables Beta Release ([#15315](https://github.com/CartoDB/cartodb/pull/15169)):
   - Add enpoints to list, register, update, and unregister Federated Servers
   - Add enpoints to list Remote Schemas
   - Add enpoints to list, register, update, and unregister Remote Tables
@@ -30,6 +31,8 @@ sudo make install
 - ArcGIS connector: Stop skipping ids on failure.
 - Adapt python scripts python3 syntax.
 - Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
+- Fix kuviz permissions ([#15336](https://github.com/CartoDB/cartodb/pull/15336))
+- Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
 
 4.31.0 (2019-11-19)
 -------------------
@@ -56,11 +59,13 @@ sudo make install
 * Add support for BigQuery connector (https://github.com/CartoDB/cartodb/pull/15179)
 
 ### Bug fixes / enhancements
-* Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
-* Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
-* Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
-* Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
-* Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+- Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
+- Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
+- Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
+- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+- Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 
 4.30.0 (2019-10-18)
 -------------------

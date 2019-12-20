@@ -22,6 +22,7 @@ Development
 - ArcGIS connector: Stop skipping ids on failure.
 - Adapt python scripts python3 syntax.
 - Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
+- Fix kuviz permissions ([#15336](https://github.com/CartoDB/cartodb/pull/15336))
 - Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
 
 4.31.0 (2019-11-19)

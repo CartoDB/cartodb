@@ -53,6 +53,7 @@ class Table
     else
       @user_table = args[:user_table]
     end
+    self.user_id = args[:user_id] if args[:user_id].present?
     # TODO: this probably makes sense only if user_table is not passed as argument
     @user_table.set_service(self)
   end

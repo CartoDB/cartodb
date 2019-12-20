@@ -23,6 +23,7 @@ Development
 - Adapt python scripts python3 syntax.
 - Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
 - Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
+- Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
 
 4.31.0 (2019-11-19)
 -------------------

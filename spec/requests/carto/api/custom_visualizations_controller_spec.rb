@@ -39,24 +39,27 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @kuviz_password.destroy
     end
 
-    it 'works with master api_key' do
-      get_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key) do |response|
-        expect(response.status).to eq(200)
-      end
-    end
-
-    it 'works with oauth api_key' do
+    it 'returns 403 with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'works with regular api_key' do
+    it 'returns 403 with regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
+
+      get_json api_v4_kuviz_list_vizs_url(api_key: token) do |response|
+        expect(response.status).to eq(403)
       end
     end
 
@@ -159,27 +162,27 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @valid_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
     end
 
-    it 'returns 401 wih default_public api_key' do
-      api_key = @user.api_keys.default_public
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
 
-      post_json api_v4_kuviz_create_viz_url(api_key: api_key), data: @valid_html_base64, name: 'test' do |response|
-        expect(response.status).to eq(401)
+      post_json api_v4_kuviz_create_viz_url(api_key: token), data: @valid_html_base64, name: 'test' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 with oauth api_key' do
+    it 'returns 403 with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
-      post_json api_v4_kuviz_create_viz_url(api_key: api_key), data: @valid_html_base64, name: 'test' do |response|
-        expect(response.status).to eq(401)
+      post_json api_v4_kuviz_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: 'test' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 wih regular api_key' do
+    it 'returns 403 wih regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
 
-      post_json api_v4_kuviz_create_viz_url(api_key: api_key), data: @valid_html_base64, name: 'test' do |response|
-        expect(response.status).to eq(401)
+      post_json api_v4_kuviz_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: 'test' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
@@ -249,27 +252,27 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset2.save
     end
 
-    it 'returns 401 wih default_public api_key' do
-      api_key = @user.api_keys.default_public
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
 
-      put_json api_v4_kuviz_update_viz_url(api_key: api_key, id: @kuviz.id), name: 'new name' do |response|
-        expect(response.status).to eq(401)
+      put_json api_v4_kuviz_update_viz_url(api_key: token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 with oauth api_key' do
+    it 'returns 403 with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
-      put_json api_v4_kuviz_update_viz_url(api_key: api_key, id: @kuviz.id), name: 'new name' do |response|
-        expect(response.status).to eq(401)
+      put_json api_v4_kuviz_update_viz_url(api_key: api_key.token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 wih regular api_key' do
+    it 'returns 403 wih regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
 
-      put_json api_v4_kuviz_update_viz_url(api_key: api_key, id: @kuviz.id), name: 'new name' do |response|
-        expect(response.status).to eq(401)
+      put_json api_v4_kuviz_update_viz_url(api_key: api_key.token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
       end
     end
 
@@ -350,27 +353,27 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset2.save
     end
 
-    it 'returns 401 wih default_public api_key' do
-      api_key = @user.api_keys.default_public
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
 
-      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key, id: @kuviz.id) do |response|
-        expect(response.status).to eq(401)
+      delete_json api_v4_kuviz_delete_viz_url(api_key: token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 with oauth api_key' do
+    it 'returns 403 with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
-      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key, id: @kuviz.id) do |response|
-        expect(response.status).to eq(401)
+      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key.token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'returns 401 wih regular api_key' do
+    it 'returns 403 wih regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
 
-      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key, id: @kuviz.id) do |response|
-        expect(response.status).to eq(401)
+      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key.token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
       end
     end
 

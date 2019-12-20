@@ -2,6 +2,7 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::ApplicationController
+  include Carto::ControllerHelper
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
@@ -19,7 +20,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
-  before_action :check_master_api_key, only: [:create, :update, :delete]
+  before_action :check_master_api_key
+
+  rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -93,7 +96,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def check_master_api_key
     api_key = Carto::ApiKey.find_by_token(params["api_key"])
-    raise UnauthorizedError unless api_key&.master?
+    raise Carto::UnauthorizedError unless api_key&.master?
   end
 
   def check_edition_permission

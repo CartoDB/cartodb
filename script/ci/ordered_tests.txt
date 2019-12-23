@@ -291,5 +291,3 @@ services/datasources/spec/unit/gdrive_spec.rb
 services/datasources/spec/unit/dropbox_spec.rb
 services/datasources/spec/unit/box_spec.rb
 spec/models/visualization/name_generator_spec.rb
-spec/requests/carto/api/public/federated_tables_controller_spec.rb
-spec/services/carto/federated_tables_service_spec.rb

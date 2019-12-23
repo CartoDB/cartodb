@@ -683,11 +683,8 @@ module CartoDB
                   RETURN;
                 END;
                 ver := '#{cdb_extension_target_version}';
-                IF position('dev' in ver) > 0 THEN
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                ELSE
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
                 END IF;
               END;
               $$;

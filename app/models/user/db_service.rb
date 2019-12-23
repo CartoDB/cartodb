@@ -685,7 +685,6 @@ module CartoDB
                 ver := '#{cdb_extension_target_version}';
                 EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
                 EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                END IF;
               END;
               $$;
             })

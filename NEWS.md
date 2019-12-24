@@ -21,6 +21,7 @@ sudo make install
   - Add enpoints to list, register, update, and unregister Federated Servers
   - Add enpoints to list Remote Schemas
   - Add enpoints to list, register, update, and unregister Remote Tables
+- Fixed issue while creating a new user's database: force to alter extension always as template_postgis may have the current version defined and the extension won't be installed
 
 ### Bug fixes / enhancements
 - Avoid warnings when running test in parallel with an empty environment

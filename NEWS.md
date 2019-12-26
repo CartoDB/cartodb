@@ -36,6 +36,7 @@ sudo make install
 - Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
 - Destroy users with OAuth access tokens ([CartoDB/support#2301](https://github.com/CartoDB/support/issues/2301))
 - Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
+- Better control of visualization presenter parameters ([CartoDB/support#2291](https://github.com/CartoDB/support/issues/2291))
 
 4.31.0 (2019-11-19)
 -------------------

@@ -98,13 +98,13 @@ module Carto
 
       def presenter_options_from_hash(params)
         options = {}
-        options[:show_stats] = false if params[:show_stats].to_s == 'false'
-        options[:show_table] = false if params[:show_table].to_s == 'false'
-        options[:show_permission] = false if params[:show_permission].to_s == 'false'
-        options[:show_uses_builder_features] = false if params[:show_uses_builder_features].to_s == 'false'
-        options[:show_synchronization] = false if params[:show_synchronization].to_s == 'false'
-        options[:show_table_size_and_row_count] = false if params[:show_table_size_and_row_count].to_s == 'false'
+
+        params.each { |k, v| options[k.to_sym] = false if params[k].to_s == 'false' }
+
         options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
+
+        invalid_keys = options.keys - Carto::Api::VisualizationPresenter::ALLOWED_PARAMS
+        options.except!(*invalid_keys)
         options
       end
 

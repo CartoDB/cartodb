@@ -37,7 +37,7 @@ module Carto
         @password = password
         @with_dependent_visualizations = with_dependent_visualizations
 
-        @presenter_cache ||= Carto::Api::PresenterCache.new
+        @presenter_cache = Carto::Api::PresenterCache.new
       end
 
       def with_presenter_cache(presenter_cache)

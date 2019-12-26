@@ -1,3 +1,4 @@
+<div class="gtm-connectors-<%= name %>"></div>
 <div class="ImportOptions__overlay">
   <div class="ImportOptions__lock"></div>
 </div>

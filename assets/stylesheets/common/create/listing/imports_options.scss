@@ -140,6 +140,15 @@ $w: $sLayout-width;
   font-weight: 600;
 }
 
+div[class^="gtm-connectors"] {
+  display: block;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .ImportOptions-navigationButton {
   position: absolute;
   top: 28px;

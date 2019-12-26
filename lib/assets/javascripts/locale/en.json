@@ -1355,7 +1355,7 @@
                     "bigquery": {
                         "field-project-billing": "Project Billing ID",
                         "field-sql-query": "SQL query",
-                        "hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly.",
+                        "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly. There are other accepted names, such us “geom“ and “geometry“.",
                         "run": "Run SQL query",
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable",
                         "feedback-text": "Have feedback or questions about the BigQuery connector?",

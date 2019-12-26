@@ -15,7 +15,7 @@
       <div class="ImportOptions__CodeMirror">
         <textarea rows="4" cols="50" class="ImportOptions__input--long Form-input Form-textarea CDB-Text CDB-Size-medium js-textarea"></textarea>
       </div>
-      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.add-layer.imports.bigquery.hint') %></div>
+      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-secondaryTextColor"><%- _t('components.modals.add-layer.imports.bigquery.sql-hint') %></div>
     </div>
   </div>
   <div class="Form-row">

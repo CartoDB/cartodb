@@ -2,43 +2,55 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.33.0`. Run the following to have it available:
+- None yet
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- None yet
+
+4.32.0 (2019-12-27)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.33.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- Regular licensing for Data Observatory ([#15315](https://github.com/CartoDB/cartodb/pull/15315))
-- BigQuery Connector beta release
-- Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
-- Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
+* Regular licensing for Data Observatory ([#15315](https://github.com/CartoDB/cartodb/pull/15315))
+* BigQuery Connector beta release
+* Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
   ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
-- Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
-- New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
-- New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
-- Federated Tables Beta Release ([#15315](https://github.com/CartoDB/cartodb/pull/15169)):
-  - Add enpoints to list, register, update, and unregister Federated Servers
-  - Add enpoints to list Remote Schemas
-  - Add enpoints to list, register, update, and unregister Remote Tables
-- Fixed issue while creating a new user's database: force to alter extension always as template_postgis may have the current version defined and the extension won't be installed
+* Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
+* New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
+* New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
+* Federated Tables Beta Release ([#15315](https://github.com/CartoDB/cartodb/pull/15169)):
+  * Add enpoints to list, register, update, and unregister Federated Servers
+  * Add enpoints to list Remote Schemas
+  * Add enpoints to list, register, update, and unregister Remote Tables
+* Fixed issue while creating a new user's database: force to alter extension always as template_postgis may have the current version defined and the extension won't be installed
 
 ### Bug fixes / enhancements
-- Avoid warnings when running test in parallel with an empty environment
-- Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
-- Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
-- Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
-- Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
-- ArcGIS connector: Stop skipping ids on failure.
-- Adapt python scripts python3 syntax.
-- Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
-- Fix kuviz permissions ([#15336](https://github.com/CartoDB/cartodb/pull/15336))
-- Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
-- Destroy users with OAuth access tokens ([CartoDB/support#2301](https://github.com/CartoDB/support/issues/2301))
-- Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
-- Minor fixes Connectors UI ([#15323](https://github.com/CartoDB/cartodb/issues/15323))
-- Update Data Observatory storage types ([#15352](https://github.com/CartoDB/cartodb/pull/15352))
-- Update internal-carto.js version to new released v4.2.0
+* Avoid warnings when running test in parallel with an empty environment
+* Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
+* Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
+* Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
+* Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
+* ArcGIS connector: Stop skipping ids on failure.
+* Adapt python scripts python3 syntax.
+* Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
+* Fix kuviz permissions ([#15336](https://github.com/CartoDB/cartodb/pull/15336))
+* Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
+* Destroy users with OAuth access tokens ([CartoDB/support#2301](https://github.com/CartoDB/support/issues/2301))
+* Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
+* Minor fixes Connectors UI ([#15323](https://github.com/CartoDB/cartodb/issues/15323))
+* Update Data Observatory storage types ([#15352](https://github.com/CartoDB/cartodb/pull/15352))
+* Update internal-carto.js version to new released v4.2.0
 
 4.31.0 (2019-11-19)
 -------------------

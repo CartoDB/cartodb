@@ -1353,9 +1353,11 @@
                         "input-placeholder": "Paste your %{brand} URL here"
                     },
                     "bigquery": {
-                        "field-project-billing": "Project Billing ID",
+                        "field-billing-project": "Billing Project ID",
+                        "billing-project-hint": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifier. More info <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_project' target='_blank'>here</a>.",
                         "field-sql-query": "SQL query",
-                        "hint": "If your query contains geographic data in EPSG:4326 format, name that column “the_geom” so that it’s imported correctly.",
+                        "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+                        "sql-error": "There has been an error parsing your query",
                         "run": "Run SQL query",
                         "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable",
                         "feedback-text": "Have feedback or questions about the BigQuery connector?",

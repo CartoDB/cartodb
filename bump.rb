@@ -135,4 +135,4 @@ puts 'Committing, tagging and pushing...'
 `git add NEWS.md`
 `git commit -m "Bump to #{next_version}"`
 `git tag -a v#{next_version} -m "Version #{next_version}"`
-`git push origin master --follow-tags`
+# `git push origin master --follow-tags`

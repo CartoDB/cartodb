@@ -38,6 +38,7 @@ sudo make install
 - Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
 - Minor fixes Connectors UI ([#15323](https://github.com/CartoDB/cartodb/issues/15323))
 - Update Data Observatory storage types ([#15352](https://github.com/CartoDB/cartodb/pull/15352))
+- Update internal-carto.js version to new released v4.2.0
 
 4.31.0 (2019-11-19)
 -------------------

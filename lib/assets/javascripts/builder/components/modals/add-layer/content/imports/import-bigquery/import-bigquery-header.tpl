@@ -1,8 +1,11 @@
 <p class="CDB-Text CDB-Size-medium u-secondaryTextColor">
-  <% if (state !== "selected") { %>
-    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'BigQuery' }) %>
-  <% } else { %>
+ <% state %>
+  <% if (state === "error") { %>
+    <%- _t('components.modals.add-layer.imports.service-import.state-error', { title: 'BigQuery' }) %>
+  <% } else if (state === "selected") { %>
     <%- _t('components.modals.add-layer.imports.arcgis.sync-options') %>
+  <% } else { %>
+    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'BigQuery' }) %>
   <% } %>
 </p>
 <% if (state === "selected") { %>

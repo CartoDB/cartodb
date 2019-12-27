@@ -103,9 +103,7 @@ module Carto
 
         options[:with_dependent_visualizations] = params[:with_dependent_visualizations].to_i
 
-        invalid_keys = options.keys - Carto::Api::VisualizationPresenter::ALLOWED_PARAMS
-        options.except!(*invalid_keys)
-        options
+        options.slice(*Carto::Api::VisualizationPresenter::ALLOWED_PARAMS)
       end
 
       private

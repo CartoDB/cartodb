@@ -38,6 +38,7 @@ class Admin::VisualizationsController < Admin::AdminController
                        :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :redirect_to_kuviz_if_needed, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
@@ -401,8 +402,6 @@ class Admin::VisualizationsController < Admin::AdminController
         format.html { render inline: "<%= @cached_embed[:body].html_safe %>" }
       end
     else
-      return redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization.kuviz?
-
       resp = embed_map_actual
       if response.ok? && (@visualization.public? || @visualization.public_with_link?)
         # cache response
@@ -667,6 +666,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def data_library_user?
     @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
+  end
+
+  def redirect_to_kuviz_if_needed
+    redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization&.kuviz?
   end
 
   def redirect_to_builder_embed_if_v3

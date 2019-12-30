@@ -67,7 +67,7 @@ class PubSubTracker
 
     @topics.each_value do |topic|
       begin
-        stop_publisher(topic) unless topic.async_publisher.stopped?
+        stop_publisher(topic) unless topic.async_publisher.nil? || topic.async_publisher.stopped?
       rescue StandardError => e
         CartoDB::Logger.error(message: e.message, exeption: e)
       end

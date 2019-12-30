@@ -10,6 +10,16 @@ Development
 ### Bug fixes / enhancements
 - None yet
 
+4.32.1 (2019-12-30)
+-----------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.35.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
 4.32.0 (2019-12-27)
 -------------------
 

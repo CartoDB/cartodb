@@ -13,6 +13,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+- Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
 
 4.32.0 (2019-12-27)
 -------------------

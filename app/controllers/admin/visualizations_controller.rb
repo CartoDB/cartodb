@@ -38,6 +38,7 @@ class Admin::VisualizationsController < Admin::AdminController
                        :show_protected_public_map, :show_protected_embed_map]
 
   before_filter :resolve_visualization_and_table_if_not_cached, only: [:embed_map]
+  before_filter :redirect_to_kuviz_if_needed, only: [:embed_map]
   before_filter :redirect_to_builder_embed_if_v3, only: [:embed_map, :show_organization_public_map,
                                                          :show_organization_embed_map, :show_protected_public_map,
                                                          :show_protected_embed_map,
@@ -93,7 +94,6 @@ class Admin::VisualizationsController < Admin::AdminController
     return(render_pretty_404) if @visualization.private?
 
     get_viewed_user
-    ff_user = @viewed_user || @org.try(:owner)
 
     if @visualization.derived?
       if current_user.nil? || current_user.username != request.params[:user_domain]
@@ -191,7 +191,6 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'public_dataset', layout: 'application_table_public' }
     end
-
   end
 
   def public_map
@@ -231,7 +230,7 @@ class Admin::VisualizationsController < Admin::AdminController
       end
       additional_keys = " #{additional_keys.join(' ')}"
     else
-       additional_keys = ''
+      additional_keys = ''
     end
 
     if @visualization.can_be_cached?
@@ -278,8 +277,8 @@ class Admin::VisualizationsController < Admin::AdminController
       format.html { render layout: 'application_public_visualization_layout' }
       format.js { render 'public_map', content_type: 'application/javascript' }
     end
-  rescue => e
-    CartoDB.notify_exception(e, {user:current_user})
+  rescue StandardError => e
+    CartoDB.notify_exception(e, user: current_user)
     embed_forbidden
   end
 
@@ -348,7 +347,7 @@ class Admin::VisualizationsController < Admin::AdminController
     @related_tables         = @visualization.related_tables
     @related_canonical_visualizations = @visualization.related_canonical_visualizations
     @public_tables_count    = @visualization.user.public_table_count
-    @nonpublic_tables_count = @related_tables.select{|p| !p.public?  }.count
+    @nonpublic_tables_count = @related_tables.select{|p| !p.public? }.count
 
     # We need to know if visualization logo is visible or not
     @hide_logo = is_logo_hidden(@visualization, params)
@@ -356,7 +355,7 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'public_map', layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     public_map_protected
   end
@@ -380,13 +379,13 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render 'embed_map', layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     embed_protected
   end
 
   def embed_map
-    if @viewed_user && @viewed_user.has_feature_flag?('static_embed_map')
+    if @viewed_user&.has_feature_flag?('static_embed_map')
       return render(file: "public/static/embed_map/index.html", layout: false)
     end
 
@@ -405,7 +404,7 @@ class Admin::VisualizationsController < Admin::AdminController
     else
       resp = embed_map_actual
       if response.ok? && (@visualization.public? || @visualization.public_with_link?)
-        #cache response
+        # cache response
         is_https = (request.protocol == 'https://')
         embed_redis_cache.set(@visualization.id, is_https, response.headers, response.body)
       end
@@ -642,7 +641,7 @@ class Admin::VisualizationsController < Admin::AdminController
     respond_to do |format|
       format.html { render layout: 'application_public_visualization_layout' }
     end
-  rescue => e
+  rescue StandardError => e
     CartoDB::Logger.error(exception: e)
     embed_forbidden
   end
@@ -667,6 +666,10 @@ class Admin::VisualizationsController < Admin::AdminController
 
   def data_library_user?
     @viewed_user && Cartodb.get_config(:data_library, 'username') == @viewed_user.username
+  end
+
+  def redirect_to_kuviz_if_needed
+    redirect_to(CartoDB.url(self, 'kuviz_show', params: { id: @visualization.id })) if @visualization&.kuviz?
   end
 
   def redirect_to_builder_embed_if_v3

@@ -8,7 +8,7 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
 
 4.32.0 (2019-12-27)
 -------------------

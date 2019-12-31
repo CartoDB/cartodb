@@ -8,9 +8,9 @@ describe Carto::DoLicensingService do
     @service = Carto::DoLicensingService.new('fulano')
     @dataset_id = 'carto.abc.dataset1'
     @datasets = [
-      { dataset_id: @dataset_id, available_in: ['bq', 'spanner'], price: 100,
+      { dataset_id: @dataset_id, available_in: ['bq', 'bigtable'], price: 100,
         expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-      { dataset_id: 'carto.abc.dataset2', available_in: ['spanner'], price: 200,
+      { dataset_id: 'carto.abc.dataset2', available_in: ['bigtable'], price: 200,
         expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
     ]
   end
@@ -46,7 +46,7 @@ describe Carto::DoLicensingService do
       bq_datasets = [
         { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' }
       ].to_json
-      spanner_datasets = [
+      bigtable_datasets = [
         { dataset_id: 'carto.abc.dataset1', expires_at: '2020-09-27 08:00:00 +0000' },
         { dataset_id: 'carto.abc.dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
       ].to_json
@@ -54,7 +54,7 @@ describe Carto::DoLicensingService do
       @service.subscribe(@datasets)
 
       $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(@redis_key, 'spanner').should eq spanner_datasets
+      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_datasets
     end
 
     it 'allows to add more data in the same Redis key' do
@@ -69,9 +69,9 @@ describe Carto::DoLicensingService do
       @service.subscribe(more_datasets)
 
       bq_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bq'))
-      spanner_datasets = JSON.parse($users_metadata.hget(@redis_key, 'spanner'))
+      bigtable_datasets = JSON.parse($users_metadata.hget(@redis_key, 'bigtable'))
       bq_datasets.count.should eq 2
-      spanner_datasets.count.should eq 2
+      bigtable_datasets.count.should eq 2
     end
   end
 
@@ -96,7 +96,7 @@ describe Carto::DoLicensingService do
       @central_mock.stubs(:remove_do_dataset)
 
       bq_datasets = [].to_json
-      spanner_datasets = [
+      bigtable_datasets = [
         { dataset_id: 'carto.abc.dataset2', expires_at: '2020-12-31 12:00:00 +0000' }
       ].to_json
 
@@ -104,7 +104,7 @@ describe Carto::DoLicensingService do
       @service.unsubscribe(@dataset_id)
 
       $users_metadata.hget(@redis_key, 'bq').should eq bq_datasets
-      $users_metadata.hget(@redis_key, 'spanner').should eq spanner_datasets
+      $users_metadata.hget(@redis_key, 'bigtable').should eq bigtable_datasets
     end
   end
 

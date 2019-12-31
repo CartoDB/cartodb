@@ -13,6 +13,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+- Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
 
 4.32.0 (2019-12-27)
 -------------------

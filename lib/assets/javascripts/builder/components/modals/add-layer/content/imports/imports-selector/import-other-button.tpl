@@ -6,7 +6,10 @@
   <li class="ImportOther__step2 js-step js-step2">
     <span><%- _t('components.modals.add-layer.imports.other.type') %></span>
     <input type="text" class="ImportOther__input js-input" required value=""/>
-    <button type="submit" class="ImportOther__inputSubmit js-submit is-disabled CDB-Text CDB-Size-small u-actionTextColor u-upperCase">
+    <button
+      type="submit"
+      disabled
+      class="ImportOther__inputSubmit js-submit is-disabled CDB-Text CDB-Size-small u-actionTextColor u-upperCase">
       <span><%- _t('components.modals.add-layer.imports.other.submit') %></span>
     </button>
     <div class="ImportOther__inputError"></div>

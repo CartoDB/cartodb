@@ -43,6 +43,20 @@ describe Carto::Kuviz::VisualizationsController do
       response.status.should eq 200
       response.body.scan(/Insert your password/).present?.should == true
     end
+
+    it 'increments the map views in Redis' do
+      datetime = '20191231'
+      redis_key = "user:#{@kuviz.user.username}:mapviews:stat_tag:#{@kuviz.id}"
+      $users_metadata.ZSCORE(redis_key, datetime).should be_nil
+
+      Delorean.time_travel_to(Date.parse(datetime)) do
+        get kuviz_show_url(id: @kuviz.id)
+        $users_metadata.ZSCORE(redis_key, datetime).should eql '1'
+
+        get kuviz_show_url(id: @kuviz.id)
+        $users_metadata.ZSCORE(redis_key, datetime).should eql '2'
+      end
+    end
   end
 
   describe '#show_protected' do
@@ -77,6 +91,20 @@ describe Carto::Kuviz::VisualizationsController do
       response.status.should eq 200
       response.body.scan(/<body>test<\/body>/).present?.should == true
       response.headers.include?('X-Frame-Options').should == false
+    end
+
+    it 'increments the map views in Redis' do
+      datetime = '20191231'
+      redis_key = "user:#{@kuviz.user.username}:mapviews:stat_tag:#{@kuviz.id}"
+      $users_metadata.ZSCORE(redis_key, datetime).should be_nil
+
+      Delorean.time_travel_to(Date.parse(datetime)) do
+        post kuviz_password_protected_url(id: @kuviz.id), password: 'test'
+        $users_metadata.ZSCORE(redis_key, datetime).should eql '1'
+
+        post kuviz_password_protected_url(id: @kuviz.id), password: 'test'
+        $users_metadata.ZSCORE(redis_key, datetime).should eql '2'
+      end
     end
   end
 end

@@ -13,6 +13,7 @@ sudo make install
 
 ### Bug fixes / enhancements
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+- Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
 
 4.32.0 (2019-12-27)
 -------------------

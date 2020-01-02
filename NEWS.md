@@ -17,6 +17,7 @@ sudo make install
 - Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
 - Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
 - Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+- Count kuviz for public map quota
 
 4.32.0 (2019-12-27)
 -------------------

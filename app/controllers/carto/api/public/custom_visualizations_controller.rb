@@ -15,12 +15,13 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   ssl_required
 
+  before_action :check_master_api_key
   before_action :validate_mandatory_creation_params, only: [:create]
   before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
+  before_action :check_public_map_quota, only: [:create]
   before_action :check_edition_permission, only: [:update, :delete]
-  before_action :check_master_api_key
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
@@ -101,6 +102,12 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def check_edition_permission
     head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
+  end
+
+  def check_public_map_quota
+    return unless CartoDB::QuotaChecker.new(@logged_user).will_be_over_public_map_quota?
+
+    raise Carto::UnauthorizedError.new('Public map quota exceeded')
   end
 
   def validate_input_parameters

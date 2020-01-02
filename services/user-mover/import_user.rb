@@ -622,7 +622,7 @@ module CartoDB
       end
 
       def setup_db(_dbname)
-        ['plpythonu', 'postgis'].each do |extension|
+        ['postgis'].each do |extension|
           superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS #{extension}")
         end
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
@@ -631,7 +631,7 @@ module CartoDB
         superuser_user_pg_conn.query("CREATE SCHEMA cdb_importer") if cdb_importer_schema.count == 0
         cdb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb'")
         superuser_user_pg_conn.query("CREATE SCHEMA cdb") if cdb_schema.count == 0
-        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb")
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS cartodb WITH SCHEMA cartodb CASCADE")
         superuser_user_pg_conn.query("SELECT CDB_DisableGhostTablesTrigger()")
       rescue PG::Error => e
         @logger.error "Error: Cannot setup DB"

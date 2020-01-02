@@ -188,6 +188,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
     context 'with a plan limit of 1 public map' do
       before(:each) do
+        @user.visualizations.each(&:destroy)
         @user.public_map_quota = 1
         @user.save
       end

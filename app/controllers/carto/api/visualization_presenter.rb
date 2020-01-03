@@ -197,7 +197,8 @@ module Carto
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
-                                           show_size_and_row_count: show_table_size_and_row_count)
+                                           show_size_and_row_count: show_table_size_and_row_count,
+                                           show_permission: show_permission)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 

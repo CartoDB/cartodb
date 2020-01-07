@@ -277,7 +277,7 @@ paths:
       x-code-samples:
         - lang: Curl
           source: >
-            curl -v "https://{account}.carto.com/api/v1/imports/{import_id}?api_key={account API Key}
+            curl -v "https://{account}.carto.com/api/v3/visualization_exports/{visualization_export_id}?api_key={account API Key}
   '/v1/synchronizations':
     get:
       summary: List current sync tables

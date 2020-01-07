@@ -1701,6 +1701,40 @@ describe User do
           expect(OauthToken.where(user_id: user.id).first).to be_nil
           $api_credentials.keys.should_not include(base_key)
         end
+
+        it 'deletes oauth_apps and friends' do
+          owner_oauth_app = create_user(email: 'owner@example.com', username: 'oauthappowner', password: @user_password)
+          user = create_user(email: 'oauth@example.com', username: 'oauthapp', password: @user_password)
+
+          oauth_app = FactoryGirl.create(:oauth_app, user_id: owner_oauth_app.id)
+          oauth_app_user = oauth_app.oauth_app_users.create!(user_id: user.id)
+          oac = oauth_app_user.oauth_authorization_codes.create!(scopes: ['offline'])
+          access_token, refresh_token = oac.exchange!
+
+          app = Carto::OauthApp.where(user_id: owner_oauth_app.id).first
+          users = app.oauth_app_users
+          o_user = users.first
+          refresh_token = Carto::OauthRefreshToken.where(oauth_app_user_id: o_user.id).first
+          access_token = Carto::OauthAccessToken.where(oauth_app_user_id: o_user.id).first
+          api_keys = Carto::ApiKey.where(user_id: user.id, type: 'oauth').all
+          expect(users.count).to eq 1
+          expect(refresh_token).to eq refresh_token
+          expect(access_token).to eq access_token
+          expect(api_keys.count).to eq 1
+
+          expect(user.destroy).to be_true
+
+          app = Carto::OauthApp.where(user_id: user.id).first
+          users = Carto::OauthAppUser.where(user_id: user.id, oauth_app: oauth_app.id).first
+          refresh_token = Carto::OauthRefreshToken.where(oauth_app_user_id: oauth_app_user.id).first
+          access_token = Carto::OauthAccessToken.where(oauth_app_user_id: oauth_app_user.id).first
+          api_key = Carto::ApiKey.where(user_id: user.id, type: 'oauth').first
+          expect(app).to be_nil
+          expect(users).to be_nil
+          expect(refresh_token).to be_nil
+          expect(access_token).to be_nil
+          expect(api_key).to be_nil
+        end
       end
     end
   end

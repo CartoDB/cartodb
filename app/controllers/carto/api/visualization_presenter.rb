@@ -6,6 +6,12 @@ module Carto
   module Api
     class VisualizationPresenter
 
+      ALLOWED_PARAMS = [:related, :related_canonical_visualizations, :show_user,
+                        :show_stats, :show_table, :show_liked,
+                        :show_permission, :show_synchronization, :show_uses_builder_features,
+                        :show_table_size_and_row_count, :show_auth_tokens, :show_user_basemaps,
+                        :password, :with_dependent_visualizations].freeze
+
       def initialize(visualization, current_viewer, context,
                      related: true, related_canonical_visualizations: false, show_user: false,
                      show_stats: true, show_table: true, show_liked: true,
@@ -191,7 +197,8 @@ module Carto
 
       def user_table_presentation
         Carto::Api::UserTablePresenter.new(@visualization.user_table, @current_viewer,
-                                           show_size_and_row_count: show_table_size_and_row_count)
+                                           show_size_and_row_count: show_table_size_and_row_count,
+                                           show_permission: show_permission)
                                       .with_presenter_cache(@presenter_cache).to_poro
       end
 

@@ -486,6 +486,8 @@ class User < Sequel::Model
           v.user.viewer = false
           v.destroy!
         end
+        oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
+        oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 

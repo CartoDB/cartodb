@@ -1,6 +1,5 @@
 <template>
   <div
-    v-click-outside="closeDropdown"
     class="catalogDropdown"
     @keydown.down.prevent="onKeydownDown"
     @keydown.up.prevent="onKeydownUp"
@@ -22,12 +21,24 @@
         class="text is-caption catalogDropdown__input"
         :class="{ 'has-error': hasError }"
         @click="openDropdown">
-        <CatalogDropdownItem :option="searchFilter"/>
-        <button class="catalogDropdown__close" @click="reset"><img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" /></button>
+        <CatalogDropdownItem v-if="this.searchFilter" :option="this.searchFilter"/>
+        <span v-else class="catalogDropdown__input--placeholder">{{ this.placeholder }}</span>
+        <button
+          v-if="searchFilter"
+          class="catalogDropdown__close"
+          @click="reset">
+          <img src="../../assets/icons/common/dropdown-close.svg" width="16" height="20" />
+        </button>
       </div>
       <p class="catalogDropdown__error text is-small" v-if="hasError">{{ error }}</p>
-      <ul class="catalogDropdown__list"
-        :class="{'is-open': isOpen, 'is-height-limited': limitHeight}"
+      <ul ref="catalogDropdownList"
+        class="catalogDropdown__list"
+        v-click-outside="closeDropdown"
+        :class="{
+          'is-open ps-container': isOpen,
+          'is-height-limited': limitHeight,
+          'ps-active-y': showScroll
+        }"
         @mouseleave="resetActiveOption">
         <li
           v-for="(option, index) in filteredOptions" :key="option"
@@ -47,6 +58,7 @@
 
 <script>
 import CatalogDropdownItem from './CatalogDropdownItem';
+import PerfectScrollbar from 'perfect-scrollbar';
 
 export default {
   name: 'CatalogDropdown',
@@ -87,6 +99,24 @@ export default {
     };
   },
   computed: {
+    maxItemsScroll () {
+      const PAGE_HEIGHT = window.innerHeight;
+      const SMALL_HEIGHT = 680;
+      const MEDIUM_HEIGHT = 850;
+      const HEIGHT_SMALL_MAX_ITEMS = 3;
+      const HEIGHT_MEDIUM_MAX_ITEMS = 5;
+      const HEIGHT_DEFAULT_MAX_ITEMS = 8;
+
+      if (PAGE_HEIGHT < SMALL_HEIGHT ) {
+        return HEIGHT_SMALL_MAX_ITEMS;
+      }
+
+      if (PAGE_HEIGHT < MEDIUM_HEIGHT) {
+        return HEIGHT_MEDIUM_MAX_ITEMS;
+      }
+
+      return HEIGHT_DEFAULT_MAX_ITEMS;
+    },
     filteredOptions () {
       const filtered = [];
       const regOption = new RegExp(this.searchFilter, 'ig');
@@ -97,19 +127,53 @@ export default {
       }
       return filtered.length > 0 ? filtered : this.options;
     },
+    searchEnabled () {
+      return this.$refs.catalogDropdownList
+        ? this.$refs.catalogDropdownList.scrollTop === 0
+        : false;
+    },
     hasError () {
       return this.error.length > 0;
     },
+    showScroll () {
+      return this.filteredOptions.length > this.maxItemsScroll;
+    },
     showInput () {
-      return Object.keys(this.selected).length === 0;
+      return this.isOpen && Object.keys(this.selected).length === 0;
     }
   },
+  mounted() {
+    this.$refs.catalogDropdownList.scrollTop = 0;
+    PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
+      wheelSpeed: 1,
+      wheelPropagation: false,
+      swipePropagation: true,
+      stopPropagationOnClick: false,
+      minScrollbarLength: 20,
+      useBothWheelAxes: true
+    });
+  },
+  beforeDestroy() {
+    PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
+  },
   methods: {
-    openDropdown () {
-      this.isOpen = true;
+    openDropdown (event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
+      if (!this.isOpen && !this.isDisabled) {
+        this.isOpen = true;
+        this.$refs.catalogDropdownList.scrollTop = 0;
+        PerfectScrollbar.update(this.$refs.catalogDropdownList);
+      }
     },
     closeDropdown () {
-      this.isOpen = false;
+      if (this.isOpen) {
+        this.isOpen = false;
+        this.$refs.catalogDropdownList.scrollTop = 0;
+        PerfectScrollbar.update(this.$refs.catalogDropdownList);
+      }
     },
     disableDropdown () {
       this.isDisabled = true;
@@ -161,7 +225,6 @@ export default {
       this.clearInput();
       this.error = '';
       this.$emit('reset');
-      this.openDropdown();
     },
     setError (error) {
       this.error = error;
@@ -182,20 +245,22 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .catalogDropdown {
+  --default-height-items: 8;
+  --medium-height-items: 5;
+  --small-height-items: 3;
+  --extra-space: 2px;
+  --catalog-dropdown-item-height: calc(48px + var(--extra-space));
+
   display: flex;
-  position: absolute;
-  z-index: 2;
+  z-index: $z-index__dropdown;
   flex-direction: column;
   width: 100%;
 
-  &__label {
-    margin-bottom: 16px;
-  }
-
   &__container {
-    position: absolute;
-    top: 48px;
+    position: relative;
+    z-index: 2;
     width: calc(100% - 20px);
+    margin-top: 16px;
   }
 
   &__input {
@@ -205,16 +270,12 @@ export default {
     border: 1px solid $neutral--300;
     border-radius: 4px;
 
-    &:hover {
-      cursor: pointer;
-
-      .catalogDropdown__close {
-        display: block;
-      }
-    }
-
     &.has-error {
       border: 1px solid $warning__border-color;
+    }
+
+    &--placeholder {
+      color: $neutral--500;
     }
   }
 
@@ -241,7 +302,7 @@ export default {
   }
 
   &__close {
-    display: none;
+    display: block;
     position: absolute;
     top: 18px;
     right: 24px;
@@ -281,14 +342,34 @@ export default {
   }
 
   &:not(.is-open) {
-    .catalogDropdown__input:hover {
-      border-color: $text__color;
+    .catalogDropdown__close {
+      display: none;
+    }
+
+    .catalogDropdown__list,
+    .catalogDropdown__extra {
+      display: none;
+    }
+
+    &:hover {
+      &:not(.is-disabled) {
+        cursor: pointer;
+
+        .catalogDropdown__close {
+          display: block;
+        }
+
+        .catalogDropdown__input:hover {
+          border-color: $text__color;
+        }
+      }
     }
   }
 }
 
 .catalogDropdown__list {
   visibility: hidden;
+  position: relative;
   border: 1px solid $softblue;
   opacity: 0;
   background-color: $white;
@@ -298,11 +379,6 @@ export default {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-  }
-
-  &.is-height-limited {
-    max-height: 196px;
-    overflow-y: scroll;
   }
 }
 
@@ -340,6 +416,30 @@ export default {
 
   &--text {
     color: $neutral--600;
+  }
+}
+
+@media (max-height: 680px) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--small-height-items));
+    }
+  }
+}
+
+@media (min-height: 681px) and (max-height: 850px) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--medium-height-items));
+    }
+  }
+}
+
+@media (min-height: 851px) {
+  .catalogDropdown__list {
+    &.is-height-limited {
+      max-height: calc(var(--catalog-dropdown-item-height) * var(--default-height-items));
+    }
   }
 }
 </style>

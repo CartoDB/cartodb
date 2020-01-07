@@ -323,6 +323,27 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
+    it 'returns the default delivery days if estimated_delivery_days is 0 and instant licensing is not enabled' do
+      expected_response = {
+        estimated_delivery_days: 3.0,
+        id: 'carto.abc.dataset1',
+        licenses: 'licenses',
+        licenses_link: 'licenses_link',
+        rights: 'rights',
+        subscription_list_price: 100.0,
+        tos: 'tos',
+        tos_link: 'tos_link',
+        type: 'dataset'
+      }
+
+      with_feature_flag @user1, 'do-instant-licensing', false do
+        get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
+          expect(response.status).to eq(200)
+          expect(response.body).to eq expected_response
+        end
+      end
+    end
+
   end
 
   describe 'subscribe' do

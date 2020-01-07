@@ -27,6 +27,7 @@ module Carto
                              rights type).freeze
         TABLES_BY_TYPE = { 'dataset' => 'datasets', 'geography' => 'geographies' }.freeze
         REQUIRED_METADATA_FIELDS = %i(available_in estimated_delivery_days subscription_list_price).freeze
+        DEFAULT_DELIVERY_DAYS = 3.0
 
         def token
           response = Cartodb::Central.new.get_do_token(@user.username)
@@ -134,9 +135,15 @@ module Carto
         end
 
         def present_metadata(metadata)
-          metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days].to_f
+          metadata[:estimated_delivery_days] = present_delivery_days(metadata[:estimated_delivery_days])
           metadata[:subscription_list_price] = metadata[:subscription_list_price].to_f
           metadata.slice(*METADATA_FIELDS)
+        end
+
+        def present_delivery_days(delivery_days)
+          return DEFAULT_DELIVERY_DAYS if delivery_days.zero? && !@user.has_feature_flag?('do-instant-licensing')
+
+          delivery_days.to_f
         end
 
         def subscription_metadata

@@ -51,6 +51,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
+    Carto::Tracking::Events::CreatedMap.new(@logged_user.id, event_properties(kuviz).merge(origin: 'custom')).report
 
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
   rescue StandardError => e
@@ -66,11 +67,14 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       # In case we only update the asset we need to invalidate the visualization
       @kuviz.save
     end
+    Carto::Tracking::Events::ModifiedMap.new(@logged_user.id, event_properties(@kuviz)).report
+
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
   end
 
   def delete
     @kuviz.destroy
+    Carto::Tracking::Events::DeletedMap.new(@logged_user.id, event_properties(@kuviz)).report
     head 204
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)
@@ -88,6 +92,13 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz.user = user
     kuviz.save
     kuviz
+  end
+
+  def event_properties(kuviz)
+    {
+      user_id: @logged_user.id,
+      visualization_id: kuviz.id
+    }
   end
 
   def get_user

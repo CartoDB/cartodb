@@ -9,11 +9,13 @@ module Carto
 
       before_action :x_frame_options_allow, only: [:show, :show_protected]
       before_action :get_kuviz
+      before_action :track_event
 
       skip_before_filter :verify_authenticity_token, only: [:show_protected]
 
       def show
         return kuviz_password_protected if @kuviz.password_protected?
+
         @source = KuvizAssetsService.instance.read_source_data(@kuviz.asset)
         add_cache_headers
         render layout: false
@@ -58,6 +60,11 @@ module Carto
         response.headers['X-Cache-Channel'] = "#{@kuviz.varnish_key}:vizjson"
         response.headers['Surrogate-Key'] = "#{CartoDB::SURROGATE_NAMESPACE_PUBLIC_PAGES} #{@kuviz.surrogate_key}"
         response.headers['Cache-Control'] = "no-cache,max-age=86400,must-revalidate,public"
+      end
+
+      def track_event
+        properties = { user_id: kuviz.user.id, visualization_id: kuviz.id }
+        Carto::Tracking::Events::VisitedMap.new(kuviz.user.id, properties).report
       end
     end
   end

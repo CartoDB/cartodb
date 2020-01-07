@@ -2,6 +2,82 @@ Development
 -----------
 
 ### NOTICES
+- This release upgrades the CartoDB PostgreSQL extension to `0.35.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+- None yet
+
+### Bug fixes / enhancements
+- Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+- Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
+- Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
+- Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
+- Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+- Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
+- Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
+- Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
+- Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
+
+4.32.0 (2019-12-27)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.33.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
+
+### Features
+* Regular licensing for Data Observatory ([#15315](https://github.com/CartoDB/cartodb/pull/15315))
+* BigQuery Connector beta release
+* Add new parameter `import_as` to odbc connectors ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Add support for Storage API to BigQuery connector, make it public, and allow separate a billing project
+  ([#15266](https://github.com/CartoDB/cartodb/pull/15266))
+* Split into Upload/connect tabs in new Connectors UI ([#15207](https://github.com/CartoDB/cartodb/issues/15207))
+* New Connectors UI layout([#15194](https://github.com/CartoDB/cartodb/issues/15194))
+* New UI for BigQuery connector ([#15284](https://github.com/CartoDB/cartodb/issues/15284))
+* Federated Tables Beta Release ([#15315](https://github.com/CartoDB/cartodb/pull/15169)):
+  * Add enpoints to list, register, update, and unregister Federated Servers
+  * Add enpoints to list Remote Schemas
+  * Add enpoints to list, register, update, and unregister Remote Tables
+* Fixed issue while creating a new user's database: force to alter extension always as template_postgis may have the current version defined and the extension won't be installed
+
+### Bug fixes / enhancements
+* Avoid warnings when running test in parallel with an empty environment
+* Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
+* Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))
+* Migrate old industry values to new ones ([#15273](https://github.com/CartoDB/cartodb/pull/15273)
+* Update user industries options with the allowed values from Hubspot ([#15265](https://github.com/CartoDB/cartodb/pull/15265))
+* ArcGIS connector: Stop skipping ids on failure.
+* Adapt python scripts python3 syntax.
+* Column options display bug ([#15325](https://github.com/CartoDB/cartodb/pull/15325))
+* Fix kuviz permissions ([#15336](https://github.com/CartoDB/cartodb/pull/15336))
+* Unlock Connectors UI ([CartoDB/support#2318](https://github.com/CartoDB/support/issues/2318))
+* Destroy users with OAuth access tokens ([CartoDB/support#2301](https://github.com/CartoDB/support/issues/2301))
+* Add element to track GTM events in Connectors UI ([#15340](https://github.com/CartoDB/cartodb/issues/15340))
+* Minor fixes Connectors UI ([#15323](https://github.com/CartoDB/cartodb/issues/15323))
+* Update Data Observatory storage types ([#15352](https://github.com/CartoDB/cartodb/pull/15352))
+* Update internal-carto.js version to new released v4.2.0
+
+4.31.0 (2019-11-19)
+-------------------
+
+### Features
+* Show license information for OnPremises ([#15243](https://github.com/CartoDB/cartodb/pull/15243))
+
+### Bug fixes / enhancements
+* Remove X-Frame-Options header for kuviz visualizations ([CartoDB/cartodb#15019](https://github.com/CartoDB/cartodb/issues/15019))
+* Remove duplicate banner in API Keys page ([CartoDB/cartodb#14936](https://github.com/CartoDB/cartodb/issues/14936))
+
+4.30.1 (2019-11-15)
+-------------------
+
+### NOTICES
 * This release upgrades the CartoDB PostgreSQL extension to `0.32.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
@@ -9,16 +85,17 @@ sudo make install
 ```
 
 ### Features
-- Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
-- Add support for BigQuery connector (https://github.com/CartoDB/cartodb/pull/15179)
+* Add quick link to copy dataset name ([CartoDB/product#391](https://github.com/CartoDB/product/issues/391))
+* Add support for BigQuery connector (https://github.com/CartoDB/cartodb/pull/15179)
 
 ### Bug fixes / enhancements
 - Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
-- Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 - Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 - Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
+- Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
 - Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
-- Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
+- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+- Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 
 4.30.0 (2019-10-18)
 -------------------
@@ -2910,7 +2987,7 @@ Now, back to the new features!
   * Full screen options are enabled by default for public visualizations
   * Empty the_geom from CSV no longer imports to "" instead of NULL
   * Trying to change a password no longer returns unauthorized
-  * User destroy no longer fails when he has named maps
+  * User destroy no longer fails when she/he has named maps
   * /api/v1/tables returns 404 when table does not exist
 
 
@@ -2980,7 +3057,7 @@ Now, back to the new features!
   * Improved color picker.
 
 * Bugs Fixed
-  * When deleting a user from the box, his database should be deleted before deleting his metadata.
+  * When deleting a user from the box, his/her database should be deleted before deleting his/her metadata.
   * Map turns blank at "Publish" time.
   * Revamp option for selecting a marker image / polygon pattern fill.
   * Wrong message shown in dashboard.

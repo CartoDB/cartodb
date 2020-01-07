@@ -2,6 +2,7 @@
 
 require 'signet/oauth_2/client'
 require_relative '../../../../../lib/carto/http/client'
+require 'google/apis/bigquery_v2'
 
 module CartoDB
   module Datasources
@@ -41,6 +42,8 @@ module CartoDB
             access_type: :offline
           )
           @revoke_uri = config.fetch('revoke_auth_uri')
+          @bigquery_api = Google::Apis::BigqueryV2::BigqueryService.new
+          @bigquery_api.authorization = @client
         end
 
         # Factory method
@@ -201,47 +204,14 @@ module CartoDB
           raise AuthError.new("revoke_token: #{ex.message}", DATASOURCE_NAME)
         end
 
-        private
-
-        # Formats all data to comply with our desired format
-        # @param item_data Hash : Single item returned from GDrive API
-        # @return { :id, :title, :url, :service, :checksum, :size }
-        def format_item_data(item_data)
-          data =
-            {
-              id:           item_data.fetch('id'),
-              title:        item_data.fetch('title'),
-              service:      DATASOURCE_NAME,
-              checksum:     checksum_of(item_data.fetch('modifiedDate'))
-
-            }
-          if item_data.include?('exportLinks')
-            # Native spreadsheets  have no format nor direct download links
-            data[:url] = item_data.fetch('exportLinks').first.last
-            data[:url] = data[:url][0..data[:url].rindex('=')] + 'csv'
-            data[:filename] = clean_filename(item_data.fetch('title')) + '.csv'
-            data[:size] = NO_CONTENT_SIZE_PROVIDED
-          elsif item_data.include?('downloadUrl')
-            data[:url] = item_data.fetch('downloadUrl')
-            # For Drive files, title == filename + extension
-            data[:filename] = item_data.fetch('title')
-            data[:size] = item_data.fetch('fileSize').to_i
-          else
-            # Downloads from files shared by other people can be disabled, ignore them
-            CartoDB.notify_debug('Non downloadable file @gdrive', item: item_data.inspect, user: @user)
-            return nil
-          end
-          data
-        end
-
-        def clean_filename(name)
-          clean_name = ''
-          name.gsub(' ','_').scan(/([a-zA-Z0-9_]+)/).flatten.map { |match|
-            clean_name << match
-          }
-          clean_name = name if clean_name.size == 0
-
-          clean_name
+        def create_dataset(project_id, dataset_id, options)
+          dataset = Google::Apis::BigqueryV2::Dataset.new(options.merge({
+            :dataset_reference => Google::Apis::BigqueryV2::DatasetReference.new({
+              :project_id => project_id,
+              :dataset_id => dataset_id,
+            })
+          }))
+          @bigquery_api.insert_dataset(project_id, dataset)
         end
 
       end

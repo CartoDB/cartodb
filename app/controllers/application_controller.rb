@@ -462,10 +462,22 @@ class ApplicationController < ActionController::Base
     current_user.set_last_ip_address request.remote_ip
   end
 
-  def ensure_required_params(required_params)
+  def ensure_required_params(required_params, status = 400)
     params_with_value = params.reject { |_, v| v.empty? }
     missing_params = required_params - params_with_value.keys
-    raise Carto::MissingParamsError.new(missing_params) unless missing_params.empty?
+    raise Carto::MissingParamsError.new(missing_params, status) unless missing_params.empty?
+  end
+
+  def ensure_required_request_params(required_params, status = 422)
+    params_with_value = request.request_parameters.reject { |_, v| v.empty? }
+    missing_params = required_params - params_with_value.keys
+    raise Carto::UnprocesableEntityError.new("Missing parameter: #{missing_params}", status) unless missing_params.empty?
+  end
+
+  def ensure_no_extra_request_params(allowed_params, status = 422)
+    params_with_value = request.request_parameters.reject { |_, v| v.empty? }
+    extra_params = params_with_value.keys - allowed_params
+    raise Carto::UnprocesableEntityError.new("Invalid parameter: #{extra_params}", status) unless extra_params.empty?
   end
 
   protected :current_user

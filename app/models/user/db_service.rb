@@ -654,7 +654,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.32.0'
+          cdb_extension_target_version = '0.35.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -683,12 +683,8 @@ module CartoDB
                   RETURN;
                 END;
                 ver := '#{cdb_extension_target_version}';
-                IF position('dev' in ver) > 0 THEN
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                ELSE
-                  EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
-                END IF;
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || 'next''';
+                EXECUTE 'ALTER EXTENSION cartodb UPDATE TO ''' || ver || '''';
               END;
               $$;
             })

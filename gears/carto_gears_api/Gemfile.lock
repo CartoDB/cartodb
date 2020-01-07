@@ -4,6 +4,7 @@ PATH
     carto_gears_api (0.0.6)
       pg (= 0.20.0)
       rails (= 4.2.11)
+      sprockets (= 3.7.2)
       values (= 1.8.0)
 
 GEM
@@ -107,7 +108,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    sprockets (4.0.0)
+    sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.2.1)
@@ -131,4 +132,4 @@ DEPENDENCIES
   rspec-rails (= 2.12.0)
 
 BUNDLED WITH
-   1.14.6
+   1.17.3

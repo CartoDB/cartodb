@@ -2,13 +2,22 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- This release upgrades the CartoDB PostgreSQL extension to `0.35.0`. Run the following to have it available:
+```shell
+cd $(git rev-parse --show-toplevel)/lib/sql
+sudo make install
+```
 
 ### Features
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+- Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
+- Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
+- Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
+- Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+- Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
 
 4.32.0 (2019-12-27)
 -------------------

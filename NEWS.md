@@ -19,6 +19,8 @@ sudo make install
 - Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
 - Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
 - Track kuviz events ([#15377](https://github.com/CartoDB/cartodb/pull/15377))
+- Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
+- Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
 
 4.32.0 (2019-12-27)
 -------------------

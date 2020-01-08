@@ -63,8 +63,8 @@ module Carto
       end
 
       def track_event
-        properties = { user_id: kuviz.user.id, visualization_id: kuviz.id }
-        Carto::Tracking::Events::VisitedMap.new(kuviz.user.id, properties).report
+        properties = { user_id: @kuviz.user.id, visualization_id: @kuviz.id }
+        Carto::Tracking::Events::VisitedMap.new(@kuviz.user.id, properties).report
       end
     end
   end

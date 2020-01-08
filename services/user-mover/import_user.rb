@@ -622,9 +622,7 @@ module CartoDB
       end
 
       def setup_db(_dbname)
-        ['postgis'].each do |extension|
-          superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS #{extension}")
-        end
+        superuser_user_pg_conn.query("CREATE EXTENSION IF NOT EXISTS postgis")
         cartodb_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cartodb'")
         superuser_user_pg_conn.query("CREATE SCHEMA cartodb") if cartodb_schema.count == 0
         cdb_importer_schema = superuser_user_pg_conn.query("SELECT nspname FROM pg_catalog.pg_namespace where nspname = 'cdb_importer'")

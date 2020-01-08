@@ -10,16 +10,17 @@ module Carto
       PRIVACY_LINK = 2
 
       PRIVACY_VALUES_TO_TEXTS = {
-          PRIVACY_PRIVATE => 'private',
-          PRIVACY_PUBLIC => 'public',
-          PRIVACY_LINK => 'link'
+        PRIVACY_PRIVATE => 'private',
+        PRIVACY_PUBLIC => 'public',
+        PRIVACY_LINK => 'link'
       }
 
-      def initialize(user_table, current_viewer, show_size_and_row_count: true)
+      def initialize(user_table, current_viewer, show_size_and_row_count: true, show_permission: true)
         @user_table = user_table
         @current_viewer = current_viewer
         @presenter_cache = Carto::Api::PresenterCache.new
         @show_size_and_row_count = show_size_and_row_count
+        @show_permission = show_permission
       end
 
       def with_presenter_cache(presenter_cache)
@@ -29,15 +30,10 @@ module Carto
 
       def to_poro(accessible_dependent_derived_maps: false, context: nil)
         return {} if @user_table.nil?
-        permission = @user_table.permission
-        permission_presentation = Carto::Api::PermissionPresenter.new(
-          permission, current_viewer: @current_viewer
-        ).with_presenter_cache(@presenter_cache).to_poro if permission
 
         poro = {
           id: @user_table.id,
           name: @user_table.name_for_user(@current_viewer),
-          permission: permission_presentation,
           geometry_types: @user_table.geometry_types,
           privacy: privacy_text(@user_table.privacy).upcase,
           updated_at: @user_table.updated_at
@@ -57,6 +53,10 @@ module Carto
           poro[:accessible_dependent_derived_maps] = derived_maps_to_presenter(context)
         end
 
+        if show_permission
+          poro[:permission] = permission_presentation
+        end
+
         poro
       end
 
@@ -67,13 +67,21 @@ module Carto
 
       private
 
-      attr_reader :show_size_and_row_count
+      attr_reader :show_size_and_row_count, :show_permission
 
       def derived_maps_to_presenter(context)
         visualizations = @user_table.accessible_dependent_derived_maps
         visualizations.map { |v| Carto::Api::VisualizationPresenter.new(v, @current_viewer, context).to_poro }
       end
 
+      def permission_presentation
+        permission = @user_table.permission
+        return unless permission
+
+        Carto::Api::PermissionPresenter.new(permission, current_viewer: @current_viewer)
+                                       .with_presenter_cache(@presenter_cache)
+                                       .to_poro
+      end
     end
   end
 end

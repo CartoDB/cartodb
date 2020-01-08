@@ -423,6 +423,16 @@ describe Carto::Api::VisualizationsController do
       body['visualizations'][0]['dependent_visualizations_count'].should be_zero
     end
 
+    it 'exludes any kind of permissions with show_permission=false' do
+      FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id)
+
+      body = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL, show_permission: false)
+
+      body['total_entries'].should == 1
+      body['visualizations'][0]['permission'].should be_nil
+      body['visualizations'][0]['table']['permission'].should be_nil
+    end
+
     describe 'performance with many tables' do
       # The bigger the number the better the improvement, but test gets too slow
       VIZS_N = 20

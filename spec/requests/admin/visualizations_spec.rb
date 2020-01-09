@@ -95,6 +95,19 @@ describe Admin::VisualizationsController do
       last_request.path.should =~ %r{/tables/}
     end
 
+    it 'redirects to kuviz when needed' do
+      kuviz = FactoryGirl.create(:kuviz_visualization, user_id: @user.id)
+
+      get "/viz/#{kuviz.id}", {}, @headers
+      last_response.status.should eq 302
+
+      follow_redirect!
+
+      uri = URI.parse(last_request.url)
+      uri.host.should == "#{@user.username}.localhost.lan"
+      uri.path.should == "/kuviz/#{kuviz.id}"
+    end
+
     describe 'redirects to builder' do
       describe 'for tables' do
         before(:each) do

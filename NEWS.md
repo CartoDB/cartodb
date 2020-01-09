@@ -21,6 +21,8 @@ sudo make install
 - Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
 - Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
 - Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
+- Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
+
 
 4.32.0 (2019-12-27)
 -------------------

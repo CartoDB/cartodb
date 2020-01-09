@@ -229,11 +229,19 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'stores html content' do
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'test' do |response|
-        expect(response.status).to eq(200)
-        expect(response.body[:visualizations]).present?.should be true
-        expect(response.body[:url]).present?.should be true
+    it 'returns the expected info' do
+      Delorean.time_travel_to('2020-01-09') do
+        post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'test' do |response|
+          expect(response.status).to eq(200)
+
+          kuviz = @user.visualizations.first
+          expect(response.body[:id]).to eq kuviz.id
+          expect(response.body[:name]).to eq 'test'
+          expect(response.body[:privacy]).to eq 'public'
+          expect(response.body[:url]).to eq "http://#{@user.username}.localhost.lan:53716/viz/#{kuviz.id}"
+          expect(response.body[:created_at]).to include('2020-01-09')
+          expect(response.body[:updated_at]).to include('2020-01-09')
+        end
       end
     end
   end

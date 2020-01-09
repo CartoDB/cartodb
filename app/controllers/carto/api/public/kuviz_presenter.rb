@@ -16,7 +16,7 @@ module Carto
             privacy: @kuviz.privacy,
             created_at: @kuviz.created_at,
             updated_at: @kuviz.updated_at,
-            url: CartoDB.url(@context, 'kuviz_show',
+            url: CartoDB.url(@context, 'public_visualizations_show',
                              params: { id: @kuviz.id },
                              user: @user)
           }

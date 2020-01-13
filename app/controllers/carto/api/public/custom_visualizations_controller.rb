@@ -155,7 +155,10 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def validate_unique_name
-    if_exists = params[:if_exists].nil? ? IF_EXISTS_FAIL : params[:if_exists]
+    if_exists = params[:if_exists]
+    if if_exists.nil?
+      if_exists = @kuviz.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
+    end
 
     unless VALID_IF_EXISTS.include?(if_exists)
       error = Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', '))

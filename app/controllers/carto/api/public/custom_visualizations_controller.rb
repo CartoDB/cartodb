@@ -25,7 +25,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
   before_action :check_master_api_key
-  before_action :validate_if_exists, :validate_unique_name, only: [:create, :update]
+  before_action :validate_if_exists, :remove_duplicates, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
@@ -59,6 +59,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     asset.save
 
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
+  rescue ActiveRecord::RecordInvalid => e
+    CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
+    render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
@@ -92,7 +95,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz.password = params[:password]
     kuviz.type = Carto::Visualization::TYPE_KUVIZ
     kuviz.user = user
-    kuviz.save
+    kuviz.save!
     kuviz
   end
 
@@ -164,17 +167,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
   end
 
-  def validate_unique_name
-    name = params[:name]
-    existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: name)
-    existing_kuvizs = existing_kuvizs - [@kuviz] if @kuviz.present? && existing_kuvizs.include?(@kuviz)
-
-    return unless existing_kuvizs.any?
-
-    if @if_exists == IF_EXISTS_FAIL
-      error = Carto::LoadError.new("A Kuviz with name '#{name}' already exists.")
-      return render_jsonp({ error: error.message }, error.status)
-    elsif @if_exists == IF_EXISTS_REPLACE
+  def remove_duplicates
+    if @if_exists == IF_EXISTS_REPLACE
+      existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: params[:name]) - [@kuviz]
       existing_kuvizs.each(&:destroy!)
     end
   end

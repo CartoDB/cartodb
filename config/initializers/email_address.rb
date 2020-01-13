@@ -1,4 +1,4 @@
-EmailAddress::Config.configure(local_format: :conventional)
+EmailAddress::Config.configure(local_format: :conventional, host_validation: Cartodb.config[:disable_email_mx_check] ? :syntax : :mx )
 
 class EmailValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)

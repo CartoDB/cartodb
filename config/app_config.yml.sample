@@ -767,7 +767,7 @@ defaults: &defaults
         isolines: false
         routing: false
         data_observatory: false
-
+  disable_email_mx_check: false # Disables MX DNS record check and just performs syntax validation.
 
 development:
   <<: *defaults

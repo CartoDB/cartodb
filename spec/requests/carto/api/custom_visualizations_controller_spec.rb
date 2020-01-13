@@ -311,6 +311,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
     after(:each) do
       @kuviz.destroy!
+      @kuviz2.destroy!
       @kuviz_other_user.destroy!
     end
 

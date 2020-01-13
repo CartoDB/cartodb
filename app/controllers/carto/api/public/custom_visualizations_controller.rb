@@ -76,6 +76,8 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       @kuviz.save
     end
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
+  rescue ActiveRecord::RecordInvalid => e
+    render_jsonp({ error: e.message }, 400)
   end
 
   def delete

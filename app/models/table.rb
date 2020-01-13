@@ -1315,11 +1315,7 @@ class Table
   end
 
   def column_sanitization_version
-    if data_import
-      data_import.column_sanitization_version
-    else
-      CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION
-    end
+    data_import&.column_sanitization_version || CartoDB::Importer2::Column::NO_COLUMN_SANITIZATION_VERSION
   end
 
   def self.sanitize_columns(table_name, column_sanitization_version, options={})

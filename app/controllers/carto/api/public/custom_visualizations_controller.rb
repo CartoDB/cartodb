@@ -25,7 +25,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
   before_action :check_master_api_key
-  before_action :validate_name, only: [:create, :update]
+  before_action :validate_unique_name, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
 
@@ -154,18 +154,23 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     end
   end
 
-  def validate_name
-    if_exists = params[:if_exists] or IF_EXISTS_FAIL
-    raise ParamInvalidError.new(:type, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(if_exists)
+  def validate_unique_name
+    if_exists = params[:if_exists].nil? ? IF_EXISTS_FAIL : params[:if_exists]
+
+    unless VALID_IF_EXISTS.include?(if_exists)
+      error = Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', '))
+      return render_jsonp({ error: error.message }, error.status)
+    end
 
     name = params[:name]
     existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: name)
-    existing_kuvizs = existing_kuvizs - @kuviz if @kuviz.present? && existing_kuvizs.include?(@kuviz)
+    existing_kuvizs = existing_kuvizs - [@kuviz] if @kuviz.present? && existing_kuvizs.include?(@kuviz)
 
     return unless existing_kuvizs.any?
 
     if if_exists == IF_EXISTS_FAIL
-      raise Carto::LoadError.new("A Kuviz with name '#{name}' already exists.")
+      error = Carto::LoadError.new("A Kuviz with name '#{name}' already exists.")
+      return render_jsonp({ error: error.message }, error.status)
     elsif if_exists == IF_EXISTS_REPLACE
       existing_kuvizs.each(&:destroy!)
     end

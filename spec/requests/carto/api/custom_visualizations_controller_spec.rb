@@ -22,12 +22,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
   describe '#index' do
     before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
+      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user, name: 'kuviz')
       @kuviz.save
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @kuviz_password = FactoryGirl.create(:kuviz_protected_visualization, user: @user)
+      @kuviz_password = FactoryGirl.create(:kuviz_protected_visualization, user: @user, name: 'kuviz password')
       @kuviz_password.save
       @asset_password = Carto::Asset.for_visualization(visualization: @kuviz_password,
                                                        resource: StringIO.new('<html><body>test</body></html>'))
@@ -256,12 +256,12 @@ describe Carto::Api::Public::CustomVisualizationsController do
         expect(response.body[:url].present?).to be true
       end
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
-        expect(response.status).to eq(404)
-        expect(response.body[:error]).to eq("A Kuviz with name '#{@kuviz_name}' already exists.")
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
       end
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'fail' do |response|
-        expect(response.status).to eq(404)
-        expect(response.body[:error]).to eq("A Kuviz with name '#{@kuviz_name}' already exists.")
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
       end
     end
 
@@ -291,22 +291,27 @@ describe Carto::Api::Public::CustomVisualizationsController do
   describe '#update' do
     before(:each) do
       @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
-      @kuviz.save
+      @kuviz.save!
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
 
-      @kuviz2 = FactoryGirl.create(:kuviz_visualization, user: @user)
-      @kuviz2.save
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization, user: @user, name: 'kuviz2')
+      @kuviz2.save!
       @asset2 = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset2.save
 
       @kuviz_other_user = FactoryGirl.create(:kuviz_visualization)
-      @kuviz_other_user.save
+      @kuviz_other_user.save!
       @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
                                                resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
+    end
+
+    after(:each) do
+      @kuviz.destroy!
+      @kuviz_other_user.destroy!
     end
 
     it 'returns 403 wih default_public api_key' do
@@ -403,20 +408,20 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'works if name already exists and if_exists is replace' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz.name do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
       end
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz.name, if_exists: 'replace' do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
       end
     end
 
     it 'rejects if name already exists and if_exists is fail' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz.name, if_exists: 'fail' do |response|
-        expect(response.status).to eq(404)
-        expect(response.body[:error]).to eq("A Kuviz with name '#{@kuviz.name}' already exists.")
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'fail' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
       end
     end
 
@@ -440,6 +445,11 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
                                                resource: StringIO.new('<html><body>test</body></html>'))
       @asset_other_user.save
+    end
+
+    after(:each) do
+      @kuviz.destroy!
+      @kuviz_other_user.destroy!
     end
 
     it 'returns 403 wih default_public api_key' do

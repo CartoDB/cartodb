@@ -25,9 +25,10 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
   before_action :check_master_api_key
-  before_action :validate_unique_name, only: [:create, :update]
+  before_action :validate_if_exists, :validate_unique_name, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -154,27 +155,26 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     end
   end
 
+  def validate_if_exists
+    @if_exists = params[:if_exists]
+    if @if_exists.nil?
+      @if_exists = @kuviz.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
+    end
+
+    raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
+  end
+
   def validate_unique_name
-    if_exists = params[:if_exists]
-    if if_exists.nil?
-      if_exists = @kuviz.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
-    end
-
-    unless VALID_IF_EXISTS.include?(if_exists)
-      error = Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', '))
-      return render_jsonp({ error: error.message }, error.status)
-    end
-
     name = params[:name]
     existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: name)
     existing_kuvizs = existing_kuvizs - [@kuviz] if @kuviz.present? && existing_kuvizs.include?(@kuviz)
 
     return unless existing_kuvizs.any?
 
-    if if_exists == IF_EXISTS_FAIL
+    if @if_exists == IF_EXISTS_FAIL
       error = Carto::LoadError.new("A Kuviz with name '#{name}' already exists.")
       return render_jsonp({ error: error.message }, error.status)
-    elsif if_exists == IF_EXISTS_REPLACE
+    elsif @if_exists == IF_EXISTS_REPLACE
       existing_kuvizs.each(&:destroy!)
     end
   end

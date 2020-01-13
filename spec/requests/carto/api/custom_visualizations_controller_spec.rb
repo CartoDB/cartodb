@@ -246,7 +246,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'rejects if if_exists parameter is not a valid one' do
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'wrong-option' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
+        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
       end
     end
 
@@ -398,7 +398,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'rejects if if_exists parameter is not a valid one' do
       put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'test', if_exists: 'wrong-option' do |response|
         expect(response.status).to eq(400)
-        expect(response.body[:error]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
+        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
       end
     end
 

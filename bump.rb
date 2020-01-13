@@ -104,7 +104,7 @@ end
 ARGV << 'patch' if ARGV.empty?
 help unless ARGV.count == 1
 
-raise 'Not in master branch' unless `git rev-parse --abbrev-ref HEAD`.strip == 'master'
+# raise 'Not in master branch' unless `git rev-parse --abbrev-ref HEAD`.strip == 'master'
 
 puts 'Pulling and fetching tags...'
 `git pull --tags`
@@ -135,4 +135,4 @@ puts 'Committing, tagging and pushing...'
 `git add NEWS.md`
 `git commit -m "Bump to #{next_version}"`
 `git tag -a v#{next_version} -m "Version #{next_version}"`
-`git push origin master --follow-tags`
+# `git push origin master --follow-tags`

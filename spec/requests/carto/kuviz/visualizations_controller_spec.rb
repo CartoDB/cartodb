@@ -24,6 +24,7 @@ describe Carto::Kuviz::VisualizationsController do
 
       response.status.should eq 200
       response.body.scan(/test/).present?.should == true
+      response.headers.include?('X-Frame-Options').should == false
     end
 
     it 'shows 404 on non-existent kuviz' do
@@ -75,6 +76,7 @@ describe Carto::Kuviz::VisualizationsController do
 
       response.status.should eq 200
       response.body.scan(/<body>test<\/body>/).present?.should == true
+      response.headers.include?('X-Frame-Options').should == false
     end
   end
 end

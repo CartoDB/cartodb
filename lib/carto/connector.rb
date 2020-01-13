@@ -11,12 +11,12 @@ module Carto
     attr_reader :provider_name
 
     def initialize(parameters, context)
-      @connector_context = Context.cast(context)
-
       @params = Parameters.new(parameters)
 
       @provider_name = @params[:provider]
       @provider_name ||= DEFAULT_PROVIDER
+
+      @connector_context = Context.cast(context)
 
       raise InvalidParametersError.new(message: "Provider not defined") if @provider_name.blank?
       @provider = Connector.provider_class(@provider_name).try :new, @connector_context, @params
@@ -28,12 +28,23 @@ module Carto
     end
 
     def self.list_tables?(provider)
-      information = Connector.information(provider)
-      information[:features][:list_tables]
+      has_feature? provider, :list_tables
+    end
+
+    def self.list_projects?(provider)
+      has_feature? provider, :list_projects
     end
 
     def list_tables(limit = nil)
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
+    end
+
+    def list_projects
+      @provider.list_projects
+    end
+
+    def list_tables_by_project(project_id)
+      @provider.list_tables_by_project project_id
     end
 
     def check_connection
@@ -44,14 +55,24 @@ module Carto
       @provider.remote_data_updated?
     end
 
-    def remote_table_name
+    def table_name
       @provider.table_name
     end
 
-    # General availabillity check
-    def self.check_availability!(user)
+    # Availabillity check: checks general availability for user,
+    # and specific provider availability if provider_name is not nil
+    def self.check_availability!(user, provider_name=nil)
+      return false if user.nil?
+      # check general availability
       unless user.has_feature_flag?('carto-connectors')
         raise ConnectorsDisabledError.new(user: user)
+      end
+      if provider_name
+        # check the provider is enabled for the user
+        limits = Connector.limits provider_name: provider_name, user: user
+        if !limits || !limits[:enabled]
+          raise ConnectorsDisabledError.new(user: user, provider: provider_name)
+        end
       end
     end
 
@@ -59,12 +80,16 @@ module Carto
       user.has_feature_flag?('carto-connectors')
     end
 
+    def self.provider_available?(provider, user)
+      Carto::Connector.check_availability! user, provider
+      true
+    rescue ConnectorsDisabledError
+      false
+    end
+
     # Check availability for a user and provider
     def check_availability!
-      Connector.check_availability!(@connector_context.user)
-      if !enabled?
-        raise ConnectorsDisabledError.new(user: @connector_context.user, provider: @provider_name)
-      end
+      Connector.check_availability!(@connector_context.user, @provider_name)
     end
 
     # Limits for the user/provider
@@ -146,6 +171,11 @@ module Carto
     end
 
     private
+
+    def self.has_feature?(provider, feature)
+      information = Connector.information(provider)
+      information[:features][feature]
+    end
 
     # Validate parameters.
     # An array of parameter names to validate can be passed via :only.

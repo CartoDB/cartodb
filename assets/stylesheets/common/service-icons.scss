@@ -28,3 +28,8 @@
 @include serviceIcon(mailchimp, 18px, -65px);
 @include serviceIcon(instagram, 20px, -145px);
 @include serviceIcon(box, 29px, -194px);
+
+.ServiceIcon--bigquery {
+  width: 23px;
+  background: url($assetsDir + '/images/layout/connectors/bigquery.svg') no-repeat;
+}

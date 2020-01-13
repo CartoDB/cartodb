@@ -329,6 +329,13 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
+    it 'raises param invalid error if user does not exist' do
+      host! "pra.localhost.lan"
+      get base_url, {  }, @headers
+      JSON.load(last_response.body)['error'].should eq "Wrong 'username' parameter value."
+      last_response.status.should eq 400
+    end
+
     it 'returns success, empty response for empty user' do
       expected_response = {
         'visualizations' => [],
@@ -414,6 +421,16 @@ describe Carto::Api::VisualizationsController do
       body['total_entries'].should == 1
       body['total_user_entries'].should == 1
       body['visualizations'][0]['dependent_visualizations_count'].should be_zero
+    end
+
+    it 'exludes any kind of permissions with show_permission=false' do
+      FactoryGirl.create(:carto_user_table_with_canonical, user_id: @user_1.id)
+
+      body = response_body(type: CartoDB::Visualization::Member::TYPE_CANONICAL, show_permission: false)
+
+      body['total_entries'].should == 1
+      body['visualizations'][0]['permission'].should be_nil
+      body['visualizations'][0]['table']['permission'].should be_nil
     end
 
     describe 'performance with many tables' do
@@ -3191,7 +3208,7 @@ describe Carto::Api::VisualizationsController do
       end
     end
 
-    it 'generates the URL for tables shared by another user with hyphens in his username' do
+    it 'generates the URL for tables shared by another user with hyphens in their username' do
       user_with_hyphen = FactoryGirl.create(:user, username: 'fulano-de-tal', organization: @organization)
       table = create_random_table(user_with_hyphen, 'tabluca', UserTable::PRIVACY_PRIVATE)
       shared_table = table.table_visualization

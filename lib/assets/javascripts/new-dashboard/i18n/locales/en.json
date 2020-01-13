@@ -675,7 +675,8 @@
     }
   },
   "CatalogPage": {
-    "header": "Catalog"
+    "header": "Catalog",
+    "description": "Broaden your analysis and augment your own data with our curated selection of location datasets."
   },
   "CatalogListHeader": {
     "name": "Name",
@@ -685,9 +686,10 @@
   },
   "CatalogDropdown" : {
     "placeholder": "Search...",
+    "select": "Select",
     "category": {
       "title": "Select a category",
-      "placeholder": "Search...",
+      "placeholder": "Select",
       "extra": "Interested in a different data category? <a href='mailto:sdr@carto.com'>Contact Us</a>"
     },
     "country": {

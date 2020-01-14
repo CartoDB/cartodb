@@ -111,7 +111,7 @@ export default {
       const HEIGHT_MEDIUM_MAX_ITEMS = 5;
       const HEIGHT_DEFAULT_MAX_ITEMS = 8;
 
-      if (PAGE_HEIGHT < SMALL_HEIGHT ) {
+      if (PAGE_HEIGHT < SMALL_HEIGHT) {
         return HEIGHT_SMALL_MAX_ITEMS;
       }
 
@@ -146,7 +146,7 @@ export default {
       return this.isOpen && Object.keys(this.selected).length === 0;
     }
   },
-  mounted() {
+  mounted () {
     this.$refs.catalogDropdownList.scrollTop = 0;
     PerfectScrollbar.initialize(this.$refs.catalogDropdownList, {
       wheelSpeed: 1,
@@ -157,7 +157,7 @@ export default {
       useBothWheelAxes: true
     });
   },
-  beforeDestroy() {
+  beforeDestroy () {
     PerfectScrollbar.destroy(this.$refs.catalogDropdownList);
   },
   methods: {

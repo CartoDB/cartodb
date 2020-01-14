@@ -73,8 +73,8 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def delete
-    @kuviz.destroy
     Carto::Tracking::Events::DeletedMap.new(@logged_user.id, event_properties(@kuviz)).report
+    @kuviz.destroy
     head 204
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)

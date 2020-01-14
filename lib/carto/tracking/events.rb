@@ -131,7 +131,6 @@ module Carto
 
       class DeletedMap < MapEvent; end
       class ModifiedMap < MapEvent; end
-      class VisitedMap < MapEvent; end
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Hubspot

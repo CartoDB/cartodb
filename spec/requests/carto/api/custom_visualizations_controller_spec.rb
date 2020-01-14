@@ -164,7 +164,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     after(:each) do
-      kuvizs = Carto::Visualization.where(name: @kuviz_name)
+      kuvizs = Carto::Visualization.where(user: @user)
       kuvizs.each(&:destroy!)
     end
 
@@ -277,13 +277,24 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'works if if_exists is replace and exists a kuviz with the same name' do
+      kuviz1 = nil
+
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user, name: @kuviz_name)
+        expect(kuvizs.length).to be 1
+        kuviz1 = kuvizs.first
       end
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'replace' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user, name: @kuviz_name)
+        expect(kuvizs.length).to be 1
+        kuviz2 = kuvizs.first
+        expect(kuviz1.id).not_to be kuviz2.id
       end
     end
   end
@@ -408,14 +419,31 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
-    it 'works if name already exists and if_exists is replace' do
+    it 'works if name already exists and if_exists is replace by default' do
       put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq @kuviz2.name
       end
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
+    end
+
+    it 'works if name already exists and if_exists is replace' do
+        put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq @kuviz2.name
       end
     end
 
@@ -427,9 +455,18 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'works if if_exists is fail and name does not exists' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'other name', if_exists: 'fail' do |response|
+      new_name = 'other_name'
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: new_name, if_exists: 'fail' do |response|
         expect(response.status).to eq(200)
         expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz, @kuviz2].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq new_name
+        expect(kuviz_updated.name).not_to eq @kuviz.name
       end
     end
   end

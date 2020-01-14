@@ -11,14 +11,19 @@
     "noDescription": "No description",
     "noTags": "No tags",
     "lastUpdate": "Updated {date} ago",
-    "tags": "tags"
+    "tags": "tags",
+    "type": {
+      "derived": "BUILDER",
+      "kuviz": "CARTOFRAMES"
+    }
   },
   "MapListHeader": {
     "name": "Name",
     "lastModified": "Last Modified",
     "views": "Views (30d)",
     "usage": "Usage",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "type": "Type"
   },
   "QuickActions": {
     "title": "Quick actions",
@@ -30,7 +35,8 @@
     "duplicate": "Duplicate",
     "lock": "Lock",
     "unlock": "Unlock",
-    "delete": "Delete"
+    "delete": "Delete",
+    "shareViaURL": "Share via URL"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -93,7 +99,9 @@
         "public": "Your Public Maps",
         "link": "Your Link-shared Maps",
         "password": "Your Password-protected Maps",
-        "private": "Your Private Maps"
+        "private": "Your Private Maps",
+        "builder": "Your Builder Maps",
+        "cartoframes": "Your CARTOframes Maps"
       },
       "warning": "<span class='is-bold'>{counter} public maps used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited public maps."
     },
@@ -127,7 +135,9 @@
       "publicPrivacy": "Public",
       "privatePrivacy": "Private",
       "linkPrivacy": "Link",
-      "passwordPrivacy": "Password"
+      "passwordPrivacy": "Password",
+      "builderType": "Builder",
+      "kuvizType": "CARTOframes"
     }
   },
   "DatasetCard": {
@@ -695,5 +705,12 @@
     "variableGroups": "Variable Groups",
     "category": "Category",
     "country": "Country"
+  },
+  "Dialogs": {
+    "ShareViaURL": {
+      "map": "map",
+      "headerText": "Share current map via URL",
+      "close": "close"
+    }
   }
 }

@@ -74,7 +74,7 @@ module Carto
 
           {
             user_id: @user.id,
-            event_origin: @user.builder_enabled? ? 'Builder' : 'Editor',
+            event_source: @user.builder_enabled? ? 'builder' : 'editor',
             plan: @user.account_type,
             user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
@@ -124,8 +124,11 @@ module Carto
         end
 
         def event_properties
+          domain = Cartodb.get_config(:session_domain)
+
           {
             event_time: now,
+            source_domain: domain,
             event_version: EVENT_VERSION
           }
         end

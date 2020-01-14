@@ -1,5 +1,6 @@
 require_relative 'segment'
 require_relative 'hubspot'
+require_relative 'pubsub'
 
 module Carto
   module Tracking

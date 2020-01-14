@@ -117,6 +117,10 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
+        def name
+          'map_exported'
+        end
+
         required_properties :user_id, :visualization_id
       end
 
@@ -132,10 +136,23 @@ module Carto
 
       class CreatedMap < MapEvent
         required_properties :origin
+
+        def name
+          'map_created'
+        end
       end
 
-      class DeletedMap < MapEvent; end
-      class ModifiedMap < MapEvent; end
+      class DeletedMap < MapEvent
+        def name
+          'map_deleted'
+        end
+      end
+
+      class ModifiedMap < MapEvent
+        def name
+          'map_modified'
+        end
+      end
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Hubspot
@@ -146,6 +163,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+
+        def name
+          'map_published'
+        end
       end
 
       class ConnectionEvent < Event
@@ -158,8 +179,17 @@ module Carto
         required_properties :user_id, :connection
       end
 
-      class CompletedConnection < ConnectionEvent; end
-      class FailedConnection < ConnectionEvent; end
+      class CompletedConnection < ConnectionEvent
+        def name
+          'connection_completed'
+        end
+      end
+
+      class FailedConnection < ConnectionEvent
+        def name
+          'connection_failed'
+        end
+      end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
@@ -169,6 +199,10 @@ module Carto
 
         required_properties :user_id
         optional_properties :quota_overage
+
+        def name
+          'quota_exceeded'
+        end
       end
 
       class ScoredTrendingMap < Event
@@ -179,6 +213,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :mapviews
+
+        def name
+          'trending_map_scored'
+        end
       end
 
       class VisitedPrivatePage < Event
@@ -188,6 +226,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :page
+
+        def name
+          'private_page_visited'
+        end
 
         def report_to_user_model
           @format.fetch_record!(:user).view_dashboard if @format.to_hash['page'] == 'dashboard'
@@ -206,9 +248,17 @@ module Carto
 
       class CreatedDataset < DatasetEvent
         required_properties :origin
+
+        def name
+          'dataset_created'
+        end
       end
 
-      class DeletedDataset < DatasetEvent; end
+      class DeletedDataset < DatasetEvent
+        def name
+          'dataset_deleted'
+        end
+      end
 
       class AnalysisEvent < Event
         include Carto::Tracking::Services::Hubspot
@@ -221,9 +271,23 @@ module Carto
         required_properties :user_id, :visualization_id, :analysis
       end
 
-      class CreatedAnalysis < AnalysisEvent; end
-      class ModifiedAnalysis < AnalysisEvent; end
-      class DeletedAnalysis < AnalysisEvent; end
+      class CreatedAnalysis < AnalysisEvent
+        def name
+          'analysis_created'
+        end
+      end
+
+      class ModifiedAnalysis < AnalysisEvent
+        def name
+          'analysis_modified'
+        end
+      end
+
+      class DeletedAnalysis < AnalysisEvent
+        def name
+          'analysis_deleted'
+        end
+      end
 
       class AppliedSql < Event
         include Carto::Tracking::Services::Hubspot
@@ -233,6 +297,10 @@ module Carto
 
         required_properties :user_id, :visualization_id, :sql
         optional_properties :node_id, :dataset_id
+
+        def name
+          'sql_applied'
+        end
       end
 
       class AppliedCartocss < Event
@@ -242,10 +310,18 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :cartocss
+
+        def name
+          'cartocss_applied'
+        end
       end
 
       class ModifiedStyleForm < AppliedCartocss
         required_properties :style_properties
+
+        def name
+          'style_form_modified'
+        end
       end
 
       class CreatedWidget < Event
@@ -257,6 +333,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :widget_id
+
+        def name
+          'widget_created'
+        end
       end
 
       class DownloadedLayer < Event
@@ -271,6 +351,10 @@ module Carto
                             :source, :visible, :table_name
 
         optional_properties :from_view
+
+        def name
+          'layer_downloaded'
+        end
       end
 
       class StyledByValue < Event
@@ -281,6 +365,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :attribute, :attribute_type
+
+        def name
+          'styled_by_value'
+        end
       end
 
       class DraggedNode < Event
@@ -291,6 +379,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+
+        def name
+          'node_dragged'
+        end
       end
 
       class CreatedLayer < Event
@@ -302,6 +394,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :empty
+
+        def name
+          'layer_created'
+        end
       end
 
       class ChangedDefaultGeometry < Event
@@ -312,6 +408,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+
+        def name
+          'default_geometry_changed'
+        end
       end
 
       class AggregatedGeometries < Event
@@ -322,6 +422,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :previous_agg_type, :agg_type
+
+        def name
+          'geometries_aggregated'
+        end
       end
 
       class UsedAdvancedMode < Event
@@ -332,6 +436,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :mode_type
+
+        def name
+          'advanced_mode_used'
+        end
       end
 
       class OauthAppEvent < Event
@@ -343,10 +451,29 @@ module Carto
         required_properties :user_id, :app_id, :app_name
       end
 
-      class CreatedOauthApp < OauthAppEvent; end
-      class DeletedOauthApp < OauthAppEvent; end
-      class CreatedOauthAppUser < OauthAppEvent; end
-      class DeletedOauthAppUser < OauthAppEvent; end
+      class CreatedOauthApp < OauthAppEvent
+        def name
+          'oauth_app_created'
+        end
+      end
+
+      class DeletedOauthApp < OauthAppEvent
+        def name
+          'oauth_app_deleted'
+        end
+      end
+
+      class CreatedOauthAppUser < OauthAppEvent
+        def name
+          'oauth_app_user_created'
+        end
+      end
+
+      class DeletedOauthAppUser < OauthAppEvent
+        def name
+          'oauth_app_user_deleted'
+        end
+      end
 
       # Models a generic event for segment.
       class SegmentEvent < Event

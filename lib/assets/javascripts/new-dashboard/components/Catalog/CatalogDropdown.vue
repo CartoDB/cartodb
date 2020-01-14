@@ -10,7 +10,7 @@
         <input type="text"
           class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
-          :placeholder="!isDisabled ?  placeholderActive : placeholderInactive"
+          :placeholder="placeholder"
           v-model="searchFilter"
           @focus="onInputFocus"
           @click="openDropdown"
@@ -100,6 +100,9 @@ export default {
     };
   },
   computed: {
+    placeholder () {
+      return !this.isDisabled ? this.placeholderActive : this.placeholderInactive;
+    },
     maxItemsScroll () {
       const PAGE_HEIGHT = window.innerHeight;
       const SMALL_HEIGHT = 680;

@@ -10,7 +10,7 @@
         <input type="text"
           class="text is-caption catalogDropdown__input"
           :class="{ 'has-error': hasError }"
-          :placeholder="[isOpen ?  $t('CatalogDropdown.placeholder') : placeholder]"
+          :placeholder="!isDisabled ?  placeholderActive : placeholderInactive"
           v-model="searchFilter"
           @focus="onInputFocus"
           @click="openDropdown"
@@ -67,7 +67,8 @@ export default {
   },
   props: {
     title: String,
-    placeholder: String,
+    placeholderActive: String,
+    placeholderInactive: String,
     options: {
       type: Array,
       default () {

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CatalogDropdown.vue Search should be hidden if there is no items overflow 1`] = `
-<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label"></span>
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
   <div class="catalogDropdown__container">
     <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
     <!---->
@@ -22,7 +22,7 @@ exports[`CatalogDropdown.vue Search should be hidden if there is no items overfl
 `;
 
 exports[`CatalogDropdown.vue Search should be visible when there is an items overflow 1`] = `
-<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label"></span>
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
   <div class="catalogDropdown__container">
     <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
     <!---->
@@ -103,7 +103,7 @@ exports[`CatalogDropdown.vue should be enabled by default if disabled is false 1
 `;
 
 exports[`CatalogDropdown.vue should be opened by default if open is true 1`] = `
-<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label"></span>
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
   <div class="catalogDropdown__container">
     <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
     <!---->
@@ -117,6 +117,17 @@ exports[`CatalogDropdown.vue should render correct contents 1`] = `
 <div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
   <div class="catalogDropdown__container">
     <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should render inactive placeholder if dropdown is inactive 1`] = `
+<div class="catalogDropdown is-disabled is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="Placeholder Disabled" disabled="disabled" class="text is-caption catalogDropdown__input"></div>
     <!---->
     <ul class="catalogDropdown__list is-open ps-container"></ul>
     <div class="catalogDropdown__extra">Extra Content</div>

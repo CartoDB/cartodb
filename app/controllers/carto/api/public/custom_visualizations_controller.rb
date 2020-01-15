@@ -25,7 +25,9 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :get_user, only: [:create, :update, :delete]
   before_action :check_edition_permission, only: [:update, :delete]
   before_action :check_master_api_key
-  before_action :validate_if_exists, :remove_duplicates, only: [:create, :update]
+  before_action :validate_if_exists, only: [:create, :update]
+  before_action :get_last_one, only: [:create]
+  before_action :remove_duplicates, only: [:update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
@@ -53,6 +55,8 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def create
+    return update if @kuviz
+
     kuviz = create_visualization_metadata(@logged_user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
@@ -167,6 +171,12 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     end
 
     raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
+  end
+
+  def get_last_one
+    if @if_exists == IF_EXISTS_REPLACE
+      @kuviz = Carto::Visualization.where(user: @logged_user, name: params[:name]).order(updated_at: :desc).first
+    end
   end
 
   def remove_duplicates

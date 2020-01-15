@@ -294,7 +294,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
         kuvizs = Carto::Visualization.where(user: @user, name: @kuviz_name)
         expect(kuvizs.length).to be 1
         kuviz2 = kuvizs.first
-        expect(kuviz1.id).not_to be kuviz2.id
+        expect(kuviz1.id).to eq(kuviz2.id)
       end
     end
   end

@@ -17,7 +17,8 @@
       <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCategories"
           :title="$t('CatalogDropdown.category.title')"
-          :placeholder="$t('CatalogDropdown.category.placeholder')"
+          :placeholderActive="$t('CatalogDropdown.category.placeholderActive')"
+          :placeholderInactive="$t('CatalogDropdown.category.placeholderInactive')"
           :options="categories"
           :disabled="true"
           :limitHeight="true"
@@ -31,7 +32,8 @@
       <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCountries"
           :title="$t('CatalogDropdown.country.title')"
-          :placeholder="$t('CatalogDropdown.country.placeholder')"
+          :placeholderActive="$t('CatalogDropdown.country.placeholderActive')"
+          :placeholderInactive="$t('CatalogDropdown.country.placeholderInactive')"
           :options="countries"
           :disabled="true"
           :limitHeight="true"

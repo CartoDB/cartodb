@@ -64,7 +64,7 @@ gem 'gibbon',                  '1.1.4'
 gem 'instagram-continued-continued'
 
 # GCloud
-gem 'google-cloud-pubsub', '1.1.2'
+gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'

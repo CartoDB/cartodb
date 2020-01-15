@@ -5,11 +5,7 @@ require 'google/cloud/pubsub'
 class PubSubTracker
   include Singleton
 
-  MAX_BYTES_BATCH = 500_000
-  MAX_MESSAGES_BATCH = 5
-
   def initialize
-    @topic_name = Cartodb.get_config(:pubsub, 'topic')
     @pubsub = init_pubsub
     @errored = false
 
@@ -19,7 +15,7 @@ class PubSubTracker
 
   rescue StandardError => e
     @errored = true
-    CartoDB::Logger.error(message: 'PubSub: initialization error', exception: e)
+    CartoDB::Logger.error(message: 'PubSubTracker: initialization error', exception: e)
   end
 
   def init_pubsub
@@ -34,10 +30,8 @@ class PubSubTracker
   end
 
   def metrics_topic
-    @pubsub.topic(@topic_name, async: {
-      max_bytes: MAX_BYTES_BATCH,
-      max_messages: MAX_MESSAGES_BATCH
-    })
+    topic_name = Cartodb.get_config(:pubsub, 'topic')
+    @pubsub.topic(topic_name)
   end
 
   def enabled?
@@ -51,13 +45,17 @@ class PubSubTracker
     attributes = {user_id: user_id}.merge(properties)
 
     topic.publish_async(event, attributes) do |result|
-      raise "PubSub: error publishing to topic #{@topic_name} for event #{event}" unless result&.succeeded?
+      if result&.succeeded?
+        CartoDB::Logger.info(message: "PubSubTracker: event #{event} published to #{topic.name}")
+      else
+        CartoDB::Logger.error(message: "PubSubTracker: error publishing to topic #{topic.name} for event #{event}: #{result&.error}")
+      end
     end
 
     attributes
 
   rescue KeyError => e
-    CartoDB::Logger.error(message: "Error: topic #{topic_key} does not exist")
+    CartoDB::Logger.error(message: "PubSubTracker: error topic key #{topic_key} not found")
   rescue StandardError => e
     CartoDB::Logger.error(message: e.message, exception: e)
   end
@@ -78,7 +76,7 @@ class PubSubTracker
 
   # Method needed for testing purposes
   def stop_publisher(topic)
-    topic.async_publisher.stop.wait!
+    topic.async_publisher.stop!
   end
 
 end

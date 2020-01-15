@@ -70,13 +70,11 @@ module Carto
 
         def user_properties
           user_created_at = @user.created_at
-          user_age_in_days_with_decimals = days_with_decimals(now - user_created_at)
 
           {
             user_id: @user.id,
             event_source: @user.builder_enabled? ? 'builder' : 'editor',
             plan: @user.account_type,
-            user_active_for: user_age_in_days_with_decimals,
             user_created_at: user_created_at,
             organization: @user.organization_user? ? @user.organization.name : nil
           }

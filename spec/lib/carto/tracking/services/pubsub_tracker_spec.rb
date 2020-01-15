@@ -17,7 +17,7 @@ describe PubSubTracker do
 
     it 'should log an error if an exception occurs during Pubsub initialization' do
       Google::Cloud::Pubsub.stubs(:new).raises('Error')
-      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSub: initialization error'))
+      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
@@ -27,7 +27,7 @@ describe PubSubTracker do
       @pubsub.stubs(:topic).raises('Error')
       Google::Cloud::Pubsub.stubs(:new).returns(@pubsub)
 
-      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSub: initialization error'))
+      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSubTracker: initialization error'))
 
       PubSubTracker.instance
     end
@@ -38,7 +38,9 @@ describe PubSubTracker do
     before(:each) do
       Singleton.__init__(PubSubTracker)
 
+      @topic_name_and_path = '/projects/project-identifier/topics/topic-name'
       @topic = Object.new
+      @topic.stubs(:name).returns(@topic_name_and_path)
       @pubsub = Object.new
       @pubsub.stubs(:topic).returns(@topic)
 
@@ -52,21 +54,17 @@ describe PubSubTracker do
       @topic.stubs(:publish_async).returns(success_response)
 
       user_id = 'ff5d41c7-e599-4876-9646-8ba023031287'
-      event = 'Created user'
+      event = 'map_created'
 
       properties = {
+        user_id: user_id,
         organization: 'acme',
-        event_origin: 'Central',
-        creation_time: DateTime.now,
-        mrr_plan: 299,
-        on_trial: true,
+        event_source: 'builder',
+        source_domain: '.localhost.lan',
+        type: 'table',
+        event_time: Time.now.utc,
         plan: 'Individual',
-        plan_period: 1,
-        revenue: 299,
-        trial_ends_at: DateTime.now + 300,
-        trial_starts_at: DateTime.now,
-        user_active_for: 0.00014968342800925926,
-        user_created_at: DateTime.now
+        user_created_at: Time.now
       }
 
       result = PubSubTracker.instance.send_event(:metrics, user_id, event, properties)
@@ -76,7 +74,7 @@ describe PubSubTracker do
     end
 
     it 'should log error when no event type is sent' do
-      CartoDB::Logger.expects(:error).with(message: 'Error: topic  does not exist')
+      CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key  not found')
 
       @topic.stubs(:publish_async)
 
@@ -84,7 +82,7 @@ describe PubSubTracker do
     end
 
     it 'should log error when unknown event type sent' do
-      CartoDB::Logger.expects(:error).with(message: 'Error: topic fake_topic does not exist')
+      CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
 
       @topic.stubs(:publish_async)
 
@@ -112,7 +110,7 @@ describe PubSubTracker do
     end
 
     it 'should log error if publishing did not succeeded' do
-      CartoDB::Logger.expects(:error).with(has_entry(message: 'PubSub: error publishing to topic test-topic for event track user'))
+      CartoDB::Logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user: "))
 
       @topic.stubs(:publish_async).yields(nil)
 

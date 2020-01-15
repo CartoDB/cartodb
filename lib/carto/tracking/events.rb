@@ -21,7 +21,7 @@ module Carto
           @reporter = Carto::User.find(reporter_id)
         end
 
-        def name
+        def class_name
           self.class.name.demodulize.underscore.humanize.capitalize
         end
 
@@ -76,7 +76,7 @@ module Carto
           missing_properties = required_properties - @format.to_hash.symbolize_keys.keys
 
           unless missing_properties.empty?
-            message = "#{name} is missing the following properties: #{missing_properties.join(', ')}"
+            message = "#{class_name} is missing the following properties: #{missing_properties.join(', ')}"
 
             raise Carto::UnprocesableEntityError.new(message)
           end

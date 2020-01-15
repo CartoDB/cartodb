@@ -9,7 +9,7 @@ sudo make install
 ```
 
 ### Features
-- None yet
+- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
 
 ### Bug fixes / enhancements
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))

@@ -30,9 +30,6 @@
 <script>
 import PublishViewDialog from 'builder/components/modals/publish/publish/publish-view';
 import VisualizationModel from 'builder/data/vis-definition-model';
-import ModalModel from 'new-dashboard/plugins/backbone/modal-model';
-import UserModel from 'builder/data/user-model'
-import CreateShareOptions from 'builder/components/modals/publish/create-share-options'
 
 export default {
   name: 'ShareViaUrl',
@@ -52,13 +49,9 @@ export default {
   },
   methods: {
     renderDialog () {
-      const modalModel = ModalModel({
-        destroy: () => this.$emit('close')
-      });
-
       const visDefinitionModel = new VisualizationModel(
-        this.$props.visualization, 
-        { configModel: this.$cartoModels.config}
+        this.$props.visualization,
+        { configModel: this.$cartoModels.config }
       );
 
       visDefinitionModel.on('change', model => {
@@ -69,14 +62,14 @@ export default {
         visDefinitionModel,
         userModel: this.$cartoModels.user,
         el: this.$refs.injectionContent
-      })
+      });
 
       publishViewDialog.render();
       return publishViewDialog;
     },
 
     close () {
-      this.$emit('close')
+      this.$emit('close');
     }
   }
 };
@@ -85,16 +78,6 @@ export default {
 <style lang="scss">
 @import 'new-dashboard/styles/variables';
 @import 'assets/stylesheets/editor-3/_cards.scss';
-
-.Dialog {
-  .OptionCards {
-    box-sizing: content-box;
-
-    * {
-      box-sizing: content-box;
-    }
-  }
-}
 
 .Dialog-footer {
   display: flex;

@@ -21,7 +21,7 @@ module Carto
           @reporter = Carto::User.find(reporter_id)
         end
 
-        def class_name
+        def name
           self.class.name.demodulize.underscore.humanize.capitalize
         end
 
@@ -117,7 +117,7 @@ module Carto
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User
 
-        def name
+        def pubsub_name
           'map_exported'
         end
 
@@ -137,19 +137,19 @@ module Carto
       class CreatedMap < MapEvent
         required_properties :origin
 
-        def name
+        def pubsub_name
           'map_created'
         end
       end
 
       class DeletedMap < MapEvent
-        def name
+        def pubsub_name
           'map_deleted'
         end
       end
 
       class ModifiedMap < MapEvent
-        def name
+        def pubsub_name
           'map_modified'
         end
       end
@@ -164,7 +164,7 @@ module Carto
 
         required_properties :user_id, :visualization_id
 
-        def name
+        def pubsub_name
           'map_published'
         end
       end
@@ -180,13 +180,13 @@ module Carto
       end
 
       class CompletedConnection < ConnectionEvent
-        def name
+        def pubsub_name
           'connection_completed'
         end
       end
 
       class FailedConnection < ConnectionEvent
-        def name
+        def pubsub_name
           'connection_failed'
         end
       end
@@ -200,7 +200,7 @@ module Carto
         required_properties :user_id
         optional_properties :quota_overage
 
-        def name
+        def pubsub_name
           'quota_exceeded'
         end
       end
@@ -214,7 +214,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :mapviews
 
-        def name
+        def pubsub_name
           'trending_map_scored'
         end
       end
@@ -227,7 +227,7 @@ module Carto
 
         required_properties :user_id, :page
 
-        def name
+        def pubsub_name
           'private_page_visited'
         end
 
@@ -249,13 +249,13 @@ module Carto
       class CreatedDataset < DatasetEvent
         required_properties :origin
 
-        def name
+        def pubsub_name
           'dataset_created'
         end
       end
 
       class DeletedDataset < DatasetEvent
-        def name
+        def pubsub_name
           'dataset_deleted'
         end
       end
@@ -272,19 +272,19 @@ module Carto
       end
 
       class CreatedAnalysis < AnalysisEvent
-        def name
+        def pubsub_name
           'analysis_created'
         end
       end
 
       class ModifiedAnalysis < AnalysisEvent
-        def name
+        def pubsub_name
           'analysis_modified'
         end
       end
 
       class DeletedAnalysis < AnalysisEvent
-        def name
+        def pubsub_name
           'analysis_deleted'
         end
       end
@@ -298,7 +298,7 @@ module Carto
         required_properties :user_id, :visualization_id, :sql
         optional_properties :node_id, :dataset_id
 
-        def name
+        def pubsub_name
           'sql_applied'
         end
       end
@@ -311,7 +311,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :layer_id, :cartocss
 
-        def name
+        def pubsub_name
           'cartocss_applied'
         end
       end
@@ -319,7 +319,7 @@ module Carto
       class ModifiedStyleForm < AppliedCartocss
         required_properties :style_properties
 
-        def name
+        def pubsub_name
           'style_form_modified'
         end
       end
@@ -334,7 +334,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :widget_id
 
-        def name
+        def pubsub_name
           'widget_created'
         end
       end
@@ -352,7 +352,7 @@ module Carto
 
         optional_properties :from_view
 
-        def name
+        def pubsub_name
           'layer_downloaded'
         end
       end
@@ -366,7 +366,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :attribute, :attribute_type
 
-        def name
+        def pubsub_name
           'styled_by_value'
         end
       end
@@ -380,7 +380,7 @@ module Carto
 
         required_properties :user_id, :visualization_id
 
-        def name
+        def pubsub_name
           'node_dragged'
         end
       end
@@ -395,7 +395,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :layer_id, :empty
 
-        def name
+        def pubsub_name
           'layer_created'
         end
       end
@@ -409,7 +409,7 @@ module Carto
 
         required_properties :user_id, :visualization_id
 
-        def name
+        def pubsub_name
           'default_geometry_changed'
         end
       end
@@ -423,7 +423,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :previous_agg_type, :agg_type
 
-        def name
+        def pubsub_name
           'geometries_aggregated'
         end
       end
@@ -437,7 +437,7 @@ module Carto
 
         required_properties :user_id, :visualization_id, :mode_type
 
-        def name
+        def pubsub_name
           'advanced_mode_used'
         end
       end
@@ -452,25 +452,25 @@ module Carto
       end
 
       class CreatedOauthApp < OauthAppEvent
-        def name
+        def pubsub_name
           'oauth_app_created'
         end
       end
 
       class DeletedOauthApp < OauthAppEvent
-        def name
+        def pubsub_name
           'oauth_app_deleted'
         end
       end
 
       class CreatedOauthAppUser < OauthAppEvent
-        def name
+        def pubsub_name
           'oauth_app_user_created'
         end
       end
 
       class DeletedOauthAppUser < OauthAppEvent
-        def name
+        def pubsub_name
           'oauth_app_user_deleted'
         end
       end

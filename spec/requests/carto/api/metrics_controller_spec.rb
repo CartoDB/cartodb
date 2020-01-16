@@ -30,7 +30,7 @@ describe Carto::Api::MetricsController do
 
       event_class.any_instance.stubs(:report!)
 
-      post_json metrics_url, name: event.class_name, properties: user_properties do |response|
+      post_json metrics_url, name: event.name, properties: user_properties do |response|
         response.status.should eq 201
       end
     end
@@ -53,9 +53,9 @@ describe Carto::Api::MetricsController do
         event = event_class.new(@user.id, {})
 
         unless event.required_properties.empty?
-          post_json metrics_url, name: event.class_name, properties: {} do |response|
+          post_json metrics_url, name: event.name, properties: {} do |response|
             response.status.should eq 422
-            response.body[:errors].should eq "#{event.class_name} is missing the following properties: #{event.required_properties.join(', ')}"
+            response.body[:errors].should eq "#{event.name} is missing the following properties: #{event.required_properties.join(', ')}"
           end
         end
       end

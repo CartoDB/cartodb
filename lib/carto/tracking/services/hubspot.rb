@@ -7,7 +7,7 @@ module Carto
         def report_to_hubspot
           return unless ::Hubspot::EventsAPI.instance.enabled?
 
-          event_name = name.downcase.tr(' ', '_')
+          event_name = class_name.downcase.tr(' ', '_')
           id = fetch_event_id_for_event_name(event_name)
 
           if id.present?

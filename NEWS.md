@@ -25,6 +25,7 @@ sudo make install
 - Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
 - Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
 - Avoid requesting password for kuviz with permissions and send email when sharing ([#15384](https://github.com/CartoDB/cartodb/pull/15384))
+- Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
 
 
 4.32.0 (2019-12-27)

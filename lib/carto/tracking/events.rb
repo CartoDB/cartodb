@@ -76,7 +76,7 @@ module Carto
           missing_properties = required_properties - @format.to_hash.symbolize_keys.keys
 
           unless missing_properties.empty?
-            message = "#{class_name} is missing the following properties: #{missing_properties.join(', ')}"
+            message = "#{name} is missing the following properties: #{missing_properties.join(', ')}"
 
             raise Carto::UnprocesableEntityError.new(message)
           end

@@ -138,7 +138,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def validate_input_parameters
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
-      return render_jsonp({ error: "Visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
+      return render_jsonp({ error: "Visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES / 1024 / 1024}MB)" }, 400)
     end
 
     if params[:privacy].present?

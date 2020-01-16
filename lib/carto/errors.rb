@@ -84,4 +84,16 @@ module Carto
       super("Wrong '#{parameter}' parameter value. #{extra_message}", 422)
     end
   end
+
+  class PaymentRequiredError < CartoError
+    def initialize(message = "Payment Required")
+      super(message, 402)
+    end
+  end
+
+  class QuotaExceededError < PaymentRequiredError
+    def initialize(message = "Your quota has been exceeded. Please, upgrade your account")
+      super(message)
+    end
+  end
 end

@@ -32,6 +32,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::QuotaExceededError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -132,7 +133,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def check_public_map_quota
     return unless CartoDB::QuotaChecker.new(@logged_user).will_be_over_public_map_quota?
-    raise Carto::UnauthorizedError.new('Public map quota exceeded')
+    raise Carto::QuotaExceededError.new('Public map quota exceeded')
   end
 
   def validate_input_parameters

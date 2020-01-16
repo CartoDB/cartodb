@@ -210,7 +210,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
         end
 
         post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'b' do |response|
-          expect(response.status).to eq(403)
+          expect(response.status).to eq(402)
           expect(response.body[:errors]).to eql 'Public map quota exceeded'
         end
       end

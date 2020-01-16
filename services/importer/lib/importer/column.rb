@@ -290,25 +290,42 @@ module CartoDB
         existing_names = column_names - [candidate_column_name]
 
         if column_sanitization_version == INITIAL_COLUMN_SANITIZATION_VERSION
-          # NOTE: originally not all uses of this sanitization version applied reserved words
-          # reserved_words = RESERVED_COLUMN_NAMES
-          reserved_words = []
-
-          candidate_column_name = 'untitled_column' if candidate_column_name.blank?
-          candidate_column_name = candidate_column_name.to_s.squish
-
-          # Subsequent characters can be letters, underscores or digits
-          candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
-
-          # Valid names start with a letter or an underscore
-          candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
-
-          avoid_collisions(candidate_column_name, existing_names, reserved_words)
+          get_valid_column_name_v1(candidate_column_name, existing_names)
         elsif column_sanitization_version == 2
-          new_column_name = sanitize_name(candidate_column_name).gsub(/_{2,}/, '_')
-          new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
-          avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
+          get_valid_column_name_v2(candidate_column_name, existing_names)
         elsif column_sanitization_version == 3
+          get_valid_column_name_v3(candidate_column_name, existing_names)
+        else
+          raise "Invalid column sanitization version #{column_sanitization_version.inspect}"
+        end
+      end
+
+      private
+
+      def self.get_valid_column_name_v1(candidate_column_name, existing_names)
+        # NOTE: originally not all uses of this sanitization version applied reserved words
+        # reserved_words = RESERVED_COLUMN_NAMES
+        reserved_words = []
+
+        candidate_column_name = 'untitled_column' if candidate_column_name.blank?
+        candidate_column_name = candidate_column_name.to_s.squish
+
+        # Subsequent characters can be letters, underscores or digits
+        candidate_column_name = candidate_column_name.gsub(/[^a-z0-9]/,'_').gsub(/_{2,}/, '_')
+
+        # Valid names start with a letter or an underscore
+        candidate_column_name = "column_#{candidate_column_name}" unless candidate_column_name[/^[a-z_]{1}/]
+
+        avoid_collisions(candidate_column_name, existing_names, reserved_words)
+      end
+
+      def self.get_valid_column_name_v2(candidate_column_name, existing_names)
+        new_column_name = sanitize_name(candidate_column_name).gsub(/_{2,}/, '_')
+        new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
+        avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
+      end
+
+      def self.get_valid_column_name_v3(candidate_column_name, existing_names)
           # experimental sanitization
           # this can be configured using the locale files for the current (I18n.locale) locale;
           # for example, for I18n.locale == :en we could add this to config/locales/en.yml
@@ -321,12 +338,7 @@ module CartoDB
           new_column_name = candidate_column_name.parameterize.tr('-','_')
           new_column_name = [0, PG_IDENTIFIER_MAX_LENGTH] if new_column_name.size > PG_IDENTIFIER_MAX_LENGTH
           avoid_collisions(new_column_name, existing_names, RESERVED_COLUMN_NAMES)
-        else
-          raise "Invalid column sanitization version #{column_sanitization_version.inspect}"
-        end
       end
-
-      private
 
       def self.avoid_collisions(name, existing_names, reserved_words, max_length=PG_IDENTIFIER_MAX_LENGTH)
         count = 1

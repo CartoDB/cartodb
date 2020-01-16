@@ -20,25 +20,46 @@ describe Carto::Api::Public::CustomVisualizationsController do
     FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
   end
 
-  describe '#common' do
-    it 'works with master api_key' do
-      get_json api_v4_kuviz_list_vizs_url(api_key: @user.api_key) do |response|
-        expect(response.status).to eq(200)
-      end
+  describe '#index' do
+    before(:each) do
+      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user, name: 'kuviz')
+      @kuviz.save
+      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
+                                              resource: StringIO.new('<html><body>test</body></html>'))
+      @asset.save
+      @kuviz_password = FactoryGirl.create(:kuviz_protected_visualization, user: @user, name: 'kuviz password')
+      @kuviz_password.save
+      @asset_password = Carto::Asset.for_visualization(visualization: @kuviz_password,
+                                                       resource: StringIO.new('<html><body>test</body></html>'))
+      @asset_password.save
     end
 
-    it 'works with oauth api_key' do
+    after(:each) do
+      @kuviz.destroy
+      @kuviz_password.destroy
+    end
+
+    it 'returns 403 with oauth api_key' do
       api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
 
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(403)
       end
     end
 
-    it 'works with regular api_key' do
+    it 'returns 403 with regular api_key' do
       api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+
       get_json api_v4_kuviz_list_vizs_url(api_key: api_key.token) do |response|
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
+
+      get_json api_v4_kuviz_list_vizs_url(api_key: token) do |response|
+        expect(response.status).to eq(403)
       end
     end
 
@@ -53,26 +74,6 @@ describe Carto::Api::Public::CustomVisualizationsController do
       get_json api_v4_kuviz_list_vizs_url do |response|
         expect(response.status).to eq(401)
       end
-    end
-  end
-
-  describe '#index' do
-    before(:each) do
-      @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
-      @kuviz.save
-      @asset = Carto::Asset.for_visualization(visualization: @kuviz,
-                                              resource: StringIO.new('<html><body>test</body></html>'))
-      @asset.save
-      @kuviz_password = FactoryGirl.create(:kuviz_protected_visualization, user: @user)
-      @kuviz_password.save
-      @asset_password = Carto::Asset.for_visualization(visualization: @kuviz_password,
-                                                       resource: StringIO.new('<html><body>test</body></html>'))
-      @asset_password.save
-    end
-
-    after(:each) do
-      @kuviz.destroy
-      @kuviz_password.destroy
     end
 
     it 'shows all the visualizations' do
@@ -157,6 +158,40 @@ describe Carto::Api::Public::CustomVisualizationsController do
   end
 
   describe '#create' do
+    before(:all) do
+      @valid_html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
+      @kuviz_name = 'kuviz_name'
+    end
+
+    after(:each) do
+      kuvizs = Carto::Visualization.where(user: @user)
+      kuvizs.each(&:destroy!)
+    end
+
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
+
+      post_json api_v4_kuviz_create_viz_url(api_key: token), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 with oauth api_key' do
+      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+
+      post_json api_v4_kuviz_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 wih regular api_key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+
+      post_json api_v4_kuviz_create_viz_url(api_key: api_key.token), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
     it 'rejects if name parameter is not send in the request' do
       string_base64 = Base64.strict_encode64('<html><body>test html</body></html>')
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: nil do |response|
@@ -170,18 +205,18 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'rejects if data parameter is not send in the request' do
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: nil, name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: nil, name: @kuviz_name do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing data parameter')
       end
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), name: @kuviz_name do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('missing data parameter')
       end
     end
 
     it 'rejects if data parameter is not encoded in base64' do
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: 'non-base64 test', name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: 'non-base64 test', name: @kuviz_name do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be encoded in base64')
       end
@@ -189,23 +224,77 @@ describe Carto::Api::Public::CustomVisualizationsController do
 
     it 'rejects non html content' do
       string_base64 = Base64.strict_encode64('test string non-html')
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: @kuviz_name do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be HTML')
       end
       pixel_base64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: pixel_base64, name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: pixel_base64, name: @kuviz_name do |response|
         expect(response.status).to eq(400)
         expect(response.body[:error]).to eq('data parameter must be HTML')
       end
     end
 
     it 'stores html content' do
-      html_base64 = Base64.strict_encode64('<html><head><title>test</title></head><body>test</body></html>')
-      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: html_base64, name: 'test' do |response|
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
         expect(response.status).to eq(200)
         expect(response.body[:visualizations]).present?.should be true
         expect(response.body[:url]).present?.should be true
+      end
+    end
+
+    it 'rejects if if_exists parameter is not a valid one' do
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'wrong-option' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
+      end
+    end
+
+    it 'fails if if_exists is fail and exists a kuviz with the same name' do
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+      end
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'fail' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+      end
+    end
+
+    it 'works if if_exists is fail and does not exists a kuviz with the same name' do
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'another name' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+    end
+
+    it 'works if if_exists is replace and exists a kuviz with the same name' do
+      kuviz1 = nil
+
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user, name: @kuviz_name)
+        expect(kuvizs.length).to be 1
+        kuviz1 = kuvizs.first
+      end
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'replace' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user, name: @kuviz_name)
+        expect(kuvizs.length).to be 1
+        kuviz2 = kuvizs.first
+        expect(kuviz1.id).to eq(kuviz2.id)
       end
     end
   end
@@ -213,15 +302,52 @@ describe Carto::Api::Public::CustomVisualizationsController do
   describe '#update' do
     before(:each) do
       @kuviz = FactoryGirl.create(:kuviz_visualization, user: @user)
-      @kuviz.save
+      @kuviz.save!
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
-      @kuviz2.save
-      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
-                                               resource: StringIO.new('<html><body>test</body></html>'))
+
+      @kuviz2 = FactoryGirl.create(:kuviz_visualization, user: @user, name: 'kuviz2')
+      @kuviz2.save!
+      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz,
+                                              resource: StringIO.new('<html><body>test</body></html>'))
       @asset2.save
+
+      @kuviz_other_user = FactoryGirl.create(:kuviz_visualization)
+      @kuviz_other_user.save!
+      @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
+                                               resource: StringIO.new('<html><body>test</body></html>'))
+      @asset_other_user.save
+    end
+
+    after(:each) do
+      @kuviz.destroy!
+      @kuviz2.destroy!
+      @kuviz_other_user.destroy!
+    end
+
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
+
+      put_json api_v4_kuviz_update_viz_url(api_key: token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 with oauth api_key' do
+      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+
+      put_json api_v4_kuviz_update_viz_url(api_key: api_key.token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 wih regular api_key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+
+      put_json api_v4_kuviz_update_viz_url(api_key: api_key.token, id: @kuviz.id), name: 'new name' do |response|
+        expect(response.status).to eq(403)
+      end
     end
 
     it 'should update an existing kuviz name' do
@@ -275,7 +401,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'shouldn\'t update an existing kuviz if the user doesn\'t have permission' do
-      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz2.id), name: 'test' do |response|
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz_other_user.id), name: 'test' do |response|
         expect(response.status).to eq(403)
       end
     end
@@ -283,6 +409,64 @@ describe Carto::Api::Public::CustomVisualizationsController do
     it 'should return 404 error if kuviz doesn\'t exist' do
       put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: '47f41ab4-63de-439f-a826-de5deab14de6') do |response|
         expect(response.status).to eq(404)
+      end
+    end
+
+    it 'rejects if if_exists parameter is not a valid one' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: 'test', if_exists: 'wrong-option' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:errors]).to eq("Wrong 'if_exists' parameter value. Valid values are one of fail, replace")
+      end
+    end
+
+    it 'works if name already exists and if_exists is replace by default' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq @kuviz2.name
+      end
+    end
+
+    it 'works if name already exists and if_exists is replace' do
+        put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'replace' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq @kuviz2.name
+      end
+    end
+
+    it 'rejects if name already exists and if_exists is fail' do
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: @kuviz2.name, if_exists: 'fail' do |response|
+        expect(response.status).to eq(400)
+        expect(response.body[:error]).to eq("Validation failed: Name has already been taken")
+      end
+    end
+
+    it 'works if if_exists is fail and name does not exists' do
+      new_name = 'other_name'
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: new_name, if_exists: 'fail' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+
+        kuvizs = Carto::Visualization.where(user: @user)
+        expect(kuvizs.length).to be [@kuviz, @kuviz2].length
+
+        kuviz_updated = Carto::Visualization.find(@kuviz.id)
+        expect(kuviz_updated.id).to eq @kuviz.id
+        expect(kuviz_updated.name).to eq new_name
+        expect(kuviz_updated.name).not_to eq @kuviz.name
       end
     end
   end
@@ -294,11 +478,40 @@ describe Carto::Api::Public::CustomVisualizationsController do
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,
                                               resource: StringIO.new('<html><body>test</body></html>'))
       @asset.save
-      @kuviz2 = FactoryGirl.create(:kuviz_visualization)
-      @kuviz2.save
-      @asset2 = Carto::Asset.for_visualization(visualization: @kuviz2,
+      @kuviz_other_user = FactoryGirl.create(:kuviz_visualization)
+      @kuviz_other_user.save
+      @asset_other_user = Carto::Asset.for_visualization(visualization: @kuviz_other_user,
                                                resource: StringIO.new('<html><body>test</body></html>'))
-      @asset2.save
+      @asset_other_user.save
+    end
+
+    after(:each) do
+      @kuviz.destroy!
+      @kuviz_other_user.destroy!
+    end
+
+    it 'returns 403 wih default_public api_key' do
+      token = 'default_public'
+
+      delete_json api_v4_kuviz_delete_viz_url(api_key: token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 with oauth api_key' do
+      api_key = FactoryGirl.create(:oauth_api_key, user_id: @user.id)
+
+      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key.token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
+      end
+    end
+
+    it 'returns 403 wih regular api_key' do
+      api_key = FactoryGirl.create(:api_key_apis, user_id: @user.id)
+
+      delete_json api_v4_kuviz_delete_viz_url(api_key: api_key.token, id: @kuviz.id) do |response|
+        expect(response.status).to eq(403)
+      end
     end
 
     it 'should delete kuviz and assets' do
@@ -310,7 +523,7 @@ describe Carto::Api::Public::CustomVisualizationsController do
     end
 
     it 'shouldn\'t delete a kuviz for which the user doesn\'t have permissions' do
-      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz2.id) do |response|
+      delete_json api_v4_kuviz_delete_viz_url(api_key: @user.api_key, id: @kuviz_other_user.id) do |response|
         expect(response.status).to eq(403)
       end
     end

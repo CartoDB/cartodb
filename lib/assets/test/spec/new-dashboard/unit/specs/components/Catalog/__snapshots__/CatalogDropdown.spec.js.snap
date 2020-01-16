@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CatalogDropdown.vue Search should be hidden if there is no items overflow 1`] = `
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container">
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_1"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_2"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_3"></catalogdropdownitem-stub>
+      </li>
+    </ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue Search should be visible when there is an items overflow 1`] = `
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container ps-active-y">
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_1"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_2"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_3"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_4"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_5"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_6"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_7"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_8"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_9"></catalogdropdownitem-stub>
+      </li>
+      <li class="catalogDropdown__option text is-caption">
+        <catalogdropdownitem-stub option="o_10"></catalogdropdownitem-stub>
+      </li>
+    </ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should be closed by default if open is false 1`] = `
+<div class="catalogDropdown"><span class="title is-caption catalogDropdown__label"></span>
+  <div class="catalogDropdown__container">
+    <div class="text is-caption catalogDropdown__input"><span class="catalogDropdown__input--placeholder"></span>
+      <!---->
+    </div>
+    <!---->
+    <ul class="catalogDropdown__list"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should be disabled by default if disabled is true 1`] = `
+<div class="catalogDropdown is-disabled"><span class="title is-caption catalogDropdown__label"></span>
+  <div class="catalogDropdown__container">
+    <div class="text is-caption catalogDropdown__input"><span class="catalogDropdown__input--placeholder"></span>
+      <!---->
+    </div>
+    <!---->
+    <ul class="catalogDropdown__list"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should be enabled by default if disabled is false 1`] = `
+<div class="catalogDropdown"><span class="title is-caption catalogDropdown__label"></span>
+  <div class="catalogDropdown__container">
+    <div class="text is-caption catalogDropdown__input"><span class="catalogDropdown__input--placeholder"></span>
+      <!---->
+    </div>
+    <!---->
+    <ul class="catalogDropdown__list"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should be opened by default if open is true 1`] = `
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should render correct contents 1`] = `
+<div class="catalogDropdown is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="CatalogDropdown.placeholder" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;
+
+exports[`CatalogDropdown.vue should render inactive placeholder if dropdown is inactive 1`] = `
+<div class="catalogDropdown is-disabled is-open"><span class="title is-caption catalogDropdown__label">Title</span>
+  <div class="catalogDropdown__container">
+    <div><input type="text" placeholder="Placeholder Disabled" disabled="disabled" class="text is-caption catalogDropdown__input"></div>
+    <!---->
+    <ul class="catalogDropdown__list is-open ps-container"></ul>
+    <div class="catalogDropdown__extra">Extra Content</div>
+  </div>
+</div>
+`;

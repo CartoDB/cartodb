@@ -767,7 +767,7 @@ defaults: &defaults
         isolines: false
         routing: false
         data_observatory: false
-
+  disable_email_mx_check: false # Disables MX DNS record check and just performs syntax validation.
 
 development:
   <<: *defaults
@@ -793,6 +793,10 @@ test:
     body: ""
   session_domain:     '.localhost.lan'
   subdomainless_urls: false
+  federated_server:
+    dir: "/tmp/federated_server_db"
+    port: 22665
+    test_user: "remote_user"
 
 staging:
   <<: *defaults

@@ -2,6 +2,7 @@ require_relative '../visualization_searcher'
 require_relative '../paged_searcher'
 
 class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::ApplicationController
+  include Carto::ControllerHelper
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
@@ -12,13 +13,24 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     Carto::Visualization::PRIVACY_PROTECTED
   ].freeze
 
+  IF_EXISTS_FAIL = 'fail'.freeze
+  IF_EXISTS_REPLACE = 'replace'.freeze
+  VALID_IF_EXISTS = [IF_EXISTS_FAIL, IF_EXISTS_REPLACE].freeze
+
   ssl_required
 
   before_action :validate_mandatory_creation_params, only: [:create]
   before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
-  before_action :check_for_permission, only: [:update, :delete]
+  before_action :check_edition_permission, only: [:update, :delete]
+  before_action :check_master_api_key
+  before_action :validate_if_exists, only: [:create, :update]
+  before_action :get_last_one, only: [:create]
+  before_action :remove_duplicates, only: [:update]
+
+  rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
+  rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -43,12 +55,18 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   end
 
   def create
+    return update if @kuviz
+
     kuviz = create_visualization_metadata(@logged_user)
     asset = Carto::Asset.for_visualization(visualization: kuviz,
                                            resource: StringIO.new(Base64.decode64(params[:data])))
     asset.save
+    Carto::Tracking::Events::CreatedMap.new(@logged_user.id, event_properties(kuviz).merge(origin: 'custom')).report
 
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, kuviz).to_hash, 200)
+  rescue ActiveRecord::RecordInvalid => e
+    CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
+    render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
     render_jsonp({ error: 'cant create the kuviz' }, 500)
@@ -62,16 +80,20 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
       # In case we only update the asset we need to invalidate the visualization
       @kuviz.save
     end
+    Carto::Tracking::Events::ModifiedMap.new(@logged_user.id, event_properties(@kuviz)).report
+
     render_jsonp(Carto::Api::Public::KuvizPresenter.new(self, @logged_user, @kuviz).to_hash, 200)
+  rescue ActiveRecord::RecordInvalid => e
+    render_jsonp({ error: e.message }, 400)
   end
 
   def delete
+    Carto::Tracking::Events::DeletedMap.new(@logged_user.id, event_properties(@kuviz)).report
     @kuviz.destroy
     head 204
-  rescue StandardError => exception
-    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: exception,
-                          visualization: @kuviz)
-    render_jsonp({ errors: [exception.message] }, 400)
+  rescue StandardError => e
+    CartoDB::Logger.error(message: 'Error deleting kuviz', exception: e, visualization: @kuviz)
+    render_jsonp({ errors: [e.message] }, 400)
   end
 
   private
@@ -83,15 +105,27 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     kuviz.password = params[:password]
     kuviz.type = Carto::Visualization::TYPE_KUVIZ
     kuviz.user = user
-    kuviz.save
+    kuviz.save!
     kuviz
+  end
+
+  def event_properties(kuviz)
+    {
+      user_id: @logged_user.id,
+      visualization_id: kuviz.id
+    }
   end
 
   def get_user
     @logged_user = current_viewer.present? ? Carto::User.find(current_viewer.id) : nil
   end
 
-  def check_for_permission
+  def check_master_api_key
+    api_key = Carto::ApiKey.find_by_token(params["api_key"])
+    raise Carto::UnauthorizedError unless api_key&.master?
+  end
+
+  def check_edition_permission
     head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
   end
 
@@ -138,6 +172,28 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     @kuviz = Carto::Visualization.find(params[:id])
     if @kuviz.nil?
       raise Carto::LoadError.new('Kuviz doesn\'t exist', 404)
+    end
+  end
+
+  def validate_if_exists
+    @if_exists = params[:if_exists]
+    if @if_exists.nil?
+      @if_exists = @kuviz.present? ? IF_EXISTS_REPLACE : IF_EXISTS_FAIL
+    end
+
+    raise Carto::ParamInvalidError.new(:if_exists, VALID_IF_EXISTS.join(', ')) unless VALID_IF_EXISTS.include?(@if_exists)
+  end
+
+  def get_last_one
+    if @if_exists == IF_EXISTS_REPLACE
+      @kuviz = Carto::Visualization.where(user: @logged_user, name: params[:name]).order(updated_at: :desc).first
+    end
+  end
+
+  def remove_duplicates
+    if @if_exists == IF_EXISTS_REPLACE
+      existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: params[:name]) - [@kuviz]
+      existing_kuvizs.each(&:destroy!)
     end
   end
 

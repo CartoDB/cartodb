@@ -593,6 +593,25 @@ CartoDB::Application.routes.draw do
         delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
         get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
       end
+
+      # Federated Tables
+
+      ## Federated servers
+      get 'federated_servers', to: 'federated_tables#list_federated_servers', as: :api_v4_federated_servers_list_servers
+      post 'federated_servers' => 'federated_tables#register_federated_server', as: :api_v4_federated_servers_register_server
+      get 'federated_servers/:federated_server_name' => 'federated_tables#show_federated_server', as: :api_v4_federated_servers_get_server
+      put 'federated_servers/:federated_server_name' => 'federated_tables#update_federated_server', as: :api_v4_federated_servers_update_server
+      delete 'federated_servers/:federated_server_name' => 'federated_tables#unregister_federated_server', as: :api_v4_federated_servers_unregister_server
+
+      ## Remote schemas
+      get 'federated_servers/:federated_server_name/remote_schemas', to: 'federated_tables#list_remote_schemas', as: :api_v4_federated_servers_list_schemas
+
+      ## Remote tables
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#list_remote_tables', as: :api_v4_federated_servers_list_tables
+      post 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#register_remote_table', as: :api_v4_federated_servers_register_table
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
+      put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
+      delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
     end
 
     scope 'v3/' do

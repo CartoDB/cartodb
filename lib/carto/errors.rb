@@ -92,7 +92,7 @@ module Carto
   end
 
   class QuotaExceededError < PaymentRequiredError
-    def initialize(message = "Your quota has been exceeded. Please, upgrade your account")
+    def initialize(message = "Your quota has been exceeded")
       super(message)
     end
   end

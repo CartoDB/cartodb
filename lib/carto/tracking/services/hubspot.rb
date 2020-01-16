@@ -7,6 +7,7 @@ module Carto
         def report_to_hubspot
           return unless ::Hubspot::EventsAPI.instance.enabled?
 
+          CartoDB::Logger.error(message: 'Test should not reach this!!')
           event_name = name.downcase.tr(' ', '_')
           id = fetch_event_id_for_event_name(event_name)
 

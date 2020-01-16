@@ -143,6 +143,10 @@ $sLabel-width: 140px;
   text-align: left;
 }
 
+.Form-rowLabel--small {
+  width: 60px;
+}
+
 .Form-label {
   color: $cTypography-paragraphs;
   font-size: $sFontSize-normal;

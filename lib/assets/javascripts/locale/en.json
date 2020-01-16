@@ -1363,6 +1363,29 @@
                         "feedback-text": "Have feedback or questions about the BigQuery connector?",
                         "feedback-link": "Please let us know!"
                     },
+                    "database": {
+                        "title": "Enter your %{brand} credentials",
+                        "desc": "Get tables or custom SQL queries from your database and keep them in sync.",
+                        "label-server": "Server",
+                        "placeholder-server": "Paste your %{brand} Server URL",
+                        "label-port": "Port",
+                        "placeholder-port": "Type your port",
+                        "label-database": "Database",
+                        "placeholder-database": "Type your database name",
+                        "label-username": "Username",
+                        "placeholder-username": "Type your username",
+                        "label-password": "Password",
+                        "placeholder-password": "Type your password",
+                        "connect-button": "Connect",
+                        "sidebar-connect": {
+                            "title": "Getting connected",
+                            "desc": "To ensure CARTO has access to your %{brand} database, please make sure your firewall is configured to allow the connections from these IP addesses:",
+                            "IP1": "54.68.30.98",
+                            "IP2": "54.68.45.3",
+                            "IP3": "54.164.204.122",
+                            "IP4": "54.172.100.146"
+                        }
+                    },
                     "notenabled": {
                         "fallback-desc": "This connector is not currently enabled in your account. Please, contact us if you are interested.",
                         "request-sent": "Your request has been received.",

@@ -6,7 +6,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
-  CONTENT_LENGTH_LIMIT_IN_BYTES = 10 * 1000 * 1000 # 10Mb
+  CONTENT_LENGTH_LIMIT_IN_BYTES = 10 * 1024 * 1024 # 10MB
   VALID_ORDER_PARAMS = %i(name updated_at privacy).freeze
   ALLOWED_PRIVACY_MODES = [
     Carto::Visualization::PRIVACY_PUBLIC,

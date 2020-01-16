@@ -28,7 +28,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   before_action :check_edition_permission, only: [:update, :delete]
   before_action :validate_if_exists, only: [:create, :update]
   before_action :get_last_one, only: [:create]
-  before_action :remove_duplicates, only: [:update]
+  before_action :remove_duplicates, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
@@ -132,7 +132,6 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def check_public_map_quota
     return unless CartoDB::QuotaChecker.new(@logged_user).will_be_over_public_map_quota?
-
     raise Carto::UnauthorizedError.new('Public map quota exceeded')
   end
 

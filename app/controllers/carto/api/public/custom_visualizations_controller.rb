@@ -71,7 +71,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
-    render_jsonp({ error: 'cant create the kuviz' }, 500)
+    render_jsonp({ error: 'The kuviz can not be created' }, 500)
   end
 
   def update

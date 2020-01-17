@@ -12,6 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
+- Remove directo connections debug trace ([#15274](https://github.com/CartoDB/cartodb/pull/15274))
 - New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
 - Change Catalog dropdown placeholders (([#15335](https://github.com/CartoDB/cartodb/issues/15335)))
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))

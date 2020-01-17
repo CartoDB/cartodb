@@ -16,7 +16,7 @@ is not present a set of default basemaps will be used (CARTO and Stamen ones,
 check the default basemaps file
 https://github.com/CartoDB/cartodb/blob/master/lib/assets/javascripts/cartodb/table/default_layers.js)
 
-Also, it's always necessary to have a default basemap among all the confifured
+Also, it's always necessary to have a default basemap among all the configured
 ones in the app_config.yml. The way to set a basemap as default a "default"
 attribute needs to be added to the basemap. There can be several basemaps in the
 config with the attribute default set, however, only the first one found in the

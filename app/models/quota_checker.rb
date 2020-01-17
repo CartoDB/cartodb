@@ -39,7 +39,7 @@ module CartoDB
 
       query_builder = Carto::VisualizationQueryBuilder.new.
                       with_user_id(@user.id).
-                      with_type(Carto::Visualization::TYPE_DERIVED).
+                      with_types([Carto::Visualization::TYPE_DERIVED, Carto::Visualization::TYPE_KUVIZ]).
                       with_privacy(not_private)
       query_builder.build.count
     end

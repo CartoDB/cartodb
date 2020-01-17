@@ -1,0 +1,8 @@
+.ps-scrollbar-y-rail,
+.ps-scrollbar-x-rail {
+  z-index: $z-index__dropdown;
+}
+
+.ps-container.ps-active > .ps-scrollbar-y-rail {
+  opacity: 1;
+}

@@ -1,6 +1,7 @@
-@import '../variables/mixins';
-@import '../variables/colors';
-@import '../variables/sizes';
+@import '../../variables/mixins';
+@import '../../variables/colors';
+@import '../../variables/sizes';
+@import 'flexbox';
 
 .u-transparent {
   opacity: 0;
@@ -204,3 +205,5 @@
     display: block !important;
   }
 }
+
+

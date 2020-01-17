@@ -1,6 +1,8 @@
 module Carto
   class DoLicensingService
 
+    AVAILABLE_STORAGES = %w(bq bigtable carto).freeze
+
     def initialize(username)
       @username = username
       @redis_key = "do:#{@username}:datasets"
@@ -19,12 +21,12 @@ module Carto
     private
 
     def add_to_redis(datasets)
-      value = ["bq", insert_redis_value(datasets, 'bq'), "spanner", insert_redis_value(datasets, 'spanner')]
+      value = AVAILABLE_STORAGES.map { |storage| [storage, insert_redis_value(datasets, storage)] }.flatten
       $users_metadata.hmset(@redis_key, value)
     end
 
     def remove_from_redis(dataset_id)
-      value = ["bq", remove_redis_value(dataset_id, 'bq'), "spanner", remove_redis_value(dataset_id, 'spanner')]
+      value = AVAILABLE_STORAGES.map { |storage| [storage, remove_redis_value(dataset_id, storage)] }.flatten
       $users_metadata.hmset(@redis_key, value)
     end
 

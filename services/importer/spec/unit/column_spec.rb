@@ -243,15 +243,15 @@ describe Column do
 
   describe '#reserved?' do
     it 'returns true if name is a reserved keyword' do
-      @column.reserved?('select').should eq true
-      @column.reserved?('bogus').should eq false
+      Column.reserved?('select').should eq true
+      Column.reserved?('bogus').should eq false
     end
   end #reserved?
 
   describe '#unsupported?' do
     it 'returns true if name is not supported by Postgres' do
-      @column.unsupported?('9name').should eq true
-      @column.unsupported?('name9').should eq false
+      Column.unsupported?('9name').should eq true
+      Column.unsupported?('name9').should eq false
     end
   end #unsupported?
 
@@ -345,5 +345,153 @@ describe Column do
       ogc_fid:      1
     }
   end #random_kml_multi_record
+
+
+  LEGACY_SANITIZATION_EXAMPLES = {
+    "abc" => "abc",
+    "abc xyz" => "abc_xyz",
+    "2abc" => "column_2abc",
+    "Abc" => "_bc",
+    "\u0432\u044b\u0445\u043b\u043e\u043f\u044b \u0430\u0432\u0442\u043e\u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u04302" => "_2",
+    "\u043d\u0435\u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0439 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a2" => "_2",
+    "\u0432\u044b\u0431\u0440\u043e\u0441\u044b \u043f\u0440\u0435\u0434\u043f\u0440\u0438\u044f\u0442\u0438\u04392" => "_2",
+    "\u013ar" => "_r",
+    "CONVERT(BlueNumber USING utf8)" => '_lue_umber_utf8_',
+    "is growing site fenced?" => "is_growing_site_fenced_",
+    "if it\u2019s a community garden, is it collective or allotment?" => "if_it_s_a_community_garden_is_it_collective_or_allotment_",
+    "Paddock" => "_addock",
+    "Date Due" => "_ate_ue",
+    "__5" => "_5",
+    "__1" => "_1",
+    "tel\u00e9fono" => "tel_fono",
+    ":@computed_region_wvic_k925" => "_computed_region_wvic_k925",
+    "\u0420\u0435\u0433\u0438\u043e\u043d" => "_",
+    "\u043d\u0435\u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0439 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a" => "_",
+    "> min" => "_min",
+    "12_ schedule of visits.0" => "column_12_schedule_of_visits_0",
+    "previous rent (\u00a3 per sq ft)" => "previous_rent_per_sq_ft_",
+    "description/\u540d\u7a31" => "description_",
+    "description/\u5730\u5740" =>  "description_",
+    "@relations" =>  "_relations",
+    "EntityName" => "_ntity_ame",
+    "_ injured" => "_injured",
+    "trips 11 _ 15 miles" => "trips_11_15_miles",
+    "as" => "as",
+    "any" => "any",
+    "xmin" => "xmin",
+    "action" => "action",
+  }
+
+  LEGACY_SANITIZATION_COLS = {
+    ['выбросы предприятий2', 'выхлопы автотранспорта2', 'неустановленный источник2'] => ['_2', '_2_1', '_2_2'],
+    ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description_", "description__1"]
+  }
+
+  VERSION_2_SANITIZATION_EXAMPLES = {
+    "abc" => "abc",
+    "abc xyz" => "abc_xyz",
+    "2abc" => "_2abc",
+    "Abc" => "abc",
+    "выхлопы автотранспорта2" => "vyxlopy_vtotr_nsport_2",
+    "неустановленный источник2" => "neust_novlennyj_istochnik2",
+    "выбросы предприятий2" => "vybrosy_predpriyatij2",
+    "ĺr" => "lr",
+    "CONVERT(BlueNumber USING utf8)" => "convert_bluenumber_using_utf8",
+    "is growing site fenced?" => "is_growing_site_fenced",
+    "if it’s a community garden, is it collective or allotment?" => "if_it_s_a_community_garden_is_it_collective_or_allotment",
+    "Paddock" => "paddock",
+    "Date Due" => "date_due",
+    "__5" => "_5",
+    "__1" => "_1",
+    "teléfono" => "telefono",
+    ":@computed_region_wvic_k925" => "computed_region_wvic_k925",
+    "Регион" => "region",
+    "неустановленный источник" => "neust_novlennyj_istochnik",
+    "> min" => "min",
+    "12_ schedule of visits.0" => "_12_schedule_of_visits_0",
+    "previous rent (£ per sq ft)" => "previous_rent_per_sq_ft",
+    "description/名稱" => "description",
+    "description/地址" => "description",
+    "@relations" => "relations",
+    "EntityName" => "entityname",
+    "_ injured" => "_injured",
+    "trips 11 _ 15 miles" => "trips_11_15_miles",
+    "as" => "_as",
+    "any" => "_any",
+    "xmin" => "_xmin",
+    "action" => "_action",
+  }
+
+  VERSION_2_SANITIZATION_COLS = {
+    ['выбросы предприятий2', 'выхлопы автотранспорта2', 'неустановленный источник2'] => ['vybrosy_predpriyatij2', 'vyxlopy_vtotr_nsport_2', 'neust_novlennyj_istochnik2'],
+    ["description/\u540d\u7a31", "description/\u5730\u5740"] => ["description", "description_1"],
+    ["abc", "Abc", "aBc", "ABC"] => ["abc", "abc_1", "abc_2", "abc_3"]
+  }
+
+  describe '.get_valid_column_name' do
+
+    it 'can apply legacy sanitization to single columns' do
+      LEGACY_SANITIZATION_EXAMPLES.each do |input_name, output_name|
+        name = Column::get_valid_column_name(input_name, Column::INITIAL_COLUMN_SANITIZATION_VERSION, [])
+        name.should eq output_name
+      end
+    end
+
+    it 'can apply legacy sanitization to multiple columns' do
+      LEGACY_SANITIZATION_COLS.each do |input_columns, output_columns|
+        columns = []
+        input_columns.zip(output_columns).each do |input_column, output_column|
+          column = Column::get_valid_column_name(input_column, Column::INITIAL_COLUMN_SANITIZATION_VERSION, columns)
+          columns << column
+          column.should eq output_column
+        end
+      end
+    end
+
+    it 'can apply sanitization v2 to single columns' do
+      VERSION_2_SANITIZATION_EXAMPLES.each do |input_name, output_name|
+        name = Column::get_valid_column_name(input_name, 2, [])
+        name.should eq output_name
+      end
+    end
+
+    it 'v2 sanitization is idempotent' do
+      VERSION_2_SANITIZATION_EXAMPLES.each_key do |input_name|
+        first_name = Column::get_valid_column_name(input_name, 2, [])
+        second_name = Column::get_valid_column_name(first_name, 2, [])
+        second_name.should eq first_name
+      end
+    end
+
+    it 'can apply v2 sanitization to multiple columns' do
+      VERSION_2_SANITIZATION_COLS.each do |input_columns, output_columns|
+        columns = []
+        input_columns.zip(output_columns).each do |input_column, output_column|
+          column = Column::get_valid_column_name(input_column, 2, columns)
+          puts "--- ADDING COL #{column}"
+          columns << column
+          puts " >> #{columns.inspect}"
+          column.should eq output_column
+        end
+      end
+    end
+
+    it 'multiple column sanitization is idempotent' do
+      VERSION_2_SANITIZATION_COLS.each_key do |input_columns|
+        columns1 = []
+        input_columns.each do |input_column|
+          column1 = Column::get_valid_column_name(input_column, 2, columns1)
+          columns1 << column1
+        end
+        columns2 = []
+        columns1.each do |input_column|
+          column2 = Column::get_valid_column_name(input_column, 2, columns2)
+          columns2 << column2
+          column2.should eq input_column
+        end
+      end
+    end
+  end # .get_valid_column_name
+
 end # Column
 

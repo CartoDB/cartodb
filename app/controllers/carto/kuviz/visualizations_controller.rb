@@ -14,6 +14,7 @@ module Carto
 
       def show
         return kuviz_password_protected if @kuviz.password_protected?
+
         @source = KuvizAssetsService.instance.read_source_data(@kuviz.asset)
         add_cache_headers
         render layout: false

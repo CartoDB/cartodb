@@ -37,9 +37,9 @@ describe 'data_observatory.rake' do
     it 'calls subscribe from Carto::DoLicensingService with the expected parameters' do
       File.stubs(:open).returns(csv_example)
       expected_datasets = [
-        { dataset_id: 'dataset1', available_in: ['bq', 'spanner'], price: 100.0,
+        { dataset_id: 'dataset1', available_in: ['bq', 'bigtable'], price: 100.0,
           expires_at: Time.new(2020, 9, 27, 8, 0, 0) },
-        { dataset_id: 'dataset2', available_in: ['spanner'], price: 200.0,
+        { dataset_id: 'dataset2', available_in: ['bigtable'], price: 200.0,
           expires_at: Time.new(2020, 12, 31, 12, 0, 0) }
       ]
       service_mock = mock
@@ -78,8 +78,8 @@ describe 'data_observatory.rake' do
 
   def csv_example
     CSV.generate do |csv|
-      csv << ["dataset1", "bq;spanner", "100", "2020-09-27T08:00:00"]
-      csv << ["dataset2", "spanner", "200", "2020-12-31T12:00:00"]
+      csv << ["dataset1", "bq;bigtable", "100", "2020-09-27T08:00:00"]
+      csv << ["dataset2", "bigtable", "200", "2020-12-31T12:00:00"]
     end
   end
 

@@ -129,10 +129,22 @@ module Carto
 
       class CreatedMap < MapEvent
         required_properties :origin
+
+        def pubsub_name
+          'map_created'
+        end
       end
 
-      class DeletedMap < MapEvent; end
-      class ModifiedMap < MapEvent; end
+      class DeletedMap < MapEvent
+        def pubsub_name
+          'map_deleted'
+        end
+      end
+      class ModifiedMap < MapEvent
+        def pubsub_name
+          'map_modified'
+        end
+      end
 
       class PublishedMap < Event
         include Carto::Tracking::Services::Hubspot

@@ -110,6 +110,7 @@ module Carto
       class ExportedMap < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Readable
         include Carto::Tracking::Validators::User

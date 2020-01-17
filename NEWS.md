@@ -12,6 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
+- New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
 - Change Catalog dropdown placeholders (([#15335](https://github.com/CartoDB/cartodb/issues/15335)))
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
 - Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))

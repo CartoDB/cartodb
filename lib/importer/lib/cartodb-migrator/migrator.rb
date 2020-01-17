@@ -84,14 +84,14 @@ module CartoDB
 
     def sanitize(column_names)
       columns_to_sanitize = column_names.select do |column_name|
-        column_name != column_name.sanitize_column_name
+        column_name != CartoDB::Importer2::Column.sanitize_name(column_name)
       end
 
       correct_columns = column_names - columns_to_sanitize
 
       sanitization_map = Hash[
         columns_to_sanitize.map { |column_name|
-          [column_name, column_name.sanitize_column_name]
+          [column_name, CartoDB::Importer2::Column.sanitize_name(column_name)]
         }
       ]
 

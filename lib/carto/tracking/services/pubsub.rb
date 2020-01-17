@@ -1,3 +1,5 @@
+require 'carto/tracking/services/pubsub_tracker'
+
 module Carto
   module Tracking
     module Services

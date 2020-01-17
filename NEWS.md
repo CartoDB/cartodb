@@ -19,6 +19,7 @@ sudo make install
 - Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
 - Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
 - Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+- Count kuviz for public map quota ([#15367](https://github.com/CartoDB/cartodb/pull/15367))
 - Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
 - Track kuviz events ([#15377](https://github.com/CartoDB/cartodb/pull/15377) and [#15386](https://github.com/CartoDB/cartodb/pull/15386))
 - Add config option for disabling email MX check ([#15280](https://github.com/CartoDB/cartodb/pull/15280))

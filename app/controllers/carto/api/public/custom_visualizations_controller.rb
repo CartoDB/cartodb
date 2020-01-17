@@ -6,7 +6,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
   include Carto::Api::VisualizationSearcher
   include Carto::Api::PagedSearcher
 
-  CONTENT_LENGTH_LIMIT_IN_BYTES = 100000
+  CONTENT_LENGTH_LIMIT_IN_BYTES = 10 * 1024 * 1024 # 10MB
   VALID_ORDER_PARAMS = %i(name updated_at privacy).freeze
   ALLOWED_PRIVACY_MODES = [
     Carto::Visualization::PRIVACY_PUBLIC,
@@ -19,18 +19,20 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   ssl_required
 
+  before_action :check_master_api_key
   before_action :validate_mandatory_creation_params, only: [:create]
   before_action :validate_input_parameters, only: [:create, :update]
   before_action :get_kuviz, only: [:update, :delete]
   before_action :get_user, only: [:create, :update, :delete]
+  before_action :check_public_map_quota, only: [:create]
   before_action :check_edition_permission, only: [:update, :delete]
-  before_action :check_master_api_key
   before_action :validate_if_exists, only: [:create, :update]
   before_action :get_last_one, only: [:create]
-  before_action :remove_duplicates, only: [:update]
+  before_action :remove_duplicates, only: [:create, :update]
 
   rescue_from Carto::UnauthorizedError, with: :rescue_from_carto_error
   rescue_from Carto::ParamInvalidError, with: :rescue_from_carto_error
+  rescue_from Carto::QuotaExceededError, with: :rescue_from_carto_error
 
   def index
     opts = { valid_order_combinations: VALID_ORDER_PARAMS }
@@ -69,7 +71,7 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     render_jsonp({ error: e.message }, 400)
   rescue StandardError => e
     CartoDB::Logger.error(message: 'Error creating kuviz', params: params, exception: e)
-    render_jsonp({ error: 'cant create the kuviz' }, 500)
+    render_jsonp({ error: 'The kuviz can not be created' }, 500)
   end
 
   def update
@@ -129,9 +131,14 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
     head(403) unless @kuviz.has_permission?(@logged_user, Carto::Permission::ACCESS_READWRITE)
   end
 
+  def check_public_map_quota
+    return unless CartoDB::QuotaChecker.new(@logged_user).will_be_over_public_map_quota?
+    raise Carto::QuotaExceededError.new('Public map quota exceeded')
+  end
+
   def validate_input_parameters
     if request.content_length > CONTENT_LENGTH_LIMIT_IN_BYTES
-      return render_jsonp({ error: "visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES})" }, 400)
+      return render_jsonp({ error: "Visualization over the size limit (#{CONTENT_LENGTH_LIMIT_IN_BYTES / 1024 / 1024}MB)" }, 400)
     end
 
     if params[:privacy].present?

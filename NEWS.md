@@ -12,6 +12,7 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
+- New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
 - Change Catalog dropdown placeholders (([#15335](https://github.com/CartoDB/cartodb/issues/15335)))
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
 - Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
@@ -53,7 +54,6 @@ sudo make install
 * Fixed issue while creating a new user's database: force to alter extension always as template_postgis may have the current version defined and the extension won't be installed
 
 ### Bug fixes / enhancements
-* New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
 * Avoid warnings when running test in parallel with an empty environment
 * Improve concurrent Ghost Tables syncs handling ([#15272](https://github.com/CartoDB/cartodb/pull/15272))
 * Fix consent screen in OAuth apps without user ([#15247](https://github.com/CartoDB/cartodb/pull/15247))

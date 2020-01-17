@@ -24,6 +24,7 @@ EmailAddress::Config.configure(local_format: :conventional, host_validation: :sy
 RSpec.configure do |config|
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
+  config.include Capybara::DSL
 
   config.after(:each) do
     Delorean.back_to_the_present

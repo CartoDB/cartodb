@@ -116,6 +116,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+
+        def pubsub_name
+          'map_event'
+        end
       end
 
       class MapEvent < Event
@@ -125,6 +129,10 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
+
+        def pubsub_name
+          'map_event'
+        end
       end
 
       class CreatedMap < MapEvent
@@ -368,38 +376,6 @@ module Carto
 
       class SegmentFormat < Carto::Tracking::Formats::Internal
         def to_segment
-          data = super
-          data[:data_properties] = to_hash
-          data
-        end
-      end
-
-      # Models a generic event for PubSub.
-      class PubSubEvent < Event
-
-        attr_reader :name
-
-        private_class_method :new
-
-        # Just pass any hash at `properties` and it will be sent to PubSub.
-        def self.build(name, reporter_id, properties)
-          new(name, reporter_id, properties) if EVENTS.include?(name)
-        end
-
-        private
-
-        EVENTS = ['WebGL stats'].freeze
-
-        def initialize(name, reporter_id, properties)
-          @name = name
-          @properties = properties
-          @format = PubSubFormat.new(@properties)
-          @reporter = Carto::User.where(id: reporter_id).first
-        end
-      end
-
-      class PubSubFormat < Carto::Tracking::Formats::Internal
-        def to_pubsub
           data = super
           data[:data_properties] = to_hash
           data

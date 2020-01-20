@@ -192,6 +192,30 @@ describe Carto::Api::Public::CustomVisualizationsController do
       end
     end
 
+    context 'with a plan limit of 1 public map' do
+      before(:each) do
+        @user.visualizations.each(&:destroy)
+        @user.public_map_quota = 1
+        @user.save
+      end
+
+      after(:each) do
+        @user.public_map_quota = nil
+        @user.save
+      end
+
+      it 'allows to create just one kuviz' do
+        post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'a' do |response|
+          expect(response.status).to eq(200)
+        end
+
+        post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: 'b' do |response|
+          expect(response.status).to eq(402)
+          expect(response.body[:errors]).to eql 'Public map quota exceeded'
+        end
+      end
+    end
+
     it 'rejects if name parameter is not send in the request' do
       string_base64 = Base64.strict_encode64('<html><body>test html</body></html>')
       post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: string_base64, name: nil do |response|

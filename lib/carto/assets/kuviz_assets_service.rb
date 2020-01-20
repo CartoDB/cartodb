@@ -7,7 +7,7 @@ module Carto
     include Singleton
 
     EXTENSION = ".html".freeze
-    DEFAULT_MAX_SIZE_IN_BYTES = 1048576
+    DEFAULT_MAX_SIZE_IN_BYTES = 10 * 1024 * 1024 # 10MB
 
     def upload(visualization, resource)
       super(visualization.id, resource)

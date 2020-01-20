@@ -12,12 +12,15 @@ sudo make install
 - None yet
 
 ### Bug fixes / enhancements
+- Remove directo connections debug trace ([#15274](https://github.com/CartoDB/cartodb/pull/15274))
+- New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
 - Change Catalog dropdown placeholders (([#15335](https://github.com/CartoDB/cartodb/issues/15335)))
 - Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
 - Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
 - Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
 - Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
 - Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+- Count kuviz for public map quota ([#15367](https://github.com/CartoDB/cartodb/pull/15367))
 - Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
 - Track kuviz events ([#15377](https://github.com/CartoDB/cartodb/pull/15377) and [#15386](https://github.com/CartoDB/cartodb/pull/15386))
 - Add config option for disabling email MX check ([#15280](https://github.com/CartoDB/cartodb/pull/15280))
@@ -26,6 +29,7 @@ sudo make install
 - Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
 - Avoid requesting password for kuviz with permissions and send email when sharing ([#15384](https://github.com/CartoDB/cartodb/pull/15384))
 - Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
+- Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
 
 
 4.32.0 (2019-12-27)

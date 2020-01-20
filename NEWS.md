@@ -27,6 +27,7 @@ sudo make install
 - Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
 - Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
 - Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
+- Avoid requesting password for kuviz with permissions and send email when sharing ([#15384](https://github.com/CartoDB/cartodb/pull/15384))
 - Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
 - Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
 
@@ -145,6 +146,13 @@ sudo make install
   * Add list of datasets for new Catalogue page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
   * Add interactivity/filtering section to new Catalogue page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
   * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
+* Add Kuviz to Maps page:
+  * (a) - Add kuviz to visualizations request (maps) ([#15192](https://github.com/CartoDB/cartodb/issues/15192))
+  * (b) - Quick actions ([#15174](https://github.com/CartoDB/cartodb/issues/15174))
+  * (c) - Bulk actions ([#15173](https://github.com/CartoDB/cartodb/issues/15173))
+  * (d) - Dropdown filter ([#15175](https://github.com/CartoDB/cartodb/issues/15175))
+  * (e) - Custom kuviz card ([#15193](https://github.com/CartoDB/cartodb/issues/15193))
+
 
 ### Bug fixes / enhancements
 * Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))

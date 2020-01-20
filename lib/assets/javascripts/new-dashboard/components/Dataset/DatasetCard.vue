@@ -86,7 +86,7 @@
               </template>
           </FeaturesDropdown>
         </div>
-        <div class="cell cell--small">
+        <div class="cell cell--xsmall">
           <span class="text is-small is-txtSoftGrey">{{ $t(`DatasetCard.shared.${dataset.privacy}`) }}</span>
         </div>
         <div class="cell cell--last" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">

@@ -29,6 +29,7 @@ sudo make install
 - Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
 - Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
 - Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
+- Add Geocodio geocoder [#15394](https://github.com/CartoDB/cartodb/issues/15394)
 
 
 4.32.0 (2019-12-27)

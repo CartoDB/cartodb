@@ -224,7 +224,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def feature_flags_list
-    @feature_flag_names ||= (feature_flags_user
+    ffs = feature_flags_user + (organization&.owner&.feature_flags_user || [])
+    @feature_flag_names ||= (ffs
                                  .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
                                                                                  .map(&:name)).uniq.sort
   end

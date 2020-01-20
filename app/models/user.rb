@@ -1636,7 +1636,8 @@ class User < Sequel::Model
   end
 
   def feature_flags
-    @feature_flag_names ||= (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
+    ffs = feature_flags_user + (organization&.owner&.feature_flags_user || [])
+    @feature_flag_names ||= (ffs.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
   end
 
   def has_feature_flag?(feature_flag_name)

@@ -2806,6 +2806,54 @@ describe User do
     end
   end
 
+  describe '#has_feature_flag?' do
+    before :all do
+      @account_type_org = create_account_type_fg('ORGANIZATION USER')
+      @organization = FactoryGirl.create(:organization)
+
+      @owner = FactoryGirl.create(:user, account_type: @account_type_org)
+      uo = CartoDB::UserOrganization.new(@organization.id, @owner.id)
+      uo.promote_user_to_admin
+      @organization.reload
+      @user_org = FactoryGirl.build(:user, account_type: 'FREE')
+      @user_org.organization = @organization
+      @user_org.enabled = true
+      @user_org.save
+
+      @user_regu = FactoryGirl.create(:valid_user)
+
+      @ff_owner = FactoryGirl.create(:carto_feature_flag, name: 'drop', restricted: true)
+      @ff_user = FactoryGirl.create(:carto_feature_flag, name: 'drop-user', restricted: true)
+
+      FactoryGirl.create(:feature_flags_user, feature_flag_id: @ff_owner.id, user_id: @owner.id)
+      FactoryGirl.create(:feature_flags_user, feature_flag_id: @ff_user.id, user_id: @user_org.id)
+      FactoryGirl.create(:feature_flags_user, feature_flag_id: @ff_user.id, user_id: @user_regu.id)
+    end
+
+    after :all do
+      @user_org.destroy!
+      @user_regu.destroy!
+      @owner.destroy!
+      @organization.destroy!
+      @account_type_org.destroy!
+      @ff_owner.destroy!
+      @ff_user.destroy!
+    end
+
+    it 'inherits feature flags from owner' do
+      @user_org.has_feature_flag?('drop').should eq true
+      @user_org.has_feature_flag?('drop-user').should eq true
+      @user_org.feature_flags.count.should eq 2
+    end
+
+    it 'does not inherit feature flags for regular users' do
+      @user_regu.reload
+      @user_regu.has_feature_flag?('drop').should eq false
+      @user_regu.has_feature_flag?('drop-user').should eq true
+      @user_regu.feature_flags.count.should eq 1
+    end
+  end
+
   describe '#rate limits' do
     before :all do
       @account_type = create_account_type_fg('FREE')

@@ -124,6 +124,7 @@ module Carto
 
       class MapEvent < Event
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
@@ -167,14 +168,23 @@ module Carto
       class ConnectionEvent < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
+        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :connection
       end
 
-      class CompletedConnection < ConnectionEvent; end
-      class FailedConnection < ConnectionEvent; end
+      class CompletedConnection < ConnectionEvent
+        def pubsub_name
+          'connection_completed'
+        end
+      end
+      class FailedConnection < ConnectionEvent
+        def pubsub_name
+          'connection_failed'
+        end
+      end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment

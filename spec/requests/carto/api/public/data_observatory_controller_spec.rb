@@ -565,6 +565,7 @@ describe Carto::Api::Public::DataObservatoryController do
                                name text);
       INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                       'rights', '{bq}', 'CARTO geography 1');
+          }
     metadata_user.in_database.run(db_seed)
   end
 end

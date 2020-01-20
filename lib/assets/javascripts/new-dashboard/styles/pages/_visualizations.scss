@@ -30,7 +30,7 @@
 }
 
 .viz-column--share {
-  @extend .grid--justify-end;
+  @extend .grid--around;
 }
 
 /* Smaller version of share column */

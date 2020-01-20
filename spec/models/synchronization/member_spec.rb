@@ -58,11 +58,12 @@ describe Synchronization::Member do
 
     before(:each) do
       bypass_named_maps
+      ::Hubspot::EventsAPI.any_instance.stubs(:enabled?).returns(false)
     end
 
-    around(:each) do |example|
-      Cartodb.with_config(metrics: {}, &example)
-    end
+    #around(:each) do |example|
+    #  Cartodb.with_config(metrics: {}, &example)
+    #end
 
     after(:all) do
       @user1.destroy

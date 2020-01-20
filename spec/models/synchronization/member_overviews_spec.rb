@@ -20,12 +20,13 @@ describe Synchronization::Member do
     end
 
     before(:each) do
+      ::Hubspot::EventsAPI.any_instance.stubs(:enabled?).returns(false)
       bypass_named_maps
     end
 
-    around(:each) do |example|
-      Cartodb.with_config(metrics: {}, &example)
-    end
+    #around(:each) do |example|
+    #  Cartodb.with_config(metrics: {}, &example)
+    #end
 
     after(:all) do
       @user1.destroy

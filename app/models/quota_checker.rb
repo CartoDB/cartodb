@@ -22,6 +22,12 @@ module CartoDB
       public_map_count + number_of_new_maps > user.public_map_quota
     end
 
+    def will_be_over_private_map_quota?(number_of_new_maps = 1)
+      return false unless user.private_map_quota
+
+      private_map_count + number_of_new_maps > user.private_map_quota
+    end
+
     def will_be_over_regular_api_key_quota?
       return false unless user.regular_api_key_quota
 
@@ -41,6 +47,14 @@ module CartoDB
                       with_user_id(@user.id).
                       with_types([Carto::Visualization::TYPE_DERIVED, Carto::Visualization::TYPE_KUVIZ]).
                       with_privacy(not_private)
+      query_builder.build.count
+    end
+
+    def private_map_count
+      query_builder = Carto::VisualizationQueryBuilder.new.
+                      with_user_id(@user.id).
+                      with_types([Carto::Visualization::TYPE_DERIVED, Carto::Visualization::TYPE_KUVIZ]).
+                      with_privacy(Carto::Visualization::PRIVACY_PRIVATE)
       query_builder.build.count
     end
 

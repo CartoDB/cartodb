@@ -28,7 +28,7 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
       <!---->
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" rel="noopener noreferrer" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.feedback
       </a>
     </li>
@@ -66,7 +66,7 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
       </router-link> <span class="notification-number text is-semibold is-small is-txtGrey">2</span>
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" rel="noopener noreferrer" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.feedback
       </a>
     </li>
@@ -107,7 +107,7 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
       <!---->
     </li>
     <li class="navbar-dropdown-iconLink">
-      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" class="text is-semibold is-caption is-txtGrey">
+      <div class="icon-container"><img svg-inline="" src="../../assets/icons/navbar/dropdown/feedback.svg"></div> <a href="https://docs.google.com/forms/d/e/1FAIpQLScBQUWd-TP3Qy514DOCNg-KoLrViHijUR5giLAMS-3jmDnrPg/viewform" target="_blank" rel="noopener noreferrer" class="text is-semibold is-caption is-txtGrey">
         UserDropdown.feedback
       </a>
     </li>

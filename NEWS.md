@@ -31,7 +31,7 @@ sudo make install
 - Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
 - Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
 - Inherit feature flags from org owner [CartoDB/support#2306](https://github.com/CartoDB/support/issues/2306)
-
+- Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
 
 4.32.0 (2019-12-27)
 -------------------

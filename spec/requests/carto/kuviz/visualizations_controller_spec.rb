@@ -33,15 +33,58 @@ describe Carto::Kuviz::VisualizationsController do
       response.status.should eq 404
     end
 
-    it 'shows password protected kuviz' do
-      @kuviz.privacy = Carto::Visualization::PRIVACY_PROTECTED
-      @kuviz.password = 'test'
-      @kuviz.save
+    context 'with password protected kuviz' do
+      before(:each) do
+        @kuviz.privacy = Carto::Visualization::PRIVACY_PROTECTED
+        @kuviz.password = 'test'
+        @kuviz.save
+      end
 
-      get kuviz_show_url(id: @kuviz.id)
+      it 'does not require password for the owner' do
+        get kuviz_show_url(id: @kuviz.id)
 
-      response.status.should eq 200
-      response.body.scan(/Insert your password/).present?.should == true
+        response.status.should eq 200
+        response.body.scan(/test/).present?.should == true
+      end
+
+      it 'does not require password when it is shared' do
+        user2 = FactoryGirl.create(:carto_user)
+        @kuviz.permission.acl = [
+          {
+            type: Permission::TYPE_USER,
+            entity: { id: user2.id, username: user2.username },
+            access: Permission::ACCESS_READONLY
+          }
+        ]
+        @kuviz.permission.save
+        logout
+        login(user2)
+
+        get kuviz_show_url(id: @kuviz.id)
+
+        response.status.should eq 200
+        response.body.scan(/test/).present?.should == true
+      end
+
+      it 'requires password for a user when it is not shared' do
+        user2 = FactoryGirl.create(:carto_user)
+        logout
+        login(user2)
+
+        get kuviz_show_url(id: @kuviz.id)
+
+        response.status.should eq 200
+        response.body.scan(/Insert your password/).present?.should == true
+      end
+
+      it 'requires password without session' do
+        logout
+
+        get kuviz_show_url(id: @kuviz.id)
+
+        response.status.should eq 200
+        response.body.scan(/Insert your password/).present?.should == true
+      end
     end
   end
 

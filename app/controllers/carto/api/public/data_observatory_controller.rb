@@ -136,7 +136,7 @@ module Carto
 
         def present_metadata(metadata)
           metadata[:estimated_delivery_days] = present_delivery_days(metadata[:estimated_delivery_days])
-          metadata[:subscription_list_price] = metadata[:subscription_list_price].to_f
+          metadata[:subscription_list_price] = metadata[:subscription_list_price].to_f unless metadata[:subscription_list_price].nil?
           metadata.slice(*METADATA_FIELDS)
         end
 

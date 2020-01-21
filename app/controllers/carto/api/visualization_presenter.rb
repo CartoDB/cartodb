@@ -164,8 +164,9 @@ module Carto
       # INFO: For now, no support for non-org users, as intended use is for sharing urls
       def privacy_aware_map_url(additional_params = {}, action = 'public_visualizations_show_map')
         organization = @visualization.user.organization
-
         return unless organization
+
+        return kuviz_url(@visualization) if @visualization.kuviz?
 
         # When a visualization is private, checks of permissions need not only the Id but also the vis owner database schema
         # Logic on public_map route will handle permissions so here we only "namespace the id" when proceeds
@@ -185,6 +186,13 @@ module Carto
 
       def qualified_visualization_id(schema = nil)
         schema.nil? ? @visualization.id : "#{schema}.#{@visualization.id}"
+      end
+
+      def kuviz_url(visualization)
+        org_name = visualization.user.organization.name
+        username = visualization.user.username
+        path = CartoDB.path(@context, 'kuviz_show', id: visualization.id)
+        "#{CartoDB.base_url(org_name, username)}#{path}"
       end
 
       private

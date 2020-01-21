@@ -57,7 +57,8 @@ module CartoDB
               # be applied to a type of object. But with an array this is open
               # to more than one permission change at a time
               perm.each do |p|
-                if self.real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED
+                if real_entity_type == CartoDB::Visualization::Member::TYPE_DERIVED ||
+                   real_entity_type == CartoDB::Visualization::Member::TYPE_KUVIZ
                   if p['action'] == 'grant'
                     # At this moment just inform as read grant
                     if p['type'].include?('r')

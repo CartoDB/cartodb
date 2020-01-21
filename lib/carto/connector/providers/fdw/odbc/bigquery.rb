@@ -44,11 +44,25 @@ module Carto
       end
 
       def list_projects
-        raise Carto::Connector::NotImplemented.new
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          oauth_client.list_projects.map { |p| p[:id] }
+        end
       end
 
       def list_tables_by_project(project_id)
-        raise Carto::Connector::NotImplemented.new
+        tables = []
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          oauth_client.list_datasets(project_id).each do |dataset|
+            dataset_id = dataset[:id]
+            oauth_client.list_tables(project_id, dataset_id).each do |table|
+              # tables << { project_id: project_id, dataset_id: dataset_id, table_id: table[:id] }
+              tables << table[:full_id]
+            end
+          end
+        end
+        tables
       end
 
       def parameters_to_odbc_attributes(params, optional_params, required_params)
@@ -73,6 +87,28 @@ module Carto
         params
       end
 
+      def list_tables(limits: {})
+        tables = []
+        limit = limits[:max_listed_tables]
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          oauth_client.list_projects.each do |project|
+            project_id = project[:id]
+            oauth_client.list_datasets(project_id).each do |dataset|
+              dataset_id = dataset[:id]
+              oauth_client.list_tables(project_id, dataset_id).each do |table|
+                tables << {
+                  project: project_id,
+                  dataset: dataset_id,
+                  schema: dataset[:full_id],
+                  name: table.id,
+                }
+                break if tables.size >= limit
+              end
+            end
+          end
+        end
+      end
 
       private
 
@@ -139,6 +175,9 @@ module Carto
         if @sync_oauth.blank?
           raise "Missing OAuth credentials for BigQuery: user must authorize"
         end
+
+        fixed_odbc_attributes
+
       end
 
       def token
@@ -182,6 +221,17 @@ module Carto
           end
         end
 
+        # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
+        # Note that the import may stil fail if using Storage API and needed permission is missing.
+        # TODO: insert project, dataset in the query as appropriate
+        sql = @params[:sql_query] || "SELECT * FROM #{@params[:table]}"
+        result = dry_run(@params[:billing_project], sql)
+        if result[:error]
+          # TODO: avoid rescuing errors in dry_run? return our own exception here?
+          raise result[:client_error]
+        end
+        # TODO: could we make result[:total_bytes_processed] available?
+
         if !proxy_conf.nil?
           @server_conf = @server_conf.merge(proxy_conf)
         end
@@ -204,6 +254,18 @@ module Carto
           end
         end
         temp_dataset_id
+      end
+
+      def dry_run(project_id, sql)
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          oauth_client.dry_run(project_id, sql)
+        else
+          {
+            error: false
+          }
+        end
+
       end
 
       def remote_schema_name

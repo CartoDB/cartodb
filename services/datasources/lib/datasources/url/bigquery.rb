@@ -214,6 +214,44 @@ module CartoDB
           @bigquery_api.insert_dataset(project_id, dataset)
         end
 
+        def list_projects
+          @bigquery_api.list_projects.projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
+        end
+
+        def list_datasets(project_id)
+          @bigquery_api.list_datasets(project_id).datasets.map { |d|
+            { id: d.dataset_reference.dataset_id, full_id: d.id, location: d.location }
+          }
+        end
+
+        def list_tables(project_id, dataset_id)
+          @bigquery_api.list_tables(project-id, dataset_id).tables.map { |t|
+            { id: t.table_reference.table_id, full_id: t.id, creation_time: t.creation_time }
+          }
+        end
+
+        def dry_run(billing_project_id, sql)
+          query = Google::Apis::BigqueryV2::QueryRequest.new
+          query.query = sql
+          query.dry_run = true
+          query.use_legacy_sql = false
+          begin
+            resp = @bigquery_api.query_job(billing_project_id, sql)
+            {
+              error: false,
+              total_bytes_processed: resp.total_bytes_processed,
+              cache_hit: resp.cache_hit,
+              location: resp.location,
+              job_complete: resp.job_complete
+            }
+          rescue Google::Apis::ClientError => err
+            {
+              error: true,
+              message: err.message,
+              client_error: err
+            }
+          end
+        end
       end
     end
   end

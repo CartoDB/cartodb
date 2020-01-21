@@ -82,9 +82,14 @@ module Carto
         # their projects) table imports have to be imported as sql_query
         if !params[:sql_query].present?
           project = @params[:project] || @params[:billing_project]
-          params[:sql_query] = %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{params[:table]}`;}
+          params[:sql_query] = table_query
         end
         params
+      end
+
+      def table_query
+        project = @params[:project] || @params[:billing_project]
+        %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{params[:table]}`;}
       end
 
       def list_tables(limits: {})
@@ -223,8 +228,7 @@ module Carto
 
         # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
         # Note that the import may stil fail if using Storage API and needed permission is missing.
-        # TODO: insert project, dataset in the query as appropriate
-        sql = @params[:sql_query] || "SELECT * FROM #{@params[:table]}"
+        sql = @params[:sql_query] || table_query
         result = dry_run(@params[:billing_project], sql)
         if result[:error]
           # TODO: avoid rescuing errors in dry_run? return our own exception here?

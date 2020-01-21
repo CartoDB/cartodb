@@ -34,7 +34,7 @@
   </div>
   <div class="ImportOptions__feedback">
     <p class="CDB-Text CDB-Size-medium">
-      <span class="u-secondaryTextColor"><%- _t('components.modals.add-layer.imports.bigquery.feedback-text') %> <a href="https://docs.google.com/forms/d/e/1FAIpQLSf9U6Yca37TlpguW_mC6nr9YdyBJzipCjf_QSHNkqlmkQ8dgQ/viewform" target="_blank"><%- _t('components.modals.add-layer.imports.bigquery.feedback-link') %></a></span>
+      <span class="u-secondaryTextColor"><%- _t('components.modals.add-layer.imports.bigquery.feedback-text') %> <a href="https://docs.google.com/forms/d/e/1FAIpQLSf9U6Yca37TlpguW_mC6nr9YdyBJzipCjf_QSHNkqlmkQ8dgQ/viewform" target="_blank" rel="noopener noreferrer"><%- _t('components.modals.add-layer.imports.bigquery.feedback-link') %></a></span>
     </p>
   </div>
 </form>

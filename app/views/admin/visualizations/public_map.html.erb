@@ -97,13 +97,13 @@
                   </li>
 
                   <li class="Navmenu-subItem">
-                    <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>" target="_blank" class="Navmenu-link js-Navmenu-link--facebook">
+                    <a href="http://www.facebook.com/sharer.php?u=<%= url_encode(request.original_url) %>" target="_blank" rel="noopener noreferrer" class="Navmenu-link js-Navmenu-link--facebook">
                       <i class="CDB-IconFont CDB-IconFont-facebookSquare Navmenu-icon"></i>
                     </a>
                   </li>
 
                   <li class="Navmenu-subItem">
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description.present? ? "#{markdown_html_clean(@visualization.description)} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO") %>&source=CARTO" target="_blank" class="Navmenu-link js-Navmenu-link--linkedin">
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<%= url_encode(request.original_url) %>&title=<%= url_encode(@visualization.name) %>&summary=<%= url_encode(@visualization.description.present? ? "#{markdown_html_clean(@visualization.description)} — Map created by #{@name} in CARTO" : "Map created by #{@name} in CARTO") %>&source=CARTO" target="_blank" rel="noopener noreferrer" class="Navmenu-link js-Navmenu-link--linkedin">
                       <i class="CDB-IconFont CDB-IconFont-linkedin Navmenu-icon"></i>
                     </a>
                   </li>

@@ -14,5 +14,5 @@
 </p>
 
 <p class="CDB-Text Onboarding-description">
-  <a href="https://carto.com/learn/guides/analysis/connect-with-lines" class="Onboarding-readMore" target="_blank"><%- _t('analyses-onboarding.learn-more') %></a>
+  <a href="https://carto.com/learn/guides/analysis/connect-with-lines" class="Onboarding-readMore" target="_blank" rel="noopener noreferrer"><%- _t('analyses-onboarding.learn-more') %></a>
 </p>

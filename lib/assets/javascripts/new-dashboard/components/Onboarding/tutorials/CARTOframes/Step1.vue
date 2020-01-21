@@ -45,7 +45,7 @@
       <button class="underlined-link title is-caption is-txtCartoframes" @click="goToDashboard">
         <span>{{ $t('Wizards.cartoframes.step1.footer.returnToDashboard') }}</span>
       </button>
-      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes" target="_blank" @click="goToDashboard">
+      <a href="https://carto.com/developers/cartoframes/" class="button button--arrow is-cartoframes" target="_blank" rel="noopener noreferrer" @click="goToDashboard">
         <span>{{ $t('Wizards.cartoframes.step1.footer.learnMore') }}</span>
       </a>
     </div>

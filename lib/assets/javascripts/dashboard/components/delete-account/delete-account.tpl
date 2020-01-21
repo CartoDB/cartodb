@@ -22,6 +22,7 @@
         <div class="Form-rowData">
           <input
             type="password"
+            autocomplete="off"
             id="deletion_password_confirmation"
             name="deletion_password_confirmation"
             class="CDB-InputText CDB-Text Form-input Form-input--long <%- isLoading ? 'is-disabled' : '' %>"

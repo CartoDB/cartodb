@@ -159,7 +159,7 @@ module CartoDB
         }
       }.freeze
       # the next fields won't be discarded if set to NULL
-      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'public_map_quota', 'regular_api_key_quota', 
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'private_map_quota', 'regular_api_key_quota', 
                                'builder_enabled'].freeze
       include CartoDB::DataMover::Utils
 

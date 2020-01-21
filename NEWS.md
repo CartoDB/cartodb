@@ -30,6 +30,7 @@ sudo make install
 - Avoid requesting password for kuviz with permissions and send email when sharing ([#15384](https://github.com/CartoDB/cartodb/pull/15384))
 - Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
 - Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
+- Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
 
 
 4.32.0 (2019-12-27)

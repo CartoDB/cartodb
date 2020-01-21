@@ -22,11 +22,8 @@ class PubSubTracker
     project_id = Cartodb.get_config(:pubsub, 'project_id')
     credentials = Cartodb.get_config(:pubsub, 'credentials')
 
-    return Google::Cloud::Pubsub.new unless project_id.present?
-
-    return Google::Cloud::Pubsub.new(project_id: project_id) unless credentials.present?
-
-    @pubsub = Google::Cloud::Pubsub.new(project_id: project_id, credentials: credentials)
+    params = { project_id: project_id, credentials: credentials }.compact
+    @pubsub = Google::Cloud::Pubsub.new(params)
   end
 
   def metrics_topic
@@ -66,6 +63,7 @@ class PubSubTracker
     @topics.each_value do |topic|
       begin
         stop_publisher(topic) unless topic.async_publisher.nil? || topic.async_publisher.stopped?
+        CartoDB::Logger.info(message: "PubSubTracker: topic #{topic.name} successfully stopped")
       rescue StandardError => e
         CartoDB::Logger.error(message: e.message, exeption: e)
       end

@@ -52,14 +52,13 @@ module Carto
         private
 
         def visualization_properties
-          created_at = @visualization.created_at
-          lifetime_in_days_with_decimals = days_with_decimals(now - created_at)
+          lifetime_in_days_with_decimals = days_with_decimals(now - @visualization.created_at)
 
           properties = {
             vis_id: @visualization.id,
             privacy: @visualization.privacy,
             type: @visualization.type,
-            object_created_at: created_at,
+            object_created_at: @visualization.created_at,
             lifetime: lifetime_in_days_with_decimals
           }
 
@@ -69,14 +68,13 @@ module Carto
         end
 
         def user_properties
-          user_created_at = @user.created_at
 
           {
             user_id: @user.id,
             event_source: @user.builder_enabled? ? 'builder' : 'editor',
             plan: @user.account_type,
-            user_created_at: user_created_at,
-            organization: @user.organization_user? ? @user.organization.name : nil
+            user_created_at: @user.created_at,
+            organization: @user.organization&.name
           }
         end
 

@@ -41,12 +41,12 @@ class PubSubTracker
     topic = @topics.fetch(topic_key)
     attributes = {user_id: user_id}.merge(properties)
 
-    topic.publish_async(event, attributes) do |result|
-      if result&.succeeded?
-        CartoDB::Logger.info(message: "PubSubTracker: event #{event} published to #{topic.name}")
-      else
-        CartoDB::Logger.error(message: "PubSubTracker: error publishing to topic #{topic.name} for event #{event}: #{result&.error}")
-      end
+    result = topic.publish(event, attributes)
+
+    if result
+      CartoDB::Logger.info(message: "PubSubTracker: event #{event} published to #{topic.name}")
+    else
+      CartoDB::Logger.error(message: "PubSubTracker: error publishing to topic #{topic.name} for event #{event}")
     end
 
     attributes
@@ -55,26 +55,6 @@ class PubSubTracker
     CartoDB::Logger.error(message: "PubSubTracker: error topic key #{topic_key} not found")
   rescue StandardError => e
     CartoDB::Logger.error(message: e.message, exception: e)
-  end
-
-  def graceful_shutdown
-    return unless enabled?
-
-    @topics.each_value do |topic|
-      begin
-        stop_publisher(topic) unless topic.async_publisher.nil? || topic.async_publisher.stopped?
-        CartoDB::Logger.info(message: "PubSubTracker: topic #{topic.name} successfully stopped")
-      rescue StandardError => e
-        CartoDB::Logger.error(message: e.message, exeption: e)
-      end
-    end
-  rescue StandardError => e
-    CartoDB::Logger.error(message: e.message, exeption: e)
-  end
-
-  # Method needed for testing purposes
-  def stop_publisher(topic)
-    topic.async_publisher.stop!
   end
 
 end

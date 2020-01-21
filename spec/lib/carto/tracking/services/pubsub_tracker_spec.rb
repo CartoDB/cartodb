@@ -51,7 +51,7 @@ describe PubSubTracker do
       success_response = Object.new
       success_response.stubs(:succeeded?).returns(true)
       success_response
-      @topic.stubs(:publish_async).returns(success_response)
+      @topic.stubs(:publish).returns(success_response)
 
       user_id = 'ff5d41c7-e599-4876-9646-8ba023031287'
       event = 'map_created'
@@ -76,7 +76,7 @@ describe PubSubTracker do
     it 'should log error when no event type is sent' do
       CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key  not found')
 
-      @topic.stubs(:publish_async)
+      @topic.stubs(:publish)
 
       PubSubTracker.instance.send_event(nil, 'user_id', 'event_name')
     end
@@ -84,7 +84,7 @@ describe PubSubTracker do
     it 'should log error when unknown event type sent' do
       CartoDB::Logger.expects(:error).with(message: 'PubSubTracker: error topic key fake_topic not found')
 
-      @topic.stubs(:publish_async)
+      @topic.stubs(:publish)
 
       PubSubTracker.instance.send_event(:fake_topic, 'user_id', 'event_name')
     end
@@ -92,7 +92,7 @@ describe PubSubTracker do
     it 'should do nothing when no user id sent' do
       CartoDB::Logger.expects(:error).never
 
-      @topic.stubs(:publish_async)
+      @topic.stubs(:publish)
 
       result = PubSubTracker.instance.send_event(:metrics, '', 'event_name')
 
@@ -110,69 +110,14 @@ describe PubSubTracker do
     end
 
     it 'should log error if publishing did not succeeded' do
-      CartoDB::Logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user: "))
+      CartoDB::Logger.expects(:error).with(has_entry(message: "PubSubTracker: error publishing to topic #{@topic_name_and_path} for event track user"))
 
-      @topic.stubs(:publish_async).yields(nil)
+      @topic.stubs(:publish).yields(nil)
 
       user_id = 'jane'
       event = 'track user'
 
       PubSubTracker.instance.send_event(:metrics, user_id, event)
-    end
-  end
-
-  describe '#graceful_shutdown' do
-
-    before(:each) do
-      Singleton.__init__(PubSubTracker)
-
-      @topic = Object.new
-      pubsub = Object.new
-      pubsub.stubs(:topic).returns(@topic)
-
-      Google::Cloud::Pubsub.stubs(:new).returns(pubsub)
-
-      @async_publisher = Object.new
-      PubSubTracker.any_instance.stubs(:stop_publisher)
-      @topic.stubs(:async_publisher).returns(@async_publisher)
-    end
-
-    it 'should flush messages if publisher not stopped' do
-      @async_publisher.stubs(:stopped?).returns(false)
-      PubSubTracker.instance.expects(:stop_publisher).once
-
-      PubSubTracker.instance.graceful_shutdown
-    end
-
-    it 'should not be flushed if publisher already stopped' do
-      @async_publisher.stubs(:stopped?).returns(true)
-      PubSubTracker.instance.expects(:stop_publisher).never
-
-      PubSubTracker.instance.graceful_shutdown
-    end
-
-    it 'should not be flushed if not enabled' do
-      PubSubTracker.any_instance.stubs(:enabled?).returns(false)
-      PubSubTracker.instance.expects(:stop_publisher).never
-
-      PubSubTracker.instance.graceful_shutdown
-    end
-
-    it 'should log error if an exception occurs' do
-      PubSubTracker.any_instance.stubs(:enabled?).returns(true)
-      PubSubTracker.instance.stubs(:stop_publisher).raises('Error')
-
-      CartoDB::Logger.expects(:error).once
-
-      PubSubTracker.instance.graceful_shutdown
-    end
-
-    it 'should log error if an exception occurs' do
-      PubSubTracker.any_instance.stubs(:enabled?).raises('Error')
-
-      CartoDB::Logger.expects(:error).once
-
-      PubSubTracker.instance.graceful_shutdown
     end
   end
 end

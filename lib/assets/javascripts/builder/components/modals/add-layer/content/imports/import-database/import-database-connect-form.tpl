@@ -53,7 +53,7 @@
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small"></div>
         <div class="Form-rowData u-flex__justify--end">
-          <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit">
+          <button type="submit" class="CDB-Button CDB-Button--primary is-disabled js-submit" disabled>
             <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%- _t('components.modals.add-layer.imports.database.connect-button') %></span>
           </button>
         </div>

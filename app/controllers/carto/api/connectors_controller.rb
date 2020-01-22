@@ -103,10 +103,10 @@ module Carto
 
       def dryrun
         provider_id = params[:provider_id]
-        params[:provider] = provider_id
+        parameters = build_connector_parameters(provider_id, params)
         if Carto::Connector.dry_run?(provider_id)
           begin
-            connector = Carto::Connector.new(params, user: current_user, logger: nil)
+            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.dry_run.except(:client_error))
           rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)
@@ -122,9 +122,10 @@ module Carto
 
       private
 
+      # Put connection parameters into a single `connection` parameter, along with `provider`
       def build_connection_parameters(provider_id, request_params)
         parameters = {}
-        parameters[:provider] = request_params[:provider_id]
+        parameters[:provider] = provider_id
         provider_information = Carto::Connector.information(provider_id)
         if provider_information[:parameters]["connection"].present?
           parameters[:connection] = {}
@@ -135,6 +136,16 @@ module Carto
           end
         end
         parameters
+      end
+
+      # Put connector parameter along with `provider`
+      def build_connector_parameters(provider_id, request_params)
+        parameters = {}
+        if request_params[:provider].present? && request_params[:provider] != provider_id
+          raise InvalidParametersError.new(message: "Provider doesn't match")
+        end
+        parameters[:provider] = provider_id
+        parameters.merge! request_params.except(:provider_id)
       end
 
       def check_availability

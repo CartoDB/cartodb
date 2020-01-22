@@ -180,9 +180,6 @@ module Carto
         if @sync_oauth.blank?
           raise "Missing OAuth credentials for BigQuery: user must authorize"
         end
-
-        fixed_odbc_attributes
-
       end
 
       def token

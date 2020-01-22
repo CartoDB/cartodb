@@ -18,7 +18,7 @@
     </div>
 
     <div class="Dialog-stickyFooter u-flex">
-      <div class="Dialog-footer u-inner">
+      <div class="Dialog-shareViaUrl-footer Dialog-footer u-inner">
         <button class="CDB-Button CDB-Button--secondary" @click="close">
           <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase">{{ $t('Dialogs.ShareViaURL.close') }}</span>
         </button>
@@ -79,7 +79,7 @@ export default {
 @import 'new-dashboard/styles/variables';
 @import 'assets/stylesheets/editor-3/_cards.scss';
 
-.Dialog-footer {
+.Dialog-shareViaUrl-footer.Dialog-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;

@@ -115,6 +115,11 @@ module Carto
         end
       end
 
+      def dry_run
+        fixed_odbc_attributes unless @dry_run_result
+        @dry_run_result
+      end
+
       private
 
       # Notes regarding IMPORT (extermal) schema and the DefaultDataset parameter:
@@ -241,11 +246,6 @@ module Carto
         end
 
         return @server_conf
-      end
-
-      def dry_run
-        fixed_odbc_attributes unless @dry_run_result
-        @dry_run_result
       end
 
       def create_temp_dataset(project_id, location)

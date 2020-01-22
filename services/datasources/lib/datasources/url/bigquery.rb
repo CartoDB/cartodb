@@ -240,9 +240,7 @@ module CartoDB
             {
               error: false,
               total_bytes_processed: resp.total_bytes_processed,
-              cache_hit: resp.cache_hit,
-              location: resp.location,
-              job_complete: resp.job_complete
+              cache_hit: resp.cache_hit
             }
           rescue Google::Apis::ClientError => err
             {

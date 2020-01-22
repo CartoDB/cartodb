@@ -223,15 +223,17 @@ module Carto
           end
         end
 
-        # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
-        # Note that the import may stil fail if using Storage API and needed permission is missing.
-        sql = @params[:sql_query] || table_query
-        result = dry_run(@params[:billing_project], sql)
-        if result[:error]
-          # TODO: avoid rescuing errors in dry_run? return our own exception here?
-          raise result[:client_error]
+        unless @oauth_config['no_dry_run']
+          # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
+          # Note that the import may stil fail if using Storage API and needed permission is missing.
+          sql = @params[:sql_query] || table_query
+          result = dry_run(@params[:billing_project], sql)
+          if result[:error]
+            # TODO: avoid rescuing errors in dry_run? return our own exception here?
+            raise result[:client_error]
+          end
+          # TODO: could we make result[:total_bytes_processed] available?
         end
-        # TODO: could we make result[:total_bytes_processed] available?
 
         if !proxy_conf.nil?
           @server_conf = @server_conf.merge(proxy_conf)

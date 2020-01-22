@@ -1770,7 +1770,8 @@ describe Carto::Connector do
           'callback_url' => 'https://example.com',
           'authorization_uri' => 'https://example.com',
           'token_credential_uri' => 'https://example.com',
-          'revoke_auth_uri' =>  'https://example.com'
+          'revoke_auth_uri' =>  'https://example.com',
+          'no_dry_run' => true
         }
       }
       Cartodb.with_config oauth: oauth_config do

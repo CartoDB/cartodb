@@ -13,7 +13,7 @@ module Carto
       skip_before_filter :verify_authenticity_token, only: [:show_protected]
 
       def show
-        return kuviz_password_protected if @kuviz.password_protected?
+        return kuviz_password_protected if show_password?
 
         @source = KuvizAssetsService.instance.read_source_data(@kuviz.asset)
         add_cache_headers
@@ -43,6 +43,12 @@ module Carto
       end
 
       private
+
+      def show_password?
+        return false if current_user && @kuviz.has_read_permission?(current_user)
+
+        @kuviz.password_protected?
+      end
 
       def get_kuviz
         @kuviz = Carto::Visualization.find(params[:id])

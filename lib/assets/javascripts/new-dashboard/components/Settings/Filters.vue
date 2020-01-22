@@ -38,6 +38,16 @@
         </a>
       </div>
     </li>
+    <li v-if="isMapsSection" class="type text is-caption is-txtGrey" :class="{ 'type--selected': isTypeFilterApplied }">
+      <div class="element">
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('builder') }" @click="setFilter('builder')">
+          {{ $t('SettingsDropdown.types.builderType') }}
+        </a> |
+        <a href="javascript:void(0)" class="element--inline" :class="{ 'element--selected': isFilterApplied('cartoframes') }" @click="setFilter('cartoframes')">
+          {{ $t('SettingsDropdown.types.kuvizType') }}
+        </a>
+      </div>
+    </li>
   </ul>
 </div>
 </template>
@@ -58,6 +68,12 @@ export default {
   computed: {
     isPrivacyFilterApplied () {
       return ['public', 'private', 'link', 'password'].indexOf(this.$props.filter) > -1;
+    },
+    isTypeFilterApplied () {
+      return ['builder', 'cartoframes'].indexOf(this.$props.filter) > -1;
+    },
+    isMapsSection () {
+      return this.section === 'maps';
     }
   },
   methods: {

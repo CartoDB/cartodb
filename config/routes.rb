@@ -728,7 +728,7 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
       get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
       get 'connectors/:provider_id/:project_id/tables' => 'connectors#project_tables', as: :api_v1_connectors_project_tables
-      get 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
+      post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
     end
   end
 

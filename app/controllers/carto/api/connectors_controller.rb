@@ -103,10 +103,10 @@ module Carto
 
       def dryrun
         provider_id = params[:provider_id]
-        parameters = build_connection_parameters(provider_id, params)
+        params[:provider] = provider_id
         if Carto::Connector.dry_run?(provider_id)
           begin
-            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            connector = Carto::Connector.new(params, user: current_user, logger: nil)
             render_jsonp(connector.dry_run.except(:client_error))
           rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)

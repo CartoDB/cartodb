@@ -236,7 +236,7 @@ module CartoDB
           query.dry_run = true
           query.use_legacy_sql = false
           begin
-            resp = @bigquery_api.query_job(billing_project_id, sql)
+            resp = @bigquery_api.query_job(billing_project_id, query)
             {
               error: false,
               total_bytes_processed: resp.total_bytes_processed,

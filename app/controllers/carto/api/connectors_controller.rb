@@ -54,8 +54,8 @@ module Carto
             render_jsonp(connector.list_tables(MAX_LISTED_TABLES))
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)
-          rescue
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          rescue => e
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
           end
         else
           render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
@@ -93,8 +93,8 @@ module Carto
             render_jsonp({ errors: e.message }, 501)
           rescue Carto::Connector::InvalidParametersError => e
             render_jsonp({ errors: e.message }, 422)
-          rescue
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          rescue => e
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
           end
         else
           render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)

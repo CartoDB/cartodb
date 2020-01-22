@@ -10,6 +10,7 @@ sudo make install
 
 ### Features
 - Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
+- New PostgreSQL connector UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
 - Fix misplaced footer in Dialogs ([#15418](https://github.com/CartoDB/cartodb/pull/15418))

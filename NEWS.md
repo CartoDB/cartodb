@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- New PostgreSQL connector UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
 - None yet

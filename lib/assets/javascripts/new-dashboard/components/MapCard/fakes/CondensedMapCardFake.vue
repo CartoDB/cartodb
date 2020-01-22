@@ -9,7 +9,10 @@
       </div>
     </div>
     <div class="viz-column--extra-info">
-      <div class="viz-column--status u-flex__justify--between">
+      <div class="viz-column--statusL u-flex__justify--between">
+        <div class="cell-placeholder cell--medium">
+          <div class="text-placeholder"/>
+        </div>
         <div class="cell-placeholder cell--large">
           <div class="text-placeholder"/>
         </div>
@@ -17,7 +20,7 @@
           <div class="text-placeholder"/>
         </div>
       </div>
-      <div class="viz-column--share">
+      <div class="viz-column--shareS">
         <div class="cell-placeholder cell--small">
           <div class="text-placeholder"/>
         </div>

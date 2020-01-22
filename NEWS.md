@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- New PostgreSQL connector UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
 - Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))

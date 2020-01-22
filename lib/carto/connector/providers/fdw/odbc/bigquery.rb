@@ -89,7 +89,7 @@ module Carto
 
       def table_query
         project = @params[:project] || @params[:billing_project]
-        %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{params[:table]}`;}
+        %{SELECT * FROM `#{project}.#{@params[:dataset]}.#{@params[:table]}`;}
       end
 
       def list_tables(limits: {})

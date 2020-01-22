@@ -95,7 +95,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
-  validates :name, uniqueness: { scope: :user_id }, if: :kuviz?
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create

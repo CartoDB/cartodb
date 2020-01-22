@@ -31,7 +31,7 @@ module Carto
 
       # BigQuery provider add the list_projects feature
       def features_information
-        super.merge(list_projects: true)
+        super.merge(list_projects: true, dry_run: true)
       end
 
       def check_connection
@@ -227,7 +227,7 @@ module Carto
           # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
           # Note that the import may stil fail if using Storage API and needed permission is missing.
           sql = @params[:sql_query] || table_query
-          result = dry_run(@params[:billing_project], sql)
+          result = perform_dry_run(@params[:billing_project], sql)
           @dry_run_result = result
           if result[:error]
             # TODO: avoid rescuing errors in dry_run? return our own exception here?
@@ -243,7 +243,7 @@ module Carto
         return @server_conf
       end
 
-      def dry_run_result
+      def dry_run
         fixed_odbc_attributes unless @dry_run_result
         @dry_run_result
       end
@@ -265,7 +265,7 @@ module Carto
         temp_dataset_id
       end
 
-      def dry_run(project_id, sql)
+      def perform_dry_run(project_id, sql)
         oauth_client = @sync_oauth&.get_service_datasource
         if oauth_client
           oauth_client.dry_run(project_id, sql)

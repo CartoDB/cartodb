@@ -35,6 +35,10 @@ module Carto
       has_feature? provider, :list_projects
     end
 
+    def self.dry_run?(provider)
+      has_feature? provider, :dry_run
+    end
+
     def list_tables(limit = nil)
       @provider.list_tables(limits: limits.merge(max_listed_tables: limit))
     end

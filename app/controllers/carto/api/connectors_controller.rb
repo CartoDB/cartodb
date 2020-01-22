@@ -101,6 +101,25 @@ module Carto
         end
       end
 
+      def dryrun
+        provider_id = params[:provider_id]
+        parameters = build_connection_parameters(provider_id, params)
+        if Carto::Connector.dry_run?(provider_id)
+          begin
+            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            render_jsonp(connector.dry_run.except(:client_error))
+          rescue Carto::Connector::NotImplemented => e
+            render_jsonp({ errors: e.message }, 501)
+          rescue Carto::Connector::InvalidParametersError => e
+            render_jsonp({ errors: e.message }, 422)
+          rescue => e
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e.message}" }, 400)
+          end
+        else
+          render_jsonp({ errors: "Provider #{provider_id} doesn't support dry runs" }, 422)
+        end
+      end
+
       private
 
       def build_connection_parameters(provider_id, request_params)

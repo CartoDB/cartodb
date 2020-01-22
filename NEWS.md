@@ -32,6 +32,7 @@ sudo make install
 - Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
 - Add Geocodio geocoder [#15394](https://github.com/CartoDB/cartodb/issues/15394)
 - Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
+- Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
 
 
 4.32.0 (2019-12-27)

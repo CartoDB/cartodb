@@ -106,7 +106,7 @@ module Carto
                   project: project_id,
                   dataset: dataset_id,
                   schema: dataset[:full_id],
-                  name: table.id,
+                  name: table[:id],
                 }
                 break if tables.size >= limit
               end
@@ -228,6 +228,7 @@ module Carto
           # Note that the import may stil fail if using Storage API and needed permission is missing.
           sql = @params[:sql_query] || table_query
           result = dry_run(@params[:billing_project], sql)
+          @dry_run_result = result
           if result[:error]
             # TODO: avoid rescuing errors in dry_run? return our own exception here?
             raise result[:client_error]
@@ -240,6 +241,11 @@ module Carto
         end
 
         return @server_conf
+      end
+
+      def dry_run_result
+        fixed_odbc_attributes unless @dry_run_result
+        @dry_run_result
       end
 
       def create_temp_dataset(project_id, location)

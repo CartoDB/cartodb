@@ -225,7 +225,7 @@ module CartoDB
         end
 
         def list_tables(project_id, dataset_id)
-          @bigquery_api.list_tables(project-id, dataset_id).tables.map { |t|
+          @bigquery_api.list_tables(project_id, dataset_id).tables.map { |t|
             { id: t.table_reference.table_id, full_id: t.id, creation_time: t.creation_time }
           }
         end

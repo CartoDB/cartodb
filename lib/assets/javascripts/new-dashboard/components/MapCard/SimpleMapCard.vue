@@ -9,14 +9,15 @@
        'card--can-hover': canHover
      }"
     @click="onClick">
-    <div class="card-media" :class="{'has-error': isThumbnailErrored}">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isMap && !isThumbnailErrored"/>
+    <div class="card-media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored  }">
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
 
-      <div class="media-dataset" v-if="!isMap">
+      <div class="media-dataset" v-if="!(isBuilderMap || isKuviz)">
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+      <TypeBadge v-if="isBuilderMap || isKuviz" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 
     <span class="checkbox card-select" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -100,6 +101,7 @@
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import DatasetQuickActions from 'new-dashboard/components/QuickActions/DatasetQuickActions';
+import TypeBadge from './TypeBadge';
 import props from './shared/props';
 import methods from './shared/methods';
 import data from './shared/data';
@@ -110,7 +112,8 @@ export default {
   components: {
     MapQuickActions,
     DatasetQuickActions,
-    FeaturesDropdown
+    FeaturesDropdown,
+    TypeBadge
   },
   props: {
     ...props,
@@ -136,7 +139,7 @@ export default {
         return 'DatasetQuickActions';
       }
 
-      if (visualizationType === 'derived') {
+      if (visualizationType === 'derived' || visualizationType === 'kuviz') {
         return 'MapQuickActions';
       }
     },
@@ -148,9 +151,6 @@ export default {
         allSections[section] = true;
         return allSections;
       }, {});
-    },
-    isMap () {
-      return this.$props.visualization.type === 'derived';
     }
   },
   methods: {
@@ -261,6 +261,12 @@ export default {
   color: $text__color;
 }
 
+.card-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+}
+
 .card-media {
   display: flex;
   position: relative;
@@ -268,6 +274,11 @@ export default {
   overflow: hidden;
   background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
   background-size: cover;
+
+  &.is-kuviz {
+    display: block;
+    background: url("../../assets/icons/maps/kuviz-map-bkg.svg");
+  }
 
   img {
     width: 100%;

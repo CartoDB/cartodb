@@ -60,7 +60,7 @@
             {{ $t(`DatasetListHeader.usage`) }}
           </span>
         </div>
-        <div class="dataset-list-cell cell cell--small" @click="changeOrder('privacy')">
+        <div class="dataset-list-cell cell cell--xsmall" @click="changeOrder('privacy')">
           <span class="text is-small is-txtSoftGrey"
                 :class="{
                   'is-active': isOrderApplied('privacy'),

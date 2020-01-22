@@ -193,15 +193,18 @@ class Carto::Api::Public::CustomVisualizationsController < Carto::Api::Public::A
 
   def get_last_one
     if @if_exists == IF_EXISTS_REPLACE
-      @kuviz = Carto::Visualization.where(user: @logged_user, name: params[:name]).order(updated_at: :desc).first
+      @kuviz = kuvizs_by_name.order(updated_at: :desc).first
     end
   end
 
   def remove_duplicates
     if @if_exists == IF_EXISTS_REPLACE
-      existing_kuvizs = Carto::Visualization.where(user: @logged_user, name: params[:name]) - [@kuviz]
+      existing_kuvizs = kuvizs_by_name - [@kuviz]
       existing_kuvizs.each(&:destroy!)
     end
   end
 
+  def kuvizs_by_name
+    Carto::Visualization.where(user: @logged_user, name: params[:name], type: Carto::Visualization::TYPE_KUVIZ)
+  end
 end

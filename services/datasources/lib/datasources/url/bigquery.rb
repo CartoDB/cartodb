@@ -215,19 +215,34 @@ module CartoDB
         end
 
         def list_projects
-          @bigquery_api.list_projects.projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
+          projects = @bigquery_api.list_projects.projects
+          if projects
+            projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
+          else
+            []
+          end
         end
 
         def list_datasets(project_id)
-          @bigquery_api.list_datasets(project_id).datasets.map { |d|
-            { id: d.dataset_reference.dataset_id, full_id: d.id, location: d.location }
-          }
+          datasets = @bigquery_api.list_datasets(project_id).datasets
+          if datasets
+            datasets.map { |d|
+              { id: d.dataset_reference.dataset_id, full_id: d.id, location: d.location }
+            }
+          else
+            []
+          end
         end
 
         def list_tables(project_id, dataset_id)
-          @bigquery_api.list_tables(project_id, dataset_id).tables.map { |t|
-            { id: t.table_reference.table_id, full_id: t.id, creation_time: t.creation_time }
-          }
+          tables = @bigquery_api.list_tables(project_id, dataset_id).tables
+          if tables
+            tables.map { |t|
+              { id: t.table_reference.table_id, full_id: t.id, creation_time: t.creation_time }
+            }
+          else
+            []
+          end
         end
 
         def dry_run(billing_project_id, sql)

@@ -55,6 +55,10 @@ module Carto
       @provider.check_connection
     end
 
+    def dry_run
+      @provider.dry_run
+    end
+
     def remote_data_updated?
       @provider.remote_data_updated?
     end

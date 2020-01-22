@@ -1242,6 +1242,8 @@
                     "got-it": "Ok, got it",
                     "try-again": "Try again",
                     "connector": "connector",
+                    "feedback-text": "Have feedback or questions about the %{brand} connector?",
+                    "feedback-link": "Please let us know!",
                     "demo-email-title": "I am interested in the %{name} connector",
                     "demo-email-desc": "Hi, I am interested in testing the %{name} connector. Please contact me to schedule a demo of this feature.",
                     "tab-options-error": {
@@ -1272,7 +1274,9 @@
                         "sync-disabled": "Sync options are not available",
                         "type-selected": "%{brand} selected",
                         "type-import": "%{brand} import",
-                        "upload-file-url": "Upload a file or a URL |||| Upload a URL"
+                        "upload-file-url": "Upload a file or a URL |||| Upload a URL",
+                        "import-data": "Import your data from a %{brand} instance",
+                        "sync-options": "Sync options only available for a layer"
                     },
                     "service-import": {
                         "and": "and",
@@ -1327,9 +1331,7 @@
                     "arcgis": {
                         "fallback-desc": "Enable the %{brand} connector in your account to connect your %{brand} data to CARTO and mantain it in sync with the source.",
                         "input-placeholder": "Paste your %{brand} table URL here",
-                        "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL",
-                        "import-data": "Import your data from a %{brand} instance",
-                        "sync-options": "Sync options only available for a layer"
+                        "url-desc": "To retrieve a particular layer, add the layer index at the end of the URL"
                     },
                     "instagram": {
                         "fallback-desc": "Enable the %{brand} connector to map your photos or videos from your account in CARTO."
@@ -1359,9 +1361,7 @@
                         "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
                         "sql-error": "There has been an error parsing your query",
                         "run": "Run SQL query",
-                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable",
-                        "feedback-text": "Have feedback or questions about the BigQuery connector?",
-                        "feedback-link": "Please let us know!"
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
                     },
                     "database": {
                         "title": "Enter your %{brand} credentials",

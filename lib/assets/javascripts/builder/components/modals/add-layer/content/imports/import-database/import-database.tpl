@@ -1,3 +1,4 @@
+<div class="ImportPanel-header"></div>
 <div class="ImportPanel-body">
   <div class="ImportPanel-bodyWrapper">
     <div class="ImportPanel-connectForm"></div>

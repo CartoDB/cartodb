@@ -134,6 +134,15 @@ describe Carto::Superadmin::OrganizationsController do
       it_behaves_like 'dataservices usage metrics'
     end
 
+    describe 'geocoder_geocodio' do
+      before(:all) do
+        @class = CartoDB::GeocoderUsageMetrics
+        @service = :geocoder_geocodio
+      end
+
+      it_behaves_like 'dataservices usage metrics'
+    end
+
     describe 'here_isolines' do
       before(:all) do
         @class = CartoDB::IsolinesUsageMetrics

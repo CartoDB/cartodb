@@ -460,9 +460,10 @@
           "howto": "What does it look like?"
         },
         "text1": "No more⁠ context switching—visualize your data straight out of your notebook",
-        "text2": "Share your work right away—publicly or privately",
-        "text3": "Spend less time in data preparation using Data Observatory, our location data repository",
-        "text4": "(Coming soon)",
+        "text2": "Access location data services, such as geocoding our routing, and create your areas of influence",
+        "text3": "Spend less time enriching your data by accessing Data Observatory, our location data repository",
+        "text4": "Share your work right away, publicly or privately",
+        "text5": "...and much more!",
         "footer": {
           "returnToDashboard": "Return to your dashboard",
           "learnMore": "Learn more"

@@ -9,7 +9,7 @@ sudo make install
 ```
 
 ### Features
-- Limit private maps by quota
+- Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
 - Remove directo connections debug trace ([#15274](https://github.com/CartoDB/cartodb/pull/15274))

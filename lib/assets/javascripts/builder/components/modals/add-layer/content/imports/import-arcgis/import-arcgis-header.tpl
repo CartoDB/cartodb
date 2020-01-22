@@ -7,9 +7,9 @@
 </h3>
 <p class="CDB-Text CDB-Size-medium u-altTextColor">
   <% if (state !== "selected") { %>
-    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
+    <%= _t('components.modals.add-layer.imports.header-import.import-data', { brand: 'ArcGIS<sup>&trade;</sup>' }) %>
   <% } else { %>
-    <%- _t('components.modals.add-layer.imports.arcgis.sync-options') %>
+    <%- _t('components.modals.add-layer.imports.header-import.sync-options') %>
   <% } %>
 </p>
 <% if (state === "selected") { %>

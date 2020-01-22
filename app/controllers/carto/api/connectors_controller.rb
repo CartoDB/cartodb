@@ -142,7 +142,7 @@ module Carto
       def build_connector_parameters(provider_id, request_params)
         parameters = {}
         if request_params[:provider].present? && request_params[:provider] != provider_id
-          raise InvalidParametersError.new(message: "Provider doesn't match")
+          raise Carto::Connector::InvalidParametersError.new(message: "Provider doesn't match")
         end
         parameters[:provider] = provider_id
         parameters.merge! request_params.except(:provider_id)

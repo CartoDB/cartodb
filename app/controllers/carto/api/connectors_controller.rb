@@ -81,14 +81,35 @@ module Carto
         end
       end
 
-      def project_tables
+      def project_datasets
         provider_id = params[:provider_id]
-        project = params[:project_id]
-        parameters = build_connection_parameters(provider_id, params)
-        if Carto::Connector.list_tables?(provider_id)
+        project_id = params[:project_id]
+        parameters = build_connection_parameters(provider_id, params.except(:project_id))
+        if Carto::Connector.list_projects?(provider_id)
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
-            render_jsonp(connector.list_tables_by_project(project))
+            render_jsonp(connector.list_project_datasets(project_id))
+          rescue Carto::Connector::NotImplemented => e
+            render_jsonp({ errors: e.message }, 501)
+          rescue Carto::Connector::InvalidParametersError => e
+            render_jsonp({ errors: e.message }, 422)
+          rescue
+            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          end
+        else
+          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets" }, 422)
+        end
+      end
+
+      def project_dataset_tables
+        provider_id = params[:provider_id]
+        project_id = params[:project_id]
+        dataset_id = params[:dataset_id]
+        parameters = build_connection_parameters(provider_id, params.except(:project_id, :dataset_id))
+        if Carto::Connector.list_projects?(provider_id)
+          begin
+            connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
+            render_jsonp(connector.list_project_dataset_tables(project_id, dataset_id))
           rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)
           rescue Carto::Connector::InvalidParametersError => e
@@ -97,7 +118,7 @@ module Carto
             render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
           end
         else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
+          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets/tables" }, 422)
         end
       end
 

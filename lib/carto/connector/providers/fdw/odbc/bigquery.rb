@@ -46,21 +46,22 @@ module Carto
       def list_projects
         oauth_client = @sync_oauth&.get_service_datasource
         if oauth_client
-          oauth_client.list_projects.map { |p| p[:id] }
+          oauth_client.list_projects
         end
       end
 
-      def list_tables_by_project(project_id)
+      def list_project_datasets(project_id)
+        oauth_client = @sync_oauth&.get_service_datasource
+        if oauth_client
+          oauth_client.list_datasets(project_id)
+        end
+      end
+
+      def list_project_dataset_tables(project_id, dataset_id)
         tables = []
         oauth_client = @sync_oauth&.get_service_datasource
         if oauth_client
-          oauth_client.list_datasets(project_id).each do |dataset|
-            dataset_id = dataset[:id]
-            oauth_client.list_tables(project_id, dataset_id).each do |table|
-              # tables << { project_id: project_id, dataset_id: dataset_id, table_id: table[:id] }
-              tables << table[:full_id]
-            end
-          end
+          oauth_client.list_tables(project_id, dataset_id)
         end
         tables
       end
@@ -103,10 +104,8 @@ module Carto
               dataset_id = dataset[:id]
               oauth_client.list_tables(project_id, dataset_id).each do |table|
                 tables << {
-                  project: project_id,
-                  dataset: dataset_id,
-                  schema: dataset[:full_id],
-                  name: table[:id],
+                  schema: dataset[:qualified_name],
+                  name: table[:id]
                 }
                 break if tables.size >= limit
               end

@@ -227,7 +227,8 @@ module CartoDB
           datasets = @bigquery_api.list_datasets(project_id).datasets
           if datasets
             datasets.map { |d|
-              { id: d.dataset_reference.dataset_id, full_id: d.id, location: d.location }
+              qualified_name = d.id.gsub(':', '.') # "#{project_id}.#{d.dataset_reference.dataset_id}"
+              { id: d.dataset_reference.dataset_id, qualified_name: qualified_name, location: d.location }
             }
           else
             []
@@ -238,7 +239,8 @@ module CartoDB
           tables = @bigquery_api.list_tables(project_id, dataset_id).tables
           if tables
             tables.map { |t|
-              { id: t.table_reference.table_id, full_id: t.id, creation_time: t.creation_time }
+              qualified_name = t.id.gsub(':', '.') # "#{project_id}.#{dataset_id}.#{t.table_reference.table_id}"
+              { id: t.table_reference.table_id, qualified_name: qualified_name, creation_time: t.creation_time }
             }
           else
             []

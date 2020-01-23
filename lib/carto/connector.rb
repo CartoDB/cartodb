@@ -47,8 +47,12 @@ module Carto
       @provider.list_projects
     end
 
-    def list_tables_by_project(project_id)
-      @provider.list_tables_by_project project_id
+    def list_project_datasets(project_id)
+      @provider.list_projects(project_id)
+    end
+
+    def list_project_dataset_tables(project_id, dataset_id)
+      @provider.list_project_dataset_tables(project_id, dataset_id)
     end
 
     def check_connection

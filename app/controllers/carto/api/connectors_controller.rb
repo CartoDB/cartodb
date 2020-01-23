@@ -23,11 +23,11 @@ module Carto
       end
 
       def connect
-        provider_id = params[:provider_id]
-        parameters = build_connection_parameters(provider_id, params)
-        error_code = nil
-        connection_res = {connected: false}
         begin
+          connection_res = {connected: false}
+          provider_id = params[:provider_id]
+          parameters = build_connection_parameters(provider_id, params)
+          error_code = nil
           connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
           connection_res[:connected] = connector.check_connection
           error_code = 200
@@ -46,87 +46,87 @@ module Carto
       end
 
       def tables
-        provider_id = params[:provider_id]
-        parameters = build_connection_parameters(provider_id, params)
-        if Carto::Connector.list_tables?(provider_id)
-          begin
+        begin
+          provider_id = params[:provider_id]
+          parameters = build_connection_parameters(provider_id, params)
+          if Carto::Connector.list_tables?(provider_id)
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_tables(MAX_LISTED_TABLES))
-          rescue Carto::Connector::InvalidParametersError => e
-            render_jsonp({ errors: e.message }, 422)
-          rescue => e
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
           end
-        else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support list tables" }, 422)
+        rescue Carto::Connector::InvalidParametersError => e
+          render_jsonp({ errors: e.message }, 422)
+        rescue => e
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
         end
       end
 
       def projects
-        provider_id = params[:provider_id]
-        parameters = build_connection_parameters(provider_id, params)
-        if Carto::Connector.list_projects?(provider_id)
-          begin
+        begin
+          provider_id = params[:provider_id]
+          parameters = build_connection_parameters(provider_id, params)
+          if Carto::Connector.list_projects?(provider_id)
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_projects)
-          rescue Carto::Connector::NotImplemented => e
-            render_jsonp({ errors: e.message }, 501)
-          rescue Carto::Connector::InvalidParametersError => e
-            render_jsonp({ errors: e.message }, 422)
-          rescue
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects" }, 422)
           end
-        else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects" }, 422)
+        rescue Carto::Connector::NotImplemented => e
+          render_jsonp({ errors: e.message }, 501)
+        rescue Carto::Connector::InvalidParametersError => e
+          render_jsonp({ errors: e.message }, 422)
+        rescue
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
 
       def project_datasets
-        provider_id = params[:provider_id]
-        project_id = params[:project_id]
-        parameters = build_connection_parameters(provider_id, params.except(:project_id))
-        if Carto::Connector.list_projects?(provider_id)
-          begin
+        begin
+          provider_id = params[:provider_id]
+          project_id = params[:project_id]
+          parameters = build_connection_parameters(provider_id, params.except(:project_id))
+          if Carto::Connector.list_projects?(provider_id)
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_project_datasets(project_id))
-          rescue Carto::Connector::NotImplemented => e
-            render_jsonp({ errors: e.message }, 501)
-          rescue Carto::Connector::InvalidParametersError => e
-            render_jsonp({ errors: e.message }, 422)
-          rescue
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, check connection parameters" }, 400)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets" }, 422)
           end
-        else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets" }, 422)
+        rescue Carto::Connector::NotImplemented => e
+          render_jsonp({ errors: e.message }, 501)
+        rescue Carto::Connector::InvalidParametersError => e
+          render_jsonp({ errors: e.message }, 422)
+        rescue => e
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e}" }, 400)
         end
       end
 
       def project_dataset_tables
-        provider_id = params[:provider_id]
-        project_id = params[:project_id]
-        dataset_id = params[:dataset_id]
-        parameters = build_connection_parameters(provider_id, params.except(:project_id, :dataset_id))
-        if Carto::Connector.list_projects?(provider_id)
-          begin
+        begin
+          provider_id = params[:provider_id]
+          project_id = params[:project_id]
+          dataset_id = params[:dataset_id]
+          parameters = build_connection_parameters(provider_id, params.except(:project_id, :dataset_id))
+          if Carto::Connector.list_projects?(provider_id)
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             render_jsonp(connector.list_project_dataset_tables(project_id, dataset_id))
-          rescue Carto::Connector::NotImplemented => e
-            render_jsonp({ errors: e.message }, 501)
-          rescue Carto::Connector::InvalidParametersError => e
-            render_jsonp({ errors: e.message }, 422)
-          rescue => e
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets/tables" }, 422)
           end
-        else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support list projects/datasets/tables" }, 422)
+        rescue Carto::Connector::NotImplemented => e
+          render_jsonp({ errors: e.message }, 501)
+        rescue Carto::Connector::InvalidParametersError => e
+          render_jsonp({ errors: e.message }, 422)
+        rescue => e
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}, #{e}" }, 400)
         end
       end
 
       def dryrun
-        provider_id = params[:provider_id]
-        parameters = build_connector_parameters(provider_id, params)
-        if Carto::Connector.dry_run?(provider_id)
-          begin
+        begin
+          provider_id = params[:provider_id]
+          parameters = build_connector_parameters(provider_id, params)
+          if Carto::Connector.dry_run?(provider_id)
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             result = connector.dry_run
             if result[:error]
@@ -137,15 +137,15 @@ module Carto
               code = 200
             end
             render_jsonp(result, code)
-          rescue Carto::Connector::NotImplemented => e
-            render_jsonp({ errors: e.message }, 501)
-          rescue Carto::Connector::InvalidParametersError => e
-            render_jsonp({ errors: e.message }, 422)
-          rescue => e
-            render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e.message}" }, 400)
+          else
+            render_jsonp({ errors: "Provider #{provider_id} doesn't support dry runs" }, 422)
           end
-        else
-          render_jsonp({ errors: "Provider #{provider_id} doesn't support dry runs" }, 422)
+        rescue Carto::Connector::NotImplemented => e
+          render_jsonp({ errors: e.message }, 501)
+        rescue Carto::Connector::InvalidParametersError => e
+          render_jsonp({ errors: e.message }, 422)
+        rescue => e
+          render_jsonp({ errors: "Error connecting to provider #{provider_id}: #{e.message}" }, 400)
         end
       end
 

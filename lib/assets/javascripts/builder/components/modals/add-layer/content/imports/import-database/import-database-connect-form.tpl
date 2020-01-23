@@ -7,46 +7,46 @@
     <form class="Form js-form">
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small">
-          <label class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-server') %></label>
+          <label for="server-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-server') %></label>
         </div>
         <div class="Form-rowData">
-          <input type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-server" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-server', { brand: title}) %>" />
+          <input id="server-textbox" type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-server" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-server', { brand: title}) %>" />
         </div>
       </div>
 
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small">
-          <label class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-port') %></label>
+          <label for="number-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-port') %></label>
         </div>
         <div class="Form-rowData">
-          <input type="number" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-port" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-port') %>" />
+          <input id="number-textbox" type="number" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-port" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-port') %>" />
         </div>
       </div>
 
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small">
-          <label class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-database') %></label>
+          <label for="database-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-database') %></label>
         </div>
         <div class="Form-rowData">
-          <input type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-database" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-database') %>" />
+          <input id="database-textbox" type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-database" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-database') %>" />
         </div>
       </div>
 
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small">
-          <label class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-username') %></label>
+          <label for="username-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-username') %></label>
         </div>
         <div class="Form-rowData">
-          <input type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-username" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-username') %>" />
+          <input id="username-textbox" type="text" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-username" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-username') %>" />
         </div>
       </div>
 
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small">
-          <label class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-password') %></label>
+          <label for="password-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-password') %></label>
         </div>
         <div class="Form-rowData">
-          <input type="password" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-password" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-password') %>" />
+          <input id="password-textbox" type="password" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-password" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-password') %>" autocomplete="off" />
         </div>
       </div>
 

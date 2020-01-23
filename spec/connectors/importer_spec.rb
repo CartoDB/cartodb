@@ -695,9 +695,9 @@ describe CartoDB::Connector::Importer do
     end
 
     it 'fails to import a visualization export if public map quota is exceeded' do
-      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
-
-      Carto::User.any_instance.stubs(:public_map_quota).returns(0)
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/public_visualization_export_with_csv_table.carto"
+      @user.public_map_quota = 0
+      @user.save
       @data_import = DataImport.create(
         user_id: @user.id,
         data_source: filepath,
@@ -706,10 +706,35 @@ describe CartoDB::Connector::Importer do
         create_visualization: true
       )
       @data_import.values[:data_source] = filepath
-      expect { @data_import.run_import! }.to raise_error('Public map quota exceeded')
+
+      expect { @data_import.run_import! }.to raise_error('Map quota exceeded')
+      @data_import.success.should eq false
+      @data_import.error_code.should eq 8007
+
+      @user.public_map_quota = nil
+      @user.save
+    end
+
+    it 'fails to import a visualization export if private map quota is exceeded' do
+      filepath = "#{Rails.root}/services/importer/spec/fixtures/visualization_export_with_csv_table.carto"
+      @user.private_map_quota = 0
+      @user.save
+      @data_import = DataImport.create(
+        user_id: @user.id,
+        data_source: filepath,
+        updated_at: Time.now.utc,
+        append: false,
+        create_visualization: true
+      )
+      @data_import.values[:data_source] = filepath
+
+      expect { @data_import.run_import! }.to raise_error('Map quota exceeded')
       @data_import.success.should eq false
       @data_import.error_code.should eq 8007
       Carto::User.any_instance.unstub(:public_map_quota)
+
+      @user.private_map_quota = nil
+      @user.save
     end
   end
 end

@@ -172,24 +172,14 @@ module Carto
       class ConnectionEvent < Event
         include Carto::Tracking::Services::Hubspot
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :connection
       end
 
-      class CompletedConnection < ConnectionEvent
-        def pubsub_name
-          'connection_completed'
-        end
-      end
-
-      class FailedConnection < ConnectionEvent
-        def pubsub_name
-          'connection_failed'
-        end
-      end
+      class CompletedConnection < ConnectionEvent; end
+      class FailedConnection < ConnectionEvent; end
 
       class ExceededQuota < Event
         include Carto::Tracking::Services::Segment
@@ -207,29 +197,19 @@ module Carto
 
       class ScoredTrendingMap < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :mapviews
-
-        def pubsub_name
-          'trending_map_scored'
-        end
       end
 
       class VisitedPrivatePage < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :page
-
-        def pubsub_name
-          'private_page_visited'
-        end
 
         def report_to_user_model
           @format.fetch_record!(:user).view_dashboard if @format.to_hash['page'] == 'dashboard'
@@ -297,10 +277,6 @@ module Carto
 
         required_properties :user_id, :visualization_id, :sql
         optional_properties :node_id, :dataset_id
-
-        def pubsub_name
-          'sql_applied'
-        end
       end
 
       class AppliedCartocss < Event
@@ -310,38 +286,24 @@ module Carto
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :cartocss
-
-        def pubsub_name
-          'cartocss_applied'
-        end
       end
 
       class ModifiedStyleForm < AppliedCartocss
         required_properties :style_properties
-
-        def pubsub_name
-          'style_form_modified'
-        end
       end
 
       class CreatedWidget < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Widget::Existence
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :widget_id
-
-        def pubsub_name
-          'widget_created'
-        end
       end
 
       class DownloadedLayer < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::Layer
@@ -351,95 +313,61 @@ module Carto
                             :source, :visible, :table_name
 
         optional_properties :from_view
-
-        def pubsub_name
-          'layer_downloaded'
-        end
       end
 
       class StyledByValue < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :attribute, :attribute_type
-
-        def pubsub_name
-          'styled_by_value'
-        end
       end
 
       class DraggedNode < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
-
-        def pubsub_name
-          'node_dragged'
-        end
       end
 
       class CreatedLayer < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::Layer
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :layer_id, :empty
-
-        def pubsub_name
-          'layer_created'
-        end
       end
 
       class ChangedDefaultGeometry < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id
-
-        def pubsub_name
-          'default_geometry_changed'
-        end
       end
 
       class AggregatedGeometries < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :previous_agg_type, :agg_type
-
-        def pubsub_name
-          'geometries_aggregated'
-        end
       end
 
       class UsedAdvancedMode < Event
         include Carto::Tracking::Services::Segment
-        include Carto::Tracking::Services::PubSub
 
         include Carto::Tracking::Validators::Visualization::Writable
         include Carto::Tracking::Validators::User
 
         required_properties :user_id, :visualization_id, :mode_type
-
-        def pubsub_name
-          'advanced_mode_used'
-        end
       end
 
       class OauthAppEvent < Event

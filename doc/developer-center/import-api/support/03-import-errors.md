@@ -219,7 +219,7 @@ The following table contains a list of known errors codes and possible solutions
     </tr>
     <tr>
       <td>8007</td>
-      <td>Over account public maps limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
+      <td>Over account maps limit, please upgrade - To upgrade your account, go to your Dashboard and click Settings. Click 'Upgrade your server'. Follow the directions for choosing a larger size and setting up your payment information.</td>
     </tr>
     <tr>
       <td>6666</td>

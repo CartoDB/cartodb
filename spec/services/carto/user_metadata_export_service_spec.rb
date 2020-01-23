@@ -144,8 +144,7 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'includes all user model attributes' do
-      # private_map_quota temporarily exluded until added to the model
-      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id, :private_map_quota] + [:rate_limit]
+      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit]
 
       export = service.export_user_json_hash(@user)
 
@@ -188,6 +187,12 @@ describe Carto::UserMetadataExportService do
 
     it 'imports latest' do
       test_import_user_from_export(full_export)
+    end
+
+    it 'imports 1.0.13 (without private_map_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_thirteen)
+
+      expect(user.private_map_quota).to be_nil
     end
 
     it 'imports 1.0.12 (without company_employees and use_case)' do
@@ -763,7 +768,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.12",
+      version: "1.0.14",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -779,6 +784,7 @@ describe Carto::UserMetadataExportService do
         quota_in_bytes: 5000000,
         table_quota: nil,
         public_map_quota: 20,
+        private_map_quota: 20,
         regular_api_key_quota: 20,
         account_type: "FREE",
         private_tables_enabled: false,
@@ -1139,15 +1145,22 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_thirteen) do
+    user_hash = full_export[:user].except!(:private_map_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_twelve) do
-    user_hash = full_export[:user].except!(:use_case, :company_employees)
-    
+    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees)
+
     full_export[:user] = user_hash
     full_export
   end
 
   let(:full_export_one_zero_eleven) do
-    full_export[:user][:maintenance_mode] = false
+    full_export_one_zero_twelve[:user][:maintenance_mode] = false
     full_export
   end
 

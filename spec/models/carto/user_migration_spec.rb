@@ -770,6 +770,7 @@ describe 'UserMigration' do
           records.each.with_index { |row, index| @table1.record(index + 1).should include(row) }
           if migrate_metadata
             new_organization.owner.in_database(as: :superuser) do |db|
+              db.exec_query("SELECT cartodb.cdb_extension_reload()")
               ds_config = db.exec_query("SELECT * from cdb_conf where key = 'geocoder_server_config'").first['value']
               fdws_config = db.exec_query("SELECT * from cdb_conf where key = 'fdws'").first['value']
               expect(ds_config).to match /dbname=test_migration/
@@ -1006,6 +1007,7 @@ describe 'UserMigration' do
       end
 
       check_cdb_conf_query = "SELECT value->>'ownership_role_name' as c from cdb_conf where key = 'api_keys_' || '#{api_key.db_role}';"
+      user.in_database(as: :superuser).execute("SELECT cartodb.cdb_extension_reload()")
       result = user.in_database(as: :superuser).execute(check_cdb_conf_query)
       expect(result.count).to eq 1
       Cartodb::Central.unstub(:sync_data_with_cartodb_central?)

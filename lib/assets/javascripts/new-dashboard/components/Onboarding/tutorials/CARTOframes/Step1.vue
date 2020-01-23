@@ -26,7 +26,10 @@
           <span>{{ $t(`Wizards.cartoframes.step1.text2`) }}</span>
         </li>
         <li class="list__item text">
-          <span>{{ $t(`Wizards.cartoframes.step1.text3`) }}</span><span class="u-ml--4 is-italic">{{ $t(`Wizards.cartoframes.step1.text4`) }}</span>
+          <span>{{ $t(`Wizards.cartoframes.step1.text3`) }}</span>
+        </li>
+        <li class="list__item text">
+          <span>{{ $t(`Wizards.cartoframes.step1.text4`) }}</span><span class="u-ml--4 is-italic">{{ $t(`Wizards.cartoframes.step1.text5`) }}</span>
         </li>
       </ul>
     </div>
@@ -81,18 +84,22 @@ export default {
 
 const codeBlock1 =
 `from cartoframes.auth import set_default_credentials
-from cartoframes.viz import Map
-from cartoframes.viz.helpers import color_bins_layer
+from cartoframes.data.observatory import Enrichment
+from cartoframes.data.services import Geocoding, Isolines
+from cartoframes.viz import Map, color_continuous_style, size_continuous_style
+import pandas as pd
 
-set_default_credentials('johnsmith', '1a2b3c4d5e6f7g8h9i0j')
+set_default_credentials('creds.json')
 
-masters_map = Map(color_bins_layer(
-    'higher_edu_by_county',
-    'pct_higher_ed',
-    '% Population with Masters degree')
-)
+stores_df = pd.read_csv('http://libs.cartocdn.com/cartoframes/files/starbucks_brooklyn.csv')
+stores_gdf, _ = Geocoding().geocode(stores_df, street='address')
+aoi_gdf, _ = Isolines().isochrones(stores_gdf, [15*60], mode='walk')
+aoi_enriched_gdf = Enrichment().enrich_polygons(aoi_gdf, ['total_pop_3cf008b3'])
 
-masters_map.publish('higher_edu_by_county_map')`;
+result_map = Map([
+    Layer(aoi_enriched_gdf, color_continuous_style('total_pop', stroke_width=0, opacity=0.7)),
+    Layer(stores_gdf, size_continuous_style('revenue', stroke_color='white'), default_widget=True)
+])`;
 
 </script>
 

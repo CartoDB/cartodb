@@ -67,7 +67,7 @@ export default {
       return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
     },
     isKuviz () {
-      return this.map.type === 'kuviz'
+      return this.map.type === 'kuviz';
     }
   },
   methods: {

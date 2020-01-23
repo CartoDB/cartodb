@@ -1,11 +1,55 @@
-name: cartodb PR Tests
-on: pull_request
+name: cartodb backend PR Tests
+on: push
 jobs:
   cartodb-news:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
       - name: Checkout current repository
         uses: actions/checkout@v1
 
       - name: Check NEWS.md was updated
         run: if git diff $(git merge-base $(git rev-parse HEAD) origin/master) --name-only | grep NEWS.md > /dev/null; then exit 0; else exit 1; fi
+
+#  cartodb-tests:
+#    runs-on: ubuntu-16.04
+#    steps:
+#
+#      - name: Setup gcloud authentication
+#        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+#        with:
+#          service_account_key: ${{ secrets.GCS }}
+#
+#      - name: Pull base image
+#        run: gcloud auth configure-docker && docker pull gcr.io/cartodb-on-gcp-ci-testing/cartodb-base:latest && docker pull gcr.io/cartodb-on-gcp-ci-testing/cartodb-postgresql-base:10
+#
+#      - name: Checkout current repository
+#        uses: actions/checkout@v1
+#        with:
+#          submodules: true
+#
+#      - name: Checkout ci tools repository
+#        uses: actions/checkout@v2
+#        with:
+#          repository: CartoDB/ci-tools
+#          path: ci-tools
+#          token: ${{ secrets.CARTOFANTE_PAT }}
+#
+#      - name: Copy ci files to root
+#        run: cp ci-tools/repos/${{ github.event.repository.name }}/* .
+#
+#      - name: Move config files to config dir
+#        run: cp config/app_config.yml.sample config/app_config.yml && cp config/database.yml.sample config/database.yml && cp lib/assets/javascripts/cdb/secrets.example.json lib/assets/javascripts/cdb/secrets.json && cp script/ci/* .
+#
+#      - name: Cache 'vendor' folder for bundle install
+#        uses: actions/cache@v1
+#        with:
+#          path: vendor
+#          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-gem-
+#
+#      - name: Start docker-compose services
+#        run: docker-compose up -d
+#
+#      - name: Run Tests (make check)
+#        run: docker exec -i builder_1 bash -c "createdb -T template0 -O postgres -U postgres -E UTF8 template_postgis && ldconfig && psql -U postgres template_postgis -c 'CREATE EXTENSION postgis;CREATE EXTENSION postgis_topology;CREATE EXTENSION plpythonu;' && make prepare-test-db && /bin/bash runParallelTests.sh 2"

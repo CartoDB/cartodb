@@ -686,7 +686,7 @@
 					if (options.onShow.apply(this, [cal.get(0)]) != false) {
 						cal.show();
 					}
-					$(document).bind('mousedown', {cal: cal, trigger: this}, hide);
+					$(document).on('mousedown', {cal: cal, trigger: this}, hide);
 				}
 				return false;
 			},
@@ -695,7 +695,7 @@
 					if (ev.data.cal.data('datepicker').onHide.apply(this, [ev.data.cal.get(0)]) != false) {
 						ev.data.cal.hide();
 					}
-					$(document).unbind('mousedown', hide);
+					$(document).off('mousedown', hide);
 				}
 			};
 		return {

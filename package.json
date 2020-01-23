@@ -17,7 +17,7 @@
     "@babel/polyfill": "https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.0.0.tgz",
     "@carto/carto.js": "CartoDB/carto.js#jquery-upgrade",
     "@carto/zera": "1.0.7",
-    "backbone": "1.2.3",
+    "backbone": "1.4.0",
     "backbone-forms": "0.14.0",
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",

@@ -48,7 +48,7 @@ module Carto
     end
 
     def list_project_datasets(project_id)
-      @provider.list_projects(project_id)
+      @provider.list_project_datasets(project_id)
     end
 
     def list_project_dataset_tables(project_id, dataset_id)

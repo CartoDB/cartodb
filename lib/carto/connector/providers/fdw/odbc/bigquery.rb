@@ -58,12 +58,10 @@ module Carto
       end
 
       def list_project_dataset_tables(project_id, dataset_id)
-        tables = []
         oauth_client = @sync_oauth&.get_service_datasource
         if oauth_client
           oauth_client.list_tables(project_id, dataset_id)
         end
-        tables
       end
 
       def parameters_to_odbc_attributes(params, optional_params, required_params)

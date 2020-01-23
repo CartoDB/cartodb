@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WORKERS=${1:-20}
+
 # BACKEND PARALLEL
 script/ci/generateSpecFull.sh || exit 1
 
@@ -7,10 +9,10 @@ script/ci/generateSpecFull.sh || exit 1
 script/ci/cleaner.sh || exit 1
 
 # WRAPPER
-script/ci/wrapper.sh $1 || exit 1
+script/ci/wrapper.sh $WORKERS || exit 1
 
 # TESTS
-time parallel -j $1 -a parallel_tests/specfull.txt 'script/ci/executor.sh {} {%} {#}' || exit 1
+time parallel -j $WORKERS -a parallel_tests/specfull.txt 'script/ci/executor.sh {} {%} {#}' || exit 1
 
 # SECOND TRY
 script/ci/secondTry.sh || exit 1

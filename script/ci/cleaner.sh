@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Kill redis
 killall redis-server
 # Drop all databases
@@ -12,7 +11,7 @@ sed -e 's/\s\+/\n/g' parallel_tests/databases.log > parallel_tests/databases_new
 while read -r line
 do
   [ -z "$line" ] && continue
-  psql -U postgres -t -c "drop database $line" >> parallel_tests/cleaner.log
+  psql  -U postgres -t -c "drop database $line" >> parallel_tests/cleaner.log
 done < parallel_tests/databases_new.log
 
 

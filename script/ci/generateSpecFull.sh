@@ -8,6 +8,9 @@ mkdir parallel_tests
 DISABLED_TESTS=(
   'spec/models/asset_spec.rb' # Hangs sometimes when serving files
   'services/user-mover/spec/user_mover_spec.rb' # Database recreation fails in parallel
+  'spec/models/carto/oauth_app_user_spec.rb'
+  'spec/requests/api/imports_spec.rb'
+  'spec/requests/admin/pages_controller_spec.rb'
 )
 
 # This is a file that contains a list of specs in the order you want them executed

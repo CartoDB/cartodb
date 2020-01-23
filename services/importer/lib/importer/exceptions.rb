@@ -70,7 +70,7 @@ module CartoDB
     end
 
     class MapQuotaExceededError < BaseImportError
-      def initialize(message = "Public map quota exceeded")
+      def initialize(message = "Map quota exceeded")
         super(message, 8007)
       end
     end

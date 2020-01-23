@@ -112,6 +112,7 @@ module Carto
             end
           end
         end
+        tables
       end
 
       def dry_run

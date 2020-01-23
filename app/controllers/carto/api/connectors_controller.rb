@@ -107,7 +107,15 @@ module Carto
         if Carto::Connector.dry_run?(provider_id)
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
-            render_jsonp(connector.dry_run.except(:client_error))
+            result = connector.dry_run
+            if result.error
+              result = { errors: result.message }
+              code = 400
+            else
+              result = result.except(:client_error, :error)
+              code = 200
+            end
+            render_jsonp(result, code)
           rescue Carto::Connector::NotImplemented => e
             render_jsonp({ errors: e.message }, 501)
           rescue Carto::Connector::InvalidParametersError => e

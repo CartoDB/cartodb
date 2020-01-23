@@ -34,6 +34,7 @@ sudo make install
 - Add Geocodio geocoder [#15394](https://github.com/CartoDB/cartodb/issues/15394)
 - Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
 - Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
+- Update CARTOframes onboarding [#15420](https://github.com/CartoDB/cartodb/pull/15420)
 
 
 4.32.0 (2019-12-27)

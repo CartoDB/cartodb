@@ -129,7 +129,7 @@ module Carto
           begin
             connector = Carto::Connector.new(parameters, user: current_user, logger: nil)
             result = connector.dry_run
-            if result.error
+            if result[:error]
               result = { errors: result.message }
               code = 400
             else

@@ -46,7 +46,7 @@
           <label for="password-textbox" class="CDB-Text CDB-Size-medium"><%- _t('components.modals.add-layer.imports.database.label-password') %></label>
         </div>
         <div class="Form-rowData">
-          <input id="password-textbox" type="password" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-password" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-password') %>" />
+          <input id="password-textbox" type="password" class="CDB-Text CDB-Size-medium Form-input Form-input--long js-textInput js-password" value="" placeholder="<%= _t('components.modals.add-layer.imports.database.placeholder-password') %>" autocomplete="off" />
         </div>
       </div>
 

@@ -160,7 +160,7 @@ DESC
       pg_ctl     = "#{pg_bindir}/pg_ctl"
       psql       = "#{pg_bindir}/psql"
 
-      raise "Federated server directory is not configured!" unless dir.present?
+      #raise "Federated server directory is not configured!" unless dir.present?
       raise "Federated server port is not configured!" unless port.present?
       raise "Federated server user is not configured!" unless user.present?
       #raise "Binary 'pg_ctl' could not be found" unless system("which #{pg_ctl}")
@@ -168,13 +168,13 @@ DESC
 
       puts "Creating a federated server in #{File.expand_path(dir)}"
       #raise("Could not clean #{dir}") unless system("rm -rf #{dir}")
-      raise("Could not create data folder federated DB") unless system("mkdir -p #{dir} && chown postgres:postgres #{dir}")
-      raise("Could not create a new federated DB") unless system("sudo -u postgres #{pg_ctl} init -s -D #{dir} -o '--locale=en_US.UTF-8 -E UTF8 --auth-local trust --auth-host password -U postgres'")
-      raise("Could not configure the federated server") unless system("printf '\nport = #{port}\n' >> #{dir}/postgresql.conf")
-      raise("Could not configure the federated server") unless system("printf \"\nunix_socket_directories = '#{dir}/'\n\" >> #{dir}/postgresql.conf")
+      #raise("Could not create data folder federated DB") unless system("mkdir -p #{dir} && chown postgres:postgres #{dir}")
+      #raise("Could not create a new federated DB") unless system("sudo -u postgres #{pg_ctl} init -s -D #{dir} -o '--locale=en_US.UTF-8 -E UTF8 --auth-local trust --auth-host password -U postgres'")
+      #raise("Could not configure the federated server") unless system("printf '\nport = #{port}\n' >> #{dir}/postgresql.conf")
+      #raise("Could not configure the federated server") unless system("printf \"\nunix_socket_directories = '#{dir}/'\n\" >> #{dir}/postgresql.conf")
       # Allow postgres to connect without password
-      rd = IO.read "#{dir}/pg_hba.conf"
-      IO.write "#{dir}/pg_hba.conf", "host all postgres 127.0.0.1/32 trust\n host all postgres ::1/128 trust\n" + rd
+      #rd = IO.read "#{dir}/pg_hba.conf"
+      #IO.write "#{dir}/pg_hba.conf", "host all postgres 127.0.0.1/32 trust\n host all postgres ::1/128 trust\n" + rd
 
       puts "Setting up the remote database (#{user})"
       #raise("Could not start the federated DB") unless system("#{pg_ctl} start --silent -D #{dir} >/dev/null")

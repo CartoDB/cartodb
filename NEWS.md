@@ -8,11 +8,10 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
 
 4.33.1 (2020-01-27)
 -------------------
-
 
 4.33.0 (2020-01-24)
 -------------------

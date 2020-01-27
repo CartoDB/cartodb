@@ -35,6 +35,6 @@
 <footer class="ApiKeys-footer">
   <p class="ApiKeys-warning-text">
     <i class="CDB-IconFont CDB-IconFont-info ApiKeys-info-icon"></i>
-    <span class="u-altTextColor">Learn more about location app authorization and API key management <a href="https://carto.com/developers/fundamentals/authorization/" target="_blank">here</a></span>
+    <span class="u-altTextColor">Learn more about location app authorization and API key management <a href="https://carto.com/developers/fundamentals/authorization/" target="_blank" rel="noopener noreferrer">here</a></span>
   </p>
 </footer>

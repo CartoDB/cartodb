@@ -49,7 +49,7 @@ class Carto::User < ActiveRecord::Base
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
                    "users.public_map_quota, users.private_map_quota, users.maintenance_mode, users.company_employees, "\
-                   "users.use_case".freeze
+                   "users.use_case, users.session_salt".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user

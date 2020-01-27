@@ -1,3 +1,4 @@
+#require 'securerandom'
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 
@@ -86,6 +87,8 @@ class ApplicationController < ActionController::Base
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|
+    binding.pry
+    _user&.invalidate_all_sessions!
     auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
   end
 
@@ -95,12 +98,12 @@ class ApplicationController < ActionController::Base
 
   # @see Warden::Manager.after_set_user
   def update_session_security_token(user)
-    warden.session(user.username)[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+    warden.session(user.username)[:sec_token] = user.security_token
   end
 
   def session_security_token_valid?(user)
     warden.session(user.username).key?(:sec_token) &&
-      warden.session(user.username)[:sec_token] == Digest::SHA1.hexdigest(user.crypted_password)
+      warden.session(user.username)[:sec_token] == user.security_token
   rescue Warden::NotAuthenticated
     false
   end

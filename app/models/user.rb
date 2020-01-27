@@ -690,6 +690,18 @@ class User < Sequel::Model
     set_last_password_change_date
   end
 
+  def security_token
+    return if self.session_salt.blank?
+
+    Digest::SHA1.hexdigest(self.crypted_password + self.session_salt)
+  end
+
+  def invalidate_all_sessions!
+    self.session_salt = SecureRandom.hex
+    update_in_central
+    save
+  end
+
   # Database configuration setup
 
   def database_username

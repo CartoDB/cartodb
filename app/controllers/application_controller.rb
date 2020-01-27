@@ -87,7 +87,6 @@ class ApplicationController < ActionController::Base
   end
 
   Warden::Manager.before_logout do |_user, auth, _opts|
-    binding.pry
     _user&.invalidate_all_sessions!
     auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
   end

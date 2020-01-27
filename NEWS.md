@@ -28,6 +28,7 @@ sudo make install
 * Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
+* Prevent sync starvation ([#15398](https://github.com/CartoDB/cartodb/issues/15398))
 * Fix misplaced footer in Dialogs ([#15418](https://github.com/CartoDB/cartodb/pull/15418))
 * Remove directo connections debug trace ([#15274](https://github.com/CartoDB/cartodb/pull/15274))
 * New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))

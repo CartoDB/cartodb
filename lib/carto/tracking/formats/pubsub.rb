@@ -54,7 +54,7 @@ module Carto
           properties = {
             vis_id: @visualization.id,
             privacy: @visualization.privacy,
-            type: @visualization.type,
+            vis_type: @visualization.type,
             object_created_at: @visualization.created_at,
             lifetime: lifetime_in_days_with_decimals
           }

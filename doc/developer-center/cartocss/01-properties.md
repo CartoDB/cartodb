@@ -1445,7 +1445,7 @@ You can also apply simple math using float number values. For example:
 
 A uniform resource identifier (URI) is a string of characters used to identify the name of a resource, typically a path on your computer or an internet address. You can also apply a URL (as if using HTML), to define a URI image location.
 
-> In CARTO style code, only an URL to a publicly-available image can be used.
+> In CARTO style code, only a URL to a publicly-available image can be used.
 
 {% highlight scss %}
 #markers {

@@ -1,5 +1,9 @@
 <% if @organization %>
   <% content_for :title do %><%= @organization.name %><% end %>
+
+  <% content_for :robots do %>
+    <meta name="robots" content="noindex">
+  <% end %>
 <% end %>
 
 <% content_for :js do %>

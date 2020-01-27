@@ -1357,11 +1357,7 @@
                     "bigquery": {
                         "field-billing-project": "Billing Project ID",
                         "billing-project-hint": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifier. More info <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_project' target='_blank'>here</a>.",
-                        "field-sql-query": "SQL query",
-                        "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
-                        "sql-error": "There has been an error parsing your query",
-                        "run": "Run SQL query",
-                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM mytable"
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM project.dataset.table"
                     },
                     "database": {
                         "title": "Enter your %{brand} credentials",
@@ -1377,6 +1373,11 @@
                         "label-password": "Password",
                         "placeholder-password": "Type your password",
                         "connect-button": "Connect",
+                        "field-sql-query": "SQL query",
+                        "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
+                        "sql-error": "There has been an error parsing your query",
+                        "run": "Run SQL query",
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM table",
                         "sidebar-connect": {
                             "title": "Getting connected",
                             "desc": "To ensure CARTO has access to your %{brand} database, please make sure your firewall is configured to allow the connections from these IP addesses:",

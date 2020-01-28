@@ -1373,6 +1373,8 @@
                         "label-password": "Password",
                         "placeholder-password": "Type your password",
                         "connect-button": "Connect",
+                        "connection-error": "The connection could not be established. Please, check the entered parameters.",
+                        "general-error": "Unfortunately, there was an error. Please, try again.",
                         "field-sql-query": "SQL query",
                         "sql-hint": "If your query contains geographic data in EPSG:4326 format, name that column with an accepted name so that it’s imported correctly: “the_geom”, “geom“, “geometry“...",
                         "sql-error": "There has been an error parsing your query",

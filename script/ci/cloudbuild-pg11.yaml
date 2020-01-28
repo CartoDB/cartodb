@@ -60,8 +60,8 @@ steps:
 
 - name: gcr.io/cloud-builders/docker
   args: ['exec', '-i', 'builder_1', '/cartodb/runParallelTests.sh']
-  timeout: 7200s
+  timeout: 2700s
 
 options:
     machineType: 'N1_HIGHCPU_32'
-timeout: 10000s
+timeout: 3600s

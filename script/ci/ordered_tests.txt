@@ -1,6 +1,13 @@
-spec/models/user_spec.rb
-spec/models/carto/user_migration_spec.rb
-spec/requests/carto/api/visualizations_controller_spec.rb
+spec/models/user_spec_part_1.rb
+spec/models/user_spec_part_2.rb
+spec/models/user_spec_part_3.rb
+spec/models/user_spec_part_4.rb
+spec/models/carto/user_migration_spec_part_1.rb
+spec/models/carto/user_migration_spec_part_2.rb
+spec/models/carto/user_migration_spec_part_3.rb
+spec/requests/carto/api/visualizations_controller_spec_part_1.rb
+spec/requests/carto/api/visualizations_controller_spec_part_2.rb
+spec/requests/carto/api/visualizations_controller_spec_part_3.rb
 spec/models/data_import_spec.rb
 spec/models/carto/user_spec.rb
 spec/models/map_spec.rb

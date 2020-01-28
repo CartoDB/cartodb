@@ -53,6 +53,7 @@ sudo make install
 * Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
 * Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
 * Update CARTOframes onboarding [#15420](https://github.com/CartoDB/cartodb/pull/15420)
+* Update CartoCSS info about URI images [CartoDB/developers#651](https://github.com/CartoDB/developers/issues/651)
 
 4.32.0 (2019-12-27)
 -------------------

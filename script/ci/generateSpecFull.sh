@@ -6,6 +6,8 @@ mkdir parallel_tests
 
 # The following tests are disabled in a parallel environment and are run afterwards, sequentially
 DISABLED_TESTS=(
+  'spec/models/asset_spec.rb' # Hangs sometimes when serving files
+  'services/user-mover/spec/user_mover_spec.rb' # Database recreation fails in parallel
 )
 
 # This is a file that contains a list of specs in the order you want them executed

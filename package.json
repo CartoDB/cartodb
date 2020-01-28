@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.151",
+  "version": "1.0.0-assets.154",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -212,7 +212,7 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push origin master",
+    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push",
     "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

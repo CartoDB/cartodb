@@ -321,6 +321,30 @@ describe Carto::Api::Public::CustomVisualizationsController do
         expect(kuviz1.id).to eq(kuviz2.id)
       end
     end
+
+    it 'works if if_exists is fail and exists a visualization with the same name' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: @kuviz_name)
+      visualization.save!
+
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+
+      visualization.destroy!
+    end
+
+    it 'works if if_exists is replace and exists a visualization with the same name' do
+      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: @kuviz_name)
+      visualization.save!
+
+      post_json api_v4_kuviz_create_viz_url(api_key: @user.api_key), data: @valid_html_base64, name: @kuviz_name, if_exists: 'replace' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+
+      visualization.destroy!
+    end
   end
 
   describe '#update' do
@@ -492,6 +516,25 @@ describe Carto::Api::Public::CustomVisualizationsController do
         expect(kuviz_updated.name).to eq new_name
         expect(kuviz_updated.name).not_to eq @kuviz.name
       end
+    end
+
+    it 'works if exists a visualization with the same name' do
+      new_name = 'other_name'
+
+      visualization = FactoryGirl.create(:carto_visualization, user: @user, name: new_name)
+      visualization.save!
+
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: new_name, if_exists: 'fail' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+
+      put_json api_v4_kuviz_update_viz_url(api_key: @user.api_key, id: @kuviz.id), name: new_name, if_exists: 'replace' do |response|
+        expect(response.status).to eq(200)
+        expect(response.body[:url].present?).to be true
+      end
+
+      visualization.destroy!
     end
   end
 

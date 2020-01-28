@@ -12,6 +12,6 @@
 </div>
 <ul class="CustomList-list js-customList">
   <li class="Privacy-passwordField CustomList-item">
-    <input type="password" class="CDB-Text CDB-InputText js-input" placeholder="<%- _t('components.modals.publish.privacy.password.placeholder') %>">
+    <input type="password" autocomplete="off" class="CDB-Text CDB-InputText js-input" placeholder="<%- _t('components.modals.publish.privacy.password.placeholder') %>">
   </li>
 </ul>

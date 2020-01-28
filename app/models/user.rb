@@ -1777,7 +1777,7 @@ class User < Sequel::Model
       geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
       here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
-      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit
+      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit private_map_quota
     )
     to.set_fields(self, attributes_to_copy)
     to.invite_token = make_token

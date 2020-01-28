@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
 
 ### Bug fixes / enhancements
 - None yet

@@ -1,6 +1,5 @@
 #!/bin/bash
-# Kill redis
-killall redis-server
+
 # Drop all databases
 databases=$(psql -U postgres -t -c "select datname from pg_database where datname like 'carto_db_test_%'")
 touch parallel_tests/databases.log
@@ -11,7 +10,7 @@ sed -e 's/\s\+/\n/g' parallel_tests/databases.log > parallel_tests/databases_new
 while read -r line
 do
   [ -z "$line" ] && continue
-  psql  -U postgres -t -c "drop database $line" >> parallel_tests/cleaner.log
+  psql -U postgres -t -c "drop database $line" >> parallel_tests/cleaner.log
 done < parallel_tests/databases_new.log
 
 

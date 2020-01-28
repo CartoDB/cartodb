@@ -74,6 +74,22 @@ $w: $sLayout-width;
     padding-top: 12px;
   }
 
+  &__form-error {
+    position: relative;
+    width: 465px;
+    padding-left: 20px;
+    color: $cHighlight-negative;
+    font-size: 12px;
+    line-height: 16px;
+
+    &::before {
+      content: '🚫';
+      position: absolute;
+      left: 0;
+      line-height: 18px;
+    }
+  }
+
   &__input-error {
     margin-top: -4px;
     padding: 0 12px;

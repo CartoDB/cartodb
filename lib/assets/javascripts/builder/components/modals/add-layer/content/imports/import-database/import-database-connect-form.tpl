@@ -50,6 +50,14 @@
         </div>
       </div>
 
+      <% if (errorMessage) { %>
+        <div class="Form-row">
+          <div class="ImportOptions__form-error CDB-Text">
+            <%- errorMessage %>
+          </div>
+        </div>
+      <% } %>
+
       <div class="Form-row">
         <div class="Form-rowLabel Form-rowLabel--small"></div>
         <div class="Form-rowData u-flex__justify--end">

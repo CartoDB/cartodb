@@ -130,8 +130,6 @@ describe Carto::FederatedTablesService do
     end
 
     after(:all) do
-        #puts "Stopping the remote server"
-        #raise("Could not stop the federated DB") unless system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null")
     end
 
     describe 'federated server service' do

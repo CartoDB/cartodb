@@ -75,7 +75,7 @@ module Concerns
              obs_general_block_price salesforce_datasource_enabled geocoder_provider
              isolines_provider routing_provider engine_enabled builder_enabled
              mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-             password_expiration_in_d)
+             password_expiration_in_d inherit_owner_ffs)
         when :update
           %i(seats viewer_seats quota_in_bytes display_name description website
              discus_shortname twitter_username geocoding_quota map_view_quota
@@ -88,7 +88,7 @@ module Concerns
              obs_general_block_price salesforce_datasource_enabled geocoder_provider
              isolines_provider routing_provider engine_enabled builder_enabled
              mapzen_routing_quota mapzen_routing_block_price no_map_logo auth_github_enabled
-             password_expiration_in_d)
+             password_expiration_in_d inherit_owner_ffs)
         end
       elsif is_a?(::User)
         %i(account_type admin org_admin crypted_password database_host
@@ -121,7 +121,8 @@ module Concerns
           raise "Can't create organizations from editor"
         when :update
           allowed_attributes = %i(seats viewer_seats display_name description website discus_shortname twitter_username
-                                  auth_username_password_enabled auth_google_enabled password_expiration_in_d)
+                                  auth_username_password_enabled auth_google_enabled password_expiration_in_d
+                                  inherit_owner_ffs)
           values.slice(*allowed_attributes)
         end
       elsif is_a?(::User)

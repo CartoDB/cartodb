@@ -2840,17 +2840,35 @@ describe User do
       @ff_user.destroy!
     end
 
-    it 'inherits feature flags from owner' do
+    it 'inherits feature flags from owner if inherit_owner_ffs' do
+      @organization.stubs(:inherit_owner_ffs).returns(true)
       @user_org.has_feature_flag?('drop').should eq true
       @user_org.has_feature_flag?('drop-user').should eq true
       @user_org.feature_flags.count.should eq 2
     end
 
+    it 'does not inherit feature flags from owner if not inherit_owner_ffs' do
+      @organization.stubs(:inherit_owner_ffs).returns(false)
+      @user_org.reload
+      @user_org.has_feature_flag?('drop').should eq false
+      @user_org.has_feature_flag?('drop-user').should eq true
+      @user_org.feature_flags.count.should eq 1
+    end
+
     it 'does not inherit feature flags for regular users' do
+      @organization.stubs(:inherit_owner_ffs).returns(true)
       @user_regu.reload
       @user_regu.has_feature_flag?('drop').should eq false
       @user_regu.has_feature_flag?('drop-user').should eq true
       @user_regu.feature_flags.count.should eq 1
+    end
+
+    it 'does not inherit feature flags for owner' do
+      @organization.stubs(:inherit_owner_ffs).returns(true)
+      @owner.reload
+      @owner.has_feature_flag?('drop').should eq true
+      @owner.has_feature_flag?('drop-user').should eq false
+      @owner.feature_flags.count.should eq 1
     end
   end
 

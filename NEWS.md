@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Use Dataservices API client 0.28.0
 
 ### Bug fixes / enhancements
 - Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
@@ -54,6 +54,7 @@ sudo make install
 * Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
 * Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
 * Update CARTOframes onboarding [#15420](https://github.com/CartoDB/cartodb/pull/15420)
+* Update CartoCSS info about URI images [CartoDB/developers#651](https://github.com/CartoDB/developers/issues/651)
 
 4.32.0 (2019-12-27)
 -------------------

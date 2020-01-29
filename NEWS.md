@@ -34,7 +34,8 @@ sudo make install
 ```
 
 ### Features
-* Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
+- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
 * Add noindex meta to organization login page ([#15117](https://github.com/CartoDB/cartodb/issues/15117))

@@ -1,7 +1,10 @@
 module Carto
   module Tracking
     module Formats
-      class Segment
+      class PubSub
+
+        EVENT_VERSION = 1
+
         def initialize(user: nil, visualization: nil, widget: nil, hash: {})
           @user = user
           @visualization = visualization
@@ -51,7 +54,7 @@ module Carto
           properties = {
             vis_id: @visualization.id,
             privacy: @visualization.privacy,
-            type: @visualization.type,
+            vis_type: @visualization.type,
             object_created_at: @visualization.created_at,
             lifetime: lifetime_in_days_with_decimals
           }
@@ -62,13 +65,11 @@ module Carto
         end
 
         def user_properties
-          user_age_in_days_with_decimals = days_with_decimals(now - @user.created_at)
 
           {
-            event_user_id: @user.id,
-            event_origin: @user.builder_enabled? ? 'Builder' : 'Editor',
+            user_id: @user.id,
+            event_source: @user.builder_enabled? ? 'builder' : 'editor',
             plan: @user.account_type,
-            user_active_for: user_age_in_days_with_decimals,
             user_created_at: @user.created_at,
             organization: @user.organization&.name
           }
@@ -104,7 +105,13 @@ module Carto
         end
 
         def event_properties
-          { creation_time: now }
+          domain = Cartodb.get_config(:session_domain)
+
+          {
+            event_time: now,
+            source_domain: domain,
+            event_version: EVENT_VERSION
+          }
         end
 
         def days_with_decimals(time_object)

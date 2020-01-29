@@ -9,7 +9,7 @@
       </div>
 
       <div v-if="content.link && content.button" class="u-flex u-flex__justify--end">
-        <a :href="content.link" target="_blank" class="button button--ghost button--outline">
+        <a :href="content.link" target="_blank" rel="noopener noreferrer" class="button button--ghost button--outline">
           {{content.button}}
         </a>
       </div>

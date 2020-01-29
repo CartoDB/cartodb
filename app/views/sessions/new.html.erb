@@ -1,5 +1,9 @@
 <% if @organization %>
   <% content_for :title do %><%= @organization.name %><% end %>
+
+  <% content_for :robots do %>
+    <meta name="robots" content="noindex">
+  <% end %>
 <% end %>
 
 <% content_for :js do %>
@@ -35,7 +39,7 @@
                   </div>
 
                   <div class="Sessions-field">
-                    <%= password_field_tag :password, "", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
+                    <%= password_field_tag :password, "", autocomplete: "off", placeholder: "password", class: "CDB-Size-medium #{@organization.present? ? 'Sessions-input' : 'Sessions-navy-input'} bottomBorderRadius" %>
 
                     <% if @login_error %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @login_error %>">!</div>

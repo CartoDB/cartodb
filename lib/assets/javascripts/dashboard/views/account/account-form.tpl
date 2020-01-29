@@ -39,6 +39,8 @@
     </div>
   <% } %>
 
+  <%= accountFormExtension %>
+
   <div class="FormAccount-row">
     <div class="FormAccount-rowLabel">
       <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">
@@ -129,7 +131,7 @@
       <p class="FormAccount-footerText"></p>
     <% } %>
 
-    <button type="submit" class="CDB-Button CDB-Button--primary">
+    <button type="submit" class="CDB-Button CDB-Button--primary js-save">
       <span class="CDB-Button-Text CDB-Text is-semibold CDB-Size-small u-upperCase"><%= _t('account.views.form.save_changes') %></span>
     </button>
   </div>

@@ -15,12 +15,8 @@
           <% } else if (isAdmin) { %>
             <span class="UserRoleIndicator UserRoleIndicator--filled is-grey u-lSpace">ADMIN</span>
           <% } %>
-          <span class="UserRoleIndicator u-altTextColor u-lSpace">
-            <% if (isViewer) { %>
-              VIEWER
-            <% } else { %>
-              BUILDER
-            <% } %>
+          <span class="UserRoleIndicator u-altTextColor u-lSpace u-upperCase">
+            <%- role %>
           </span>
         </div>
         <h4 class="OrganizationList-userInfoSubtitle u-ellipsLongText" title="<%- user_email %>"><%- user_email %></h4>

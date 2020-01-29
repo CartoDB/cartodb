@@ -619,6 +619,10 @@ class Carto::User < ActiveRecord::Base
     end
   end
 
+  def role_display
+    viewer ? 'viewer' : 'builder'
+  end
+
   def new_visualizations_version
     builder_enabled? ? 3 : 2
   end

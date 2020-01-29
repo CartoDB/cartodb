@@ -1827,6 +1827,10 @@ class User < Sequel::Model
     viewer
   end
 
+  def role_display
+    viewer? ? 'viewer' : 'builder'
+  end
+
   def organization_admin?
     organization_user? && (organization_owner? || org_admin)
   end

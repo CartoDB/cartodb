@@ -3,7 +3,6 @@ require_relative 'providers/fdw/odbc/mysql'
 require_relative 'providers/fdw/odbc/postgresql'
 require_relative 'providers/fdw/odbc/sqlserver'
 require_relative 'providers/fdw/odbc/hive'
-require_relative 'providers/fdw/odbc/bigquery'
 require_relative 'providers/fdw/pg_fdw'
 
 module Carto
@@ -13,9 +12,14 @@ module Carto
       PostgreSQLProvider,
       MySqlProvider,
       SqlServerProvider,
-      HiveProvider,
-      BigQueryProvider
+      HiveProvider
     ]
+
+    puts "-"*80
+    puts "-"*80
+    puts "PROVIDERS INITIALIZED #{PROVIDERS.size}"
+    puts "-"*80
+    puts "-"*80
 
     DEFAULT_PROVIDER = nil # No default provider
 

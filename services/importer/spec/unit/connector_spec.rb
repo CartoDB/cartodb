@@ -127,8 +127,7 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: false, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil },
-        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
       }
     end
   end
@@ -146,8 +145,7 @@ describe Carto::Connector do
         "postgres"  => { name: "PostgreSQL",           enabled: true, description: nil },
         "mysql"     => { name: "MySQL",                enabled: true, description: nil },
         "sqlserver" => { name: "Microsoft SQL Server", enabled: false, description: nil },
-        "hive"      => { name: "Hive",                 enabled: false, description: nil },
-        "bigquery"  => { name: "Google BigQuery",      enabled: false, description: nil }
+        "hive"      => { name: "Hive",                 enabled: false, description: nil }
       }
     end
     user_config.destroy
@@ -1754,171 +1752,6 @@ describe Carto::Connector do
       }
     end
   end
-
-  describe 'bigquery' do
-    it 'Executes expected odbc_fdw SQL commands to copy a table' do
-      parameters = {
-        provider: 'bigquery',
-        billing_project: 'theproject',
-        dataset: 'thedataset',
-        table:    'thetable'
-      }
-      options = {
-        logger:  @fake_log,
-        user: @user
-      }
-      @user.oauths.add 'bigquery', 'thetoken'
-      context = TestConnectorContext.new(@executed_commands = [], options)
-      oauth_config = {
-        'bigquery' => {
-          'client_id' => 'theclientid',
-          'client_secret' => 'theclientsecret',
-          'scope' => 'thescope',
-          'application_name' => 'Connect your Google BigQuery data with CartoDB',
-          'callback_url' => 'https://example.com',
-          'authorization_uri' => 'https://example.com',
-          'token_credential_uri' => 'https://example.com',
-          'revoke_auth_uri' =>  'https://example.com',
-          'no_dry_run' => true
-        }
-      }
-      Cartodb.with_config oauth: oauth_config do
-        connector = Carto::Connector.new(parameters, context)
-        connector.copy_table schema_name: 'xyz', table_name: 'abc'
-      end
-
-      @executed_commands.size.should eq 9
-      server_name = match_sql_command(@executed_commands[0][1])[:server_name]
-      foreign_table_name = %{"cdb_importer"."#{server_name}_thetable"}
-      user_name = @user.username
-      user_role = @user.database_username
-
-      expected_commands = [{
-        # CREATE SERVER
-        mode: :superuser,
-        sql: [{
-          command: :create_server,
-          fdw_name: 'odbc_fdw',
-          options: {
-            'odbc_AllowLargeResults' => '0',
-            'odbc_Catalog' => 'theproject',
-            'odbc_ClientId' => 'theclientid',
-            'odbc_ClientSecret' => 'theclientsecret',
-            'odbc_Driver' => 'Simba ODBC Driver for Google BigQuery 64-bit',
-            "odbc_EnableHTAPI" => "0",
-            "odbc_HTAPI_MinActivationRatio" => "0",
-            "odbc_HTAPI_MinResultsSize" => "100",
-            'odbc_LargeResultsTempTableExpirationTime' => '3600000',
-            'odbc_OAuthMechanism' => '1',
-            'odbc_SQLDialect' => '1',
-            "odbc_UseQueryCache" => "1"
-          }
-        }]
-      }, {
-        # CREATE USER MAPPING
-        mode: :superuser,
-        sql: [{
-          command: :create_user_mapping,
-          server_name: server_name,
-          user_name: user_role,
-          options: { 'odbc_RefreshToken' => 'thetoken' }
-        }]
-      }, {
-        # CREATE USER MAPPING
-        mode: :superuser,
-        sql: [{
-          command: :create_user_mapping,
-          server_name: server_name,
-          user_name: 'postgres',
-          options: { 'odbc_RefreshToken' => 'thetoken' }
-        }]
-      }, {
-        # IMPORT FOREIGH SCHEMA; GRANT SELECT
-        mode: :superuser,
-        sql: [{
-          command: :import_foreign_schema,
-          remote_schema_name: 'thedataset',
-          server_name: server_name,
-          schema_name: 'cdb_importer',
-          options: {
-            "odbc_DefaultDataset" => 'thedataset',
-            "table" => 'thetable',
-            "prefix" => "#{server_name}_",
-            "sql_query" => "SELECT * FROM `theproject.thedataset.thetable`;" # uses a query for BQ driver issues
-          }
-        }, {
-          command: :grant_select,
-          table_name: foreign_table_name,
-          user_name: user_role
-        }]
-      }, {
-        # CREATE TABLE AS SELECT
-        mode: :user,
-        user: user_name,
-        sql: [{
-          command: :create_table_as_select,
-          table_name: %{"xyz"."abc"},
-          select: /\s*\*\s+FROM\s+#{Regexp.escape foreign_table_name}/
-        }]
-      }, {
-        # DROP FOREIGN TABLE
-        mode: :superuser,
-        sql: [{
-          command: :drop_foreign_table_if_exists,
-          table_name: foreign_table_name
-        }]
-      }, {
-        # DROP USER MAPPING
-        mode: :superuser,
-        sql: [{
-          command: :drop_usermapping_if_exists,
-          server_name: server_name,
-          user_name: 'postgres'
-        }]
-      }, {
-        # DROP USER MAPPING
-        mode: :superuser,
-        sql: [{
-          command: :drop_usermapping_if_exists,
-          server_name: server_name,
-          user_name: user_role
-        }]
-      }, {
-        # DROP SERVER
-        mode: :superuser,
-        sql: [{
-          command: :drop_server_if_exists,
-          server_name: server_name
-        }]
-      }]
-
-      expect_executed_commands @executed_commands, *expected_commands
-    end
-
-    it 'Should provide connector metadata' do
-      Carto::Connector.information('bigquery').should == {
-        features: {
-          'list_tables':    true,
-          'list_databases': false,
-          'sql_queries':    true,
-          'preview_table':  false,
-          'dry_run':        true,
-          'list_projects':  true
-        },
-        parameters: {
-          'billing_project' => { required: true },
-          'project'         => { required: false },
-          'location'        => { required: false },
-          'import_as'       => { required: false },
-          'dataset'         => { required: false },
-          'table'           => { required: false },
-          'sql_query'       => { required: false },
-          'storage_api'     => { required: false }
-        }
-      }
-    end
-  end
-
 
   describe 'invalid_provider' do
     it 'Fails' do

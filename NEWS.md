@@ -6,6 +6,7 @@ Development
 
 ### Features
 - BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
+- Hooks to override org settings ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
 
 ### Bug fixes / enhancements
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))

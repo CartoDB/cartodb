@@ -482,8 +482,8 @@ class Organization < Sequel::Model
     auth_saml_configuration.present?
   end
 
-  def inheritable_feature_flags(user)
-    !user.organization_owner? && inherit_owner_ffs ? owner.feature_flags_user : []
+  def inheritable_feature_flags
+    inherit_owner_ffs ? owner.feature_flags_user : []
   end
 
   private

@@ -1636,7 +1636,7 @@ class User < Sequel::Model
   end
 
   def feature_flags
-    ffs = feature_flags_user + (organization&.inheritable_feature_flags(self) || [])
+    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
     @feature_flag_names ||= (ffs.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
   end
 

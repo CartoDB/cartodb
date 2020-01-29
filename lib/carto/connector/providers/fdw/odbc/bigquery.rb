@@ -228,7 +228,7 @@ module Carto
 
         unless @oauth_config['no_dry_run']
           # Perform a dry-run of the query to catch errors (API permissions, SQL syntax, etc.)
-          # Note that the import may stil fail if using Storage API and needed permission is missing.
+          # Note that the import may still fail if using Storage API and needed permission is missing.
           sql = @params[:sql_query] || table_query
           result = perform_dry_run(@params[:billing_project], sql)
           @dry_run_result = result

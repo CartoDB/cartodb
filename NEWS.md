@@ -5,10 +5,10 @@ Development
 - None yet
 
 ### Features
-- None yet
+- BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
 
 ### Bug fixes / enhancements
-- None yet
+- Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 
 4.34.0 (2020-01-28)
 -------------------

@@ -214,6 +214,56 @@ module CartoDB
           @bigquery_api.insert_dataset(project_id, dataset)
         end
 
+        def list_projects
+          projects = @bigquery_api.list_projects.projects
+          return [] unless projects
+          projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
+        end
+
+        def list_datasets(project_id)
+          datasets = @bigquery_api.list_datasets(project_id).datasets
+          if datasets
+            datasets.map { |d|
+              qualified_name = d.id.gsub(':', '.') # "#{project_id}.#{d.dataset_reference.dataset_id}"
+              { id: d.dataset_reference.dataset_id, qualified_name: qualified_name, location: d.location }
+            }
+          else
+            []
+          end
+        end
+
+        def list_tables(project_id, dataset_id)
+          tables = @bigquery_api.list_tables(project_id, dataset_id).tables
+          if tables
+            tables.map { |t|
+              qualified_name = t.id.gsub(':', '.') # "#{project_id}.#{dataset_id}.#{t.table_reference.table_id}"
+              { id: t.table_reference.table_id, qualified_name: qualified_name, creation_time: t.creation_time }
+            }
+          else
+            []
+          end
+        end
+
+        def dry_run(billing_project_id, sql)
+          query = Google::Apis::BigqueryV2::QueryRequest.new
+          query.query = sql
+          query.dry_run = true
+          query.use_legacy_sql = false
+          begin
+            resp = @bigquery_api.query_job(billing_project_id, query)
+            {
+              error: false,
+              total_bytes_processed: resp.total_bytes_processed,
+              cache_hit: resp.cache_hit
+            }
+          rescue Google::Apis::ClientError => err
+            {
+              error: true,
+              message: err.message,
+              client_error: err
+            }
+          end
+        end
       end
     end
   end

@@ -231,10 +231,8 @@ module Carto
           sql = @params[:sql_query] || table_query
           result = perform_dry_run(@params[:billing_project], sql)
           @dry_run_result = result
-          if result[:error]
-            # TODO: avoid rescuing errors in dry_run? return our own exception here?
-            raise result[:client_error]
-          end
+          # TODO: avoid rescuing errors in dry_run? return our own exception here?
+          raise result[:client_error] if result[:error]
           # TODO: could we make result[:total_bytes_processed] available?
         end
 

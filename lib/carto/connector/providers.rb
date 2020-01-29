@@ -15,12 +15,6 @@ module Carto
       HiveProvider
     ]
 
-    puts "-"*80
-    puts "-"*80
-    puts "PROVIDERS INITIALIZED #{PROVIDERS.size}"
-    puts "-"*80
-    puts "-"*80
-
     DEFAULT_PROVIDER = nil # No default provider
 
     class << self

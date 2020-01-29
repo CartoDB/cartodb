@@ -216,11 +216,8 @@ module CartoDB
 
         def list_projects
           projects = @bigquery_api.list_projects.projects
-          if projects
-            projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
-          else
-            []
-          end
+          return [] unless projects
+          projects.map { |p| { id: p.id, friendly_name: p.friendly_name } }
         end
 
         def list_datasets(project_id)

@@ -1270,7 +1270,9 @@ describe Carto::Connector do
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    true,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        false,
+          'list_projects':  false
         },
         parameters: {
           'connection' => {
@@ -1424,7 +1426,9 @@ describe Carto::Connector do
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    true,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        false,
+          'list_projects':  false
         },
         parameters: {
           'connection' => {
@@ -1576,7 +1580,9 @@ describe Carto::Connector do
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    true,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        false,
+          'list_projects':  false
         },
         parameters: {
           'connection' => {
@@ -1725,7 +1731,9 @@ describe Carto::Connector do
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    true,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        false,
+          'list_projects':  false
         },
         parameters: {
           'connection' => {
@@ -1770,7 +1778,8 @@ describe Carto::Connector do
           'callback_url' => 'https://example.com',
           'authorization_uri' => 'https://example.com',
           'token_credential_uri' => 'https://example.com',
-          'revoke_auth_uri' =>  'https://example.com'
+          'revoke_auth_uri' =>  'https://example.com',
+          'no_dry_run' => true
         }
       }
       Cartodb.with_config oauth: oauth_config do
@@ -1887,28 +1896,24 @@ describe Carto::Connector do
     end
 
     it 'Should provide connector metadata' do
-      Carto::Connector.information('hive').should == {
+      Carto::Connector.information('bigquery').should == {
         features: {
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    true,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        true,
+          'list_projects':  true
         },
         parameters: {
-          'connection' => {
-            'username' => { required: false },
-            'password' => { required: false },
-            'server'   => { required: true  },
-            'port'     => { required: false },
-            'database' => { required: false }
-          },
-          'table'      => { required: false },
-          'import_as'  => { required: false },
-          'schema'     => { required: false },
-          'sql_query'  => { required: false },
-          'sql_count'  => { required: false },
-          'encoding'   => { required: false },
-          'columns'    => { required: false }
+          'billing_project' => { required: true },
+          'project'         => { required: false },
+          'location'        => { required: false },
+          'import_as'       => { required: false },
+          'dataset'         => { required: false },
+          'table'           => { required: false },
+          'sql_query'       => { required: false },
+          'storage_api'     => { required: false }
         }
       }
     end
@@ -2466,7 +2471,9 @@ describe Carto::Connector do
           'list_tables':    true,
           'list_databases': false,
           'sql_queries':    false,
-          'preview_table':  false
+          'preview_table':  false,
+          'dry_run':        false,
+          'list_projects':  false
         },
         parameters: {
           'table'      => { required: true  },

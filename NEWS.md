@@ -6,9 +6,10 @@ Development
 
 ### Features
 - Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
+- BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
 
 ### Bug fixes / enhancements
-- None yet
+- Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 
 4.34.0 (2020-01-28)
 -------------------
@@ -34,7 +35,8 @@ sudo make install
 ```
 
 ### Features
-* Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
+- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
 * Add noindex meta to organization login page ([#15117](https://github.com/CartoDB/cartodb/issues/15117))

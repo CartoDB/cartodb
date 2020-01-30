@@ -352,8 +352,12 @@ describe 'Warden' do
       get account_user_url
 
       response.status.should == 302
+      request.fullpath.should eql '/account'
+
       follow_redirect!
-      response.body.should include("login")
+
+      response.status.should == 200
+      request.fullpath.should eql '/login'
     end
 
     it 'should invalidate all sessions at logout' do

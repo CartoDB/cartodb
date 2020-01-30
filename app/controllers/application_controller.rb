@@ -279,7 +279,10 @@ class ApplicationController < ActionController::Base
 
   def login_required
     is_auth = authenticated?(CartoDB.extract_subdomain(request))
-    is_auth ? validate_session(current_user) : not_authorized
+
+    unless is_auth && validate_session(current_user)
+      not_authorized
+    end
   end
 
   def login_required_any_user

@@ -336,9 +336,9 @@ describe 'Warden' do
     end
 
     it 'should be valid for current security token ' do
-      env['warden'].session(@user.username)[:sec_token] = @user.security_token
+      login
 
-      get account_user_url
+      get dashboard_url
 
       response.status.should == 200
     end
@@ -349,12 +349,14 @@ describe 'Warden' do
       @user.session_salt = "1234567f"
       @user.save
 
-      get account_user_url
+      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json'}
 
-      response.status.should == 302
-      follow_redirect!
-      response.status.should == 200
-      response.body.should include("Log in")
+      get dashboard_url, {}, @headers
+
+      response.status.should == 401
+      #follow_redirect!
+      #response.status.should == 200
+      #response.body.should include("Log in")
     end
 
     it 'should invalidate all sessions at logout' do

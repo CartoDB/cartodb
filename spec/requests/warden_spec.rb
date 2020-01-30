@@ -13,6 +13,12 @@ describe 'Warden' do
     post create_session_url(email: @user.email, password: 'bla')
   end
 
+  def logout
+    # Manual login because `login_as` skips normal warden hook processing
+    host! "#{@user.username}.localhost.lan"
+    get logout_url
+  end
+
   describe ':auth_api Strategy' do
     include_context 'users helper'
     include HelperMethods
@@ -91,6 +97,8 @@ describe 'Warden' do
     end
 
     it 'UI redirects to login page if password is expired' do
+      Cartodb::Central.any_instance.stubs(:send_request)
+
       login
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
@@ -110,6 +118,7 @@ describe 'Warden' do
     it 'redirects to the original url after changing the expired password' do
       # we use this to avoid generating the static assets in CI
       Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+      Cartodb::Central.any_instance.stubs(:send_request)
 
       login
 
@@ -138,6 +147,8 @@ describe 'Warden' do
     end
 
     it 'API returns 403 with an error if password is expired' do
+      Cartodb::Central.any_instance.stubs(:send_request)
+
       login
 
       Cartodb.with_config(passwords: { 'expiration_in_d' => 1 }) do
@@ -311,6 +322,50 @@ describe 'Warden' do
       after(:all) do
         @user.destroy
       end
+    end
+  end
+
+  describe 'session' do
+
+    before(:all) do
+      @user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    xit 'should be valid for current security token ' do
+      warden.session(@user.username)[:sec_token] = @user.security_token
+
+      get account_user_url
+
+      response.status.should == 200
+    end
+
+    it 'should not be valid for different security token' do
+      login
+
+      @user.session_salt = "1234567f"
+      @user.save
+
+      binding.pry
+      get account_user_url
+      binding.pry
+
+      response.status.should == 302
+      follow_redirect!
+      response.status.should == 200
+      response.body.should include("Log in")
+    end
+
+    it 'should invalidate all sessions at logout' do
+      initial_session_salt = @user.session_salt
+      Cartodb::Central.any_instance.expects(:send_request)
+
+      get logout_url
+
+      initial_session_salt.should_not == @user.session_salt
     end
   end
 end

@@ -95,4 +95,33 @@ describe Carto::User do
       @user.password_reset_sent_at.to_s.should eql now.to_s
     end
   end
+
+  describe 'session' do
+
+    before(:all) do
+      @user = FactoryGirl.create(:valid_user)
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'salt should be generated at creation' do
+      @user.session_salt.should_not be_nil
+    end
+
+    it 'security token should include salt' do
+      sec_token = Digest::SHA1.hexdigest(@user.crypted_password + @user.session_salt)
+      @user.security_token.should == sec_token
+    end
+
+    it 'invalidation should modify salt and update central' do
+      Cartodb::Central.any_instance.expects(:send_request)
+      initial_salt = @user.session_salt
+
+      @user.invalidate_all_sessions!
+
+      initial_salt.should_not == @user.session_salt
+    end
+  end
 end

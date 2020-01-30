@@ -1,5 +1,6 @@
 require_relative 'segment'
 require_relative 'hubspot'
+require_relative 'pubsub'
 
 module Carto
   module Tracking
@@ -34,6 +35,17 @@ module Carto
           widget = fetch_record!(:widget)
 
           Carto::Tracking::Formats::Segment.new(user: user,
+                                                visualization: visualization,
+                                                widget: widget,
+                                                hash: @hash).to_hash
+        end
+
+        def to_pubsub
+          user = @hash['user_id'].present? ? fetch_record!(:user) : nil
+          visualization = fetch_record!(:visualization)
+          widget = fetch_record!(:widget)
+
+          Carto::Tracking::Formats::PubSub.new(user: user,
                                                 visualization: visualization,
                                                 widget: widget,
                                                 hash: @hash).to_hash

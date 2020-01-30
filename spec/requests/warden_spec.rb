@@ -349,14 +349,11 @@ describe 'Warden' do
       @user.session_salt = "1234567f"
       @user.save
 
-      @headers = { 'CONTENT_TYPE' => 'application/json', :format => "json", 'Accept' => 'application/json'}
+      get account_user_url
 
-      get dashboard_url, {}, @headers
-
-      response.status.should == 401
-      #follow_redirect!
-      #response.status.should == 200
-      #response.body.should include("Log in")
+      response.status.should == 302
+      follow_redirect!
+      response.body.should include("login")
     end
 
     it 'should invalidate all sessions at logout' do

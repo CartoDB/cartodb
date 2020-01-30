@@ -1,4 +1,5 @@
 require_relative '../base'
+require_relative '../../fdw_support'
 
 # Base class for Connector Providers
 # that use FDW to import data through a foreign table.

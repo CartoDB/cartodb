@@ -1,4 +1,3 @@
-#require 'securerandom'
 require_relative '../../lib/cartodb/profiler.rb'
 require_dependency 'carto/http_header_authentication'
 
@@ -86,8 +85,13 @@ class ApplicationController < ActionController::Base
     auth.request.session_options[:skip] = true if opts[:store] == false
   end
 
-  Warden::Manager.before_logout do |_user, auth, _opts|
-    _user&.invalidate_all_sessions!
+  Warden::Manager.before_logout do |user, auth, opts|
+    if user.present?
+      user.invalidate_all_sessions!
+    elsif opts[:scope]
+      scope_user = ::User.where(username: opts[:scope]).first
+      scope_user&.invalidate_all_sessions!
+    end
     auth.cookies.delete(ME_ENDPOINT_COOKIE, domain: Cartodb.config[:session_domain])
   end
 
@@ -266,8 +270,7 @@ class ApplicationController < ActionController::Base
   end
 
   def multifactor_authentication_required?(user = current_viewer)
-    user &&
-      user.multifactor_authentication_configured? &&
+    user&.multifactor_authentication_configured? &&
       !warden.session(user.username)[:multifactor_authentication_performed] &&
       !warden.session(user.username)[:skip_multifactor_authentication]
   rescue Warden::NotAuthenticated

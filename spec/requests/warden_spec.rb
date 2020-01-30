@@ -335,8 +335,8 @@ describe 'Warden' do
       @user.destroy
     end
 
-    xit 'should be valid for current security token ' do
-      warden.session(@user.username)[:sec_token] = @user.security_token
+    it 'should be valid for current security token ' do
+      env['warden'].session(@user.username)[:sec_token] = @user.security_token
 
       get account_user_url
 
@@ -349,9 +349,7 @@ describe 'Warden' do
       @user.session_salt = "1234567f"
       @user.save
 
-      binding.pry
       get account_user_url
-      binding.pry
 
       response.status.should == 302
       follow_redirect!
@@ -363,8 +361,9 @@ describe 'Warden' do
       initial_session_salt = @user.session_salt
       Cartodb::Central.any_instance.expects(:send_request)
 
-      get logout_url
+      logout
 
+      @user.reload
       initial_session_salt.should_not == @user.session_salt
     end
   end

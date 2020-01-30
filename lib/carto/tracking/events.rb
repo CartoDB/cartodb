@@ -259,7 +259,7 @@ module Carto
 
       class ModifiedAnalysis < AnalysisEvent
         def pubsub_name
-          'analysis_modified'
+          'analysis_updated'
         end
       end
 

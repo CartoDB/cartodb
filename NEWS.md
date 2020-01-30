@@ -8,6 +8,7 @@ Development
 - BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
 
 ### Bug fixes / enhancements
+- Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 
 4.34.0 (2020-01-28)

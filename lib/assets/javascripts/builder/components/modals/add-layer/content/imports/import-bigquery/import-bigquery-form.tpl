@@ -3,8 +3,8 @@
     <div class="Form-rowLabel ImportOptions__label">
       <label class="Form-label CDB-Text CDB-Size-medium u-mainTextColor"><%- _t('components.modals.add-layer.imports.bigquery.field-billing-project') %></label>
     </div>
-    <div class="">
-      <input type="text" class="ImportOptions__input--long Form-input CDB-Text CDB-Size-medium js-textInput">
+    <div>
+      <div class="ImportOptions__select"></div>
       <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%= _t('components.modals.add-layer.imports.bigquery.billing-project-hint') %></div>
     </div>
   </div>

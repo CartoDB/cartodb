@@ -27,9 +27,14 @@ module Carto
     end
 
     def values
-      hash = {}
-      STORE_ATTRIBUTES.each { |attr| hash[attr] = self.send(attr).to_json }
-      hash
+      {
+        service_account: @service_account.to_json,
+        bq_public_project: @bq_public_project,
+        gcp_execution_project: @gcp_execution_project,
+        bq_project: @bq_project,
+        bq_dataset: @bq_dataset,
+        gcs_bucket: @gcs_bucket
+      }
     end
 
     def remove

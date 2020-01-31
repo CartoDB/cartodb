@@ -583,7 +583,7 @@ feature "Superadmin's users API" do
       user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
     end
 
-    it 'gcloud settings are set in redis' do
+    it 'gcloud settings are updated in redis' do
       user = FactoryGirl.create(:user)
       user.save
 
@@ -615,6 +615,16 @@ feature "Superadmin's users API" do
       redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
       redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
       redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
+
+      # Now an update without gcloud settings
+      payload = {
+        user: {
+          gcloud_settings: nil
+        }
+      }
+      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
+      redis_gcloud_settings.should == {}
     end
   end
 

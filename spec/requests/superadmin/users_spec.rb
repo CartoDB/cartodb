@@ -587,28 +587,35 @@ feature "Superadmin's users API" do
       user = FactoryGirl.create(:user)
       user.save
 
+      expected_gcloud_settings = {
+        service_account: {
+          type: 'service_account',
+          project_id: 'my_project_id',
+          private_key_id: 'my_private_key_id'
+        },
+        bq_public_project: 'my_public_project',
+        gcp_execution_project: 'my_gcp_execution_project',
+        bq_project: 'my_bq_project',
+        gcs_bucket: 'my_gcs_bucket',
+        bq_dataset: 'my_bq_dataset'
+      }
+
       payload = {
         user: {
-          gcloud_settings: {
-            service_account: {
-              type: 'service_account',
-              project_id: 'my_project_id',
-              private_key_id: 'my_private_key_id'
-            },
-            bq_public_project: 'my_public_project',
-            gcp_execution_project: 'my_gcp_execution_project',
-            bq_project: 'my_bq_project',
-            gcs_bucket: 'my_gcs_bucket',
-            bq_dataset: 'my_bq_dataset'
-          }
+          gcloud_settings: expected_gcloud_settings
         }
       }
       put superadmin_user_url(user.id), payload.to_json, superadmin_headers
 
-      user_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
-      user_gcloud_settings.should == payload[:user][:gcloud_settings]
-    end
+      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}").symbolize_keys
 
+      redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account].to_json
+      redis_gcloud_settings[:bq_public_project].should == expected_gcloud_settings[:bq_public_project]
+      redis_gcloud_settings[:gcp_execution_project].should == expected_gcloud_settings[:gcp_execution_project]
+      redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
+      redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
+      redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
+    end
   end
 
   describe '#destroy' do

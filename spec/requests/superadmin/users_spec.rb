@@ -616,10 +616,29 @@ feature "Superadmin's users API" do
       redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
       redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
 
-      # Now an update without gcloud settings
+      # An update with nil gcloud settings
       payload = {
         user: {
           gcloud_settings: nil
+        }
+      }
+      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
+      redis_gcloud_settings.should == {}
+
+      # An update with empty gcloud settings
+      payload = {
+        user: {
+          gcloud_settings: {}
+        }
+      }
+      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
+      redis_gcloud_settings.should == {}
+
+      # An update without gcloud settings (so that it can safely be deployed without central changes)
+      payload = {
+        user: {
         }
       }
       put superadmin_user_url(user.id), payload.to_json, superadmin_headers

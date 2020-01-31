@@ -598,6 +598,7 @@ feature "Superadmin's users API" do
             bq_public_project: 'my_public_project',
             gcp_execution_project: 'my_gcp_execution_project',
             bq_project: 'my_bq_project',
+            gcs_bucket: 'my_gcs_bucket',
             bq_dataset: 'my_bq_dataset'
           }
         }

@@ -28,7 +28,7 @@ module Carto
 
     def values
       hash = {}
-      STORE_ATTRIBUTES.each { |attr| hash[attr] = self.send(attr) }
+      STORE_ATTRIBUTES.each { |attr| hash[attr] = self.send(attr).to_json }
       hash
     end
 

@@ -72,6 +72,7 @@ class Superadmin::UsersController < Superadmin::SuperadminController
     @user.regenerate_api_key(user_param[:api_key]) if user_param[:api_key].present?
 
     @user.update_rate_limits(user_param[:rate_limit])
+    @user.store_gcloud_settings(user_param[:gcloud_settings])
     @user.save
     respond_with(:superadmin, @user)
   end

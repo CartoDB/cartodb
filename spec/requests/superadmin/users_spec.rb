@@ -582,6 +582,32 @@ feature "Superadmin's users API" do
       user.reload
       user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
     end
+
+    it 'gcloud settings are set in redis' do
+      user = FactoryGirl.create(:user)
+      user.save
+
+      payload = {
+        user: {
+          gcloud_settings: {
+            service_account: {
+              type: 'service_account',
+              project_id: 'my_project_id',
+              private_key_id: 'my_private_key_id'
+            },
+            bq_public_project: 'my_public_project',
+            gcp_execution_project: 'my_gcp_execution_project',
+            bq_project: 'my_bq_project',
+            bq_dataset: 'my_bq_dataset'
+          }
+        }
+      }
+      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+
+      user_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
+      user_gcloud_settings.should == payload[:user][:gcloud_settings]
+    end
+
   end
 
   describe '#destroy' do

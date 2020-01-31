@@ -150,7 +150,7 @@ module Carto
 
       class ModifiedMap < MapEvent
         def pubsub_name
-          'map_modified'
+          'map_updated'
         end
       end
 

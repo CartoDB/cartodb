@@ -170,6 +170,17 @@ class Carto::User < ActiveRecord::Base
     # TODO: Implement
   end
 
+  def security_token
+    return if self.session_salt.blank?
+
+    Digest::SHA1.hexdigest(self.crypted_password + self.session_salt)
+  end
+
+  def invalidate_all_sessions!
+    user = ::User.where(id: self.id).first
+    user&.invalidate_all_sessions!
+  end
+
   def default_avatar
     "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end

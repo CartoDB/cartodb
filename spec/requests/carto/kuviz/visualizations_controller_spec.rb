@@ -6,8 +6,7 @@ describe Carto::Kuviz::VisualizationsController do
   include Warden::Test::Helpers
 
   def login(carto_user)
-    user = ::User.where(id: carto_user.id).first
-    login_as(user)
+    login_as(carto_user)
   end
 
   after(:all) do

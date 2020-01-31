@@ -37,7 +37,6 @@ module Carto
     end
 
     def key
-      require 'byebug'; byebug
       "#{REDIS_PREFIX}:#{@username}:#{@api_key}"
     end
   end

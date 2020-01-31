@@ -17,8 +17,9 @@ Development
 * Use Dataservices API client 0.28.0
 
 ### Bug fixes / enhancements
-* Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
-* Fix quotes for `rel='noopener noreferrer'` parameters
+- Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
+- Fix quotes for `rel='noopener noreferrer'` parameters
+- Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
 
 4.33.1 (2020-01-27)
 -------------------

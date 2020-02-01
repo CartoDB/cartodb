@@ -12,6 +12,7 @@ module Carto
     def initialize(user, attributes)
       @username = user.username
       @api_key = user.api_key
+      @attributes = attributes
 
       if attributes.present?
         h = attributes.symbolize_keys
@@ -21,6 +22,14 @@ module Carto
         @bq_project = h[:bq_project]
         @bq_dataset = h[:bq_dataset]
         @gcs_bucket = h[:gcs_bucket]
+      end
+    end
+
+    def update
+      if @attributes.present?
+        store
+      else
+        remove
       end
     end
 

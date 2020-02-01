@@ -1128,11 +1128,7 @@ class User < Sequel::Model
   def update_gcloud_settings(attributes)
     return if attributes.nil?
     settings = Carto::GCloudUserSettings.new(self, attributes)
-    if attributes.present?
-      settings.store
-    else
-      settings.remove
-    end
+    settings.update
   end
 
   def carto_account_type

@@ -3,9 +3,6 @@ module Carto
 
     REDIS_PREFIX = 'do_settings'
 
-    STORE_ATTRIBUTES = [ :service_account, :bq_public_project,
-      :gcp_execution_project, :bq_project, :bq_dataset, :gcs_bucket ]
-
     attr_reader :service_account, :bq_public_project,
                 :gcp_execution_project, :bq_project, :bq_dataset, :gcs_bucket
 

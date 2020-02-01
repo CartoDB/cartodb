@@ -616,16 +616,6 @@ feature "Superadmin's users API" do
       redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
       redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
 
-      # An update with nil gcloud settings
-      payload = {
-        user: {
-          gcloud_settings: nil
-        }
-      }
-      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
-      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
-      redis_gcloud_settings.should == {}
-
       # An update with empty gcloud settings
       payload = {
         user: {
@@ -644,6 +634,27 @@ feature "Superadmin's users API" do
       put superadmin_user_url(user.id), payload.to_json, superadmin_headers
       redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
       redis_gcloud_settings.should == {}
+    end
+
+    it 'gcloud settings are not deleted when not sent in update' do
+      user = FactoryGirl.create(:user)
+      user.save
+
+      # Populate dummy settings
+      expected_gcloud_settings = { bq_project: 'dummy_project' }
+      $users_metadata.hmset("do_settings:#{user.username}:#{user.api_key}", *expected_gcloud_settings.to_a)
+
+      # An update with nothing to do with gcloud_settings
+      payload = {
+        user: {
+          builder_enabled: true
+        }
+      }
+      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+
+      # Make sure they are still there
+      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}").symbolize_keys
+      redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
     end
   end
 

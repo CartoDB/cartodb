@@ -1126,6 +1126,7 @@ class User < Sequel::Model
   end
 
   def store_gcloud_settings(attributes)
+    return if attributes.nil?
     settings = Carto::GCloudUserSettings.new(self, attributes)
     if attributes.present?
       settings.store

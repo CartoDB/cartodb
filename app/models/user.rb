@@ -1125,7 +1125,7 @@ class User < Sequel::Model
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
   end
 
-  def store_gcloud_settings(attributes)
+  def update_gcloud_settings(attributes)
     return if attributes.nil?
     settings = Carto::GCloudUserSettings.new(self, attributes)
     if attributes.present?

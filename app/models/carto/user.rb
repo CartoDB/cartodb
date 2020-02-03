@@ -1,5 +1,6 @@
 require 'active_record'
 require 'cartodb-common'
+require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -107,6 +108,7 @@ class Carto::User < ActiveRecord::Base
 
   before_create :set_database_host
   before_create :generate_api_key
+  before_create :generate_session_salt
 
   after_save { reset_password_rate_limit if crypted_password_changed? }
 
@@ -813,6 +815,10 @@ class Carto::User < ActiveRecord::Base
 
   def generate_api_key
     self.api_key ||= make_token
+  end
+
+  def generate_session_salt
+    self.session_salt ||= SecureRandom.hex
   end
 
   def generate_token(column)

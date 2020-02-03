@@ -774,6 +774,7 @@ describe Carto::UserMetadataExportService do
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
         database_name: "cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db",
         username: "user00000001",
+        session_salt: "123456789f",
         state: 'active',
         admin: nil,
         maintenance_mode: true,

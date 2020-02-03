@@ -3074,10 +3074,12 @@ describe User do
   describe 'session' do
 
     before(:all) do
+      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
       @user = FactoryGirl.create(:valid_user)
     end
 
     after(:all) do
+      Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
       @user.destroy
     end
 

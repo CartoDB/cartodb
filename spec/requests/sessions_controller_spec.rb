@@ -5,6 +5,11 @@ require 'fake_net_ldap'
 require_relative '../lib/fake_net_ldap_bind_as'
 
 describe SessionsController do
+
+  after(:each) do
+    Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
+  end
+
   def create_ldap_user(admin_user_username, admin_user_password)
     admin_user_email = "#{@organization.name}-admin@test.com"
     admin_user_cn = "cn=#{admin_user_username},#{@domain_bases.first}"

@@ -5,18 +5,12 @@ require_relative '../../../factories/users_helper'
 describe Carto::Kuviz::VisualizationsController do
   include Warden::Test::Helpers
 
-  def login(carto_user)
-    login_as(carto_user)
-  end
-
   after(:all) do
     FileUtils.rmtree(Carto::Conf.new.public_uploads_path + '/kuviz_assets')
   end
 
   describe '#show' do
     before(:each) do
-      Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(false)
-
       @kuviz = FactoryGirl.create(:kuviz_visualization)
       @kuviz.save
       @asset = Carto::Asset.for_visualization(visualization: @kuviz,

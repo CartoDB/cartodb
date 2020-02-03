@@ -3092,13 +3092,28 @@ describe User do
       @user.security_token.should == sec_token
     end
 
-    it 'invalidation should modify salt and update central' do
-      Cartodb::Central.any_instance.expects(:send_request)
-      initial_salt = @user.session_salt
+    describe '#invalidate_all_sessions!' do
+      before(:each) do
+        Cartodb::Central.any_instance.stubs(:send_request)
+      end
 
-      @user.invalidate_all_sessions!
+      after(:each) do
+        Cartodb::Central.any_instance.unstub(:send_request)
+      end
 
-      initial_salt.should_not == @user.session_salt
+      it 'updates the session_salt' do
+        initial_session_salt = @user.session_salt
+
+        @user.invalidate_all_sessions!
+
+        initial_session_salt.should_not == @user.reload.session_salt
+      end
+
+      it 'updates the user in Central' do
+        Cartodb::Central.any_instance.expects(:send_request).once
+
+        @user.invalidate_all_sessions!
+      end
     end
   end
 

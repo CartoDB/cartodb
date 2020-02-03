@@ -326,15 +326,22 @@ describe 'Warden' do
   end
 
   describe 'session' do
-
     before(:all) do
       @user = FactoryGirl.create(:valid_user)
+    end
+
+    before(:each) do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)
+      Cartodb::Central.any_instance.stubs(:send_request)
     end
 
     after(:all) do
       @user.destroy
+    end
+
+    after(:each) do
       Cartodb::Central.unstub(:sync_data_with_cartodb_central?)
+      Cartodb::Central.any_instance.unstub(:send_request)
     end
 
     it 'should be valid for current security token ' do
@@ -364,14 +371,18 @@ describe 'Warden' do
       request.fullpath.should eql '/login'
     end
 
-    it 'should invalidate all sessions at logout' do
+    it 'updates the session_salt at logout' do
       initial_session_salt = @user.session_salt
-      Cartodb::Central.any_instance.expects(:send_request)
 
       logout
 
-      @user.reload
-      initial_session_salt.should_not == @user.session_salt
+      initial_session_salt.should_not == @user.reload.session_salt
+    end
+
+    it 'updates the user in Central at logout' do
+      Cartodb::Central.any_instance.expects(:send_request).once
+
+      logout
     end
   end
 end

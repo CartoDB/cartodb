@@ -58,7 +58,7 @@
     "password_privacy_map_count": 3,
     "public_privacy_map_count": 2,
     "public_map_quota": 10,
-    "private_map_quota": 3,
+    "private_map_quota": 0,
     "regular_api_key_quota": 3,
     "account_type": "Individual"
   },

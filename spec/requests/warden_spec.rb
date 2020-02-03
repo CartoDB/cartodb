@@ -345,6 +345,9 @@ describe 'Warden' do
     end
 
     it 'should be valid for current security token ' do
+      # we use this to avoid generating the static assets in CI
+      Admin::VisualizationsController.any_instance.stubs(:render).returns('')
+
       login
       cookies["_cartodb_session"] = response.cookies["_cartodb_session"]
 

@@ -7,13 +7,7 @@ require_relative 'providers/fdw/pg_fdw'
 
 module Carto
   class Connector
-    PROVIDERS = [
-      GenericOdbcProvider,
-      PostgreSQLProvider,
-      MySqlProvider,
-      SqlServerProvider,
-      HiveProvider
-    ]
+    PROVIDERS = []
 
     DEFAULT_PROVIDER = nil # No default provider
 

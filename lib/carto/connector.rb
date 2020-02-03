@@ -1,11 +1,10 @@
-require_relative 'connector/fdw_support'
 require_relative 'connector/errors'
 require_relative 'connector/providers'
 require_relative 'connector/parameters'
 require_relative 'connector/context'
 
 module Carto
-  # This class provides remote database connection services based on FDW
+  # This class provides remote database connection services
   class Connector
 
     attr_reader :provider_name

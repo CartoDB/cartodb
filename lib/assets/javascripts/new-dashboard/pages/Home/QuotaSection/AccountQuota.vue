@@ -15,6 +15,12 @@
       :availableQuota="availablePublicMaps"/>
 
     <QuotaWidget
+      v-if="hasPrivateMapsLimits"
+      :name="$t(`QuotaSection.privateMaps`)"
+      :usedQuota="usedPrivateMaps"
+      :availableQuota="availablePrivateMaps"/>
+
+    <QuotaWidget
       v-if="hasPublicMapLimits"
       :name="$t(`QuotaSection.datasets`)"
       :usedQuota="usedDatasets"
@@ -24,7 +30,8 @@
       v-if="hasApiKeysLimits"
       :name="$t(`QuotaSection.apiKeys`)"
       :usedQuota="usedApiKeys"
-      :availableQuota="availableApiKeys"/>
+      :availableQuota="availableApiKeys"
+      :isDisabled="hasApiKeysLimitsToZero"/>
   </QuotaContainer>
 </template>
 
@@ -33,7 +40,7 @@ import { mapState } from 'vuex';
 import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
 import { apiKeysTypes } from 'new-dashboard/core/constants/api-keys';
-import { accountsWithLimits } from 'new-dashboard/core/constants/accounts';
+import { accountsWithLimits, freeAccountsWithLimits } from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'AccountQuota',
@@ -57,6 +64,8 @@ export default {
       linkMapsTotal: state => state.user.link_privacy_map_count,
       passwordMapsTotal: state => state.user.password_privacy_map_count,
       publicMapsTotal: state => state.user.public_privacy_map_count,
+      availablePrivateMaps: state => state.user.private_map_quota,
+      mapsTotal: state => state.user.owned_visualization_count,
       availableDatasets: state => state.user.table_quota,
       usedDatasets: state => state.user.table_count,
       availableApiKeys: state => state.user.regular_api_key_quota,
@@ -72,16 +81,25 @@ export default {
       return 'https://carto.com/help/your-account/your-disk-storage/';
     },
     hasTableLimits () {
-      return accountsWithLimits.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
     },
     hasPublicMapLimits () {
-      return accountsWithLimits.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+    },
+    hasPrivateMapsLimits () {
+      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
     },
     hasApiKeysLimits () {
-      return accountsWithLimits.includes(this.planAccountType);
+      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+    },
+    hasApiKeysLimitsToZero () {
+      return freeAccountsWithLimits.includes(this.planAccountType);
     },
     usedPublicMaps () {
       return this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal;
+    },
+    privateMapsTotal () {
+      return this.mapsTotal - this.linkMapsTotal - this.passwordMapsTotal - this.publicMapsTotal;
     }
   },
   methods: {

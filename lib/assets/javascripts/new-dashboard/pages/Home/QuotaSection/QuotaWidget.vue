@@ -1,11 +1,15 @@
 <template>
-  <div class="quota-widget" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
+  <div class="quota-widget" :class="{'is-disabled': isDisabled }" @mouseover="onMouseOver" @mouseleave="onMouseLeave">
     <div class="quota-main">
       <div class="quota-cell cell--title">
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
-        <div class="progressbar">
+        <BadgeWarning  v-if="isDisabled" :showIcon="false" :hasMargin="false">
+          <img class="warning-icon" src="../../../assets/icons/common/info-icon.svg" width="16" height="16" />
+          <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
+        </BadgeWarning>
+        <div v-else class="progressbar">
             <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
             </div>
         </div>
@@ -36,6 +40,9 @@
 </template>
 
 <script>
+import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import { mapState } from 'vuex';
+
 export default {
   name: 'QuotaCard',
   props: {
@@ -48,7 +55,14 @@ export default {
       type: Boolean,
       default: true
     },
-    helpLink: String
+    helpLink: String,
+    isDisabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  components: {
+    BadgeWarning
   },
   data: function () {
     return {
@@ -56,6 +70,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      upgradeUrl: state => state.config.upgrade_url
+    }),
     remainingQuota () {
       const remainingQuota = this.availableQuota - this.usedQuota;
       return Math.max(0, remainingQuota);
@@ -104,6 +121,15 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 80px;
+
+  &.is-disabled {
+    background-color: rgba($color-primary--soft, 0.3);
+
+    .cell--title,
+    .quota-data {
+      opacity: 0.3;
+    }
+  }
 
   &:not(:last-of-type) {
     border-bottom: 1px solid $softblue;
@@ -156,7 +182,7 @@ export default {
 }
 
 .cell--title {
-  width: 110px;
+  width: 160px;
   margin-left: 36px;
 }
 
@@ -201,6 +227,10 @@ export default {
   .progressbar--problem {
     background-color: $danger__bg-color;
   }
+}
+
+.warning-icon {
+  margin-right: 5px;
 }
 
 </style>

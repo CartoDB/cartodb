@@ -1,10 +1,3 @@
-require_relative 'providers/fdw/odbc/generic_odbc'
-require_relative 'providers/fdw/odbc/mysql'
-require_relative 'providers/fdw/odbc/postgresql'
-require_relative 'providers/fdw/odbc/sqlserver'
-require_relative 'providers/fdw/odbc/hive'
-require_relative 'providers/fdw/pg_fdw'
-
 module Carto
   class Connector
     PROVIDERS = []

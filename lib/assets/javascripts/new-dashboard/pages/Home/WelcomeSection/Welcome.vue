@@ -1,12 +1,17 @@
 <template>
   <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
-      <template v-if="trialEndDate">
-        <span v-html="trialTimeLeft" class="title is-small"></span>
-        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
-          {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+    <WelcomeCompact v-else :name="name" :userType="userType">
+      <template>
+        <a v-if="isFree2020User && accountUpgradeURL" :href="accountUpgradeURL" class="button is-primary">
+          {{ $t('HomePage.WelcomeSection.upgradeNow') }}
         </a>
+        <div v-else-if="trialEndDate">
+          <span v-html="trialTimeLeft" class="title is-small"></span>
+          <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
+            {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+          </a>
+        </div>
       </template>
     </WelcomeCompact>
   </section>
@@ -61,6 +66,10 @@ export default {
         return 'free';
       }
 
+      if (this.isFree2020User()) {
+        return 'free2020';
+      }
+
       return 'unknown';
     }
   },
@@ -76,6 +85,10 @@ export default {
     isIndividualUser () {
       const individualUsers = ['Individual'];
       return individualUsers.includes(this.user.account_type);
+    },
+    isFree2020User () {
+      const free2020Users = ['Free2020'];
+      return free2020Users.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

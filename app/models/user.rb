@@ -693,7 +693,7 @@ class User < Sequel::Model
   def security_token
     return if self.session_salt.blank?
 
-    Digest::SHA1.hexdigest(self.crypted_password + self.session_salt)
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
   end
 
   def invalidate_all_sessions!

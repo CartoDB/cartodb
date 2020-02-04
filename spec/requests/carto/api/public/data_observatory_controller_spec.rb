@@ -323,11 +323,11 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 200 and null price with the metadata for a dataset with null price' do
+    it 'returns 200 and null values with the metadata for a dataset with null price and delivery days' do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetnull', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(200)
         expected_response = {
-          estimated_delivery_days: 0.0,
+          estimated_delivery_days: nil,
           id: 'carto.abc.datasetnull',
           licenses: 'licenses',
           licenses_link: 'licenses_link',
@@ -379,7 +379,6 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
-
   end
 
   describe 'subscribe' do
@@ -556,7 +555,7 @@ describe Carto::Api::Public::DataObservatoryController do
                                    'rights', '{bq}', 'CARTO dataset 1');
       INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', NULL, 'Incomplete dataset');
-      INSERT INTO datasets VALUES ('carto.abc.datasetnull', 0.0, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
+      INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', '{bq}', 'CARTO dataset null');
       INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', '{bq}', 'CARTO dataset zero');

@@ -98,6 +98,9 @@ export default {
     usedPublicMaps () {
       return this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal;
     },
+    usedPrivateMaps () {
+      return this.mapsTotal - this.usedPublicMaps;
+    },
     privateMapsTotal () {
       return this.mapsTotal - this.linkMapsTotal - this.passwordMapsTotal - this.publicMapsTotal;
     }

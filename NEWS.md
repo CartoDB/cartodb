@@ -22,6 +22,7 @@ Development
 - Fix quotes for `rel='noopener noreferrer'` parameters
 - Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
 - Fix assets version in package-lock.json to `1.0.0-assets.155`
+- Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
 
 4.33.1 (2020-01-27)
 -------------------

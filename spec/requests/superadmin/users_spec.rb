@@ -583,78 +583,100 @@ feature "Superadmin's users API" do
       user.rate_limit.api_attributes.should eq rate_limit_custom.api_attributes
     end
 
-    it 'gcloud settings are updated in redis' do
-      user = FactoryGirl.create(:user)
-      user.save
+    describe 'gcloud settings' do
 
-      expected_gcloud_settings = {
-        service_account: {
-          type: 'service_account',
-          project_id: 'my_project_id',
-          private_key_id: 'my_private_key_id'
-        },
-        bq_public_project: 'my_public_project',
-        gcp_execution_project: 'my_gcp_execution_project',
-        bq_project: 'my_bq_project',
-        gcs_bucket: 'my_gcs_bucket',
-        bq_dataset: 'my_bq_dataset'
-      }
+      before(:all) do
+        @user = FactoryGirl.create(:user)
+      end
 
-      payload = {
-        user: {
-          gcloud_settings: expected_gcloud_settings
+      after(:all) do
+        @user.destroy
+      end
+
+      after(:each) do
+        $users_metadata.del("do_settings:#{@user.username}:#{@user.api_key}")
+      end
+
+      it 'gcloud settings are updated in redis' do
+        expected_gcloud_settings = {
+          service_account: {
+            type: 'service_account',
+            project_id: 'my_project_id',
+            private_key_id: 'my_private_key_id'
+          },
+          bq_public_project: 'my_public_project',
+          gcp_execution_project: 'my_gcp_execution_project',
+          bq_project: 'my_bq_project',
+          gcs_bucket: 'my_gcs_bucket',
+          bq_dataset: 'my_bq_dataset'
         }
-      }
-      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
 
-      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}").symbolize_keys
-
-      redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account].to_json
-      redis_gcloud_settings[:bq_public_project].should == expected_gcloud_settings[:bq_public_project]
-      redis_gcloud_settings[:gcp_execution_project].should == expected_gcloud_settings[:gcp_execution_project]
-      redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
-      redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
-      redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
-
-      # An update with empty gcloud settings
-      payload = {
-        user: {
-          gcloud_settings: {}
+        payload = {
+          user: {
+            gcloud_settings: expected_gcloud_settings
+          }
         }
-      }
-      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
-      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
-      redis_gcloud_settings.should == {}
+        put superadmin_user_url(@user.id), payload.to_json, superadmin_headers do |response|
+          response.status.should == 204
+        end
 
-      # An update without gcloud settings (so that it can safely be deployed without central changes)
-      payload = {
-        user: {
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}").symbolize_keys
+
+        redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account].to_json
+        redis_gcloud_settings[:bq_public_project].should == expected_gcloud_settings[:bq_public_project]
+        redis_gcloud_settings[:gcp_execution_project].should == expected_gcloud_settings[:gcp_execution_project]
+        redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
+        redis_gcloud_settings[:gcs_bucket].should == expected_gcloud_settings[:gcs_bucket]
+        redis_gcloud_settings[:bq_dataset].should == expected_gcloud_settings[:bq_dataset]
+      end
+
+      it 'gclouds settings are set to blank when receiving empty hash' do
+        dummy_settings = { bq_project: 'dummy_project' }
+        $users_metadata.hmset("do_settings:#{@user.username}:#{@user.api_key}", *dummy_settings.to_a)
+
+        payload = {
+          user: {
+            gcloud_settings: {}
+          }
         }
-      }
-      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
-      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}")
-      redis_gcloud_settings.should == {}
-    end
+        put superadmin_user_url(@user.id), payload.to_json, superadmin_headers do |response|
+          response.status.should == 204
+        end
 
-    it 'gcloud settings are not deleted when not sent in update' do
-      user = FactoryGirl.create(:user)
-      user.save
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}")
+        redis_gcloud_settings.should == {}
+      end
 
-      # Populate dummy settings
-      expected_gcloud_settings = { bq_project: 'dummy_project' }
-      $users_metadata.hmset("do_settings:#{user.username}:#{user.api_key}", *expected_gcloud_settings.to_a)
+      it 'An update without gcloud settings do not affect them' do
+        expected_settings = { bq_project: 'dummy_project' }
+        $users_metadata.hmset("do_settings:#{@user.username}:#{@user.api_key}", *expected_settings.to_a)
 
-      # An update with nothing to do with gcloud_settings
-      payload = {
-        user: {
-          builder_enabled: true
+        payload = {
+          user: {
+            builder_enabled: true
+          }
         }
-      }
-      put superadmin_user_url(user.id), payload.to_json, superadmin_headers
+        put superadmin_user_url(@user.id), payload.to_json, superadmin_headers do |response|
+          response.status.should == 204
+        end
 
-      # Make sure they are still there
-      redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{user.username}:#{user.api_key}").symbolize_keys
-      redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]
+        redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}").symbolize_keys
+        redis_gcloud_settings.should == expected_settings
+      end
+
+      it 'An update without gcloud settings does not add an empty key to redis' do
+        payload = {
+          user: {
+            #builder_enabled: true
+          }
+        }
+        put superadmin_user_url(@user.id), payload.to_json, superadmin_headers do |response|
+          response.status.should == 204
+        end
+
+        keys = $users_metadata.keys("do_settings:#{@user.username}:*")
+        keys.should be_empty
+      end
     end
   end
 

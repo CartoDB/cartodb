@@ -96,6 +96,10 @@ export default {
     isFree2020User () {
       return Accounts.free2020.includes(this.user.account_type);
     },
+    isFree2020User () {
+      const free2020Users = ['Free2020'];
+      return free2020Users.includes(this.user.account_type);
+    },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {
         return false;

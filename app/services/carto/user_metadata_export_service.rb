@@ -24,10 +24,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.12: maintenance_mode
 # 1.0.13: company_employees, use_case
 # 1.0.14: private_map_quota
+# 1.0.15: session_salt
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.14'.freeze
+    CURRENT_VERSION = '1.0.15'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled

@@ -186,7 +186,15 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports latest' do
-      test_import_user_from_export(full_export)
+      user = test_import_user_from_export(full_export)
+
+      expect(user.session_salt).to eq '123456789f'
+    end
+
+    it 'imports 1.0.14 (without session_salt)' do
+      user = test_import_user_from_export(full_export_one_zero_fourteen)
+
+      expect(user.session_salt).to_not eq '123456789f'
     end
 
     it 'imports 1.0.13 (without private_map_quota)' do
@@ -388,7 +396,9 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_user(export, user)
-    Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
+    # session_salt is generated on user creation, it's ok if it's different on exports < 1.0.15
+    attributes_to_check = Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES - [:session_salt]
+    attributes_to_check.each do |att|
       error = "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
       expect(export[att]).to eq(user.attributes[att.to_s]), error
     end
@@ -768,7 +778,7 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.14",
+      version: "1.0.15",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
@@ -1146,8 +1156,15 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_fourteen) do
+    user_hash = full_export[:user].except!(:session_salt)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_thirteen) do
-    user_hash = full_export[:user].except!(:private_map_quota)
+    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota)
 
     full_export[:user] = user_hash
     full_export

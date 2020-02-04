@@ -15,6 +15,7 @@ Development
 - Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
 - Add private map count to /me ([#15464](https://github.com/CartoDB/cartodb/pull/15464))
 - Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
+- New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))
 
 4.34.0 (2020-01-28)
 -------------------

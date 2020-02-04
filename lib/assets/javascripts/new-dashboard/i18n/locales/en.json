@@ -307,7 +307,7 @@
     "isolines": "Isolines",
     "routing": "Routing",
     "credits": "Your credits will be renewed in 0 days ({day} of each month). | Your credits will be renewed in {remainingDays} day ({day} of each month). | Your credits will be renewed in {remainingDays} days ({day} of each month).",
-    "upgrade": "Not included in your plan. <a class='is-bold' href='{path}'>Upgrade plan</a>"
+    "upgrade": "Not included in your current plan. <a class='is-bold' href='{path}'>Upgrade now</a>"
   },
   "Footer": {
     "HelpCenter": {

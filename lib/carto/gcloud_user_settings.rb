@@ -34,7 +34,7 @@ module Carto
     end
 
     def remove
-      $users_metadata.del key
+      $users_metadata.del(key)
     end
 
     def key

@@ -1357,7 +1357,9 @@
                     "bigquery": {
                         "field-billing-project": "Billing Project ID",
                         "billing-project-hint": "Project ID for the Google Cloud project that will run the queries and be charged for the expenses. Example: my-project-identifier. More info <a href='https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_project' target='_blank'>here</a>.",
-                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM project.dataset.table"
+                        "placeholder": "SELECT *, ST_GeogPoint(longitude, latitude) AS the_geom FROM project.dataset.table",
+                        "import-as-field": "CARTO Dataset name",
+                        "import-as-hint": "Name of the new Dataset in your CARTO Dashboard with the imported data."
                     },
                     "database": {
                         "title": "Enter your %{brand} credentials",

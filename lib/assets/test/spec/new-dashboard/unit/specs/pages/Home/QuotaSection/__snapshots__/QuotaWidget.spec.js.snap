@@ -1,5 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`QuotaWidget.vue should render a disabled  widget with warning 1`] = `
+<div class="quota-widget is-disabled" quotatype="credits">
+  <div class="quota-main">
+    <div class="quota-cell cell--title">
+      <h4 class="text is-caption is-semibold is-txtGrey">Another test</h4>
+    </div>
+    <div class="quota-cell cell--large">
+      <badgewarning-stub><img src="../../../assets/icons/common/info-icon.svg" width="16" height="16" class="warning-icon">
+        <div class="text is-small">QuotaSection.upgrade</div>
+      </badgewarning-stub>
+    </div>
+  </div>
+  <div class="quota-data">
+    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+        0 
+      </span></div>
+    <div class="quota-cell cell--medium cell--mobile"><span class="text is-small is-txtSoftGrey">
+        0 
+      </span></div>
+    <div class="quota-cell cell--medium"><span class="text is-small is-txtSoftGrey">
+        0 
+      </span></div>
+    <div class="quota-help cell--small"><a href="https://test-help-link.com" target="_blank"><img svg-inline="" src="../../../assets/icons/common/question-mark.svg" class="quota-image"></a></div>
+  </div>
+</div>
+`;
+
 exports[`QuotaWidget.vue should render correct contents 1`] = `
 <div class="quota-widget" quotatype="quota">
   <div class="quota-main">

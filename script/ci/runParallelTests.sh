@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKERS=${1:-20}
+WORKERS=${1:-22}
 
 # BACKEND PARALLEL
 script/ci/generateSpecFull.sh || exit 1

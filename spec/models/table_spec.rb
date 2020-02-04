@@ -552,7 +552,7 @@ describe Table do
         table.name = 'Wadus table #23'
         table.save
         table.reload
-        table.name.should == "Wadus table #23".sanitize
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table'.to_sym).should be_false
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
@@ -561,7 +561,7 @@ describe Table do
         table.name = ''
         table.save
         table.reload
-        table.name.should == "Wadus table #23".sanitize
+        table.name.should == CartoDB::Importer2::StringSanitizer.sanitize("Wadus table #23")
         @user.in_database do |user_database|
           user_database.table_exists?('wadus_table_23'.to_sym).should be_true
         end
@@ -2219,23 +2219,28 @@ describe Table do
     describe 'self.get_valid_column_name' do
       it 'returns the same candidate name if it is ok' do
         Table.expects(:get_column_names).once.returns(%w{a b c})
-        Table.get_valid_column_name('dummy_table_name', 'a').should == 'a'
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
+        Table.get_valid_column_name('dummy_table_name', 'a', version).should == 'a'
       end
 
       it 'returns an alternative name if using a reserved word' do
         Table.expects(:get_column_names).once.returns(%w{column b c})
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
         Table.get_valid_column_name(
           'dummy_table_name',
           'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_1'
+          version
+        ).should == '_column'
       end
 
       it 'avoids collisions when a renamed column already exists' do
-        Table.expects(:get_column_names).once.returns(%w{column_1 column c})
+        Table.expects(:get_column_names).once.returns(%w{_column column c})
+        version = CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION
         Table.get_valid_column_name(
           'dummy_table_name',
           'column',
-          reserved_words: %w{ INSERT SELECT COLUMN }).should == 'column_2'
+          version
+        ).should == '_column_1'
       end
 
     end

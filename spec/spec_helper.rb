@@ -30,6 +30,7 @@ RSpec.configure do |config|
   config.include CartoDB::Factories
   config.include HelperMethods
   config.include NamedMapsHelper
+  config.include Capybara::DSL
 
   config.after(:each) do
     Delorean.back_to_the_present

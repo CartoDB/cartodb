@@ -24,7 +24,7 @@
         <label class="Form-label">Your password</label>
       </div>
       <div class="Form-rowData">
-        <input type="password" name="deletion_password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
+        <input type="password" autocomplete="off" name="deletion_password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long" value=""/>
       </div>
     </div>
   </div>

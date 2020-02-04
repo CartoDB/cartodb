@@ -58,7 +58,7 @@
                   <% end %>
                 <% elsif @organization.auth_username_password_enabled %>
                   <div class="Sessions-field">
-                    <%= f.password_field :password, class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
+                    <%= f.password_field :password, autocomplete: "off", class: "CDB-Size-medium Sessions-input bottomBorderRadius", placeholder: 'Password' %>
                     <% if !@user.errors[:password].blank? %>
                       <div class="Sessions-fieldError js-Sessions-fieldError" data-content="<%= @user.errors[:password] %>">!</div>
                     <% end %>

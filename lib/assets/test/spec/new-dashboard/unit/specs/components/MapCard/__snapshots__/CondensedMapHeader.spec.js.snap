@@ -9,15 +9,18 @@ exports[`CondensedMapHeader.vue should render correct contents 1`] = `
       </span></div>
   </div>
   <div class="viz-column--extra-info">
-    <div class="viz-column--status">
+    <div class="viz-column--statusL">
+      <div class="cell cell--medium u-p--0"><span class="text is-small is-txtSoftGrey">
+          MapListHeader.type
+        </span></div>
       <div class="cell cell--large"><span class="text is-small is-txtSoftGrey is-active element-sort">
           MapListHeader.lastModified
         </span></div>
-      <div class="cell cell--large u-txt-right u-p--0 "><span class="text is-small is-txtSoftGrey element-sort">
+      <div class="cell cell--xsmall u-txt-right u-p--0"><span class="text is-small is-txtSoftGrey element-sort">
           MapListHeader.views
         </span></div>
     </div>
-    <div class="viz-column--share">
+    <div class="viz-column--shareS">
       <div class="cell cell--small"><span class="text is-small is-txtSoftGrey element-sort">
           MapListHeader.privacy
         </span></div>

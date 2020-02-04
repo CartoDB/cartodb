@@ -2,25 +2,73 @@ Development
 -----------
 
 ### NOTICES
-- This release upgrades the CartoDB PostgreSQL extension to `0.35.0`. Run the following to have it available:
+- None yet
+
+### Features
+- BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
+
+### Bug fixes / enhancements
+- Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
+- Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
+
+4.34.0 (2020-01-28)
+-------------------
+
+### Features
+* Use Dataservices API client 0.28.0
+
+### Bug fixes / enhancements
+- Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
+- Fix quotes for `rel='noopener noreferrer'` parameters
+- Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
+- Fix assets version in package-lock.json to `1.0.0-assets.155`
+- Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
+
+4.33.1 (2020-01-27)
+-------------------
+
+4.33.0 (2020-01-24)
+-------------------
+
+### NOTICES
+* This release upgrades the CartoDB PostgreSQL extension to `0.35.0`. Run the following to have it available:
 ```shell
 cd $(git rev-parse --show-toplevel)/lib/sql
 sudo make install
 ```
 
 ### Features
-- None yet
+- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
-- Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
-- Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
-- Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
-- Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
-- Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
-- Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
-- Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
-- Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
-- Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
+* Add noindex meta to organization login page ([#15117](https://github.com/CartoDB/cartodb/issues/15117))
+* Prevent sync starvation ([#15398](https://github.com/CartoDB/cartodb/issues/15398))
+* Fix misplaced footer in Dialogs ([#15418](https://github.com/CartoDB/cartodb/pull/15418))
+* Remove directo connections debug trace ([#15274](https://github.com/CartoDB/cartodb/pull/15274))
+* New versioned sanitization of column names ([#15326](https://github.com/CartoDB/cartodb/issues/15326))
+* Change Catalog dropdown placeholders (([#15335](https://github.com/CartoDB/cartodb/issues/15335)))
+* Fix /embed_map for kuviz ([#15360](https://github.com/CartoDB/cartodb/pull/15360))
+* Avoid extra calls when counting number of likes of each visualization ([#15349](https://github.com/CartoDB/cartodb/pull/15349))
+* Add scroll to uploaded icons page ([CartoDB/support#2073](https://github.com/CartoDB/support/issues/2073))
+* Disable the submit button in the Request Connector form when needed ([#15353](https://github.com/CartoDB/cartodb/issues/15353))
+* Fix 414 Request-URI error choosing http method based on real query ([CartoDB/support#2263](https://github.com/CartoDB/support/issues/2263))
+* Count kuviz for public map quota ([#15367](https://github.com/CartoDB/cartodb/pull/15367))
+* Exclude table permissions from /viz with show_permission=false ([#15368](https://github.com/CartoDB/cartodb/pull/15368))
+* Track kuviz events ([#15377](https://github.com/CartoDB/cartodb/pull/15377) and [#15386](https://github.com/CartoDB/cartodb/pull/15386))
+* Add config option for disabling email MX check ([#15280](https://github.com/CartoDB/cartodb/pull/15280))
+* Add default delivery days for data observatory metadata ([#15362](https://github.com/CartoDB/cartodb/pull/15362))
+* Add required tips parameter to fix street geocoding in advanced mode ([CartoDB/support#2265](https://github.com/CartoDB/support/issues/2265))
+* Use plpython3u for PG12+ ([#15228](https://github.com/CartoDB/cartodb/pull/15228))
+* Avoid requesting password for kuviz with permissions and send email when sharing ([#15384](https://github.com/CartoDB/cartodb/pull/15384))
+* Unique name for Kuvizs [#15385](https://github.com/CartoDB/cartodb/pull/15385)
+* Check if the connector is configured to add it to the Connectors UI [#15399](https://github.com/CartoDB/cartodb/pull/15399)
+* Add a new geocoder (Geocodio) [#15394](https://github.com/CartoDB/cartodb/issues/15394)
+* Do dataset price returns zero or null [#15408](https://github.com/CartoDB/cartodb/pull/15408)
+* Fix ensuring uniqueness working with kuviz [#15417](https://github.com/CartoDB/cartodb/pull/15417)
+* Update CARTOframes onboarding [#15420](https://github.com/CartoDB/cartodb/pull/15420)
+* Update CartoCSS info about URI images [CartoDB/developers#651](https://github.com/CartoDB/developers/issues/651)
+* Upgrade jQuery to 3.4.1 to fix dependency vulnerabilities ([CartoDB/support#2057](https://github.com/CartoDB/support/issues/2057))
 
 4.32.0 (2019-12-27)
 -------------------
@@ -89,13 +137,13 @@ sudo make install
 * Add support for BigQuery connector (https://github.com/CartoDB/cartodb/pull/15179)
 
 ### Bug fixes / enhancements
-- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
-- Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
-- Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
-- Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
-- Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
-- Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
-- Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
+* Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+* Fix message in password confirmation modal when changing the password ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
+* Fix message in password protected maps ([CartoDB/design#1758](https://github.com/CartoDB/design/issues/1758)
+* Fix Catalog Dropdowns scroll ([CartoDB/design#1744](https://github.com/CartoDB/design/issues/1744)
+* Fix Visualization Searcher ([CartoDB/cartodb#15224](https://github.com/CartoDB/cartodb/issues/15224)
+* Reassign ownership after destroying an OAuth API key ([#15162](https://github.com/CartoDB/cartodb/pull/15162))
+* Show create dataset button when the user enters the dashboard the first time but already has datasets ([CartoDB/support#2187](https://github.com/CartoDB/support/issues/2187))
 
 4.30.0 (2019-10-18)
 -------------------
@@ -136,6 +184,13 @@ sudo make install
   * Add list of datasets for new Catalogue page ([#15115](https://github.com/CartoDB/cartodb/issues/15115))
   * Add interactivity/filtering section to new Catalogue page ([#15116](https://github.com/CartoDB/cartodb/issues/15116))
   * Add detail page to new Catalogue ([#15124](https://github.com/CartoDB/cartodb/issues/15124))
+* Add Kuviz to Maps page:
+  * (a) - Add kuviz to visualizations request (maps) ([#15192](https://github.com/CartoDB/cartodb/issues/15192))
+  * (b) - Quick actions ([#15174](https://github.com/CartoDB/cartodb/issues/15174))
+  * (c) - Bulk actions ([#15173](https://github.com/CartoDB/cartodb/issues/15173))
+  * (d) - Dropdown filter ([#15175](https://github.com/CartoDB/cartodb/issues/15175))
+  * (e) - Custom kuviz card ([#15193](https://github.com/CartoDB/cartodb/issues/15193))
+
 
 ### Bug fixes / enhancements
 * Change utm_parameters ([#15146](https://github.com/CartoDB/cartodb/pull/15146))

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>None</title>
+  <title>onboarding_analysis</title>
   <meta name="description" content="None">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
@@ -13,23 +13,23 @@
   <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css" rel="stylesheet" />
 
   <!-- Include Airship -->
-  <script nomodule="" src="https://libs.cartocdn.com/airship-components/v2.2.0-rc.2.1/airship.js"></script>
-  <script type="module" src="https://libs.cartocdn.com/airship-components/v2.2.0-rc.2.1/airship/airship.esm.js"></script>
-  <script src="https://libs.cartocdn.com/airship-bridge/v2.2.0-rc.2.1/asbridge.min.js"></script>
-  <link href="https://libs.cartocdn.com/airship-style/v2.2.0-rc.2.1/airship.min.css" rel="stylesheet">
-  <link href="https://libs.cartocdn.com/airship-icons/v2.2.0-rc.2.1/icons.css" rel="stylesheet">
+  <script nomodule="" src="https://libs.cartocdn.com/airship-components/v2.2/airship.js"></script>
+  <script type="module" src="https://libs.cartocdn.com/airship-components/v2.2/airship/airship.esm.js"></script>
+  <script src="https://libs.cartocdn.com/airship-bridge/v2.2/asbridge.min.js"></script>
+  <link href="https://libs.cartocdn.com/airship-style/v2.2/airship.min.css" rel="stylesheet">
+  <link href="https://libs.cartocdn.com/airship-icons/v2.2/icons.css" rel="stylesheet">
 
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
 
   <!-- External libraries -->
 
-  <!-- base64-js -->
-  <script src='https://libs.cartocdn.com/cartoframes/dependencies/base64.js'></script>
-
+  <!-- pako -->
+  <script src="https://libs.cartocdn.com/cartoframes/dependencies/pako_inflate.min.js"></script>
+  
   <!-- html2canvas -->
+  
 
-
-
+  
   <style>
   body {
     margin: 0;
@@ -174,45 +174,91 @@
 <body class="as-app-body as-app">
   <img id="map-image" class="map-image" alt='Static map image' />
   <as-responsive-content id="main-container">
+    
+      
 
+<aside class="as-sidebar as-sidebar--right" id="widgets" data-name="Widgets">
+  
+    
+      
+        
+          <div class="as-box">
+            <section class="as-body">
+    
+      <div>
+  <as-histogram-widget
+    id="layer0_widget0"
+    description=""
+    heading="revenue">
+  </as-histogram-widget>
+  
+</div>
+    
+  </section>
+          </div>
+        
+    
+  
+    
+  
+</aside>
+    
     <main class="as-main">
       <div class="as-map-area">
         <div id="map" class="map"></div>
-
-
+        
+        
           <div class="as-map-panels" data-name="Legends">
             <div class="as-panel as-panel--left as-panel--top">
-
+              
 
 <div class="as-panel__element" id="legends">
-
-
-
-
-
-
-        <as-legend
-          heading="% Population with Masters degree"
-          description="">
-          <as-legend-color-bins-polygon id="layer0_map0_legend0" slot="legends"></as-legend-color-bins-polygon>
-
-        </as-legend>
-
-
-
+  
+    
+    
+      
+        
+          <as-legend
+            heading="revenue"
+            description="">
+            <as-legend-size-continuous id="layer0_map0_legend0" slot="legends"></as-legend-size-continuous>
+            
+          </as-legend>
+        
+      
+    
+  
+    
+    
+      
+        
+          <as-legend
+            heading="total_pop"
+            description="">
+            <as-legend-color-continuous id="layer1_map0_legend0" slot="legends"></as-legend-color-continuous>
+            
+          </as-legend>
+        
+      
+    
+  
 </div>
             </div> <!-- as-panel -->
           </div> <!-- as-map-panels -->
-
+        
       </div> <!-- as-map-area -->
     </main> <!-- as-main -->
   </as-responsive-content>
 
-
+  
+    <div class="map-footer">
+  <span>Crafted with ♥ and CARTOframes | <a href="https://carto.com/developers/cartoframes/">Learn more</a></span>
+</div>
+  
 
   <div id="error-container" class="error">
   <p>There is a <span class="errors" id="error-highlight"></span>
-  from the <a href="https://carto.com/developers/carto-vl/" target="_blank">CARTO VL</a> library:</p>
+  from the <a href="https://carto.com/developers/carto-vl/" target="_blank" rel="noopener noreferrer">CARTO VL</a> library:</p>
   <section class="error-section">
     <span class="errors" id="error-name"></span>:
     <section id="error-content">
@@ -242,143 +288,7 @@
     compact: false
   });
 
-  const FIT_BOUNDS_SETTINGS = { animate: false, padding: 50, maxZoom: 14 };
-
-  function format(value) {
-    if (Array.isArray(value)) {
-      const [first, second] = value;
-      if (first === -Infinity) {
-        return `< ${formatValue(second)}`;
-      }
-      if (second === Infinity) {
-        return `> ${formatValue(first)}`;
-      }
-      return `${formatValue(first)} - ${formatValue(second)}`;
-    }
-    return formatValue(value);
-  }
-
-  function formatValue(value) {
-    if (typeof value === 'number') {
-      return formatNumber(value);
-    }
-    return value;
-  }
-
-  function formatNumber(value) {
-    const log = Math.log10(Math.abs(value));
-
-    if ((log > 4 || log < -2.00000001) && value) {
-      return value.toExponential(2);
-    }
-
-    if (!Number.isInteger(value)) {
-      return value.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 3
-      });
-    }
-
-    return value.toLocaleString();
-  }
-
-  function updateViewport(map) {
-    function updateMapInfo() {
-      const mapInfo$ = document.getElementById('map-info');
-      const center = map.getCenter();
-      const lat = center.lat.toFixed(6);
-      const lng = center.lng.toFixed(6);
-      const zoom = map.getZoom().toFixed(2);
-
-      mapInfo$.innerText = `viewport={'zoom': ${zoom}, 'lat': ${lat}, 'lng': ${lng}}`;
-    }
-
-    updateMapInfo();
-
-    map.on('zoom', updateMapInfo);
-    map.on('move', updateMapInfo);
-  }
-
-  function getBasecolorSettings(basecolor) {
-    return {
-      'version': 8,
-      'sources': {},
-      'layers': [{
-          'id': 'background',
-          'type': 'background',
-          'paint': {
-              'background-color': basecolor
-          }
-      }]
-    };
-  }
-
-  function getImageElement(mapIndex) {
-    const id = mapIndex !== undefined ? `map-image-${mapIndex}` : 'map-image';
-    return document.getElementById(id);
-  }
-
-  function getContainerElement(mapIndex) {
-    const id = mapIndex !== undefined ? `main-container-${mapIndex}` : 'main-container';
-    return document.getElementById(id);
-  }
-
-  function saveImage(mapIndex) {
-    const img = getImageElement(mapIndex);
-    const container = getContainerElement(mapIndex);
-
-    html2canvas(container)
-      .then((canvas) => setMapImage(canvas, img, container));
-  }
-
-  function setMapImage(canvas, img, container) {
-    const src = canvas.toDataURL();
-    img.setAttribute('src', src);
-    img.style.display = 'block';
-    container.style.display = 'none';
-  }
-
-  function createDefaultLegend(layers) {
-    const defaultLegendContainer = document.getElementById('default-legend-container');
-    defaultLegendContainer.style.display = 'none';
-
-    AsBridge.VL.Legends.layersLegend(
-      '#default-legend',
-      layers,
-      {
-        onLoad: () => defaultLegendContainer.style.display = 'unset'
-      }
-    );
-  }
-
-  function createLegend(layer, legendData, layerIndex, mapIndex=0) {
-    const element = document.querySelector(`#layer${layerIndex}_map${mapIndex}_legend`);
-
-    if (legendData.length) {
-      legendData.forEach((legend, legendIndex) => _createLegend(layer, legend, layerIndex, legendIndex, mapIndex));
-    } else {
-      _createLegend(layer, legendData, layerIndex, 0, mapIndex);
-    }
-  }
-
-  function _createLegend(layer, legend, layerIndex, legendIndex, mapIndex=0) {
-    const element = document.querySelector(`#layer${layerIndex}_map${mapIndex}_legend${legendIndex}`);
-
-    if (legend.prop) {
-      const othersLabel = 'Others';   // TODO: i18n
-      const prop = legend.prop;
-      const dynamic = legend.dynamic;
-      const variable = legend.variable;
-      const config = { othersLabel, variable };
-      const options = { format, config, dynamic };
-
-      if (legend.type.startsWith('size-continuous')) {
-        config.samples = 4;
-      }
-
-      AsBridge.VL.Legends.rampLegend(element, layer, prop, options);
-    }
-  }
+  const FIT_BOUNDS_SETTINGS = { animate: false, padding: 50, maxZoom: 16 };
 
   /** From https://github.com/errwischt/stacktrace-parser/blob/master/src/stack-trace-parser.js */
 
@@ -503,6 +413,100 @@
     stacktrace$.innerHTML = list.join('\n');
   }
 
+  function format(value) {
+    if (Array.isArray(value)) {
+      const [first, second] = value;
+      if (first === -Infinity) {
+        return `< ${formatValue(second)}`;
+      }
+      if (second === Infinity) {
+        return `> ${formatValue(first)}`;
+      }
+      return `${formatValue(first)} - ${formatValue(second)}`;
+    }
+    return formatValue(value);
+  }
+
+  function formatValue(value) {
+    if (typeof value === 'number') {
+      return formatNumber(value);
+    }
+    return value;
+  }
+
+  function formatNumber(value) {
+    const log = Math.log10(Math.abs(value));
+
+    if ((log > 4 || log < -2.00000001) && value) {
+      return value.toExponential(2);
+    }
+    
+    if (!Number.isInteger(value)) {
+      return value.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 3
+      });
+    }
+    
+    return value.toLocaleString();
+  }
+
+  function updateViewport(map) {
+    function updateMapInfo() {
+      const mapInfo$ = document.getElementById('map-info');
+      const center = map.getCenter();
+      const lat = center.lat.toFixed(6);
+      const lng = center.lng.toFixed(6);
+      const zoom = map.getZoom().toFixed(2);
+    
+      mapInfo$.innerText = `viewport={'zoom': ${zoom}, 'lat': ${lat}, 'lng': ${lng}}`;
+    }
+
+    updateMapInfo();
+
+    map.on('zoom', updateMapInfo);
+    map.on('move', updateMapInfo); 
+  }
+
+  function getBasecolorSettings(basecolor) {
+    return {
+      'version': 8,
+      'sources': {},
+      'layers': [{
+          'id': 'background',
+          'type': 'background',
+          'paint': {
+              'background-color': basecolor
+          }
+      }]
+    };
+  }
+
+  function getImageElement(mapIndex) {
+    const id = mapIndex !== undefined ? `map-image-${mapIndex}` : 'map-image';
+    return document.getElementById(id);
+  }
+
+  function getContainerElement(mapIndex) {
+    const id = mapIndex !== undefined ? `main-container-${mapIndex}` : 'main-container';
+    return document.getElementById(id);
+  }
+
+  function saveImage(mapIndex) {
+    const img = getImageElement(mapIndex);
+    const container = getContainerElement(mapIndex);
+
+    html2canvas(container)
+      .then((canvas) => setMapImage(canvas, img, container));
+  }
+
+  function setMapImage(canvas, img, container) {
+    const src = canvas.toDataURL();
+    img.setAttribute('src', src);
+    img.style.display = 'block';
+    container.style.display = 'none';
+  }
+
   function resetPopupClick(interactivity) {
     interactivity.off('featureClick');
   }
@@ -511,15 +515,16 @@
     interactivity.off('featureHover');
   }
 
-  function setPopupsClick(map, popup, interactivity, attrs) {
+  function setPopupsClick(map, clickPopup, hoverPopup, interactivity, attrs) {
     interactivity.on('featureClick', (event) => {
-      updatePopup(map, popup, event, attrs);
+      updatePopup(map, clickPopup, event, attrs);
+      hoverPopup.remove();
     });
   }
 
-  function setPopupsHover(map, popup, interactivity, attrs) {
+  function setPopupsHover(map, hoverPopup, interactivity, attrs) {
     interactivity.on('featureHover', (event) => {
-      updatePopup(map, popup, event, attrs);
+      updatePopup(map, hoverPopup, event, attrs);
     });
   }
 
@@ -534,7 +539,7 @@
         }
         // Track layers to add only one feature per layer
         layerIDs.push(feature.layerId);
-
+    
         for (const item of attrs) {
           const variable = feature.variables[item.name];
           if (variable) {
@@ -563,7 +568,13 @@
 
   function setInteractivity(map, interactiveLayers, interactiveMapLayers) {
     const interactivity = new carto.Interactivity(interactiveMapLayers);
-    const popup = new mapboxgl.Popup({
+
+    const clickPopup = new mapboxgl.Popup({
+      closeButton: true,
+      closeOnClick: false
+    });
+
+    const hoverPopup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false
     });
@@ -574,11 +585,11 @@
     resetPopupHover(map);
 
     if (clickAttrs.length > 0) {
-      setPopupsClick(map, popup, interactivity, clickAttrs);
+      setPopupsClick(map, clickPopup, hoverPopup, interactivity, clickAttrs);
     }
 
     if (hoverAttrs.length > 0) {
-      setPopupsHover(map, popup, interactivity, hoverAttrs);
+      setPopupsHover(map, hoverPopup, interactivity, hoverAttrs);
     }
   }
 
@@ -658,6 +669,33 @@
       : null;
   }
 
+  function createLegends(layer, legends, layerIndex, mapIndex=0) {
+    if (legends.length) {
+      legends.forEach((legend, legendIndex) => _createLegend(layer, legend, layerIndex, legendIndex, mapIndex));
+    } else {
+      _createLegend(layer, legends, layerIndex, 0, mapIndex);
+    }
+  }
+
+  function _createLegend(layer, legend, layerIndex, legendIndex, mapIndex=0) {
+    const element = document.querySelector(`#layer${layerIndex}_map${mapIndex}_legend${legendIndex}`);
+
+    if (legend.prop) {
+      const othersLabel = 'Others';   // TODO: i18n
+      const prop = legend.prop;
+      const dynamic = legend.dynamic;
+      const variable = legend.variable;
+      const config = { othersLabel, variable };
+      const options = { format, config, dynamic };
+
+      if (legend.type.startsWith('size-continuous')) {
+        config.samples = 4;
+      }
+
+      AsBridge.VL.Legends.rampLegend(element, layer, prop, options);
+    }
+  }
+
   function SourceFactory() {
     const sourceTypes = { GeoJSON, Query, MVT };
 
@@ -667,7 +705,10 @@
   }
 
   function GeoJSON(layer) {
-    return new carto.source.GeoJSON(_decodeJSONQuery(layer.query));
+    const options = JSON.parse(JSON.stringify(layer.options));
+    const data = _decodeJSONData(layer.data);
+
+    return new carto.source.GeoJSON(data, options);
   }
 
   function Query(layer) {
@@ -680,15 +721,15 @@
       serverURL: layer.credentials.base_url || `https://${layer.credentials.username}.carto.com/`
     };
 
-    return new carto.source.SQL(layer.query, auth, config);
+    return new carto.source.SQL(layer.data, auth, config);
   }
 
   function MVT(layer) {
-    return new carto.source.MVT(layer.query.file, JSON.parse(layer.query.metadata));
+    return new carto.source.MVT(layer.data.file, JSON.parse(layer.data.metadata));
   }
 
-  function _decodeJSONQuery(query) {
-    return JSON.parse(Base64.decode(query.replace(/b\'/, '\'')));
+  function _decodeJSONData(b64Data) {
+    return JSON.parse(pako.inflate(atob(b64Data), { to: 'string' }));
   }
 
   const factory = new SourceFactory();
@@ -729,8 +770,8 @@
   }
 
   function setLayerLegend(layer, mapLayerIndex, mapLayer, mapIndex, hasLegends) {
-    if (hasLegends && layer.legend) {
-      createLegend(mapLayer, layer.legend, mapLayerIndex, mapIndex);
+    if (hasLegends && layer.legends) {
+      createLegends(mapLayer, layer.legends, mapLayerIndex, mapIndex);
     }
   }
 
@@ -803,7 +844,6 @@
   function initLayers(map, settings, mapIndex) {
     const numLayers = settings.layers.length;
     const hasLegends = settings.has_legends;
-    const isDefaultLegend = settings.default_legend;
     const isStatic = settings.is_static;
     const layers = settings.layers;
     const mapLayers = getMapLayers(
@@ -814,7 +854,6 @@
       mapIndex
     );
 
-    createLegend$1(isDefaultLegend, mapLayers);
     setInteractiveLayers(map, layers, mapLayers);
 
     return waitForMapLayersLoad(isStatic, mapIndex, mapLayers);
@@ -847,12 +886,6 @@
 
     if (interactiveLayers && interactiveLayers.length > 0) {
       setInteractivity(map, interactiveLayers, interactiveMapLayers);
-    }
-  }
-
-  function createLegend$1(isDefaultLegend, mapLayers) {
-    if (isDefaultLegend) {
-      createDefaultLegend(mapLayers);
     }
   }
 
@@ -893,21 +926,19 @@
   .addEventListener('ready', () => {
     const basecolor = '';
     const basemap = 'Positron';
-    const bounds = [[-178.334698, 18.910361], [-66.949895, 49.384358]];
+    const bounds = [[-74.04169, 40.57381], [-73.85992, 40.70181]];
     const camera = null;
-    const default_legend = 'False' === 'true';
-    const has_legends = 'true' === 'true';
-    const is_static = 'None' === 'true';
-    const layers = [{"credentials": {"api_key": "2d57ca55a8618b952a2ff0fc13cc354280e62dc7", "base_url": "https://cartovl.carto.com", "username": "cartovl"}, "has_legend_list": false, "interactivity": [{"attrs": [{"name": "vb501ae", "title": "% Population with Masters degree"}], "event": "hover"}], "legend": {"description": "", "dynamic": true, "footer": "", "prop": "color", "title": "% Population with Masters degree", "type": "color-bins-polygon", "variable": ""}, "query": "SELECT * FROM \"public\".\"higher_edu_by_county\"", "type": "Query", "viz": "@vb501ae: $pct_higher_ed\ncolor: opacity(ramp(globalQuantiles($pct_higher_ed, 5), purpor), 0.9)\nstrokeWidth: ramp(linear(zoom(),2,18),[0.5,1])\nstrokeColor: opacity(#2c2c2c,ramp(linear(zoom(),2,18),[0.2,0.6]))\nfilter: 1\n", "widgets": []}];
+    const has_legends = 'True' === 'True';
+    const is_static = 'None' === 'True';
+    const layers = [{"credentials": null, "data": "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", "has_legend_list": true, "interactivity": [{"attrs": {"name": "ve38b29", "title": "total_pop"}, "event": "hover"}], "legends": [{"description": "", "dynamic": true, "footer": "", "prop": "color", "title": "total_pop", "type": "color-continuous", "variable": null}], "options": {"dateColumns": []}, "type": "GeoJSON", "viz": "@ve38b29: $total_pop\ncolor: opacity(ramp(linear($total_pop, globalMIN($total_pop), globalMAX($total_pop)), bluyl), 0.7)\nstrokeWidth: 0\nstrokeColor: opacity(#2c2c2c,ramp(linear(zoom(),2,18),[0.2,0.6]))\nfilter: 1\n", "widgets": []}, {"credentials": null, "data": "H4sIAI6NJF4C/5XTwWrDMAwG4HfxOTOWZEtWr4Oddx89lNYbgS4pWTooJe8+J80gPeoq5HxI+nN34+1S3M69lcN4Hcprfz6X49j2nWvc56P243Yfd9eealeo1ecHtXAZ+ksZxnZuvLuh/JbuWjuAEEIMXgSnxn2V/ruMw21uWb/w3rfdWN8f+344td1hXKQXIa+cGJr6lgUj7KepWX2w+Mg55OAjZLsPiLOfRJQ3Ppr8mIHIs6rZz5of84OmDU8WHnKSgHWFbOOjDygsC08Y4saPJj/miFLXD2Y/BM3L+rVmaOMnmx8Ds2dO5vUrrvHLOerGZ4sfavwz1WWaz58lQFr8RLC9vxh8xXp+8URovz8R0Bo/lI2fDb5wEiUfGezpj2n5+1ifpleLHhWBPUG28zW38J/+efr99AeAz8fVJgUAAA==", "has_legend_list": true, "interactivity": [{"attrs": {"name": "v1085d4", "title": "revenue"}, "event": "hover"}], "legends": [{"description": "", "dynamic": true, "footer": "", "prop": "width", "title": "revenue", "type": "size-continuous", "variable": "size_value"}], "options": {"dateColumns": []}, "type": "GeoJSON", "viz": "@v1085d4: $revenue\n@vabf72c: $revenue\ncolor: opacity(#FFB927, 0.8)\nwidth: ramp(linear(sqrt($revenue), sqrt(globalMIN($revenue)), sqrt(globalMAX($revenue))), [2, 40])\nstrokeWidth: ramp(linear(zoom(),0,18),[0,1])\nstrokeColor: white\n@size_value: ramp(linear($revenue, globalMIN($revenue), globalMAX($revenue)), [2, 40])\nfilter: 1\n", "widgets": [{"description": "", "footer": "", "has_bridge": true, "options": {"buckets": 20, "readOnly": false}, "prop": "", "title": "revenue", "type": "histogram", "value": "revenue", "variable_name": "vabf72c"}]}];
     const mapboxtoken = '';
-    const show_info = 'None' === 'true';
+    const show_info = 'False' === 'True';
 
     init({
       basecolor,
       basemap,
       bounds,
       camera,
-      default_legend,
       has_legends,
       is_static,
       layers,

@@ -3,7 +3,7 @@
     <div class="CDB-Dashboard-menuHeader">
       <% if (showLogo === true) { %>
       <div class="CDB-Dashboard-menuLogo">
-        <a href="http://carto.com" target="_blank">
+        <a href="http://carto.com" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 62 24" height="24" width="62">
               <g class="CDB-EmbedLogo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                   <path d="M3.94693333,15.9877346 C5.63066667,15.9877346 6.60373333,15.2552013 7.32533333,14.260268 L5.72906667,13.1232013 C5.26986667,13.6808013 4.79973333,14.0525346 4.0016,14.0525346 C2.93013333,14.0525346 2.17573333,13.1560013 2.17573333,12.0080013 L2.17573333,11.9861346 C2.17573333,10.8709346 2.93013333,9.95253464 4.0016,9.95253464 C4.73413333,9.95253464 5.23706667,10.3133346 5.6744,10.849068 L7.27066667,9.6136013 C6.5928,8.68426797 5.58693333,8.02826797 4.02346667,8.02826797 C1.7056,8.02826797 0,9.7776013 0,12.0080013 L0,12.029868 C0,14.3149346 1.76026667,15.9877346 3.94693333,15.9877346 L3.94693333,15.9877346 Z M10.93653,15.834668 L13.1559967,15.834668 L13.7026634,14.457068 L16.6655967,14.457068 L17.2122634,15.834668 L19.4863967,15.834668 L16.2282634,8.12666797 L14.18373,8.12666797 L10.93653,15.834668 Z M14.3258634,12.8061346 L15.1895967,10.6413346 L16.0423967,12.8061346 L14.3258634,12.8061346 Z M23.61653,15.834668 L25.7375966,15.834668 L25.7375966,13.5168013 L26.6778633,13.5168013 L28.2194633,15.834668 L30.6575966,15.834668 L28.83173,13.1669346 C29.78293,12.7624013 30.40613,11.9861346 30.40613,10.8053346 L30.40613,10.783468 C30.40613,10.029068 30.17653,9.4496013 29.7282633,9.00133464 C29.2143966,8.48746797 28.40533,8.18133464 27.2354633,8.18133464 L23.61653,8.18133464 L23.61653,15.834668 Z M25.7375966,11.8549346 L25.7375966,10.0072013 L27.1370633,10.0072013 C27.8367966,10.0072013 28.2850633,10.3133346 28.2850633,10.9256013 L28.2850633,10.947468 C28.2850633,11.505068 27.8586633,11.8549346 27.1479966,11.8549346 L25.7375966,11.8549346 Z M36.7338633,15.834668 L38.8549299,15.834668 L38.8549299,10.0400013 L41.1509299,10.0400013 L41.1509299,8.18133464 L34.4487966,8.18133464 L34.4487966,10.0400013 L36.7338633,10.0400013 L36.7338633,15.834668 Z" class="CDB-EmbedLogo-text" fill="#FFFFFF"></path>
@@ -23,18 +23,18 @@
 
       <ul class="CDB-Dashboard-menuActions">
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="https://twitter.com/share?url=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" class="u-hintTextColor">
+          <a href="https://twitter.com/share?url=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" rel="noopener noreferrer" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-twitter CDB-Size-large"></i>
           </a>
         </li>
         <li class="CDB-Dashboard-menuActionsItem">
-          <a href="http://www.facebook.com/sharer.php?u=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" class="u-hintTextColor">
+          <a href="http://www.facebook.com/sharer.php?u=<%- urlWithoutParams %>&text=<%- shortTitle %>" target="_blank" rel="noopener noreferrer" class="u-hintTextColor">
             <i class="CDB-IconFont CDB-IconFont-facebook CDB-Size-medium"></i>
           </a>
         </li>
         <% if (inIframe) { %>
           <li class="CDB-Dashboard-menuActionsItem">
-            <a href="<%- url %>" target="_blank" class="u-hintTextColor">
+            <a href="<%- url %>" target="_blank" rel="noopener noreferrer" rel="noopener noreferrer" class="u-hintTextColor">
               <i class="CDB-IconFont CDB-IconFont-anchor CDB-Size-medium"></i>
             </a>
           </li>
@@ -76,7 +76,7 @@
           <div class="CDB-Dashboard-menuMedia CDB-Dashboard-menuAvatar">
             <img src="<%- userAvatarURL %>" alt="avatar" class="inline-block"/>
           </div>
-          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt">Map by <a href="<%- userProfileURL %>" target="_blank"><%- userName %></a></p>
+          <p class="CDB-Text CDB-Size-medium CDB-Dashboard-menuFooterTxt">Map by <a href="<%- userProfileURL %>" target="_blank" rel="noopener noreferrer"><%- userName %></a></p>
         </li>
       </ul>
     </div>
@@ -91,7 +91,7 @@
       <div class="CDB-Dashboard-menuHeaderMobileText">
         <% if (showLogo === true) { %>
         <div class="CDB-Dashboard-menuLogo">
-          <a href="http://carto.com" target="_blank">
+          <a href="http://carto.com" target="_blank" rel="noopener noreferrer">
           <svg width="62px" height="24px" viewBox="35 63 62 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g class="CDB-EmbedLogo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(35.000000, 63.000000)">
                   <path d="M3.94693333,15.9877346 C5.63066667,15.9877346 6.60373333,15.2552013 7.32533333,14.260268 L5.72906667,13.1232013 C5.26986667,13.6808013 4.79973333,14.0525346 4.0016,14.0525346 C2.93013333,14.0525346 2.17573333,13.1560013 2.17573333,12.0080013 L2.17573333,11.9861346 C2.17573333,10.8709346 2.93013333,9.95253464 4.0016,9.95253464 C4.73413333,9.95253464 5.23706667,10.3133346 5.6744,10.849068 L7.27066667,9.6136013 C6.5928,8.68426797 5.58693333,8.02826797 4.02346667,8.02826797 C1.7056,8.02826797 0,9.7776013 0,12.0080013 L0,12.029868 C0,14.3149346 1.76026667,15.9877346 3.94693333,15.9877346 L3.94693333,15.9877346 Z M10.93653,15.834668 L13.1559967,15.834668 L13.7026634,14.457068 L16.6655967,14.457068 L17.2122634,15.834668 L19.4863967,15.834668 L16.2282634,8.12666797 L14.18373,8.12666797 L10.93653,15.834668 Z M14.3258634,12.8061346 L15.1895967,10.6413346 L16.0423967,12.8061346 L14.3258634,12.8061346 Z M23.61653,15.834668 L25.7375966,15.834668 L25.7375966,13.5168013 L26.6778633,13.5168013 L28.2194633,15.834668 L30.6575966,15.834668 L28.83173,13.1669346 C29.78293,12.7624013 30.40613,11.9861346 30.40613,10.8053346 L30.40613,10.783468 C30.40613,10.029068 30.17653,9.4496013 29.7282633,9.00133464 C29.2143966,8.48746797 28.40533,8.18133464 27.2354633,8.18133464 L23.61653,8.18133464 L23.61653,15.834668 Z M25.7375966,11.8549346 L25.7375966,10.0072013 L27.1370633,10.0072013 C27.8367966,10.0072013 28.2850633,10.3133346 28.2850633,10.9256013 L28.2850633,10.947468 C28.2850633,11.505068 27.8586633,11.8549346 27.1479966,11.8549346 L25.7375966,11.8549346 Z M36.7338633,15.834668 L38.8549299,15.834668 L38.8549299,10.0400013 L41.1509299,10.0400013 L41.1509299,8.18133464 L34.4487966,8.18133464 L34.4487966,10.0400013 L36.7338633,10.0400013 L36.7338633,15.834668 Z" class="CDB-EmbedLogo-text" fill="#FFFFFF"></path>

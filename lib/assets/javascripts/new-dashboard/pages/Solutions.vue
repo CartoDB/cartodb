@@ -56,7 +56,7 @@
       <h3 class="title is-medium">{{ $t(`SolutionsPage.talkUsTitle`) }}</h3>
       <p class="text is-caption card-description">{{ $t(`SolutionsPage.talkUsDescription`) }}</p>
       <div class="talk-us-button">
-        <a href="https://carto.com/request-live-demo/" target="_blank" class="button u-no-decoration">
+        <a href="https://carto.com/request-live-demo/" target="_blank" rel="noopener noreferrer" class="button u-no-decoration">
           <span>{{ $t(`SolutionsPage.talkUsButton`) }}</span>
         </a>
       </div>

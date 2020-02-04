@@ -20,8 +20,6 @@ module CartoDB
   SURROGATE_NAMESPACE_PUBLIC_PAGES = 'rp'.freeze
   SURROGATE_NAMESPACE_VIZJSON = 'rj'.freeze
 
-  RESERVED_COLUMN_NAMES = %w(FORMAT CONTROLLER ACTION oid tableoid xmin cmin xmax cmax ctid ogc_fid).freeze
-
   LAST_BLOG_POSTS_FILE_PATH = "#{Rails.root}/public/system/last_blog_posts.html"
 
   # Helper method to encapsulate Rails full URL generation compatible with our subdomainless mode

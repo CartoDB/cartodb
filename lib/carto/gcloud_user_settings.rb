@@ -3,23 +3,14 @@ module Carto
 
     REDIS_PREFIX = 'do_settings'
 
-    attr_reader :service_account, :bq_public_project,
-                :gcp_execution_project, :bq_project, :bq_dataset, :gcs_bucket
+    REDIS_KEYS = %i(service_account bq_public_project
+                    gcp_execution_project bq_project bq_dataset
+                    gcs_bucket).freeze
 
     def initialize(user, attributes)
       @username = user.username
       @api_key = user.api_key
       @attributes = attributes
-
-      if attributes.present?
-        h = attributes.symbolize_keys
-        @service_account = h[:service_account]
-        @bq_public_project = h[:bq_public_project]
-        @gcp_execution_project = h[:gcp_execution_project]
-        @bq_project = h[:bq_project]
-        @bq_dataset = h[:bq_dataset]
-        @gcs_bucket = h[:gcs_bucket]
-      end
     end
 
     def update
@@ -30,19 +21,16 @@ module Carto
       end
     end
 
+    private
+
     def store
       $users_metadata.hmset(key, *values.to_a)
     end
 
     def values
-      {
-        service_account: @service_account.to_json,
-        bq_public_project: @bq_public_project,
-        gcp_execution_project: @gcp_execution_project,
-        bq_project: @bq_project,
-        bq_dataset: @bq_dataset,
-        gcs_bucket: @gcs_bucket
-      }
+      attributes = @attributes.symbolize_keys
+      redis_values = attributes.slice(*REDIS_KEYS)
+      redis_values.merge(service_account: attributes[:service_account].to_json)
     end
 
     def remove

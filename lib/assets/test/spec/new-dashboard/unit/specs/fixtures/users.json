@@ -51,6 +51,7 @@
     "org_admin": false,
     "public_visualization_count": 3,
     "all_visualization_count": 16,
+    "owned_visualization_count": 16,
     "org_user": false,
     "remove_logo": false,
     "next_billing_period": "2019-01-11",

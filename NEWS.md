@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- DB Connectors removed from the main repository
 
 ### Features
 - Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))

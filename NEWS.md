@@ -22,6 +22,7 @@ Development
 - Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
 - Remove "FROM unpackaged" from cartodb extension installation process ([#15493](https://github.com/CartoDB/cartodb/pull/15493))
 - BigQuery Connector UI enhancements ([#15393](https://github.com/CartoDB/cartodb/issues/15393))
+- New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))
 
 4.34.0 (2020-01-28)
 -------------------

@@ -24,10 +24,11 @@ require_dependency 'carto/export/connector_configuration_exporter'
 # 1.0.12: maintenance_mode
 # 1.0.13: company_employees, use_case
 # 1.0.14: private_map_quota
+# 1.0.15: session_salt
 
 module Carto
   module UserMetadataExportServiceConfiguration
-    CURRENT_VERSION = '1.0.14'.freeze
+    CURRENT_VERSION = '1.0.15'.freeze
     EXPORTED_USER_ATTRIBUTES = %i(
       email crypted_password database_name username admin enabled invite_token invite_token_date
       map_enabled quota_in_bytes table_quota public_map_quota regular_api_key_quota account_type private_tables_enabled
@@ -47,7 +48,7 @@ module Carto
       github_user_id engine_enabled mapzen_routing_quota mapzen_routing_block_price soft_mapzen_routing_limit
       no_map_logo org_admin last_name user_render_timeout database_render_timeout frontend_version
       asset_host state company phone industry job_role password_reset_token password_reset_sent_at maintenance_mode
-      company_employees use_case private_map_quota
+      company_employees use_case private_map_quota session_salt
     ).freeze
 
     BLANK_UUID = '00000000-0000-0000-0000-000000000000'.freeze

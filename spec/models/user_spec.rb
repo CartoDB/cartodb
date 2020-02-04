@@ -3088,7 +3088,8 @@ describe User do
     end
 
     it 'security token should include salt' do
-      sec_token = Digest::SHA1.hexdigest(@user.crypted_password + @user.session_salt)
+      sec_token = Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: @user.crypted_password,
+                                                           salt: @user.session_salt)
       @user.security_token.should == sec_token
     end
 

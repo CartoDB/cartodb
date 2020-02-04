@@ -23,7 +23,7 @@ Development
 - Remove "FROM unpackaged" from cartodb extension installation process ([#15493](https://github.com/CartoDB/cartodb/pull/15493))
 - BigQuery Connector UI enhancements ([#15393](https://github.com/CartoDB/cartodb/issues/15393))
 - New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))
-
+- New Free Plan (Dashboard): Update welcome section ([#15434](https://github.com/CartoDB/cartodb/issues/15434))
 4.34.0 (2020-01-28)
 -------------------
 

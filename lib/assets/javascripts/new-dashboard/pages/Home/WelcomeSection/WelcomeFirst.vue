@@ -35,6 +35,9 @@ export default {
       return this.$t('HomePage.WelcomeSection.greeting', {name: this.$props.name});
     },
     text () {
+      if (this.isFree2020User) {
+        return this.$t(`HomePage.WelcomeSection.firstTime.planMessage.${this.userType}`);
+      }
       const organizationName = this.$store.state.user.organization && this.$store.state.user.organization.name;
 
       const firstTimeMessage = this.$t('HomePage.WelcomeSection.firstTime.message');
@@ -53,6 +56,9 @@ export default {
     },
     isOrganizationUser () {
       return this.userType === 'organizationUser';
+    },
+    isFree2020User () {
+      return this.userType === 'free2020';
     },
     organizationMail () {
       const organization = this.$store.state.user.organization;

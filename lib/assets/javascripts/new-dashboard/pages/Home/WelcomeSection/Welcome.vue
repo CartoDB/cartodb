@@ -1,12 +1,17 @@
 <template>
   <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
-      <template v-if="showTrialReminder">
-        <span v-html="trialTimeLeft" class="title is-small"></span>
-        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
-          {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+    <WelcomeCompact v-else :name="name" :userType="userType">
+      <template>
+        <a v-if="isFree2020User && accountUpgradeURL" :href="accountUpgradeURL" class="button is-primary">
+          {{ $t('HomePage.WelcomeSection.upgradeNow') }}
         </a>
+        <div v-else-if="showTrialReminder">
+          <span v-html="trialTimeLeft" class="title is-small"></span>
+          <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
+            {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+          </a>
+        </div>
       </template>
     </WelcomeCompact>
   </section>
@@ -32,7 +37,7 @@ export default {
       isFirst: state => state.config.isFirstTimeViewingDashboard,
       accountUpgradeURL: state => state.config.upgrade_url,
       trialEndDate: state => state.user.trial_ends_at,
-      showTrialReminder: state => state.user.show_trial_reminder,      
+      showTrialReminder: state => state.user.show_trial_reminder,
       user: state => state.user,
       name: state => state.user.name || state.user.username,
       organization: state => state.user.organization,
@@ -65,6 +70,10 @@ export default {
         return 'free';
       }
 
+      if (this.isFree2020User()) {
+        return 'free2020';
+      }
+
       return 'unknown';
     }
   },
@@ -80,6 +89,10 @@ export default {
     isIndividualUser () {
       const individualUsers = ['Individual'];
       return individualUsers.includes(this.user.account_type);
+    },
+    isFree2020User () {
+      const free2020Users = ['Free2020'];
+      return free2020Users.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

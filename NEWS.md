@@ -5,7 +5,7 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
-- BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
+- BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
 
 ### Bug fixes / enhancements
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))

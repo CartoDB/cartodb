@@ -26,6 +26,7 @@ require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
+require_dependency 'carto/gcloud_user_settings'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -1137,6 +1138,12 @@ class User < Sequel::Model
 
   def rate_limit
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self, attributes)
+    settings.update
   end
 
   def carto_account_type

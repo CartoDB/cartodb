@@ -1235,6 +1235,7 @@
                 "imports": {
                     "header": "Connect with %{brand}",
                     "header-alt": "%{brand} connector logo",
+                    "go-connectors": "Connectors",
                     "ask-for-demo": "ask for demo",
                     "contact-us": "Contact us",
                     "loading": "Sending request",
@@ -1276,7 +1277,8 @@
                         "type-import": "%{brand} import",
                         "upload-file-url": "Upload a file or a URL |||| Upload a URL",
                         "import-data": "Import your data from a %{brand} instance",
-                        "sync-options": "Sync options only available for a layer"
+                        "sync-options": "Sync options only available for a layer",
+                        "go-back": "Back"
                     },
                     "service-import": {
                         "and": "and",

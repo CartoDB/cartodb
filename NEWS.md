@@ -2,7 +2,7 @@ Development
 -----------
 
 ### NOTICES
-- None yet
+- DB Connectors removed from the main repository
 
 ### Features
 - BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)

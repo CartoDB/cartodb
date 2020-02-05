@@ -323,6 +323,42 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
+    it 'returns 200 and null values with the metadata for a dataset with null price and delivery days' do
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetnull', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+        expected_response = {
+          estimated_delivery_days: nil,
+          id: 'carto.abc.datasetnull',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          subscription_list_price: nil,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          type: 'dataset'
+        }
+        expect(response.body).to eq expected_response
+      end
+    end
+
+    it 'returns 200 and 0.0 as price with the metadata for a dataset with 0.0 as price' do
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetzero', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+        expected_response = {
+          estimated_delivery_days: 0.0,
+          id: 'carto.abc.datasetzero',
+          licenses: 'licenses',
+          licenses_link: 'licenses_link',
+          rights: 'rights',
+          subscription_list_price: 0.0,
+          tos: 'tos',
+          tos_link: 'tos_link',
+          type: 'dataset'
+        }
+        expect(response.body).to eq expected_response
+      end
+    end
+
     it 'returns the default delivery days if estimated_delivery_days is 0 and instant licensing is not enabled' do
       expected_response = {
         estimated_delivery_days: 3.0,
@@ -343,7 +379,6 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
-
   end
 
   describe 'subscribe' do
@@ -514,18 +549,22 @@ describe Carto::Api::Public::DataObservatoryController do
     metadata_user = FactoryGirl.create(:user, username: 'do-metadata')
     db_seed = %{
       CREATE TABLE datasets(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
-                            tos_link text, licenses text, licenses_link text, rights text, available_in text[], 
+                            tos_link text, licenses text, licenses_link text, rights text, available_in text[],
                             name text);
       INSERT INTO datasets VALUES ('carto.abc.dataset1', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', '{bq}', 'CARTO dataset 1');
       INSERT INTO datasets VALUES ('carto.abc.incomplete', 0.0, 100.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                    'rights', NULL, 'Incomplete dataset');
+      INSERT INTO datasets VALUES ('carto.abc.datasetnull', NULL, NULL, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                   'rights', '{bq}', 'CARTO dataset null');
+      INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                   'rights', '{bq}', 'CARTO dataset zero');
       CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                tos_link text, licenses text, licenses_link text, rights text, available_in text[],
                                name text);
       INSERT INTO geographies VALUES ('carto.abc.geography1', 3.0, 90.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                       'rights', '{bq}', 'CARTO geography 1');
-    }
+          }
     metadata_user.in_database.run(db_seed)
   end
 end

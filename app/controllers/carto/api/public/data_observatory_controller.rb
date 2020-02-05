@@ -136,14 +136,14 @@ module Carto
 
         def present_metadata(metadata)
           metadata[:estimated_delivery_days] = present_delivery_days(metadata[:estimated_delivery_days])
-          metadata[:subscription_list_price] = metadata[:subscription_list_price].to_f
+          metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
           metadata.slice(*METADATA_FIELDS)
         end
 
         def present_delivery_days(delivery_days)
-          return DEFAULT_DELIVERY_DAYS if delivery_days.zero? && !@user.has_feature_flag?('do-instant-licensing')
+          return DEFAULT_DELIVERY_DAYS if delivery_days&.zero? && !@user.has_feature_flag?('do-instant-licensing')
 
-          delivery_days.to_f
+          delivery_days&.to_f
         end
 
         def subscription_metadata

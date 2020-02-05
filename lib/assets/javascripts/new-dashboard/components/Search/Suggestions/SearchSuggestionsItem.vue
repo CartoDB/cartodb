@@ -13,7 +13,8 @@
       class="suggestions__item text is-caption"
       :class="`suggestions__item--${item.type}`"
       @click="onItemClicked"
-      target="_blank">
+      target="_blank"
+      rel="noopener noreferrer">
       {{item.name}}
     </a>
   </div>

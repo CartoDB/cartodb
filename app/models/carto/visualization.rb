@@ -95,6 +95,7 @@ class Carto::Visualization < ActiveRecord::Base
   validates :name, :privacy, :type, :user_id, :version, presence: true
   validates :privacy, inclusion: { in: PRIVACIES }
   validates :type, inclusion: { in: VALID_TYPES }
+  validates :name, uniqueness: { scope: [:user_id, :type] }, if: :kuviz?
   validate :validate_password_presence
   validate :validate_privacy_changes
   validate :validate_user_not_viewer, on: :create
@@ -766,13 +767,25 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    return unless privacy_changed? && derived?
+    return unless privacy_changed? && (derived? || kuviz?)
 
-    if is_privacy_private? && !user.try(:private_maps_enabled?)
-      errors.add(:privacy, 'cannot be set to private')
-    elsif (privacy_was == Carto::Visualization::PRIVACY_PRIVATE ||
-          (!privacy_was && privacy != Carto::Visualization::PRIVACY_PRIVATE)) &&
-          CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+    is_privacy_private? ? validate_change_to_private : validate_change_to_public
+  end
+
+  def validate_change_to_private
+    errors.add(:privacy, 'cannot be set to private') unless user&.private_maps_enabled?
+
+    return unless !privacy_was || privacy_was != Carto::Visualization::PRIVACY_PRIVATE
+
+    if CartoDB::QuotaChecker.new(user).will_be_over_private_map_quota?
+      errors.add(:privacy, 'over account private map quota')
+    end
+  end
+
+  def validate_change_to_public
+    return unless !privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE
+
+    if CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
       errors.add(:privacy, 'over account public map quota')
     end
   end

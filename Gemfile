@@ -58,11 +58,13 @@ gem 'state_machines-activerecord', '~> 0.5.0'
 gem 'typhoeus',                '0.7.2'
 gem 'charlock_holmes',         '0.7.6'
 gem 'dbf',                     '2.0.6'
-gem 'faraday',                 '0.9.0'
-gem 'google-api-client',       '0.28.4'
-gem 'dropbox_api',             '0.1.6'
-gem 'instagram',               '1.1.6'
+gem 'google-api-client',       '0.34.1'
+gem 'dropbox_api',             '0.1.17'
 gem 'gibbon',                  '1.1.4'
+gem 'instagram-continued-continued'
+
+# GCloud
+gem 'google-cloud-pubsub', '1.2.0'
 
 # Service components (/services)
 gem 'virtus',                   '1.0.5'
@@ -80,6 +82,7 @@ gem 'resque-metrics',        '0.1.1'
 
 gem 'net-telnet'
 
+
 # This is weird. In ruby 2 test-unit is required. We don't know why for sure
 gem 'test-unit'
 
@@ -95,12 +98,12 @@ group :test do
   gem 'rack-test',             '0.6.3',  require: 'rack/test'
   gem 'factory_girl_rails',    '~> 4.0.0'
   gem 'selenium-webdriver',    '>= 2.5.0'
-  gem 'capybara',              '1.1.2'
+  gem 'capybara',              '2.18.0'
   gem 'delorean'
   gem 'webrick',               '1.3.1'
   gem 'mocha',                 '1.1.0'
   gem 'ci_reporter',           '1.8.4'
-  gem 'poltergeist',           '>= 1.0.0'
+  gem 'poltergeist',           '1.18.1'
   gem 'activerecord-nulldb-adapter', '0.3.1'
   # Need to use specific branch from this fork as original gem is broken and outdated
   gem 'fake_net_ldap', git: 'https://github.com/kuldeepaggarwal/fake_net_ldap.git', :branch => 'fix-responder'
@@ -118,6 +121,7 @@ group :development, :test do
   gem 'rspec-rails',           '2.12.0'
   gem 'rb-readline'
   gem 'byebug'
+  gem 'pry-byebug',            '3.3.0'
   gem 'rack'
   gem 'zeus'
 

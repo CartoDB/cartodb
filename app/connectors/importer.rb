@@ -57,26 +57,31 @@ module CartoDB
         if quota_checker.will_be_over_table_quota?(results.length)
           log('Results would set overquota')
           @aborted = true
-          results.each { |result|
-            drop(result.table_name)
-          }
+          results.each { |result| drop(result.table_name) }
         else
-          log('Checking public map quota')
-          vis = runner.visualizations.select do |v|
-            v.type == Carto::Visualization::TYPE_DERIVED && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
-          end
-          if CartoDB::QuotaChecker.new(data_import.user).will_be_over_public_map_quota?(vis.count)
-            log('Results would set public map overquota')
-            raise CartoDB::Importer2::MapQuotaExceededError.new
-          end
+          check_map_quotas(runner.visualizations)
           log('Proceeding to register')
           register_results(results)
-          results.select(&:success?).each { |result|
-            create_overviews(result)
-          }
+          results.select(&:success?).each { |result| create_overviews(result) }
           create_visualization if data_import.create_visualization
         end
         self
+      end
+
+      def check_map_quotas(visualizations)
+        log('Checking public and private map quota')
+        public_maps = visualizations.select do |v|
+          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy != Carto::Visualization::PRIVACY_PRIVATE
+        end
+        private_maps = visualizations.select do |v|
+          v.type == Carto::Visualization::TYPE_DERIVED && v.privacy == Carto::Visualization::PRIVACY_PRIVATE
+        end
+        quota_checker = CartoDB::QuotaChecker.new(data_import.user)
+        return unless quota_checker.will_be_over_public_map_quota?(public_maps.count) ||
+                      quota_checker.will_be_over_private_map_quota?(private_maps.count)
+
+        log('Results would set map overquota')
+        raise CartoDB::Importer2::MapQuotaExceededError.new
       end
 
       def register_results(results)

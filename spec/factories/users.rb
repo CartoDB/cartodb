@@ -51,7 +51,9 @@ FactoryGirl.define do
     trait :valid do
       password 'kkkkkkkkk'
       password_confirmation 'kkkkkkkkk'
-      crypted_password 'kkkkkkkkk'
+      crypted_password do
+        Carto::Common::EncryptionService.encrypt(password: password, secret: Cartodb.config[:password_secret])
+      end
     end
 
     factory :user_with_private_tables, traits: [:enabled, :private_tables]

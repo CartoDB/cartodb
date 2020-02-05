@@ -20,7 +20,7 @@
       <% }%>
     </div>
     <div class="Form-rowData">
-      <input type="password" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value="" autofocus/>
+      <input type="password" autocomplete="off" id="password-confirmation" name="password_confirmation" class="CDB-InputText CDB-Text Form-input Form-input--long js-password" value="" autofocus/>
     </div>
   </form>
 </div>

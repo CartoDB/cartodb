@@ -3,9 +3,9 @@
   <% if (state === "error") { %>
     <%- _t('components.modals.add-layer.imports.service-import.state-error', { title: 'BigQuery' }) %>
   <% } else if (state === "selected") { %>
-    <%- _t('components.modals.add-layer.imports.arcgis.sync-options') %>
+    <%- _t('components.modals.add-layer.imports.header-import.sync-options') %>
   <% } else { %>
-    <%= _t('components.modals.add-layer.imports.arcgis.import-data', { brand: 'BigQuery' }) %>
+    <%= _t('components.modals.add-layer.imports.header-import.import-data', { brand: 'BigQuery' }) %>
   <% } %>
 </p>
 <% if (state === "selected") { %>

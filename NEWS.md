@@ -6,6 +6,7 @@ Development
 
 ### Features
 - BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
+- New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
 - Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))

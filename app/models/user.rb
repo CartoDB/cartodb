@@ -1,6 +1,7 @@
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
 require 'email_address'
+require 'securerandom'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -25,6 +26,7 @@ require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
+require_dependency 'carto/gcloud_user_settings'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -98,6 +100,7 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
+                 :session_salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -289,6 +292,7 @@ class User < Sequel::Model
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= make_token
+    self.session_salt ||= SecureRandom.hex
   end
 
   def before_save
@@ -685,6 +689,18 @@ class User < Sequel::Model
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
+  end
+
+  def security_token
+    return if self.session_salt.blank?
+
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
+  end
+
+  def invalidate_all_sessions!
+    self.session_salt = SecureRandom.hex
+    update_in_central
+    save
   end
 
   # Database configuration setup
@@ -1122,6 +1138,12 @@ class User < Sequel::Model
 
   def rate_limit
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self, attributes)
+    settings.update
   end
 
   def carto_account_type

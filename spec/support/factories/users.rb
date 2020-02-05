@@ -49,6 +49,7 @@ module CartoDB
       user.email                 = attributes[:email]    || unique_email
       user.password              = attributes[:password] || user.email.split('@').first
       user.password_confirmation = user.password
+      user.session_salt          = attributes[:session_salt] || "123456789f"
       user.admin                 = attributes[:admin] == false ? false : true
       user.private_tables_enabled = attributes[:private_tables_enabled] == true ? true : false
       user.private_maps_enabled  = attributes[:private_maps_enabled] == true ? true : false
@@ -136,6 +137,7 @@ module CartoDB
         username: username,
         email: "#{username}@example.com",
         password: "000#{username}",
+        session_salt: "123456789f",
         private_tables_enabled: true,
         database_schema: organization.nil? ? 'public' : username,
         organization: organization,

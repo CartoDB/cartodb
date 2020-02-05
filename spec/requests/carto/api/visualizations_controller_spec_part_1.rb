@@ -5,6 +5,7 @@ require_relative '../../../../app/controllers/carto/api/visualizations_controlle
 # TODO: Remove once Carto::Visualization is complete enough
 require_relative '../../../../app/models/visualization/member'
 require_relative './vizjson_shared_examples'
+require_relative './helpers/visualization_controller_helper'
 require 'helpers/unique_names_helper'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'
@@ -18,6 +19,7 @@ describe Carto::Api::VisualizationsController do
   include Carto::Factories::Visualizations
   include VisualizationDestructionHelper
   include FeatureFlagHelper
+  include VisualizationControllerHelper
 
   before(:all) do
     create_account_type_fg('ORGANIZATION USER')
@@ -100,57 +102,6 @@ describe Carto::Api::VisualizationsController do
       end
     end
   end
-
-  TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
-
-  DATE_ATTRIBUTES = %w{ created_at updated_at }.freeze
-  NORMALIZED_ASSOCIATION_ATTRIBUTES = {
-    attributes: DATE_ATTRIBUTES,
-    associations: {
-      'permission' => {
-        attributes: DATE_ATTRIBUTES,
-        associations: {}
-      },
-      'table' => {
-        attributes: DATE_ATTRIBUTES,
-        associations: {}
-      }
-    }
-  }.freeze
-
-  NEW_ATTRIBUTES = {
-    attributes: [],
-    associations: {
-      'table' => {
-        attributes: [],
-        associations: {
-          'permission' => {
-            attributes: [],
-            associations: {
-              'owner' => {
-                attributes: ['email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
-                             'all_visualization_count', 'table_count'],
-                associations: {}
-              }
-            }
-          }
-        }
-      },
-      'permission' => {
-        attributes: [],
-        associations: {
-          'owner' => {
-            attributes: ['email', 'quota_in_bytes', 'db_size_in_bytes', 'public_visualization_count',
-                         'all_visualization_count', 'table_count'],
-            associations: {}
-          }
-        }
-      }
-    }
-  }.freeze
-
-  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'.freeze
-  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'.freeze
 
   describe 'static_map' do
     include_context 'visualization creation helpers'
@@ -485,89 +436,5 @@ describe Carto::Api::VisualizationsController do
         body2['total_shared'].should be_nil
       end
     end
-
   end
-
-  include Rack::Test::Methods
-  include Warden::Test::Helpers
-  include CacheHelper
-
-  private
-
-  # Custom hash comparison, since in the ActiveModel-based controllers
-  # we allow some differences:
-  # - x to many associations can return [] instead of nil
-  def normalize_hash(h, normalized_attributes = NORMALIZED_ASSOCIATION_ATTRIBUTES)
-    h.each { |k, v|
-      h[k] = nil if v == []
-      h[k] = '' if normalized_attributes[:attributes].include?(k)
-      if normalized_attributes[:associations].keys.include?(k)
-        normalize_hash(v, normalized_attributes[:associations][k])
-      end
-    }
-  end
-
-  # INFO: this test uses comparison against old data structures to check validity.
-  # You can use this method to remove that new data so next comparisons will work.
-  def remove_data_only_in_new_controllers(visualization_hash, new_attributes = NEW_ATTRIBUTES)
-    visualization_hash.each { |k, v|
-      if new_attributes[:attributes].include?(k)
-        removed = visualization_hash.delete(k)
-      elsif new_attributes[:associations].include?(k)
-        remove_data_only_in_new_controllers(v, new_attributes[:associations][k])
-      end
-    }
-  end
-
-  def login(user)
-    login_as(user, {scope: user.username })
-    host! "#{user.username}.localhost.lan"
-  end
-
-  def base_url
-    '/api/v1/viz'
-  end
-
-  def response_body(params = nil)
-    get base_url, params.nil? ? nil : params.dup, @headers
-    last_response.status.should == 200
-    body = JSON.parse(last_response.body)
-    body['visualizations'] = body['visualizations'].map { |v| normalize_hash(v) }.map { |v| remove_data_only_in_new_controllers(v) }
-    body
-  end
-
-  def factory(user, attributes={})
-    visualization_template(user, attributes)
-  end
-
-  def table_factory(options={})
-    create_table_with_options(@user_1, @headers, options)
-  end
-
-  def api_visualization_creation(user, headers, additional_fields = {})
-    post api_v1_visualizations_create_url(user_domain: user.username, api_key: user.api_key), factory(user).merge(additional_fields).to_json, headers
-    id = JSON.parse(last_response.body).fetch('id')
-    id.should_not be_nil
-    CartoDB::Visualization::Member.new(id: id).fetch
-  end
-
-  def test_organization
-    organization = Organization.new
-    organization.name = unique_name('org')
-    organization.quota_in_bytes = 1234567890
-    organization.seats = 5
-    organization.builder_enabled = false
-    organization
-  end
-
-  def create_geometry_table(user, the_geom)
-    table = new_table(privacy: UserTable::PRIVACY_PUBLIC, user_id: user.id)
-    table.force_schema = "the_geom geometry"
-    table.the_geom_type = "point"
-    table.save.reload
-    table.insert_row!(the_geom: the_geom)
-    table.update_bounding_box
-    table
-  end
-
 end

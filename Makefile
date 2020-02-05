@@ -361,9 +361,9 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
 	spec/requests/carto/api/public/datasets_controller_spec.rb \
-	spec/models/carto/user_migration_spec_part_1.rb \
-	spec/models/carto/user_migration_spec_part_2.rb \
-	spec/models/carto/user_migration_spec_part_3.rb \
+	spec/models/carto/user_migration_api_key_spec.rb \
+	spec/models/carto/user_migration_rollback_spec.rb \
+	spec/models/carto/user_migration_base_spec.rb \
 	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
 	spec/lib/tasks/data_observatory_rake_spec.rb \
 	spec/services/carto/do_licensing_service_spec.rb \

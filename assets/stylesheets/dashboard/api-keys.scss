@@ -1,5 +1,6 @@
 // API Keys
 // --------------------------------------------------
+@import '../variables/colors';
 
 .api-keys {
   padding-bottom: 64px;
@@ -7,13 +8,36 @@
 
 // -- List
 
-.ApiKeys-title {
+.ApiKeys-header {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
   border-bottom: 1px solid rgba(#000, 0.15);
+
+  .ApiKeys-info {
+    display: flex;
+    align-items: center;
+    margin-left: 24px;
+    padding: 4px 12px 4px 36px;
+    border-radius: 30px;
+    background-color: $cHighlight-info;
+    background-image: url($assetsDir + '/images/layout/info-icon.svg');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 14px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  &.is-disabled {
+    justify-content: flex-start;
+
+    .ApiKeys-title {
+      opacity: 0.3;
+    }
+  }
 }
 
 .ApiKeys-list {

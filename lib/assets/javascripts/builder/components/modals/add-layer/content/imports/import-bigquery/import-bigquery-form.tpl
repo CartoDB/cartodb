@@ -15,9 +15,11 @@
     <div>
       <div class="ImportOptions__CodeMirror">
         <textarea rows="4" cols="50" class="ImportOptions__input--long Form-input Form-textarea CDB-Text CDB-Size-medium js-textarea"></textarea>
-        <% if (errorMessage) { %>
+        <% if (errorMessages) { %>
           <div class="ImportOptions__input-error CDB-Text">
-            <%- errorMessage %>
+            <% errorMessages.forEach(function (errorMessage) { %>
+              <p><%- errorMessage %></p>
+            <% }); %>
           </div>
         <% } %>
       </div>

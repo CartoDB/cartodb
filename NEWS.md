@@ -5,10 +5,14 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
-- BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
+- BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
+- New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
+- Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
+- Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
+- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
 
 4.34.0 (2020-01-28)
 -------------------
@@ -21,6 +25,7 @@ Development
 - Fix quotes for `rel='noopener noreferrer'` parameters
 - Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
 - Fix assets version in package-lock.json to `1.0.0-assets.155`
+- Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
 
 4.33.1 (2020-01-27)
 -------------------

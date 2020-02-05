@@ -39,7 +39,7 @@
     "internal-carto.js": "CartoDB/carto.js#jquery-upgrade",
     "jquery": "3.4.1",
     "jquery-migrate": "3.1.0",
-    "jquery-ui": "git+https://github.com/jquery/jquery-ui.git",
+    "jquery-ui": "git+https://github.com/cartodb/jquery-ui.git",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
     "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
     "moment": "2.18.1",

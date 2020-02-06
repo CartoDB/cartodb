@@ -21,10 +21,13 @@ fi
 echo "Giving a second try to the next specs"
 cat parallel_tests/specfailed.log
 
-RAILS_ENV=test bundle exec rspec $specs
+RAILS_ENV=test bundle exec rspec $specs > tmp_file
+RC=$?
 
+TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=<NULL>\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis"
+cat tmp_file | grep -v "$TRASH_MESSAGES"
 
-if [ $? -eq 0 ]; then
+if [ $RC -eq 0 ]; then
   truncate -s 0 parallel_tests/specfailed.log # Here is where the hack takes place. If im the second try we dont have errors then we're OK
 else
   exit 0; # The reporter script will output the failed specs

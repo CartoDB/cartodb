@@ -738,7 +738,7 @@
 						var id = 'datepicker_' + parseInt(Math.random() * 1000), cnt;
 						options.id = id;
 						$(this).data('datepickerId', options.id);
-						var cal = $(tpl.wrapper).attr('id', id).bind('click', click).data('datepicker', options);
+						var cal = $(tpl.wrapper).attr('id', id).on('click', click).data('datepicker', options);
 						if (options.className) {
 							cal.addClass(options.className);
 						}
@@ -770,7 +770,7 @@
 							layout(cal.get(0));
 						} else {
 							cal.appendTo(document.body);
-							$(this).bind(options.eventName, show);
+							$(this).on(options.eventName, show);
 						}
 					}
 				});

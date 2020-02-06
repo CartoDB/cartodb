@@ -131,7 +131,7 @@ require('jquery-ui/ui/widgets/autocomplete.js');
 
             this.tagInput = $('<input type="text" />').addClass('ui-widget-content');
 
-            if (this.options.readOnly) this.tagInput.attr('disabled', 'disabled');
+            if (this.options.readOnly) this.tagInput.prop('disabled', true);
 
             if (this.options.tabIndex) {
                 this.tagInput.attr('tabindex', this.options.tabIndex);

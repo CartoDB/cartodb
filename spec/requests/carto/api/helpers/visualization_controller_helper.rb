@@ -51,9 +51,6 @@ module VisualizationControllerHelper
     }
   }.freeze
 
-  BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-75.234375,54.57206166],[4.921875,54.36775852],[7.03125,-0.35156029],[-71.71875,1.75753681],[-75.234375,54.57206166]]]]}'.freeze
-  OUTSIDE_BBOX_GEOM = '{"type":"MultiPolygon","coordinates":[[[[-149.4140625,79.74993208],[-139.921875,79.74993208],[-136.0546875,78.13449318],[-148.7109375,78.06198919],[-149.4140625,79.74993208]]]]}'.freeze
-
   # Custom hash comparison, since in the ActiveModel-based controllers
   # we allow some differences:
   # - x to many associations can return [] instead of nil

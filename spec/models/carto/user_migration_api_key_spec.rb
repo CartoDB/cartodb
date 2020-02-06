@@ -194,6 +194,34 @@ describe 'UserMigration' do
   describe 'with organization' do
     include_context 'organization with users helper'
 
+    records =
+    [
+      { name: 'carto', description: 'awesome' },
+      { name: 'user-mover', description: 'insanity' }
+    ]
+
+    agg_ds_config =
+      {
+        aggregation_tables: {
+          'host' => 'localhost',
+          'port' => '5432',
+          'dbname' => 'test_migration',
+          'username' => 'geocoder_api',
+          'password' => '',
+          'tables' => {
+            'admin0' => 'ne_admin0_v3',
+            'admin1' => 'global_province_polygons'
+          }
+        },
+        geocoder: {
+          'api' => {
+            'host' => 'localhost',
+            'port' => '5432',
+            'dbname' => 'test_migration',
+            'user' => 'geocoder_api'
+          }
+        }
+      }
     let(:org_attributes) { @carto_organization.attributes }
     let(:owner_attributes) { @carto_org_user_owner.attributes }
 

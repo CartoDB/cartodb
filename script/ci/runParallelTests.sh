@@ -20,7 +20,7 @@ cat parallel_tests/6*.log | grep -v "$TRASH_MESSAGES"
 echo "*****************************************************************************************************"
 
 # SECOND TRY
-#script/ci/secondTry.sh || exit 1
+script/ci/secondTry.sh || exit 1
 
 # REPORTER
 script/ci/reporter.sh || exit 1

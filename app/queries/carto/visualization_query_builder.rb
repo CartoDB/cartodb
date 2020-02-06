@@ -22,24 +22,24 @@ class Carto::VisualizationQueryBuilder
 
   def self.user_link_privacy_visualizations(user)
     new.with_user_id(user.id)
-       .with_type(Carto::Visualization::MAP_TYPES)
+       .with_types(Carto::Visualization::MAP_TYPES)
        .with_privacy(Carto::Visualization::PRIVACY_LINK)
   end
 
   def self.user_password_privacy_visualizations(user)
     new.with_user_id(user.id)
-       .with_type(Carto::Visualization::MAP_TYPES)
+       .with_types(Carto::Visualization::MAP_TYPES)
        .with_privacy(Carto::Visualization::PRIVACY_PROTECTED)
   end
 
   def self.user_private_privacy_visualizations(user)
     new.with_user_id(user.id)
-       .with_type(Carto::Visualization::MAP_TYPES)
+       .with_types(Carto::Visualization::MAP_TYPES)
        .with_privacy(Carto::Visualization::PRIVACY_PRIVATE)
   end
 
   def self.user_all_visualizations(user)
-    new.with_user_id(user ? user.id : nil).with_type(Carto::Visualization::MAP_TYPES)
+    new.with_user_id(user ? user.id : nil).with_types(Carto::Visualization::MAP_TYPES)
   end
 
   def self.user_public(user)

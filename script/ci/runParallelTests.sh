@@ -19,7 +19,7 @@ cat parallel_tests/*.log
 echo "*****************************************************************************************************"
 
 # SECOND TRY
-script/ci/secondTry.sh || exit 1
+#script/ci/secondTry.sh || exit 1
 
 # REPORTER
 script/ci/reporter.sh || exit 1

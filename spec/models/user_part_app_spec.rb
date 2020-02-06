@@ -304,22 +304,6 @@ describe User do
     end
   end
 
-  describe 'refactored behaviour' do
-    it_behaves_like 'user models' do
-      def get_twitter_imports_count_by_user_id(user_id)
-        get_user_by_id(user_id).get_twitter_imports_count
-      end
-
-      def get_user_by_id(user_id)
-        ::User.where(id: user_id).first
-      end
-
-      def create_user
-        FactoryGirl.create(:valid_user)
-      end
-    end
-  end
-
   describe 'session' do
     before(:all) do
       Cartodb::Central.stubs(:sync_data_with_cartodb_central?).returns(true)

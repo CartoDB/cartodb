@@ -17,6 +17,7 @@ WORKING_SPECS_1 = \
 	spec/models/user_part_organization_spec.rb \
 	spec/models/user_part_plans_and_services_spec.rb \
 	spec/models/user_part_validation_and_authentication_spec.rb \
+	spec/models/user_part_refactored_behaviour_spec.rb \
 	spec/models/user_presenter_spec.rb \
 	spec/models/user_table_spec.rb \
 	spec/models/layer_spec.rb \

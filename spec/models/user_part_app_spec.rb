@@ -44,6 +44,7 @@ describe User do
 
   describe "avatar checks" do
     let(:user1) do
+      User.where(username: 'u1').first&.destroy
       create_user(email: 'ewdewfref34r43r43d32f45g5@example.com', username: 'u1', password: 'foobar')
     end
 

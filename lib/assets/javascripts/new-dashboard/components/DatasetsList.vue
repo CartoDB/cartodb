@@ -9,16 +9,7 @@
         <template slot="title">
           <VisualizationsTitle
             :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
-            :selectedItems="selectedDatasets.length"
-            :vizQuota="datasetsQuota"
-            :vizCount="datasetsCount"
-            :isOutOfQuota="isOutOfDatasetsQuota"/>
-        </template>
-
-        <template v-if="shouldShowLimitsWarning" slot="warning">
-          <NotificationBadge type="warning">
-            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
-          </NotificationBadge>
+            :selectedItems="selectedDatasets.length"/>
         </template>
 
         <template slot="dropdownButton">
@@ -46,6 +37,13 @@
             {{ $t(`DataPage.createDataset`) }}
           </CreateButton>
         </template>
+
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <NotificationBadge type="warning" :has-margin='false'>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+          </NotificationBadge>
+        </template>
+
       </SectionTitle>
     </div>
 
@@ -214,7 +212,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     shouldShowLimitsWarning () {
-      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
+      return this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

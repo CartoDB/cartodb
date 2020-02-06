@@ -6,8 +6,6 @@
         <slot name="title"></slot>
       </h2>
 
-      <slot name="warning"></slot>
-
       <ul class="head-sectionActions">
         <li class="head-sectionActionsItem head-sectionDropdownContainer">
           <slot name="dropdownButton"></slot>
@@ -20,6 +18,8 @@
     </div>
 
     <p v-if="description" class="head-sectionDescription">{{description}}</p>
+
+    <slot name="warning"></slot>
   </header>
 </template>
 
@@ -91,7 +91,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .head-sectionActions {

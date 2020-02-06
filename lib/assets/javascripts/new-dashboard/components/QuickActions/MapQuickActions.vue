@@ -28,7 +28,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
     }),
     actions () {
       return {
@@ -61,10 +62,12 @@ export default {
       return this.map.privacy === 'PRIVATE';
     },
     canChangePrivacy () {
-      return !this.isOutOfPublicMapsQuota || !this.isSelectedMapPrivate;
+      return (this.isSelectedMapPrivate && !this.isOutOfPublicMapsQuota) ||
+      !this.isSelectedMapPrivate;
     },
     canDuplicate () {
-      return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
+      return (!this.isOutOfPrivateMapsQuota && this.isSelectedMapPrivate) ||
+        (!this.isOutOfPublicMapsQuota && !this.isSelectedMapPrivate);
     },
     isKuviz () {
       return this.map.type === 'kuviz';

@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.159-fd-apikeys",
+  "version": "1.0.0-assets.159-fd-limits",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",

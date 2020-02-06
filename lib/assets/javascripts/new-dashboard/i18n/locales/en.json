@@ -73,7 +73,7 @@
         "password": "Your Password-protected Datasets",
         "private": "Your Private Datasets"
       },
-      "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited datasets."
+      "warning": "<span class='is-bold'>{counter} datasets used.</span> <a href='{path}' class='is-bold'>Upgrade now</a> to get more datasets."
     },
     "createDataset": "New Dataset",
     "zeroCase": {
@@ -104,7 +104,10 @@
         "builder": "Your Builder Maps",
         "cartoframes": "Your CARTOframes Maps"
       },
-      "warning": "<span class='is-bold'>{counter} public maps used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited public maps."
+      "warning": {
+        "counter": "{counter} {type} maps.&nbsp",
+        "upgrade": "<a href='{path}' class='is-bold'>Upgrade now</a> to get more maps."
+      }
     },
     "createMap": "New Map",
     "zeroCase": {

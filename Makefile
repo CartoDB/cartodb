@@ -146,6 +146,8 @@ WORKING_SPECS_4 = \
 	spec/requests/carto/api/visualizations_controller_spec_part_1.rb \
 	spec/requests/carto/api/visualizations_controller_spec_part_2.rb \
 	spec/requests/carto/api/visualizations_controller_spec_part_3.rb \
+	spec/requests/carto/api/visualizations_controller_index_spec.rb \
+	spec/requests/carto/api/visualizations_controller_vizjson_spec.rb \
 	spec/requests/carto/api/tables_controller_spec.rb \
 	spec/queries/carto/visualization_query_builder_spec.rb \
 	spec/requests/admin/tables_spec.rb \

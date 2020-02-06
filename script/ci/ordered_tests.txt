@@ -1,10 +1,12 @@
+spec/models/carto/user_migration_rollback_spec.rb
+spec/requests/carto/api/visualizations_controller_spec_part_2.rb
+spec/requests/carto/api/visualizations_controller_index_spec.rb
+spec/requests/carto/api/visualizations_controller_vizjson_spec.rb
+spec/models/carto/user_spec.rb
 spec/models/user_part_validation_and_authentication_spec.rb
 spec/models/user_part_refactored_behaviour_spec.rb
 spec/models/user_part_app_spec.rb
-spec/models/carto/user_migration_rollback_spec.rb
-spec/requests/carto/api/visualizations_controller_spec_part_2.rb
 spec/models/data_import_spec.rb
-spec/models/carto/user_spec.rb
 spec/models/map_spec.rb
 spec/requests/superadmin/users_spec.rb
 spec/models/carto/user_migration_api_key_spec.rb

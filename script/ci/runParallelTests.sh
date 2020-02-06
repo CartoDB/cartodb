@@ -14,6 +14,10 @@ script/ci/wrapper.sh $WORKERS || exit 1
 # TESTS
 time parallel -j $WORKERS -a parallel_tests/specfull.txt 'script/ci/executor.sh {} {%} {#}' || exit 1
 
+echo *****************************************************************************************************
+cat parallel_tests/*.log
+echo *****************************************************************************************************
+
 # SECOND TRY
 script/ci/secondTry.sh || exit 1
 

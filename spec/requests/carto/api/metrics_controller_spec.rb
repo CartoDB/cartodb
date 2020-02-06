@@ -16,7 +16,7 @@ describe Carto::Api::MetricsController do
     logout(@user)
 
     @user.destroy
-    @instruder.destroy
+    @instruder&.destroy
   end
 
   it 'should accept all existing events' do

@@ -1609,6 +1609,8 @@ describe Carto::Api::VisualizationsController do
     end
 
     describe 'non existent visualization' do
+      TEST_UUID = '00000000-0000-0000-0000-000000000000'.freeze
+
       it 'returns 404' do
         get api_v1_visualizations_show_url(id: TEST_UUID, api_key: @api_key), {}, @headers
         last_response.status.should == 404

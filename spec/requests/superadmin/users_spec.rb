@@ -445,10 +445,10 @@ feature "Superadmin's users API" do
     end
 
     after do
-      @user.destroy
-      @user2.destroy
-      @user3.destroy
-      @user4.destroy
+      @user&.destroy
+      @user2&.destroy
+      @user3&.destroy
+      @user4&.destroy
     end
 
     it "gets all users" do

@@ -18,6 +18,7 @@ module UserPartHelper
 
   shared_context 'user spec configuration' do
     before(:all) do
+      create_account_type_fg('ORGANIZATION USER')
       bypass_named_maps
   
       @user_password = 'admin123'

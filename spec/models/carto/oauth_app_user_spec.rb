@@ -185,22 +185,22 @@ module Carto
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq([o1, o2]))
+        expect(oau.scopes.sort).to(eq([o1, o2].sort))
 
         oau.upgrade!([o1])
-        expect(oau.scopes).to(eq([o1, o2]))
+        expect(oau.scopes.sort).to(eq([o1, o2].sort))
 
         oau.upgrade!([o3])
-        expect(oau.scopes).to(eq([o1, o2, o3]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3].sort))
 
         oau.upgrade!([o2, o4])
-        expect(oau.scopes).to(eq([o1, o2, o3, o4]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4].sort))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(eq([o1, o2, o3, o4]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4].sort))
 
         oau.upgrade!([o5])
-        expect(oau.scopes).to(eq([o1, o2, o3, o4, o5]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4, o5].sort))
       end
     end
 

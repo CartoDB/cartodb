@@ -1,6 +1,7 @@
 REV=$(shell git rev-parse HEAD)
 RUBY_MAJOR=$(shell ruby -e "puts RUBY_VERSION" | cut -d. -f1)
 
+
 all:
 	RAILS_ENV=test bundle install
 	# I cannot remmeber why gdal is being skipped from this list...

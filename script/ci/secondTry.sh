@@ -24,7 +24,7 @@ cat parallel_tests/specfailed.log
 RAILS_ENV=test bundle exec rspec $specs > tmp_file
 RC=$?
 
-TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=<NULL>\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis"
+TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis\|pg_restore:\|pg_dump:\|is already a member of\|Skipping Ghost Tables linking"
 cat tmp_file | grep -v "$TRASH_MESSAGES"
 
 if [ $RC -eq 0 ]; then

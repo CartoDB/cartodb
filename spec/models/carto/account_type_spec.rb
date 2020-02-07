@@ -12,7 +12,7 @@ describe Carto::AccountType do
 
   after :each do
     if @account_type
-      User.where(account_type: @account_type.account_type).find_each(&:destroy)
+      User.where(account_type: @account_type.account_type).each(&:destroy)
       @account_type.destroy
     end
   end

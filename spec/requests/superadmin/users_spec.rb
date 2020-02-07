@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'ostruct'
 require_relative '../../acceptance_helper'
 require_relative '../../factories/organizations_contexts'
@@ -603,7 +604,7 @@ feature "Superadmin's users API" do
             type: 'service_account',
             project_id: 'my_project_id',
             private_key_id: 'my_private_key_id'
-          },
+          }.to_json,
           bq_public_project: 'my_public_project',
           gcp_execution_project: 'my_gcp_execution_project',
           bq_project: 'my_bq_project',
@@ -622,7 +623,7 @@ feature "Superadmin's users API" do
 
         redis_gcloud_settings = $users_metadata.hgetall("do_settings:#{@user.username}:#{@user.api_key}").symbolize_keys
 
-        redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account].to_json
+        redis_gcloud_settings[:service_account].should == expected_gcloud_settings[:service_account]
         redis_gcloud_settings[:bq_public_project].should == expected_gcloud_settings[:bq_public_project]
         redis_gcloud_settings[:gcp_execution_project].should == expected_gcloud_settings[:gcp_execution_project]
         redis_gcloud_settings[:bq_project].should == expected_gcloud_settings[:bq_project]

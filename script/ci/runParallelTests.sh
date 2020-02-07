@@ -3,7 +3,7 @@
 WORKERS=${1:-22}
 
 # init builder (must run from /cartodb directory)
-init.sh
+init.sh || exit 1
 
 # BACKEND PARALLEL
 script/ci/generateSpecFull.sh || exit 1

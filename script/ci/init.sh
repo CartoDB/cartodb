@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 mkdir -p log && chmod -R 777 log/
 createdb -T template0 -O postgres -h localhost -U postgres -E UTF8 template_postgis || true

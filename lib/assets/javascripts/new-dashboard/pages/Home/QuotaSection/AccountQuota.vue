@@ -65,6 +65,7 @@ export default {
       passwordMapsTotal: state => state.user.password_privacy_map_count,
       publicMapsTotal: state => state.user.public_privacy_map_count,
       availablePrivateMaps: state => state.user.private_map_quota,
+      privateMapsTotal: state => state.user.private_privacy_map_count,
       mapsTotal: state => state.user.owned_visualization_count,
       availableDatasets: state => state.user.table_quota,
       usedDatasets: state => state.user.table_count,

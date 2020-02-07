@@ -5,10 +5,9 @@
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
-        <BadgeWarning  v-if="isDisabled" :showIcon="false" :hasMargin="false">
-          <img class="warning-icon" src="../../../assets/icons/common/info-icon.svg" width="16" height="16" />
+        <BadgeInfo  v-if="isDisabled">
           <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
-        </BadgeWarning>
+        </BadgeInfo>
         <div v-else class="progressbar">
             <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
             </div>
@@ -40,7 +39,7 @@
 </template>
 
 <script>
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import BadgeInfo from 'new-dashboard/components/BadgeInfo';
 import { mapState } from 'vuex';
 
 export default {
@@ -62,7 +61,7 @@ export default {
     }
   },
   components: {
-    BadgeWarning
+    BadgeInfo
   },
   data: function () {
     return {
@@ -198,7 +197,7 @@ export default {
 }
 
 .cell--medium {
-  width: 120px;
+  width: 110px;
 }
 
 .cell--small {
@@ -211,7 +210,7 @@ export default {
 
 .progressbar {
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
   height: 8px;
   border-radius: 4px;
   background-color: $progressbar__bg-color;

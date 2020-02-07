@@ -784,13 +784,31 @@ development:
     url_purge_command: 'url.purge'
     retries: 5
     timeout: 5
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    http_port: 6081
+    purge_command: 'purge'
+    retries: 1
+    timeout: 1
+    # 'warning' or 'error'
+    trigger_verbose: false
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    retries: 1 # number of retries before considering failure
+    critical: false # either the failure is considered an error or a warning
+    timeout: 1 # socket timeout
+    trigger_verbose: false
 
 test:
   <<: *defaults
   http_port: 53716
   redis:
     host: '127.0.0.1'
-    port: 6335
+    port: 6379
   enforce_non_empty_layer_css: false
   api_requests_es_service:
     url: "http://api-calls-service.localhost.lan/search"
@@ -801,6 +819,25 @@ test:
     dir: "/tmp/federated_server_db"
     port: 22665
     test_user: "remote_user"
+  varnish_management:
+    critical: false
+    host: '127.0.0.1'
+    port: 6082
+    http_port: 6081
+    purge_command: 'purge'
+    retries: 1
+    timeout: 1
+    # 'warning' or 'error'
+    trigger_verbose: false
+  invalidation_service:
+    enabled: false
+    host: '127.0.0.1'
+    port: 3142
+    retries: 1 # number of retries before considering failure
+    critical: false # either the failure is considered an error or a warning
+    timeout: 1 # socket timeout
+    trigger_verbose: false
+
 
 staging:
   <<: *defaults

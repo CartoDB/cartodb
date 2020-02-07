@@ -16,11 +16,11 @@ shared_examples_for 'permission models' do
 
   after(:all) do
     bypass_named_maps
-    @viewer_user.destroy
-    @user4.destroy
-    @user3.destroy
-    @user2.destroy
-    @user.destroy
+    @viewer_user&.destroy
+    @user4&.destroy
+    @user3&.destroy
+    @user2&.destroy
+    @user&.destroy
   end
 
   describe '#create' do

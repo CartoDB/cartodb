@@ -291,7 +291,7 @@ describe CartoDB::Importer2::CsvNormalizer do
   end
 
   def get_temp_csv_fullpath
-    "/var/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
+    "/tmp/#{Time.now.to_f}-#{rand(999)}.csv"
   end
 
 end

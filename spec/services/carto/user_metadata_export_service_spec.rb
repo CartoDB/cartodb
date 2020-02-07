@@ -101,7 +101,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
-    user.update_attributes!(viewer: false) unless user.destroyed?
+    user.update_attributes!(viewer: false) unless user && user.destroyed?
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))

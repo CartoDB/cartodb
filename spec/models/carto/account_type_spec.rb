@@ -11,7 +11,10 @@ describe Carto::AccountType do
   end
 
   after :each do
-    @account_type.destroy if @account_type
+    if @account_type
+      User.where(account_type: @account_type.account_type).find_each(&:destroy)
+      @account_type.destroy
+    end
   end
 
   describe '#create' do

@@ -18,15 +18,17 @@ else
   specs=$(cat parallel_tests/specfailed.log | sed ':a;N;$!ba;s/\n/ /g')
 fi
 
-# Print parallel logs if some of them failed
-if [ -s parallel_tests/specfailed.log ]; then
-    echo "*****************************************************************************************************"
-    echo "Logs of tests that ran in parallel"
-    echo "*****************************************************************************************************"
-    TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis\|pg_restore:\|pg_dump:\|is already a member of\|Skipping Ghost Tables linking"
-    cat parallel_tests/6*.log | grep -v "$TRASH_MESSAGES"
-    echo "*****************************************************************************************************"
-fi
+TRASH_MESSAGES="Varnish purge error: \[Errno 111\] Connection refused\|_CDB_LinkGhostTables() called with username=\|terminating connection due to administrator command\|Error trying to connect to Invalidation Service to link Ghost Tables: No module named redis\|pg_restore:\|pg_dump:\|is already a member of\|Skipping Ghost Tables linking"
+
+## uncomment the following if you want to debug failures in parallel execution
+## Print parallel logs if some of them failed
+#if [ -s parallel_tests/specfailed.log ]; then
+#    echo "*****************************************************************************************************"
+#    echo "Logs of tests that ran in parallel"
+#    echo "*****************************************************************************************************"
+#    cat parallel_tests/6*.log | grep -v "$TRASH_MESSAGES"
+#    echo "*****************************************************************************************************"
+#fi
 
 echo "Giving a second try to the next specs"
 cat parallel_tests/specfailed.log

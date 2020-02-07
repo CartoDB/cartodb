@@ -6,9 +6,6 @@ dbAdmin="postgres"
 startPort=6000
 lastPort=$((threads + $startPort))
 
-## wait for builder to start
-until curl  -s --fail http://localhost:3000/; do sleep 1; done
-
 # Iterate and create one database per spec
 for i in $(seq $startPort $lastPort)
 do

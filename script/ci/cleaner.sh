@@ -48,5 +48,7 @@ rm -f parallel_tests/databases.log
 rm -f parallel_tests/databases_new.log
 rm -f parallel_tests/user_databases.log
 rm -f parallel_tests/users_databases_new.log
+rm -f .zeu*
+rm -f /cartodb/tmp/pids/server.pid
 
 echo "# Cleaner finished"

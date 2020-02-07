@@ -2,6 +2,9 @@
 
 WORKERS=${1:-22}
 
+# init builder
+script/ci/init.sh
+
 # BACKEND PARALLEL
 script/ci/generateSpecFull.sh || exit 1
 

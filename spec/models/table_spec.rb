@@ -1581,6 +1581,9 @@ describe Table do
         @user.database_timeout = 1
         @user.save
         table.update_table_pg_stats
+        @user.user_timeout = @old_user_timeout
+        @user.database_timeout = @old_user_db_timeout
+        @user.save
         table.rows_counted.should == 7
       end
 
@@ -1601,6 +1604,9 @@ describe Table do
         @user.save
 
         table.update_table_geom_pg_stats
+        @user.user_timeout = @old_user_timeout
+        @user.database_timeout = @old_user_db_timeout
+        @user.save
         table.rows_counted.should == 7
       end
     end

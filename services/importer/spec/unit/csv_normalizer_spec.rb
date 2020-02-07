@@ -295,4 +295,3 @@ describe CartoDB::Importer2::CsvNormalizer do
   end
 
 end
-

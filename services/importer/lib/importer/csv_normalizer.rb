@@ -70,14 +70,8 @@ module CartoDB
 
         LINES_FOR_DETECTION.times {
           line = stream.gets
-          if !line.nil?
-            if line.count("\"").odd?
-              # Toggle the skip line mode
-              skip_line ^= true
-            elsif !skip_line
-              lines_for_detection << remove_quoted_strings(line)
-            end
-          end
+          skip_line ^= true if line&.count("\"")&.odd?  # Toggle skip line mode
+          lines_for_detection << remove_quoted_strings(line) unless !line || skip_line
         }
 
         stream.rewind

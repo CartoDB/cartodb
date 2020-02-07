@@ -50,4 +50,6 @@ test:
   conn_validator_timeout: -1
   connect_timeout: -1
   prepared_statements: false
+  variables:
+    statement_timeout: 10000
 

@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 cd /cartodb
 mkdir -p log && chmod -R 777 log/

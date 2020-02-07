@@ -89,7 +89,7 @@ export default {
 }
 
 .cell--medium {
-  width: 120px;
+  width: 110px;
 }
 
 .cell--small {

@@ -1324,6 +1324,17 @@ describe Table do
     end
 
     context "post import processing tests" do
+      before(:all) do
+        @old_user_timeout = @user.user_timeout
+        @old_user_db_timeout = @user.database_timeout
+      end
+
+      after(:each) do
+        @user.user_timeout = @old_user_timeout
+        @user.database_timeout = @old_user_db_timeout
+        @user.save
+      end
+
       it "should optimize the table" do
         fixture = fake_data_path("SHP1.zip")
         Table.any_instance.expects(:optimize).once
@@ -1348,54 +1359,6 @@ describe Table do
         table.rows_counted.should == 7
 
         table.schema.should include([:the_geom, "geometry", "geometry", "geometry"])
-      end
-
-      it "should not fail when the analyze is executed in update_table_pg_stats and raises a timeout" do
-        delete_user_data @user
-        old_user_timeout = @user.user_timeout
-        old_user_db_timeout = @user.database_timeout
-        data_import = DataImport.create(user_id: @user.id,
-                                        data_source: fake_data_path('twitters.csv'))
-        data_import.run_import!
-
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should match(/^twitters/)
-        @user.user_timeout = 1
-        @user.database_timeout = 1
-        @user.save
-        table.update_table_pg_stats
-        table.rows_counted.should == 7
-        @user.user_timeout = old_user_timeout
-        @user.database_timeout = old_user_db_timeout
-        @user.save
-      end
-
-      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout" do
-        delete_user_data @user
-        old_user_timeout = @user.user_timeout
-        old_user_db_timeout = @user.database_timeout
-        data_import = DataImport.create(user_id: @user.id,
-                                        data_source: fake_data_path('twitters.csv'))
-        data_import.run_import!
-
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should match(/^twitters/)
-
-        @user.user_timeout = 1
-        @user.database_timeout = 1
-        @user.save
-
-        begin
-          table.update_table_geom_pg_stats
-        ensure
-          @user.user_timeout = old_user_timeout
-          @user.database_timeout = old_user_db_timeout
-          @user.save
-        end
-
-        table.rows_counted.should == 7
       end
 
       it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
@@ -1481,30 +1444,6 @@ describe Table do
         cartodb_id_schema[:primary_key].should == true
         cartodb_id_schema[:allow_null].should == false
       end
-
-      # Legacy test commented: Invalid data on cartodb_id will provoke an import failure and this behavior
-      # is tested in the data_import specs.
-      #
-      # it "should add a 'cartodb_id_' column when importing a file with invalid data on the cartodb_id column" do
-      #   data_import = DataImport.create( :user_id       => @user.id,
-      #                                    :data_source   =>  '/../db/fake_data/duplicated_cartodb_id.zip')
-
-      #   data_import.run_import!
-      #   table = Table.new(user_table: UserTable[data_import.table_id])
-      #   table.should_not be_nil, "Import failure: #{data_import.log}"
-
-      #   table_schema = @user.in_database.schema(table.name)
-
-      #   cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id'}
-      #   cartodb_id_schema.should be_present
-      #   cartodb_id_schema = cartodb_id_schema[1]
-      #   cartodb_id_schema[:db_type].should == 'bigint'
-      #   cartodb_id_schema[:default].should == "nextval('#{table.name}_cartodb_id_seq'::regclass)"
-      #   cartodb_id_schema[:primary_key].should == true
-      #   cartodb_id_schema[:allow_null].should == false
-      #   invalid_cartodb_id_schema = table_schema.detect {|s| s[0].to_s == 'cartodb_id_0'}
-      #   invalid_cartodb_id_schema.should be_present
-      # end
 
       it "should return geometry types when guessing is enabled" do
         data_import = DataImport.create( :user_id       => @user.id,
@@ -1625,6 +1564,44 @@ describe Table do
         table.sequel.select(:f1).where(:test_id => '2').first[:f1].should == false
         table.sequel.select(:f1).where(:test_id => '3').first[:f1].should == true
         table.sequel.select(:f1).where(:test_id => '4').first[:f1].should == true
+      end
+
+      it "should not fail when the analyze is executed in update_table_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+        table.update_table_pg_stats
+        table.rows_counted.should == 7
+      end
+
+      it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a timeout" do
+        delete_user_data @user
+        old_user_timeout = @user.user_timeout
+        old_user_db_timeout = @user.database_timeout
+        data_import = DataImport.create(user_id: @user.id,
+                                        data_source: fake_data_path('twitters.csv'))
+        data_import.run_import!
+
+        table = Table.new(user_table: UserTable[data_import.table_id])
+        table.should_not be_nil, "Import failure: #{data_import.log}"
+        table.name.should match(/^twitters/)
+
+        @user.user_timeout = 1
+        @user.database_timeout = 1
+        @user.save
+
+        table.update_table_geom_pg_stats
+        table.rows_counted.should == 7
       end
     end
 

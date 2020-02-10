@@ -905,19 +905,23 @@ module CartoDB
         @queries.run_in_transaction(queries, true)
       end
 
+      # PG12_DEPRECATED in postgis 3+
       def set_raster_privileges(role_name = nil)
-        # Postgis lives at public schema, so raster catalogs too
-        catalogs_schema = SCHEMA_PUBLIC
-        queries = [
-          "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
-          "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
-        ]
-        target_user = role_name.nil? ? @user.database_public_username : role_name
-        unless @user.organization.nil?
-          queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
-          queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
+        database = @user.in_database(as: :superuser)
+        if database.table_exists?('raster_overviews')
+          # Postgis lives at public schema, so raster catalogs too
+          catalogs_schema = SCHEMA_PUBLIC
+          queries = [
+            "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
+            "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
+          ]
+          target_user = role_name.nil? ? @user.database_public_username : role_name
+          unless @user.organization.nil?
+            queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
+            queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
+          end
+          @queries.run_in_transaction(queries, true)
         end
-        @queries.run_in_transaction(queries, true)
       end
 
       def setup_organization_role_permissions

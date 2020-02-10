@@ -16,9 +16,9 @@
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
-          <BadgeWarning>
+          <NotificationBadge type="warning">
             <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
-          </BadgeWarning>
+          </NotificationBadge>
         </template>
 
         <template slot="dropdownButton">
@@ -112,7 +112,7 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -140,7 +140,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
-    BadgeWarning,
+    NotificationBadge,
     DatasetCard,
     DatasetCardFake,
     InitialState,

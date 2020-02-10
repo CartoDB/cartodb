@@ -7,9 +7,9 @@ exports[`QuotaWidget.vue should render a disabled  widget with warning 1`] = `
       <h4 class="text is-caption is-semibold is-txtGrey">Another test</h4>
     </div>
     <div class="quota-cell cell--large">
-      <badgeinfo-stub>
+      <notificationbadge-stub type="info" showicon="true" hasmargin="true">
         <div class="text is-small">QuotaSection.upgrade</div>
-      </badgeinfo-stub>
+      </notificationbadge-stub>
     </div>
   </div>
   <div class="quota-data">

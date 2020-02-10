@@ -42,18 +42,17 @@ RSpec.configure do |config|
       clean_metadata_database
       close_pool_connections
       drop_leaked_test_user_databases
-
     end
   end
   config.after(:all) do
-    unless ENV['PARALLEL']
+    unless ENV['PARALLEL'] || ENV['BUILD_ID']
       close_pool_connections
       drop_leaked_test_user_databases
       delete_database_test_users
     end
   end
 
-  unless ENV['PARALLEL']
+  unless ENV['PARALLEL'] || ENV['BUILD_ID']
     config.after(:suite) do
       CartoDB::RedisTest.down
     end

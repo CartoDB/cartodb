@@ -9,3 +9,4 @@ REDIS_PORT=6335 RAILS_ENV=test bundle exec rake cartodb:test:prepare
 REDIS_PORT=6335 RAILS_ENV=development bundle exec rake db:create
 REDIS_PORT=6335 RAILS_ENV=development bundle exec rake db:migrate
 cd -
+

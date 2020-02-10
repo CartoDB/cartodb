@@ -505,4 +505,60 @@ describe Carto::VisualizationQueryBuilder do
       destroy_full_visualization(map, table, table_visualization, visualization)
     end
   end
+
+  describe 'user visualizations helpers' do
+    before(:all) do
+      @user = FactoryGirl.create(:carto_user, private_maps_enabled: true)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+                                               privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_KUVIZ,
+                                               privacy: Carto::Visualization::PRIVACY_PUBLIC)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_CANONICAL,
+                                               privacy: Carto::Visualization::PRIVACY_PRIVATE)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+                                               privacy: Carto::Visualization::PRIVACY_PRIVATE)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+                                               privacy: Carto::Visualization::PRIVACY_LINK)
+      FactoryGirl.create(:carto_visualization, user_id: @user.id, type: Carto::Visualization::TYPE_DERIVED,
+                                               privacy: Carto::Visualization::PRIVACY_PROTECTED, password: 'x')
+    end
+
+    after(:all) do
+      @user.destroy
+    end
+
+    it 'returns the private maps of a user' do
+      result = Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user).build
+
+      expect(result.count).to eq 1
+      expect(result.first.privacy).to eq Carto::Visualization::PRIVACY_PRIVATE
+    end
+
+    it 'returns the public maps of a user' do
+      result = Carto::VisualizationQueryBuilder.user_public_privacy_visualizations(@user).build
+
+      expect(result.count).to eq 2
+      expect(result.all.map(&:privacy).uniq).to eq [Carto::Visualization::PRIVACY_PUBLIC]
+    end
+
+    it 'returns the link maps of a user' do
+      result = Carto::VisualizationQueryBuilder.user_link_privacy_visualizations(@user).build
+
+      expect(result.count).to eq 1
+      expect(result.first.privacy).to eq Carto::Visualization::PRIVACY_LINK
+    end
+
+    it 'returns the password maps of a user' do
+      result = Carto::VisualizationQueryBuilder.user_password_privacy_visualizations(@user).build
+
+      expect(result.count).to eq 1
+      expect(result.first.privacy).to eq Carto::Visualization::PRIVACY_PROTECTED
+    end
+
+    it 'returns all the user maps' do
+      result = Carto::VisualizationQueryBuilder.user_all_visualizations(@user).build
+
+      expect(result.count).to eq 5
+    end
+  end
 end

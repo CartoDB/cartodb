@@ -1539,12 +1539,12 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
-                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
-                          exclude_shared: true,
-                          exclude_raster: true
-                        })
+    visualization_count(
+      type: Carto::Visualization::MAP_TYPES,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    )
   end
 
   def public_privacy_visualization_count
@@ -1552,15 +1552,22 @@ class User < Sequel::Model
   end
 
   def link_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_LINK,
                         exclude_shared: true,
                         exclude_raster: true)
   end
 
   def password_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def private_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
+                        privacy: Carto::Visualization::PRIVACY_PRIVATE,
                         exclude_shared: true,
                         exclude_raster: true)
   end
@@ -1568,7 +1575,7 @@ class User < Sequel::Model
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: false,
                           exclude_raster: false
                         })
@@ -1577,7 +1584,7 @@ class User < Sequel::Model
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: true,
                           exclude_raster: false
                         })

@@ -209,7 +209,7 @@ module Carto
           },
           trial_ends_at: @user.trial_ends_at,
           upgraded_at: @user.upgraded_at,
-          show_trial_reminder: @user.trial_ends_at.present?,
+          show_trial_reminder: @user.show_trial_reminder?,
           show_upgraded_message: (@user.account_type.downcase != 'free' && @user.upgraded_at && @user.upgraded_at + 15.days > Date.today ? true : false),
           actions: {
             private_tables: @user.private_tables_enabled,

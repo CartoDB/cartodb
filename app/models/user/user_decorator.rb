@@ -120,7 +120,7 @@ module CartoDB
         layers: layers.map(&:public_values),
         trial_ends_at: trial_ends_at,
         upgraded_at: upgraded_at,
-        show_trial_reminder: trial_ends_at.present?,
+        show_trial_reminder: show_trial_reminder?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: private_tables_enabled,

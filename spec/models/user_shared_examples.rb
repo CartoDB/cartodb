@@ -1044,18 +1044,61 @@ shared_examples_for "user models" do
   end
 
   describe '#remaining_trial_days' do
-    before(:all) do
-      @user = create_user
+    before(:each) do
+      @user = build_user
     end
 
-    after(:each) do
-      @user.unstub(:trial_ends_at)
+    it 'returns 0 if the plan has no trial' do
+      @user.account_type = 'FREE'
+
+      expect(@user.remaining_trial_days).to eq 0
     end
 
-    it 'returns 0 if trial_ends_at is in the past' do
-      @user.stubs(trial_ends_at: Time.now - 2.days)
+    it 'returns 0 the trial has ended' do
+      @user.account_type = 'PERSONAL30'
+      @user.created_at = Time.now - 2.months
 
-      @user.remaining_trial_days.should eq 0
+      expect(@user.remaining_trial_days).to eq 0
+    end
+
+    it 'returns the remaining number of trial days of the plan' do
+      @user.account_type = 'PERSONAL30'
+      @user.created_at = Time.now - 10.days
+
+      expect(@user.remaining_trial_days).to eq 20
+    end
+
+    it 'rounds up the remaining days' do
+      @user.account_type = 'PERSONAL30'
+      @user.created_at = Time.now - 28.hours
+
+      expect(@user.remaining_trial_days).to eq 29
+    end
+  end
+
+  describe '#show_trial_reminder?' do
+    before(:each) do
+      @user = build_user
+    end
+
+    it 'returns false if the account does not have a trial' do
+      @user.account_type = 'FREE'
+
+      expect(@user.show_trial_reminder?).to be_false
+    end
+
+    it 'returns false if the account has an expired trial' do
+      @user.account_type = 'PERSONAL30'
+      @user.created_at = Time.now - 2.months
+
+      expect(@user.show_trial_reminder?).to be_false
+    end
+
+    it 'returns true if the account has an active trial' do
+      @user.account_type = 'PERSONAL30'
+      @user.created_at = Time.now - 1.day
+
+      expect(@user.show_trial_reminder?).to be_true
     end
   end
 end

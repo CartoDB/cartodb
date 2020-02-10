@@ -140,6 +140,7 @@ module Carto
           public_privacy_map_count: @user.public_privacy_visualization_count,
           link_privacy_map_count: @user.link_privacy_visualization_count,
           password_privacy_map_count: @user.password_privacy_visualization_count,
+          private_privacy_map_count: @user.private_privacy_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,

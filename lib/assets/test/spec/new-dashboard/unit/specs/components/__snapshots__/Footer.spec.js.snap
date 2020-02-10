@@ -8,7 +8,7 @@ exports[`Footer.vue should render items for free users 1`] = `
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
-      </a> <a href="https://carto.com/developers" target="_blank" rel="noopener noreferrer" class="footer-link">
+      </a> <a href="https://carto.com/developers/" target="_blank" rel="noopener noreferrer" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
@@ -38,7 +38,7 @@ exports[`Footer.vue should render items for organization users (no owner) 1`] = 
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
-      </a> <a href="https://carto.com/developers" target="_blank" rel="noopener noreferrer" class="footer-link">
+      </a> <a href="https://carto.com/developers/" target="_blank" rel="noopener noreferrer" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
@@ -67,7 +67,7 @@ exports[`Footer.vue should render items for organization users (owner) 1`] = `
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
-      </a> <a href="https://carto.com/developers" target="_blank" rel="noopener noreferrer" class="footer-link">
+      </a> <a href="https://carto.com/developers/" target="_blank" rel="noopener noreferrer" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>
@@ -94,7 +94,7 @@ exports[`Footer.vue should render items for pro users 1`] = `
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.HelpCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.HelpCenter.description</p>
-      </a> <a href="https://carto.com/developers" target="_blank" rel="noopener noreferrer" class="footer-link">
+      </a> <a href="https://carto.com/developers/" target="_blank" rel="noopener noreferrer" class="footer-link">
         <h4 class="title-link title is-caption is-txtGrey">
           Footer.DeveloperCenter.title<span class="chevron"><img svg-inline="" src="../assets/icons/common/chevron.svg"></span></h4>
         <p class="description-link text is-small is-txtSoftGrey">Footer.DeveloperCenter.description</p>

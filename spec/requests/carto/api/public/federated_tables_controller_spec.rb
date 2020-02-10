@@ -27,11 +27,7 @@ describe Carto::Api::Public::FederatedTablesController do
     raise "Federated server directory is not configured!" unless @dir.present?
     raise "Federated server port is not configured!" unless port.present?
     raise "Federated server user is not configured!" unless user.present?
-    raise "Binary 'pg_ctl' could not be found" unless system("which #{@pg_ctl}")
     raise "Binary 'psql' could not be found" unless system("which #{@psql}")
-
-    puts "Starting the remote server"
-    raise("Could not start the federated DB") unless system("#{@pg_ctl} start --silent -D #{@dir} >/dev/null")
 
     @remote_host     = "127.0.0.1"
     @remote_port     = "#{port}"
@@ -42,8 +38,6 @@ describe Carto::Api::Public::FederatedTablesController do
 
   after(:all) do
     @feature_flag.destroy
-    puts "Stopping the remote server"
-    system("#{@pg_ctl} stop --silent -D #{@dir} >/dev/null") || raise("Could not stop the federated DB")
   end
 
   def remote_query(query)

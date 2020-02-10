@@ -45,17 +45,13 @@ module CartoDB
 
       query_builder = Carto::VisualizationQueryBuilder.new.
                       with_user_id(@user.id).
-                      with_types([Carto::Visualization::TYPE_DERIVED, Carto::Visualization::TYPE_KUVIZ]).
+                      with_types(Carto::Visualization::MAP_TYPES).
                       with_privacy(not_private)
       query_builder.build.count
     end
 
     def private_map_count
-      query_builder = Carto::VisualizationQueryBuilder.new.
-                      with_user_id(@user.id).
-                      with_types([Carto::Visualization::TYPE_DERIVED, Carto::Visualization::TYPE_KUVIZ]).
-                      with_privacy(Carto::Visualization::PRIVACY_PRIVATE)
-      query_builder.build.count
+      Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user).build.count
     end
 
     def regular_api_key_count

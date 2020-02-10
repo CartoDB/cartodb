@@ -10,10 +10,6 @@ describe Carto::AccountType do
     @account_type = create_account_type_fg('PRO')
   end
 
-  after :each do
-    @account_type.destroy if @account_type
-  end
-
   describe '#create' do
     it 'is persisted correctly to database' do
       account_type = Carto::AccountType.find(@account_type.account_type)

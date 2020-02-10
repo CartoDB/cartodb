@@ -1043,6 +1043,26 @@ shared_examples_for "user models" do
     end
   end
 
+  describe '#trial_ends_at' do
+    before(:each) do
+      @user = build_user
+    end
+
+    it 'returns nil if the account does not have a trial' do
+      @user.account_type = 'CORONELLI'
+
+      expect(@user.trial_ends_at).to be_nil
+    end
+
+    it 'returns the expected date for trial accounts' do
+      @user.account_type = 'Individual'
+      @user.created_at = Time.parse('2020-02-01 10:00:00')
+      expected_date = Time.parse('2020-02-15 10:00:00')
+
+      expect(@user.trial_ends_at).to eql expected_date
+    end
+  end
+
   describe '#remaining_trial_days' do
     before(:each) do
       @user = build_user

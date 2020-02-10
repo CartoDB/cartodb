@@ -311,6 +311,7 @@ describe Admin::PagesController do
 
     before(:each) do
       host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+      Carto::Visualization.find_each(&:destroy)
     end
 
     it 'returns 200 if a dataset has no table' do

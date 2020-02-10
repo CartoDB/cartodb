@@ -1,4 +1,5 @@
 require 'base64'
+require 'securerandom'
 
 require_dependency 'carto/user_authenticator'
 require_dependency 'carto/email_cleaner'
@@ -271,7 +272,7 @@ end
 Warden::Manager.after_set_user except: :fetch do |user, auth, opts|
   auth.session(opts[:scope])[:skip_multifactor_authentication] = auth.winning_strategy && !auth.winning_strategy.store?
 
-  auth.session(opts[:scope])[:sec_token] = Digest::SHA1.hexdigest(user.crypted_password)
+  auth.session(opts[:scope])[:sec_token] = user.security_token
 
   # Only at the editor, and only after new authentications, destroy other sessions
   # @see #4656

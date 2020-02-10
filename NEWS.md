@@ -14,6 +14,7 @@ Development
 - Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
 - Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
 - Fix remaining trial days calculation ([#15470](https://github.com/CartoDB/cartodb/pull/15470))
+- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453) and [#15467](https://github.com/CartoDB/cartodb/pull/15467))
 - Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
 
 4.34.0 (2020-01-28)

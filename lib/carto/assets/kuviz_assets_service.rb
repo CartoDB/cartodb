@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_dependency 'carto/storage'
 require_dependency 'carto/assets/assets_service'
 require 'singleton'
@@ -9,7 +7,7 @@ module Carto
     include Singleton
 
     EXTENSION = ".html".freeze
-    DEFAULT_MAX_SIZE_IN_BYTES = 1048576
+    DEFAULT_MAX_SIZE_IN_BYTES = 10 * 1024 * 1024 # 10MB
 
     def upload(visualization, resource)
       super(visualization.id, resource)

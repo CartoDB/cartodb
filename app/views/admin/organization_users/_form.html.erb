@@ -47,7 +47,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">New password</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= password_field_tag 'user[password]', nil, :placeholder => "New password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
+          <%= password_field_tag 'user[password]', nil, autocomplete: "off", :placeholder => "New password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present? }", readonly: !@user.can_change_password? %>
         </div>
         <div class="FormAccount-rowInfo">
           <% if (@user.errors[:password].present?) %>
@@ -61,7 +61,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor">Confirm password</label>
         </div>
         <div class="FormAccount-rowData">
-          <%= password_field_tag 'user[password_confirmation]', nil, :placeholder => "Confirm new password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
+          <%= password_field_tag 'user[password_confirmation]', nil, autocomplete: "off", :placeholder => "Confirm new password", :class => "CDB-InputText CDB-Text FormAccount-input FormAccount-input--med #{ 'is-disabled' if !@user.can_change_password? } #{ 'has-error' if @user.errors[:password].present?}", readonly: !@user.can_change_password? %>
         </div>
       </div>
     </div>

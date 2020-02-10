@@ -133,13 +133,6 @@ module Carto
           display_name || @data_import.id
         end
       rescue => e
-        CartoDB.notify_debug(
-          'Error extracting display name',
-          data_import_id: @data_import.id,
-          service_item_id: @data_import.service_item_id,
-          data_source: @data_import.data_source,
-          exception: e.inspect
-        )
         @data_import.id
       end
 

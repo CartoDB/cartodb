@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'spec_helper_min'
 require_dependency 'carto/uuidhelper'
 require 'factories/carto_visualizations'

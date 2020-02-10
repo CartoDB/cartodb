@@ -11,7 +11,13 @@ WORKING_SPECS_1 = \
 	spec/models/table_spec.rb \
 	spec/models/table_privacy_manager_spec.rb \
 	spec/models/table/column_typecaster_spec.rb \
-	spec/models/user_spec.rb \
+	spec/models/user_part_app_spec.rb \
+	spec/models/user_part_crud_spec.rb \
+	spec/models/user_part_database_and_cache_spec.rb \
+	spec/models/user_part_organization_spec.rb \
+	spec/models/user_part_plans_and_services_spec.rb \
+	spec/models/user_part_validation_and_authentication_spec.rb \
+	spec/models/user_part_refactored_behaviour_spec.rb \
 	spec/models/user_presenter_spec.rb \
 	spec/models/user_table_spec.rb \
 	spec/models/layer_spec.rb \
@@ -137,7 +143,11 @@ WORKING_SPECS_4 = \
 	services/sql-api/spec/sql_api_spec.rb \
 	spec/requests/admin/organizations_controller_spec.rb \
 	spec/requests/admin/visualizations_spec.rb \
-	spec/requests/carto/api/visualizations_controller_spec.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_1.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_2.rb \
+	spec/requests/carto/api/visualizations_controller_spec_part_3.rb \
+	spec/requests/carto/api/visualizations_controller_index_spec.rb \
+	spec/requests/carto/api/visualizations_controller_vizjson_spec.rb \
 	spec/requests/carto/api/tables_controller_spec.rb \
 	spec/queries/carto/visualization_query_builder_spec.rb \
 	spec/requests/admin/tables_spec.rb \
@@ -354,10 +364,15 @@ SPEC_HELPER_MIN_SPECS = \
 	spec/requests/carto/api/search_preview_controller_spec.rb \
 	spec/requests/carto/api/public/oauth_apps_controller_spec.rb \
 	spec/requests/carto/api/public/datasets_controller_spec.rb \
-	spec/models/carto/user_migration_spec.rb \
+	spec/models/carto/user_migration_api_key_spec.rb \
+	spec/models/carto/user_migration_rollback_spec.rb \
+	spec/models/carto/user_migration_base_spec.rb \
 	spec/requests/carto/api/public/data_observatory_controller_spec.rb \
 	spec/lib/tasks/data_observatory_rake_spec.rb \
 	spec/services/carto/do_licensing_service_spec.rb \
+	spec/requests/carto/api/public/federated_tables_controller_spec.rb \
+	spec/services/carto/federated_tables_service_spec.rb \
+	spec/mailers/data_observatory_mailer_spec.rb \
 	$(NULL)
 
 # This class must be tested isolated as pollutes namespace

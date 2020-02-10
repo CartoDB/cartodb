@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../../lib/varnish/lib/cartodb-varnish'
 require_relative '../user'
 require_relative 'user_table'

@@ -1,6 +1,5 @@
 require_relative '../carto/http/client'
 
-# encoding: utf-8
 module Cartodb
   class Central
 
@@ -89,6 +88,10 @@ module Cartodb
 
     def delete_user(username)
       send_request("api/users/#{username}", nil, :delete, [204, 404])
+    end
+
+    def check_do_enabled(username)
+      send_request("api/users/#{username}/do_status", nil, :get, [200])
     end
 
     def get_do_token(username)

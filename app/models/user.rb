@@ -1,7 +1,7 @@
-# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
 require 'email_address'
+require 'securerandom'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -26,6 +26,7 @@ require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
+require_dependency 'carto/gcloud_user_settings'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -45,7 +46,8 @@ class User < Sequel::Model
     'dropbox' => 'Dropbox',
     'box' => 'Box',
     'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram'
+    'instagram' => 'Instagram',
+    'bigquery' => 'Google BigQuery'
   }.freeze
 
   OAUTH_SERVICE_REVOKE_URLS = {
@@ -98,6 +100,7 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
+                 :session_salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -289,6 +292,7 @@ class User < Sequel::Model
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= make_token
+    self.session_salt ||= SecureRandom.hex
   end
 
   def before_save
@@ -486,6 +490,8 @@ class User < Sequel::Model
           v.user.viewer = false
           v.destroy!
         end
+        oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
+        oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
@@ -683,6 +689,20 @@ class User < Sequel::Model
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
+  end
+
+  def security_token
+    return if self.session_salt.blank?
+
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
+  end
+
+  def invalidate_all_sessions!
+    self.session_salt = SecureRandom.hex
+    update_in_central
+    save
+  rescue CartoDB::CentralCommunicationFailure => e
+    CartoDB::Logger.info(exception: e, message: "Cannot invalidate session")
   end
 
   # Database configuration setup
@@ -1122,6 +1142,12 @@ class User < Sequel::Model
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
   end
 
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self, attributes)
+    settings.update
+  end
+
   def carto_account_type
     Carto::AccountType.find(account_type)
   end
@@ -1373,21 +1399,22 @@ class User < Sequel::Model
       title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
       revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'box'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'dropbox'
-        Cartodb.config[:oauth]['dropbox']['app_key'].present?
-      when 'mailchimp'
-        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
-      when 'instagram'
-        Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
-      else
-        true
-      end
+                when 'gdrive'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'box'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'dropbox'
+                  Cartodb.get_config(:oauth, serv, 'app_key')
+                when 'mailchimp'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('mailchimp_import')
+                when 'instagram'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('instagram_import')
+                when 'bigquery'
+                  Cartodb.get_config(:oauth, serv, 'client_id') &&
+                  Carto::Connector.provider_available?('bigquery', self)
+                else
+                  true
+                end
 
       if enabled
         oauth = oauths.select(serv)
@@ -1511,12 +1538,12 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
-                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
-                          exclude_shared: true,
-                          exclude_raster: true
-                        })
+    visualization_count(
+      type: Carto::Visualization::MAP_TYPES,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    )
   end
 
   def public_privacy_visualization_count
@@ -1524,15 +1551,22 @@ class User < Sequel::Model
   end
 
   def link_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_LINK,
                         exclude_shared: true,
                         exclude_raster: true)
   end
 
   def password_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def private_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
+                        privacy: Carto::Visualization::PRIVACY_PRIVATE,
                         exclude_shared: true,
                         exclude_raster: true)
   end
@@ -1540,7 +1574,7 @@ class User < Sequel::Model
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: false,
                           exclude_raster: false
                         })
@@ -1549,7 +1583,7 @@ class User < Sequel::Model
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: true,
                           exclude_raster: false
                         })
@@ -1773,7 +1807,7 @@ class User < Sequel::Model
       geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
       here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
-      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit
+      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit private_map_quota
     )
     to.set_fields(self, attributes_to_copy)
     to.invite_token = make_token

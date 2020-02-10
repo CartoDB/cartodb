@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'sequel'
 require 'rack/test'
 require 'json'
@@ -408,6 +407,19 @@ describe Admin::VisualizationsController do
       get "/viz/#{URI::encode(name)}/embed_map", {}, @headers
       last_response.status.should == 200
       last_response.headers.include?('X-Frame-Options').should_not == true
+    end
+
+    it 'redirects to kuviz when needed' do
+      kuviz = FactoryGirl.create(:kuviz_visualization, user_id: @user.id)
+
+      get public_tables_embed_map_url(id: kuviz.id), {}, @headers
+      last_response.status.should eq 302
+
+      follow_redirect!
+
+      uri = URI.parse(last_request.url)
+      uri.host.should == "#{@user.username}.localhost.lan"
+      uri.path.should == "/kuviz/#{kuviz.id}"
     end
   end
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
 
 # NOTES:
@@ -595,6 +593,25 @@ CartoDB::Application.routes.draw do
         delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
         get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
       end
+
+      # Federated Tables
+
+      ## Federated servers
+      get 'federated_servers', to: 'federated_tables#list_federated_servers', as: :api_v4_federated_servers_list_servers
+      post 'federated_servers' => 'federated_tables#register_federated_server', as: :api_v4_federated_servers_register_server
+      get 'federated_servers/:federated_server_name' => 'federated_tables#show_federated_server', as: :api_v4_federated_servers_get_server
+      put 'federated_servers/:federated_server_name' => 'federated_tables#update_federated_server', as: :api_v4_federated_servers_update_server
+      delete 'federated_servers/:federated_server_name' => 'federated_tables#unregister_federated_server', as: :api_v4_federated_servers_unregister_server
+
+      ## Remote schemas
+      get 'federated_servers/:federated_server_name/remote_schemas', to: 'federated_tables#list_remote_schemas', as: :api_v4_federated_servers_list_schemas
+
+      ## Remote tables
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#list_remote_tables', as: :api_v4_federated_servers_list_tables
+      post 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#register_remote_table', as: :api_v4_federated_servers_register_table
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
+      put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
+      delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
     end
 
     scope 'v3/' do
@@ -709,6 +726,10 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
+      get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
+      get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
+      get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
+      post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
     end
   end
 

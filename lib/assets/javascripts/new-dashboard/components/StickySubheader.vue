@@ -1,7 +1,7 @@
 <template>
   <section
     class="sticky-subheader"
-    :class="{ 'is-visible': $props.isVisible, 'is-user-notification': isNotificationVisible }">
+    :class="{ 'is-visible': $props.isVisible, 'has-user-notification': isNotificationVisible }">
     <div class="container subheader-container">
       <slot />
     </div>
@@ -42,11 +42,11 @@ export default {
   background-color: $white;
 
   &.is-visible {
-    transform: translate3d(0, 64px, 0);
+    transform: translate3d(0, $header__height, 0);
 
-    &.is-user-notification {
-      $stickyHeaderPosition: calc(64px + #{$notification-warning__height});
-      transform: translate3d(0, #{$stickyHeaderPosition}, 0);
+    &.has-user-notification {
+      $stickyHeaderPosition: $header__height + $notification-warning__height;
+      transform: translate3d(0, $stickyHeaderPosition, 0);
     }
   }
 }

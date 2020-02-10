@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../spec_helper'
 require_relative '../../app/controllers/visualizations_controller_helper'
 

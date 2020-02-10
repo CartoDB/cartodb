@@ -16,11 +16,11 @@ shared_examples_for 'permission models' do
 
   after(:all) do
     bypass_named_maps
-    @viewer_user.destroy
-    @user4.destroy
-    @user3.destroy
-    @user2.destroy
-    @user.destroy
+    @viewer_user&.destroy
+    @user4&.destroy
+    @user3&.destroy
+    @user2&.destroy
+    @user&.destroy
   end
 
   describe '#create' do
@@ -606,6 +606,30 @@ shared_examples_for 'permission models' do
 
       permission.notify_permissions_change(permissions_changes)
       destroy_full_visualization(map, table, table_visualization, visualization)
+    end
+
+    it "enqueues notifications for kuviz" do
+      visualization = FactoryGirl.create(:kuviz_visualization, user: @carto_user)
+      entity_id = visualization.id
+      permission = permission_from_visualization_id(entity_id)
+
+      user2_id = "17d5b1e6-0d14-11e4-a3ef-0800274a1928"
+      user3_id = "28d09bc0-0d14-11e4-a3ef-0800274a1928"
+      permissions_changes = {
+        "user" => {
+          user2_id => [{ "action" => "grant", "type" => "r" }],
+          user3_id => [{ "action" => "revoke", "type" => "r" }]
+        }
+      }
+
+      ::Resque.stubs(:enqueue).returns(nil)
+
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::ShareVisualization, permission.entity.id, user2_id).once
+      ::Resque.expects(:enqueue).with(::Resque::UserJobs::Mail::UnshareVisualization,
+                                      permission.entity.name, permission.owner_username, user3_id).once
+
+      permission.notify_permissions_change(permissions_changes)
+      visualization.destroy
     end
 
     it "should call the permissions comparison function with correct values" do

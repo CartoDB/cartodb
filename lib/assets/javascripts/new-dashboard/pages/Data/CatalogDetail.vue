@@ -126,10 +126,6 @@ export default {
 <style scoped lang="scss">
 @import "new-dashboard/styles/variables";
 
-.page--data {
-  padding-top: 64px;
-}
-
 .full-width {
   width: 100%;
 }

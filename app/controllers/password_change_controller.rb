@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../lib/cartodb/stats/authentication'
 
 class PasswordChangeController < ApplicationController

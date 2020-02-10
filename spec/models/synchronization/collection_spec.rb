@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../spec_helper'
 require_relative '../../../services/data-repository/backend/sequel'
 require_relative '../../../services/data-repository/repository'

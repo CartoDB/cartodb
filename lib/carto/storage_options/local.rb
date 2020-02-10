@@ -1,5 +1,3 @@
-# encoding utf-8
-
 class Carto::StorageOptions::Local
   include Carto::Configuration
 

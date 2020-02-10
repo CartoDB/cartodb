@@ -1,5 +1,3 @@
-# coding: utf-8
-
 module AvatarHelper
   AVATAR_VALID_EXTENSIONS = %w{ jpeg jpg gif png }
 

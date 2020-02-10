@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'input_type_resolver'
 require_relative '../../../importer/lib/importer/query_batcher'
 

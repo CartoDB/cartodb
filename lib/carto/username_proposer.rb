@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Carto
   class UsernameProposer
     def self.find_unique(candidate_username, offset: 0, max_retries: 99)

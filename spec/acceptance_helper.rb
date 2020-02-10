@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './spec_helper'
 require 'capybara/rails'
 require "capybara/dsl"
@@ -15,7 +13,7 @@ Capybara.default_driver     = :selenium
 Capybara.default_host       = Cartodb.hostname
 Capybara.app_host           = Cartodb.hostname
 Capybara.server_port        = 53716
-Capybara.default_wait_time  = 5
+Capybara.default_max_wait_time  = 5
 
 RSpec.configure do |config|
   config.include Warden::Test::Helpers

@@ -1,9 +1,16 @@
-# encoding: utf-8
-
 require 'hubspot/events_api'
+require 'carto/tracking/services/pubsub_tracker'
 
 module Resque
   module TrackingJobs
+    module SendPubSubEvent
+      @queue = :tracker
+
+      def self.perform(user_id, name, properties)
+        PubSubTracker.instance.send_event(:metrics, user_id, name, properties)
+      end
+    end
+
     module SendSegmentEvent
       ANONYMOUS_SEGMENT_USER_ID = '00000000-0000-0000-0000-000000000000'.freeze
 

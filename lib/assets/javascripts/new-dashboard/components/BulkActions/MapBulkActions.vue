@@ -44,7 +44,8 @@ export default {
           {
             name: this.$t('BulkActions.maps.duplicate'),
             event: 'duplicateMap',
-            shouldBeDisabled: !this.canDuplicate
+            shouldBeDisabled: !this.canDuplicate,
+            shouldBeHidden: this.isAnyKuviz
           },
           {
             name: this.$t('BulkActions.maps.lock'),
@@ -118,6 +119,9 @@ export default {
     },
     canDuplicate () {
       return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
+    },
+    isAnyKuviz () {
+      return this.selectedMaps.some(map => map.type === 'kuviz');
     }
   },
   methods: {

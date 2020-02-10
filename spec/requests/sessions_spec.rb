@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../acceptance_helper'
 require_relative '../factories/visualization_creation_helpers'
 

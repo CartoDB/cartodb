@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require_dependency 'carto/api/infowindow_migrator'
 require_dependency 'carto/table_utils'
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CartoDB
   class QuotaChecker
     def initialize(user)
@@ -24,6 +22,12 @@ module CartoDB
       public_map_count + number_of_new_maps > user.public_map_quota
     end
 
+    def will_be_over_private_map_quota?(number_of_new_maps = 1)
+      return false unless user.private_map_quota
+
+      private_map_count + number_of_new_maps > user.private_map_quota
+    end
+
     def will_be_over_regular_api_key_quota?
       return false unless user.regular_api_key_quota
 
@@ -41,9 +45,13 @@ module CartoDB
 
       query_builder = Carto::VisualizationQueryBuilder.new.
                       with_user_id(@user.id).
-                      with_type(Carto::Visualization::TYPE_DERIVED).
+                      with_types(Carto::Visualization::MAP_TYPES).
                       with_privacy(not_private)
       query_builder.build.count
+    end
+
+    def private_map_count
+      Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user).build.count
     end
 
     def regular_api_key_count

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_support/time'
 require_relative '../../../lib/carto/metrics/usage_metrics_interface'
 

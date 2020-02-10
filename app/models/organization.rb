@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../controllers/carto/api/group_presenter'
 require_relative './organization/organization_decorator'
 require_relative '../helpers/data_services_metrics_helper'

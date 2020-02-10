@@ -11,7 +11,7 @@
     <label class="Metadata-label Metadata-label--big CDB-Text CDB-Size-small is-semibold u-upperCase u-ellipsis"></label>
     <div class="Form-rowData Form-rowData--noMinHeight Form-rowData--longer">
       <p class="CDB-Text CDB-Size-small Form-rowInfoText--block u-altTextColor">
-        Learn how to get your Mapbox Style URL <a href="https://www.mapbox.com/help/carto/" target="_blank">here</a>
+        Learn how to get your Mapbox Style URL <a href="https://www.mapbox.com/help/carto/" target="_blank" rel="noopener noreferrer">here</a>
       </p>
     </div>
   </div>

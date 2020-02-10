@@ -2,7 +2,7 @@
   <section class="catalog">
     <div class="container grid">
       <div class="full-width">
-        <SectionTitle class="grid-cell">
+        <SectionTitle class="grid-cell" :description="$t('CatalogPage.description')">
           <template slot="icon">
             <img src="../../assets/icons/section-title/catalog.svg" width="18" height="20" />
           </template>
@@ -17,9 +17,11 @@
       <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCategories"
           :title="$t('CatalogDropdown.category.title')"
-          :placeholder="$t('CatalogDropdown.category.placeholder')"
+          :placeholderActive="$t('CatalogDropdown.category.placeholderActive')"
+          :placeholderInactive="$t('CatalogDropdown.category.placeholderInactive')"
           :options="categories"
           :disabled="true"
+          :limitHeight="true"
           @selected="getCountries"
           @reset="resetCategory">
           <template slot="extra">
@@ -30,7 +32,8 @@
       <div class="grid-cell grid-cell--col6 catalog__filter--dropdown">
         <CatalogDropdown ref="dropdownCountries"
           :title="$t('CatalogDropdown.country.title')"
-          :placeholder="$t('CatalogDropdown.country.placeholder')"
+          :placeholderActive="$t('CatalogDropdown.country.placeholderActive')"
+          :placeholderInactive="$t('CatalogDropdown.country.placeholderInactive')"
           :options="countries"
           :disabled="true"
           :limitHeight="true"

@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 module Carto
   class ReceivedNotification < ActiveRecord::Base
     # autosave must be explicitly disabled due to https://github.com/rails/rails/issues/9336

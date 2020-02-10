@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 class HomeController < ApplicationController
   layout 'frontend'
 
@@ -10,8 +8,8 @@ class HomeController < ApplicationController
   OS_VERSION = "Description:\tUbuntu 16.04"
   PG_VERSION = 'PostgreSQL 10'.freeze
   POSTGIS_VERSION = '2.4'.freeze
-  CDB_VALID_VERSION = '0.31.0'.freeze
-  CDB_LATEST_VERSION = '0.31.0'.freeze
+  CDB_VALID_VERSION = '0.35.0'.freeze
+  CDB_LATEST_VERSION = '0.35.0'.freeze
   REDIS_VERSION = '4'.freeze
   RUBY_BIN_VERSION = 'ruby 2.2'.freeze
   NODE_VERSION = 'v6.9.2'.freeze

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 namespace :cartodb do
   namespace :log do
     desc "Take an input with the format 'verb,request,respnse_time' and outputs 'verb,controller,action,response_time'"

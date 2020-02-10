@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carto/connector'
 require_relative 'exceptions'
 require_relative 'georeferencer'
@@ -48,7 +46,7 @@ module CartoDB
         @job.log "ConnectorRunner #{@json_params.except('connection').to_json}"
         # TODO: logging with CartoDB::Logger
         table_name = @job.table_name
-        if should_import?(@connector.remote_table_name)
+        if should_import?(@connector.table_name)
           @job.log "Copy connected table"
           warnings = @connector.copy_table(schema_name: @job.schema, table_name: @job.table_name)
           @job.log 'Georeference geometry column'
@@ -61,7 +59,7 @@ module CartoDB
         @job.log "ConnectorRunner Error #{error}"
         @results.push result_for(@job.schema, table_name, error)
       else
-        if should_import?(@connector.remote_table_name)
+        if should_import?(@connector.table_name)
           @job.log "ConnectorRunner created table #{table_name}"
           @job.log "job schema: #{@job.schema}"
           @results.push result_for(@job.schema, table_name)
@@ -119,7 +117,7 @@ module CartoDB
       end
 
       def result_table_name
-        Carto::DB::Sanitize.sanitize_identifier @connector.remote_table_name
+        Carto::DB::Sanitize.sanitize_identifier @connector.table_name
       end
 
       def result_for(schema, table_name, error = nil)

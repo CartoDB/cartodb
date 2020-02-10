@@ -82,10 +82,6 @@ export default {
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
 
-header.is-user-notification + section.page--welcome {
-  padding: 0;
-}
-
 .section {
   position: relative;
 

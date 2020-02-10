@@ -12,10 +12,10 @@
 
     <div class="viz-column--main-info">
       <div class="cell cell--thumbnail cell--first">
-        <div class="cell__media" :class="{'has-error': isThumbnailErrored}">
-          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="!isThumbnailErrored"/>
+        <div class="cell__media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored }">
+          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
 
-          <div class="MapCard-error" v-if="isThumbnailErrored"></div>
+          <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
         </div>
 
         <span class="checkbox cell__checkbox" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
@@ -62,16 +62,19 @@
     </div>
 
     <div class="viz-column--extra-info">
-      <div class="viz-column--status">
+      <div class="viz-column--statusL">
+        <div class="cell cell--medium u-p--0">
+          <TypeBadge :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="true" />
+        </div>
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--large u-txt-right u-p--0 ">
+        <div class="cell cell--xsmall u-txt-right u-p--0">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>
 
-      <div class="viz-column--share">
+      <div class="viz-column--shareS">
         <div class="cell cell--small">
           <p class="text is-small is-txtSoftGrey">
             {{ $t(`MapCard.shared.${visualization.privacy}`) }}
@@ -94,6 +97,7 @@ import data from './shared/data';
 import FeaturesDropdown from 'new-dashboard/components/Dropdowns/FeaturesDropdown';
 import MapQuickActions from 'new-dashboard/components/QuickActions/MapQuickActions';
 import SharedBrief from 'new-dashboard/components/SharedBrief';
+import TypeBadge from './TypeBadge';
 import methods from './shared/methods';
 import props from './shared/props';
 
@@ -102,7 +106,8 @@ export default {
   components: {
     MapQuickActions,
     FeaturesDropdown,
-    SharedBrief
+    SharedBrief,
+    TypeBadge
   },
   props,
   data () {
@@ -156,6 +161,11 @@ export default {
     border-radius: 2px;
     background: url($assetsDir + '/images/layout/default-map-bkg.png') no-repeat center 0;
     background-size: cover;
+
+    &.is-kuviz {
+      display: block;
+      background: url("../../assets/icons/maps/kuviz-map-squared-bkg.svg");
+    }
 
     &.has-error {
       .MapCard-error {

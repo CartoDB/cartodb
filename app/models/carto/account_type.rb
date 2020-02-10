@@ -5,8 +5,8 @@ module Carto
     PERSONAL30 = 'PERSONAL30'.freeze
     INDIVIDUAL = 'Individual'.freeze
 
-    TRIAL_PLANS = [PERSONAL30, INDIVIDUAL].freeze
-    TRIAL_DAYS = { PERSONAL30 => 30, INDIVIDUAL => 14 }.freeze
+    TRIAL_PLANS = [INDIVIDUAL].freeze
+    TRIAL_DAYS = { INDIVIDUAL => 14 }.freeze
 
     FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL].freeze
 

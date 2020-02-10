@@ -1,5 +1,6 @@
 require 'active_record'
 require 'cartodb-common'
+require 'securerandom'
 require_relative 'user_service'
 require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
@@ -49,7 +50,7 @@ class Carto::User < ActiveRecord::Base
                    "users.description, users.available_for_hire, users.frontend_version, users.asset_host, "\
                    "users.no_map_logo, users.industry, users.company, users.phone, users.job_role, "\
                    "users.public_map_quota, users.private_map_quota, users.maintenance_mode, users.company_employees, "\
-                   "users.use_case".freeze
+                   "users.use_case, users.session_salt".freeze
 
   has_many :tables, class_name: Carto::UserTable, inverse_of: :user
   has_many :visualizations, inverse_of: :user
@@ -93,7 +94,8 @@ class Carto::User < ActiveRecord::Base
     :database_username, :database_password, :in_database,
     :db_size_in_bytes, :get_api_calls, :table_count, :public_visualization_count, :all_visualization_count,
     :visualization_count, :owned_visualization_count, :twitter_imports_count,
-    :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count
+    :link_privacy_visualization_count, :password_privacy_visualization_count, :public_privacy_visualization_count,
+    :private_privacy_visualization_count
   ] => :service
 
   attr_reader :password
@@ -107,6 +109,7 @@ class Carto::User < ActiveRecord::Base
 
   before_create :set_database_host
   before_create :generate_api_key
+  before_create :generate_session_salt
 
   after_save { reset_password_rate_limit if crypted_password_changed? }
 
@@ -168,6 +171,17 @@ class Carto::User < ActiveRecord::Base
 
   def password_confirmation=(password_confirmation)
     # TODO: Implement
+  end
+
+  def security_token
+    return if self.session_salt.blank?
+
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
+  end
+
+  def invalidate_all_sessions!
+    user = ::User.where(id: self.id).first
+    user&.invalidate_all_sessions!
   end
 
   def default_avatar
@@ -803,6 +817,10 @@ class Carto::User < ActiveRecord::Base
 
   def generate_api_key
     self.api_key ||= make_token
+  end
+
+  def generate_session_salt
+    self.session_salt ||= SecureRandom.hex
   end
 
   def generate_token(column)

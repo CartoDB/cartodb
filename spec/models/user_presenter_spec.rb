@@ -169,6 +169,7 @@ describe Carto::Api::UserPresenter do
     new_data[:public_privacy_visualization_count].should == old_data[:public_privacy_visualization_count]
     new_data[:link_privacy_visualization_count].should == old_data[:link_privacy_visualization_count]
     new_data[:password_privacy_visualization_count].should == old_data[:password_privacy_visualization_count]
+    new_data[:private_privacy_visualization_count].should == old_data[:private_privacy_visualization_count]
     new_data[:all_visualization_count].should == old_data[:all_visualization_count]
     new_data[:visualization_count].should == old_data[:visualization_count]
     new_data[:failed_import_count].should == old_data[:failed_import_count]

@@ -4,8 +4,8 @@
   <div class="u-inner Footer-inner">
     <ul class="Footer-list Footer-list--primary">
       <% unless cartodb_com_hosted? %>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/learn/guides/">Guides</a></li>
-        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/developers">Developers</a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/help/">Help</a></li>
+        <li class="Footer-listItem CDB-Text CDB-Size-medium"><a href="https://carto.com/developers/">Developers</a></li>
       <% end %>
       <% unless cartodb_onpremise_version.blank? %>
         <li class="Footer-listItem CDB-Text CDB-Size-medium">Version: <%= cartodb_onpremise_version %></li>

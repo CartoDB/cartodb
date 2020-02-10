@@ -17,9 +17,9 @@
         </template>
 
         <template v-if="shouldShowLimitsWarning" slot="warning">
-          <BadgeWarning>
+          <NotificationBadge type="warning">
             <div class="warning" v-html="$t('MapsPage.header.warning', { counter: `${publicMapsCount}/${publicMapsQuota}`, path: upgradeUrl })"></div>
-          </BadgeWarning>
+          </NotificationBadge>
         </template>
 
         <template slot="dropdownButton">
@@ -109,7 +109,7 @@ import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHea
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
@@ -148,7 +148,7 @@ export default {
     MapCardFake,
     SectionTitle,
     VisualizationsTitle,
-    BadgeWarning,
+    NotificationBadge,
     InitialState
   },
   data () {

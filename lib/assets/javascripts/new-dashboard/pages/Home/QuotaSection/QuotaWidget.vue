@@ -5,9 +5,9 @@
         <h4 class="text is-caption is-semibold is-txtGrey">{{name}}</h4>
       </div>
       <div class="quota-cell cell--large">
-        <BadgeInfo  v-if="isDisabled">
+        <NotificationBadge  v-if="isDisabled">
           <div class="text is-small" v-html="$t('QuotaSection.upgrade', { path: upgradeUrl })"></div>
-        </BadgeInfo>
+        </NotificationBadge>
         <div v-else class="progressbar">
             <div :class="`progressbar progressbar--${getStatusBar}`"  :style="{width: `${getUsedPercent}%`}">
             </div>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import BadgeInfo from 'new-dashboard/components/BadgeInfo';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import { mapState } from 'vuex';
 
 export default {
@@ -61,7 +61,7 @@ export default {
     }
   },
   components: {
-    BadgeInfo
+    NotificationBadge
   },
   data: function () {
     return {

@@ -785,7 +785,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def remaining_trial_days
-    return 0 unless trial_ends_at
+    return 0 if trial_ends_at.nil? || trial_ends_at < Time.now
+
     ((trial_ends_at - Time.now) / 1.day).round
   end
 

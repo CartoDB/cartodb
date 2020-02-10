@@ -1042,4 +1042,20 @@ shared_examples_for "user models" do
       result.should be_true
     end
   end
+
+  describe '#remaining_trial_days' do
+    before(:all) do
+      @user = create_user
+    end
+
+    after(:each) do
+      @user.unstub(:trial_ends_at)
+    end
+
+    it 'returns 0 if trial_ends_at is in the past' do
+      @user.stubs(trial_ends_at: Time.now - 2.days)
+
+      @user.remaining_trial_days.should eq 0
+    end
+  end
 end

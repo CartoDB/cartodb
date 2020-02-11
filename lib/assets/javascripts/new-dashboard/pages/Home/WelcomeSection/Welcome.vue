@@ -53,6 +53,9 @@ export default {
     showUpgrade () {
       return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
     },
+    showUpgrade () {
+      return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
+    },
     userType () {
       if (this.isOrganizationAdmin()) {
         return 'organizationAdmin';

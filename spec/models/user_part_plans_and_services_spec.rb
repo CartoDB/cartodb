@@ -29,24 +29,6 @@ describe User do
     Delorean.back_to_the_present
   end
 
-  it "should calculate the trial end date" do
-    @user.stubs(:upgraded_at).returns(nil)
-    @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - 5.days)
-    @user.stubs(:account_type).returns('CORONELLI')
-    @user.trial_ends_at.should be_nil
-    @user.stubs(:account_type).returns('MAGELLAN')
-    @user.trial_ends_at.should_not be_nil
-    @user.stubs(:upgraded_at).returns(nil)
-    @user.trial_ends_at.should be_nil
-    @user.stubs(:upgraded_at).returns(Time.now - (::User::MAGELLAN_TRIAL_DAYS - 1).days)
-    @user.trial_ends_at.should_not be_nil
-    @user.stubs(:account_type).returns('PERSONAL30')
-    @user.trial_ends_at.should_not be_nil
-    @user.stubs(:account_type).returns('Individual')
-    @user.trial_ends_at.should_not be_nil
-  end
-
   it "should update remaining quotas when adding or removing tables" do
     initial_quota = @user2.remaining_quota
 

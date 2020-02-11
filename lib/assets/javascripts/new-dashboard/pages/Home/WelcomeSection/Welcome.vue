@@ -24,6 +24,7 @@ import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
 import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
+import * as Accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'Welcome',
@@ -86,12 +87,10 @@ export default {
       return freeUser.includes(this.user.account_type);
     },
     isIndividualUser () {
-      const individualUsers = ['Individual'];
-      return individualUsers.includes(this.user.account_type);
+      return Accounts.individual.includes(this.user.account_type);
     },
     isFree2020User () {
-      const free2020Users = ['Free 2020'];
-      return free2020Users.includes(this.user.account_type);
+      return Accounts.free2020.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

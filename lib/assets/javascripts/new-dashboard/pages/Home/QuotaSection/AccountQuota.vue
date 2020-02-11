@@ -40,7 +40,7 @@ import { mapState } from 'vuex';
 import QuotaWidget from './QuotaWidget';
 import QuotaContainer from './QuotaContainer';
 import { apiKeysTypes } from 'new-dashboard/core/constants/api-keys';
-import { accountsWithLimits, freeAccountsWithLimits } from 'new-dashboard/core/constants/accounts';
+import * as Accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'AccountQuota',
@@ -82,19 +82,19 @@ export default {
       return 'https://carto.com/help/your-account/your-disk-storage/';
     },
     hasTableLimits () {
-      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+      return Accounts.accountsWithTableLLimits.includes(this.planAccountType);
     },
     hasPublicMapLimits () {
-      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+      return Accounts.accountsWithPublicMapLimits.includes(this.planAccountType);
     },
     hasPrivateMapsLimits () {
-      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+      return Accounts.accountsWithPrivateMapsLimits.includes(this.planAccountType);
     },
     hasApiKeysLimits () {
-      return accountsWithLimits.includes(this.planAccountType) || freeAccountsWithLimits.includes(this.planAccountType);
+      return Accounts.accountsWithApiKeysLimits.includes(this.planAccountType);
     },
     hasApiKeysLimitsToZero () {
-      return freeAccountsWithLimits.includes(this.planAccountType);
+      return Accounts.accountsWithApiKeysLimitsToZero.includes(this.planAccountType);
     },
     usedPublicMaps () {
       return this.linkMapsTotal + this.passwordMapsTotal + this.publicMapsTotal;

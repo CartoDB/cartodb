@@ -511,7 +511,6 @@ module CartoDB
                        trace:        nil
                      }
         begin
-          disable_ghost_tables_event_trigger
 
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
@@ -519,6 +518,7 @@ module CartoDB
             @user_id = @user_data["id"]
             @database_host = @user_data['database_host']
             @database_name = @user_data['database_name']
+            disable_ghost_tables_event_trigger
             export_log[:db_source] = @database_host
             export_log[:db_size] = get_db_size(@database_name)
             dump_user_metadata if @options[:metadata]
@@ -568,6 +568,7 @@ module CartoDB
             export_log[:db_size] ||= get_db_size(@database_name)
 
             if @options[:data] && !@options[:split_user_schemas]
+              disable_ghost_tables_event_trigger
               DumpJob.new(
                 user_pg_conn,
                 @database_host,

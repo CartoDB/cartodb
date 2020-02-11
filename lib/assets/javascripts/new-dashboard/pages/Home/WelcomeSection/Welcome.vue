@@ -3,7 +3,7 @@
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-else :name="name" :userType="userType">
       <template>
-        <a v-if="isFree2020User && accountUpgradeURL" :href="accountUpgradeURL" class="button is-primary">
+        <a v-if="showUpgrade" :href="accountUpgradeURL" class="button is-primary">
           {{ $t('HomePage.WelcomeSection.upgradeNow') }}
         </a>
         <div v-else-if="showTrialReminder">
@@ -48,6 +48,9 @@ export default {
       const now = moment();
       const days = Math.ceil(endDate.diff(now, 'days', true));
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: days });
+    },
+    showUpgrade () {
+      return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
     },
     userType () {
       if (this.isOrganizationAdmin()) {
@@ -103,6 +106,10 @@ export default {
     },
     isOrganizationUser () {
       return Boolean(this.organization);
+    },
+    isTimeToShowUpgrade () {
+      const aMonthFromToday = new Date(new Date().setDate(new Date().getDate() + 30));
+      return this.trialEndDate < aMonthFromToday;
     }
   }
 };

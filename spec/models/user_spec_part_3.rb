@@ -585,14 +585,14 @@ describe User do
                                           '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.geography_columns', 'SELECT');
       }).first[:has_table_privilege].should == true
       # PG12_DEPRECATED
-      if @database.table_exists?('raster_overviews')
+      if user.in_database(as: :superuser).table_exists?('raster_overviews')
         user.in_database(as: :superuser).fetch(%{
           SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_overviews', 'SELECT');
         }).first[:has_table_privilege].should == true
       end
       # PG12_DEPRECATED
-      if @database.table_exists?('raster_columns')
+      if user.in_database(as: :superuser).table_exists?('raster_columns')
         user.in_database(as: :superuser).fetch(%{
           SELECT * FROM has_table_privilege('#{CartoDB::PUBLIC_DB_USER}',
                                             '#{CartoDB::UserModule::DBService::SCHEMA_PUBLIC}.raster_columns', 'SELECT');

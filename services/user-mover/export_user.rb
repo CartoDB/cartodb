@@ -194,7 +194,13 @@ module CartoDB
       end
 
       def get_org_users(organization_id)
-        q = pg_conn.exec("SELECT * FROM users WHERE organization_id = '#{organization_id}'")
+        # owners have to be in the last position to prevent errors
+        q = pg_conn.exec(%{
+          SELECT u.* FROM users u INNER JOIN organizations o
+          ON u.organization_id = o.id
+          WHERE o.id = '#{organization_id}'
+          ORDER BY (CASE WHEN u.id = o.owner_id THEN 1 ELSE 0 END) ASC;
+        })
         if q.count > 0
           return q
         else

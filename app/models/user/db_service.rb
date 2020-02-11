@@ -1531,7 +1531,8 @@ module CartoDB
                   try:
                     GD['httplib'] = __import__('httplib')
                   except:
-                    GD['httplib'] = __import__('http')
+                    from http import client
+                    GD['httplib'] = client
 
                 for i in ('base64', 'hashlib'):
                   if not i in GD:
@@ -1540,11 +1541,19 @@ module CartoDB
                 while True:
 
                   try:
-                    client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    database_table = '#{@user.database_name}:%s' % table_name
+                    try:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6]
+                    except Exception:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', port=#{varnish_port}, timeout=timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table.encode()).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6].decode()
+                    raw_cache_key = 't:%s' % dbtable_encoded
                     cache_key = raw_cache_key.replace('+', r'\+')
-                    client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
-                    response = client.getresponse()
+                    conn.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
+                    response = conn.getresponse()
                     assert response.status == 204
                     break
                   except Exception as err:

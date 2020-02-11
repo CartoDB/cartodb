@@ -9,6 +9,9 @@
         <template v-for="action in actions">
           <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
             <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
+            <div class="action__badge" v-if="action.shouldBeDisabled">
+              <div v-html="$t('QuickActions.upgrade', { path: upgradeUrl })"></div>
+            </div>
           </li>
         </template>
       </ul>
@@ -26,7 +29,8 @@ export default {
     };
   },
   props: {
-    actions: Array
+    actions: Array,
+    upgradeUrl: String
   },
   methods: {
     emitEvent (action) {
@@ -98,6 +102,8 @@ export default {
 
 .action {
   &__item {
+    position: relative;
+
     &:not(:last-of-type) {
       border-bottom: 1px solid $softblue;
     }
@@ -113,9 +119,19 @@ export default {
     }
 
     &.u-is-disabled {
-      pointer-events: none;
       color: grey;
+      pointer-events: none;
     }
+  }
+
+  &__badge {
+    position: absolute;
+    top: 14px;
+    right: 24px;
+    padding: 0.4em 1em;
+    border-radius: 30px;
+    background-color: rgba($info__bg-color, 0.2);
+    font-size: 12px;
   }
 }
 </style>

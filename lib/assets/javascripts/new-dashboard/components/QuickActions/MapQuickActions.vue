@@ -3,13 +3,14 @@
     v-if="!isSharedWithMe"
     ref="quickActions"
     :actions="actions[actionMode]"
+    :upgradeUrl="upgradeUrl"
     v-on="getEventListeners()"
     @open="openQuickactions"
     @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Visualization from 'new-dashboard/core/models/visualization';
@@ -30,6 +31,9 @@ export default {
     ...mapGetters({
       isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
       isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
+    }),
+    ...mapState({
+      upgradeUrl: state => state.config.upgrade_url
     }),
     actions () {
       return {
@@ -63,7 +67,7 @@ export default {
     },
     canChangePrivacy () {
       return (this.isSelectedMapPrivate && !this.isOutOfPublicMapsQuota) ||
-      !this.isSelectedMapPrivate;
+      (!this.isSelectedMapPrivate && !this.isOutOfPrivateMapsQuota);
     },
     canDuplicate () {
       return (!this.isOutOfPrivateMapsQuota && this.isSelectedMapPrivate) ||

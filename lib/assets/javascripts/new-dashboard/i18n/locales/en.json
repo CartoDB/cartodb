@@ -37,7 +37,8 @@
     "lock": "Lock",
     "unlock": "Unlock",
     "delete": "Delete",
-    "shareViaURL": "Share via URL"
+    "shareViaURL": "Share via URL",
+    "upgrade": "<a class='is-bold' href='{path}'>Upgrade</a>"
   },
   "BulkActions": {
     "selected": "{count} selected",
@@ -105,7 +106,8 @@
         "cartoframes": "Your CARTOframes Maps"
       },
       "warning": {
-        "counter": "{counter} {type} maps.&nbsp",
+        "counter": "{counter} {type} maps used.&nbsp",
+        "doubleCounter": "{publicCounter} public and {privateCounter} maps used.&nbsp",
         "upgrade": "<a href='{path}' class='is-bold'>Upgrade now</a> to get more maps."
       }
     },

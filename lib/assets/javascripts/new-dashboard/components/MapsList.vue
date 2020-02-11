@@ -15,8 +15,9 @@
         <template slot="warning">
           <NotificationBadge type="warning" v-if="shouldShowLimitsWarning">
             <div class="warning">
-              <span v-if="isOutOfPublicMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${publicMapsCount}/${publicMapsQuota}`, type: `public` })"></span>
-              <span v-if="isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${privateMapsCount}/${privateMapsQuota}`, type: `private` })"></span>
+              <span v-if="isOutOfPublicMapsQuota && !isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${publicMapsCount}/${publicMapsQuota}`, type: `public` })"></span>
+              <span v-if="isOutOfPrivateMapsQuota && !isOutOfPublicMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${privateMapsCount}/${privateMapsQuota}`, type: `private` })"></span>
+              <span v-if="isOutOfPublicMapsQuota && isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.doubleCounter', { publicCounter: `${publicMapsCount}/${publicMapsQuota}`, privateCounter: `${privateMapsCount}/${privateMapsQuota}`})"></span>
               <span v-html="$t('MapsPage.header.warning.upgrade', { path: upgradeUrl })"></span>
             </div>
           </NotificationBadge>
@@ -47,7 +48,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps" :disabled="isViewer">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -181,7 +182,8 @@ export default {
       isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
       privateMapsQuota: 'user/privateMapsQuota',
       privateMapsCount: 'user/privateMapsCount',
-      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota',
+      canCreateMaps: 'user/canCreateMaps'
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
@@ -223,9 +225,6 @@ export default {
     },
     shouldShowListHeader () {
       return this.isCondensed && !this.emptyState && !this.initialState;
-    },
-    isViewer () {
-      return this.$store.getters['user/isViewer'];
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

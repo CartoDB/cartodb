@@ -82,7 +82,7 @@ export default {
       return 'https://carto.com/help/your-account/your-disk-storage/';
     },
     hasTableLimits () {
-      return Accounts.accountsWithTableLLimits.includes(this.planAccountType);
+      return Accounts.accountsWithTableLimits.includes(this.planAccountType);
     },
     hasPublicMapLimits () {
       return Accounts.accountsWithPublicMapLimits.includes(this.planAccountType);

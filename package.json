@@ -15,7 +15,6 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@babel/polyfill": "https://registry.npmjs.org/@babel/polyfill/-/polyfill-7.0.0.tgz",
-    "@carto/carto.js": "git+https://github.com/cartodb/carto.js.git#v4.2.1-0",
     "@carto/zera": "1.0.7",
     "backbone": "1.4.0",
     "backbone-forms": "0.14.0",

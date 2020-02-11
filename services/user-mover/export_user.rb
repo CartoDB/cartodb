@@ -479,6 +479,14 @@ module CartoDB
         size
       end
 
+      def disable_ghost_tables_event_trigger
+        user_pg_conn.exec("SELECT CDB_DisableGhostTablesTrigger()")
+      end
+
+      def enable_ghost_tables_event_trigger
+        user_pg_conn.exec("SELECT CDB_EnableGhostTablesTrigger()")
+      end
+
       def initialize(options)
         default_options = { metadata: true, data: true, split_user_schemas: true, path: '', set_banner: true }
         @options = default_options.merge(options)
@@ -503,16 +511,19 @@ module CartoDB
                        trace:        nil
                      }
         begin
+
           if @options[:id]
             @user_data = get_user_metadata(options[:id])
             @username = @user_data["username"]
             @user_id = @user_data["id"]
             @database_host = @user_data['database_host']
             @database_name = @user_data['database_name']
+            disable_ghost_tables_event_trigger
             export_log[:db_source] = @database_host
             export_log[:db_size] = get_db_size(@database_name)
             dump_user_metadata if @options[:metadata]
             redis_conn.quit
+
             if @options[:data]
               DumpJob.new(
                 user_pg_conn,
@@ -557,6 +568,7 @@ module CartoDB
             export_log[:db_size] ||= get_db_size(@database_name)
 
             if @options[:data] && !@options[:split_user_schemas]
+              disable_ghost_tables_event_trigger
               DumpJob.new(
                 user_pg_conn,
                 @database_host,
@@ -596,6 +608,7 @@ module CartoDB
           export_log[:status] = 'success'
         ensure
           exportjob_logger.info(export_log.to_json) unless options[:from_org]
+          enable_ghost_tables_event_trigger
         end
       end
     end

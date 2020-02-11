@@ -227,6 +227,7 @@
         "message": "Welcome to your new dashboard! We hope you like it. You can learn more about it <a class='welcome-first__link' href='https://carto.com/help/getting-started/new-dashboard' target='_blank'>here</a>.",
         "planMessage": {
           "free": "Remember that you're currently on the FREE plan.",
+          "free2020": "Welcome to CARTO. You're currently in your one-year free account.",
           "30day": "Remember that you're currently on the 30-day personal trial.",
           "individual": "Remember that you're currently on the {trialLength}-day Individual trial.",
           "organizationAdmin": "Remember that you're currently the admin of the {organizationName} organization.",
@@ -243,7 +244,8 @@
         "createMap": "New map",
         "createDataset": "New dataset"
       },
-      "subscribeNow": " Subscribe now."
+      "subscribeNow": " Subscribe now.",
+      "upgradeNow": " Upgrade now"
     },
     "MapsSection": {
       "title": "Your Maps",
@@ -353,6 +355,7 @@
   "Wizards": {
     "Distributor": {
       "cta": "Get started",
+      "extendedCta": "Let's get started!",
       "headerTitle": "Getting started",
       "title": "What do you want to do?",
       "feedback": {

@@ -1,12 +1,17 @@
 <template>
   <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
-    <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
-      <template v-if="trialEndDate">
-        <span v-html="trialTimeLeft" class="title is-small"></span>
-        <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
-          {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+    <WelcomeCompact v-else :name="name" :userType="userType">
+      <template>
+        <a v-if="showUpgrade" :href="accountUpgradeURL" class="button is-primary">
+          {{ $t('HomePage.WelcomeSection.upgradeNow') }}
         </a>
+        <div v-else-if="trialEndDate">
+          <span v-html="trialTimeLeft" class="title is-small"></span>
+          <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
+            {{ $t('HomePage.WelcomeSection.subscribeNow') }}
+          </a>
+        </div>
       </template>
     </WelcomeCompact>
   </section>
@@ -19,6 +24,7 @@ import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
 import { isOrganizationAdmin } from 'new-dashboard/core/models/organization';
+import * as Accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'Welcome',
@@ -39,6 +45,9 @@ export default {
     }),
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
+    },
+    showUpgrade () {
+      return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
     },
     userType () {
       if (this.isOrganizationAdmin()) {
@@ -61,6 +70,10 @@ export default {
         return 'free';
       }
 
+      if (this.isFree2020User()) {
+        return 'free2020';
+      }
+
       return 'unknown';
     }
   },
@@ -74,8 +87,10 @@ export default {
       return freeUser.includes(this.user.account_type);
     },
     isIndividualUser () {
-      const individualUsers = ['Individual'];
-      return individualUsers.includes(this.user.account_type);
+      return Accounts.individual.includes(this.user.account_type);
+    },
+    isFree2020User () {
+      return Accounts.free2020.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {
@@ -86,6 +101,10 @@ export default {
     },
     isOrganizationUser () {
       return Boolean(this.organization);
+    },
+    isTimeToShowUpgrade () {
+      const aMonthFromToday = new Date(new Date().setDate(new Date().getDate() + 30));
+      return this.trialEndDate < aMonthFromToday;
     }
   }
 };

@@ -1362,16 +1362,18 @@ describe Table do
       end
 
       it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
-        delete_user_data @user
-        data_import = DataImport.create(user_id: @user.id,
-                                        data_source: fake_data_path('import_raster.tif.zip'))
-        data_import.run_import!
+        if @user.in_database.table_exists?('raster_overviews')
+          delete_user_data @user
+          data_import = DataImport.create(user_id: @user.id,
+                                          data_source: fake_data_path('import_raster.tif.zip'))
+          data_import.run_import!
 
-        table = Table.new(user_table: UserTable[data_import.table_id])
-        table.should_not be_nil, "Import failure: #{data_import.log}"
-        table.name.should match(/^import_raster/)
+          table = Table.new(user_table: UserTable[data_import.table_id])
+          table.should_not be_nil, "Import failure: #{data_import.log}"
+          table.name.should match(/^import_raster/)
 
-        table.update_table_geom_pg_stats
+          table.update_table_geom_pg_stats
+        end
       end
 
       it "should not drop a table that exists when upload fails" do

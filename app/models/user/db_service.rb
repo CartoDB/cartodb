@@ -1526,7 +1526,14 @@ module CartoDB
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}
                 trigger_verbose = #{varnish_trigger_verbose}
-                for i in ('httplib', 'base64', 'hashlib'):
+
+                if not 'httplib' in GD:
+                  try:
+                    GD['httplib'] = __import__('httplib')
+                  except:
+                    GD['httplib'] = __import__('http')
+
+                for i in ('base64', 'hashlib'):
                   if not i in GD:
                     GD[i] = __import__(i)
 

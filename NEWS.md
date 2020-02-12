@@ -6,9 +6,18 @@ Development
 
 ### Features
 - Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
+- BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
+- New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
-- None yet
+- Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
+- Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
+- Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
+- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
+- Fix remaining trial days calculation ([#15470](https://github.com/CartoDB/cartodb/pull/15470))
+- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453) and [#15467](https://github.com/CartoDB/cartodb/pull/15467))
+- Add private map count to /me ([#15464](https://github.com/CartoDB/cartodb/pull/15464))
+- Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
 
 4.34.0 (2020-01-28)
 -------------------
@@ -17,8 +26,11 @@ Development
 * Use Dataservices API client 0.28.0
 
 ### Bug fixes / enhancements
-* Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
-* Fix quotes for `rel='noopener noreferrer'` parameters
+- Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
+- Fix quotes for `rel='noopener noreferrer'` parameters
+- Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
+- Fix assets version in package-lock.json to `1.0.0-assets.155`
+- Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
 
 4.33.1 (2020-01-27)
 -------------------
@@ -34,7 +46,8 @@ sudo make install
 ```
 
 ### Features
-* Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
+- Add pubsub connection to publish metrics events ([#15389](hhttps://github.com/CartoDB/cartodb/pull/15389))
+- Limit private maps by quota ([#15412](https://github.com/CartoDB/cartodb/pull/15412))
 
 ### Bug fixes / enhancements
 * Add noindex meta to organization login page ([#15117](https://github.com/CartoDB/cartodb/issues/15117))

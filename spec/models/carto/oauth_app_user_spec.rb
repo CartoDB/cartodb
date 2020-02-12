@@ -261,7 +261,6 @@ module Carto
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
-          byebug
           connection.execute("insert into #{@table1.name} (cartodb_id) values (999)")
           connection.execute("select cartodb_id from #{@table1.name}") do |result|
             result[0]['cartodb_id'].should eq '999'

@@ -263,5 +263,28 @@ describe CartoDB::Importer2::ConnectorRunner do
     Carto::ConnectorConfiguration.where(user_id: @user.id).destroy_all
   end
 
+  it "Passes global configuration limits to the provider" do
+    with_feature_flag @user, 'carto-connectors', true do
+      parameters = {
+        table:    'thetable',
+        req1: 'a',
+        req2: 'b',
+        opt1: 'c'
+      }
+      options = {
+        pg:   @pg_options,
+        log:  @fake_log,
+        user: @user
+      }
+      @providers.each do |provider|
+        config = { provider => { 'enabled' => true, 'max_rows' => 10 } }
+        Cartodb.with_config connectors: config do
+          connector = CartoDB::Importer2::ConnectorRunner.new(parameters.merge(provider: provider).to_json, options)
+          connector.run
+        end
+      end
+      DummyConnectorProvider.copies.map(&:last).uniq.should eq [{enabled: true, max_rows: 10}]
+    end
+  end
   # TODO: check Runner compatibility
 end

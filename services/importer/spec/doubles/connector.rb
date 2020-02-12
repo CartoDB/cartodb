@@ -34,7 +34,8 @@ class DummyConnectorProvider < Carto::Connector::Provider
     validate!
     raise self.class.error_message if self.class.error_message
     self.class.copies << [schema_name, table_name, limits]
-    @connector_context.execute_in_user_database "CREATE TABLE #{schema_name}.#{table_name}()"
+    # We expect @user to be a ::User here (Sequel model)
+    @user.in_database.run "CREATE TABLE #{schema_name}.#{table_name}()"
   end
 
   def check_connection

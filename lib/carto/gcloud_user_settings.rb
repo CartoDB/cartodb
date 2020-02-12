@@ -30,7 +30,6 @@ module Carto
     def values
       attributes = @attributes.symbolize_keys
       redis_values = attributes.slice(*REDIS_KEYS)
-      redis_values.merge(service_account: attributes[:service_account].to_json)
     end
 
     def remove

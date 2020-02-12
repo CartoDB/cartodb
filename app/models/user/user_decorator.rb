@@ -13,7 +13,9 @@ module CartoDB
         state: state,
         account_type: account_type,
         table_count: table_count,
-        public_map_count: public_privacy_visualization_count + link_privacy_visualization_count + password_privacy_visualization_count,
+        public_map_count: public_privacy_visualization_count + link_privacy_visualization_count +
+          password_privacy_visualization_count,
+        private_map_count: private_privacy_visualization_count,
         map_count: all_visualization_count,
         map_views: map_views,
         geocoding_credits_count: organization_user? ? organization.get_geocoding_calls : get_geocoding_calls,
@@ -52,6 +54,7 @@ module CartoDB
         public_privacy_map_count: public_privacy_visualization_count,
         link_privacy_map_count: link_privacy_visualization_count,
         password_privacy_map_count: password_privacy_visualization_count,
+        private_privacy_map_count: private_privacy_visualization_count,
         all_visualization_count: all_visualization_count,
         visualization_count: visualization_count,
         owned_visualization_count: owned_visualizations_count,
@@ -120,7 +123,7 @@ module CartoDB
         layers: layers.map(&:public_values),
         trial_ends_at: trial_ends_at,
         upgraded_at: upgraded_at,
-        show_trial_reminder: trial_ends_at.present?,
+        show_trial_reminder: show_trial_reminder?,
         show_upgraded_message: (account_type.downcase != 'free' && upgraded_at && upgraded_at + 15.days > Date.today ? true : false),
         actions: {
           private_tables: private_tables_enabled,

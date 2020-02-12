@@ -27,7 +27,7 @@ describe Carto::Api::MapcapsController do
   after(:all) do
     Carto::FeatureFlag.destroy_all
 
-    @torque_layer.destroy
+    @torque_layer&.destroy
     destroy_full_visualization(@map, @table, @table_visualization, @visualization)
 
     @user.destroy

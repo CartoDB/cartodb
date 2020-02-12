@@ -60,7 +60,6 @@ class User < Sequel::Model
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
 
   self.strict_param_setting = false
 
@@ -116,11 +115,6 @@ class User < Sequel::Model
   OBS_SNAPSHOT_BLOCK_SIZE = 1000
   OBS_GENERAL_BLOCK_SIZE = 1000
   MAPZEN_ROUTING_BLOCK_SIZE = 1000
-
-  MAGELLAN_TRIAL_DAYS = 15
-  PERSONAL30_TRIAL_DAYS = 30
-  INDIVIDUAL_TRIAL_DAYS = 14
-  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -909,13 +903,20 @@ class User < Sequel::Model
   end
 
   def trial_ends_at
-    if account_type.to_s.casecmp('magellan').zero? && upgraded_at && upgraded_at + MAGELLAN_TRIAL_DAYS.days > Date.today
-      upgraded_at + MAGELLAN_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('personal30').zero?
-      created_at + PERSONAL30_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('individual').zero?
-      created_at + INDIVIDUAL_TRIAL_DAYS.days
-    end
+    return nil unless Carto::AccountType::TRIAL_PLANS.include?(account_type)
+
+    trial_days = Carto::AccountType::TRIAL_DAYS[account_type].days
+    created_at + trial_days
+  end
+
+  def remaining_trial_days
+    return 0 if trial_ends_at.nil? || trial_ends_at < Time.now
+
+    ((trial_ends_at - Time.now) / 1.day).ceil
+  end
+
+  def show_trial_reminder?
+    trial_ends_at && trial_ends_at > Time.now
   end
 
   def remaining_days_deletion
@@ -1538,12 +1539,12 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
-                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
-                          exclude_shared: true,
-                          exclude_raster: true
-                        })
+    visualization_count(
+      type: Carto::Visualization::MAP_TYPES,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    )
   end
 
   def public_privacy_visualization_count
@@ -1551,15 +1552,22 @@ class User < Sequel::Model
   end
 
   def link_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_LINK,
                         exclude_shared: true,
                         exclude_raster: true)
   end
 
   def password_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def private_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
+                        privacy: Carto::Visualization::PRIVACY_PRIVATE,
                         exclude_shared: true,
                         exclude_raster: true)
   end
@@ -1567,7 +1575,7 @@ class User < Sequel::Model
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: false,
                           exclude_raster: false
                         })
@@ -1576,7 +1584,7 @@ class User < Sequel::Model
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: true,
                           exclude_raster: false
                         })
@@ -1913,7 +1921,7 @@ class User < Sequel::Model
   end
 
   def fullstory_enabled?
-    FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
+    Carto::AccountType::FULLSTORY_SUPPORTED_PLANS.include?(account_type) && created_at > FULLSTORY_ENABLED_MIN_DATE
   end
 
   def password_expired?
@@ -1945,15 +1953,6 @@ class User < Sequel::Model
     else
       MULTIFACTOR_AUTHENTICATION_DISABLED
     end
-  end
-
-  def remaining_trial_days
-    return 0 unless trial_ends_at
-    ((trial_ends_at - Time.now) / 1.day).round
-  end
-
-  def trial_user?
-    TRIAL_PLANS.include?(account_type.to_s.downcase)
   end
 
   def get_database_roles

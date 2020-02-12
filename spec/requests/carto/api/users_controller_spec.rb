@@ -19,6 +19,7 @@ describe Carto::Api::UsersController do
     user = @organization.owner
     carto_user = Carto::User.where(id: user.id).first
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PUBLIC)
+    FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_PRIVATE)
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
     FactoryGirl.create(:carto_visualization, user: carto_user, privacy: Carto::Visualization::PRIVACY_LINK)
     FactoryGirl.create(:carto_visualization, user: carto_user,
@@ -79,6 +80,7 @@ describe Carto::Api::UsersController do
         expect(response.body[:user_data][:public_privacy_map_count]).to eq 1
         expect(response.body[:user_data][:link_privacy_map_count]).to eq 2
         expect(response.body[:user_data][:password_privacy_map_count]).to eq 3
+        expect(response.body[:user_data][:private_privacy_map_count]).to eq 1
       end
     end
 

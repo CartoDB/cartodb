@@ -14,7 +14,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import distanceInWordsStrict from 'date-fns/distance_in_words_strict';
+import moment from 'moment';
 import WelcomeCompact from './WelcomeCompact';
 import WelcomeFirst from './WelcomeFirst';
 import WelcomeBasic from './WelcomeBasic';
@@ -39,7 +39,10 @@ export default {
       notifications: state => state.user.organizationNotifications
     }),
     trialTimeLeft () {
-      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
+      const endDate = moment(this.trialEndDate);
+      const now = moment();
+      const days = Math.ceil(endDate.diff(now, 'days', true));
+      return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: days });
     },
     userType () {
       if (this.isOrganizationAdmin()) {

@@ -1,6 +1,15 @@
 module Carto
   class AccountType < ActiveRecord::Base
 
+    FREE = 'FREE'.freeze
+    PERSONAL30 = 'PERSONAL30'.freeze
+    INDIVIDUAL = 'Individual'.freeze
+
+    TRIAL_PLANS = [INDIVIDUAL].freeze
+    TRIAL_DAYS = { INDIVIDUAL => 14 }.freeze
+
+    FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL].freeze
+
     belongs_to :rate_limit, dependent: :destroy
 
     def soft_geocoding_limit?(user)

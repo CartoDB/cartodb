@@ -15,5 +15,9 @@ describe 'refactored behaviour' do
     def create_user
       FactoryGirl.create(:valid_user)
     end
+
+    def build_user
+      FactoryGirl.build(:valid_user)
+    end
   end
 end

@@ -509,7 +509,9 @@ class Carto::User < ActiveRecord::Base
   end
 
   def show_trial_reminder?
-    trial_ends_at && trial_ends_at > Time.now
+    return false unless trial_ends_at
+
+    trial_ends_at > Time.now
   end
 
   def remaining_days_deletion

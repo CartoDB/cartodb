@@ -905,8 +905,7 @@ class User < Sequel::Model
   def trial_ends_at
     return nil unless Carto::AccountType::TRIAL_PLANS.include?(account_type)
 
-    trial_days = Carto::AccountType::TRIAL_DAYS[account_type].days
-    created_at + trial_days
+    created_at + Carto::AccountType::TRIAL_DURATION[account_type]
   end
 
   def remaining_trial_days

@@ -154,6 +154,7 @@ module.exports = {
     rootDir('assets/stylesheets/common/form-content.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/forms/**/*.scss')),
     rootDir('assets/stylesheets/common/option-card.scss'),
+    rootDir('assets/stylesheets/common/notification-badge.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/icons/**/*.scss')),
     rootDir('assets/stylesheets/common/maps-list.scss'),
     rootDir('assets/stylesheets/common/map-card.scss')

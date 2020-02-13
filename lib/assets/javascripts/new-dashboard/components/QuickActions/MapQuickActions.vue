@@ -67,7 +67,7 @@ export default {
     },
     canChangePrivacy () {
       return (this.isSelectedMapPrivate && !this.isOutOfPublicMapsQuota) ||
-      (!this.isSelectedMapPrivate && !this.isOutOfPrivateMapsQuota);
+      !this.isSelectedMapPrivate;
     },
     canDuplicate () {
       return (!this.isOutOfPrivateMapsQuota && this.isSelectedMapPrivate) ||

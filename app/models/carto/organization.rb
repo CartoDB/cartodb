@@ -159,6 +159,10 @@ module Carto
       users.reject { |u| owner && u.id == owner.id }
     end
 
+    def inheritable_feature_flags
+      inherit_owner_ffs ? owner.feature_flags_user : []
+    end
+
     private
 
     def ensure_auth_saml_configuration

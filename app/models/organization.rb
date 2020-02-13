@@ -482,6 +482,10 @@ class Organization < Sequel::Model
     auth_saml_configuration.present?
   end
 
+  def inheritable_feature_flags
+    inherit_owner_ffs ? owner.feature_flags_user : []
+  end
+
   private
 
   def destroy_assets

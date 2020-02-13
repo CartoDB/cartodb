@@ -182,13 +182,6 @@ class Carto::User < ActiveRecord::Base
     "cartodb.s3.amazonaws.com/static/public_dashboard_default_avatar.png"
   end
 
-  def feature_flag_names
-    @feature_flag_names ||= (feature_flags_user.map do |ff|
-                               ff.feature_flag.name
-                             end +
-                            FeatureFlag.where(restricted: false).map(&:name)).uniq.sort
-  end
-
   # TODO: Revisit methods below to delegate to the service, many look like not proper of the model itself
 
   def service
@@ -233,7 +226,8 @@ class Carto::User < ActiveRecord::Base
   end
 
   def feature_flags_list
-    @feature_flag_names ||= (feature_flags_user
+    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
+    @feature_flag_names = (ffs
                                  .map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false)
                                                                                  .map(&:name)).uniq.sort
   end

@@ -72,11 +72,6 @@ steps:
   timeout: 900s
 
 - name: gcr.io/cloud-builders/docker
-  args: ['exec', '-u', '0', '-i', 'workspace_postgres-server_1', 'bash', '-c',
-         "cd /cartodb-postgresql && git pull && git checkout pg12_compatibility && make install"]
-  timeout: 900s
-
-- name: gcr.io/cloud-builders/docker
   args: ['exec', '-e', 'SLACK_TOKEN=$_SLACK_TOKEN', '-e', 'BUILD_ID=$BUILD_ID', '-e', 'BRANCH_NAME=$BRANCH_NAME', '-i', 'builder_1', 'bash', '-c',
          "trap '/cartodb/script/ci/send_slack_notification.sh' ERR && /cartodb/runParallelTests.sh 24" ]
   timeout: 2700s

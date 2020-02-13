@@ -324,6 +324,7 @@ sudo make install
 * Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
 * Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 * [Maintenance Page] Remove unnecessary call ([#14977](https://github.com/CartoDB/cartodb/pull/14977))
+* Support for the new Free price plan ([#15478](https://github.com/CartoDB/cartodb/pull/15478))
 
 4.26.1 (2019-05-06)
 -------------------

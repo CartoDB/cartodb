@@ -63,5 +63,56 @@ describe Carto::Connector do
     end
     user_config.destroy
   end
-end
 
+  it 'Should provide connector metadata' do
+    Carto::Connector.information('dummy').should == {
+      features: {
+        'list_tables':    true,
+        'list_databases': false,
+        'sql_queries':    false,
+        'preview_table':  false,
+        'dry_run':        false,
+        'list_projects':  false
+      },
+      parameters: {
+        'table' => {required:  true },
+        'req1'  => {required:  true },
+        'req2'  => {required:  true },
+        'opt1'  => {required:  false },
+        'opt2'  => {required:  false }
+      }
+    }
+  end
+
+  it 'Should not provide metadata for an invalid provider' do
+    expect {
+      Carto::Connector.information('not_a_provider')
+    }.to raise_error(Carto::Connector::InvalidParametersError)
+  end
+
+  it 'Should instantiate a provider' do
+    parameters = {
+      provider: 'dummy',
+      table:    'thetable',
+      req1: 'a',
+      req2: 'b',
+      opt1: 'c'
+    }
+    connector = Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
+    connector.should_not be nil
+    connector.provider_name.should eq 'dummy'
+  end
+
+  it 'Should fail to instantiate an invalid provider' do
+    parameters = {
+      provider: 'invalid',
+      table:    'thetable',
+      req1: 'a',
+      req2: 'b',
+      opt1: 'c'
+    }
+    expect {
+      Carto::Connector.new(parameters: parameters, user: @user, logger: @fake_log)
+    }.to raise_error(Carto::Connector::InvalidParametersError)
+  end
+end

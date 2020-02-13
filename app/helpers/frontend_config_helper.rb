@@ -4,8 +4,6 @@ module FrontendConfigHelper
   include AvatarHelper
   include FullstoryHelper
 
-  UPGRADE_LINK_ACCOUNTS = ['personal30', 'basic', 'student-engine', 'individual', 'free 2020'].freeze
-
   def frontend_config_hash(user = current_user)
     config = {
       app_assets_base_url:        app_assets_base_url,
@@ -82,20 +80,10 @@ module FrontendConfigHelper
       config[:dataservices_enabled] = Cartodb.get_config(:dataservices, 'enabled')
     end
 
-    if CartoDB.account_host.present? && show_account_update_url(user)
-      config[:account_update_url] = "#{CartoDB.account_host}"\
-                                    "#{CartoDB.account_path}/"\
-                                    "#{user.username}/update_payment"
-    end
-
     config
   end
 
   def frontend_config
     frontend_config_hash.to_json
-  end
-
-  def show_account_update_url(user)
-    user && UPGRADE_LINK_ACCOUNTS.include?(user.account_type.downcase)
   end
 end

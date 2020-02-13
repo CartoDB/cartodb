@@ -232,7 +232,7 @@ module Carto
           },
           notification: @user.notification,
           avatar_url: @user.avatar,
-          feature_flags: @user.feature_flag_names,
+          feature_flags: @user.feature_flags_list,
           base_url: @user.public_url,
           needs_password_confirmation: @user.needs_password_confirmation?,
           description: @user.description,

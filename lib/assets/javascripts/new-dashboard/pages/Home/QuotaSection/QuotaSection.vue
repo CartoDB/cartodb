@@ -18,7 +18,7 @@
         </ul>
         <div class="quota-billing">
           <span class="quota-billingday text is-small is-txtSoftGrey">
-            {{ $tc(`QuotaSection.credits`, remainingDaysUntilLDSRenewal, { remainingDays: remainingDaysUntilLDSRenewal, day: billingDay })}}
+            {{ $tc(`QuotaSection.credits`, { day: billingDay })}}
           </span>
         </div>
       </div>
@@ -32,7 +32,6 @@ import SectionTitle from 'new-dashboard/components/SectionTitle';
 import AccountQuota from './AccountQuota';
 import DataServicesQuota from './DataServicesQuota';
 import format from 'date-fns/format';
-import differenceInDays from 'date-fns/difference_in_days';
 
 export default {
   name: 'QuotasModule',
@@ -47,9 +46,6 @@ export default {
     }),
     billingDay () {
       return format(new Date(this.billingPeriod), 'Do');
-    },
-    remainingDaysUntilLDSRenewal () {
-      return differenceInDays(new Date(this.billingPeriod), new Date());
     }
   }
 };

@@ -8,10 +8,10 @@
       <ul>
         <template v-for="action in actions">
           <li class="action__item" :key="action.name" v-if="!action.shouldBeHidden">
-            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
             <div class="action__badge" v-if="action.shouldBeDisabled">
-              <div v-html="$t('QuickActions.upgrade', { path: upgradeUrl })"></div>
+              <div @click="goToUpgrade" v-html="$t('QuickActions.upgrade', { path: upgradeUrl })"></div>
             </div>
+            <a href="#" class="action__text text is-caption" :class="{'is-txtPrimary': !action.isDestructive, 'is-txtAlert': action.isDestructive, 'u-is-disabled': action.shouldBeDisabled}" @click="emitEvent(action.event)">{{action.name}}</a>
           </li>
         </template>
       </ul>
@@ -50,6 +50,9 @@ export default {
     },
     killEvent (event) {
       event.preventDefault();
+    },
+    goToUpgrade () {
+      window.location.href = this.upgradeUrl;
     }
   }
 };

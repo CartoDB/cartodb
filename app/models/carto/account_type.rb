@@ -4,11 +4,12 @@ module Carto
     FREE = 'FREE'.freeze
     PERSONAL30 = 'PERSONAL30'.freeze
     INDIVIDUAL = 'Individual'.freeze
+    FREE_2020 = 'Free 2020'.freeze
 
-    TRIAL_PLANS = [INDIVIDUAL].freeze
-    TRIAL_DAYS = { INDIVIDUAL => 14 }.freeze
+    TRIAL_PLANS = [INDIVIDUAL, FREE_2020].freeze
+    TRIAL_DAYS = { INDIVIDUAL => 14, FREE_2020 => 365 }.freeze
 
-    FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL].freeze
+    FULLSTORY_SUPPORTED_PLANS = [FREE, PERSONAL30, INDIVIDUAL, FREE_2020].freeze
 
     belongs_to :rate_limit, dependent: :destroy
 

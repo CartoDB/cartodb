@@ -32,7 +32,7 @@ export default {
       isFirst: state => state.config.isFirstTimeViewingDashboard,
       accountUpgradeURL: state => state.config.upgrade_url,
       trialEndDate: state => state.user.trial_ends_at,
-      showTrialReminder: state => state.user.show_trial_reminder,      
+      showTrialReminder: state => state.user.show_trial_reminder,
       user: state => state.user,
       name: state => state.user.name || state.user.username,
       organization: state => state.user.organization,

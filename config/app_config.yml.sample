@@ -773,6 +773,7 @@ defaults: &defaults
         data_observatory: false
   disable_email_mx_check: false # Disables MX DNS record check and just performs syntax validation.
 
+
 development:
   <<: *defaults
   http_port: 3000
@@ -802,6 +803,13 @@ development:
     critical: false # either the failure is considered an error or a warning
     timeout: 1 # socket timeout
     trigger_verbose: false
+  do_metadata_database:
+    host: 'xxx.xxx.xxx.xxx'
+    port: 5432
+    database: catalog
+    username: xxx
+    password: xxx
+
 
 test:
   <<: *defaults

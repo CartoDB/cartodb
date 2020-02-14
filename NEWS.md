@@ -5,6 +5,7 @@ Development
 - DB Connectors removed from the main repository
 
 ### Features
+- Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
 - BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 

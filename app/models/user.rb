@@ -916,7 +916,9 @@ class User < Sequel::Model
   end
 
   def show_trial_reminder?
-    trial_ends_at && trial_ends_at > Time.now
+    return false unless trial_ends_at
+
+    trial_ends_at > Time.now
   end
 
   def remaining_days_deletion
@@ -1668,7 +1670,8 @@ class User < Sequel::Model
   end
 
   def feature_flags
-    @feature_flag_names ||= (self.feature_flags_user.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
+    ffs = feature_flags_user + (organization&.inheritable_feature_flags || [])
+    @feature_flag_names = (ffs.map { |ff| ff.feature_flag.name } + FeatureFlag.where(restricted: false).map { |ff| ff.name }).uniq.sort
   end
 
   def has_feature_flag?(feature_flag_name)

@@ -102,7 +102,8 @@
         "password": "Your Password-protected Maps",
         "private": "Your Private Maps",
         "builder": "Your Builder Maps",
-        "cartoframes": "Your CARTOframes Maps"
+        "cartoframes": "Your CARTOframes Maps",
+        "external": "Your External Maps"
       },
       "warning": "<span class='is-bold'>{counter} public maps used.</span> <a href='{path}'>Upgrade your account</a> to get unlimited public maps."
     },
@@ -115,6 +116,10 @@
     "emptyCase": {
       "default": "There are no maps here.",
       "onlyShared": "No maps here. Go to the <a href='{path}'>maps shared with you</a>."
+    },
+    "tabs": {
+      "carto": "CARTO",
+      "external": "External"
     }
   },
   "NotificationsPage": {

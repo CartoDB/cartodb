@@ -16,32 +16,31 @@ describe 'UserMigration' do
   it 'exports and imports a user with raster overviews because exporting skips them' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     user = FactoryGirl.build(:valid_user).save
+    next unless user.in_database.table_exists?('raster_overviews')
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
-    if user.in_database.table_exists?('raster_overviews')
-      user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
-      user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
-      user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
-      user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
-      user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
-      user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
-      user.in_database.execute('DROP TABLE i_hate_raster')
-      export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
-      export.run_export
-      user.destroy
+    user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
+    user.in_database.execute('INSERT INTO i_hate_raster VALUES(ST_MakeEmptyRaster(100, 100, 0, 0, 100, 100, 0, 0, 2274))')
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("UPDATE i_hate_raster SET rast = ST_AddBand(rast, 1, '32BF'::text, 0)")
+    user.in_database.execute("SELECT AddRasterConstraints('i_hate_raster', 'rast')")
+    user.in_database.execute("SELECT ST_CreateOverview('i_hate_raster'::regclass, 'rast', 2)")
+    user.in_database.execute('DROP TABLE i_hate_raster')
+    export = Carto::UserMigrationExport.create(user: carto_user, export_metadata: true)
+    export.run_export
+    user.destroy
 
-      import = Carto::UserMigrationImport.create(
-        exported_file: export.exported_file,
-        database_host: user_attributes['database_host'],
-        org_import: false,
-        json_file: export.json_file,
-        import_metadata: true,
-        dry: false
-      )
-      import.run_import
+    import = Carto::UserMigrationImport.create(
+      exported_file: export.exported_file,
+      database_host: user_attributes['database_host'],
+      org_import: false,
+      json_file: export.json_file,
+      import_metadata: true,
+      dry: false
+    )
+    import.run_import
 
-      expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
-    end
+    expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
 
   describe 'legacy functions' do

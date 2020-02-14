@@ -19,7 +19,8 @@ module CartoDB
       # Only intended to be used if from the Visualization Relator (who will set the parent)
       # PG12_DEPRECATED in postgis 3+
       def load_actual_list(parent_name=nil)
-        return [] if @parent_id.nil? || @parent_kind != Visualization::Member::KIND_RASTER
+        return [] if @parent_id.nil? || @parent_kind != Visualization::Member::KIND_RASTER ||
+          !@database.table_exists?('raster_overviews')
         parent = Visualization::Member.new(id:@parent_id).fetch
         table_data = @database.fetch(%Q{
           SELECT o_table_catalog AS catalog, o_table_schema AS schema, o_table_name AS name
@@ -27,7 +28,7 @@ module CartoDB
           WHERE r_table_catalog = '#{parent.user.database_name}'
           AND r_table_schema = '#{parent.user.database_schema}'
           AND r_table_name = '#{parent_name.nil? ? parent.name : parent_name}'
-        }).all if @database.table_exists?('raster_overviews')
+        }).all
 
         table_data.nil? ? [] : table_data
       end

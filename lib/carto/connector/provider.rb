@@ -21,7 +21,7 @@ module Carto
       end
 
       # Human-readable name of the provider
-      def self.name
+      def self.friendly_name
         must_be_defined_in_derived_class
       end
 
@@ -142,10 +142,17 @@ module Carto
         self.class.id
       end
 
+      METADATA_KEYS = {
+        id: :id,
+        name: :friendly_name,
+        public: :public?
+      }
       class <<self
         def metadata(options)
           options.each do |key, value|
-            define_singleton_method(key) { value.freeze }
+            method = METADATA_KEYS[key]
+            raise "Invalid Provider metadata key: #{key.inspect}" unless method
+            define_singleton_method(method) { value.freeze }
           end
         end
         def optional_parameters(params)

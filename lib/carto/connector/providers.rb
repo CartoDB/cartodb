@@ -14,7 +14,7 @@ module Carto
       end
 
       def provider_name(provider_id)
-        provider_item provider_id, :name
+        provider_item provider_id, :friendly_name
       end
 
       def provider_ids

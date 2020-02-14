@@ -16,7 +16,7 @@ module Carto
   class Connector
     class Provider
       # Provider identifier (internal name, used in APIs, etc)
-      def self.id
+      def self.provider_id
         must_be_defined_in_derived_class
       end
 
@@ -139,11 +139,11 @@ module Carto
       end
 
       def provider_id
-        self.class.id
+        self.class.provider_id
       end
 
       METADATA_KEYS = {
-        id: :id,
+        id: :provider_id,
         name: :friendly_name,
         public: :public?
       }

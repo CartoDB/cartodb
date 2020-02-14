@@ -18,14 +18,14 @@ module Carto
       end
 
       def provider_ids
-        PROVIDERS.map &:id
+        PROVIDERS.map &:provider_id
       end
 
       private
 
       def provider_data(provider_id)
         provider_id ||= DEFAULT_PROVIDER
-        PROVIDERS.find{|p| p.id == provider_id}
+        PROVIDERS.find{|p| p.provider_id == provider_id}
       end
 
       def provider_item(provider_id, item)

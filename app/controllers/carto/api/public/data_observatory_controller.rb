@@ -147,12 +147,11 @@ module Carto
         end
 
         def subscription_metadata
-          metadata_user = ::User.where(username: 'do-metadata').first
-          raise Carto::LoadError.new('No Data Observatory metadata found') unless metadata_user
+          connection = Carto::Db::Connection.do_metadata_connection()
 
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
 
-          result = metadata_user.in_database[query].first
+          result = connection[query].first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
           result

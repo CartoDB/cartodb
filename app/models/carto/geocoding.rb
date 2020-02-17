@@ -36,7 +36,7 @@ module Carto
     end
 
     def price
-      return 0 unless used_credits.positive?
+      return 0 unless used_credits&.positive?
 
       (user.geocoding_block_price * used_credits) / GEOCODING_BLOCK_SIZE
     end

@@ -29,6 +29,7 @@ module Carto
     end
 
     def link_ghost_tables_asynchronously
+      ::Resque.dequeue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
       ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username)
     end
 

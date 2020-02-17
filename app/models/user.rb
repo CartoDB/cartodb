@@ -19,10 +19,7 @@ require_dependency 'carto/user_db_size_cache'
 require_dependency 'cartodb/redis_vizjson_cache'
 require_dependency 'carto/bolt'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'carto/helpers/has_connector_configuration'
-require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/user_authenticator'
-require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
@@ -36,12 +33,8 @@ class User < Sequel::Model
   include CartoDB::ConfigUtils
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
-  include Carto::HasConnectorConfiguration
-  include Carto::BatchQueriesStatementTimeout
-  include Carto::BillingCycle
   include Carto::EmailCleaner
   include SequelFormCompatibility
-  include VarnishCacheHandler
   include Carto::UserCommons
 
   self.strict_param_setting = false

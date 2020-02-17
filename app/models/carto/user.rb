@@ -6,9 +6,6 @@ require_relative 'user_db_service'
 require_relative 'synchronization_oauth'
 require_relative '../../helpers/data_services_metrics_helper'
 require_dependency 'carto/helpers/auth_token_generator'
-require_dependency 'carto/helpers/has_connector_configuration'
-require_dependency 'carto/helpers/batch_queries_statement_timeout'
-require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/helpers/user_commons'
 
 # TODO: This probably has to be moved as the service of the proper User Model
@@ -16,10 +13,6 @@ class Carto::User < ActiveRecord::Base
   extend Forwardable
   include DataServicesMetricsHelper
   include Carto::AuthTokenGenerator
-  include Carto::HasConnectorConfiguration
-  include Carto::BatchQueriesStatementTimeout
-  include Carto::BillingCycle
-  include ::VarnishCacheHandler
   include Carto::UserCommons
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.

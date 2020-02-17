@@ -365,8 +365,8 @@ module Carto::UserCommons
     organization_user? && (organization_owner? || org_admin)
   end
 
-  def belongs_to_organization?(organization)
-    organization_id == organization.id
+  def belongs_to_organization?(org)
+    organization_user? && organization_id == org&.id
   end
 
   def sql_safe_database_schema

@@ -17,7 +17,7 @@ module CartoDB
           if filter.empty?
             return []
           else
-            Tag.fetch(%Q{
+            Carto::Tag.find_by_sql(%Q{
               SELECT DISTINCT (unnest(tags)) as name
               FROM visualizations
               WHERE #{shared_entities_sql_filter(params)}
@@ -29,7 +29,7 @@ module CartoDB
             ).map{ |tag| tag.name}
           end
         else
-          Tag.fetch(%Q{
+          Carto::Tag.find_by_sql(%Q{
             SELECT DISTINCT (unnest(tags)) as name
             FROM visualizations
             WHERE user_id = ?
@@ -49,7 +49,7 @@ module CartoDB
           if filter.empty?
             return []
           else
-            Tag.fetch(%Q{
+            Carto::Tag.find_by_sql(%Q{
             WITH tags as (
               SELECT unnest(tags) as name
               FROM visualizations
@@ -66,7 +66,7 @@ module CartoDB
             ).all.map(&:values)
           end
         else
-          Tag.fetch(%Q{
+          Carto::Tag.find_by_sql(%Q{
             WITH tags as (
               SELECT unnest(tags) as name
               FROM visualizations

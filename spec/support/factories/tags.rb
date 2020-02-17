@@ -18,7 +18,7 @@ module CartoDB
       else
         attributes.delete(:table_id)
       end
-      Tag.new(attributes)
+      Carto::Tag.new(attributes)
       tag.user_id = user_id
       tag.table_id = table_id
       tag

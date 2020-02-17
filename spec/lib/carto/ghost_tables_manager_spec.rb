@@ -86,7 +86,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
@@ -147,7 +147,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
@@ -187,7 +187,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
@@ -267,7 +267,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
@@ -312,7 +312,7 @@ module Carto
       @user.tables.count.should eq 0
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_false
 
-      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user.id).never
+      ::Resque.expects(:enqueue).with(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername, @user.username).never
 
       @ghost_tables_manager.link_ghost_tables_synchronously
       @ghost_tables_manager.instance_eval { user_tables_synced_with_db? }.should be_true
@@ -358,6 +358,12 @@ module Carto
       Carto::GhostTablesManager.expects(:new).with(@user.id).returns(@ghost_tables_manager).once
       @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
       ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTablesByUsername.perform(@user.username)
+    end
+
+    it 'perform a successfully ghost tables execution when is called from LinkGhostTables' do
+      Carto::GhostTablesManager.expects(:new).with(@user.id).returns(@ghost_tables_manager).once
+      @ghost_tables_manager.expects(:link_ghost_tables_synchronously).once
+      ::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables.perform(@user.id)
     end
 
     it 'should call the fail_function and execute sync twice because other worker tried to get the lock' do

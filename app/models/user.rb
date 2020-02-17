@@ -27,6 +27,7 @@ require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
 require_dependency 'carto/gcloud_user_settings'
+require_dependency 'carto/helpers/user_commons'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -40,35 +41,10 @@ class User < Sequel::Model
   include Carto::BillingCycle
   include Carto::EmailCleaner
   include SequelFormCompatibility
-
-  OAUTH_SERVICE_TITLES = {
-    'gdrive' => 'Google Drive',
-    'dropbox' => 'Dropbox',
-    'box' => 'Box',
-    'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram',
-    'bigquery' => 'Google BigQuery'
-  }.freeze
-
-  OAUTH_SERVICE_REVOKE_URLS = {
-    'mailchimp' => 'http://admin.mailchimp.com/account/oauth2/',
-    'instagram' => 'http://instagram.com/accounts/manage_access/'
-  }.freeze
-
-  # Make sure the following date is after Jan 29, 2015,
-  # which is the date where a message to accept the Terms and
-  # conditions and the Privacy policy was included in the Signup page.
-  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
-  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  include VarnishCacheHandler
+  include Carto::UserCommons
 
   self.strict_param_setting = false
-
-  # @param name             String
-  # @param avatar_url       String
-  # @param database_schema  String
-  # @param max_import_file_size Integer
-  # @param max_import_table_row_count Integer
-  # @param max_concurrent_import_count Integer
 
   one_to_one  :client_application
   one_to_many :synchronization_oauths
@@ -110,12 +86,6 @@ class User < Sequel::Model
 
   DEFAULT_MAX_LAYERS = 8
 
-  GEOCODING_BLOCK_SIZE = 1000
-  HERE_ISOLINES_BLOCK_SIZE = 1000
-  OBS_SNAPSHOT_BLOCK_SIZE = 1000
-  OBS_GENERAL_BLOCK_SIZE = 1000
-  MAPZEN_ROUTING_BLOCK_SIZE = 1000
-
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
   DEFAULT_MAPZEN_ROUTING_QUOTA = nil
@@ -128,19 +98,8 @@ class User < Sequel::Model
 
   COMMON_DATA_ACTIVE_DAYS = 31
 
-  STATE_ACTIVE = 'active'.freeze
-  STATE_LOCKED = 'locked'.freeze
-
-  MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
-  MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
-  MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
-
   self.raise_on_typecast_failure = false
   self.raise_on_save_failure = false
-
-  LOGIN_NOT_RATE_LIMITED = -1
-
-  include VarnishCacheHandler
 
   def db_service
     @db_service ||= CartoDB::UserModule::DBService.new(self)
@@ -222,32 +181,6 @@ class User < Sequel::Model
     end
 
     errors.add(:viewer, "cannot be enabled for organization admin") if organization_admin? && viewer
-  end
-
-  #                             +--------+---------+------+
-  #       valid_privacy logic   | Public | Private | Link |
-  #   +-------------------------+--------+---------+------+
-  #   | private_tables_enabled  |    T   |    T    |   T  |
-  #   | !private_tables_enabled |    T   |    F    |   F  |
-  #   +-------------------------+--------+---------+------+
-  #
-  def valid_privacy?(privacy)
-    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
-  end
-
-  def valid_password?(key, value, confirmation_value)
-    password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_password_not_in_use(nil, value, key)
-
-    errors[key].empty?
-  end
-
-  def password_validator
-    if organization.try(:strong_passwords_enabled)
-      Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
-    else
-      Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
-    end
   end
 
   def valid_creation?(creator_user)
@@ -341,11 +274,6 @@ class User < Sequel::Model
 
   def twitter_datasource_enabled
     (super || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
-  end
-
-  def twitter_configured?
-    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
-    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   def after_create
@@ -617,13 +545,6 @@ class User < Sequel::Model
     self.password = new_password_value
   end
 
-  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
-    if password_in_use?(old_password, new_password)
-      errors.add(key, 'New password cannot be the same as old password')
-    end
-    errors[key].empty?
-  end
-
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new? || (@changing_passwords && !old_password)
     return old_password == new_password if old_password
@@ -633,39 +554,11 @@ class User < Sequel::Model
                                             secret: Cartodb.config[:password_secret])
   end
 
-  def validate_old_password(old_password)
-    return true unless needs_password_confirmation?
-
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
-                                            secret: Cartodb.config[:password_secret])
-  end
-
-  def valid_password_confirmation(password)
-    valid = validate_old_password(password)
-    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
-    valid
-  end
-
   def should_display_old_password?
     needs_password_confirmation?
   end
 
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set
-  # (because of Google/Github sign in, for example)
-  def needs_password_confirmation?
-    (!oauth_signin? || last_password_change_date.present?) &&
-      !created_with_http_authentication? &&
-      !organization.try(:auth_saml_enabled?)
-  end
   alias :password_set? :needs_password_confirmation?
-
-  def oauth_signin?
-    google_sign_in || github_user_id.present?
-  end
-
-  def created_with_http_authentication?
-    Carto::UserCreation.http_authentication.find_by_user_id(id).present?
-  end
 
   def password_confirmation
     @password_confirmation
@@ -683,12 +576,6 @@ class User < Sequel::Model
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
-  end
-
-  def security_token
-    return if self.session_salt.blank?
-
-    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
   end
 
   def invalidate_all_sessions!
@@ -709,10 +596,6 @@ class User < Sequel::Model
     else
       "#{Rails.env}_cartodb_user_#{id}"
     end
-  end
-
-  def database_public_username
-    (self.database_schema != CartoDB::DEFAULT_DB_SCHEMA) ? "cartodb_publicuser_#{id}" : CartoDB::PUBLIC_DB_USER
   end
 
   def database_password

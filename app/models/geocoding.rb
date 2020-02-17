@@ -26,6 +26,8 @@ class Geocoding < Sequel::Model
 
   MIN_GEOCODING_TIME_TO_NOTIFY = 3 * 60 #seconds
 
+  GEOCODING_BLOCK_SIZE = 1000.0
+
   many_to_one :user
   many_to_one :user_table, :key => :table_id
   many_to_one :automatic_geocoding
@@ -203,9 +205,10 @@ class Geocoding < Sequel::Model
   end # calculate_used_credits
 
   def price
-    return 0 unless used_credits.to_i > 0
-    (user.geocoding_block_price * used_credits) / ::User::GEOCODING_BLOCK_SIZE.to_f
-  end # price
+    return 0 unless used_credits.positive?
+
+    (user.geocoding_block_price * used_credits) / GEOCODING_BLOCK_SIZE
+  end
 
   def cost
     return 0 unless kind == 'high-resolution'

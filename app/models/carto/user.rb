@@ -9,6 +9,7 @@ require_dependency 'carto/helpers/auth_token_generator'
 require_dependency 'carto/helpers/has_connector_configuration'
 require_dependency 'carto/helpers/batch_queries_statement_timeout'
 require_dependency 'carto/helpers/billing_cycle'
+require_dependency 'carto/helpers/user_commons'
 
 # TODO: This probably has to be moved as the service of the proper User Model
 class Carto::User < ActiveRecord::Base
@@ -18,21 +19,8 @@ class Carto::User < ActiveRecord::Base
   include Carto::HasConnectorConfiguration
   include Carto::BatchQueriesStatementTimeout
   include Carto::BillingCycle
-
-  GEOCODING_BLOCK_SIZE = 1000
-  HERE_ISOLINES_BLOCK_SIZE = 1000
-  OBS_SNAPSHOT_BLOCK_SIZE = 1000
-  OBS_GENERAL_BLOCK_SIZE = 1000
-  MAPZEN_ROUTING_BLOCK_SIZE = 1000
-
-  STATE_ACTIVE = 'active'.freeze
-  STATE_LOCKED = 'locked'.freeze
-
-  # Make sure the following date is after Jan 29, 2015,
-  # which is the date where a message to accept the Terms and
-  # conditions and the Privacy policy was included in the Signup page.
-  # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
-  FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
+  include ::VarnishCacheHandler
+  include Carto::UserCommons
 
   # INFO: select filter is done for security and performance reasons. Add new columns if needed.
   DEFAULT_SELECT = "users.email, users.username, users.admin, users.organization_id, users.id, users.avatar_url," \
@@ -110,14 +98,6 @@ class Carto::User < ActiveRecord::Base
   after_destroy { rate_limit.destroy_completely(self) if rate_limit }
   after_destroy :invalidate_varnish_cache
 
-  LOGIN_NOT_RATE_LIMITED = -1
-
-  MULTIFACTOR_AUTHENTICATION_ENABLED = 'enabled'.freeze
-  MULTIFACTOR_AUTHENTICATION_DISABLED = 'disabled'.freeze
-  MULTIFACTOR_AUTHENTICATION_NEEDS_SETUP = 'setup'.freeze
-
-  include ::VarnishCacheHandler
-
   # Auto creates notifications on first access
   def static_notifications_with_creation
     static_notifications_without_creation || build_static_notifications(user: self, notifications: {})
@@ -126,14 +106,6 @@ class Carto::User < ActiveRecord::Base
 
   def name_or_username
     name.present? || last_name.present? ? [name, last_name].select(&:present?).join(' ') : username
-  end
-
-  def password_validator
-    if organization.try(:strong_passwords_enabled)
-      Carto::PasswordValidator.new(Carto::StrongPasswordStrategy.new)
-    else
-      Carto::PasswordValidator.new(Carto::StandardPasswordStrategy.new)
-    end
   end
 
   def password=(value)
@@ -167,12 +139,6 @@ class Carto::User < ActiveRecord::Base
     # TODO: Implement
   end
 
-  def security_token
-    return if self.session_salt.blank?
-
-    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
-  end
-
   def invalidate_all_sessions!
     user = ::User.where(id: self.id).first
     user&.invalidate_all_sessions!
@@ -190,17 +156,6 @@ class Carto::User < ActiveRecord::Base
 
   def db_service
     @db_service ||= Carto::UserDBService.new(self)
-  end
-
-  #                             +--------+---------+------+
-  #       valid_privacy logic   | Public | Private | Link |
-  #   +-------------------------+--------+---------+------+
-  #   | private_tables_enabled  |    T   |    T    |   T  |
-  #   | !private_tables_enabled |    T   |    F    |   F  |
-  #   +-------------------------+--------+---------+------+
-  #
-  def valid_privacy?(privacy)
-    private_tables_enabled || privacy == Carto::UserTable::PRIVACY_PUBLIC
   end
 
   def default_dataset_privacy
@@ -252,10 +207,6 @@ class Carto::User < ActiveRecord::Base
     database_schema.include?('-') ? "\"#{database_schema}\"" : database_schema
   end
 
-  def database_public_username
-    database_schema == CartoDB::DEFAULT_DB_SCHEMA ? CartoDB::PUBLIC_DB_USER : "cartodb_publicuser_#{id}"
-  end
-
   # returns google maps api key. If the user is in an organization and
   # that organization has api key it's used
   def google_maps_api_key
@@ -264,11 +215,6 @@ class Carto::User < ActiveRecord::Base
 
   def twitter_datasource_enabled
     (read_attribute(:twitter_datasource_enabled) || organization.try(&:twitter_datasource_enabled)) && twitter_configured?
-  end
-
-  def twitter_configured?
-    # DatasourcesFactory.config_for takes configuration from organization if user is an organization user
-    CartoDB::Datasources::DatasourcesFactory.customized_config?(Search::Twitter::DATASOURCE_NAME, self)
   end
 
   # TODO: this is the correct name for what's stored in the model, refactor changing that name
@@ -528,40 +474,6 @@ class Carto::User < ActiveRecord::Base
     id == user.id || user.belongs_to_organization?(organization) && (user.organization_owner? || !organization_admin?)
   end
 
-  # Some operations, such as user deletion, won't ask for password confirmation if password is not set (because of Google sign in, for example)
-  def needs_password_confirmation?
-    (!oauth_signin? || !last_password_change_date.nil?) &&
-      !created_with_http_authentication? &&
-      !organization.try(:auth_saml_enabled?)
-  end
-
-  def validate_old_password(old_password)
-    return true unless needs_password_confirmation?
-
-    Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
-                                            secret: Cartodb.config[:password_secret])
-  end
-
-  def valid_password_confirmation(password)
-    valid = validate_old_password(password)
-    errors.add(:password, 'Confirmation password sent does not match your current password') unless valid
-    valid
-  end
-
-  def valid_password?(key, value, confirmation_value)
-    password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
-    validate_password_not_in_use(nil, value, key)
-
-    errors[key].empty?
-  end
-
-  def validate_password_not_in_use(old_password = nil, new_password = nil, key = :new_password)
-    if password_in_use?(old_password, new_password)
-      errors.add(key, 'New password cannot be the same as old password')
-    end
-    errors[key].empty?
-  end
-
   def password_in_use?(old_password = nil, new_password = nil)
     return false if new_record?
     return old_password == new_password if old_password
@@ -682,8 +594,8 @@ class Carto::User < ActiveRecord::Base
     datasources.each do |serv|
       obj ||= Hash.new
 
-      title = ::User::OAUTH_SERVICE_TITLES.fetch(serv, serv)
-      revoke_url = ::User::OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
+      title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
+      revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
                 when 'gdrive'
                   Cartodb.get_config(:oauth, serv, 'client_id')

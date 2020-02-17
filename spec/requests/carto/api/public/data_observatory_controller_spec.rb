@@ -269,17 +269,6 @@ describe Carto::Api::Public::DataObservatoryController do
       end
     end
 
-    it 'returns 404 if the metadata user does not exist' do
-      Carto::User.find_by_username('do-metadata').destroy
-
-      get_json endpoint_url(api_key: @master, id: 'carto.abc.dataset1', type: 'dataset'), @headers do |response|
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: 'No Data Observatory metadata found', errors_cause: nil)
-      end
-
-      populate_do_metadata
-    end
-
     it 'returns 404 if the dataset metadata does not exist' do
       get_json endpoint_url(api_key: @master, id: 'carto.abc.inexistent', type: 'dataset'), @headers do |response|
         expect(response.status).to eq(404)
@@ -403,17 +392,6 @@ describe Carto::Api::Public::DataObservatoryController do
         }
         expect(response.body).to eq expected_response
       end
-    end
-
-    it 'returns 404 if the metadata user does not exist' do
-      Carto::User.find_by_username('do-metadata').destroy
-
-      post_json endpoint_url(api_key: @master), @payload do |response|
-        expect(response.status).to eq(404)
-        expect(response.body).to eq(errors: "No Data Observatory metadata found", errors_cause: nil)
-      end
-
-      populate_do_metadata
     end
 
     it 'returns 404 if the dataset metadata does not exist' do

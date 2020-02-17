@@ -53,9 +53,6 @@ export default {
     showUpgrade () {
       return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
     },
-    showUpgrade () {
-      return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
-    },
     userType () {
       if (this.isOrganizationAdmin()) {
         return 'organizationAdmin';
@@ -98,10 +95,6 @@ export default {
     },
     isFree2020User () {
       return Accounts.free2020.includes(this.user.account_type);
-    },
-    isFree2020User () {
-      const free2020Users = ['Free2020'];
-      return free2020Users.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

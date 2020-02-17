@@ -41,6 +41,14 @@ module Carto
           end
         end
 
+        def do_metadata_connection()
+          configuration = get_metadata_db_configuration()
+          $pool.fetch(configuration)
+        rescue => exception
+          CartoDB::report_exception(exception, "Cannot connect to DO Metadata database")
+          raise exception
+        end
+
         private
 
         def get_database(options, configuration)
@@ -132,6 +140,12 @@ module Carto
                                   params: { user_type: options[:as], username: options[:username] })
             raise Carto::Db::InvalidConfiguration.new('Db connection needs user username/password for regular user')
           end
+        end
+
+        def get_metadata_db_configuration(db_host, db_name)
+          do_configuration = Cartodb.config[:do_metadata_database]
+          configuration = get_db_configuration_for(do_configuration['host'], do_configuration['database'])
+          configuration.merge(do_configuration)
         end
       end
     end

@@ -43,7 +43,9 @@ module Carto
 
         def do_metadata_connection()
           configuration = get_metadata_db_configuration()
-          $pool.fetch(configuration)
+          $pool.fetch(configuration) do
+            get_database_without_search_path(configuration)
+          end
         rescue => exception
           CartoDB::report_exception(exception, "Cannot connect to DO Metadata database")
           raise exception
@@ -142,10 +144,17 @@ module Carto
           end
         end
 
-        def get_metadata_db_configuration(db_host, db_name)
+        def get_metadata_db_configuration()
           do_configuration = Cartodb.config[:do_metadata_database]
-          configuration = get_db_configuration_for(do_configuration['host'], do_configuration['database'])
+          configuration = get_db_configuration_for(do_configuration['host'], do_configuration['database'], {})
           configuration.merge(do_configuration)
+        end
+
+        def get_database_without_search_path(configuration)
+          resolver = ActiveRecord::ConnectionAdapters::ConnectionSpecification::Resolver.new([])
+          ActiveRecord::Base.connection_handler.establish_connection(
+            get_connection_name(:do_metadata_connection), resolver.spec(configuration)
+          ).connection
         end
       end
     end

@@ -150,8 +150,7 @@ module Carto
           connection = Carto::Db::Connection.do_metadata_connection()
 
           query = "SELECT *, '#{@type}' as type FROM #{TABLES_BY_TYPE[@type]} WHERE id = '#{@id}'"
-
-          result = connection[query].first
+          result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
           result

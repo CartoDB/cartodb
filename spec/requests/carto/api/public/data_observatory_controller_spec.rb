@@ -474,7 +474,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 200 with the dataset metadata and calls the DoLicensingService with the expected params' do
       expected_params = [{
         dataset_id: 'carto.abc.dataset1',
-        available_in: ['bq'],
+        available_in: '{bq}',
         price: 100.0,
         expires_at: Time.parse('2019/01/01 00:00:00')
       }]

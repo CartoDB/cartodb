@@ -1622,7 +1622,7 @@ describe Carto::VisualizationsExportService2 do
         @visualization.password = 'super_secure_secret'
         @visualization.save!
 
-        @user2.stubs(:public_dataset_quota).returns(1)
+        @user2.stubs(:public_dataset_quota).returns(0)
         exported_string = export_service.export_visualization_json_string(@visualization.id, @user, with_password: true)
         built_viz = export_service.build_visualization_from_json_export(exported_string)
         expect {

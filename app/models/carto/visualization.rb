@@ -792,11 +792,11 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_change_to_public
     return unless !privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE
 
-    if CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
       errors.add(:privacy, 'over account public map quota')
     end
 
-    if CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+    if table? && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
       errors.add(:privacy, 'over account public dataset quota')
     end
   end

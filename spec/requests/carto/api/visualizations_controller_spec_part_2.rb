@@ -1393,9 +1393,11 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns a 200 response when making a dataset public with enough quota' do
         @carto_user1.public_dataset_quota = nil
+        @carto_user1.private_tables_enabled = true
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_table_visualization, user: @carto_user1,
-                                           privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        visualization = user_table.visualization
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
         put api_v1_visualizations_update_url(request_params),
@@ -1408,9 +1410,11 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns a 403 response when making a dataset public without enough quota' do
         @carto_user1.public_dataset_quota = 0
+        @carto_user1.private_tables_enabled = true
         @carto_user1.save
-        visualization = FactoryGirl.create(:carto_table_visualization, user: @carto_user1,
-                                           privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        visualization = user_table.visualization
 
         request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
         put api_v1_visualizations_update_url(request_params),
@@ -1455,6 +1459,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns a 200 response when making a table public without enough map quota' do
         @carto_user1.private_maps_enabled = true
+        @carto_user1.private_tables_enabled = true
         @carto_user1.public_map_quota = 0
         @carto_user1.save
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user1.id)

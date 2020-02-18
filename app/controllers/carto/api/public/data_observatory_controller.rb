@@ -153,6 +153,9 @@ module Carto
           result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
+          result = result.symbolize_keys
+          result[:subscription_list_price] = result[:subscription_list_price]&.to_f
+          result[:estimated_delivery_days] = result[:estimated_delivery_days]&.to_f
           result
         end
 

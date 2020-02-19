@@ -2112,7 +2112,7 @@ class User < Sequel::Model
     api_keys.each(&:set_enabled_for_engine)
   end
 
-  def make_token(wadus)
+  def make_token(wadusss)
   Carto::Common::EncryptionService.make_token
   end  
 end

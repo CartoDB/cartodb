@@ -1362,7 +1362,6 @@ describe Table do
       end
 
       it "should not fail when the analyze is executed in update_table_geom_pg_stats and raises a PG::UndefinedColumn" do
-        next unless @user.in_database.table_exists?('raster_overviews')
         delete_user_data @user
         data_import = DataImport.create(user_id: @user.id,
                                         data_source: fake_data_path('import_raster.tif.zip'))

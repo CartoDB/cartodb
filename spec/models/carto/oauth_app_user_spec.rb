@@ -185,22 +185,22 @@ module Carto
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: [o1, o2])
 
         oau.upgrade!([])
-        expect(oau.scopes).to(match_array([o1, o2]))
+        expect(oau.scopes.sort).to(eq([o1, o2].sort))
 
         oau.upgrade!([o1])
-        expect(oau.scopes).to(match_array([o1, o2]))
+        expect(oau.scopes.sort).to(eq([o1, o2].sort))
 
         oau.upgrade!([o3])
-        expect(oau.scopes).to(match_array([o1, o2, o3]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3].sort))
 
         oau.upgrade!([o2, o4])
-        expect(oau.scopes).to(match_array([o1, o2, o3, o4]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4].sort))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(match_array([o1, o2, o3, o4]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4].sort))
 
         oau.upgrade!([o5])
-        expect(oau.scopes).to(match_array([o1, o2, o3, o4, o5]))
+        expect(oau.scopes.sort).to(eq([o1, o2, o3, o4, o5].sort))
       end
     end
 
@@ -226,13 +226,13 @@ module Carto
         scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([dataset_scope1])
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         table2.destroy
         oau.destroy
@@ -241,15 +241,15 @@ module Carto
       it 'rename table and check how it affects the scopes' do
         scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
-        expect(oau.all_scopes).to(match_array(scopes_before))
+        expect(oau.all_scopes).to(eq(scopes_before))
 
         @table1.name = 'table_renamed_' + @table1.name
         @table1.save
 
-        expect(oau.all_scopes).to_not(match_array(scopes_before))
+        expect(oau.all_scopes).to_not(eq(scopes_before))
 
         scopes_after = ['user:profile', "datasets:rw:#{@table1.name}"]
-        expect(oau.all_scopes).to(match_array(scopes_after))
+        expect(oau.all_scopes).to(eq(scopes_after))
 
         oau.destroy
       end
@@ -257,7 +257,7 @@ module Carto
       it 'write on table with the proper permissions' do
         scopes_before = ['user:profile', "datasets:rw:#{@table1.name}"]
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
-        expect(oau.all_scopes).to(match_array(scopes_before))
+        expect(oau.all_scopes).to(eq(scopes_before))
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes_before)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
@@ -274,7 +274,7 @@ module Carto
         scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
         scopes_after = ['offline', 'user:profile']
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
-        expect(oau.all_scopes).to(match_array(scopes_before))
+        expect(oau.all_scopes).to(eq(scopes_before))
         refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
         access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
 
@@ -300,7 +300,7 @@ module Carto
         scopes_before = ['offline', 'user:profile', "datasets:rw:#{@table1.name}"]
         scopes_after = ['offline', 'user:profile', "datasets:r:#{@table1.name}"]
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes_before)
-        expect(oau.all_scopes).to(match_array(scopes_before))
+        expect(oau.all_scopes).to(eq(scopes_before))
         refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes_before)
         access_token = refresh_token.exchange!(requested_scopes: scopes_before)[0]
 
@@ -351,13 +351,13 @@ module Carto
         scopes = ['user:profile', dataset_scope1, dataset_scope2]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([])
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         oau.upgrade!([dataset_scope1])
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
 
         table2.destroy
         oau.destroy
@@ -368,7 +368,7 @@ module Carto
         scopes = ['user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
@@ -389,7 +389,7 @@ module Carto
         scopes = ['user:profile']
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
         access_token = OauthAccessToken.create!(oauth_app_user: oau, scopes: scopes)
 
         with_connection_from_api_key(access_token.api_key) do |connection|
@@ -406,7 +406,7 @@ module Carto
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
         refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
@@ -434,7 +434,7 @@ module Carto
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
         refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 
@@ -465,7 +465,7 @@ module Carto
         scopes = ['offline', 'user:profile', schemas_scope]
 
         oau = OauthAppUser.create!(user: @carto_user, oauth_app: @app, scopes: scopes)
-        expect(oau.scopes).to(match_array(scopes))
+        expect(oau.scopes).to(eq(scopes))
         refresh_token = oau.oauth_refresh_tokens.create!(scopes: scopes)
         access_token = refresh_token.exchange!(requested_scopes: scopes)[0]
 

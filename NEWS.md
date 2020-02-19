@@ -8,7 +8,6 @@ Development
 - Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
 - BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
-- Add PostgreSQL 12 and PostGIS 3 compatibility ([#6233](https://github.com/CartoDB/cartodb-platform/issues/6233))
 
 ### Bug fixes / enhancements
 - Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))

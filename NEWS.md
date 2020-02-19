@@ -10,6 +10,7 @@ Development
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
 ### Bug fixes / enhancements
+- Prevent multiple Ghost Tables jobs enqueued for same user ([#15277](https://github.com/CartoDB/cartodb/issues/15277))
 - Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 - Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))

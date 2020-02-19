@@ -3,8 +3,8 @@
     <div class="Form-rowLabel ImportOptions__label">
       <label class="Form-label CDB-Text CDB-Size-medium u-mainTextColor"><%- _t('components.modals.add-layer.imports.bigquery.field-billing-project') %></label>
     </div>
-    <div class="">
-      <input type="text" class="ImportOptions__input--long Form-input CDB-Text CDB-Size-medium js-textInput">
+    <div>
+      <div class="ImportOptions__select"></div>
       <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%= _t('components.modals.add-layer.imports.bigquery.billing-project-hint') %></div>
     </div>
   </div>
@@ -15,13 +15,24 @@
     <div>
       <div class="ImportOptions__CodeMirror">
         <textarea rows="4" cols="50" class="ImportOptions__input--long Form-input Form-textarea CDB-Text CDB-Size-medium js-textarea"></textarea>
-        <% if (errorMessage) { %>
+        <% if (errorMessages) { %>
           <div class="ImportOptions__input-error CDB-Text">
-            <%- errorMessage %>
+            <% errorMessages.forEach(function (errorMessage) { %>
+              <p><%- errorMessage %></p>
+            <% }); %>
           </div>
         <% } %>
       </div>
       <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%- _t('components.modals.add-layer.imports.database.sql-hint') %></div>
+    </div>
+  </div>
+  <div class="Form-row u-flex__align--start">
+    <div class="Form-rowLabel ImportOptions__label">
+      <label class="Form-label CDB-Text CDB-Size-medium u-mainTextColor"><%- _t('components.modals.add-layer.imports.database.import-as-field') %></label>
+    </div>
+    <div>
+      <input type="text" class="ImportOptions__input--long Form-input CDB-Text CDB-Size-medium js-textInput" value="" />
+      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%= _t('components.modals.add-layer.imports.database.import-as-hint') %></div>
     </div>
   </div>
   <div class="Form-row">

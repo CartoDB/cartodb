@@ -18,7 +18,7 @@
         </ul>
         <div class="quota-billing">
           <span class="quota-billingday text is-small is-txtSoftGrey">
-            {{ $tc(`QuotaSection.credits`, { day: billingDay })}}
+            {{ $t(`QuotaSection.credits`, { day: billingDay })}}
           </span>
         </div>
       </div>

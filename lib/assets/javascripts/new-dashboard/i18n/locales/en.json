@@ -243,6 +243,7 @@
         "manageOrganization": "Manage my organization"
       },
       "trialMessage": "{date} days left in your trial.&nbsp;",
+      "accountMessage": "{date} days left in your account.&nbsp;",
       "notificationsButton": "Go to Notifications",
       "learnMoreButton": "Learn More",
       "actions": {

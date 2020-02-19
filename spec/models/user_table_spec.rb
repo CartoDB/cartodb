@@ -1,4 +1,3 @@
-# coding: UTF-8
 require_relative '../spec_helper'
 require 'models/user_table_shared_examples'
 
@@ -28,6 +27,21 @@ describe UserTable do
     def build_user_table(attrs = {})
       ::UserTable.new.set_all(attrs)
     end
+  end
+
+  it "can save large OIDs" do
+    user_table = ::UserTable.new
+    user_table.user_id = @user.id
+    user_table.name = 'user_table_3'
+    user_table.save
+    user_table.reload
+
+    user_table.table_id = 2**32 - 1
+    user_table.save
+    user_table.reload
+    user_table.table_id.should eq 2**32 - 1
+
+    user_table.destroy
   end
 
   context 'viewer users' do

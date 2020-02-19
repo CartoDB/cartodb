@@ -101,7 +101,7 @@ describe Carto::UserMetadataExportService do
   end
 
   def destroy_user(user = @user)
-    user.update_attributes!(viewer: false) unless user.destroyed?
+    user.update_attributes!(viewer: false) unless user && user.destroyed?
 
     gum = CartoDB::GeocoderUsageMetrics.new(user.username)
     $users_metadata.DEL(gum.send(:user_key_prefix, :geocoder_here, :success_responses, Time.zone.now))
@@ -144,9 +144,12 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'includes all user model attributes' do
+      # session_salt temporarily excluded until added to the model
+      expected_attrs = @user.attributes.symbolize_keys.keys - [:rate_limit_id, :session_salt] + [:rate_limit]
+
       export = service.export_user_json_hash(@user)
 
-      expect(export[:user].keys).to include(*@user.attributes.symbolize_keys.keys - [:rate_limit_id] + [:rate_limit])
+      expect(export[:user].keys).to include(*expected_attrs)
     end
   end
 
@@ -184,7 +187,28 @@ describe Carto::UserMetadataExportService do
     end
 
     it 'imports latest' do
-      test_import_user_from_export(full_export)
+      user = test_import_user_from_export(full_export)
+
+      expect(user.session_salt).to eq '123456789f'
+    end
+
+    it 'imports 1.0.14 (without session_salt)' do
+      user = test_import_user_from_export(full_export_one_zero_fourteen)
+
+      expect(user.session_salt).to_not eq '123456789f'
+    end
+
+    it 'imports 1.0.13 (without private_map_quota)' do
+      user = test_import_user_from_export(full_export_one_zero_thirteen)
+
+      expect(user.private_map_quota).to be_nil
+    end
+
+    it 'imports 1.0.12 (without company_employees and use_case)' do
+      user = test_import_user_from_export(full_export_one_zero_twelve)
+
+      expect(user.company_employees).to be_nil
+      expect(user.use_case).to be_nil
     end
 
     it 'imports 1.0.11 (without maintenance_mode)' do
@@ -373,7 +397,9 @@ describe Carto::UserMetadataExportService do
   end
 
   def expect_export_matches_user(export, user)
-    Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES.each do |att|
+    # session_salt is generated on user creation, it's ok if it's different on exports < 1.0.15
+    attributes_to_check = Carto::UserMetadataExportService::EXPORTED_USER_ATTRIBUTES - [:session_salt]
+    attributes_to_check.each do |att|
       error = "attribute #{att.inspect} expected: #{user.attributes[att.to_s].inspect} got: #{export[att].inspect}"
       expect(export[att]).to eq(user.attributes[att.to_s]), error
     end
@@ -753,12 +779,13 @@ describe Carto::UserMetadataExportService do
 
   let(:full_export) do
     {
-      version: "1.0.12",
+      version: "1.0.15",
       user: {
         email: "e00000002@d00000002.com",
         crypted_password: "0f865d90688f867c18bbd2f4a248537878585e6c",
         database_name: "cartodb_test_user_5be8c3d4-49f0-11e7-8698-bc5ff4c95cd0_db",
         username: "user00000001",
+        session_salt: "123456789f",
         state: 'active',
         admin: nil,
         maintenance_mode: true,
@@ -769,6 +796,7 @@ describe Carto::UserMetadataExportService do
         quota_in_bytes: 5000000,
         table_quota: nil,
         public_map_quota: 20,
+        private_map_quota: 20,
         regular_api_key_quota: 20,
         account_type: "FREE",
         private_tables_enabled: false,
@@ -1113,7 +1141,8 @@ describe Carto::UserMetadataExportService do
               "dataservices:isolines",
               "dataservices:observatory",
               "dataservices:geocoding",
-              "datasets:r:test1"
+              "datasets:r:test1",
+              "schemas:c"
             ],
             created_at: "2018-11-16T14:31:46+00:00"
           }],
@@ -1128,13 +1157,34 @@ describe Carto::UserMetadataExportService do
     }
   end
 
+  let(:full_export_one_zero_fourteen) do
+    user_hash = full_export[:user].except!(:session_salt)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_thirteen) do
+    user_hash = full_export_one_zero_fourteen[:user].except!(:private_map_quota)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
+  let(:full_export_one_zero_twelve) do
+    user_hash = full_export_one_zero_thirteen[:user].except!(:use_case, :company_employees)
+
+    full_export[:user] = user_hash
+    full_export
+  end
+
   let(:full_export_one_zero_eleven) do
-    full_export[:user][:maintenance_mode] = false
+    full_export_one_zero_twelve[:user][:maintenance_mode] = false
     full_export
   end
 
   let(:full_export_one_zero_ten) do
-    user_hash = full_export[:user].except!(:regular_api_key_quota)
+    user_hash = full_export_one_zero_eleven[:user].except!(:regular_api_key_quota)
 
     full_export[:user] = user_hash
     full_export

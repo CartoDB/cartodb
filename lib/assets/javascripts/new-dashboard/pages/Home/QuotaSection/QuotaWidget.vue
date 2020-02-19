@@ -29,7 +29,7 @@
         </span>
       </div>
       <div class="quota-help cell--small">
-        <a :href="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
+        <a :href="helpLink" v-if="helpLink" target= "_blank"><img svg-inline class="quota-image" :class="{'is-active': active}" src="../../../assets/icons/common/question-mark.svg"/></a>
       </div>
     </div>
   </div>
@@ -104,7 +104,6 @@ export default {
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  cursor: pointer;
 
   &:not(:last-of-type) {
     border-bottom: 1px solid $softblue;
@@ -145,6 +144,7 @@ export default {
   display: flex;
   justify-content: flex-end;
   padding-right: 16px;
+  cursor: pointer;
 }
 
 .quota-image {

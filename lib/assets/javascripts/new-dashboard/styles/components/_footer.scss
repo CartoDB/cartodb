@@ -1,0 +1,72 @@
+
+// Footer
+.footer {
+  padding-top: 64px;
+  padding-bottom: 100px;
+
+  @media (max-width: $layout-mobile) {
+    flex-direction: column-reverse;
+  }
+}
+
+.footer-block {
+  display: flex;
+  justify-content: space-between;
+
+  @media (max-width: $layout-mobile) {
+    flex-direction: column-reverse;
+  }
+
+  .footer-link:first-child {
+    padding-right: 42px;
+  }
+}
+
+.footer-link {
+  display: block;
+  width: 50%;
+  margin-bottom: 48px;
+
+  @media (max-width: $layout-mobile) {
+    width: unset;
+    margin-bottom: 36px;
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    .title-link {
+      color: $primary-color;
+    }
+
+    .chevron .chevron-path {
+      fill: $primary-color;
+    }
+  }
+
+  .chevron {
+    display: inline-block;
+    margin-left: 8px;
+  }
+}
+
+.title-link {
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.footer-logo {
+  @media (max-width: $layout-mobile) {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.carto-logo {
+  width: 92px;
+
+  @media (max-width: $layout-mobile) {
+    width: 64px;
+    margin: 28px 0 16px;
+  }
+}

@@ -1,29 +1,30 @@
-# encoding: utf-8
-
 require 'carto/api/vizjson3_presenter'
 require 'carto/api/layer_presenter'
 
 require_dependency 'carto/tracking/events'
 require_dependency 'carto/visualization_migrator'
+require_dependency 'carto/helpers/frame_options_helper'    
 
 module Carto
   module Builder
     class VisualizationsController < BuilderController
       include VisualizationsControllerHelper
       include Carto::VisualizationMigrator
+      include Carto::FrameOptionsHelper
 
       ssl_required :show
 
-      before_filter :load_derived_visualization,
+      before_action :load_derived_visualization,
                     :redirect_to_editor_if_forced,
                     :auto_migrate_visualization_if_possible, only: :show
-      before_filter :authors_only
-      before_filter :editable_visualizations_only, :load_carto_viewer, only: :show
+      before_action :authors_only
+      before_action :editable_visualizations_only, :load_carto_viewer, only: :show
+      before_action :x_frame_options_allow, only: :show, :if => :embedable?
 
       # TODO: remove this when analysis logic lives in the backend
-      before_filter :ensure_source_analyses, unless: :has_analyses?
+      before_action :ensure_source_analyses, unless: :has_analyses?
 
-      after_filter :update_user_last_activity,
+      after_action :update_user_last_activity,
                    :track_builder_visit, only: :show
 
       layout 'application_builder'
@@ -49,6 +50,10 @@ module Carto
       end
 
       private
+
+      def embedable?
+        @visualization && @visualization.user.has_feature_flag?('allow_private_viz_iframe')
+      end
 
       def load_carto_viewer
         @carto_viewer = current_viewer && Carto::User.where(id: current_viewer.id).first

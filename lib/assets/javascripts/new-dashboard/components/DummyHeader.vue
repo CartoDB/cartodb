@@ -17,9 +17,9 @@ export default {
 
 .dummy-header {
   display: flex;
-  padding: 0 64px;
-  height: 60px;
   align-items: center;
+  height: 60px;
+  padding: 0 64px;
   background-color: $primary-color;
 
   @media (max-width: $layout-tablet) {

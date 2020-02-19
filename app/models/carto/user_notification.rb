@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative './carto_json_serializer'
 
 module Carto

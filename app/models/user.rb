@@ -1,6 +1,7 @@
-# encoding: UTF-8
 require 'cartodb/per_request_sequel_cache'
 require 'cartodb-common'
+require 'email_address'
+require 'securerandom'
 require_relative './user/user_decorator'
 require_relative './user/oauths'
 require_relative './synchronization/synchronization_oauth'
@@ -25,6 +26,7 @@ require_dependency 'carto/helpers/billing_cycle'
 require_dependency 'carto/email_cleaner'
 require_dependency 'carto/email_domain_validator'
 require_dependency 'carto/visualization'
+require_dependency 'carto/gcloud_user_settings'
 
 class User < Sequel::Model
   include CartoDB::MiniSequel
@@ -44,7 +46,8 @@ class User < Sequel::Model
     'dropbox' => 'Dropbox',
     'box' => 'Box',
     'mailchimp' => 'MailChimp',
-    'instagram' => 'Instagram'
+    'instagram' => 'Instagram',
+    'bigquery' => 'Google BigQuery'
   }.freeze
 
   OAUTH_SERVICE_REVOKE_URLS = {
@@ -57,7 +60,7 @@ class User < Sequel::Model
   # conditions and the Privacy policy was included in the Signup page.
   # See https://github.com/CartoDB/cartodb-central/commit/3627da19f071c8fdd1604ddc03fb21ab8a6dff9f
   FULLSTORY_ENABLED_MIN_DATE = Date.new(2017, 1, 1)
-  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Professional'].freeze
+  FULLSTORY_SUPPORTED_PLANS = ['FREE', 'PERSONAL30', 'Individual'].freeze
 
   self.strict_param_setting = false
 
@@ -97,6 +100,7 @@ class User < Sequel::Model
   # Restrict to_json attributes
   @json_serializer_opts = {
     :except => [ :crypted_password,
+                 :session_salt,
                  :invite_token,
                  :invite_token_date,
                  :admin,
@@ -115,8 +119,8 @@ class User < Sequel::Model
 
   MAGELLAN_TRIAL_DAYS = 15
   PERSONAL30_TRIAL_DAYS = 30
-  PROFESSIONAL_TRIAL_DAYS = 14
-  TRIAL_PLANS = ['personal30', 'professional'].freeze
+  INDIVIDUAL_TRIAL_DAYS = 14
+  TRIAL_PLANS = ['personal30', 'individual'].freeze
 
   DEFAULT_GEOCODING_QUOTA = 0
   DEFAULT_HERE_ISOLINES_QUOTA = 0
@@ -159,6 +163,14 @@ class User < Sequel::Model
   ## Validations
   def validate
     super
+    validate_username
+    validate_email
+    validate_password
+    validate_organization
+    validate_quotas
+  end
+
+  def validate_username
     validates_presence :username
     validates_unique   :username
     validates_format /\A[a-z0-9\-]+\z/, :username, message: "must only contain lowercase letters, numbers and the dash (-) symbol"
@@ -166,24 +178,32 @@ class User < Sequel::Model
     validates_format /[a-z0-9]{1}\z/, :username, message: "must end with alphanumeric chars"
     validates_max_length 63, :username
     errors.add(:name, 'is taken') if name_exists_in_organizations?
+  end
 
+  def validate_email
     validates_presence :email
-    validates_unique   :email, :message => 'is already taken'
-    validates_format EmailAddressValidator::Regexp::ADDR_SPEC, :email, :message => 'is not a valid address'
+    validates_unique   :email, message: 'is already taken'
+    errors.add(:email, EmailAddress.error(email)) unless EmailAddress.valid?(email)
+  end
 
+  def validate_password
     validates_presence :password if new? && crypted_password.blank?
 
     if new? || (password.present? && !@new_password.present?)
       errors.add(:password, "is not confirmed") unless password == password_confirmation
     end
     validate_password_change
+  end
 
+  def validate_organization
     if organization.present?
       organization_validation
     elsif org_admin
       errors.add(:org_admin, "cannot be set for non-organization user")
     end
+  end
 
+  def validate_quotas
     errors.add(:geocoding_quota, "cannot be nil") if geocoding_quota.nil?
     errors.add(:here_isolines_quota, "cannot be nil") if here_isolines_quota.nil?
     errors.add(:obs_snapshot_quota, "cannot be nil") if obs_snapshot_quota.nil?
@@ -272,6 +292,7 @@ class User < Sequel::Model
     super
     self.database_host ||= ::SequelRails.configuration.environment_for(Rails.env)['host']
     self.api_key ||= make_token
+    self.session_salt ||= SecureRandom.hex
   end
 
   def before_save
@@ -469,6 +490,8 @@ class User < Sequel::Model
           v.user.viewer = false
           v.destroy!
         end
+        oauth_app_user = Carto::OauthAppUser.where(user_id: id).first
+        oauth_app_user.oauth_access_tokens.each(&:destroy) if oauth_app_user
         Carto::ApiKey.where(user_id: id).each(&:destroy)
       end
 
@@ -617,9 +640,10 @@ class User < Sequel::Model
   end
 
   def validate_old_password(old_password)
+    return true unless needs_password_confirmation?
+
     Carto::Common::EncryptionService.verify(password: old_password, secure_password: crypted_password,
-                                            secret: Cartodb.config[:password_secret]) ||
-      (oauth_signin? && last_password_change_date.nil?)
+                                            secret: Cartodb.config[:password_secret])
   end
 
   def valid_password_confirmation(password)
@@ -665,6 +689,20 @@ class User < Sequel::Model
     self.crypted_password = Carto::Common::EncryptionService.encrypt(password: value,
                                                                      secret: Cartodb.config[:password_secret])
     set_last_password_change_date
+  end
+
+  def security_token
+    return if self.session_salt.blank?
+
+    Carto::Common::EncryptionService.encrypt(sha_class: Digest::SHA256, password: crypted_password, salt: session_salt)
+  end
+
+  def invalidate_all_sessions!
+    self.session_salt = SecureRandom.hex
+    update_in_central
+    save
+  rescue CartoDB::CentralCommunicationFailure => e
+    CartoDB::Logger.info(exception: e, message: "Cannot invalidate session")
   end
 
   # Database configuration setup
@@ -875,8 +913,8 @@ class User < Sequel::Model
       upgraded_at + MAGELLAN_TRIAL_DAYS.days
     elsif account_type.to_s.casecmp('personal30').zero?
       created_at + PERSONAL30_TRIAL_DAYS.days
-    elsif account_type.to_s.casecmp('professional').zero?
-      created_at + PROFESSIONAL_TRIAL_DAYS.days
+    elsif account_type.to_s.casecmp('individual').zero?
+      created_at + INDIVIDUAL_TRIAL_DAYS.days
     end
   end
 
@@ -1102,6 +1140,12 @@ class User < Sequel::Model
 
   def rate_limit
     Carto::RateLimit.find(rate_limit_id) if rate_limit_id
+  end
+
+  def update_gcloud_settings(attributes)
+    return if attributes.nil?
+    settings = Carto::GCloudUserSettings.new(self, attributes)
+    settings.update
   end
 
   def carto_account_type
@@ -1355,21 +1399,22 @@ class User < Sequel::Model
       title = OAUTH_SERVICE_TITLES.fetch(serv, serv)
       revoke_url = OAUTH_SERVICE_REVOKE_URLS.fetch(serv, nil)
       enabled = case serv
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'box'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'gdrive'
-        Cartodb.config[:oauth][serv]['client_id'].present?
-      when 'dropbox'
-        Cartodb.config[:oauth]['dropbox']['app_key'].present?
-      when 'mailchimp'
-        Cartodb.config[:oauth]['mailchimp']['app_key'].present? && has_feature_flag?('mailchimp_import')
-      when 'instagram'
-        Cartodb.config[:oauth]['instagram']['app_key'].present? && has_feature_flag?('instagram_import')
-      else
-        true
-      end
+                when 'gdrive'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'box'
+                  Cartodb.get_config(:oauth, serv, 'client_id')
+                when 'dropbox'
+                  Cartodb.get_config(:oauth, serv, 'app_key')
+                when 'mailchimp'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('mailchimp_import')
+                when 'instagram'
+                  Cartodb.get_config(:oauth, serv, 'app_key') && has_feature_flag?('instagram_import')
+                when 'bigquery'
+                  Cartodb.get_config(:oauth, serv, 'client_id') &&
+                  Carto::Connector.provider_available?('bigquery', self)
+                else
+                  true
+                end
 
       if enabled
         oauth = oauths.select(serv)
@@ -1493,12 +1538,12 @@ class User < Sequel::Model
 
   # Get the count of public visualizations
   def public_visualization_count
-    visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
-                          privacy: Carto::Visualization::PRIVACY_PUBLIC,
-                          exclude_shared: true,
-                          exclude_raster: true
-                        })
+    visualization_count(
+      type: Carto::Visualization::MAP_TYPES,
+      privacy: Carto::Visualization::PRIVACY_PUBLIC,
+      exclude_shared: true,
+      exclude_raster: true
+    )
   end
 
   def public_privacy_visualization_count
@@ -1506,15 +1551,22 @@ class User < Sequel::Model
   end
 
   def link_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_LINK,
                         exclude_shared: true,
                         exclude_raster: true)
   end
 
   def password_privacy_visualization_count
-    visualization_count(type: Carto::Visualization::TYPE_DERIVED,
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
                         privacy: Carto::Visualization::PRIVACY_PROTECTED,
+                        exclude_shared: true,
+                        exclude_raster: true)
+  end
+
+  def private_privacy_visualization_count
+    visualization_count(type: Carto::Visualization::MAP_TYPES,
+                        privacy: Carto::Visualization::PRIVACY_PRIVATE,
                         exclude_shared: true,
                         exclude_raster: true)
   end
@@ -1522,7 +1574,7 @@ class User < Sequel::Model
   # Get the count of all visualizations
   def all_visualization_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: false,
                           exclude_raster: false
                         })
@@ -1531,7 +1583,7 @@ class User < Sequel::Model
   # Get user owned visualizations
   def owned_visualizations_count
     visualization_count({
-                          type: Carto::Visualization::TYPE_DERIVED,
+                          type: Carto::Visualization::MAP_TYPES,
                           exclude_shared: true,
                           exclude_raster: false
                         })
@@ -1755,7 +1807,7 @@ class User < Sequel::Model
       geocoding_block_price account_type twitter_datasource_enabled soft_twitter_datasource_limit
       twitter_datasource_quota twitter_datasource_block_price twitter_datasource_block_size here_isolines_quota
       here_isolines_block_price soft_here_isolines_limit obs_snapshot_quota obs_snapshot_block_price
-      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit
+      soft_obs_snapshot_limit obs_general_quota obs_general_block_price soft_obs_general_limit private_map_quota
     )
     to.set_fields(self, attributes_to_copy)
     to.invite_token = make_token
@@ -1804,6 +1856,10 @@ class User < Sequel::Model
 
   def viewer?
     viewer
+  end
+
+  def role_display
+    viewer? ? 'viewer' : 'builder'
   end
 
   def organization_admin?
@@ -1909,6 +1965,12 @@ class User < Sequel::Model
 
   def trial_user?
     TRIAL_PLANS.include?(account_type.to_s.downcase)
+  end
+
+  def get_database_roles
+    api_key_roles = api_keys.reject { |k| k.db_role =~ /^publicuser/ }.map(&:db_role)
+    oauth_app_owner_roles = api_keys.reject { |k| k.effective_ownership_role_name == nil }.map(&:effective_ownership_role_name)
+    (api_key_roles + oauth_app_owner_roles).uniq
   end
 
   private

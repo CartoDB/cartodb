@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require 'aws-sdk-s3'
 
 module CartoDB

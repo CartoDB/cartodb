@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'sequel'
 require_relative './member'
 

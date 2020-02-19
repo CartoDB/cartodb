@@ -80,3 +80,18 @@ $w: 780px;
 }
 .ImportPanel-actions { text-align: center; }
 .ImportPanel-actionsButton { display: inline-block; }
+
+.ImportPanel-sidebar {
+  width: 200px;
+
+  .ip-block {
+    padding: 18px 24px;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 15px;
+  }
+}
+
+

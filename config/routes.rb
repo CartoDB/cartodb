@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # rubocop:disable Metrics/LineLength, Style/ExtraSpacing, Style/SingleSpaceBeforeFirstArg
 
 # NOTES:
@@ -127,6 +125,10 @@ CartoDB::Application.routes.draw do
     # User profile and account pages
     get    '(/user/:user_domain)(/u/:user_domain)/profile' => 'users#profile',        as: :profile_user
     get    '(/user/:user_domain)(/u/:user_domain)/account' => 'users#account',        as: :account_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps' => 'visualizations#index', as: :oauth_apps_user
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/new' => 'visualizations#index', as: :oauth_apps_user_new
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/oauth_apps/edit/:id' => 'visualizations#index', as: :oauth_apps_user_edit
+    get    '(/user/:user_domain)(/u/:user_domain)/dashboard/connected_apps' => 'visualizations#index', as: :connected_apps_user
 
     # Lockout
     get '(/user/:user_domain)(/u/:user_domain)/lockout' => 'users#lockout', as: :lockout
@@ -165,6 +167,8 @@ CartoDB::Application.routes.draw do
 
     # Datasets for new dashboard
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets'                              => 'visualizations#index', as: :datasets_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog'                      => 'visualizations#index', as: :datasets_catalog_index
+    get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/catalog/:id'                  => 'visualizations#index', as: :ddatasets_catalog_show
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/:page'                        => 'visualizations#index', as: :datasets_page
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag'                     => 'visualizations#index', as: :datasets_tag
     get '(/user/:user_domain)(/u/:user_domain)/dashboard/datasets/tag/:tag/:page'               => 'visualizations#index', as: :datasets_tag_page
@@ -573,6 +577,41 @@ CartoDB::Application.routes.draw do
       delete 'kuviz/:id', to: 'custom_visualizations#delete', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_delete_viz
       put 'kuviz/:id', to: 'custom_visualizations#update', constraints: { id: UUID_REGEXP }, as: :api_v4_kuviz_update_viz
       get 'kuviz', to: 'custom_visualizations#index', as: :api_v4_kuviz_list_vizs
+
+      # OAuth apps
+      resources :oauth_apps, only: [:index, :show, :create, :update, :destroy], constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps
+      post 'oauth_apps/:id/regenerate_secret', to: 'oauth_apps#regenerate_secret', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_regenerate_secret
+      get 'granted_oauth_apps', to: 'oauth_apps#index_granted', as: :api_v4_oauth_apps_index_granted
+      post 'oauth_apps/:id/revoke', to: 'oauth_apps#revoke', constraints: { id: UUID_REGEXP }, as: :api_v4_oauth_apps_revoke
+
+      get 'datasets', to: 'datasets#index', as: :api_v4_datasets
+
+      scope 'do' do
+        get 'token' => 'data_observatory#token', as: :api_v4_do_token
+        get 'subscriptions' => 'data_observatory#subscriptions', as: :api_v4_do_subscriptions_show
+        post 'subscriptions' => 'data_observatory#subscribe', as: :api_v4_do_subscriptions_create
+        delete 'subscriptions' => 'data_observatory#unsubscribe', as: :api_v4_do_subscriptions_destroy
+        get 'subscription_info' => 'data_observatory#subscription_info', as: :api_v4_do_subscription_info
+      end
+
+      # Federated Tables
+
+      ## Federated servers
+      get 'federated_servers', to: 'federated_tables#list_federated_servers', as: :api_v4_federated_servers_list_servers
+      post 'federated_servers' => 'federated_tables#register_federated_server', as: :api_v4_federated_servers_register_server
+      get 'federated_servers/:federated_server_name' => 'federated_tables#show_federated_server', as: :api_v4_federated_servers_get_server
+      put 'federated_servers/:federated_server_name' => 'federated_tables#update_federated_server', as: :api_v4_federated_servers_update_server
+      delete 'federated_servers/:federated_server_name' => 'federated_tables#unregister_federated_server', as: :api_v4_federated_servers_unregister_server
+
+      ## Remote schemas
+      get 'federated_servers/:federated_server_name/remote_schemas', to: 'federated_tables#list_remote_schemas', as: :api_v4_federated_servers_list_schemas
+
+      ## Remote tables
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#list_remote_tables', as: :api_v4_federated_servers_list_tables
+      post 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables', to: 'federated_tables#register_remote_table', as: :api_v4_federated_servers_register_table
+      get 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#show_remote_table', as: :api_v4_federated_servers_get_table
+      put 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#update_remote_table', as: :api_v4_federated_servers_update_table
+      delete 'federated_servers/:federated_server_name/remote_schemas/:remote_schema_name/remote_tables/:remote_table_name', to: 'federated_tables#unregister_remote_table', as: :api_v4_federated_servers_unregister_table
     end
 
     scope 'v3/' do
@@ -652,6 +691,7 @@ CartoDB::Application.routes.draw do
         delete 'users/:u_username', to: 'organization_users#destroy', as: :api_v2_organization_users_delete
         put    'users/:u_username', to: 'organization_users#update',  as: :api_v2_organization_users_update
 
+        get 'users/:u_username/mfa/:type', to: 'multifactor_authentication#show', as: :api_v2_organization_users_mfa_show
         post 'users/:u_username/mfa/:type', to: 'multifactor_authentication#create', as: :api_v2_organization_users_mfa_create
         delete 'users/:u_username/mfa/:type', to: 'multifactor_authentication#destroy', as: :api_v2_organization_users_mfa_delete
       end
@@ -686,6 +726,10 @@ CartoDB::Application.routes.draw do
       get 'connectors/:provider_id' => 'connectors#show', as: :api_v1_connectors_show
       get 'connectors/:provider_id/tables' => 'connectors#tables', as: :api_v1_connectors_tables
       get 'connectors/:provider_id/connect' => 'connectors#connect', as: :api_v1_connectors_connect
+      get 'connectors/:provider_id/projects' => 'connectors#projects', as: :api_v1_connectors_projects
+      get 'connectors/:provider_id/:project_id/datasets' => 'connectors#project_datasets', as: :api_v1_connectors_project_datasets
+      get 'connectors/:provider_id/:project_id/:dataset_id/tables' => 'connectors#project_dataset_tables', as: :api_v1_connectors_project_dataset_tables
+      post 'connectors/:provider_id/dryrun' => 'connectors#dryrun', as: :api_v1_connectors_dryrun
     end
   end
 

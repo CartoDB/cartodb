@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../controllers/carto/api/group_presenter'
 
 module CartoDB
@@ -22,6 +20,7 @@ module CartoDB
         location: user.location,
         twitter_username: user.twitter_username,
         disqus_shortname: user.disqus_shortname,
+        role_display: user.role_display,
         available_for_hire: user.available_for_hire,
         base_url: user.public_url,
         google_maps_query_string: user.google_maps_query_string,

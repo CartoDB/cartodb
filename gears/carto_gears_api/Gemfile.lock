@@ -2,8 +2,9 @@ PATH
   remote: .
   specs:
     carto_gears_api (0.0.6)
-      pg (= 0.15.0)
+      pg (= 0.20.0)
       rails (= 4.2.11)
+      sprockets (= 3.7.2)
       values (= 1.8.0)
 
 GEM
@@ -60,15 +61,15 @@ GEM
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     metaclass (0.0.4)
-    mini_mime (1.0.1)
+    mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
-    nokogiri (1.9.1)
+    nokogiri (1.10.5)
       mini_portile2 (~> 2.4.0)
-    pg (0.15.0)
-    rack (1.6.11)
+    pg (0.20.0)
+    rack (1.6.12)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.11)
@@ -131,4 +132,4 @@ DEPENDENCIES
   rspec-rails (= 2.12.0)
 
 BUNDLED WITH
-   1.14.6
+   1.17.3

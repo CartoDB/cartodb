@@ -4,10 +4,6 @@
 @import "../helpers/colors";
 @import "../helpers/utilities";
 
-.FlashMessage-container {
-  padding-top: 64px;
-}
-
 .navbar-placeholder {
   display: flex;
   position: fixed;
@@ -26,9 +22,9 @@
 }
 
 #header {
-  padding-top: 60px;
+  padding-top: 64px;
 
-  &.is-user-notification {
+  &.has-user-notification {
     padding-top: 124px;
   }
 }

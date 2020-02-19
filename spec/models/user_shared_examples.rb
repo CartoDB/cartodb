@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'mock_redis'
 require 'active_support/time'
 require_relative '../spec_helper'
@@ -36,7 +34,7 @@ shared_examples_for "user models" do
     end
 
     it 'is enabled if organization has it enabled and with custom config, no matter whether user has it or not,
-        and enabled if he has it enabled and with custom config, no matter whether org has it or not' do
+        and enabled if he/she has it enabled and with custom config, no matter whether org has it or not' do
       twitter_search_conf = @config[:datasource_search]['twitter_search']
       custom_wadus = {
         "auth_required" => false,
@@ -1033,6 +1031,15 @@ shared_examples_for "user models" do
       result = @user.valid_password_confirmation('wrong_pass')
 
       result.should be_false
+    end
+
+    it 'returns true if SAML is enabled' do
+      organization = FactoryGirl.create(:saml_organization)
+      @user.organization_id = organization.id
+
+      result = @user.valid_password_confirmation('wrong_pass')
+
+      result.should be_true
     end
   end
 end

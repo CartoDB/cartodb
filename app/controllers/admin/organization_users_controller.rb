@@ -1,4 +1,3 @@
-# coding: utf-8
 require_dependency 'carto/controller_helper'
 require_dependency 'dummy_password_generator'
 

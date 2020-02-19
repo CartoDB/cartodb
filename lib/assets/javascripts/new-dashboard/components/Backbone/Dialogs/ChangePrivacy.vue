@@ -31,6 +31,7 @@ export default {
       });
 
       visModel.on('change', model => {
+        this.$store.dispatch('user/updateData');
         this.$emit('updateVisualization', model);
         this.$emit('deselectAll');
       });
@@ -82,15 +83,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-.Dialog {
-  .OptionCards {
-    box-sizing: content-box;
-
-    * {
-      box-sizing: content-box;
-    }
-  }
-}
-</style>

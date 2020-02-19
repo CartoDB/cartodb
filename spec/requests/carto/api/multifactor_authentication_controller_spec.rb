@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../spec_helper'
 
 describe Carto::Api::MultifactorAuthenticationController do
@@ -14,6 +12,57 @@ describe Carto::Api::MultifactorAuthenticationController do
     ::User.any_instance.stubs(:delete_in_central).returns(true)
     ::User.any_instance.stubs(:load_common_data).returns(true)
     ::User.any_instance.stubs(:reload_avatar).returns(true)
+  end
+
+  describe 'MFA show' do
+    after(:each) do
+      @org_user_1.user_multifactor_auths.each(&:destroy!)
+    end
+
+    it 'returns 401 for non authorized calls' do
+      get api_v2_organization_users_mfa_show_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
+    end
+
+    it 'returns 401 for non authorized users' do
+      login(@org_user_1)
+
+      get api_v2_organization_users_mfa_show_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      last_response.status.should == 401
+    end
+
+    it 'correctly shows MFA configured' do
+      login(@organization.owner)
+      @organization.owner.reload
+
+      FactoryGirl.create(:totp, user_id: @org_user_1.id)
+        get api_v2_organization_users_mfa_show_url(
+          id_or_name: @organization.name,
+          u_username: @org_user_1.username,
+          type: 'totp'
+        )
+        expect(JSON.parse(last_response.body)['mfa_required']).to eq true
+    end
+
+    it 'correctly shows MFA not configured' do
+      login(@organization.owner)
+      @organization.owner.reload
+
+      get api_v2_organization_users_mfa_show_url(
+        id_or_name: @organization.name,
+        u_username: @org_user_1.username,
+        type: 'totp'
+      )
+      expect(JSON.parse(last_response.body)['mfa_required']).to eq false
+    end
   end
 
   describe 'MFA creation' do

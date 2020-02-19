@@ -2,10 +2,11 @@
   <Page>
     <div class="notifications-list-container container grid grid__content">
       <div class="full-width">
-        <SectionTitle class="grid-cell" :title="pageTitle" :showActionButton="false" ref="headerContainer">
+        <SectionTitle class="grid-cell" :showActionButton="false" ref="headerContainer">
           <template slot="icon">
             <img src="../assets/icons/section-title/envelope.svg">
           </template>
+          <template slot="title">{{ pageTitle }}</template>
         </SectionTitle>
         <ul v-if="!emptyState" class="notifications-list grid-cell  grid-cell--col9 grid-cell--col12--tablet">
           <li class="notification-item" v-for="notification in notifications" :key="notification.id">

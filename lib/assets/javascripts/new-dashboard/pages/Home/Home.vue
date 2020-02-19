@@ -40,6 +40,12 @@ export default {
     this.$store.dispatch('maps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
+    // If user is viewer, show shared maps and datasets
+    if (this.$store.getters['user/isViewer']) {
+      this.$store.dispatch('maps/filter', 'shared');
+      this.$store.dispatch('datasets/filter', 'shared');
+    }
+
     this.$store.dispatch('maps/fetch');
     this.$store.dispatch('datasets/fetch');
   },
@@ -75,10 +81,6 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-header.is-user-notification + section.page--welcome {
-  padding: 0;
-}
 
 .section {
   position: relative;

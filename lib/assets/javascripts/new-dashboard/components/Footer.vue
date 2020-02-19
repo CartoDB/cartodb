@@ -7,13 +7,13 @@
     </div>
     <div class="grid-cell grid-cell--col8 grid-cell--col9--tablet grid-cell--col12--mobile">
       <div class="footer-block">
-        <a href="https://carto.com/help" class="footer-link" target="_blank">
+        <a href="https://carto.com/help" class="footer-link" target="_blank" rel="noopener noreferrer">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.HelpCenter.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.HelpCenter.description`) }}</p>
         </a>
-        <a href="https://carto.com/developers" class="footer-link" target="_blank">
+        <a href="https://carto.com/developers/" class="footer-link" target="_blank" rel="noopener noreferrer">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DeveloperCenter.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -21,7 +21,7 @@
         </a>
       </div>
       <div class="footer-block">
-        <a href="https://gis.stackexchange.com/questions/tagged/carto" class="footer-link" v-if="isFreeUser" target="_blank">
+        <a href="https://gis.stackexchange.com/questions/tagged/carto" class="footer-link" v-if="isFreeUser" target="_blank" rel="noopener noreferrer">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.GISStackExchange.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -33,7 +33,7 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.TechSupport.description`) }}</p>
         </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isProUser">
+        <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DedicatedSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -70,9 +70,9 @@ export default {
       return this.userAccountType === 'free';
     },
 
-    isProUser () {
-      const noProUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noProUsers.includes(this.userAccountType) || this.user.organization);
+    isIndividualUser () {
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
+      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization);
     },
 
     isOrganizationUser () {
@@ -94,75 +94,5 @@ export default {
 
 <style scoped lang="scss">
 @import 'new-dashboard/styles/variables';
-
-.footer {
-  padding-top: 64px;
-  padding-bottom: 100px;
-
-  @media (max-width: $layout-mobile) {
-    flex-direction: column-reverse;
-  }
-}
-
-.footer-block {
-  display: flex;
-  justify-content: space-between;
-
-  @media (max-width: $layout-mobile) {
-    flex-direction: column-reverse;
-  }
-
-  .footer-link:first-child {
-    padding-right: 42px;
-  }
-}
-
-.footer-link {
-  display: block;
-  width: 50%;
-  margin-bottom: 48px;
-
-  @media (max-width: $layout-mobile) {
-    width: unset;
-    margin-bottom: 36px;
-  }
-
-  &:hover {
-    text-decoration: none;
-
-    .title-link {
-      color: $primary-color;
-    }
-
-    .chevron .chevron-path {
-      fill: $primary-color;
-    }
-  }
-
-  .chevron {
-    display: inline-block;
-    margin-left: 8px;
-  }
-}
-
-.title-link {
-  margin-bottom: 4px;
-  white-space: nowrap;
-}
-
-.footer-logo {
-  @media (max-width: $layout-mobile) {
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.carto-logo {
-  width: 92px;
-
-  @media (max-width: $layout-mobile) {
-    width: 64px;
-    margin: 28px 0 16px;
-  }
-}
+@import 'new-dashboard/styles/components/_footer';
 </style>

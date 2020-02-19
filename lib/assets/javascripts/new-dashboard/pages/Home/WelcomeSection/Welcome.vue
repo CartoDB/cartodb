@@ -1,5 +1,5 @@
 <template>
-  <section class="welcome-section" :class="{ 'is-user-notification': isNotificationVisible }">
+  <section class="welcome-section">
     <WelcomeFirst v-if="isFirst" :name="name" :userType="userType"></WelcomeFirst>
     <WelcomeCompact v-if="!isFirst" :name="name" :userType="userType">
       <template v-if="trialEndDate">
@@ -37,9 +37,6 @@ export default {
       organization: state => state.user.organization,
       notifications: state => state.user.organizationNotifications
     }),
-    isNotificationVisible () {
-      return this.$store.getters['user/isNotificationVisible'];
-    },
     trialTimeLeft () {
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: distanceInWordsStrict(this.trialEndDate, new Date(), { partialMethod: 'round' }) });
     },
@@ -52,8 +49,8 @@ export default {
         return 'organizationUser';
       }
 
-      if (this.isProUser()) {
-        return 'professional';
+      if (this.isIndividualUser()) {
+        return 'individual';
       }
 
       if (this.isPersonal30()) {
@@ -76,9 +73,9 @@ export default {
       const freeUser = ['FREE'];
       return freeUser.includes(this.user.account_type);
     },
-    isProUser () {
-      const proUsers = ['Professional'];
-      return proUsers.includes(this.user.account_type);
+    isIndividualUser () {
+      const individualUsers = ['Individual'];
+      return individualUsers.includes(this.user.account_type);
     },
     isOrganizationAdmin () {
       if (!this.isOrganizationUser()) {

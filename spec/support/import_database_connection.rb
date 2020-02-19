@@ -1,5 +1,3 @@
-# coding: UTF-8
-
 module CartoDB
   class ImportDatabaseConnection
     def self.connection

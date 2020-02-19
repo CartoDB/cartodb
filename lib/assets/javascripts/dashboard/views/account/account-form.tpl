@@ -19,7 +19,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.new_password') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['new_password']) { %>has-error<% } %> <% if (!canChangePassword) { %>is-disabled<% } %>" id="user_new_password" name="user[new_password]" size="30" type="password" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (errors['new_password']) { %>has-error<% } %> <% if (!canChangePassword) { %>is-disabled<% } %>" id="user_new_password" name="user[new_password]" size="30" type="password" autocomplete="off" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
         </div>
         <div class="FormAccount-rowInfo">
           <% if (errors['new_password']) { %>
@@ -33,7 +33,7 @@
           <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.confirm_password') %></label>
         </div>
         <div class="FormAccount-rowData">
-          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (!canChangePassword) { %>is-disabled<% } %>" id="confirm_password" name="user[confirm_password]" size="30" type="password" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med <% if (!canChangePassword) { %>is-disabled<% } %>" id="confirm_password" name="user[confirm_password]" size="30" type="password" autocomplete="off" <% if (!canChangePassword) { %>readonly="readonly"<% } %>>
         </div>
       </div>
     </div>
@@ -64,7 +64,31 @@
     </div>
   </div>
 
-  <% if ((!isInsideOrg || isOrgOwner) && !isCartoDBHosted) { %>
+  <% if (isCartoDBHosted) { %>
+    <% if ((isOrgAdmin || isOrgOwner) && licenseExpiration) { %>
+      <div class="FormAccount-title">
+        <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
+      </div>
+
+      <span class="FormAccount-separator"></span>
+
+      <div class="FormAccount-row">
+        <div class="FormAccount-rowLabel">
+          <label
+            class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.license_expiration') %>
+          </label>
+        </div>
+        <div class="FormAccount-rowData">
+          <input class="CDB-InputText CDB-Text FormAccount-input FormAccount-input--med is-disabled" id="license-expiration"
+            name="license-expiration" readonly="readonly" size="30" type="text" value="<%= licenseExpiration %>">
+          <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
+            <p class="CDB-Text CDB-Size-small u-altTextColor"><%= _t('account.views.form.license_renew_info') %></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  <% } else { %>
+    <% if (!isInsideOrg || isOrgOwner) { %>
     <div class="FormAccount-title">
       <p class="FormAccount-titleText"><%= _t('account.views.form.account_type') %></p>
     </div>
@@ -73,17 +97,19 @@
 
     <div class="FormAccount-row">
       <div class="FormAccount-rowLabel">
-        <label class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
+        <label
+          class="CDB-Text CDB-Size-medium is-semibold u-mainTextColor"><%= _t('account.views.form.billing_plan') %></label>
       </div>
       <div class="FormAccount-rowData">
         <div class="FormAccount-planTag CDB-Size-medium"><%= planName %></div>
         <div class="FormAccount-rowInfo FormAccount-rowInfo--marginLeft">
-          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>" class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
+          <p class="FormAccount-rowInfoText CDB-Size-medium"><a href="<%= planUrl %>"
+              class="FormAccount-link"><%= _t('account.views.form.view_details') %></a></p>
         </div>
       </div>
     </div>
+    <% } %>
   <% } %>
-
 
   <% if (services.length > 0) { %>
     <div class="FormAccount-title">

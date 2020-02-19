@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Class that allows "Grantable" searches.
 # Note a Grantable is not an actual ActiveRecord model but an aggregation of User and Group.
 # Since ActiveRecord doesn't support polymorphic queries or has_many associations

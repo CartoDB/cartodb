@@ -1,6 +1,4 @@
 #!/usr/bin/env ruby
-# coding: utf-8
-
 # export-user.rb
 # This class can be used to generate an as-is backup of the metadata of an user.
 # It can be ran against a single user or a single user ID or a list of any of both.
@@ -161,7 +159,8 @@ module CartoDB
         }
       }.freeze
       # the next fields won't be discarded if set to NULL
-      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'regular_api_key_quota', 'builder_enabled'].freeze
+      TABLE_NULL_EXCEPTIONS = ['table_quota', 'public_map_quota', 'private_map_quota', 'regular_api_key_quota', 
+                               'builder_enabled'].freeze
       include CartoDB::DataMover::Utils
 
       def get_user_metadata(user_id)
@@ -211,7 +210,7 @@ module CartoDB
       end
 
       def dump_role_grants(role)
-        roles = user_pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member');")
+        roles = user_pg_conn.exec("SELECT oid, rolname FROM pg_roles WHERE pg_has_role( '#{role}', oid, 'member') AND rolname not similar to '(carto_role|carto_oauth_app)_%';")
         roles.map { |q| q['rolname'] }.reject { |r| r == role }
       end
 

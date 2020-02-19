@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative './loader'
 require_relative './tiff_loader'
 require_relative './sql_loader'

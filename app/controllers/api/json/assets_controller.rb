@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Api::Json::AssetsController < Api::ApplicationController
 
   ssl_required :create, :destroy

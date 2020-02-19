@@ -41,7 +41,7 @@ module Carto
           quota_in_bytes:             @user.quota_in_bytes,
           table_count:                @user.table_count,
           viewer:                     @user.viewer?,
-          role_display:               @user.viewer? ? 'viewer' : 'builder',
+          role_display:               @user.role_display,
           org_admin:                  @user.organization_admin?,
           public_visualization_count: @user.public_visualization_count,
           all_visualization_count:    @user.all_visualization_count,
@@ -59,6 +59,8 @@ module Carto
 
         if fetch_profile
           poro[:industry] = @user.industry
+          poro[:company_employees] = @user.company_employees
+          poro[:use_case] = @user.use_case
           poro[:company]  = @user.company
           poro[:phone]    = @user.phone
           poro[:job_role] = @user.job_role
@@ -72,6 +74,7 @@ module Carto
 
         presentation.delete(:id)
         presentation[:soft_geocoding_limit] = @user.soft_geocoding_limit
+        presentation[:api_key] = @user.api_key
 
         presentation
       end
@@ -121,11 +124,14 @@ module Carto
           account_type_display_name: plan_name(@user.account_type),
           table_quota: @user.table_quota,
           public_map_quota: @user.public_map_quota,
+          private_map_quota: @user.private_map_quota,
           regular_api_key_quota: @user.regular_api_key_quota,
           table_count: @user.table_count,
           viewer: @user.viewer?,
-          role_display: @user.viewer? ? 'viewer' : 'builder',
+          role_display: @user.role_display,
           industry: @user.industry,
+          company_employees: @user.company_employees,
+          use_case: @user.use_case,
           company: @user.company,
           phone: @user.phone,
           job_role: @user.job_role,
@@ -134,6 +140,7 @@ module Carto
           public_privacy_map_count: @user.public_privacy_visualization_count,
           link_privacy_map_count: @user.link_privacy_visualization_count,
           password_privacy_map_count: @user.password_privacy_visualization_count,
+          private_privacy_map_count: @user.private_privacy_visualization_count,
           owned_visualization_count: @user.owned_visualization_count,
           all_visualization_count: @user.all_visualization_count,
           visualization_count: @user.visualization_count,

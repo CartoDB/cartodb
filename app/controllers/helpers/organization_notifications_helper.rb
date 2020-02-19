@@ -1,5 +1,3 @@
-# coding: utf-8
-
 module OrganizationNotificationsHelper
   def load_organization_notifications
     carto_user = Carto::User.where(id: current_user.id).first if current_user

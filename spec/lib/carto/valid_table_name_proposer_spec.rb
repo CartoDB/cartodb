@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative '../../../lib/carto/valid_table_name_proposer.rb'
 
 module Carto

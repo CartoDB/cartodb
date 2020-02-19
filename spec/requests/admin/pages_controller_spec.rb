@@ -1,4 +1,3 @@
-# encoding: utf-8
 require_relative '../../spec_helper'
 require_relative '../../../app/controllers/admin/pages_controller'
 require_relative '../../factories/organizations_contexts'
@@ -312,6 +311,7 @@ describe Admin::PagesController do
 
     before(:each) do
       host! "#{@carto_user1.username}.localhost.lan:#{Cartodb.config[:http_port]}"
+      Carto::Visualization.find_each(&:destroy)
     end
 
     it 'returns 200 if a dataset has no table' do

@@ -1,4 +1,3 @@
-# encoding: utf-8
 require 'virtus'
 require_relative 'adapter'
 require_relative '../../../services/importer/lib/importer'
@@ -192,7 +191,7 @@ module CartoDB
 
         database = user.in_database
         overviews_creator = CartoDB::Importer2::Overviews.new(runner, user)
-        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user, overviews_creator)
+        importer = CartoDB::Synchronization::Adapter.new(name, runner, database, user, overviews_creator, id)
 
         importer.run
         self.ran_at   = Time.now

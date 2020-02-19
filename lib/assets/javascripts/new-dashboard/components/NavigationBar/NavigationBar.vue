@@ -1,5 +1,5 @@
 <template>
-<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'is-user-notification': isNotificationVisible }">
+<nav class="navbar" :class="{ 'is-search-open': isSearchOpen, 'has-user-notification': isNotificationVisible }">
   <ul class="navbar-elementsContainer">
       <router-link :to="{ name: 'home' }" class="navbar-elementItem" :class="{'is-active': isHomePage()}" staticRoute="/dashboard">
         <span class="navbar-icon">
@@ -273,7 +273,7 @@ export default {
   }
 }
 
-.navbar.is-user-notification {
+.navbar.has-user-notification {
   top: $notification-warning__height;
 }
 

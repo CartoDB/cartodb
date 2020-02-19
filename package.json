@@ -1,6 +1,6 @@
 {
   "name": "cartodb-ui",
-  "version": "1.0.0-assets.106",
+  "version": "1.0.0-assets.157",
   "description": "CARTO UI frontend",
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "backbone-model-file-upload": "CartoDB/backbone-model-file-upload#1.0.2",
     "backbone-undo": "cartodb/Backbone.Undo.js#c10e997",
     "bootstrap-colorpicker": "2.5.0",
+    "broken-link-checker": "^0.7.8",
     "browserify": "13.0.0",
     "browserify-shim": "3.8.12",
     "camshaft-reference": "0.34.0",
@@ -36,7 +37,7 @@
     "date-fns": "^1.29.0",
     "fastclick": "^1.0.6",
     "html-webpack-plugin": "^3.2.0",
-    "internal-carto.js": "CartoDB/carto.js#v4.1.11-0",
+    "internal-carto.js": "CartoDB/carto.js#v4.2.0",
     "jquery": "2.1.4",
     "leaflet": "CartoDB/Leaflet#v1.3.1-carto1",
     "loader-utils": "https://registry.npmjs.org/loader-utils/-/loader-utils-0.2.17.tgz",
@@ -212,7 +213,7 @@
     "lint:css": "stylelint './app/assets/stylesheets/**/*.scss'",
     "lint:fix": "eslint . --fix",
     "bump": "npm --no-git-tag-version version prerelease --preid=assets",
-    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push origin master",
+    "postversion": "git add package.json package-lock.json && git commit -m 'Bump assets version' && git push",
     "update-internal-deps": "rm -rf node_modules && npm install",
     "branch-files": "node lib/build/branchFiles/branchFiles.js",
     "affected_specs": "node lib/build/branchFiles/branchFiles.js | xargs node lib/build/affectedFiles/affectedFiles.js",

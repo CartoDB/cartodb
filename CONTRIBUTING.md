@@ -27,6 +27,8 @@ app_assets: 
   asset_host: '//cartodb-libs.global.ssl.fastly.net/cartodbui'
 ```
 
+Even if you're using CDN assets you still need to run `npm run build:static`.
+
 _Don't forget to restart Rails after you have modified `config/app_config.yml`._
 
 # Documentation
@@ -65,6 +67,7 @@ After that, there are several rules you should follow when a new pull request is
   - Change UI assets version, present in [package.json](package.json) file. Minor if it is a bugfixing or a small feature, major when it is a big change.
 - Our linter machine, [Hound](https://houndci.com/), should not trigger any warnings about your changes.
 - All tests should pass, both for JS and Ruby.
+- The number of modified lines should not exceed 300. If so, please split it into smaller PRs to make it easier to review.
 
 ## Development environment accessories
 

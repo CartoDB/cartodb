@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require_relative 'bolt.rb'
 
 module Carto
@@ -22,12 +20,16 @@ module Carto
       if should_run_synchronously?
         link_ghost_tables_synchronously
       else
-        ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
+        link_ghost_tables_asynchronously
       end
     end
 
     def link_ghost_tables_synchronously
       sync_user_tables_with_db unless user_tables_synced_with_db?
+    end
+
+    def link_ghost_tables_asynchronously
+      ::Resque.enqueue(::Resque::UserDBJobs::UserDBMaintenance::LinkGhostTables, @user_id)
     end
 
     # determine linked tables vs cartodbfied tables consistency; i.e.: needs to run
@@ -44,6 +46,23 @@ module Carto
       Carto::Bolt.new("#{user.username}:#{MUTEX_REDIS_KEY}", ttl_ms: MUTEX_TTL_MS)
     end
 
+    # run a block of code exclusively with GhostTablesManager (using Bolt lock)
+    # if warning_params is provided (with paramters for Logger.warning) then
+    # the code is executed even if the lock is not acquired (in which case
+    # a warning is emmitted)
+    def self.run_synchronized(user_id, attempts: 10, timeout: 30000, **warning_params)
+      gtm = new(user_id)
+      bolt = gtm.get_bolt
+      lock_acquired = bolt.run_locked(attempts: attempts, timeout: timeout) do
+        yield
+      end
+      if !lock_acquired && warning_params.present?
+        # run even if lock wasn't aquired
+        CartoDB::Logger.warning(warning_params)
+        yield
+      end
+    end
+
     private
 
     # It's nice to run sync if any unsafe stale (dropped or renamed) tables will be shown to the user but we can't block
@@ -58,14 +77,10 @@ module Carto
     end
 
     def sync_user_tables_with_db
-      got_locked = get_bolt.run_locked(rerun_func: lambda { sync }) { sync }
-
-      CartoDB::Logger.info(message: 'Ghost table race condition avoided', user: user) unless got_locked
+      got_locked = get_bolt.run_locked(fail_function: lambda { link_ghost_tables_asynchronously }) { sync }
     end
 
     def sync
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage start', user: user)
-
       cartodbfied_tables = fetch_cartodbfied_tables
 
       # Update table_id on UserTables with physical tables with changed oid. Should go first.
@@ -79,8 +94,6 @@ module Carto
 
       # Unlink tables that have been created through the SQL API. Should go last.
       find_dropped_tables(cartodbfied_tables).each(&:drop_user_table)
-
-      CartoDB::Logger.debug(message: 'ghost tables', action: 'linkage end', user: user)
     end
 
     # Any UserTable that has been renamed or regenerated.
@@ -92,11 +105,8 @@ module Carto
     def find_renamed_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
-      user_table_names = user_tables.map(&:name)
-      user_table_ids = user_tables.map(&:id)
-
       cartodbfied_tables.select do |cartodbfied_table|
-        user_table_ids.include?(cartodbfied_table.id) && !user_table_names.include?(cartodbfied_table.name)
+        user_tables.any?{|t| t.name != cartodbfied_table.name && t.id == cartodbfied_table.id}
       end
     end
 
@@ -104,11 +114,8 @@ module Carto
     def find_regenerated_tables(cartodbfied_tables)
       user_tables = fetch_user_tables
 
-      user_table_names = user_tables.map(&:name)
-      user_table_ids = user_tables.map(&:id)
-
       cartodbfied_tables.select do |cartodbfied_table|
-        !user_table_ids.include?(cartodbfied_table.id) && user_table_names.include?(cartodbfied_table.name)
+        user_tables.any?{|t| t.name == cartodbfied_table.name && t.id != cartodbfied_table.id}
       end
     end
 
@@ -151,7 +158,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN (#{cartodb_columns}) AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -176,7 +183,7 @@ module Carto
             t.tablename = c.table_name AND
             t.schemaname = c.table_schema AND
             c.table_schema = '#{user.database_schema}' AND
-            t.tableowner = '#{user.database_username}' AND
+            t.tableowner in ('#{user.get_database_roles.join('\',\'')}') AND
             column_name IN ('cartodb_id', 'the_raster_webmercator') AND
             tg.tgrelid = (quote_ident(t.schemaname) || '.' || quote_ident(t.tablename))::regclass::oid AND
             tg.tgname = 'test_quota_per_row'
@@ -212,11 +219,6 @@ module Carto
     end
 
     def create_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'linking new table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
       user_table = Carto::UserTable.new
       user_table.user_id = user.id
       user_table.table_id = id
@@ -236,12 +238,6 @@ module Carto
     end
 
     def rename_user_table_vis
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'relinking renamed table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_vis = user_table_with_matching_id.table_visualization
 
       user_table_vis.register_table_only = true
@@ -257,12 +253,6 @@ module Carto
     end
 
     def drop_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'unlinking dropped table',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_to_drop = user.tables.where(table_id: id, name: name).first
       return unless user_table_to_drop # The table has already been deleted
 
@@ -278,12 +268,6 @@ module Carto
     end
 
     def regenerate_user_table
-      CartoDB::Logger.debug(message: 'ghost tables',
-                            action: 'regenerating table_id',
-                            user: user,
-                            table_name: name,
-                            table_id: id)
-
       user_table_to_regenerate = user_table_with_matching_name
 
       user_table_to_regenerate.table_id = id

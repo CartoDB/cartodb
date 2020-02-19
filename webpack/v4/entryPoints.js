@@ -7,10 +7,11 @@ const removeDuplicated = array => Array.from(new Set(array));
 
 const entries = {
   common_new: removeDuplicated([
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     rootDir('assets/stylesheets/common/icon-font-specials.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/**/*.scss')),
-    rootDir('node_modules/cartoassets/src/scss/entry.scss')
+    rootDir('node_modules/cartoassets/src/scss/entry.scss'),
+    rootDir('assets/stylesheets/editor-3/_codemirror.scss')
   ]),
 
   deep_insights_new: [
@@ -143,7 +144,7 @@ const entries = {
     rootDir('assets/stylesheets/common/spinner.scss'),
     rootDir('assets/stylesheets/common/tabs.scss'),
     rootDir('assets/stylesheets/common/titles.scss'),
-    rootDir('assets/stylesheets/common/utilities.scss'),
+    rootDir('assets/stylesheets/common/utilities/utilities.scss'),
     ...glob.sync(rootDir('assets/stylesheets/common/background-polling/**/*.scss')),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
     rootDir('assets/stylesheets/common/pagination.scss'),
@@ -169,6 +170,8 @@ const entries = {
     'whatwg-fetch',
     path.resolve(__dirname, '../../', 'lib/assets/javascripts/builder/public_editor.js'),
     rootDir('assets/stylesheets/plugins/tipsy.scss'),
+    rootDir('assets/stylesheets/deep-insights/entry.scss'),
+    rootDir('node_modules/internal-carto.js/themes/scss/entry.scss'),
     rootDir('node_modules/cartoassets/src/scss/entry.scss')
   ],
 

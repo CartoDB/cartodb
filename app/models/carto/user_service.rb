@@ -1,5 +1,3 @@
-# encoding: UTF-8
-
 require 'active_record'
 require 'cartodb-common'
 require_dependency 'carto/db/connection'
@@ -75,12 +73,20 @@ module Carto
                                       .count
     end
 
+    def private_privacy_visualization_count
+      return 0 unless @user.id
+
+      Carto::VisualizationQueryBuilder.user_private_privacy_visualizations(@user)
+                                      .build
+                                      .count
+    end
+
     def all_visualization_count
       return 0 unless @user.id
 
       Carto::VisualizationQueryBuilder.user_all_visualizations(@user)
-        .build
-        .count
+                                      .build
+                                      .count
     end
 
     def twitter_imports_count(options={})

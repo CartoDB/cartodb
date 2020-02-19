@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_support/time'
 require_relative 'service_usage_metrics'
 
@@ -22,7 +20,8 @@ module CartoDB
       :geocoder_cache,
       :geocoder_mapzen,
       :geocoder_mapbox,
-      :geocoder_tomtom
+      :geocoder_tomtom,
+      :geocoder_geocodio
     ].freeze
 
     GEOCODER_KEYS = {
@@ -30,7 +29,8 @@ module CartoDB
       "google" => :geocoder_google,
       "mapzen" => :geocoder_mapzen,
       "mapbox" => :geocoder_mapbox,
-      "tomtom" => :geocoder_tomtom
+      "tomtom" => :geocoder_tomtom,
+      "geocodio" => :geocoder_geocodio
     }.freeze
 
 

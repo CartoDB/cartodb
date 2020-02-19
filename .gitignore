@@ -80,4 +80,7 @@ npm-debug.log.*
 .rakeTasks
 # Remove migrations installed by rake <gear>:install:migrations
 db/migrate/*.*.rb
-
+docker-compose.yml
+Dockerfile*
+app_config.yml
+database.yml

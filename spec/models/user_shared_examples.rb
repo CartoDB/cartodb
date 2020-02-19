@@ -1132,11 +1132,18 @@ shared_examples_for "user models" do
       expect(@user.show_trial_reminder?).to be_false
     end
 
-    it 'returns true if the account has an active trial' do
+    it 'returns true if the account has an active trial with less than 30 remaining days' do
       @user.account_type = 'Individual'
       @user.created_at = Time.now - 1.day
 
       expect(@user.show_trial_reminder?).to be_true
+    end
+
+    it 'returns false if the account has an active trial with more than 30 remaining days' do
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 1.day
+
+      expect(@user.show_trial_reminder?).to be_false
     end
   end
 end

@@ -153,10 +153,15 @@ module Carto
           result = connection.execute(query).first
           raise Carto::LoadError.new("No metadata found for #{@id}") unless result
 
-          result = result.symbolize_keys
-          result[:subscription_list_price] = result[:subscription_list_price]&.to_f
-          result[:estimated_delivery_days] = result[:estimated_delivery_days]&.to_f
-          result
+          cast_metadata_result(result)
+        end
+
+        def cast_metadata_result(metadata)
+          metadata = metadata.symbolize_keys
+          metadata[:subscription_list_price] = metadata[:subscription_list_price]&.to_f
+          metadata[:estimated_delivery_days] = metadata[:estimated_delivery_days]&.to_f
+          metadata[:available_in] = metadata[:available_in].delete('{}').split(',') unless metadata[:available_in].nil?
+          metadata
         end
 
         def license_info(metadata)

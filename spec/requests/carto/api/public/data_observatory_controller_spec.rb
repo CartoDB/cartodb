@@ -372,6 +372,18 @@ describe Carto::Api::Public::DataObservatoryController do
         end
       end
     end
+
+    it 'returns 200 with different array options in available_in' do
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayempty', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearraynil', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+      get_json endpoint_url(api_key: @master, id: 'carto.abc.datasetvalidatearrayseveraldata', type: 'dataset'), @headers do |response|
+        expect(response.status).to eq(200)
+      end
+    end
   end
 
   describe 'subscribe' do
@@ -474,7 +486,7 @@ describe Carto::Api::Public::DataObservatoryController do
     it 'returns 200 with the dataset metadata and calls the DoLicensingService with the expected params' do
       expected_params = [{
         dataset_id: 'carto.abc.dataset1',
-        available_in: '{bq}',
+        available_in: ['bq'],
         price: 100.0,
         expires_at: Time.parse('2019/01/01 00:00:00')
       }]
@@ -541,6 +553,12 @@ describe Carto::Api::Public::DataObservatoryController do
                                      'rights', '{bq}', 'CARTO dataset null');
         INSERT INTO datasets VALUES ('carto.abc.datasetzero', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
                                      'rights', '{bq}', 'CARTO dataset zero');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayempty', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{}', 'CARTO dataset array empty');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearraynil', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', NULL, 'CARTO dataset array nil');
+        INSERT INTO datasets VALUES ('carto.abc.datasetvalidatearrayseveraldata', 0.0, 0.0, 'tos', 'tos_link', 'licenses', 'licenses_link',
+                                     'rights', '{bq,bigtable,carto}', 'CARTO dataset array several data');
         CREATE TABLE geographies(id text, estimated_delivery_days numeric, subscription_list_price numeric, tos text,
                                  tos_link text, licenses text, licenses_link text, rights text, available_in text[],
                                  name text);

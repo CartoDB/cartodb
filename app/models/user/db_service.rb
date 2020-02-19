@@ -682,7 +682,7 @@ module CartoDB
                 EXCEPTION WHEN undefined_function OR invalid_schema_name THEN
                   RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
                   BEGIN
-                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' CASCADE FROM unpackaged;
+                    CREATE EXTENSION cartodb VERSION '#{cdb_extension_target_version}' CASCADE;
                   EXCEPTION WHEN undefined_table THEN
                     RAISE NOTICE 'Got % (%)', SQLERRM, SQLSTATE;
                     CREATE EXTENSION cartodb CASCADE VERSION '#{cdb_extension_target_version}';

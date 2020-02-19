@@ -803,11 +803,11 @@ development:
     timeout: 1 # socket timeout
     trigger_verbose: false
   do_metadata_database:
-    host: 'xxx.xxx.xxx.xxx'
+    host: 'localhost'
     port: 5432
-    database: catalog
-    username: xxx
-    password: xxx
+    database: 'catalog'
+    username: ''
+    password: ''
 
 test:
   <<: *defaults

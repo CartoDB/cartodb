@@ -5,6 +5,7 @@ Development
 - None yet
 
 ### Features
+- Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
 - BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
 
@@ -13,6 +14,8 @@ Development
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 - Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
 - Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
+- Fix remaining trial days calculation ([#15470](https://github.com/CartoDB/cartodb/pull/15470))
+- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453) and [#15467](https://github.com/CartoDB/cartodb/pull/15467))
 - Add private map count to /me ([#15464](https://github.com/CartoDB/cartodb/pull/15464))
 - Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
 - BigQuery Connector UI enhancements ([#15393](https://github.com/CartoDB/cartodb/issues/15393))

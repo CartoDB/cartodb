@@ -16,7 +16,6 @@ describe 'UserMigration' do
   it 'exports and imports a user with raster overviews because exporting skips them' do
     CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
     user = FactoryGirl.build(:valid_user).save
-    next unless user.in_database.table_exists?('raster_overviews')
     carto_user = Carto::User.find(user.id)
     user_attributes = carto_user.attributes
     user.in_database.execute('CREATE TABLE i_hate_raster(rast raster)')
@@ -42,7 +41,7 @@ describe 'UserMigration' do
 
     expect(import.state).to eq(Carto::UserMigrationImport::STATE_COMPLETE)
   end
-
+  
   describe 'legacy functions' do
     before :each do
       @legacy_functions = CartoDB::DataMover::LegacyFunctions::LEGACY_FUNCTIONS

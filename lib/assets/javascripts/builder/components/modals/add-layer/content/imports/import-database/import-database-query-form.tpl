@@ -15,6 +15,15 @@
       <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%- _t('components.modals.add-layer.imports.database.sql-hint') %></div>
     </div>
   </div>
+  <div class="Form-row u-flex__align--start">
+    <div class="Form-rowLabel ImportOptions__label">
+      <label class="Form-label CDB-Text CDB-Size-medium u-mainTextColor"><%- _t('components.modals.add-layer.imports.database.import-as-field') %></label>
+    </div>
+    <div>
+      <input type="text" class="ImportOptions__input--long Form-input CDB-Text CDB-Size-medium js-textInput" value="" />
+      <div class="ImportOptions__hint CDB-Text CDB-Size-medium u-altTextColor u-mt--8"><%= _t('components.modals.add-layer.imports.database.import-as-hint') %></div>
+    </div>
+  </div>
   <div class="Form-row">
     <div class="Form-rowLabel ImportOptions__label"></div>
     <div class="Form-row ImportOptions__input--long u-flex__justify--end">

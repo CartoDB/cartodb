@@ -3,8 +3,8 @@
         "trial_notification": {
             "views": {
                 "trial_notification": {
-                    "message": "%{trial_days} days left in your trial.",
-                    "add_payment": "Subscribe now to keep using our platform."
+                    "message": "%{trial_days} days left in your account.",
+                    "add_payment": "Upgrade now."
                 }
             }
         }

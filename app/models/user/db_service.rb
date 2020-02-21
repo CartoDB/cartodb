@@ -662,7 +662,7 @@ module CartoDB
       # Upgrade the cartodb postgresql extension
       def upgrade_cartodb_postgres_extension(statement_timeout = nil, cdb_extension_target_version = nil)
         if cdb_extension_target_version.nil?
-          cdb_extension_target_version = '0.35.0'
+          cdb_extension_target_version = '0.36.0'
         end
 
         @user.in_database(as: :superuser, no_cartodb_in_schema: true) do |db|
@@ -905,14 +905,17 @@ module CartoDB
         @queries.run_in_transaction(queries, true)
       end
 
+      # PG12_DEPRECATED in postgis 3+
       def set_raster_privileges(role_name = nil)
+        database = @user.in_database(as: :superuser)
+        return unless database.table_exists?('raster_overviews')
         # Postgis lives at public schema, so raster catalogs too
         catalogs_schema = SCHEMA_PUBLIC
         queries = [
           "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{CartoDB::PUBLIC_DB_USER}\"",
           "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{CartoDB::PUBLIC_DB_USER}\""
         ]
-        target_user = role_name.nil? ? @user.database_public_username : role_name
+        target_user = role_name || @user.database_public_username
         unless @user.organization.nil?
           queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_overviews\" TO \"#{target_user}\""
           queries << "GRANT SELECT ON TABLE \"#{catalogs_schema}\".\"raster_columns\" TO \"#{target_user}\""
@@ -1513,6 +1516,7 @@ module CartoDB
         varnish_retry = Cartodb.config[:varnish_management].try(:[], 'retry') || 5
         varnish_trigger_verbose = Cartodb.config[:varnish_management].fetch('trigger_verbose', true) == true ? 1 : 0
 
+        # PG12_DEPRECATED remove support for python 2
         @user.in_database(as: :superuser).run(
           <<-TRIGGER
             BEGIN;
@@ -1522,18 +1526,34 @@ module CartoDB
                 timeout = #{varnish_timeout}
                 retry = #{varnish_retry}
                 trigger_verbose = #{varnish_trigger_verbose}
-                for i in ('httplib', 'base64', 'hashlib'):
+
+                if not 'httplib' in GD:
+                  try:
+                    GD['httplib'] = __import__('httplib')
+                  except:
+                    from http import client
+                    GD['httplib'] = client
+
+                for i in ('base64', 'hashlib'):
                   if not i in GD:
                     GD[i] = __import__(i)
 
                 while True:
 
                   try:
-                    client = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
-                    raw_cache_key = "t:" + GD['base64'].b64encode(GD['hashlib'].sha256('#{@user.database_name}:%s' % table_name).digest())[0:6]
+                    database_table = '#{@user.database_name}:%s' % table_name
+                    try:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', #{varnish_port}, False, timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6]
+                    except Exception:
+                      conn = GD['httplib'].HTTPConnection('#{varnish_host}', port=#{varnish_port}, timeout=timeout)
+                      dbtable_hash = GD['hashlib'].sha256(database_table.encode()).digest()
+                      dbtable_encoded = GD['base64'].b64encode(dbtable_hash)[0:6].decode()
+                    raw_cache_key = 't:%s' % dbtable_encoded
                     cache_key = raw_cache_key.replace('+', r'\+')
-                    client.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
-                    response = client.getresponse()
+                    conn.request('PURGE', '/key', '', {"Invalidation-Match": ('\\\\b%s\\\\b' % cache_key) })
+                    response = conn.getresponse()
                     assert response.status == 204
                     break
                   except Exception as err:

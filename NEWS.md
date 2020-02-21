@@ -8,8 +8,10 @@ Development
 - Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
 - BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
 - New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
+- Add PostgreSQL 12 and PostGIS 3 compatibility ([#6233](https://github.com/CartoDB/cartodb-platform/issues/6233))
 
 ### Bug fixes / enhancements
+- Prevent multiple Ghost Tables jobs enqueued for same user ([#15277](https://github.com/CartoDB/cartodb/issues/15277))
 - Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
 - Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
 - Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
@@ -326,6 +328,7 @@ sudo make install
 * Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
 * Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 * [Maintenance Page] Remove unnecessary call ([#14977](https://github.com/CartoDB/cartodb/pull/14977))
+* Support for the new Free price plan ([#15478](https://github.com/CartoDB/cartodb/pull/15478))
 
 4.26.1 (2019-05-06)
 -------------------

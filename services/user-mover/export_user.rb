@@ -73,6 +73,14 @@ module CartoDB
 
       def orphan_overview_tables
         return @orphan_overviews if @orphan_overviews
+        # PG12_DEPRECATED checks if the table raster_columns exsits
+        raster_available = user_pg_conn.exec(%{
+          SELECT 1
+          FROM   pg_views
+          WHERE  viewname = 'raster_overviews';
+        }).count > 0
+
+        return @orphan_overviews ||= [] unless raster_available
         raster_tables = user_pg_conn.exec("SELECT DISTINCT r_table_schema, r_table_name FROM raster_columns").map {
           |r| "#{r['r_table_schema']}.#{r['r_table_name']}"
         }
@@ -81,6 +89,7 @@ module CartoDB
           match = overview_re.match(table)
           match && !raster_tables.include?("#{match.captures.first}.#{match.captures.last}")
         end
+        @orphan_overviews ||= []
       end
 
       def pg_dump_bin_path
@@ -185,7 +194,13 @@ module CartoDB
       end
 
       def get_org_users(organization_id)
-        q = pg_conn.exec("SELECT * FROM users WHERE organization_id = '#{organization_id}'")
+        # owners have to be in the last position to prevent errors
+        q = pg_conn.exec(%{
+          SELECT u.* FROM users u INNER JOIN organizations o
+          ON u.organization_id = o.id
+          WHERE o.id = '#{organization_id}'
+          ORDER BY (CASE WHEN u.id = o.owner_id THEN 1 ELSE 0 END) ASC;
+        })
         if q.count > 0
           return q
         else

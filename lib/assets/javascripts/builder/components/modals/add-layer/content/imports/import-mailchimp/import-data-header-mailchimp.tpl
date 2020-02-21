@@ -27,8 +27,9 @@
     <% } %>
   </p>
   <% if (state === "selected") { %>
-    <button class="NavButton NavButton--back ImportPanel-headerButton js-back">
-      <i class="CDB-IconFont CDB-IconFont-arrowPrev"></i>
+    <button class="ImportPanel-headerButton CDB-Text is-semibold u-upperCase CDB-Size-medium u-actionTextColor js-back">
+      <i class="CDB-IconFont is-semibold CDB-IconFont-arrowPrev u-mr--4"></i>
+      <span><%= _t('components.modals.add-layer.imports.header-import.go-back') %></span>
     </button>
   <% } %>
 <% } %>

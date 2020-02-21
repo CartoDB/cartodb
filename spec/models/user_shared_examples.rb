@@ -1094,6 +1094,24 @@ shared_examples_for "user models" do
 
       expect(@user.remaining_trial_days).to eq 13
     end
+
+    it 'starts with 365 days for Free accounts in regular years' do
+      Delorean.time_travel_to('2019-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now
+
+        expect(@user.remaining_trial_days).to eq 365
+      end
+    end
+
+    it 'starts with 366 days for Free accounts in leap years' do
+      Delorean.time_travel_to('2020-01-15') do
+        @user.account_type = 'Free 2020'
+        @user.created_at = Time.now
+
+        expect(@user.remaining_trial_days).to eq 366
+      end
+    end
   end
 
   describe '#show_trial_reminder?' do
@@ -1114,11 +1132,18 @@ shared_examples_for "user models" do
       expect(@user.show_trial_reminder?).to be_false
     end
 
-    it 'returns true if the account has an active trial' do
+    it 'returns true if the account has an active trial with less than 30 remaining days' do
       @user.account_type = 'Individual'
       @user.created_at = Time.now - 1.day
 
       expect(@user.show_trial_reminder?).to be_true
+    end
+
+    it 'returns false if the account has an active trial with more than 30 remaining days' do
+      @user.account_type = 'Free 2020'
+      @user.created_at = Time.now - 1.day
+
+      expect(@user.show_trial_reminder?).to be_false
     end
   end
 end

@@ -9,16 +9,17 @@
         <template slot="title">
           <VisualizationsTitle
             :defaultTitle="$t(`MapsPage.header.title['${appliedFilter}']`)"
-            :selectedItems="selectedMaps.length"
-            :vizQuota="publicMapsQuota"
-            :vizCount="publicMapsCount"
-            :isOutOfQuota="isOutOfPublicMapsQuota"
-            :counterLabel="'Public Maps'"/>
+            :selectedItems="selectedMaps.length"/>
         </template>
 
-        <template v-if="shouldShowLimitsWarning" slot="warning">
-          <NotificationBadge type="warning">
-            <div class="warning" v-html="$t('MapsPage.header.warning', { counter: `${publicMapsCount}/${publicMapsQuota}`, path: upgradeUrl })"></div>
+        <template slot="warning">
+          <NotificationBadge type="warning" v-if="shouldShowLimitsWarning">
+            <div class="warning">
+              <span v-if="isOutOfPublicMapsQuota && !isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${publicMapsCount}/${publicMapsQuota}`, type: `public` })"></span>
+              <span v-if="isOutOfPrivateMapsQuota && !isOutOfPublicMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${privateMapsCount}/${privateMapsQuota}`, type: `private` })"></span>
+              <span v-if="isOutOfPublicMapsQuota && isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.doubleCounter', { publicCounter: `${publicMapsCount}/${publicMapsQuota}`, privateCounter: `${privateMapsCount}/${privateMapsQuota}`})"></span>
+              <span v-html="$t('MapsPage.header.warning.upgrade', { path: upgradeUrl })"></span>
+            </div>
           </NotificationBadge>
         </template>
 
@@ -47,7 +48,7 @@
           </div>
         </template>
         <template slot="actionButton" v-if="!isFirstTimeViewingDashboard && !selectedMaps.length">
-          <CreateButton visualizationType="maps" :disabled="isViewer">{{ $t(`MapsPage.createMap`) }}</CreateButton>
+          <CreateButton visualizationType="maps" :disabled="!canCreateMaps">{{ $t(`MapsPage.createMap`) }}</CreateButton>
         </template>
       </SectionTitle>
 
@@ -178,7 +179,11 @@ export default {
     ...mapGetters({
       publicMapsQuota: 'user/publicMapsQuota',
       publicMapsCount: 'user/publicMapsCount',
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      privateMapsQuota: 'user/privateMapsQuota',
+      privateMapsCount: 'user/privateMapsCount',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota',
+      canCreateMaps: 'user/canCreateMaps'
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;
@@ -213,16 +218,13 @@ export default {
       return this.selectedMaps.length > 0;
     },
     shouldShowLimitsWarning () {
-      return !this.selectedMaps.length && this.isOutOfPublicMapsQuota;
+      return this.isOutOfPublicMapsQuota || this.isOutOfPrivateMapsQuota;
     },
     shouldShowViewSwitcher () {
       return this.canChangeViewMode && !this.initialState && !this.emptyState && !this.selectedMaps.length;
     },
     shouldShowListHeader () {
       return this.isCondensed && !this.emptyState && !this.initialState;
-    },
-    isViewer () {
-      return this.$store.getters['user/isViewer'];
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

@@ -29,7 +29,7 @@ export default {
 @import 'new-dashboard/styles/variables';
 
 .NotificationBadge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   margin: 0 1em;
   padding: 0.4em 1em;

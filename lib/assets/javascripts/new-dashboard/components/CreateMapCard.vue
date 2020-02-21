@@ -7,7 +7,7 @@
       <p class="text is-caption is-txtGrey" v-html="infoText"></p>
     </template>
     <template slot="actionButton">
-      <CreateButton visualizationType="maps" :disabled="isViewer">{{ buttonText }}</CreateButton>
+      <CreateButton visualizationType="maps" :disabled="!canCreateMaps">{{ buttonText }}</CreateButton>
     </template>
   </InitialState>
 </template>
@@ -32,8 +32,8 @@ export default {
     buttonText () {
       return this.$t(`MapsPage.zeroCase.createMap`);
     },
-    isViewer () {
-      return this.$store.getters['user/isViewer'];
+    canCreateMaps () {
+      return this.$store.getters['user/canCreateMaps'];
     }
   }
 };

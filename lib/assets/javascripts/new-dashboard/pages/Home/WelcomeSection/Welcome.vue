@@ -6,6 +6,12 @@
         <a v-if="showUpgrade" :href="accountUpgradeURL" class="button is-primary">
           {{ $t('HomePage.WelcomeSection.upgradeNow') }}
         </a>
+        <div v-else-if="showTrialReminder && isFree2020User()">
+          <span v-html="accountTimeLeft" class="title is-small"></span>
+          <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
+            {{ $t('HomePage.WelcomeSection.upgradeNow') }}
+          </a>
+        </div>
         <div v-else-if="showTrialReminder">
           <span v-html="trialTimeLeft" class="title is-small"></span>
           <a class="title is-small" :href="accountUpgradeURL" v-if="accountUpgradeURL">
@@ -45,13 +51,15 @@ export default {
       notifications: state => state.user.organizationNotifications
     }),
     trialTimeLeft () {
-      const endDate = moment(this.trialEndDate);
-      const now = moment();
-      const days = Math.ceil(endDate.diff(now, 'days', true));
+      const days = this.getTimeLeft(this.trialEndDate);
       return this.$t(`HomePage.WelcomeSection.trialMessage`, { date: days });
     },
+    accountTimeLeft () {
+      const days = this.getTimeLeft(this.trialEndDate);
+      return this.$t(`HomePage.WelcomeSection.accountMessage`, { date: days });
+    },
     showUpgrade () {
-      return this.isFree2020User() && this.isTimeToShowUpgrade() && this.accountUpgradeURL;
+      return this.isFree2020User() && this.accountUpgradeURL && !this.showTrialReminder;
     },
     userType () {
       if (this.isOrganizationAdmin()) {
@@ -106,9 +114,10 @@ export default {
     isOrganizationUser () {
       return Boolean(this.organization);
     },
-    isTimeToShowUpgrade () {
-      const aMonthFromToday = new Date(new Date().setDate(new Date().getDate() + 30));
-      return this.trialEndDate < aMonthFromToday;
+    getTimeLeft (finishDate) {
+      const endDate = moment(finishDate);
+      const now = moment();
+      return Math.ceil(endDate.diff(now, 'days', true));
     }
   }
 };

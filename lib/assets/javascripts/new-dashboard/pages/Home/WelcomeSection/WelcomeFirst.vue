@@ -17,13 +17,11 @@
 
 <script>
 import differenceInDays from 'date-fns/difference_in_days';
-import CreateButton from 'new-dashboard/components/CreateButton.vue';
 import OnboardingButton from 'new-dashboard/components/Onboarding/OnboardingButton.vue';
 
 export default {
   name: 'WelcomeFirst',
   components: {
-    CreateButton,
     OnboardingButton
   },
   props: {
@@ -66,9 +64,6 @@ export default {
     },
     canCreateDatasets () {
       return this.$store.getters['user/canCreateDatasets'];
-    },
-    isViewer () {
-      return this.$store.getters['user/isViewer'];
     },
     trialLength () {
       const trialEndDate = this.$store.state.user.trial_ends_at;

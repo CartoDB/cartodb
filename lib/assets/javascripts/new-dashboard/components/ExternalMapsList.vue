@@ -227,7 +227,7 @@ export default {
   },
   methods: {
     fetchMaps () {
-      this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('externalMaps/fetch');
     },
     applyFilter (filter) {
       this.$emit('applyFilter', filter);

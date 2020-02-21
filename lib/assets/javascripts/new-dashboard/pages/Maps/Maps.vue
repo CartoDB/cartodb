@@ -18,7 +18,6 @@
 
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
-import { isAllowed } from 'new-dashboard/core/configuration/filters';
 
 export default {
   name: 'MapsPage',
@@ -28,7 +27,7 @@ export default {
   },
   computed: {
     isCartoPage () {
-      return isAllowed(this.$route.params.filter);
+      return (this.$route || {}).name === 'maps';
     }
   }
 };

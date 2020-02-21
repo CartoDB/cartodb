@@ -630,8 +630,8 @@ describe Carto::Api::VisualizationsController do
 
       describe 'named maps' do
         before(:each) do
-          @user_1.private_tables_enabled = true
-          @user_1.save
+          Carto::User.any_instance.stubs(:private_tables_enabled?).returns(true)
+          Carto::User.any_instance.stubs(:private_tables_enabled).returns(true)
           @table.user.reload
           @table.privacy = UserTable::PRIVACY_PRIVATE
           @table.save!
@@ -723,8 +723,8 @@ describe Carto::Api::VisualizationsController do
 
       describe 'named maps' do
         before(:each) do
-          @user_1.private_tables_enabled = true
-          @user_1.save
+          Carto::User.any_instance.stubs(:private_tables_enabled?).returns(true)
+          Carto::User.any_instance.stubs(:private_tables_enabled).returns(true)
           @table.user.reload
           @table.privacy = UserTable::PRIVACY_PRIVATE
           @table.save

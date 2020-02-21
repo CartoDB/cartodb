@@ -57,6 +57,14 @@ module Carto
                                       .count
     end
 
+    def public_privacy_dataset_count
+      return 0 unless @user.id
+
+      Carto::VisualizationQueryBuilder.user_public_privacy_visualizations(@user)
+                                      .build
+                                      .count
+    end
+
     def link_privacy_visualization_count
       return 0 unless @user.id
 

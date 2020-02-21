@@ -251,6 +251,10 @@ module Carto
       if !user.try(:private_tables_enabled) && !public? && (new_record? || privacy_changed?)
         errors.add(:privacy, 'unauthorized to create private tables')
       end
+
+      if public? && (new_record? || privacy_changed?) && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+        errors.add(:privacy, 'unauthorized to create public tables')
+      end
     end
 
     def create_canonical_visualization

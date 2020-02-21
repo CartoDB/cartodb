@@ -57,7 +57,7 @@ export default {
   beforeMount () {
     if (this.$store.getters['user/isViewer']) {
       // Redirect to shared maps page if user is viewer
-      return this.$router.replace({ name: 'maps', params: { filter: 'shared' } });
+      return this.$router.replace({ name: 'external_filtered', params: { filter: 'shared' } });
     }
   },
   mounted () {
@@ -104,7 +104,7 @@ export default {
       });
     },
     applyFilter (filter) {
-      this.$router.push({ name: 'external', params: { filter } });
+      this.$router.push({ name: 'external_filtered', params: { filter } });
     },
     applyOrder (orderParams) {
       this.deselectAll();

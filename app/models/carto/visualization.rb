@@ -305,6 +305,10 @@ class Carto::Visualization < ActiveRecord::Base
     type == TYPE_CANONICAL
   end
 
+  def map?
+    kuviz? || derived?
+  end
+
   def derived?
     type == TYPE_DERIVED
   end
@@ -768,13 +772,15 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def validate_privacy_changes
-    return unless privacy_changed? && (derived? || kuviz?)
+    return unless privacy_changed? && (map? || table?)
 
     is_privacy_private? ? validate_change_to_private : validate_change_to_public
   end
 
   def validate_change_to_private
-    errors.add(:privacy, 'cannot be set to private') unless user&.private_maps_enabled?
+    if (!user&.private_tables_enabled? && table?) || (!user&.private_maps_enabled? && map?)
+      errors.add(:privacy, 'cannot be set to private')
+    end
 
     return unless !privacy_was || privacy_was != Carto::Visualization::PRIVACY_PRIVATE
 
@@ -786,8 +792,12 @@ class Carto::Visualization < ActiveRecord::Base
   def validate_change_to_public
     return unless !privacy_was || privacy_was == Carto::Visualization::PRIVACY_PRIVATE
 
-    if CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
+    if map? && CartoDB::QuotaChecker.new(user).will_be_over_public_map_quota?
       errors.add(:privacy, 'over account public map quota')
+    end
+
+    if table? && CartoDB::QuotaChecker.new(user).will_be_over_public_dataset_quota?
+      errors.add(:privacy, 'over account public dataset quota')
     end
   end
 

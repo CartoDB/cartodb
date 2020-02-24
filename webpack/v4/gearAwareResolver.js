@@ -31,7 +31,7 @@ function rootDir (file, opts = {}) {
       ;
 
       // Try to look for full folder overriding, preceded by @
-      if (!fileExistsAndBoundedToGear){
+      if (!fileExistsAndBoundedToGear) {
         let pathParts = file.split(sep);
 
         pathParts.some((pathPart, pathPartIdx) => {
@@ -44,7 +44,7 @@ function rootDir (file, opts = {}) {
             pathParts.slice(pathPartIdx + 1).join(sep)
           ;
 
-          fileGearPath = join(gearPath, fileGearPath)
+          fileGearPath = join(gearPath, fileGearPath);
 
           fileExistsAndBoundedToGear =
               fs.existsSync(fileGearPath) &&
@@ -54,7 +54,7 @@ function rootDir (file, opts = {}) {
               resolve(fileGearPath).startsWith(gearPath)
           ;
 
-          return fileExistsAndBoundedToGear
+          return fileExistsAndBoundedToGear;
         });
       }
 

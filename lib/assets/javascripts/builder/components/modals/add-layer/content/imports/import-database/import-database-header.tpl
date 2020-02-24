@@ -5,3 +5,9 @@
     <%- _t('components.modals.add-layer.imports.header-import.sync-options') %>
   <% } %>
 </p>
+<% if (state === "selected") { %>
+  <button class="ImportPanel-headerButton CDB-Text is-semibold u-upperCase CDB-Size-medium u-actionTextColor js-back">
+    <i class="CDB-IconFont is-semibold CDB-IconFont-arrowPrev u-mr--4"></i>
+    <span><%= _t('components.modals.add-layer.imports.header-import.go-back') %></span>
+  </button>
+<% } %>

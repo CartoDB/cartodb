@@ -14,6 +14,10 @@ describe Carto::User do
     def create_user
       FactoryGirl.create(:carto_user)
     end
+
+    def build_user
+      FactoryGirl.build(:carto_user)
+    end
   end
 
   describe '#needs_password_confirmation?' do

@@ -1354,6 +1354,7 @@ describe Carto::Api::VisualizationsController do
       after(:each) do
         @carto_user1.private_maps_enabled = false
         @carto_user1.public_map_quota = nil
+        @carto_user1.public_dataset_quota = nil
         @carto_user1.private_map_quota = nil
         @carto_user1.save
       end
@@ -1390,6 +1391,40 @@ describe Carto::Api::VisualizationsController do
         last_response.body.should =~ /public map quota/
       end
 
+      it 'returns a 200 response when making a dataset public with enough quota' do
+        @carto_user1.public_dataset_quota = nil
+        @carto_user1.private_tables_enabled = true
+        @carto_user1.save
+        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        visualization = user_table.visualization
+
+        request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
+        put api_v1_visualizations_update_url(request_params),
+            { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
+
+        last_response.status.should == 200
+        visualization.destroy!
+      end
+
+      it 'returns a 403 response when making a dataset public without enough quota' do
+        @carto_user1.public_dataset_quota = 0
+        @carto_user1.private_tables_enabled = true
+        @carto_user1.save
+        user_table = FactoryGirl.create(:carto_user_table, :full, user: @carto_user1,
+                                        privacy: Carto::Visualization::PRIVACY_PRIVATE)
+        visualization = user_table.visualization
+
+        request_params = { user_domain: @carto_user1.username, api_key: @carto_user1.api_key, id: visualization.id }
+        put api_v1_visualizations_update_url(request_params),
+            { id: visualization.id, privacy: CartoDB::Visualization::Member::PRIVACY_PUBLIC }.to_json,
+            @headers
+
+        last_response.status.should == 403
+        last_response.body.should =~ /public dataset quota/
+      end
+
       it 'returns a 200 response when making a map private with enough quota' do
         @carto_user1.private_maps_enabled = true
         @carto_user1.private_map_quota = nil
@@ -1424,6 +1459,7 @@ describe Carto::Api::VisualizationsController do
 
       it 'returns a 200 response when making a table public without enough map quota' do
         @carto_user1.private_maps_enabled = true
+        @carto_user1.private_tables_enabled = true
         @carto_user1.public_map_quota = 0
         @carto_user1.save
         user_table = FactoryGirl.create(:carto_user_table, :with_db_table, user_id: @carto_user1.id)

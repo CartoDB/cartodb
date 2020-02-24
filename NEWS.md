@@ -5,17 +5,33 @@ Development
 - None yet
 
 ### Features
-- BigQuery Connector endponits for dry runs and projects/datasets/tables listings ([#15414]https://github.com/CartoDB/cartodb/pull/15414)
-- Hooks to override org settings ([#15126](https://github.com/CartoDB/cartodb/pull/15126))
-- New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
+- None yet
 
 ### Bug fixes / enhancements
-- Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
-- Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
-- Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
-- Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
-- Add private map count to /me ([#15464](https://github.com/CartoDB/cartodb/pull/15464))
-- Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
+- None yet
+
+4.35.0 (2020-02-21)
+-------------------
+
+### Features
+* Inherit org owner feature flags ([#15410](https://github.com/CartoDB/cartodb/pull/15410))
+* BigQuery Connector endpoints for dry runs and projects/datasets/tables listings ([#15414](https://github.com/CartoDB/cartodb/pull/15414))
+* New PostgreSQL, MySQL and SQL Server connectors UI ([#15339](https://github.com/CartoDB/cartodb/issues/15339))
+* Limit public datasets by quota ([#524](https://github.com/CartoDB/product/issues/524))
+* Add PostgreSQL 12 and PostGIS 3 compatibility ([#6233](https://github.com/CartoDB/cartodb-platform/issues/6233))
+
+### Bug fixes / enhancements
+* Prevent multiple Ghost Tables jobs enqueued for same user ([#15277](https://github.com/CartoDB/cartodb/issues/15277))
+* Invalidate session at logout ([#2334](https://github.com/CartoDB/support/issues/2334))
+* Better error reporting for BigQuery connector ([#15383](https://github.com/CartoDB/cartodb/issues/15383))
+* Fix DO subscriptions when estimated_delivery_days is NULL ([#15451](https://github.com/CartoDB/cartodb/pull/15451))
+* Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453))
+* Fix remaining trial days calculation ([#15470](https://github.com/CartoDB/cartodb/pull/15470))
+* Improve management of gcloud DO settings through API keys ([#15453](https://github.com/CartoDB/cartodb/pull/15453) and [#15467](https://github.com/CartoDB/cartodb/pull/15467))
+* Add private map count to /me ([#15464](https://github.com/CartoDB/cartodb/pull/15464))
+* Fix CSV delimiter detection ([#15423](https://github.com/CartoDB/cartodb/issues/15423))
+* Remove "FROM unpackaged" from cartodb extension installation process ([#15493](https://github.com/CartoDB/cartodb/pull/15493))
+* BigQuery Connector UI enhancements ([#15393](https://github.com/CartoDB/cartodb/issues/15393))
 
 4.34.0 (2020-01-28)
 -------------------
@@ -322,6 +338,7 @@ sudo make install
 * Fix onboarding box styles in dashboard ([#1612](https://github.com/CartoDB/design/issues/1612))
 * Take trial users to /upgrade page ([#14956](https://github.com/CartoDB/cartodb/issues/14956))
 * [Maintenance Page] Remove unnecessary call ([#14977](https://github.com/CartoDB/cartodb/pull/14977))
+* Support for the new Free price plan ([#15478](https://github.com/CartoDB/cartodb/pull/15478))
 
 4.26.1 (2019-05-06)
 -------------------

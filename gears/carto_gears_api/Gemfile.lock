@@ -66,7 +66,7 @@ GEM
     minitest (5.11.3)
     mocha (1.1.0)
       metaclass (~> 0.0.1)
-    nokogiri (1.10.5)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     pg (0.20.0)
     rack (1.6.12)

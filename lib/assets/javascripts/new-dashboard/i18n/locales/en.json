@@ -15,7 +15,8 @@
     "tags": "tags",
     "type": {
       "derived": "BUILDER",
-      "kuviz": "CARTOFRAMES"
+      "kuviz": "CARTOFRAMES",
+      "keplergl": "KEPLER.GL"
     }
   },
   "MapListHeader": {

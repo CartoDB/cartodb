@@ -13,7 +13,7 @@
     <div class="viz-column--main-info">
       <div class="cell cell--thumbnail cell--first">
         <div class="cell__media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored }">
-          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
+          <img class="cell__map-thumbnail" :src="mapThumbnailUrl" @error="onThumbnailError" v-if="(isBuilderMap && !isThumbnailErrored) || isKeplergl"/>
 
           <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
         </div>
@@ -69,7 +69,7 @@
         <div class="cell cell--large">
           <span class="text is-small is-txtSoftGrey">{{ lastUpdated }}</span>
         </div>
-        <div class="cell cell--xsmall u-txt-right u-p--0">
+        <div class="cell cell--xsmall u-txt-right u-p--0" v-if="!isKeplergl">
           <span class="text is-small is-txtSoftGrey">{{ numberViews }}</span>
         </div>
       </div>

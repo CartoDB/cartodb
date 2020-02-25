@@ -59,6 +59,7 @@
         <CondensedMapHeader
           :order="appliedOrder"
           :orderDirection="appliedOrderDirection"
+          :showViews="false"
           @orderChanged="applyOrder"
           v-if="shouldShowListHeader">
         </CondensedMapHeader>
@@ -107,11 +108,11 @@ import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
 import BadgeWarning from 'new-dashboard/components/BadgeWarning';
-import SettingsDropdown from 'new-dashboard/components/Settings/Settings';
+import SettingsDropdown from 'new-dashboard/components/SettingsExternal/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
 export default {
-  name: 'MapsList',
+  name: 'ExternalMapsList',
   props: {
     maxVisibleMaps: {
       type: Number,
@@ -159,16 +160,16 @@ export default {
   },
   computed: {
     ...mapState({
-      appliedFilter: state => state.maps.filterType,
-      appliedOrder: state => state.maps.order,
-      appliedOrderDirection: state => state.maps.orderDirection,
-      maps: state => state.maps.list,
-      mapsMetadata: state => state.maps.metadata,
-      isFetchingMaps: state => state.maps.isFetching,
-      currentEntriesCount: state => state.maps.metadata.total_entries,
-      filterType: state => state.maps.filterType,
-      totalUserEntries: state => state.maps.metadata.total_user_entries,
-      totalShared: state => state.maps.metadata.total_shared,
+      appliedFilter: state => state.externalMaps.filterType,
+      appliedOrder: state => state.externalMaps.order,
+      appliedOrderDirection: state => state.externalMaps.orderDirection,
+      maps: state => state.externalMaps.list,
+      mapsMetadata: state => state.externalMaps.metadata,
+      isFetchingMaps: state => state.externalMaps.isFetching,
+      currentEntriesCount: state => state.externalMaps.metadata.total_entries,
+      filterType: state => state.externalMaps.filterType,
+      totalUserEntries: state => state.externalMaps.metadata.total_user_entries,
+      totalShared: state => state.externalMaps.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
       upgradeUrl: state => state.config.upgrade_url
     }),
@@ -193,7 +194,7 @@ export default {
         !this.currentEntriesCount;
     },
     emptyStateText () {
-      const route = this.$router.resolve({name: 'maps', params: { filter: 'shared' }});
+      const route = this.$router.resolve({name: 'external_filtered', params: { filter: 'shared' }});
 
       return this.hasSharedMaps
         ? this.$t('MapsPage.emptyCase.onlyShared', { path: route.href })

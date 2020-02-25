@@ -69,15 +69,15 @@ export default {
     document.removeEventListener('scroll', this.$onScrollChange, { passive: true });
   },
   beforeRouteUpdate (to, from, next) {
-    checkFilters('maps', 'maps', to, from, next);
+    checkFilters('externalMaps', 'externalMaps', to, from, next);
   },
   computed: {
     ...mapState({
-      numPages: state => state.maps.numPages,
-      currentPage: state => state.maps.page,
-      maps: state => state.maps.list,
-      isFetchingMaps: state => state.maps.isFetching,
-      currentEntriesCount: state => state.maps.metadata.total_entries
+      numPages: state => state.externalMaps.numPages,
+      currentPage: state => state.externalMaps.page,
+      maps: state => state.externalMaps.list,
+      isFetchingMaps: state => state.externalMaps.isFetching,
+      currentEntriesCount: state => state.externalMaps.metadata.total_entries
     }),
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

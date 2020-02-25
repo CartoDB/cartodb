@@ -37,9 +37,11 @@ export default {
     this.$store.dispatch('recentContent/fetch');
 
     this.$store.dispatch('maps/resetFilters');
+    this.$store.dispatch('externalMaps/resetFilters');
     this.$store.dispatch('datasets/resetFilters');
 
     this.$store.dispatch('maps/setResultsPerPage', 6);
+    this.$store.dispatch('externalMaps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
     // If user is viewer, show shared maps and datasets
@@ -49,6 +51,7 @@ export default {
     }
 
     this.$store.dispatch('maps/fetch');
+    this.$store.dispatch('externalMaps/fetch');
     this.$store.dispatch('datasets/fetch');
   },
   data () {
@@ -75,6 +78,7 @@ export default {
     onContentChanged () {
       this.$store.dispatch('recentContent/fetch');
       this.$store.dispatch('maps/fetch');
+      this.$store.dispatch('externalMaps/fetch');
       this.$store.dispatch('datasets/fetch');
     }
   }

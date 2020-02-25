@@ -7,7 +7,8 @@ module.exports = merge(configBase, {
   plugins: [
     new webpack.DefinePlugin({
       __IN_DEV__: JSON.stringify(true),
-      __ENV__: JSON.stringify('dev')
+      __ENV__: JSON.stringify('dev'),
+      __KEPLERGL_BASE_URL__: JSON.stringify('http://localhost:8081')
     })
   ]
 });

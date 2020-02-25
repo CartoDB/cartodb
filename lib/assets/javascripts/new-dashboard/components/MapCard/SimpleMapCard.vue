@@ -10,13 +10,13 @@
      }"
     @click="onClick">
     <div class="card-media" :class="{ 'is-kuviz': isKuviz ,'has-error': !isKuviz && isThumbnailErrored  }">
-      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="isBuilderMap && !isThumbnailErrored"/>
+      <img :src="mapThumbnailUrl" @error="onThumbnailError" v-if="(isBuilderMap && !isThumbnailErrored) || isKeplergl"/>
 
       <div class="media-dataset" v-if="!(isBuilderMap || isKuviz)">
         <img svg-inline src="../../assets/icons/datasets/dataset-icon.svg" />
       </div>
 
-      <TypeBadge v-if="isBuilderMap || isKuviz" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
+      <TypeBadge v-if="isBuilderMap || isKuviz || isKeplergl" class="card-badge" :visualizationType="visualization.type" :isKuviz="isKuviz" :inCondensedCard="false" />
       <div class="MapCard-error" v-if="!isKuviz && isThumbnailErrored"></div>
     </div>
 

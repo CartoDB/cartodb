@@ -5,15 +5,10 @@ Development
 - None yet
 
 ### Features
-- None yet
+- New Free 2020 Plan, Dashboard and Builder changes ([#15497](https://github.com/CartoDB/cartodb/pull/15497))
 
 ### Bug fixes / enhancements
-- New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))
-- New Free Plan (Dashboard): Update welcome section ([#15434](https://github.com/CartoDB/cartodb/issues/15434))
-- New Free Plan (Dashboard): Update custom API keys section in settings ([#15440](https://github.com/CartoDB/cartodb/issues/15440))
-- New Free Plan (Dashboard): Update change privacy and duplicate options ([#15441](https://github.com/CartoDB/cartodb/issues/15441))
-- New Free Plan (Dashboard): Update limits counter and warnings in maps section ([#15436](https://github.com/CartoDB/cartodb/issues/15436))
-- New Free Plan (Dashboard): Update limits counter and warnings in datasets section ([#15439](https://github.com/CartoDB/cartodb/issues/15439))
+- Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
 
 4.35.0 (2020-02-21)
 -------------------

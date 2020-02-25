@@ -66,13 +66,15 @@ export default {
     userAccountType () {
       return this.user.account_type.toLowerCase();
     },
+
     isFreeUser () {
-      return this.userAccountType === 'free';
+      const freeUser = ['free', 'free 2020', 'carto for students - anual'];
+      return freeUser.includes(this.userAccountType);
     },
 
     isIndividualUser () {
       const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
-      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization);
+      return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization || this.isFreeUser);
     },
 
     isOrganizationUser () {

@@ -8,7 +8,12 @@ Development
 - None yet
 
 ### Bug fixes / enhancements
-- None yet
+- New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))
+- New Free Plan (Dashboard): Update welcome section ([#15434](https://github.com/CartoDB/cartodb/issues/15434))
+- New Free Plan (Dashboard): Update custom API keys section in settings ([#15440](https://github.com/CartoDB/cartodb/issues/15440))
+- New Free Plan (Dashboard): Update change privacy and duplicate options ([#15441](https://github.com/CartoDB/cartodb/issues/15441))
+- New Free Plan (Dashboard): Update limits counter and warnings in maps section ([#15436](https://github.com/CartoDB/cartodb/issues/15436))
+- New Free Plan (Dashboard): Update limits counter and warnings in datasets section ([#15439](https://github.com/CartoDB/cartodb/issues/15439))
 
 4.35.0 (2020-02-21)
 -------------------
@@ -40,11 +45,11 @@ Development
 * Use Dataservices API client 0.28.0
 
 ### Bug fixes / enhancements
-- Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
-- Fix quotes for `rel='noopener noreferrer'` parameters
-- Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
-- Fix assets version in package-lock.json to `1.0.0-assets.155`
-- Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
+* Add `rel='noopener noreferrer'` to third-party `target='_blank'` links, and `autocomplete='off'` to password fields. ([#15411](https://github.com/CartoDB/cartodb/pull/15411))
+* Fix quotes for `rel='noopener noreferrer'` parameters
+* Fix and replace broken links ([#15443])[https://github.com/CartoDB/cartodb/pull/15443])
+* Fix assets version in package-lock.json to `1.0.0-assets.155`
+* Improve analysis joins performance in Builder UI ([#15454])[https://github.com/CartoDB/cartodb/pull/15454])
 
 4.33.1 (2020-01-27)
 -------------------

@@ -3,13 +3,14 @@
     v-if="!isSharedWithMe"
     ref="quickActions"
     :actions="actions[actionMode]"
+    :upgradeUrl="upgradeUrl"
     v-on="getEventListeners()"
     @open="openQuickactions"
     @close="closeQuickactions"></QuickActions>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import QuickActions from 'new-dashboard/components/QuickActions/QuickActions';
 import * as DialogActions from 'new-dashboard/core/dialog-actions';
 import * as Visualization from 'new-dashboard/core/models/visualization';
@@ -28,7 +29,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
+    }),
+    ...mapState({
+      upgradeUrl: state => state.config.upgrade_url
     }),
     actions () {
       return {
@@ -61,10 +66,12 @@ export default {
       return this.map.privacy === 'PRIVATE';
     },
     canChangePrivacy () {
-      return !this.isOutOfPublicMapsQuota || !this.isSelectedMapPrivate;
+      return (this.isSelectedMapPrivate && !this.isOutOfPublicMapsQuota) ||
+      !this.isSelectedMapPrivate;
     },
     canDuplicate () {
-      return !this.isOutOfPublicMapsQuota || this.isSelectedMapPrivate;
+      return (!this.isOutOfPrivateMapsQuota && this.isSelectedMapPrivate) ||
+        (!this.isOutOfPublicMapsQuota && !this.isSelectedMapPrivate);
     },
     isKuviz () {
       return this.map.type === 'kuviz';

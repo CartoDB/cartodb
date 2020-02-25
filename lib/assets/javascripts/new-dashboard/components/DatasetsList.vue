@@ -67,6 +67,7 @@
         :class="{
           'has-user-notification': isNotificationVisible,
           'in-home': isInHomePage,
+          'no-secondary-navbar': !hasSecondaryNavbar
         }">
 
       <DatasetListHeader :order="appliedOrder" :orderDirection="appliedOrderDirection" @changeOrder="applyOrder"></DatasetListHeader>
@@ -116,6 +117,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
+import * as Accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DatasetsList',
@@ -166,7 +168,8 @@ export default {
       totalUserEntries: state => state.datasets.metadata.total_user_entries,
       totalShared: state => state.datasets.metadata.total_shared,
       isFirstTimeViewingDashboard: state => state.config.isFirstTimeViewingDashboard,
-      upgradeUrl: state => state.config.upgrade_url
+      upgradeUrl: state => state.config.upgrade_url,
+      planAccountType: state => state.user.account_type
     }),
     ...mapGetters({
       datasetsCount: 'user/datasetsCount',
@@ -219,6 +222,9 @@ export default {
     },
     isInHomePage () {
       return this.$router.currentRoute.name === 'home';
+    },
+    hasSecondaryNavbar () {
+      return !Accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   },
   methods: {
@@ -289,14 +295,16 @@ export default {
 .grid__head--sticky {
   top: $header__height + $subheader__height;
 
-  &.in-home {
+  &.in-home,
+  &.no-secondary-navbar {
     top: $header__height;
   }
 
   &.has-user-notification {
     top: $header__height + $subheader__height + $notification-warning__height;
 
-    &.in-home {
+    &.in-home,
+    &.no-secondary-navbar {
       top: $header__height + $notification-warning__height;
     }
   }

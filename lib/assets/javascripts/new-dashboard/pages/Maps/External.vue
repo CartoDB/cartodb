@@ -109,7 +109,7 @@ export default {
     applyOrder (orderParams) {
       this.deselectAll();
       this.$router.push({
-        name: 'maps',
+        name: 'external',
         params: this.$route.params,
         query: {
           ...this.$route.query,

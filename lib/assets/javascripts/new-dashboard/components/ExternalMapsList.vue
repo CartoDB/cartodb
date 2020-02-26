@@ -16,10 +16,15 @@
             :counterLabel="'Public Maps'"/>
         </template>
 
-        <template v-if="shouldShowLimitsWarning" slot="warning">
-          <BadgeWarning>
-            <div class="warning" v-html="$t('MapsPage.header.warning', { counter: `${publicMapsCount}/${publicMapsQuota}`, path: upgradeUrl })"></div>
-          </BadgeWarning>
+        <template slot="warning">
+          <NotificationBadge type="warning" v-if="shouldShowLimitsWarning">
+            <div class="warning">
+              <span v-if="isOutOfPublicMapsQuota && !isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${publicMapsCount}/${publicMapsQuota}`, type: `public` })"></span>
+              <span v-if="isOutOfPrivateMapsQuota && !isOutOfPublicMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.counter', { counter: `${privateMapsCount}/${privateMapsQuota}`, type: `private` })"></span>
+              <span v-if="isOutOfPublicMapsQuota && isOutOfPrivateMapsQuota" class="is-bold" v-html="$t('MapsPage.header.warning.doubleCounter', { publicCounter: `${publicMapsCount}/${publicMapsQuota}`, privateCounter: `${privateMapsCount}/${privateMapsQuota}`})"></span>
+              <span v-html="$t('MapsPage.header.warning.upgrade', { path: upgradeUrl })"></span>
+            </div>
+          </NotificationBadge>
         </template>
 
         <template slot="dropdownButton">
@@ -107,7 +112,7 @@ import CondensedMapHeader from 'new-dashboard/components/MapCard/CondensedMapHea
 import MapCardFake from 'new-dashboard/components/MapCard/fakes/MapCardFake';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import SettingsDropdown from 'new-dashboard/components/SettingsExternal/Settings';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
 
@@ -146,7 +151,7 @@ export default {
     MapCardFake,
     SectionTitle,
     VisualizationsTitle,
-    BadgeWarning,
+    NotificationBadge,
     InitialState
   },
   data () {
@@ -176,7 +181,10 @@ export default {
     ...mapGetters({
       publicMapsQuota: 'user/publicMapsQuota',
       publicMapsCount: 'user/publicMapsCount',
-      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota'
+      isOutOfPublicMapsQuota: 'user/isOutOfPublicMapsQuota',
+      privateMapsQuota: 'user/privateMapsQuota',
+      privateMapsCount: 'user/privateMapsCount',
+      isOutOfPrivateMapsQuota: 'user/isOutOfPrivateMapsQuota'
     }),
     areAllMapsSelected () {
       return Object.keys(this.maps).length === this.selectedMaps.length;

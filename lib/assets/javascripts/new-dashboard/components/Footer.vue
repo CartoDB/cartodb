@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import * as accounts from 'new-dashboard/core/constants/accounts';
+
 export default {
   name: 'Footer',
   props: {
@@ -61,13 +63,24 @@ export default {
       return this.user.account_type.toLowerCase();
     },
 
+    free2020Lowecase () {
+      return accounts.free2020.map(item => item.toLowerCase());
+    },
+
+    freeLowecase () {
+      return accounts.free.map(item => item.toLowerCase());
+    },
+
+    studentLowecase () {
+      return accounts.student.map(item => item.toLowerCase());
+    },
+
     isFreeUser () {
-      const freeUser = ['free'];
-      return freeUser.includes(this.userAccountType);
+      return this.freeLowecase.includes(this.userAccountType);
     },
 
     isIndividualUser () {
-      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free', 'free 2020', 'carto for students - annual', 'carto for the classroom - annual'];
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', ...this.freeLowecase, ...this.free2020Lowecase, ...this.studentLowecase];
       return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization || this.isFreeUser);
     },
 

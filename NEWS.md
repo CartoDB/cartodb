@@ -11,6 +11,7 @@ Development
 ### Bug fixes / enhancements
 - Hide DataCatalog to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
 - Hide Create oAuth Apps section in Connected Apps page to Free 2020 users ([#15500](https://github.com/CartoDB/cartodb/pull/15500))
+- Update footer links based on account types ([#15502](https://github.com/CartoDB/cartodb/pull/15502))
 
 4.35.0 (2020-02-21)
 -------------------

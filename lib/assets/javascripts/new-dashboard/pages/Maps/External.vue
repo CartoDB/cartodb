@@ -98,7 +98,7 @@ export default {
 
       this.deselectAll();
       this.$router.push({
-        name: 'maps',
+        name: this.$route.name,
         params: this.$route.params,
         query: { ...this.$route.query, page }
       });

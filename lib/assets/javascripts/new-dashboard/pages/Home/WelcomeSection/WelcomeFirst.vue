@@ -2,7 +2,7 @@
   <section class="welcome-first">
     <div class="container">
       <div class="welcome-first__greeting title is-title">{{ greeting }}</div>
-      <div class="welcome-first__text text is-caption" v-html="text"></div>
+      <div class="welcome-first__text text is-body" v-html="text"></div>
       <div class="welcome-first__actions">
         <OnboardingButton v-if="!isOrganizationAdmin" :isFirstTimeViewingDashboard="true"></OnboardingButton>
         <a class="button button--border"

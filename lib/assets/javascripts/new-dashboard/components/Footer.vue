@@ -29,12 +29,6 @@
         </a>
         <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
-            {{ $t(`Footer.TechSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
-          </h4>
-          <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.TechSupport.description`) }}</p>
-        </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
-          <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.DedicatedSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.DedicatedSupport.description`) }}</p>
@@ -73,7 +67,7 @@ export default {
     },
 
     isIndividualUser () {
-      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free', 'free 2020', 'carto for students - anual'];
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free', 'free 2020', 'carto for students - annual', 'carto for the classroom - annual'];
       return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization || this.isFreeUser);
     },
 

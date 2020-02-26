@@ -27,7 +27,7 @@
           </h4>
           <p class="description-link text is-small is-txtSoftGrey">{{ $t(`Footer.GISStackExchange.description`) }}</p>
         </a>
-        <a href="mailto:support@carto.com" class="footer-link" v-if="isFreeUser">
+        <a href="mailto:support@carto.com" class="footer-link" v-if="isIndividualUser">
           <h4 class="title-link title is-caption is-txtGrey">
             {{ $t(`Footer.TechSupport.title`) }}<span class="chevron"><img svg-inline src="../assets/icons/common/chevron.svg"/></span>
           </h4>
@@ -68,12 +68,12 @@ export default {
     },
 
     isFreeUser () {
-      const freeUser = ['free', 'free 2020', 'carto for students - anual'];
+      const freeUser = ['free'];
       return freeUser.includes(this.userAccountType);
     },
 
     isIndividualUser () {
-      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free'];
+      const noIndividualUsers = ['internal', 'partner', 'ambassador', 'free', 'free 2020', 'carto for students - anual'];
       return !(noIndividualUsers.includes(this.userAccountType) || this.user.organization || this.isFreeUser);
     },
 

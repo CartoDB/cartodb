@@ -117,7 +117,7 @@ import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
 import DatasetBulkActions from 'new-dashboard/components/BulkActions/DatasetBulkActions.vue';
 import { shiftClick } from 'new-dashboard/utils/shift-click.service.js';
-import * as Accounts from 'new-dashboard/core/constants/accounts';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DatasetsList',
@@ -224,7 +224,7 @@ export default {
       return this.$router.currentRoute.name === 'home';
     },
     hasSecondaryNavbar () {
-      return !Accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   },
   methods: {

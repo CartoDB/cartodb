@@ -19,7 +19,7 @@ import { mapState } from 'vuex';
 import Page from 'new-dashboard/components/Page';
 import SecondaryNavigation from 'new-dashboard/components/SecondaryNavigation';
 import { isAllowed } from 'new-dashboard/core/configuration/filters';
-import * as Accounts from 'new-dashboard/core/constants/accounts';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'DataPage',
@@ -35,7 +35,7 @@ export default {
       return isAllowed(this.$route.params.filter);
     },
     showDataCatalog () {
-      return !Accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
+      return !accounts.accountsWithDataCatalogLimits.includes(this.planAccountType);
     }
   }
 };

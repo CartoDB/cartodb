@@ -5,7 +5,7 @@ Development
 - None yet
 
 ### Features
-- None yet
+- Kepler.gl visualizations (Dashboard): Integrate Kepler.gl visualizations saved to CARTO into Dashboard ([#15484](https://github.com/CartoDB/cartodb/issues/15484))
 
 ### Bug fixes / enhancements
 - New Free Plan (Dashboard): Update metrics section in homepage ([#15435](https://github.com/CartoDB/cartodb/issues/15435))

@@ -144,7 +144,8 @@ export default {
       this.closeDropdown();
     },
     deleteMap () {
-      DialogActions.deleteVisualization.apply(this, [this.map, 'maps', this.getActionHandlers()]);
+      const contentType = !this.isKeplergl ? 'maps' : 'externalMaps';
+      DialogActions.deleteVisualization.apply(this, [this.map, contentType, this.getActionHandlers()]);
       this.closeDropdown();
     },
     shareVisualization () {

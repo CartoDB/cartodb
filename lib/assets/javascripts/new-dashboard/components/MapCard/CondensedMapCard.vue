@@ -32,7 +32,7 @@
             {{ visualization.name }}
           </h3>
 
-          <span v-if="showInteractiveElements" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
+          <span v-if="showInteractiveElements && !isKeplergl" class="cell__favorite" :class="{ 'is-favorite': visualization.liked }" @click.prevent="toggleFavorite" @mouseover="mouseOverChildElement" @mouseleave="mouseOutChildElement">
             <img svg-inline src="../../assets/icons/common/favorite.svg">
           </span>
         </div>

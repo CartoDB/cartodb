@@ -9,16 +9,7 @@
         <template slot="title">
           <VisualizationsTitle
             :defaultTitle="$t(`DataPage.header.title['${appliedFilter}']`)"
-            :selectedItems="selectedDatasets.length"
-            :vizQuota="datasetsQuota"
-            :vizCount="datasetsCount"
-            :isOutOfQuota="isOutOfDatasetsQuota"/>
-        </template>
-
-        <template v-if="shouldShowLimitsWarning" slot="warning">
-          <BadgeWarning>
-            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
-          </BadgeWarning>
+            :selectedItems="selectedDatasets.length"/>
         </template>
 
         <template slot="dropdownButton">
@@ -46,6 +37,13 @@
             {{ $t(`DataPage.createDataset`) }}
           </CreateButton>
         </template>
+
+        <template v-if="shouldShowLimitsWarning" slot="warning">
+          <NotificationBadge type="warning" :has-margin='false'>
+            <div class="warning" v-html="$t('DataPage.header.warning', { counter: `${datasetsCount}/${datasetsQuota}`, path: upgradeUrl })"></div>
+          </NotificationBadge>
+        </template>
+
       </SectionTitle>
     </div>
 
@@ -112,7 +110,7 @@ import DatasetCardFake from '../components/Dataset/DatasetCardFake';
 import SettingsDropdown from '../components/Settings/Settings';
 import SectionTitle from 'new-dashboard/components/SectionTitle';
 import VisualizationsTitle from 'new-dashboard/components/VisualizationsTitle';
-import BadgeWarning from 'new-dashboard/components/BadgeWarning';
+import NotificationBadge from 'new-dashboard/components/NotificationBadge';
 import InitialState from 'new-dashboard/components/States/InitialState';
 import EmptyState from 'new-dashboard/components/States/EmptyState';
 import CreateButton from 'new-dashboard/components/CreateButton';
@@ -140,7 +138,7 @@ export default {
     SettingsDropdown,
     SectionTitle,
     VisualizationsTitle,
-    BadgeWarning,
+    NotificationBadge,
     DatasetCard,
     DatasetCardFake,
     InitialState,
@@ -214,7 +212,7 @@ export default {
       return this.selectedDatasets.length > 0;
     },
     shouldShowLimitsWarning () {
-      return !this.selectedDatasets.length && this.isOutOfDatasetsQuota;
+      return this.isOutOfDatasetsQuota;
     },
     isNotificationVisible () {
       return this.$store.getters['user/isNotificationVisible'];

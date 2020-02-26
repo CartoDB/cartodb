@@ -59,7 +59,7 @@ import AppElement from '../../components/Apps/AppElement';
 import SettingsSidebar from 'new-dashboard/components/Apps/SettingsSidebar';
 import Modal from 'new-dashboard/components/Modal';
 import { mapState } from 'vuex';
-import * as Accounts from 'new-dashboard/core/constants/accounts';
+import * as accounts from 'new-dashboard/core/constants/accounts';
 
 export default {
   name: 'ConnectedApps',
@@ -90,7 +90,7 @@ export default {
       hasConnectedApps: state => !state.connectedApps.isFetching && !!Object.keys(state.connectedApps.list).length
     }),
     showOauthApps () {
-      return !Accounts.accountsWithOauthAppsLimits.includes(this.planAccountType);
+      return !accounts.accountsWithOauthAppsLimits.includes(this.planAccountType);
     }
   },
   methods: {

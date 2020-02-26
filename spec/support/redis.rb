@@ -18,7 +18,6 @@ module CartoDB
   end
 
   class RedisTest
-
     def self.down
     end
 

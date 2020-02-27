@@ -33,7 +33,7 @@ export default {
     QuotaSection,
     Page
   },
-  beforeMount () {
+  async beforeMount () {
     this.$store.dispatch('recentContent/fetch');
 
     this.$store.dispatch('maps/resetFilters');
@@ -41,7 +41,7 @@ export default {
     this.$store.dispatch('datasets/resetFilters');
 
     this.$store.dispatch('maps/setResultsPerPage', 6);
-    this.$store.dispatch('externalMaps/setResultsPerPage', 6);
+    // this.$store.dispatch('externalMaps/setResultsPerPage', 6);
     this.$store.dispatch('datasets/setResultsPerPage', 6);
 
     // If user is viewer, show shared maps and datasets
@@ -51,6 +51,7 @@ export default {
     }
 
     this.$store.dispatch('maps/fetch');
+    await this.$store.dispatch('externalMaps/init');
     this.$store.dispatch('externalMaps/fetch');
     this.$store.dispatch('datasets/fetch');
   },

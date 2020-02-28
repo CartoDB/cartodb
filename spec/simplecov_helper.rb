@@ -5,11 +5,13 @@ unless ENV['PARALLEL'] || ENV['NO_COVERAGE']
     require 'simplecov'
     require 'simplecov-json'
     require 'simplecov-rcov'
+    require 'codecov'
 
     SimpleCov.formatters = [
       SimpleCov::Formatter::HTMLFormatter,
       SimpleCov::Formatter::JSONFormatter,
-      SimpleCov::Formatter::RcovFormatter
+      SimpleCov::Formatter::RcovFormatter,
+      SimpleCov::Formatter::Codecov
     ]
 
     SimpleCov.start 'rails' do
